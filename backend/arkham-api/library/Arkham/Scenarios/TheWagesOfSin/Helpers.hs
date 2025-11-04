@@ -99,7 +99,6 @@ hereticRunner storyCard msg heretic = runQueueT $ case msg of
             DoNotResolveIt
             (Just $ toTarget $ toAttrs heretic)
             (enemyPlacement attrs)
-      , ReplaceCard (toCardId attrs) card
       ]
     pure heretic
   UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

@@ -490,6 +490,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                         _ -> cardDef
                     else pure cardDef
                 card <- setOwner investigatorId =<< genCard cardDef'
+                push $ ReplaceCard card.id card
                 pure
                   ( PutCardIntoPlay
                       investigatorId
@@ -626,8 +627,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       if any (`elem` mods) [CannotDrawCards, CannotManipulateDeck]
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
         else drawOpeningHand a (startingHandAmount - length investigatorHand)
-    additionalHandCards <-
-      (additionalStartingCards <>) <$> traverse genCard investigatorStartsWithInHand
+    startsWithInHandCards <- traverse genCard investigatorStartsWithInHand
+    for_ startsWithInHandCards \card -> push $ ReplaceCard card.id card
+    let additionalHandCards = additionalStartingCards <> startsWithInHandCards
 
     Lifted.shuffleDiscardBackIn iid
     Lifted.checkAfter (Window.DrawingStartingHand iid)

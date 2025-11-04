@@ -1,4 +1,10 @@
 {
+  "interludes": {
+    "1": "A Record of Those Lost",
+    "2": "The Price of Progress",
+    "3": "The Inner Circle",
+    "4": "Twist of Fate"
+  },
   "key": {
     "missingPersons": "Missing persons",
     "wasTakenByTheWatcher": "Was taken by the Watcher",

@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.ChaosToken
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
@@ -24,6 +25,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Projection
+import Arkham.Question (Question (..))
 import Arkham.Source
 import Arkham.Trait (Trait (Curse, Omen, Pact, SilverTwilight))
 
@@ -33,19 +35,19 @@ newtype TheCircleUndone = TheCircleUndone CampaignAttrs
 instance IsCampaign TheCircleUndone where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just DisappearanceAtTheTwilightEstate
-    DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
-    TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)
-    AtDeathsDoorstep -> Just (UpgradeDeckStep TheSecretName)
-    InterludeStep 2 _ -> Just (UpgradeDeckStep TheSecretName)
-    TheSecretName -> Just (UpgradeDeckStep TheWagesOfSin)
-    TheWagesOfSin -> Just (UpgradeDeckStep ForTheGreaterGood)
-    ForTheGreaterGood -> Just (UpgradeDeckStep UnionAndDisillusion)
-    InterludeStep 3 _ -> Just (UpgradeDeckStep UnionAndDisillusion)
-    UnionAndDisillusion -> Just (UpgradeDeckStep InTheClutchesOfChaos)
-    InTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just (UpgradeDeckStep BeforeTheBlackThrone)
-    BeforeTheBlackThrone -> Just EpilogueStep
+    PrologueStep -> continue DisappearanceAtTheTwilightEstate
+    DisappearanceAtTheTwilightEstate -> continue TheWitchingHour
+    TheWitchingHour -> continue AtDeathsDoorstep
+    AtDeathsDoorstep -> continue TheSecretName
+    InterludeStep 2 _ -> continue TheSecretName
+    TheSecretName -> continue TheWagesOfSin
+    TheWagesOfSin -> continue ForTheGreaterGood
+    ForTheGreaterGood -> continue UnionAndDisillusion
+    InterludeStep 3 _ -> continue UnionAndDisillusion
+    UnionAndDisillusion -> continue InTheClutchesOfChaos
+    InTheClutchesOfChaos -> continue $ InterludeStep 4 Nothing
+    InterludeStep 4 _ -> continue BeforeTheBlackThrone
+    BeforeTheBlackThrone -> continue EpilogueStep
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 
@@ -67,9 +69,19 @@ disappearanceAtTheTwilightEstateSteps =
 
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ case msg of
-    StartCampaign | attrs.step `elem` (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
-      campaignStep_
-        $ if attrs.step `elem` disappearanceAtTheTwilightEstateSteps then PrologueStep else attrs.step
+    StartCampaign | attrs.step `elem` map ContinueCampaignStep (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
+          campaignStep_
+            $ if attrs.step `elem` map ContinueCampaignStep disappearanceAtTheTwilightEstateSteps
+              then PrologueStep
+              else attrs.step
+          pure c
+    CampaignStep (ContinueCampaignStep PrologueStep) -> do
+      lead <- getActivePlayer
+      push $ Ask lead ContinueCampaign
+      pure c
+    CampaignStep (ContinueCampaignStep DisappearanceAtTheTwilightEstate) -> do
+      lead <- getActivePlayer
+      push $ Ask lead ContinueCampaign
       pure c
     CampaignStep TheWitchingHour -> do
       players <- allPlayers

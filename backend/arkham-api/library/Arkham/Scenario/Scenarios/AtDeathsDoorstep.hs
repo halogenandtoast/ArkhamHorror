@@ -256,16 +256,16 @@ instance RunMessage AtDeathsDoorstep where
         1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsEscapedTheSpectralRealm
-          endOfScenarioThen $ InterludeStep 2 (Just interludeKey)
+          endOfScenarioThen $ ContinueCampaignStep $ InterludeStep 2 (Just interludeKey)
         2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-          endOfScenarioThen $ UpgradeDeckStep TheSecretName
+          endOfScenarioThen $ ContinueCampaignStep TheSecretName
         3 -> do
           resolutionWithXp "resolution3" $ allGainXp' attrs
           eachUnresigned (kill attrs)
           record TheInvestigatorsAreNeverSeenOrHeardFromAgain
-          endOfScenarioThen $ UpgradeDeckStep TheSecretName
+          endOfScenarioThen $ ContinueCampaignStep TheSecretName
         _ -> error "Invalid resolution"
       pure s
     _ -> AtDeathsDoorstep <$> liftRunMessage msg attrs

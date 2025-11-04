@@ -11,7 +11,6 @@ import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Ref
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Placement
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
@@ -39,22 +38,13 @@ instance RunMessage UnfinishedBusiness_J where
             for_ mEnemy (push . RemoveEnemy)
             push $ ReplaceCard attrs.cardId (toCard attrs)
             addToVictory attrs
-        else case mEnemy of
-          Just enemy -> do
-            cancelEnemyDefeat enemy
-            healAllDamage attrs enemy
-            place enemy attrs.placement
-            createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
-            afterStoryResolution attrs do
-              removeStory attrs
-              initiateEnemyAttack enemy attrs iid
-          Nothing -> do
-            let card = lookupCard Enemies.heretic_I (toCardId attrs)
-            enemy <- createEnemy card attrs.placement
-            createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
-            afterStoryResolution attrs do
-              removeStory attrs
-              initiateEnemyAttack enemy attrs iid
+        else do
+          let card = lookupCard Enemies.heretic_I (toCardId attrs)
+          enemy <- createEnemy card attrs.placement
+          createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
+          afterStoryResolution attrs do
+            removeStory attrs
+            initiateEnemyAttack enemy attrs iid
 
       pure s
     DoNotResolveThisStory iid (is attrs -> True) -> do

@@ -21,17 +21,17 @@ newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
 instance IsCampaign ThePathToCarcosa where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just CurtainCall
-    CurtainCall -> Just (UpgradeDeckStep TheLastKing)
-    TheLastKing -> Just (UpgradeDeckStep EchoesOfThePast)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep EchoesOfThePast)
-    EchoesOfThePast -> Just (UpgradeDeckStep TheUnspeakableOath)
-    TheUnspeakableOath -> Just (UpgradeDeckStep APhantomOfTruth)
-    InterludeStep 2 _ -> Just (UpgradeDeckStep APhantomOfTruth)
-    APhantomOfTruth -> Just (UpgradeDeckStep ThePallidMask)
-    ThePallidMask -> Just (UpgradeDeckStep BlackStarsRise)
-    BlackStarsRise -> Just (UpgradeDeckStep DimCarcosa)
-    DimCarcosa -> Just EpilogueStep
+    PrologueStep -> continue CurtainCall
+    CurtainCall -> continue TheLastKing
+    TheLastKing -> continue EchoesOfThePast
+    InterludeStep 1 _ -> continue EchoesOfThePast
+    EchoesOfThePast -> continue TheUnspeakableOath
+    TheUnspeakableOath -> continue APhantomOfTruth
+    InterludeStep 2 _ -> continue APhantomOfTruth
+    APhantomOfTruth -> continue ThePallidMask
+    ThePallidMask -> continue BlackStarsRise
+    BlackStarsRise -> continue DimCarcosa
+    DimCarcosa -> continue EpilogueStep
     other -> defaultNextStep other
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa

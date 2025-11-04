@@ -27,6 +27,16 @@ pattern HeartOfTheElders <- ScenarioStep "04205"
   where
     HeartOfTheElders = ScenarioStep "04205"
 
+pattern HeartOfTheEldersPart1 :: CampaignStep
+pattern HeartOfTheEldersPart1 <- ScenarioStep "04205a"
+  where
+    HeartOfTheEldersPart1 = ScenarioStep "04205a"
+
+pattern HeartOfTheEldersPart2 :: CampaignStep
+pattern HeartOfTheEldersPart2 <- ScenarioStep "04205b"
+  where
+    HeartOfTheEldersPart2 = ScenarioStep "04205b"
+
 pattern TheCityOfArchives :: CampaignStep
 pattern TheCityOfArchives <- ScenarioStep "04237"
   where

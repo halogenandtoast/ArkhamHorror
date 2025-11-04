@@ -118,5 +118,14 @@
     "TheSunXIX": "The Sun • XIX",
     "JudgementXX": "Judgement • XX",
     "TheWorldXXI": "The World • XXI"
-  }
+  },
+  "headings": {
+    "prologue": "Prologue",
+    "epilogue": "Epilogue",
+    "scenario": "Scenario",
+    "interlude": "Interlude {number}",
+    "deckCreation": "Deck Creation"
+  },
+  "upgradeDecks": "Upgrade Decks",
+  "addSideScenario": "Add Side Scenario"
 }

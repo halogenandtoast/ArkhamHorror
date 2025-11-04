@@ -10,9 +10,9 @@ newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
 instance IsCampaign NightOfTheZealot where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just (ContinueCampaignStep TheGathering)
-    TheGathering -> Just (ContinueCampaignStep TheMidnightMasks)
-    TheMidnightMasks -> Just (ContinueCampaignStep TheDevourerBelow)
+    PrologueStep -> continue TheGathering
+    TheGathering -> continue TheMidnightMasks
+    TheMidnightMasks -> continue TheDevourerBelow
     other -> defaultNextStep other
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot

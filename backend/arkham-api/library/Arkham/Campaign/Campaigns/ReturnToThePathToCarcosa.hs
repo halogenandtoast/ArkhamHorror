@@ -11,17 +11,17 @@ newtype ReturnToThePathToCarcosa = ReturnToThePathToCarcosa ThePathToCarcosa
 instance IsCampaign ReturnToThePathToCarcosa where
   campaignTokens = campaignTokens @ThePathToCarcosa
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just ReturnToCurtainCall
-    ReturnToCurtainCall -> Just (UpgradeDeckStep ReturnToTheLastKing)
-    ReturnToTheLastKing -> Just (UpgradeDeckStep ReturnToEchoesOfThePast)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToEchoesOfThePast)
-    ReturnToEchoesOfThePast -> Just (UpgradeDeckStep ReturnToTheUnspeakableOath)
-    ReturnToTheUnspeakableOath -> Just (UpgradeDeckStep ReturnToAPhantomOfTruth)
-    InterludeStep 2 _ -> Just (UpgradeDeckStep ReturnToAPhantomOfTruth)
-    ReturnToAPhantomOfTruth -> Just (UpgradeDeckStep ReturnToThePallidMask)
-    ReturnToThePallidMask -> Just (UpgradeDeckStep ReturnToBlackStarsRise)
-    ReturnToBlackStarsRise -> Just (UpgradeDeckStep ReturnToDimCarcosa)
-    ReturnToDimCarcosa -> Just EpilogueStep
+    PrologueStep -> continue ReturnToCurtainCall
+    ReturnToCurtainCall -> continue ReturnToTheLastKing
+    ReturnToTheLastKing -> continue ReturnToEchoesOfThePast
+    InterludeStep 1 _ -> continue ReturnToEchoesOfThePast
+    ReturnToEchoesOfThePast -> continue ReturnToTheUnspeakableOath
+    ReturnToTheUnspeakableOath -> continue ReturnToAPhantomOfTruth
+    InterludeStep 2 _ -> continue ReturnToAPhantomOfTruth
+    ReturnToAPhantomOfTruth -> continue ReturnToThePallidMask
+    ReturnToThePallidMask -> continue ReturnToBlackStarsRise
+    ReturnToBlackStarsRise -> continue ReturnToDimCarcosa
+    ReturnToDimCarcosa -> continue EpilogueStep
     other -> defaultNextStep other
 
 returnToThePathToCarcosa :: Difficulty -> ReturnToThePathToCarcosa

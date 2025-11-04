@@ -191,7 +191,11 @@ export function scenarioToKeyI18n(scenario: Scenario): string {
 }
 
 export function scenarioToI18n(scenario: Scenario): string {
-  switch (scenario.id) {
+  return scenarioIdToI18n(scenario.id);
+}
+
+export function scenarioIdToI18n(scenarioId: string): string {
+  switch (scenarioId) {
     case "c01104": return "nightOfTheZealot.theGathering"
     case "c01120": return "nightOfTheZealot.theMidnightMasks"
     case "c01142": return "nightOfTheZealot.theDevourerBelow"
@@ -216,6 +220,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c04113": return "theForgottenAge.threadsOfFate"
     case "c04161": return "theForgottenAge.theBoundaryBeyond"
     case "c04205": return "theForgottenAge.heartOfTheElders"
+    case "c04205a": return "theForgottenAge.heartOfTheEldersPart1"
+    case "c04205b": return "theForgottenAge.heartOfTheEldersPart2"
     case "c04237": return "theForgottenAge.theCityOfArchives"
     case "c04277": return "theForgottenAge.theDepthsOfYoth"
     case "c04314": return "theForgottenAge.shatteredAeons"
@@ -280,7 +286,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53017": return "theForgottenAge.theDoomOfEztli"
     case "c53028": return "theForgottenAge.threadsOfFate"
     case "c53038": return "theForgottenAge.theBoundaryBeyond"
-    case "c53045": return "theForgottenAge.heartOfTheElders"
+    case "c53045": return "theForgottenAge.heartOfTheEldersPart1"
+    case "c53048": return "theForgottenAge.heartOfTheEldersPart2"
     case "c53053": return "theForgottenAge.theCityOfArchives"
     case "c53059": return "theForgottenAge.theDepthsOfYoth"
     case "c53061": return "theForgottenAge.shatteredAeons"
@@ -299,6 +306,6 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"
-    default: throw new Error(`Unknown scenario id: ${scenario.id}`)
+    default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

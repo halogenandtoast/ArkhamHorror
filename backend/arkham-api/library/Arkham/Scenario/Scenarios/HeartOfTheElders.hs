@@ -3,6 +3,8 @@ module Arkham.Scenario.Scenarios.HeartOfTheElders (
   HeartOfTheEldersScenarioStep (..),
   setupHeartOfTheElders,
   heartOfTheElders,
+  heartOfTheEldersPart1,
+  heartOfTheEldersPart2,
   HeartOfTheElders (..),
 ) where
 
@@ -62,6 +64,48 @@ newtype HeartOfTheElders = HeartOfTheElders (ScenarioAttrs `With` HeartOfTheElde
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+newtype HeartOfTheEldersPart1 = HeartOfTheEldersPart1 HeartOfTheElders
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+
+newtype HeartOfTheEldersPart2 = HeartOfTheEldersPart2 HeartOfTheElders
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+
+heartOfTheEldersLayout :: [GridTemplateRow]
+heartOfTheEldersLayout =
+  [ ".        .        circle    circle    .     ."
+  , ".        .        circle    circle    .     ."
+  , "square   square   diamond   diamond   moon  moon"
+  , "square   square   diamond   diamond   moon  moon"
+  , ".        triangle triangle  heart     heart ."
+  , ".        triangle triangle  heart     heart ."
+  , "squiggle squiggle hourglass hourglass t     t"
+  , "squiggle squiggle hourglass hourglass t     t"
+  , ".        .        equals    equals    .     ."
+  , ".        .        equals    equals    .     ."
+  ]
+
+heartOfTheEldersPart1 :: Difficulty -> HeartOfTheEldersPart1
+heartOfTheEldersPart1 difficulty =
+  scenarioWith
+    (HeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
+    "04205a"
+    "Heart of the Elders, Part 1"
+    difficulty
+    heartOfTheEldersLayout
+    (referenceL .~ "04205")
+
+heartOfTheEldersPart2 :: Difficulty -> HeartOfTheEldersPart2
+heartOfTheEldersPart2 difficulty =
+  scenarioWith
+    (HeartOfTheEldersPart2 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata Two False))
+    "04205a"
+    "Heart of the Elders, Part 2"
+    difficulty
+    heartOfTheEldersLayout
+    (referenceL .~ "04205")
+
 heartOfTheElders :: Difficulty -> HeartOfTheElders
 heartOfTheElders difficulty =
   scenario
@@ -69,17 +113,7 @@ heartOfTheElders difficulty =
     "04205"
     "Heart of the Elders"
     difficulty
-    [ ".        .        circle    circle    .     ."
-    , ".        .        circle    circle    .     ."
-    , "square   square   diamond   diamond   moon  moon"
-    , "square   square   diamond   diamond   moon  moon"
-    , ".        triangle triangle  heart     heart ."
-    , ".        triangle triangle  heart     heart ."
-    , "squiggle squiggle hourglass hourglass t     t"
-    , "squiggle squiggle hourglass hourglass t     t"
-    , ".        .        equals    equals    .     ."
-    , ".        .        equals    equals    .     ."
-    ]
+    heartOfTheEldersLayout
 
 part2Locations :: [GridTemplateRow]
 part2Locations =
@@ -370,12 +404,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           filter (isJust . cdVengeancePoints . toCardDef)
             <$> scenarioField ScenarioVictoryDisplay
         recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-        push RestartScenario
-        pure
-          $ HeartOfTheElders
-            ( attrs {scenarioAdditionalReferences = [], scenarioSetAsideCards = []}
-                `With` metadata {scenarioStep = Two}
-            )
+        endOfScenario
+        pure s
       _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
@@ -449,3 +479,9 @@ instance RunMessage HeartOfTheElders where
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s
       Two -> runBMessage msg s
+
+instance RunMessage HeartOfTheEldersPart1 where
+  runMessage msg (HeartOfTheEldersPart1 inner) = HeartOfTheEldersPart1 <$> runMessage msg inner
+
+instance RunMessage HeartOfTheEldersPart2 where
+  runMessage msg (HeartOfTheEldersPart2 inner) = HeartOfTheEldersPart2 <$> runMessage msg inner

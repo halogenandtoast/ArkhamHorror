@@ -75,6 +75,7 @@ const completedCampaignSettings = computed(() => {
 const isForced = (s: { scenarioId: string }) => s.scenarioId == selectedScenario.value
 
 watch(computedCampaignSettings, (newSettings) => {
+  if (!newSettings) return
   const idx = newSettings.
     findIndex((s) => s.scenarioId === selectedScenario.value)
 

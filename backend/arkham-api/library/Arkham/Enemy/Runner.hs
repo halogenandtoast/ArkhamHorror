@@ -1490,9 +1490,9 @@ instance RunMessage EnemyAttrs where
     After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
-      pushAll
-        $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory (toCard a)]
-        <> [When msg, Do msg]
+      let (f1, f2, f3) = frame (Window.LeavePlay (toTarget a))
+      let (g1, g2, g3) = frame (Window.AddedToVictory (toCard a))
+      pushAll [f1, g1, When msg, f2, g2, Do msg, g3, f3]
       pure a
     Do (DefeatedAddToVictory (isTarget a -> True)) -> do
       mods <- getModifiers a
@@ -1516,13 +1516,13 @@ instance RunMessage EnemyAttrs where
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> [ whenLeavePlay
            , RemovedFromPlay $ toSource a
-           , afterLeavePlay
            ]
         <> ( guard (not a.placement.isSwarm)
                *> [ Discarded (toTarget a) source card
                   , Do (Discarded (toTarget a) source card)
                   ]
            )
+        <> [afterLeavePlay]
       pure $ a & keysL .~ mempty & discardedByL .~ miid
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll

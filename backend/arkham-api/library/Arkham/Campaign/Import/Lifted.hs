@@ -22,7 +22,7 @@ import Arkham.Difficulty as X
 import Arkham.Helpers.Message as X (targetLabel)
 import Arkham.Id as X
 import Arkham.Message as X (Message (..), ShuffleIn (..), UI (..), pattern PlaceClues)
-import Arkham.Message.Lifted as X
+import Arkham.Message.Lifted as X hiding (continue)
 import Arkham.Prelude as X
 import Arkham.Text as X
 

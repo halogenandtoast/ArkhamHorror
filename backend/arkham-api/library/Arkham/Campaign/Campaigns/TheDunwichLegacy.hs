@@ -37,23 +37,23 @@ instance IsCampaign TheDunwichLegacy where
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ExtracurricularActivity ->
       if TheHouseAlwaysWins `elem` a.attrs.completedSteps
-        then Just $ InterludeStep 1 Nothing
-        else Just (UpgradeDeckStep TheHouseAlwaysWins)
+        then continue $ InterludeStep 1 Nothing
+        else continue TheHouseAlwaysWins
     TheHouseAlwaysWins ->
       if ExtracurricularActivity `elem` a.attrs.completedSteps
-        then Just $ InterludeStep 1 Nothing
-        else Just (UpgradeDeckStep ExtracurricularActivity)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep TheMiskatonicMuseum)
-    TheMiskatonicMuseum -> Just (UpgradeDeckStep TheEssexCountyExpress)
-    TheEssexCountyExpress -> Just (UpgradeDeckStep BloodOnTheAltar)
+        then continue $ InterludeStep 1 Nothing
+        else continue ExtracurricularActivity
+    InterludeStep 1 _ -> continue TheMiskatonicMuseum
+    TheMiskatonicMuseum -> continue TheEssexCountyExpress
+    TheEssexCountyExpress -> continue BloodOnTheAltar
     BloodOnTheAltar ->
       case lookup "02195" a.attrs.resolutions of
-        Just NoResolution -> Just (UpgradeDeckStep UndimensionedAndUnseen)
-        _ -> Just $ InterludeStep 2 Nothing
-    InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)
-    UndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
-    WhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
-    LostInTimeAndSpace -> Just EpilogueStep
+        Just NoResolution -> continue UndimensionedAndUnseen
+        _ -> continue $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> continue UndimensionedAndUnseen
+    UndimensionedAndUnseen -> continue WhereDoomAwaits
+    WhereDoomAwaits -> continue LostInTimeAndSpace
+    LostInTimeAndSpace -> continue EpilogueStep
     other -> defaultNextStep other
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
@@ -63,8 +63,10 @@ instance RunMessage TheDunwichLegacy where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> scope "prologue" do
       storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
-        labeled' "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
+        labeled' "extracurricularActivity"
+          $ setNextCampaignStep
+          $ ContinueCampaignStep ExtracurricularActivity
+        labeled' "theHouseAlwaysWins" $ setNextCampaignStep $ ContinueCampaignStep TheHouseAlwaysWins
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours

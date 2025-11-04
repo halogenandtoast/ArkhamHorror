@@ -15,9 +15,9 @@ newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
 instance IsCampaign ReturnToNightOfTheZealot where
   campaignTokens = campaignTokens @NightOfTheZealot
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just ReturnToTheGathering
-    ReturnToTheGathering -> Just (UpgradeDeckStep ReturnToTheMidnightMasks)
-    ReturnToTheMidnightMasks -> Just (UpgradeDeckStep ReturnToTheDevourerBelow)
+    PrologueStep -> continue ReturnToTheGathering
+    ReturnToTheGathering -> continue ReturnToTheMidnightMasks
+    ReturnToTheMidnightMasks -> continue ReturnToTheDevourerBelow
     other -> defaultNextStep other
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot

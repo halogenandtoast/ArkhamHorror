@@ -17,23 +17,23 @@ instance IsCampaign ReturnToTheDunwichLegacy where
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ReturnToExtracurricularActivities ->
       if ReturnToTheHouseAlwaysWins `elem` (toAttrs a).completedSteps
-        then Just $ InterludeStep 1 Nothing
-        else Just (UpgradeDeckStep ReturnToTheHouseAlwaysWins)
+        then continue $ InterludeStep 1 Nothing
+        else continue ReturnToTheHouseAlwaysWins
     ReturnToTheHouseAlwaysWins ->
       if ReturnToExtracurricularActivities `elem` (toAttrs a).completedSteps
-        then Just $ InterludeStep 1 Nothing
-        else Just (UpgradeDeckStep ReturnToExtracurricularActivities)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToTheMiskatonicMuseum)
-    ReturnToTheMiskatonicMuseum -> Just (UpgradeDeckStep ReturnToTheEssexCountyExpress)
-    ReturnToTheEssexCountyExpress -> Just (UpgradeDeckStep ReturnToBloodOnTheAltar)
+        then continue $ InterludeStep 1 Nothing
+        else continue ReturnToExtracurricularActivities
+    InterludeStep 1 _ -> continue ReturnToTheMiskatonicMuseum
+    ReturnToTheMiskatonicMuseum -> continue ReturnToTheEssexCountyExpress
+    ReturnToTheEssexCountyExpress -> continue ReturnToBloodOnTheAltar
     ReturnToBloodOnTheAltar ->
       case lookup "51032" (toAttrs a).resolutions of
-        Just NoResolution -> Just (UpgradeDeckStep ReturnToUndimensionedAndUnseen)
-        _ -> Just $ InterludeStep 2 Nothing
-    InterludeStep 2 _ -> Just (UpgradeDeckStep ReturnToUndimensionedAndUnseen)
-    ReturnToUndimensionedAndUnseen -> Just (UpgradeDeckStep ReturnToWhereDoomAwaits)
-    ReturnToWhereDoomAwaits -> Just (UpgradeDeckStep ReturnToLostInTimeAndSpace)
-    ReturnToLostInTimeAndSpace -> Just EpilogueStep
+        Just NoResolution -> continue ReturnToUndimensionedAndUnseen
+        _ -> continue $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> continue ReturnToUndimensionedAndUnseen
+    ReturnToUndimensionedAndUnseen -> continue ReturnToWhereDoomAwaits
+    ReturnToWhereDoomAwaits -> continue ReturnToLostInTimeAndSpace
+    ReturnToLostInTimeAndSpace -> continue EpilogueStep
     other -> defaultNextStep other
 
 returnToTheDunwichLegacy :: Difficulty -> ReturnToTheDunwichLegacy

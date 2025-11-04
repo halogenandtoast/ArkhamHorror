@@ -1,4 +1,11 @@
 {
+  "interludes": {
+    "1": "Restless Nights",
+    "2": "Expedition's End",
+    "3": "The Jungle Beckons",
+    "4": "Those Held Captive",
+    "5": "The Darkness"
+  },
   "key": {
     "theInvestigatorsWereForcedToWaitForAdditionalSupplies": "The investigators were forced to wait for additional supplies",
     "ichtacaObservedYourProgressWithKeenInterest": "Ichtaca observed your progress with keen interest",

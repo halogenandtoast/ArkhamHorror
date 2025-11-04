@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { inject, computed, ref } from 'vue'
-import { imgsrc } from '@/arkham/helpers';
-import { Game } from '@/arkham/types/Game';
-import type { Campaign } from '@/arkham/types/Campaign';
-import type { Investigator } from '@/arkham/types/Investigator';
-import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep';
-import { useI18n } from 'vue-i18n';
+import { toCamelCase } from '@/arkham/helpers'
+import { imgsrc } from '@/arkham/helpers'
+import { Game } from '@/arkham/types/Game'
+import { scenarioIdToI18n } from '@/arkham/types/Scenario'
+import type { Campaign } from '@/arkham/types/Campaign'
+import type { Investigator } from '@/arkham/types/Investigator'
+import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
+import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import sideStories from '@/arkham/data/side-stories.json'
@@ -33,6 +35,35 @@ const scenario = computed(() => {
 })
 
 const name = computed(() => campaignStepName(props.game, props.step))
+const numToRomanNumeral = (num: number): string => {
+  const romanNumerals: { [key: number]: string } = {
+    1: 'I',
+    2: 'II',
+    3: 'III',
+    4: 'IV',
+    5: 'V',
+    6: 'VI',
+    7: 'VII',
+    8: 'VIII',
+    9: 'IX',
+    10: 'X'
+  };
+  return romanNumerals[num] || num.toString();
+}
+const kind = computed(() => {
+  if (props.step.tag === 'ScenarioStep' || props.step.tag === 'StandaloneScenarioStep') {
+    const scenarioId = props.step.tag === 'ScenarioStep' ? props.step.contents : props.step.contents[0]
+    const prefix = scenarioIdToI18n(scenarioId)
+    const key = `${prefix}.heading`
+    if (te(key)) return t(key)
+    return t('headings.scenario')
+  }
+
+  if (props.step.tag === 'InterludeStep') {
+    return t('headings.interlude', { number: numToRomanNumeral(parseInt(props.step.contents[0])) })
+  }
+  return ''
+})
 
 const investigators = computed(() => {
   return Object.values(props.game.investigators)
@@ -48,12 +79,13 @@ const minXp = computed<number>(() => {
   }, null)  
 })
 
-const completedAnyScenarios = computed(() => {
+const canUpgrade = computed(() => {
+  if (props.step.tag !== "ScenarioStep" && props.step.tag !== "StandaloneScenarioStep") return false
   return props.campaign.completedSteps.some((step: CampaignStep) => step.tag === 'ScenarioStep' || step.tag === 'StandaloneScenarioStep')
 })
 
 const standalones = computed(() => {
-  if (props.step.tag === "StandaloneScenarioStep") return []
+  if (props.step.tag !== "ScenarioStep") return []
   const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {
       acc.push(step.contents[0].replace(/^c/, ''))
@@ -71,6 +103,10 @@ async function chooseSideStory(sideStoryId: string) {
 
 async function upgradeDecks() {
   send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: { tag: 'UpgradeDeckStep', contents: { tag: 'ContinueCampaignStep', contents: props.step }}}))
+}
+
+async function startStep() {
+  send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: props.step }))
 }
 
 </script>
@@ -91,18 +127,18 @@ async function upgradeDecks() {
 
         <button class="add" @click="chooseSideStory(sideStory.id)">+</button>
       </div>
-      <button @click="addSideStory = false">Cancel</button>
+      <button @click="addSideStory = false">{{t('cancel')}}</button>
     </div>
     <div v-else class="next-scenario">
       <div class="next-scenario-info">
         <div class='scenario-info'>
-          <h3>Scenario</h3>
+          <h3>{{kind}}</h3>
           <h2>{{name}}</h2>
         </div>
         <div class="actions">
-          <button @click="send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: step }))">{{t('continue')}}</button>
-          <button v-if="completedAnyScenarios" @click="upgradeDecks">Upgrade Decks</button>
-          <button v-if="standalones.length > 0" @click="addSideStory = true">+ Add side scenario</button>
+          <button @click="startStep">{{t('continue')}}</button>
+          <button v-if="canUpgrade" @click="upgradeDecks">{{t('upgradeDecks')}}</button>
+          <button v-if="standalones.length > 0" @click="addSideStory = true">+ {{t('addSideScenario')}}</button>
         </div>
       </div>
       <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>
@@ -176,6 +212,7 @@ async function upgradeDecks() {
   width: 150px;
   filter: invert(100%) brightness(60%);
   justify-content: center;
+  align-items: center;
   display: flex;
   /* when too small to fit, hide */
   @media (max-width: 600px) {

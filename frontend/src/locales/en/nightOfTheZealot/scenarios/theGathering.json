@@ -1,4 +1,5 @@
 {
+  "heading": "Part I",
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *The Gathering*, *Rats*, *Ghouls*, *Striking Fear*, *Ancient Evils*, and *Chilling Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
     "placeLocations": "Put the Study location into play. Set each other location aside, out of play. Each investigator begins play in the Study.",

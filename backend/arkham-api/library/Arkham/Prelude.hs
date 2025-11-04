@@ -443,6 +443,12 @@ notNullOr as bs = if null as then bs else as
 orWhenNull :: (Applicative m, MonoFoldable c) => c -> m c -> m c
 orWhenNull c mc = if null c then mc else pure c
 
+orWhenNothingM :: Monad m => m (Maybe a) -> m a -> m a
+orWhenNothingM mma mb =
+  mma >>= \case
+    Just a -> pure a
+    Nothing -> mb
+
 toSentence :: Show a => [a] -> Text
 toSentence = go False
  where

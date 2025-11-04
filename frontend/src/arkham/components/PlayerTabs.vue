@@ -34,7 +34,7 @@ const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 const investigators = computed(() => 
-  props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated ?? true).map(iid => props.players[iid])
+  props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated).map(iid => props.players[iid])
 )
 const inactiveInvestigators = computed(() => props.playerOrder.filter(iid => props.game.investigators[iid]?.eliminated ?? false).map(iid => props.players[iid]))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)

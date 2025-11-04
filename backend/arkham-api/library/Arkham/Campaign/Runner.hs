@@ -54,7 +54,7 @@ defaultCampaignRunner msg a = case msg of
     lead <- getActivePlayer
     pushAll
       $ chooseDecks players
-      : [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep && campaignStep (toAttrs a) /= ContinueCampaignStep PrologueStep]
+      : [Ask lead PickCampaignSettings | (campaignStep (toAttrs a)).unwrap /= PrologueStep]
         <> [CampaignStep $ campaignStep $ toAttrs a]
     pure a
   HandleKilledOrInsaneInvestigators -> do

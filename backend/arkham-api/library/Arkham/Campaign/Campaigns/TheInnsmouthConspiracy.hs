@@ -24,19 +24,19 @@ theInnsmouthConspiracy = campaign TheInnsmouthConspiracy (CampaignId "07") "The 
 instance IsCampaign TheInnsmouthConspiracy where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just ThePitOfDespair
-    ThePitOfDespair -> Just (InterludeStep 1 Nothing)
-    InterludeStep 1 _ -> Just TheVanishingOfElinaHarper
-    TheVanishingOfElinaHarper -> Just (InterludeStep 2 Nothing)
-    InterludeStep 2 _ -> Just (UpgradeDeckStep InTooDeep)
-    InTooDeep -> Just DevilReef
+    PrologueStep -> continue ThePitOfDespair
+    ThePitOfDespair -> continue $ InterludeStep 1 Nothing
+    InterludeStep 1 _ -> continueNoUpgrade TheVanishingOfElinaHarper
+    TheVanishingOfElinaHarper -> continue $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> continue InTooDeep
+    InTooDeep -> continueNoUpgrade DevilReef
     -- Devil Reef must choose interlude options
-    InterludeStep 3 _ -> Just (UpgradeDeckStep HorrorInHighGear)
-    HorrorInHighGear -> Just (UpgradeDeckStep ALightInTheFog)
-    ALightInTheFog -> Just TheLairOfDagon
-    TheLairOfDagon -> Just (InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just (UpgradeDeckStep IntoTheMaelstrom)
-    IntoTheMaelstrom -> Just EpilogueStep
+    InterludeStep 3 _ -> continue HorrorInHighGear
+    HorrorInHighGear -> continue ALightInTheFog
+    ALightInTheFog -> continueNoUpgrade TheLairOfDagon
+    TheLairOfDagon -> continue $ InterludeStep 4 Nothing
+    InterludeStep 4 _ -> continue IntoTheMaelstrom
+    IntoTheMaelstrom -> continue EpilogueStep
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

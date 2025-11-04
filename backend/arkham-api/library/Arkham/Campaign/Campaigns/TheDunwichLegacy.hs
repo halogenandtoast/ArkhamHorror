@@ -63,10 +63,8 @@ instance RunMessage TheDunwichLegacy where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> scope "prologue" do
       storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "extracurricularActivity"
-          $ setNextCampaignStep
-          $ ContinueCampaignStep ExtracurricularActivity
-        labeled' "theHouseAlwaysWins" $ setNextCampaignStep $ ContinueCampaignStep TheHouseAlwaysWins
+        labeled' "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
+        labeled' "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours

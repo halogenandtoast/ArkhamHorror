@@ -32,7 +32,7 @@ nextCampaignStep :: ReverseQueue m => m ()
 nextCampaignStep = push $ NextCampaignStep Nothing
 
 setNextCampaignStep :: ReverseQueue m => CampaignStep -> m ()
-setNextCampaignStep = push . NextCampaignStep . Just
+setNextCampaignStep = push . NextCampaignStep . continue
 
 interludeStepPart :: ReverseQueue m => Int -> Maybe InterludeKey -> Int -> m ()
 interludeStepPart n mKey part = campaignStep_ (InterludeStepPart n mKey part)

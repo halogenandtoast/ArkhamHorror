@@ -1,4 +1,10 @@
 {
+  "interludes": {
+    "1": "Puzzle Pieces",
+    "2": "The Syzygy",
+    "3": "Beneath the Waves",
+    "4": "Hidden Truths"
+  },
   "interlude1": {
     "part1": {
       "title": "Interlude I: Puzzle Pieces",

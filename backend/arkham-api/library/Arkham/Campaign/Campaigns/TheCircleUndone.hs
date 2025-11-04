@@ -69,17 +69,17 @@ disappearanceAtTheTwilightEstateSteps =
 
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ case msg of
-    StartCampaign | attrs.step `elem` map ContinueCampaignStep (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
-          campaignStep_
-            $ if attrs.step `elem` map ContinueCampaignStep disappearanceAtTheTwilightEstateSteps
-              then PrologueStep
-              else attrs.step
-          pure c
-    CampaignStep (ContinueCampaignStep PrologueStep) -> do
+    StartCampaign | attrs.step.unwrap `elem` (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
+      campaignStep_
+        $ if attrs.step.unwrap `elem` disappearanceAtTheTwilightEstateSteps
+          then PrologueStep
+          else attrs.step
+      pure c
+    CampaignStep ((.unwrap) -> PrologueStep) -> do
       lead <- getActivePlayer
       push $ Ask lead ContinueCampaign
       pure c
-    CampaignStep (ContinueCampaignStep DisappearanceAtTheTwilightEstate) -> do
+    CampaignStep ((.unwrap) -> DisappearanceAtTheTwilightEstate) -> do
       lead <- getActivePlayer
       push $ Ask lead ContinueCampaign
       pure c

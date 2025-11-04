@@ -243,7 +243,6 @@ instance RunMessage TheCityOfArchives where
 
           record logEntry
           endOfScenarioThen
-            $ ContinueCampaignStep
             $ InterludeStep 4 (guard resignedWithTheCustodian $> TheCustodianWasUnderControl)
         _ -> error "Invalid resolution"
       pure s

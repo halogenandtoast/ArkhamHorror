@@ -15,6 +15,7 @@ import sideStories from '@/arkham/data/side-stories.json'
 const props = defineProps<{
   game: Game
   campaign: Campaign
+  canUpgradeDecks: boolean
   step: CampaignStep
 }>();
 
@@ -80,7 +81,9 @@ const minXp = computed<number>(() => {
 })
 
 const canUpgrade = computed(() => {
+  if (!props.canUpgradeDecks) return false
   if (props.step.tag !== "ScenarioStep" && props.step.tag !== "StandaloneScenarioStep") return false
+  if (props.step.tag === "ContinueCampaignStep" && !props.step.contents.canUpgradeDecks) return false
   return props.campaign.completedSteps.some((step: CampaignStep) => step.tag === 'ScenarioStep' || step.tag === 'StandaloneScenarioStep')
 })
 
@@ -98,11 +101,45 @@ const standalones = computed(() => {
 
 async function chooseSideStory(sideStoryId: string) {
   addSideStory.value = false
-  send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: { tag: 'ContinueCampaignStep', contents: { tag: 'StandaloneScenarioStep', contents: [sideStoryId, {tag: 'ContinueCampaignStep', contents: props.step}]}}}))
+  send(JSON.stringify({
+    tag: 'CampaignStepAnswer',
+    contents: {
+      tag: 'ContinueCampaignStep',
+      contents: {
+        canUpgradeDecks: true,
+        nextStep: {
+          tag: 'StandaloneScenarioStep',
+          contents:
+            [
+              sideStoryId,
+              {
+                tag: 'ContinueCampaignStep',
+                contents: {
+                  nextStep: props.step,
+                  canUpgradeDecks: props.canUpgradeDecks
+                }
+              }
+            ]
+        }
+      }
+    }
+  }))
 }
 
 async function upgradeDecks() {
-  send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: { tag: 'UpgradeDeckStep', contents: { tag: 'ContinueCampaignStep', contents: props.step }}}))
+  send(JSON.stringify({
+    tag: 'CampaignStepAnswer',
+    contents: {
+      tag: 'UpgradeDeckStep',
+      contents: {
+        tag: 'ContinueCampaignStep',
+        contents: {
+          canUpgradeDecks: true,
+          nextStep: props.step
+        }
+      }
+    }
+  }))
 }
 
 async function startStep() {
@@ -138,7 +175,7 @@ async function startStep() {
         <div class="actions">
           <button @click="startStep">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks">{{t('upgradeDecks')}}</button>
-          <button v-if="standalones.length > 0" @click="addSideStory = true">+ {{t('addSideScenario')}}</button>
+          <button v-if="canUpgrade && standalones.length > 0" @click="addSideStory = true">+ {{t('addSideScenario')}}</button>
         </div>
       </div>
       <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>

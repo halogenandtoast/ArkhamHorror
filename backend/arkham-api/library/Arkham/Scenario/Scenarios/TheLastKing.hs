@@ -260,7 +260,7 @@ instance RunMessage TheLastKing where
         Resolution 1 -> do
           resolutionWithXp "resolution1" (fst <$> getXp')
           handleExtraXp
-          endOfScenarioThen $ ContinueCampaignStep $ InterludeStep 1 Nothing
+          endOfScenarioThen $ InterludeStep 1 Nothing
         Resolution 2 -> do
           adjustTokens
           resolutionWithXp "resolution2" (fst <$> getXp')

@@ -21,7 +21,7 @@ import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (continue)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
@@ -114,7 +114,8 @@ getHasRecord part key = do
           Just otherAttrs -> hasRecord key otherAttrs.log
           Nothing -> False
 
-whenHasRecord :: (IsCampaignLogKey k, HasGame m, Tracing m, HasCallStack) => CampaignPart -> k -> m () -> m ()
+whenHasRecord
+  :: (IsCampaignLogKey k, HasGame m, Tracing m, HasCallStack) => CampaignPart -> k -> m () -> m ()
 whenHasRecord part key action = whenM (getHasRecord part key) action
 
 instance IsCampaign TheDreamEaters where
@@ -124,86 +125,72 @@ instance IsCampaign TheDreamEaters where
      in case attrs.normalizedStep of
           PrologueStep -> error $ "Unhandled campaign step: " <> show a
           BeyondTheGatesOfSleep ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 1 Nothing
-                        else WakingNightmare
-                    PartialMode _ -> InterludeStep 1 Nothing
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 1 Nothing
+                    else WakingNightmare
+                PartialMode _ -> InterludeStep 1 Nothing
           WakingNightmare ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 1 Nothing
-                        else BeyondTheGatesOfSleep
-                    PartialMode _ -> InterludeStep 1 Nothing
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 1 Nothing
+                    else BeyondTheGatesOfSleep
+                PartialMode _ -> InterludeStep 1 Nothing
           InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
           TheSearchForKadath ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 2 Nothing
-                        else AThousandShapesOfHorror
-                    PartialMode _ -> DarkSideOfTheMoon
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if AThousandShapesOfHorror `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 2 Nothing
+                    else AThousandShapesOfHorror
+                PartialMode _ -> DarkSideOfTheMoon
           AThousandShapesOfHorror ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 2 Nothing
-                        else TheSearchForKadath
-                    PartialMode _ -> PointOfNoReturn
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if TheSearchForKadath `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 2 Nothing
+                    else TheSearchForKadath
+                PartialMode _ -> PointOfNoReturn
           InterludeStep 2 _ -> error $ "Unhandled campaign step: " <> show a
           DarkSideOfTheMoon ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 3 Nothing
-                        else PointOfNoReturn
-                    PartialMode _ -> WhereTheGodsDwell
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if PointOfNoReturn `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 3 Nothing
+                    else PointOfNoReturn
+                PartialMode _ -> WhereTheGodsDwell
           PointOfNoReturn ->
-            Just
-              ( UpgradeDeckStep
-                  $ case campaignMode meta of
-                    FullMode ->
-                      if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
-                        then InterludeStep 3 Nothing
-                        else DarkSideOfTheMoon
-                    PartialMode _ -> WeaverOfTheCosmos
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if DarkSideOfTheMoon `elem` campaignCompletedSteps (toAttrs a)
+                    then InterludeStep 3 Nothing
+                    else DarkSideOfTheMoon
+                PartialMode _ -> WeaverOfTheCosmos
           InterludeStep 3 _ -> error $ "Unhandled campaign step: " <> show a
           WhereTheGodsDwell ->
-            Just
-              ( case campaignMode meta of
-                  FullMode ->
-                    if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
-                      then EpilogueStep
-                      else WeaverOfTheCosmos
-                  PartialMode _ -> EpilogueStep
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if WeaverOfTheCosmos `elem` campaignCompletedSteps (toAttrs a)
+                    then EpilogueStep
+                    else WeaverOfTheCosmos
+                PartialMode _ -> EpilogueStep
           WeaverOfTheCosmos ->
-            Just
-              ( case campaignMode meta of
-                  FullMode ->
-                    if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
-                      then EpilogueStep
-                      else WhereTheGodsDwell
-                  PartialMode _ -> EpilogueStep
-              )
+            continue
+              $ case campaignMode meta of
+                FullMode ->
+                  if WhereTheGodsDwell `elem` campaignCompletedSteps (toAttrs a)
+                    then EpilogueStep
+                    else WhereTheGodsDwell
+                PartialMode _ -> EpilogueStep
           EpilogueStep -> Nothing
           other -> defaultNextStep other
 
@@ -225,8 +212,12 @@ instance RunMessage TheDreamEaters where
         -- [ALERT] StartCampaign, overriden to not choose decks yet
         lead <- getActivePlayer
         pushAll
-          $ [Ask lead PickCampaignSettings | campaignStep attrs /= PrologueStep]
+          $ [Ask lead PickCampaignSettings | campaignStep attrs /= ContinueCampaignStep PrologueStep]
           <> [CampaignStep $ campaignStep attrs]
+        pure c
+      CampaignStep (ContinueCampaignStep PrologueStep) -> do
+        lead <- getActivePlayer
+        push $ Ask lead ContinueCampaign
         pure c
       CampaignStep PrologueStep -> do
         lead <- getActivePlayer
@@ -252,7 +243,7 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           [ chooseDecks players
-          , NextCampaignStep (Just BeyondTheGatesOfSleep)
+          , NextCampaignStep (continue BeyondTheGatesOfSleep)
           ]
         pure
           $ TheDreamEaters
@@ -264,7 +255,7 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           [ chooseDecks players
-          , NextCampaignStep (Just WakingNightmare)
+          , NextCampaignStep (continue WakingNightmare)
           ]
         pure
           $ TheDreamEaters
@@ -277,7 +268,7 @@ instance RunMessage TheDreamEaters where
         pushAll
           $ ChoosingDecks
           : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
-            <> [DoneChoosingDecks, NextCampaignStep (Just BeyondTheGatesOfSleep)]
+            <> [DoneChoosingDecks, NextCampaignStep (continue BeyondTheGatesOfSleep)]
         let difficulty = campaignDifficulty attrs
         pure
           $ TheDreamEaters
@@ -295,7 +286,7 @@ instance RunMessage TheDreamEaters where
         pushAll
           $ ChoosingDecks
           : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
-            <> [DoneChoosingDecks, NextCampaignStep (Just WakingNightmare)]
+            <> [DoneChoosingDecks, NextCampaignStep (continue WakingNightmare)]
         let difficulty = campaignDifficulty attrs
         pure
           $ TheDreamEaters
@@ -394,7 +385,7 @@ instance RunMessage TheDreamEaters where
         story theBlackCat1
         push $ case campaignMode meta of
           FullMode -> CampaignStep (InterludeStepPart 1 Nothing 2)
-          _ -> NextCampaignStep (Just TheSearchForKadath)
+          _ -> NextCampaignStep (continue TheSearchForKadath)
         pure c
       CampaignStep (InterludeStepPart 1 _ 2) -> do
         storyWithChooseOne
@@ -422,10 +413,10 @@ instance RunMessage TheDreamEaters where
               FullMode ->
                 Msg.questionLabel "Proceed to which scenario" lead
                   $ ChooseOne
-                    [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
-                    , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
+                    [ Label "The Search for Kadath" [NextCampaignStep (continue TheSearchForKadath)]
+                    , Label "A Thousand Shapes of Horror" [NextCampaignStep (continue AThousandShapesOfHorror)]
                     ]
-              _ -> NextCampaignStep (Just AThousandShapesOfHorror)
+              _ -> NextCampaignStep (continue AThousandShapesOfHorror)
 
         story theBlackCat3
 
@@ -574,8 +565,8 @@ instance RunMessage TheDreamEaters where
         push
           $ Msg.questionLabel "Proceed to which scenario" lead
           $ ChooseOne
-            [ Label "Dark Side of the Moon" [NextCampaignStep (Just DarkSideOfTheMoon)]
-            , Label "Point of No Return" [NextCampaignStep (Just PointOfNoReturn)]
+            [ Label "Dark Side of the Moon" [NextCampaignStep (continue DarkSideOfTheMoon)]
+            , Label "Point of No Return" [NextCampaignStep (continue PointOfNoReturn)]
             ]
         pure c
       CampaignStep (InterludeStep 3 _) -> do
@@ -693,8 +684,8 @@ instance RunMessage TheDreamEaters where
         push
           $ Msg.questionLabel "Proceed to which scenario" lead
           $ ChooseOne
-            [ Label "Where the Gods Dwell" [NextCampaignStep (Just WhereTheGodsDwell)]
-            , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]
+            [ Label "Where the Gods Dwell" [NextCampaignStep (continue WhereTheGodsDwell)]
+            , Label "Weaver of the Cosmos" [NextCampaignStep (continue WeaverOfTheCosmos)]
             ]
         pure c
       CampaignStep EpilogueStep -> do

@@ -3,6 +3,9 @@ module Arkham.Act.Cards.TheDoomThatCameBefore (theDoomThatCameBefore) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Card
+import Arkham.Enemy.Cards qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -50,6 +53,8 @@ instance RunMessage TheDoomThatCameBefore where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lead <- getLead
+      selectEach (enemyIs Enemies.beingsOfIb <> not_ IsSwarm) removeEnemy
+      findCard (`cardMatch` cardIs Enemies.beingsOfIb) >>= traverse_ obtainCard
       n <- scenarioFieldMap ScenarioMeta toResult
       let availableRegions = filter (`notElem` regions n) [Oriab, ForbiddenLands, TimelessRealm]
       if null availableRegions

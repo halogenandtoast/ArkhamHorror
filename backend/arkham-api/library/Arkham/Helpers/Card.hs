@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Card (
   module Arkham.Helpers.Card,
   module Arkham.Helpers.Campaign,
@@ -275,7 +273,7 @@ cardInFastWindows
 cardInFastWindows iid source card windows' matcher =
   anyM (\window -> windowMatches iid source' window matcher) windows'
  where
-  source' = case traceShowId card of
+  source' = case card of
     PlayerCard pc -> BothSource source (CardIdSource pc.id)
     _ -> source
 

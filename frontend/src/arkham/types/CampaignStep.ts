@@ -32,7 +32,7 @@ export type ResupplyPoint = {
 
 export type CampaignSpecificStep = {
   tag: 'CampaignSpecificStep';
-  contents: string;
+  contents: [string, string | null];
 }
 
 export type EpilogueStep = {
@@ -74,7 +74,7 @@ export const resupplyPointStepDecoder = JsonDecoder.object<ResupplyPoint>(
 export const campaignSpecificStepDecoder = JsonDecoder.object<CampaignSpecificStep>(
   {
     tag: JsonDecoder.literal('CampaignSpecificStep'),
-    contents: JsonDecoder.string(),
+    contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.nullable(JsonDecoder.string())], 'contents'),
   },
   'CampaignSpecificStep',
 );
@@ -239,8 +239,8 @@ export function campaignStepName(game: Game, step: CampaignStep) {
 
   if (step.tag === 'CampaignSpecificStep') {
     if (game.campaign) {
-      const key = `${toCamelCase(game.campaign.name)}.headings.${step.contents}`
-      console.log(key)
+      const [a, b] = step.contents
+      const key = `${toCamelCase(game.campaign.name)}.headings.${b ? `${a}.${b}`: a}`
       if (te(key)) return t(key)
     }
   }

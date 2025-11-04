@@ -1,7 +1,47 @@
 {
   "headings": {
     "prologue": "Campaign Setup",
-    "embark": "Embark",
+    "embark": {
+      "Alexandria": "Depart from Alexandria",
+      "Anchorage": "Depart from Anchorage",
+      "Arkham": "Depart from Arkham",
+      "Bermuda": "Depart from Bermuda",
+      "BermudaTriangle": "Depart from Bermuda Triangle",
+      "Bombay": "Depart from Bombay",
+      "BuenosAires": "Depart from Buenos Aires",
+      "Cairo": "Depart from Cairo",
+      "Constantinople": "Depart from Constantinople",
+      "Havana": "Depart from Havana",
+      "HongKong": "Depart from Hong Kong",
+      "Kabul": "Depart from Kabul",
+      "Kathmandu": "Depart from Kathmandu",
+      "KualaLumpur": "Depart from Kuala Lumpur",
+      "Lagos": "Depart from Lagos",
+      "London": "Depart from London",
+      "Manokwari": "Depart from Manokwari",
+      "Marrakesh": "Depart from Marrakesh",
+      "MonteCarlo": "Depart from Monte Carlo",
+      "Moscow": "Depart from Moscow",
+      "Nairobi": "Depart from Nairobi",
+      "NewOrleans": "Depart from New Orleans",
+      "Perth": "Depart from Perth",
+      "Quito": "Depart from Quito",
+      "Reykjavik": "Depart from Reykjavik",
+      "RioDeJaneiro": "Depart from Rio de Janeiro",
+      "Rome": "Depart from Rome",
+      "SanFrancisco": "Depart from San Francisco",
+      "SanJuan": "Depart from San Juan",
+      "Shanghai": "Depart from Shanghai",
+      "Stockholm": "Depart from Stockholm",
+      "Sydney": "Depart from Sydney",
+      "Tokyo": "Depart from Tokyo",
+      "Tunguska": "Depart from Tunguska",
+      "Venice": "Depart from Venice",
+      "YborCity": "Depart from Ybor City"
+    },
+    "kind": {
+      "embark": "Embark"
+    },
     "interludes": {
       "1": "Interlude"
     }

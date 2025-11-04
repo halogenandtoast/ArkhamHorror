@@ -215,10 +215,6 @@ instance RunMessage TheDreamEaters where
           $ [Ask lead PickCampaignSettings | (campaignStep attrs).unwrap /= PrologueStep]
           <> [CampaignStep $ campaignStep attrs]
         pure c
-      CampaignStep ((.unwrap) -> PrologueStep) -> do
-        lead <- getActivePlayer
-        push $ Ask lead ContinueCampaign
-        pure c
       CampaignStep PrologueStep -> do
         lead <- getActivePlayer
         story prologue
@@ -229,6 +225,10 @@ instance RunMessage TheDreamEaters where
             , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
             , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
             ]
+        pure c
+      CampaignStep ((.unwrap) -> PrologueStep) -> do
+        lead <- getActivePlayer
+        push $ Ask lead ContinueCampaign
         pure c
       CampaignStep (PrologueStepPart 1) -> do
         lead <- getActivePlayer

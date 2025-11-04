@@ -36,7 +36,7 @@ instance IsCampaign TheCircleUndone where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue DisappearanceAtTheTwilightEstate
-    DisappearanceAtTheTwilightEstate -> continue TheWitchingHour
+    DisappearanceAtTheTwilightEstate -> continueNoUpgrade TheWitchingHour
     TheWitchingHour -> continue AtDeathsDoorstep
     AtDeathsDoorstep -> continue TheSecretName
     InterludeStep 2 _ -> continue TheSecretName
@@ -73,15 +73,7 @@ instance RunMessage TheCircleUndone where
       campaignStep_
         $ if attrs.step.unwrap `elem` disappearanceAtTheTwilightEstateSteps
           then PrologueStep
-          else attrs.step
-      pure c
-    CampaignStep ((.unwrap) -> PrologueStep) -> do
-      lead <- getActivePlayer
-      push $ Ask lead ContinueCampaign
-      pure c
-    CampaignStep ((.unwrap) -> DisappearanceAtTheTwilightEstate) -> do
-      lead <- getActivePlayer
-      push $ Ask lead ContinueCampaign
+          else attrs.step.unwrap
       pure c
     CampaignStep TheWitchingHour -> do
       players <- allPlayers
@@ -94,6 +86,14 @@ instance RunMessage TheCircleUndone where
     CampaignStep PrologueStep -> scope "prologue" do
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep
+      pure c
+    CampaignStep ((.unwrap) -> PrologueStep) -> do
+      lead <- getActivePlayer
+      push $ Ask lead ContinueCampaign
+      pure c
+    CampaignStep (ContinueCampaignStep (Continuation DisappearanceAtTheTwilightEstate _)) -> do
+      lead <- getActivePlayer
+      push $ Ask lead ContinueCampaign
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> scope "interlude2" do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight

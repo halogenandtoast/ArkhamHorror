@@ -72,8 +72,8 @@ const kind = computed(() => {
 
   if (props.step.tag === 'CampaignSpecificStep') {
     if (props.game.campaign) {
-      const key = `${toCamelCase(props.game.campaign.name)}.headings.${props.step.contents}`
-      console.log(key)
+      const [a, _] = props.step.contents
+      const key = `${toCamelCase(props.game.campaign.name)}.headings.kind.${a}`
       if (te(key)) return t(key)
     }
   }

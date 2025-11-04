@@ -110,6 +110,11 @@ normalizedCampaignStep = \case
     parseJSON = withObject "CampaignStep" \o -> do
       tag <- o .:? "tag"
       case (tag :: Maybe Text) of
+        Just "CampaignSpecificStep" -> do
+          contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+          pure $ case contents of
+            Right (t, ms) -> CampaignSpecificStep t ms
+            Left t -> CampaignSpecificStep t Nothing
         Just "ContinueCampaignStep" -> do
           contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
           case contents of

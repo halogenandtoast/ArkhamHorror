@@ -16,6 +16,7 @@ import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
 import Arkham.CampaignStep hiding (continue)
+import Arkham.CampaignStep qualified as CS
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -420,7 +421,7 @@ endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
 
 endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
-endOfScenarioThen = push . EndOfGame . Just
+endOfScenarioThen = push . EndOfGame . CS.continue
 
 dealAssetDirectDamage
   :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)

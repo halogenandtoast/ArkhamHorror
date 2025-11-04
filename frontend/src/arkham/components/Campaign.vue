@@ -116,7 +116,7 @@ const questionHash = computed(() => {
     <ChooseDeck :game="game" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="continueCampaign" id="game" class="game">
-    <ContinueCampaign :game="game" :campaign="campaign" :playerId="playerId" :step="continueCampaign" @choose="choose" />
+    <ContinueCampaign :game="game" :campaign="campaign" :playerId="playerId" :canUpgradeDecks="continueCampaign.canUpgradeDecks" :step="continueCampaign.nextStep" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <template v-if="pickDestiny">

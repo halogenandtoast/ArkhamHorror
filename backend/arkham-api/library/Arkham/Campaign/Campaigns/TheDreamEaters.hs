@@ -212,10 +212,10 @@ instance RunMessage TheDreamEaters where
         -- [ALERT] StartCampaign, overriden to not choose decks yet
         lead <- getActivePlayer
         pushAll
-          $ [Ask lead PickCampaignSettings | campaignStep attrs /= ContinueCampaignStep PrologueStep]
+          $ [Ask lead PickCampaignSettings | (campaignStep attrs).unwrap /= PrologueStep]
           <> [CampaignStep $ campaignStep attrs]
         pure c
-      CampaignStep (ContinueCampaignStep PrologueStep) -> do
+      CampaignStep ((.unwrap) -> PrologueStep) -> do
         lead <- getActivePlayer
         push $ Ask lead ContinueCampaign
         pure c

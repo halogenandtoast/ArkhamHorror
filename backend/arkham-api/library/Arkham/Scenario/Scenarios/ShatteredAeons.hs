@@ -329,7 +329,7 @@ instance RunMessage ShatteredAeons where
           let attrs' = attrs & victoryDisplayL %~ (locations <>)
           resolutionWithXp "resolution5" $ allGainXp' attrs
           record TheInvestigatorsTurnedBackTime
-          endOfScenarioThen $ ContinueCampaignStep EpilogueStep
+          endOfScenarioThen EpilogueStep
           pure $ ShatteredAeons attrs'
         _ -> error "invalid resolution"
     UseCardAbility _ ScenarioSource 1 _ _ -> do

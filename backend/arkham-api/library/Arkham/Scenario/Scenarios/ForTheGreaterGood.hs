@@ -266,7 +266,7 @@ instance RunMessage ForTheGreaterGood where
           resolutionWithXp "resolution1" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
           addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.puzzleBox
-          endOfScenarioThen $ ContinueCampaignStep $ InterludeStep 3 Nothing
+          endOfScenarioThen $ InterludeStep 3 Nothing
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox

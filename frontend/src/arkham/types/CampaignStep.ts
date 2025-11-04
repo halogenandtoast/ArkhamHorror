@@ -38,10 +38,23 @@ export type EpilogueStep = {
   tag: 'EpilogueStep';
 }
 
+export type Continuation = {
+  nextStep: CampaignStep;
+  canUpgradeDecks: boolean;
+}
+
 export type ContinueCampaignStep = {
   tag: 'ContinueCampaignStep';
-  contents: CampaignStep;
+  contents: Continuation;
 }
+
+export const continuationDecoder = JsonDecoder.object<Continuation>(
+  {
+    nextStep: JsonDecoder.lazy<CampaignStep>(() => campaignStepDecoder),
+    canUpgradeDecks: JsonDecoder.boolean(),
+  },
+  'Continuation',
+);
 
 export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
   {
@@ -145,7 +158,7 @@ export const upgradeStepDecoder = JsonDecoder.object<UpgradeDeckStep>(
 export const continueCampaignStepDecoder: JsonDecoder.Decoder<ContinueCampaignStep> = JsonDecoder.object<ContinueCampaignStep>(
   {
     tag: JsonDecoder.literal('ContinueCampaignStep'),
-    contents: JsonDecoder.lazy<CampaignStep>(() => campaignStepDecoder)
+    contents: continuationDecoder,
   },
   'ContinueCampaignStep',
 );

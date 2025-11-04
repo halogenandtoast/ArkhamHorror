@@ -682,7 +682,7 @@ instance RunMessage TheForgottenAge where
         -- We can only get here if we've turned back time, but may want to check
         flavor $ setTitle "title" >> p "body"
         let isReturnTo = attrs.id == "53"
-        setNextCampaignStep $ ContinueCampaignStep $ if isReturnTo then ReturnToTurnBackTime else TurnBackTime
+        setNextCampaignStep $ if isReturnTo then ReturnToTurnBackTime else TurnBackTime
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
         mods <- map setActiveDuringSetup <$> toModifiers CampaignSource [StartingResources (-3)]

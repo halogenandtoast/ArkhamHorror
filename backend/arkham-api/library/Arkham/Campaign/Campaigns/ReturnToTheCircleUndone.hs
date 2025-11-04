@@ -28,19 +28,19 @@ returnToTheCircleUndone =
 instance IsCampaign ReturnToTheCircleUndone where
   campaignTokens = campaignTokens @TheCircleUndone
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just ReturnToDisappearanceAtTheTwilightEstate
-    ReturnToDisappearanceAtTheTwilightEstate -> Just ReturnToTheWitchingHour
-    ReturnToTheWitchingHour -> Just (UpgradeDeckStep ReturnToAtDeathsDoorstep)
-    ReturnToAtDeathsDoorstep -> Just (UpgradeDeckStep ReturnToTheSecretName)
-    InterludeStep 2 _ -> Just (UpgradeDeckStep ReturnToTheSecretName)
-    ReturnToTheSecretName -> Just (UpgradeDeckStep ReturnToTheWagesOfSin)
-    ReturnToTheWagesOfSin -> Just (UpgradeDeckStep ReturnToForTheGreaterGood)
-    ReturnToForTheGreaterGood -> Just (UpgradeDeckStep ReturnToUnionAndDisillusion)
-    InterludeStep 3 _ -> Just (UpgradeDeckStep ReturnToUnionAndDisillusion)
-    ReturnToUnionAndDisillusion -> Just (UpgradeDeckStep ReturnToInTheClutchesOfChaos)
-    ReturnToInTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just (UpgradeDeckStep ReturnToBeforeTheBlackThrone)
-    ReturnToBeforeTheBlackThrone -> Just EpilogueStep
+    PrologueStep -> continue ReturnToDisappearanceAtTheTwilightEstate
+    ReturnToDisappearanceAtTheTwilightEstate -> continue ReturnToTheWitchingHour
+    ReturnToTheWitchingHour -> continue ReturnToAtDeathsDoorstep
+    ReturnToAtDeathsDoorstep -> continue ReturnToTheSecretName
+    InterludeStep 2 _ -> continue ReturnToTheSecretName
+    ReturnToTheSecretName -> continue ReturnToTheWagesOfSin
+    ReturnToTheWagesOfSin -> continue ReturnToForTheGreaterGood
+    ReturnToForTheGreaterGood -> continue ReturnToUnionAndDisillusion
+    InterludeStep 3 _ -> continue ReturnToUnionAndDisillusion
+    ReturnToUnionAndDisillusion -> continue ReturnToInTheClutchesOfChaos
+    ReturnToInTheClutchesOfChaos -> continue $ InterludeStep 4 Nothing
+    InterludeStep 4 _ -> continue ReturnToBeforeTheBlackThrone
+    ReturnToBeforeTheBlackThrone -> continue EpilogueStep
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

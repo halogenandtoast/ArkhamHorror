@@ -114,6 +114,10 @@ normalizedCampaignStep = \case
           contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
           case contents of
             Left nextStep -> pure $ ContinueCampaignStep $ Continuation nextStep True
-            Right inner -> ContinueCampaignStep <$> (Continuation <$> (inner .: "nextStep") <*> (inner .: "canUpgradeDecks"))
+            Right inner -> do
+              nextStep <- inner .:? "nextStep"
+              case nextStep of
+                Just ns -> ContinueCampaignStep . Continuation ns <$> (inner .: "canUpgradeDecks")
+                Nothing -> ContinueCampaignStep . (`Continuation` True) <$> parseJSON (Object inner)
         _ -> $(mkParseJSON defaultOptions ''CampaignStep) (Object o)
   |]

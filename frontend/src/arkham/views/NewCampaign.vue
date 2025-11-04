@@ -90,7 +90,7 @@ const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 const campaignScenarios = computed(() => selectedCampaign.value
-  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && ((s.show ?? true) !== false))
+  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && s.show !== false)
   : []
 )
 

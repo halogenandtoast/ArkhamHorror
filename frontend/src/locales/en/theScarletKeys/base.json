@@ -1,4 +1,11 @@
 {
+  "headings": {
+    "prologue": "Campaign Setup",
+    "embark": "Embark",
+    "interludes": {
+      "1": "Interlude"
+    }
+  },
   "locations": {
     "Alexandria": { "name": "Alexandria", "subtitle": "File #38-N" },
     "Anchorage": { "name": "Anchorage", "subtitle": "File #33-K" },
@@ -38,6 +45,7 @@
     "YborCity": { "name": "Ybor City", "subtitle": "File #52-U" }
   },
   "interludes": {
+    "1": "The Foundation",
     "20": "File #20–E: The Great Work",
     "26": "File #26–G: Quid Pro Quo"
   },

@@ -30,7 +30,7 @@ data CampaignStep
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
   | CheckpointStep Int
-  | CampaignSpecificStep Text
+  | CampaignSpecificStep Text (Maybe Text)
   | ContinueCampaignStep Continuation
   | StandaloneScenarioStep ScenarioId CampaignStep
   deriving stock (Show, Ord, Eq, Generic, Data)
@@ -99,7 +99,7 @@ normalizedCampaignStep = \case
   InvestigatorCampaignStep _ c -> normalizedCampaignStep c
   ResupplyPoint -> ResupplyPoint
   CheckpointStep n -> CheckpointStep n
-  CampaignSpecificStep t -> CampaignSpecificStep t
+  CampaignSpecificStep t ms -> CampaignSpecificStep t ms
   ContinueCampaignStep c -> ContinueCampaignStep c
   StandaloneScenarioStep sid c -> StandaloneScenarioStep sid c
 

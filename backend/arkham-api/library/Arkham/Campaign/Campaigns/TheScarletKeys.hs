@@ -60,7 +60,7 @@ travel attrs locId doTravel n = do
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       Constantinople -> campaignStep_ DealingsInTheDark
       _ -> pure ()
-    else campaignStep_ (CampaignSpecificStep "embark")
+    else campaignStep_ (embark attrs)
   pure
     $ TheScarletKeys
     $ attrs
@@ -74,13 +74,19 @@ instance IsCampaign TheScarletKeys where
   campaignTokens = campaignChaosBag
   invalidCards _ = ["02310"] -- The Red-Gloved Man can not be included
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just RiddlesAndRain
-    RiddlesAndRain -> Just (InterludeStep 1 Nothing)
-    InterludeStep 1 _ -> Just (CampaignSpecificStep "embark")
-    DeadHeat -> Just (CampaignSpecificStep "embark")
-    SanguineShadows -> Just (CampaignSpecificStep "embark")
+    PrologueStep -> continue RiddlesAndRain
+    RiddlesAndRain -> continue (InterludeStep 1 Nothing)
+    InterludeStep 1 _ -> continue (embark a)
+    DeadHeat -> continue (embark a)
+    SanguineShadows -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
+
+embark :: (Entity a, EntityAttrs a ~ CampaignAttrs) => a -> CampaignStep
+embark a = CampaignSpecificStep "embark" currentLocation
+ where
+  meta = toResult @TheScarletKeysMeta (toAttrs a).meta
+  currentLocation = Just $ tshow meta.currentLocation
 
 instance RunMessage TheScarletKeys where
   runMessage msg c@(TheScarletKeys attrs) = runQueueT $ campaignI18n $ case msg of
@@ -108,9 +114,9 @@ instance RunMessage TheScarletKeys where
       unscoped $ campaignI18n do
         scope "embarkingAndTravel" $ flavor $ setTitle "title" >> p "body"
         scope "theFoundationDossiers" $ flavor $ setTitle "title" >> p "body"
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure c
-    CampaignStep (CampaignSpecificStep "embark") -> scope "embark" do
+    CampaignStep (CampaignSpecificStep "embark" _) -> scope "embark" do
       lead <- getLeadPlayer
       let meta = toResult attrs.meta
 
@@ -188,7 +194,7 @@ instance RunMessage TheScarletKeys where
     CampaignStep (InterludeStepPart 20 _ 3) -> scope "theGreatWork" do
       interludeXpAll (toBonus "bonus" 3)
       flavor $ setTitle "title" >> p "theGreatWork3"
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure c
     CampaignStep (InterludeStepPart 20 _ 4) -> scope "theGreatWork" do
       record TuwileMasaiIsOnYourSide
@@ -196,12 +202,12 @@ instance RunMessage TheScarletKeys where
       markTime 1
       flavor $ setTitle "title" >> p "theGreatWork4"
       chooseBearer Keys.theBaleEngine
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure c
     CampaignStep (InterludeStepPart 20 _ 5) -> scope "theGreatWork" do
       flavor $ setTitle "title" >> p "theGreatWork5"
       eachInvestigator \iid -> setupModifier CampaignSource iid (StartingHand 1)
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (Bermuda :))
     CampaignStep (InterludeStep 26 _) -> scope "quidProQuo" do
       let meta = toResult @TheScarletKeysMeta attrs.meta
@@ -221,10 +227,10 @@ instance RunMessage TheScarletKeys where
         labeled' "ticket" do
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
-          campaignStep_ (CampaignSpecificStep "embark")
+          campaignStep_ (embark attrs)
         labeled' "supplies" do
           interludeXpAll (toBonus "supplies" 1)
-          campaignStep_ (CampaignSpecificStep "embark")
+          campaignStep_ (embark attrs)
         labeledValidate' (not visitedMarrakesh) "intel11" $ interludeStepPart 26 Nothing 3
       pure c
     CampaignStep (InterludeStepPart 26 _ 2) -> scope "quidProQuo" do
@@ -234,21 +240,21 @@ instance RunMessage TheScarletKeys where
         labeled' "ticket" do
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
-          campaignStep_ (CampaignSpecificStep "embark")
+          campaignStep_ (embark attrs)
         labeled' "supplies" do
           interludeXpAll (toBonus "supplies" 1)
-          campaignStep_ (CampaignSpecificStep "embark")
+          campaignStep_ (embark attrs)
         labeledValidate' (not visitedHavana) "intel28" $ interludeStepPart 26 Nothing 4
       pure c
     CampaignStep (InterludeStepPart 26 _ 3) -> scope "quidProQuo" do
       record TheCellKnowsAmaranthsRealName
       flavor $ setTitle "title" >> p "quidProQuo3"
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure c
     CampaignStep (InterludeStepPart 26 _ 4) -> scope "quidProQuo" do
       record TheCellKnowsOfDesisPast
       flavor $ setTitle "title" >> p "quidProQuo4"
-      campaignStep_ (CampaignSpecificStep "embark")
+      campaignStep_ (embark attrs)
       pure c
     CampaignStep (ScenarioStep _) -> do
       TheScarletKeys attrs' <- lift $ defaultCampaignRunner msg c

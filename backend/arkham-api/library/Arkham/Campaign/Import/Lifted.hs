@@ -35,10 +35,10 @@ setNextCampaignStep :: ReverseQueue m => CampaignStep -> m ()
 setNextCampaignStep = push . NextCampaignStep . continue
 
 interludeStepPart :: ReverseQueue m => Int -> Maybe InterludeKey -> Int -> m ()
-interludeStepPart n mKey part = campaignStep_ (InterludeStepPart n mKey part)
+interludeStepPart n mKey part = push $ NextCampaignStep $ Just $ InterludeStepPart n mKey part
 
 prologueStepPart :: ReverseQueue m => Int -> m ()
-prologueStepPart part = campaignStep_ (PrologueStepPart part)
+prologueStepPart part = push $ NextCampaignStep $ Just $ PrologueStepPart part
 
 campaignStep_ :: ReverseQueue m => CampaignStep -> m ()
 campaignStep_ s = setNextCampaignStep s

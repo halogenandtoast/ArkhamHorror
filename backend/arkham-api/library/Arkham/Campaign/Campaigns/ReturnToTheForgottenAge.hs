@@ -19,8 +19,9 @@ instance IsCampaign ReturnToTheForgottenAge where
     ReturnToThreadsOfFate -> continue ResupplyPoint
     ResupplyPoint -> continue ReturnToTheBoundaryBeyond
     ReturnToTheBoundaryBeyond -> continue $ InterludeStep 3 Nothing
-    InterludeStep 3 _ -> continue ReturnToHeartOfTheElders
-    ReturnToHeartOfTheElders -> continue ReturnToTheCityOfArchives
+    InterludeStep 3 _ -> continue ReturnToHeartOfTheEldersPart1
+    ReturnToHeartOfTheEldersPart1 -> continue ReturnToHeartOfTheEldersPart2
+    ReturnToHeartOfTheEldersPart2 -> continue ReturnToTheCityOfArchives
     ReturnToTheCityOfArchives -> continue $ InterludeStep 4 Nothing
     InterludeStep 4 _ -> continue ReturnToTheDepthsOfYoth
     ReturnToTheDepthsOfYoth -> continue $ InterludeStep 5 Nothing

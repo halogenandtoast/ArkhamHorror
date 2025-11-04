@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Card (
   module Arkham.Helpers.Card,
   module Arkham.Helpers.Campaign,
@@ -263,7 +265,7 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       pure $ m > n
 
 cardInFastWindows
-  :: (Tracing m, HasGame m)
+  :: (Tracing m, HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Card
@@ -273,7 +275,7 @@ cardInFastWindows
 cardInFastWindows iid source card windows' matcher =
   anyM (\window -> windowMatches iid source' window matcher) windows'
  where
-  source' = case card of
+  source' = case traceShowId card of
     PlayerCard pc -> BothSource source (CardIdSource pc.id)
     _ -> source
 

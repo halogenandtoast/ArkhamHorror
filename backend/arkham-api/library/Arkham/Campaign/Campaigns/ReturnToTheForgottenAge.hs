@@ -11,22 +11,22 @@ newtype ReturnToTheForgottenAge = ReturnToTheForgottenAge TheForgottenAge
 instance IsCampaign ReturnToTheForgottenAge where
   campaignTokens = campaignTokens @TheForgottenAge
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just ReturnToTheUntamedWilds
-    ReturnToTheUntamedWilds -> Just (InterludeStep 1 Nothing)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToTheDoomOfEztli)
-    ReturnToTheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
-    InterludeStep 2 _ -> Just ReturnToThreadsOfFate
-    ReturnToThreadsOfFate -> Just ResupplyPoint
-    ResupplyPoint -> Just (UpgradeDeckStep ReturnToTheBoundaryBeyond)
-    ReturnToTheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
-    InterludeStep 3 _ -> Just ReturnToHeartOfTheElders
-    ReturnToHeartOfTheElders -> Just (UpgradeDeckStep ReturnToTheCityOfArchives)
-    ReturnToTheCityOfArchives -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just ReturnToTheDepthsOfYoth
-    ReturnToTheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
-    InterludeStep 5 _ -> Just ReturnToShatteredAeons
+    PrologueStep -> continue ReturnToTheUntamedWilds
+    ReturnToTheUntamedWilds -> continue (InterludeStep 1 Nothing)
+    InterludeStep 1 _ -> continue ReturnToTheDoomOfEztli
+    ReturnToTheDoomOfEztli -> continue $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> continue ReturnToThreadsOfFate
+    ReturnToThreadsOfFate -> continue ResupplyPoint
+    ResupplyPoint -> continue ReturnToTheBoundaryBeyond
+    ReturnToTheBoundaryBeyond -> continue $ InterludeStep 3 Nothing
+    InterludeStep 3 _ -> continue ReturnToHeartOfTheElders
+    ReturnToHeartOfTheElders -> continue ReturnToTheCityOfArchives
+    ReturnToTheCityOfArchives -> continue $ InterludeStep 4 Nothing
+    InterludeStep 4 _ -> continue ReturnToTheDepthsOfYoth
+    ReturnToTheDepthsOfYoth -> continue $ InterludeStep 5 Nothing
+    InterludeStep 5 _ -> continue ReturnToShatteredAeons
     ReturnToShatteredAeons -> Nothing
-    EpilogueStep -> Just (UpgradeDeckStep ReturnToTurnBackTime)
+    EpilogueStep -> continue ReturnToTurnBackTime
     ReturnToTurnBackTime -> Nothing
     other -> defaultNextStep other
 

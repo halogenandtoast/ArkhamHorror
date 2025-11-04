@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 
 newtype ObtainingTheDevice = ObtainingTheDevice ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -23,7 +24,8 @@ instance RunMessage ObtainingTheDevice where
   runMessage msg a@(ObtainingTheDevice attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <- getInvestigators
-      puzzleBox <- selectJust $ assetIs Assets.puzzleBox
+      puzzleBox <-
+        selectOne (assetIs Assets.puzzleBox) `orWhenNothingM` createAssetAt Assets.puzzleBox Unplaced
       leadChooseOrRunOneM $ targets investigators (`takeControlOfAsset` puzzleBox)
       advancedWithOther attrs
       pure a

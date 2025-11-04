@@ -528,6 +528,12 @@ instance HasField "classSymbol" Investigator ClassSymbol where
 instance HasField "form" Investigator InvestigatorForm where
   getField = (.form) . toAttrs
 
+instance HasField "startsWithInHand" Investigator [CardDef] where
+  getField (Investigator a) = attr investigatorStartsWithInHand a
+
+instance HasField "startsWith" Investigator [CardDef] where
+  getField (Investigator a) = attr investigatorStartsWith a
+
 instance Named Investigator where
   toName (Investigator a) = toName (toAttrs a)
 

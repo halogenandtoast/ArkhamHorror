@@ -61,8 +61,23 @@ const kind = computed(() => {
   }
 
   if (props.step.tag === 'InterludeStep') {
+    if (props.game.campaign) {
+      const key = `${toCamelCase(props.game.campaign.name)}.headings.interludes.${props.step.contents[0]}`
+      if (te(key)) {
+        return t(key)
+      }
+    }
     return t('headings.interlude', { number: numToRomanNumeral(parseInt(props.step.contents[0])) })
   }
+
+  if (props.step.tag === 'CampaignSpecificStep') {
+    if (props.game.campaign) {
+      const key = `${toCamelCase(props.game.campaign.name)}.headings.${props.step.contents}`
+      console.log(key)
+      if (te(key)) return t(key)
+    }
+  }
+
   return ''
 })
 

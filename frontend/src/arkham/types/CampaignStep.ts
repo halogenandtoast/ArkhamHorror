@@ -32,6 +32,7 @@ export type ResupplyPoint = {
 
 export type CampaignSpecificStep = {
   tag: 'CampaignSpecificStep';
+  contents: string;
 }
 
 export type EpilogueStep = {
@@ -73,6 +74,7 @@ export const resupplyPointStepDecoder = JsonDecoder.object<ResupplyPoint>(
 export const campaignSpecificStepDecoder = JsonDecoder.object<CampaignSpecificStep>(
   {
     tag: JsonDecoder.literal('CampaignSpecificStep'),
+    contents: JsonDecoder.string(),
   },
   'CampaignSpecificStep',
 );
@@ -219,6 +221,10 @@ export function campaignStepName(game: Game, step: CampaignStep) {
   }
 
   if (step.tag === 'PrologueStep') {
+    if (game.campaign) {
+      const key = `${toCamelCase(game.campaign.name)}.headings.prologue`
+      if (te(key)) return t(key)
+    }
     return t('headings.prologue')
   }
 
@@ -229,6 +235,14 @@ export function campaignStepName(game: Game, step: CampaignStep) {
 
   if (step.tag === 'EpilogueStep') {
     return t('headings.epilogue')
+  }
+
+  if (step.tag === 'CampaignSpecificStep') {
+    if (game.campaign) {
+      const key = `${toCamelCase(game.campaign.name)}.headings.${step.contents}`
+      console.log(key)
+      if (te(key)) return t(key)
+    }
   }
 
   return "Unknown step: " + step.tag

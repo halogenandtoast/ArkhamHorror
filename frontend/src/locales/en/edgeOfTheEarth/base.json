@@ -1,4 +1,9 @@
 {
+  "interludes": {
+    "1": "Restful Night",
+    "2": "Endless Night",
+    "3": "Final Night"
+  },
   "madnessUnderTheIce": {
     "title": "Madness Under the Ice",
     "body": "<div class='iceAndDeath'><p>“That seething, half-luminous cloud-background held ineffable suggestions of a vague, ethereal beyondness far more than terrestrially spatial; and gave appalling reminders of the utter remoteness, separateness, desolation, and aeon-long death of this untrodden and unfathomed austral world.”</p><p class='right basic'>– H. P. Lovecraft, At the Mountains of Madness</p></div>"

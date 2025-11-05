@@ -23,7 +23,7 @@ instance HasAbilities SecurityOffice_129 where
 instance RunMessage SecurityOffice_129 where
   runMessage msg l@(SecurityOffice_129 attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      unrevealedExhibitHalls <- select $ UnrevealedLocation <> "ExhibitHall"
+      unrevealedExhibitHalls <- select $ UnrevealedLocation <> "Exhibit Hall"
       chooseOrRunOneM iid do
         labeled' "securityOffice.topOfDeck" $ push $ LookAtTopOfDeck iid (ScenarioDeckTarget ExhibitDeck) 1
         targets unrevealedExhibitHalls $ push . LookAtRevealed iid (toSource attrs) . toTarget

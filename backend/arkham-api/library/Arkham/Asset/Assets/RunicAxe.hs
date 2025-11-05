@@ -206,7 +206,8 @@ instance RunMessage RunicAxe where
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       push $ DoStep (count (== Glory) (inscriptions meta)) msg
-      pure a
+      attrs' <- liftRunMessage msg attrs
+      pure $ RunicAxe $ attrs' `with` Metadata (filter (/= Glory) (inscriptions meta))
     DoStep n msg'@(EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _) | n > 0 -> do
       for_ attrs.controller \iid -> do
         mCanDraw <- Msg.drawCardsIfCan iid (attrs.ability 1) 1

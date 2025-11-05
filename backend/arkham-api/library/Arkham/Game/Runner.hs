@@ -3205,7 +3205,7 @@ preloadEntities g = do
       | Just Refl <- eqT @a @Treachery = overAttrs (\attrs -> attrs {treacheryPlacement = p}) a
       | otherwise = a
     preloadHandEntities entities investigator' = do
-      asIfInHandCards <- getAsIfInHandCards (toId investigator')
+      asIfInHandCards <- getAsIfInHandCardsFor NotForPlay (toId investigator')
       let
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)
@@ -3236,7 +3236,7 @@ preloadEntities g = do
       --
       -- #2128: prevent duplicates in entities in hand and discard, prefer in hand
 
-      asIfInHandCards <- getAsIfInHandCards (toId investigator')
+      asIfInHandCards <- getAsIfInHandCardsFor NotForPlay (toId investigator')
       let
         discardEffectCards =
           map PlayerCard

@@ -98,7 +98,7 @@ instance RunMessage JoeDiamond where
           checkWhen $ Window.WouldBeShuffledIntoDeck (Deck.HunchDeck attrs.id) x
           push $ ShuffleCardsIntoDeck (Deck.HunchDeck attrs.id) [x]
         _ -> pure ()
-      pure i
+      JoeDiamond . (`with` meta) <$> liftRunMessage msg attrs
     InitiatePlayCard iid card _ _ _ _ | attrs `is` iid && Just card.id == revealedHunchCard meta -> do
       costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
       let hunchDeck' = filter (/= card) (hunchDeck attrs)

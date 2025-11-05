@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, computed, ref } from 'vue'
+import { inject, computed, ref, onMounted, watch } from 'vue'
 import { toCamelCase } from '@/arkham/helpers'
 import { imgsrc } from '@/arkham/helpers'
 import { Game } from '@/arkham/types/Game'
@@ -23,7 +23,17 @@ const props = defineProps<{
 const { t, te } = useI18n()
 const send = inject<(msg: string) => void>('send', () => {})
 const addSideStory = ref(false)
-
+const hasSent = ref(false)
+const sendOnce = (payload: unknown) => {
+  if (hasSent.value) return
+  hasSent.value = true
+  // vue-use's useWebSocket expects a string
+  send(JSON.stringify(payload))
+}
+// reset the lock on a "fresh update" of the step (new step name/kind)
+onMounted(() => { hasSent.value = false })
+const stepKey = computed(() => `${props.step.tag}:${JSON.stringify(props.step.contents)}`)
+watch(stepKey, () => { hasSent.value = false })
 const bonusXp = computed(() => props.campaign.meta?.bonusXp ?? null)
 const scenario = computed(() => {
   if (props.step.tag === 'ScenarioStep') {
@@ -36,6 +46,7 @@ const scenario = computed(() => {
 })
 
 const name = computed(() => campaignStepName(props.game, props.step))
+
 const numToRomanNumeral = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
     1: 'I',
@@ -118,7 +129,7 @@ const standalones = computed(() => {
 
 async function loadSideStory(sideStoryId: string) {
   addSideStory.value = false
-  send(JSON.stringify({
+  sendOnce({
     tag: 'CampaignStepAnswer',
     contents: {
       tag: 'ContinueCampaignStep',
@@ -140,11 +151,11 @@ async function loadSideStory(sideStoryId: string) {
         }
       }
     }
-  }))
+  })
 }
 
 async function upgradeDecks() {
-  send(JSON.stringify({
+  sendOnce({
     tag: 'CampaignStepAnswer',
     contents: {
       tag: 'UpgradeDeckStep',
@@ -156,11 +167,11 @@ async function upgradeDecks() {
         }
       }
     }
-  }))
+  })
 }
 
 async function startStep() {
-  send(JSON.stringify({ tag: 'CampaignStepAnswer', contents: props.step }))
+  sendOnce({ tag: 'CampaignStepAnswer', contents: props.step })
 }
 
 </script>
@@ -179,7 +190,7 @@ async function startStep() {
           <h3>({{ sideStory.xp }} XP)</h3>
         </div>
 
-        <button class="add" @click="loadSideStory(sideStory.id)">+</button>
+        <button class="add" @click="loadSideStory(sideStory.id)" :disabled="hasSent">+</button>
       </div>
       <button v-if="!chooseSideStory" @click="addSideStory = false">{{t('cancel')}}</button>
     </div>
@@ -190,9 +201,9 @@ async function startStep() {
           <h2>{{name}}</h2>
         </div>
         <div class="actions">
-          <button @click="startStep">{{t('continue')}}</button>
-          <button v-if="canUpgrade" @click="upgradeDecks">{{t('upgradeDecks')}}</button>
-          <button v-if="canUpgrade && standalones.length > 0" @click="addSideStory = true">+ {{t('addSideScenario')}}</button>
+          <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
+          <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
+          <button v-if="canUpgrade && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
         </div>
       </div>
       <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>

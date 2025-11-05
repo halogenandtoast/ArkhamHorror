@@ -65,10 +65,10 @@ instance HasModifiersFor BlackMarket2Effect where
             Just iid -> do
               for_ investigators \iid' ->
                 if iid == iid'
-                  then modified_ attrs iid' [AsIfInHand card]
-                  else modifiedWhen_ attrs (not (isSignature card)) iid' [AsIfInHand card]
+                  then modified_ attrs iid' [AsIfInHandForPlay card.id]
+                  else modifiedWhen_ attrs (not (isSignature card)) iid' [AsIfInHandForPlay card.id]
             Nothing -> for_ investigators \iid' ->
-              modifiedWhen_ attrs (not (isSignature card)) iid' [AsIfInHand card]
+              modifiedWhen_ attrs (not (isSignature card)) iid' [AsIfInHandForPlay card.id]
           _ -> pure mempty -- should be disabled
       _ -> error "incorrect target"
 

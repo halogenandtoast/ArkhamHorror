@@ -167,7 +167,7 @@ instance RunMessage IceAndDeathPart3 where
             | camp `elem` [Locations.broadSnowdrifts, Locations.snowGraves] ->
                 [icebreakerLanding, frigidCave, remnantsOfLakesCamp, crystallineCavern]
             | camp `elem` [Locations.frigidCave, Locations.rockyCrags] ->
-                [icebreakerLanding, frigidCave, remnantsOfLakesCamp, crystallineCavern]
+                [icebreakerLanding, snowGraves, barrierCamp, crystallineCavern]
             | camp == Locations.crystallineCavern ->
                 [remnantsOfLakesCamp, barrierCamp, icebreakerLanding, crashSite]
             | camp == Locations.barrierCamp -> [remnantsOfLakesCamp, crystallineCavern, snowGraves, crashSite]

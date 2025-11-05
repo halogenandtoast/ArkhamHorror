@@ -21,7 +21,7 @@ instance HasModifiersFor IllTakeThat where
   getModifiersFor (IllTakeThat attrs) = case attrs.attachedTo.asset of
     Just target -> do
       modified_ attrs target [AddTrait Illicit]
-      field AssetCard target >>= \c -> modified_ attrs c [AddTrait Illicit]
+      whenJustM (fieldMay AssetCard target) \c -> modified_ attrs c [AddTrait Illicit]
     _ -> pure mempty
 
 instance RunMessage IllTakeThat where

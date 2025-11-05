@@ -20,10 +20,8 @@ instance HasAbilities ArmInjury where
   getAbilities (ArmInjury a) =
     [ restricted a 1 injuryCriteria
         $ forced
-        $ ActivateAbility #after You
-        $ oneOf
-        $ AbilityIsAction
-        <$> [#fight, #activate]
+        $ PerformAction #after You
+        $ ActionOneOf [#fight, #activate]
     ]
    where
     injuryCriteria = if toResultDefault True a.meta then InThreatAreaOf You else Never

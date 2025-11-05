@@ -1512,6 +1512,7 @@ instance RunMessage ActiveCost where
           let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] $ ActionCost 1)
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
+          afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
           pushAll
             $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]
             <> [PlayCard iid card Nothing c.payments c.windows False | not c.cancelled]
@@ -1519,6 +1520,7 @@ instance RunMessage ActiveCost where
                | not c.cancelled
                , token <- c.sealedChaosTokens
                ]
+            <> [afterWindowMsgs]
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]
             <> [afterActivateAbilityWindow | isPlayAction == IsPlayAction]

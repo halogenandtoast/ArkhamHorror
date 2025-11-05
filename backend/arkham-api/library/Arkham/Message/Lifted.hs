@@ -2392,6 +2392,7 @@ afterSkillTest investigator lbl body = do
     Just (AbilitySource s n) -> do
       let
         isEndOfAbility = \case
+          MovedWithSkillTest _ msg -> isEndOfAbility msg
           MoveWithSkillTest msg -> isEndOfAbility msg
           ResolvedAbility ab -> ab.source == s && ab.index == n
           _ -> False

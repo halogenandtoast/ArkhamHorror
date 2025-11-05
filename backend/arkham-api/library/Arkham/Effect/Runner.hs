@@ -112,7 +112,15 @@ instance RunMessage EffectAttrs where
         Nothing -> pure a
         Just st ->
           if st.id == stId && st.source == a.source
-            then pure $ a {effectWindow = Just $ EffectSkillTestWindow sid}
+            then pure $ a
+              { effectWindow = case a.window of
+                  Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
+                  other -> other
+              , effectSkillTest = Just sid
+              , effectDisableWindow = case a.disableWindow of
+                  Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
+                  other -> other
+              }
             else pure a
     UpdateEffectMeta eid meta | eid == effectId -> do
       pure $ a {effectMetadata = Just meta}

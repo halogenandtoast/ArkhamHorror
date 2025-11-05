@@ -116,11 +116,17 @@ instance HasField "id" EffectAttrs EffectId where
 instance HasField "window" EffectAttrs (Maybe EffectWindow) where
   getField = effectWindow
 
+instance HasField "disableWindow" EffectAttrs (Maybe EffectWindow) where
+  getField = effectDisableWindow
+
 instance HasField "skillTest" EffectAttrs (Maybe SkillTestId) where
   getField = effectSkillTest
 
 instance HasField "window" Effect (Maybe EffectWindow) where
   getField = effectWindow . toAttrs
+
+instance HasField "disableWindow" Effect (Maybe EffectWindow) where
+  getField = effectDisableWindow . toAttrs
 
 instance HasField "skillTest" Effect (Maybe SkillTestId) where
   getField = effectSkillTest . toAttrs

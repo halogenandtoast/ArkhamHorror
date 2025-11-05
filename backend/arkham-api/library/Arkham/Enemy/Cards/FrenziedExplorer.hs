@@ -3,11 +3,9 @@ module Arkham.Enemy.Cards.FrenziedExplorer (frenziedExplorer) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Token
-import Arkham.Window qualified as Window
 
 newtype FrenziedExplorer = FrenziedExplorer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -15,8 +13,12 @@ newtype FrenziedExplorer = FrenziedExplorer EnemyAttrs
 
 frenziedExplorer :: EnemyCard FrenziedExplorer
 frenziedExplorer =
-  enemyWith FrenziedExplorer Cards.frenziedExplorer (2, Static 2, 2) (1, 1)
-    $ (tokensL %~ setTokens #doom 1)
+  enemyWith
+    FrenziedExplorer
+    Cards.frenziedExplorer
+    (2, Static 2, 2)
+    (1, 1)
+    (tokensL %~ setTokens #doom 1)
 
 instance HasAbilities FrenziedExplorer where
   getAbilities (FrenziedExplorer a) =
@@ -33,15 +35,12 @@ instance HasAbilities FrenziedExplorer where
 instance RunMessage FrenziedExplorer where
   runMessage msg e@(FrenziedExplorer attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      mlocation <- field EnemyLocation attrs.id
-      for_ mlocation \location -> do
-        moveTokens (attrs.ability 1) attrs location #doom (attrs.token #doom)
+      withLocationOf attrs $ moveTokensFrom (attrs.ability 1) attrs #doom (attrs.token #doom)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       when (attrs.token #doom > 0) do
-        push $ FlipDoom (toTarget attrs) 1
-        moveTokens (attrs.ability 2) attrs iid #clue 1
-        checkAfter $ Window.TakeControlOfClues iid (toSource attrs) 1
+        moveTokens (attrs.ability 2) attrs iid #doom 1
+        flipDoomToClues iid 1
         doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 2) -> do

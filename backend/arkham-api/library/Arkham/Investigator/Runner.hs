@@ -2010,6 +2010,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
+  FlipDoom target n | isTarget a target -> do
+    pure $ a & tokensL %~ flipDoom n
   DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
     push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})

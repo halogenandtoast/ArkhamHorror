@@ -6,6 +6,7 @@ import {
   onMounted,
   onUpdated,
   computed,
+  nextTick,
   ref,
   ComputedRef,
   reactive,
@@ -106,7 +107,7 @@ onMounted(() => {
 
 onUpdated(() => {
   if(props.scenario.id === "c06333") {
-    rotateImages(needsInit.value)
+    nextTick(() => rotateImages(needsInit.value))
   }
 });
 
@@ -420,7 +421,12 @@ function rotateImages(init: boolean) {
       })
     }
 
-    const degrees = parseFloat(atlachNacha.dataset?.rotation || "0") || 0
+    // const degrees = parseFloat(atlachNacha.dataset?.rotation || "0") || 0
+    // Guard: don't clobber with transient 0/NaN
+    const raw = atlachNacha.dataset?.rotation
+    const parsed = Number(raw)
+    const hasValid = raw != null && !Number.isNaN(parsed)
+    const degrees = hasValid ? parsed : previousRotation.value
     const middleCardImg = atlachNacha.querySelector('img')
     if (!middleCardImg) return
     const middleCardRect = atlachNacha.getBoundingClientRect()
@@ -448,7 +454,7 @@ function rotateImages(init: boolean) {
       img.style.transition = 'none'
       img.style.transform = `rotate(${previousRotation.value}deg)`
     });
-    if (degrees !== previousRotation.value) {
+    if (hasValid && degrees !== previousRotation.value) {
       previousRotation.value = degrees
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {

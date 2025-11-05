@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.CharlieKane (charlieKane, CharlieKane (..)) where
+module Arkham.Investigator.Cards.CharlieKane (charlieKane) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetCard))
@@ -22,7 +22,7 @@ charlieKane =
 
 instance HasAbilities CharlieKane where
   getAbilities (CharlieKane a) =
-    [ restrictedAbility a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest))
+    [ selfAbility a 1 DuringYourSkillTest
         $ FastAbility (ExhaustAssetCost (#ally <> assetControlledBy a.id))
     ]
 
@@ -51,7 +51,6 @@ instance RunMessage CharlieKane where
           <> #ally
           <> at_ (locationWithInvestigator iid)
           <> oneOf [AssetControlledBy (affectsOthers Anyone), not_ (AssetControlledBy Anyone)]
-      when (notNull allies) do
-        chooseOne iid [targetLabel ally [Ready (toTarget ally)] | ally <- allies]
+      chooseTargetM iid allies readyThis
       pure i
     _ -> CharlieKane <$> liftRunMessage msg attrs

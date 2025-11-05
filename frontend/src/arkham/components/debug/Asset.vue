@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
+const setModifiers = ref(false);
 const placeTokenType = ref<Token>(
   (Object.
     entries(props.asset.tokens).
@@ -119,6 +120,10 @@ const hasPool = computed(() => {
         <div class="slots">{{slots}}</div>
         <button @click="showSlots = false">Back</button>
       </div>
+      <div v-else-if="setModifiers" class="buttons">
+        <button @click="setModifiers = false">Back</button>
+        <Modifier :modifier="modifier" v-for="(modifier, idx) in asset.modifiers" :key="idx" />
+      </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">Place Tokens</button>
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">Remove All Tokens</button>
@@ -128,6 +133,7 @@ const hasPool = computed(() => {
         <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">Defeat</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
         <button v-if="slots.length > 0" @click="showSlots = true">Show Slots</button>
+        <button @click="setModifiers = true">Modifiers</button>
         <button @click="emit('close')">Close</button>
       </div>
 

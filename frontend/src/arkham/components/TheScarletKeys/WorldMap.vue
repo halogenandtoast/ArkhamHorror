@@ -498,6 +498,10 @@ document.addEventListener('fullscreenchange', () => {
             </template>
             <template v-else-if="embark === true">
               <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
+              <div v--if="selectedLocation === 'Venice'" class="side-story-info">
+                <p>This is a side-story location.</p>
+                <p>If you wish to add a side-story to this campaign, you may travel to this location and spend additional time equal to the normal experience for playing that side story.</p>
+              </div>
               <template v-if="locationData[selectedLocation].unlocked">
                 <button class="action" @click="travelToSelected">Travel here</button>
                 <button
@@ -1216,5 +1220,13 @@ p.locked {
 
 .indent {
   text-indent: 1.5em;
+}
+
+.side-story-info {
+  text-align: left;
+  margin-block: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 </style>

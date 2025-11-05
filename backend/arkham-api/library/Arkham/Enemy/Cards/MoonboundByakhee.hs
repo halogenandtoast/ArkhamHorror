@@ -24,7 +24,7 @@ moonboundByakhee :: EnemyCard MoonboundByakhee
 moonboundByakhee =
   enemyWith MoonboundByakhee Cards.moonboundByakhee (3, Static 3, 3) (3, 1)
     $ (spawnAtL ?~ SpawnAt (NearestLocationToYou $ LocationWithTrait Surface))
-    . (preyL .~ Prey (MostToken AlarmLevel <> HasTokens AlarmLevel (atLeast 3)))
+    . (preyL .~ OnlyPrey (Prey (MostToken AlarmLevel <> HasTokens AlarmLevel (atLeast 3))))
 
 instance RunMessage MoonboundByakhee where
   runMessage msg (MoonboundByakhee attrs) = MoonboundByakhee <$> runMessage msg attrs

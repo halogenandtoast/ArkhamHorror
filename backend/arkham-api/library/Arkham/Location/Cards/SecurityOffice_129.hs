@@ -7,7 +7,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,11 +20,11 @@ instance HasAbilities SecurityOffice_129 where
     extendRevealed1 x $ playerLimit PerTurn $ restricted x 1 Here doubleActionAbility
 
 instance RunMessage SecurityOffice_129 where
-  runMessage msg l@(SecurityOffice_129 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg l@(SecurityOffice_129 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       unrevealedExhibitHalls <- select $ UnrevealedLocation <> "Exhibit Hall"
-      chooseOrRunOneM iid do
-        labeled' "securityOffice.topOfDeck" $ push $ LookAtTopOfDeck iid (ScenarioDeckTarget ExhibitDeck) 1
+      chooseOneM iid do
+        targeting ExhibitDeck $ push $ LookAtTopOfDeck iid (ScenarioDeckTarget ExhibitDeck) 1
         targets unrevealedExhibitHalls $ push . LookAtRevealed iid (toSource attrs) . toTarget
       pure l
     _ -> SecurityOffice_129 <$> liftRunMessage msg attrs

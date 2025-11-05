@@ -7,6 +7,7 @@ import Arkham.Helpers.SkillTest (getSkillTestMatchingSkillIcons, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Slot
 

@@ -5,6 +5,7 @@ import {
   watchEffect,
   onMounted,
   onUpdated,
+  onBeforeUnmount,
   computed,
   nextTick,
   ref,
@@ -92,6 +93,7 @@ const cardRowTitle = ref("")
 const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
+let legObserver: MutationObserver | null = null
 const locationsZoom = ref(1);
 
 const { isMobile } = IsMobile();
@@ -100,10 +102,70 @@ const { isMobile } = IsMobile();
 onMounted(() => {
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
-      rotateImages(true);
+      nextTick(() => rotateImages(true));
+
+      // NEW: observe for legs added back in (undo etc.) and immediately apply rotation
+      const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+      const atlachNacha = document.querySelector('[data-label=atlachNacha]') as HTMLElement | null
+      if (locationCards && atlachNacha) {
+        const middleCardImg = atlachNacha.querySelector('img') as HTMLImageElement | null
+        const computeOrigin = () => {
+          if (!middleCardImg) return null
+          const middleCardRect = atlachNacha.getBoundingClientRect()
+          const middleCardImgRect = middleCardImg.getBoundingClientRect()
+          const originX = middleCardImgRect.left + middleCardImgRect.width / 2 - middleCardRect.left
+          const originY = middleCardImgRect.top + middleCardImgRect.height / 2 - middleCardRect.top
+          const oX = middleCardImgRect.left + middleCardImgRect.width / 2
+          const oY = middleCardImgRect.top + middleCardImgRect.height / 2
+          return { originX, originY, oX, oY }
+        }
+
+        const applyLegTransform = (el: HTMLElement) => {
+          const o = computeOrigin()
+          if (!o) return
+          // set container origin if needed (harmless if repeated)
+          atlachNacha.style.transformOrigin = `${o.originX}px ${o.originY}px`
+          const r = el.getBoundingClientRect()
+          el.style.transformOrigin = `${o.oX - r.left}px ${o.oY - r.top}px`
+          el.style.transition = 'transform 0.5s'
+          el.style.transform = `rotate(${previousRotation.value}deg)`
+        }
+
+        // run once for any current legs missing transform (e.g., first mount)
+        locationCards
+          .querySelectorAll<HTMLElement>('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]')
+          .forEach(applyLegTransform)
+
+        legObserver = new MutationObserver(muts => {
+          for (const m of muts) {
+            if (m.type === 'childList' && (m.addedNodes?.length ?? 0) > 0) {
+              m.addedNodes.forEach(n => {
+                if (!(n instanceof HTMLElement)) return
+                const maybeApply = (el: HTMLElement) => {
+                  const label = el.dataset?.label
+                  if (label && (label === 'legs1' || label === 'legs2' || label === 'legs3' || label === 'legs4')) {
+                    applyLegTransform(el)
+                  }
+                }
+                // node itself
+                maybeApply(n)
+                // or any legs inside subtree
+                n.querySelectorAll?.('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]')
+                  ?.forEach(el => maybeApply(el as HTMLElement))
+              })
+            }
+          }
+        })
+        legObserver.observe(locationCards, { childList: true, subtree: true })
+      }
     })
   }
 });
+
+onBeforeUnmount(() => {
+  legObserver?.disconnect()
+  legObserver = null
+})
 
 onUpdated(() => {
   if(props.scenario.id === "c06333") {

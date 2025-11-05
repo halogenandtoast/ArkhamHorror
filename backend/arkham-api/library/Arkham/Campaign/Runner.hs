@@ -240,7 +240,7 @@ defaultCampaignRunner msg a = case msg of
     UpgradeDeckStep nextStep' -> do
       push $ CampaignStep nextStep'
       pure $ updateAttrs a $ stepL .~ nextStep'
-    _ -> error "invalid state"
+    _ -> error $ "invalid state: " <> show (campaignStep (toAttrs a))
   ResetGame -> runMessage ReloadDecks a
   ReloadDecks -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do

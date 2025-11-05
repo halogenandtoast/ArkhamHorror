@@ -255,12 +255,13 @@ cherishedKeepsake =
 
 plucky1 :: CardDef
 plucky1 =
-  (asset "03115" "Plucky" 1 Survivor)
-    { cdSkills = [#willpower, #intellect]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 1
-    }
+  fast
+    $ (asset "03115" "Plucky" 1 Survivor)
+      { cdSkills = [#willpower, #intellect]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 1
+      }
 
 mrPeabody :: CardDef
 mrPeabody =

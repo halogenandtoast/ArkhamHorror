@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.CaptiveMind (captiveMind) where
 
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestModifiedSkillValue)
+import Arkham.Investigator.Projection ()
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -20,9 +21,13 @@ instance RunMessage CaptiveMind where
       revelationSkillTest sid iid attrs #willpower (Fixed 0)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      chooseAndDiscardCards iid attrs =<< getSkillTestModifiedSkillValue
+      hand <- length <$> iid.hand
+      keep <- getSkillTestModifiedSkillValue
+      chooseAndDiscardCards iid attrs (hand - keep)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      chooseAndDiscardCards iid attrs =<< getSkillTestModifiedSkillValue
+      hand <- length <$> iid.hand
+      keep <- getSkillTestModifiedSkillValue
+      chooseAndDiscardCards iid attrs (hand - keep)
       pure t
     _ -> CaptiveMind <$> liftRunMessage msg attrs

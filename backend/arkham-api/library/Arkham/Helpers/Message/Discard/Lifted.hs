@@ -30,7 +30,8 @@ chooseAndDiscardCardEdit iid source f = push . toMessage . f $ Msg.chooseAndDisc
 
 chooseAndDiscardCards
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-chooseAndDiscardCards iid source n = push . toMessage $ (Msg.chooseAndDiscardCard iid source) {discardAmount = n}
+chooseAndDiscardCards iid source n = when (n > 0) do
+  push . toMessage $ (Msg.chooseAndDiscardCard iid source) {discardAmount = n}
 
 discardCard
   :: (Sourceable source, IsCard card, ReverseQueue m)

@@ -60,9 +60,6 @@
     "takeControlOfHaroldWalsted": "Choose investigator to take control of Harold Walsted.",
     "r1": "It's too dangerous to keep around. We have to destroy it. (-> R1)",
     "r2": "It's too valuable to destroy. We have to keep it safe. (-> R2)",
-    "securityOffice": {
-      "topOfDeck": "Look at the top card of the Exhibit Deck"
-    },
     "passageIntoTheVeil": {
       "damage": "Take 1 direct damage and deal 1 damage to each of your Ally assets"
     }

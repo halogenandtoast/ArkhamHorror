@@ -36,7 +36,7 @@ const investigator = computed(() => {
     return i.playerId === props.playerId
   })
 })
-const investigatorId = computed(() => deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
+const investigatorId = computed(() => !solo && deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
 const investigators = computed(() => Object.values(props.game.investigators))
 const originalInvestigatorId = computed(() => investigator.value?.id)
 const xp = computed(() => investigator.value?.xp)
@@ -226,6 +226,7 @@ async function upgrade() {
       }
     }).finally(() => {
       fetching.value = false;
+      waiting.value = false;
     });
     deckUrl.value = null;
     deck.value = null;

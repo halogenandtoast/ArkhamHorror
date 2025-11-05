@@ -14,6 +14,6 @@ manoAMano1 = event ManoAMano1 Cards.manoAMano1
 instance RunMessage ManoAMano1 where
   runMessage msg e@(ManoAMano1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      chooseDamageEnemy iid (attrs.ability 1) Anywhere (enemyEngagedWith iid) 1
+      chooseDamageEnemy iid attrs Anywhere (enemyEngagedWith iid) 1
       pure e
     _ -> ManoAMano1 <$> liftRunMessage msg attrs

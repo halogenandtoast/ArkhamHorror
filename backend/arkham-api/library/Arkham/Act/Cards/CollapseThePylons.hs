@@ -67,7 +67,7 @@ instance RunMessage CollapseThePylons where
       toDiscard GameSource attrs
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      selectEach (enemyIs Enemies.theNamelessMadness) (`place` Unplaced)
+      selectEach (InPlayEnemy $ enemyIs Enemies.theNamelessMadness) (`place` Unplaced)
       pure a
     DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       connectLocations "theGateOfYquaa" "titanicRamp1"
@@ -77,6 +77,6 @@ instance RunMessage CollapseThePylons where
       connectLocations "titanicRamp4" "hiddenTunnel"
       firstRamp <- selectJust $ LocationWithLabel "titanicRamp1"
       eachInvestigator (\iid -> moveTo attrs iid firstRamp)
-      selectEach (enemyIs Enemies.theNamelessMadness) \e -> enemyMoveTo attrs e firstRamp
+      selectEach (enemyIs Enemies.theNamelessMadness <> EnemyWithPlacement Unplaced) \e -> enemyMoveTo attrs e firstRamp
       pure a
     _ -> CollapseThePylons <$> liftRunMessage msg attrs

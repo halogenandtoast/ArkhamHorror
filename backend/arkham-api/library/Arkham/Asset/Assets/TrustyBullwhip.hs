@@ -1,11 +1,12 @@
-module Arkham.Asset.Assets.TrustyBullwhip (trustyBullwhip, TrustyBullwhip (..)) where
+module Arkham.Asset.Assets.TrustyBullwhip (trustyBullwhip) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -30,18 +31,18 @@ instance RunMessage TrustyBullwhip where
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       withSkillTest \sid -> when attrs.ready do
-        getSkillTestTarget >>= \case
-          Just (EnemyTarget eid) -> do
+        mEnemy <- getSkillTestTargetedEnemy
+        chooseOneM iid $ withI18n do
+          for_ mEnemy \eid -> do
             canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
-            chooseOneM iid do
-              when canEvade do
-                labeled "Automatically evade the enemy" do
-                  exhaustThis attrs
-                  automaticallyEvadeEnemy iid eid
-              labeled "Deal +1 damage for this attack" do
+            when canEvade do
+              card <- fetchCard eid
+              cardNameVar card $ labeledValidate' canEvade "automaticallyEvade" do
                 exhaustThis attrs
-                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-              labeled "Do nothing" nothing
-          _ -> error "impossible"
+                automaticallyEvadeEnemy iid eid
+          countVar 1 $ labeled' "dealAdditionalDamage" do
+            exhaustThis attrs
+            skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+          labeled' "skip" nothing
       pure a
     _ -> TrustyBullwhip <$> liftRunMessage msg attrs

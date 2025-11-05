@@ -13,6 +13,7 @@ import GHC.Records
 data Continuation = Continuation
   { nextStep :: CampaignStep
   , canUpgradeDecks :: Bool
+  , chooseSideStory :: Bool
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
@@ -37,10 +38,10 @@ data CampaignStep
   deriving anyclass ToJSON
 
 continue :: CampaignStep -> Maybe CampaignStep
-continue = Just . ContinueCampaignStep . (`Continuation` True)
+continue ns = Just $ ContinueCampaignStep $ Continuation ns True False
 
 continueNoUpgrade :: CampaignStep -> Maybe CampaignStep
-continueNoUpgrade = Just . ContinueCampaignStep . (`Continuation` False)
+continueNoUpgrade ns = Just $ ContinueCampaignStep $ Continuation ns False False
 
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
@@ -118,11 +119,16 @@ normalizedCampaignStep = \case
         Just "ContinueCampaignStep" -> do
           contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
           case contents of
-            Left nextStep -> pure $ ContinueCampaignStep $ Continuation nextStep True
+            Left nextStep -> pure $ ContinueCampaignStep $ Continuation nextStep True False
             Right inner -> do
               nextStep <- inner .:? "nextStep"
               case nextStep of
-                Just ns -> ContinueCampaignStep . Continuation ns <$> (inner .: "canUpgradeDecks")
-                Nothing -> ContinueCampaignStep . (`Continuation` True) <$> parseJSON (Object inner)
+                Just ns -> do
+                  canUpgrade <- inner .: "canUpgradeDecks"
+                  chooseSideStory <- inner .:? "chooseSideStory" .!= False
+                  pure $ ContinueCampaignStep $ Continuation ns canUpgrade chooseSideStory
+                Nothing -> do
+                  nStep <- parseJSON (Object inner)
+                  pure $ ContinueCampaignStep $ Continuation nStep True False
         _ -> $(mkParseJSON defaultOptions ''CampaignStep) (Object o)
   |]

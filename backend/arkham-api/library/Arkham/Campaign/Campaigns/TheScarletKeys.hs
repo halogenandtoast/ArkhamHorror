@@ -48,9 +48,20 @@ campaignChaosBag = \case
     ]
 {- FOURMOLU_ENABLE -}
 
+pickSideStory :: ReverseQueue m => CampaignAttrs -> m ()
+pickSideStory attrs = push $ NextCampaignStep $ Just $ ContinueCampaignStep $ Continuation (embark attrs) False True
+
 travel :: ReverseQueue m => CampaignAttrs -> MapLocationId -> Bool -> Int -> m TheScarletKeys
 travel attrs locId doTravel n = do
   markTime n
+  let
+    attrs' =
+      attrs
+        & overMeta
+          ( (visitedLocationsL %~ if doTravel then (locId :) else id)
+              . (currentLocationL .~ locId)
+              . (unlockedLocationsL %~ if doTravel then filter (/= locId) else id)
+          )
   if doTravel
     then case locId of
       Moscow -> campaignStep_ (InterludeStep 26 Nothing)
@@ -59,16 +70,15 @@ travel attrs locId doTravel n = do
       Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       Constantinople -> campaignStep_ DealingsInTheDark
+      -- side story locations
+      Venice -> pickSideStory attrs'
+      Cairo -> pickSideStory attrs'
+      MonteCarlo -> pickSideStory attrs'
+      Arkham -> pickSideStory attrs'
+      NewOrleans -> pickSideStory attrs'
       _ -> pure ()
-    else campaignStep_ (embark attrs)
-  pure
-    $ TheScarletKeys
-    $ attrs
-    & overMeta
-      ( (visitedLocationsL %~ if doTravel then (locId :) else id)
-          . (currentLocationL .~ locId)
-          . (unlockedLocationsL %~ if doTravel then filter (/= locId) else id)
-      )
+    else campaignStep_ (embark attrs')
+  pure $ TheScarletKeys attrs'
 
 instance IsCampaign TheScarletKeys where
   campaignTokens = campaignChaosBag

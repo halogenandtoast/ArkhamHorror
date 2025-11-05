@@ -91,7 +91,7 @@ instance RunMessage TheCircleUndone where
       lead <- getActivePlayer
       push $ Ask lead ContinueCampaign
       pure c
-    CampaignStep (ContinueCampaignStep (Continuation DisappearanceAtTheTwilightEstate _)) -> do
+    CampaignStep (ContinueCampaignStep ((.nextStep) -> DisappearanceAtTheTwilightEstate)) -> do
       lead <- getActivePlayer
       push $ Ask lead ContinueCampaign
       pure c

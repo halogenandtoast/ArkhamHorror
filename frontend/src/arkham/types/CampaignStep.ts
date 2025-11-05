@@ -42,6 +42,7 @@ export type EpilogueStep = {
 export type Continuation = {
   nextStep: CampaignStep;
   canUpgradeDecks: boolean;
+  chooseSideStory: boolean;
 }
 
 export type ContinueCampaignStep = {
@@ -53,6 +54,7 @@ export const continuationDecoder = JsonDecoder.object<Continuation>(
   {
     nextStep: JsonDecoder.lazy<CampaignStep>(() => campaignStepDecoder),
     canUpgradeDecks: JsonDecoder.boolean(),
+    chooseSideStory: JsonDecoder.boolean(),
   },
   'Continuation',
 );

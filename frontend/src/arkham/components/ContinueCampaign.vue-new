@@ -9,6 +9,7 @@ import type { Investigator } from '@/arkham/types/Investigator'
 import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
 import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
+import ChooseSideStory from '@/arkham/components/ChooseSideStory.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import sideStories from '@/arkham/data/side-stories.json'
 
@@ -16,13 +17,13 @@ const props = defineProps<{
   game: Game
   campaign: Campaign
   canUpgradeDecks: boolean
-  chooseSideStory: boolean
   step: CampaignStep
 }>();
 
 const { t, te } = useI18n()
 const send = inject<(msg: string) => void>('send', () => {})
 const addSideStory = ref(false)
+
 
 const bonusXp = computed(() => props.campaign.meta?.bonusXp ?? null)
 const scenario = computed(() => {
@@ -86,8 +87,6 @@ const investigators = computed(() => {
 })
 
 const minXp = computed<number>(() => {
-  const time = props.campaign.log.recordedCounts.find(([c, v]) => c.tag === 'TheScarletKeysKey' && c.contents === 'Time')
-  if (time) return (35 - time[1])
   return investigators.value.reduce((acc: number | null, investigator: Investigator) => {
     const currentXp = investigator.xp
     if (acc === null) {
@@ -105,7 +104,7 @@ const canUpgrade = computed(() => {
 })
 
 const standalones = computed(() => {
-  if (!props.chooseSideStory && props.step.tag !== "ScenarioStep") return []
+  if (props.step.tag !== "ScenarioStep") return []
   const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {
       acc.push(step.contents[0].replace(/^c/, ''))
@@ -116,7 +115,7 @@ const standalones = computed(() => {
   return sideStories.filter((s: { xp: number, id: string }) => s.xp && s.xp <= minXp.value && !completed.includes(s.id))
 })
 
-async function loadSideStory(sideStoryId: string) {
+async function chooseSideStory(sideStoryId: string) {
   addSideStory.value = false
   send(JSON.stringify({
     tag: 'CampaignStepAnswer',
@@ -168,21 +167,7 @@ async function startStep() {
 <template>
   <LogIcons />
   <div class="continue-campaign scroll-container">
-    <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
-      <h2>Select a side scenario to add</h2>
-      <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option">
-        <div class="scenario-icon">
-          <img :src="imgsrc(`sets/${sideStory.id}.png`)" />
-        </div>
-        <div class="scenario-info">
-          <h2>{{ sideStory.name }}</h2>
-          <h3>({{ sideStory.xp }} XP)</h3>
-        </div>
-
-        <button class="add" @click="loadSideStory(sideStory.id)">+</button>
-      </div>
-      <button v-if="!chooseSideStory" @click="addSideStory = false">{{t('cancel')}}</button>
-    </div>
+    <ChooseSideStory v-if="addSideStory" :game="game" :step="step" :campaign="campaign" @close="addSideStory = false" />
     <div v-else class="next-scenario">
       <div class="next-scenario-info">
         <div class='scenario-info'>
@@ -198,7 +183,7 @@ async function startStep() {
       <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>
     </div>
 
-    <template v-if="!addSideStory && !chooseSideStory">
+    <template v-if="!addSideStory">
       <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
     </template>
   </div>
@@ -287,40 +272,6 @@ async function startStep() {
   width: 100%;
 }
 
-.side-story-selection {
-  > h2 {
-    color: white;
-    font-family: "Teutonic", sans-serif;
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  .side-story-option {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    gap: 10px;
-    h3 {
-      margin: 0;
-      color: white;
-    }
-    img {
-      max-height: 60px;
-      filter: invert(100%) brightness(60%);
-    }
-    .scenario-icon {
-      margin-right: 10px;
-      width: 60px;
-      justify-content: center;
-      display: flex;
-    }
-  }
-}
-
 button {
   border: 0;
   background: rgba(0, 0, 0, 0.3);
@@ -332,16 +283,5 @@ button {
     background: rgba(0, 0, 0, 0.5);
     cursor: pointer;
   }
-}
-
-.add {
-  font-size: 1.5em;
-  width: 40px;
-  height: 40px;
-  align-self: center;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

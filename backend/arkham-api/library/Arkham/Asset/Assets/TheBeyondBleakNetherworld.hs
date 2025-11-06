@@ -131,6 +131,7 @@ instance RunMessage TheBeyondBleakNetherworld where
       Just iid ->
         field InvestigatorSideDeck iid >>= \case
           Just cards | pc `elem` cards -> do
+            obtainCard card
             pure . TheBeyondBleakNetherworld $ attrs `with` Meta (spiritDeck meta <> [card]) Nothing
           _ -> pure a
     _ -> TheBeyondBleakNetherworld . (`with` meta) <$> liftRunMessage msg attrs

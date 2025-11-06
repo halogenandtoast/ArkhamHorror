@@ -1805,6 +1805,9 @@ instance RunMessage EnemyAttrs where
         _ -> do
           checkEntersThreatArea a placement
           pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
+          when (not (isInPlayPlacement a.placement) && isInPlayPlacement placement) do
+            pushM $ checkWhen $ Window.EnterPlay (toTarget a)
+            pushM $ checkAfter $ Window.EnterPlay (toTarget a)
           when (isInPlayPlacement a.placement && not (isInPlayPlacement placement)) do
             pushM $ checkWhen $ Window.LeavePlay (toTarget a)
             pushM $ checkAfter $ Window.LeavePlay (toTarget a)

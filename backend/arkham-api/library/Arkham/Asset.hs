@@ -989,6 +989,8 @@ allAssets =
       SomeAssetCard laChicaRojaYourWatchfulShadow
     , --- Dealings in the Dark [tsk]
       SomeAssetCard eceSahinTheVermillionVeiledLady
+    , --- Dancing Mad [tsk]
+      SomeAssetCard desiderioDelgadoAlvarez
     , --- Globetrotting [tsk]
       SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale

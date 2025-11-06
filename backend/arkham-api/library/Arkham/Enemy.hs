@@ -506,6 +506,9 @@ allEnemies =
     , SomeEnemyCard sinisterAspirantA
     , SomeEnemyCard sinisterAspirantB
     , SomeEnemyCard sinisterAspirantC
+    , --- Dancing Mad [tsk]
+      SomeEnemyCard desiderioDelgadoAlvarez106
+    , SomeEnemyCard desiderioDelgadoAlvarez107
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB
@@ -515,6 +518,10 @@ allEnemies =
     , --- Outsiders [tsk]
       SomeEnemyCard paracausalEntity
     , SomeEnemyCard apocalypticPresage
+    , --- Secret War [tsk]
+      SomeEnemyCard otherworldlyMimic
+    , --- Agents of the Outside [tsk]
+      SomeEnemyCard paradigmEfficer
     , --- Agents of Yuggoth [tsk]
       SomeEnemyCard emissaryFromYuggoth
     , -- The Feast of Hemloch Vale

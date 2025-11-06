@@ -7,10 +7,12 @@ data TheScarletKeysKey
   | EceDoesNotTrustTheCell
   | EceTrustsTheCell
   | LaChicaRojaIsOnYourSide
+  | TheCellHasBeenAmbushed
   | TheCellIsDecievingEce
   | TheCellIsWorkingWithEce
   | TheCellKnowsAmaranthsRealName
   | TheCellKnowsOfDesisPast
+  | TheCellMadeADealWithDesi
   | TheCellRefusedEcesOffer
   | TheLoversAreReunited
   | TheSanguineWatchersTormentContinues

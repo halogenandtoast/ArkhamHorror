@@ -331,6 +331,12 @@ allActs =
     , --- Dealings in the Dark [tsk]
       SomeActCard searchForTheManuscript
     , SomeActCard searchForTheTalisman
+    , --- Dancing Mad [tsk]
+      SomeActCard falseStepV1
+    , SomeActCard falseColorsV1
+    , SomeActCard falseStepV2
+    , SomeActCard falseColorsV2
+    , SomeActCard falseLight
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

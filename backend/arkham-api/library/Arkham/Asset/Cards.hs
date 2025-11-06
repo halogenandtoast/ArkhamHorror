@@ -965,6 +965,7 @@ allEncounterAssetCards =
       , yhanthleiStatueDynamicRelic
       , laChicaRojaYourWatchfulShadow
       , eceSahinTheVermillionVeiledLady
+      , desiderioDelgadoAlvarez
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

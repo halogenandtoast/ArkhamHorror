@@ -221,6 +221,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , bloodthirstySpirits
+      , bodySnatched
       , boundInRed
       , brazierEnchantment
       , breakALeg
@@ -398,9 +399,11 @@ allEncounterTreacheryCards =
       , maskedHorrors
       , maskOfUmordhoth
       , massHysteria
+      , matterInversion
       , meddlesomeFamiliar
       , melancholy
       , memoryOfOblivion
+      , memoryVariant
       , mergingTimelines
       , mesmerize
       , miasmaticTorment
@@ -476,6 +479,7 @@ allEncounterTreacheryCards =
       , secretDoorTheMidwinterGala
       , secretGathering
       , secretsInTheAttic
+      , secretsLost
       , secretsOfTheBeyond
       , seeingShadows
       , serpentsCall
@@ -2901,6 +2905,12 @@ lightOutOfVoid =
       { cdCardTraits = singleton Hex
       }
 
+bodySnatched :: CardDef
+bodySnatched =
+  (treachery "09608" "Body Snatched" DancingMad 2)
+    { cdCardTraits = setFromList [Scheme, Power]
+    }
+
 conspiracyInRed :: CardDef
 conspiracyInRed =
   (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
@@ -2966,6 +2976,24 @@ keyCharge =
 substanceDissimulation :: CardDef
 substanceDissimulation =
   (treachery "09733" "Substance Dissimulation" Outsiders 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+memoryVariant :: CardDef
+memoryVariant =
+  (treachery "09735" "Memory Variant" SecretWar 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+secretsLost :: CardDef
+secretsLost =
+  (treachery "09736" "Secrets Lost" SecretWar 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+matterInversion :: CardDef
+matterInversion =
+  (treachery "09738" "Matter Inversion" AgentsOfTheOutside 2)
     { cdCardTraits = setFromList [Power]
     }
 

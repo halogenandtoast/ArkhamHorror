@@ -263,6 +263,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "c09520": return "theScarletKeys.deadHeat"
     case "c09545": return "theScarletKeys.sanguineShadows"
     case "c09566": return "theScarletKeys.dealingsInTheDark"
+    case "c09591": return "theScarletKeys.dancingMad"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

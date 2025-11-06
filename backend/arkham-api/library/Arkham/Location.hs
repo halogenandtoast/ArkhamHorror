@@ -820,7 +820,7 @@ allLocations =
     , SomeLocationCard theCabildo
     , SomeLocationCard bancoDeLaProvincia
     , SomeLocationCard teatroColon
-    , --- Sanguine Shadows [tsk]
+    , --- Dealings in the Dark [tsk]
       SomeLocationCard galataDocks
     , SomeLocationCard galata
     , SomeLocationCard obeliskOfTheodosius
@@ -833,6 +833,14 @@ allLocations =
     , SomeLocationCard grandBazaarBusyWalkway
     , SomeLocationCard grandBazaarRooftopAccess
     , SomeLocationCard grandBazaarJewelersRoad
+    , --- Dancing Mad [tsk]
+      SomeLocationCard cafeLunaCoterieHaunt
+    , SomeLocationCard cafeLunaBastionOfRemembrance
+    , SomeLocationCard elMalecon
+    , SomeLocationCard jardinesDeLaTropical
+    , SomeLocationCard granTeatroDeLaHabana
+    , SomeLocationCard miramarYachtClub
+    , SomeLocationCard plazaHotel
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

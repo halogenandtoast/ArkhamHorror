@@ -108,6 +108,11 @@ library
       Arkham.Act.Cards.ExploringTheMoon
       Arkham.Act.Cards.ExploringTheRainforest
       Arkham.Act.Cards.EyesInTheTower
+      Arkham.Act.Cards.FalseColorsV1
+      Arkham.Act.Cards.FalseColorsV2
+      Arkham.Act.Cards.FalseLight
+      Arkham.Act.Cards.FalseStepV1
+      Arkham.Act.Cards.FalseStepV2
       Arkham.Act.Cards.FatedSouls
       Arkham.Act.Cards.FindAmaranth
       Arkham.Act.Cards.FindingANewWay
@@ -320,6 +325,7 @@ library
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas
       Arkham.Agenda.Cards
+      Arkham.Agenda.Cards.ABetrayalOfEyes
       Arkham.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Agenda.Cards.AgentsOfTheDark
       Arkham.Agenda.Cards.AgentsOfTheOuterGods
@@ -355,6 +361,7 @@ library
       Arkham.Agenda.Cards.DecrepitDecay
       Arkham.Agenda.Cards.DoomFromBelow
       Arkham.Agenda.Cards.DrawnIn
+      Arkham.Agenda.Cards.EasyPrey
       Arkham.Agenda.Cards.EmpireOfTheDead
       Arkham.Agenda.Cards.EmpireOfTheUndead
       Arkham.Agenda.Cards.EmptyStreets
@@ -430,6 +437,7 @@ library
       Arkham.Agenda.Cards.SettingSun
       Arkham.Agenda.Cards.ShadowsDeepen
       Arkham.Agenda.Cards.ShowbusinessAsUsual
+      Arkham.Agenda.Cards.SilenceSpeaks
       Arkham.Agenda.Cards.SilentStirring
       Arkham.Agenda.Cards.SnappedThreads
       Arkham.Agenda.Cards.SomethingStirs
@@ -748,6 +756,7 @@ library
       Arkham.Asset.Assets.DelilahORourke3
       Arkham.Asset.Assets.DeloresGadling
       Arkham.Asset.Assets.Dendromorphosis
+      Arkham.Asset.Assets.DesiderioDelgadoAlvarez
       Arkham.Asset.Assets.DetectivesColt1911s
       Arkham.Asset.Assets.DeVermisMysteriis2
       Arkham.Asset.Assets.DevilFriendOrFoe2
@@ -1791,6 +1800,8 @@ library
       Arkham.Enemy.Cards.DeepOneHatchling
       Arkham.Enemy.Cards.DeepOneNursemaid
       Arkham.Enemy.Cards.DeepOnePredator
+      Arkham.Enemy.Cards.DesiderioDelgadoAlvarez106
+      Arkham.Enemy.Cards.DesiderioDelgadoAlvarez107
       Arkham.Enemy.Cards.DevoteeOfTheKey
       Arkham.Enemy.Cards.DholeOfTheWastes
       Arkham.Enemy.Cards.DianneDevine
@@ -1955,9 +1966,11 @@ library
       Arkham.Enemy.Cards.OceirosMarsh
       Arkham.Enemy.Cards.OtheraGilmanProprietessOfTheHotel
       Arkham.Enemy.Cards.OtherworldlyMeddler
+      Arkham.Enemy.Cards.OtherworldlyMimic
       Arkham.Enemy.Cards.PackOfVooniths
       Arkham.Enemy.Cards.PadmaAmrita
       Arkham.Enemy.Cards.ParacausalEntity
+      Arkham.Enemy.Cards.ParadigmEfficer
       Arkham.Enemy.Cards.PennyWhite
       Arkham.Enemy.Cards.PeterWarren
       Arkham.Enemy.Cards.PiperOfAzathoth
@@ -2905,6 +2918,8 @@ library
       Arkham.Location.Cards.BurialPit
       Arkham.Location.Cards.BurnedRuins_204
       Arkham.Location.Cards.BurnedRuins_205
+      Arkham.Location.Cards.CafeLunaBastionOfRemembrance
+      Arkham.Location.Cards.CafeLunaCoterieHaunt
       Arkham.Location.Cards.CanalSaintMartin
       Arkham.Location.Cards.CanalSide
       Arkham.Location.Cards.CanalsOfTenochtitlan_180
@@ -3034,6 +3049,7 @@ library
       Arkham.Location.Cards.EasttownArkhamPoliceStation
       Arkham.Location.Cards.EerieGlade
       Arkham.Location.Cards.ElderChamber
+      Arkham.Location.Cards.ElMalecon
       Arkham.Location.Cards.EmergencyRoom
       Arkham.Location.Cards.EmptySpace
       Arkham.Location.Cards.EnchantedWoodsFungalForest
@@ -3131,6 +3147,7 @@ library
       Arkham.Location.Cards.GrandEntryway
       Arkham.Location.Cards.GrandGuignol
       Arkham.Location.Cards.GrandRue
+      Arkham.Location.Cards.GranTeatroDeLaHabana
       Arkham.Location.Cards.Graveyard
       Arkham.Location.Cards.GreatHallOfCeleano
       Arkham.Location.Cards.GreatLibrary
@@ -3209,6 +3226,7 @@ library
       Arkham.Location.Cards.InterviewRoomIchorFilledChamber
       Arkham.Location.Cards.InterviewRoomRestrainingChamber
       Arkham.Location.Cards.IstanbulUniversity
+      Arkham.Location.Cards.JardinesDeLaTropical
       Arkham.Location.Cards.JemaaElFnaaSquare
       Arkham.Location.Cards.JemaaElFnaaSquareAbandoned
       Arkham.Location.Cards.JoeMazurewiczsRoom
@@ -3270,6 +3288,7 @@ library
       Arkham.Location.Cards.MerchantDistrict_301
       Arkham.Location.Cards.MessHall
       Arkham.Location.Cards.MetropolitanCathedral
+      Arkham.Location.Cards.MiramarYachtClub
       Arkham.Location.Cards.MiskatonicQuad
       Arkham.Location.Cards.MiskatonicRiver
       Arkham.Location.Cards.MiskatonicUniversity
@@ -3356,6 +3375,7 @@ library
       Arkham.Location.Cards.PlainOfTheGhouls
       Arkham.Location.Cards.PlateauOfLeng
       Arkham.Location.Cards.PlateauOfLengWhereTheGodsDwell
+      Arkham.Location.Cards.PlazaHotel
       Arkham.Location.Cards.Pnakotus
       Arkham.Location.Cards.PorteDeLAvancee
       Arkham.Location.Cards.PrecariousIceSheet
@@ -3775,6 +3795,7 @@ library
       Arkham.Scenario.Scenarios.CityOfTheElderThings
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
+      Arkham.Scenario.Scenarios.DancingMad
       Arkham.Scenario.Scenarios.DarkSideOfTheMoon
       Arkham.Scenario.Scenarios.DeadHeat
       Arkham.Scenario.Scenarios.DealingsInTheDark
@@ -3890,6 +3911,7 @@ library
       Arkham.Scenarios.CurseOfTheRougarou.FlavorText
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
+      Arkham.Scenarios.DancingMad.Helpers
       Arkham.Scenarios.DarkSideOfTheMoon.Helpers
       Arkham.Scenarios.DeadHeat.Helpers
       Arkham.Scenarios.DealingsInTheDark.Helpers
@@ -4298,6 +4320,7 @@ library
       Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BloodOnYourHands
       Arkham.Treachery.Cards.BloodthirstySpirits
+      Arkham.Treachery.Cards.BodySnatched
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BoundInRed
       Arkham.Treachery.Cards.BrazierEnchantment
@@ -4524,9 +4547,11 @@ library
       Arkham.Treachery.Cards.MaskedHorrors
       Arkham.Treachery.Cards.MaskOfUmordhoth
       Arkham.Treachery.Cards.MassHysteria
+      Arkham.Treachery.Cards.MatterInversion
       Arkham.Treachery.Cards.MeddlesomeFamiliar
       Arkham.Treachery.Cards.Melancholy
       Arkham.Treachery.Cards.MemoryOfOblivion
+      Arkham.Treachery.Cards.MemoryVariant
       Arkham.Treachery.Cards.MergingTimelines
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MiasmaticTorment
@@ -4622,6 +4647,7 @@ library
       Arkham.Treachery.Cards.SecretDoorTheMidwinterGala
       Arkham.Treachery.Cards.SecretGathering
       Arkham.Treachery.Cards.SecretsInTheAttic
+      Arkham.Treachery.Cards.SecretsLost
       Arkham.Treachery.Cards.SecretsOfTheBeyond
       Arkham.Treachery.Cards.SeeingShadows
       Arkham.Treachery.Cards.SelfCentered

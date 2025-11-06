@@ -8,7 +8,6 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.Card
-import Arkham.SideStory
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead, getLeadPlayer)
@@ -17,6 +16,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Question
+import Arkham.SideStory
 import Arkham.Source
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
@@ -71,6 +71,7 @@ travel attrs locId doTravel n = do
       Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       Constantinople -> campaignStep_ DealingsInTheDark
+      Havana -> campaignStep_ DancingMad
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'
@@ -90,6 +91,8 @@ instance IsCampaign TheScarletKeys where
     InterludeStep 1 _ -> continue (embark a)
     DeadHeat -> continue (embark a)
     SanguineShadows -> continue (embark a)
+    DealingsInTheDark -> continue (embark a)
+    DancingMad -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

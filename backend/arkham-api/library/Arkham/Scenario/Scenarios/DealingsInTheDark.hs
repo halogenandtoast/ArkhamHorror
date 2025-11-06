@@ -165,7 +165,7 @@ instance RunMessage DealingsInTheDark where
     ResolveChaosToken token Cultist iid -> do
       enemies <- select $ NearestEnemyToFallback iid #cultist
       chooseOrRunOneM iid do
-        skip_
+        unscoped skip_
         targets enemies \cultist -> do
           placeDoom attrs cultist 1
           withSkillTest \sid ->
@@ -174,14 +174,14 @@ instance RunMessage DealingsInTheDark where
 
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
-      cultists <- select $ NearestEnemyTo iid #cultist
+      cultists <- select $ NearestEnemyToFallback iid #cultist
       chooseTargetM iid cultists $ placeDoomOn attrs 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Tablet -> placeCluesOnLocation iid Tablet 1
         ElderThing | isEasyStandard attrs -> do
-          cultists <- select $ NearestEnemyTo iid #cultist
+          cultists <- select $ NearestEnemyToFallback iid #cultist
           chooseTargetM iid cultists $ placeDoomOn attrs 1
         _ -> pure ()
       pure s

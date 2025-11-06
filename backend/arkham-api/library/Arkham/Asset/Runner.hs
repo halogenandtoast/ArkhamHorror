@@ -647,49 +647,59 @@ instance RunMessage AssetAttrs where
     InvestigatorDrewEncounterCardFrom _ card _ -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     PlaceAsset aid placement | aid == assetId -> do
-      let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
-      modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
-      let currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
-      startingUses <- toModifiedStartingUses a assetPrintedUses
-      let uses = if currentUses == mempty && entersPlay then startingUses else mempty
+      case a.placement of
+        StillInDiscard _ -> do
+          aid' <- getRandom
+          pushAll [ObtainCard (toCardId a), CreateAssetAt aid' (toCard a) placement]
+          pure a
+        StillInHand _ -> do
+          aid' <- getRandom
+          pushAll [ObtainCard (toCardId a), CreateAssetAt aid' (toCard a) placement]
+          pure a
+        _ -> do
+          let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
+          modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
+          let currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
+          startingUses <- toModifiedStartingUses a assetPrintedUses
+          let uses = if currentUses == mempty && entersPlay then startingUses else mempty
 
-      -- If the card wasn't in play, but moves into a play area we need to
-      -- update the controller
-      --
-      -- See: The Beyond: Bleak Netherworld
-      let
-        mController = case placement of
-          InPlayArea iid -> Just iid
-          InThreatArea iid -> Just iid
-          AttachedToAsset _ (Just (InPlayArea iid)) -> Just iid
-          _ -> Nothing
-        controllerF = case mController of
-          Just iid | entersPlay -> controllerL ?~ iid
-          Nothing | assetIsStory a -> controllerL .~ Nothing
-          _ -> id
-      -- we should update control here if need be
-      for_ placement.attachedTo $ pushM . checkAfter . Window.AttachCard a.controller (toCard a)
-      checkEntersThreatArea a placement
+          -- If the card wasn't in play, but moves into a play area we need to
+          -- update the controller
+          --
+          -- See: The Beyond: Bleak Netherworld
+          let
+            mController = case placement of
+              InPlayArea iid -> Just iid
+              InThreatArea iid -> Just iid
+              AttachedToAsset _ (Just (InPlayArea iid)) -> Just iid
+              _ -> Nothing
+            controllerF = case mController of
+              Just iid | entersPlay -> controllerL ?~ iid
+              Nothing | assetIsStory a -> controllerL .~ Nothing
+              _ -> id
+          -- we should update control here if need be
+          for_ placement.attachedTo $ pushM . checkAfter . Window.AttachCard a.controller (toCard a)
+          checkEntersThreatArea a placement
 
-      when entersPlay do
-        whenEnterMsg <- checkWindows [mkWhen (Window.EnterPlay $ toTarget a)]
-        afterEnterMsg <- checkWindows [mkAfter (Window.EnterPlay $ toTarget a)]
-        let startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
+          when entersPlay do
+            whenEnterMsg <- checkWindows [mkWhen (Window.EnterPlay $ toTarget a)]
+            afterEnterMsg <- checkWindows [mkAfter (Window.EnterPlay $ toTarget a)]
+            let startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
 
-        let
-          mEnterPlayMsg = case placement of
-            InPlayArea iid -> Just $ CardEnteredPlay iid (toCard a)
-            InThreatArea iid -> Just $ CardEnteredPlay iid (toCard a)
-            AttachedToAsset _ (Just (InPlayArea iid)) -> Just $ CardEnteredPlay iid (toCard a)
-            _ -> Nothing
+            let
+              mEnterPlayMsg = case placement of
+                InPlayArea iid -> Just $ CardEnteredPlay iid (toCard a)
+                InThreatArea iid -> Just $ CardEnteredPlay iid (toCard a)
+                AttachedToAsset _ (Just (InPlayArea iid)) -> Just $ CardEnteredPlay iid (toCard a)
+                _ -> Nothing
 
-        pushAll
-          $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
-          <> [whenEnterMsg]
-          <> maybeToList mEnterPlayMsg
-          <> [PlaceDoom GameSource (toTarget a) startingDoom | startingDoom > 0]
-          <> [afterEnterMsg]
-      pure $ a & placementL .~ placement & controllerF & (tokensL %~ Map.unionWith (+) uses . coerce)
+            pushAll
+              $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
+              <> [whenEnterMsg]
+              <> maybeToList mEnterPlayMsg
+              <> [PlaceDoom GameSource (toTarget a) startingDoom | startingDoom > 0]
+              <> [afterEnterMsg]
+          pure $ a & placementL .~ placement & controllerF & (tokensL %~ Map.unionWith (+) uses . coerce)
     Blanked msg' -> runMessage msg' a
     RemoveAllAttachments source target -> do
       case placementToAttached a.placement of

@@ -16,13 +16,12 @@ pitchfork = asset Pitchfork Cards.pitchfork
 
 instance HasAbilities Pitchfork where
   getAbilities (Pitchfork a) =
-    restrictedAbility a 1 ControlsThis fightAction_
+    controlled_ a 1 fightAction_
       : case a.placement of
         AttachedToLocation lid ->
           [ withTooltip "Take control of Pitchfork" $ restrictedAbility (proxied lid a) 2 Here actionAbility
           ]
         _ -> []
-   where
 
 instance RunMessage Pitchfork where
   runMessage msg a@(Pitchfork attrs) = runQueueT $ case msg of

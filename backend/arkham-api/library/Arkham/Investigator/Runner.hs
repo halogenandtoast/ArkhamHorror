@@ -1850,14 +1850,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               DamageDirect -> pure [damageInvestigator iid True]
               DamageFromHastur -> go DamageAny
               DamageAny -> do
-                mustBeAssignedDamage <- flip filterM healthDamageableAssets \aid -> do
-                  mods <- getModifiers aid
-                  let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
-                  pure $ n > 0 && health <= n && count (== toTarget aid) damageTargets < n
+                healthDamageableAssets' <-
+                  mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd healthDamageableAssets (field AssetRemainingHealth)
+                mustBeAssignedDamage <-
+                  healthDamageableAssets' & filterM \(aid, _) -> do
+                    mods <- getModifiers aid
+                    let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
+                    pure $ n > 0 && health <= n && count (== toTarget aid) damageTargets < n
 
-                mustBeAssignedDamageFirstBeforeInvestigator <- flip filterM healthDamageableAssets \aid -> do
-                  mods <- getModifiers aid
-                  pure $ NonDirectDamageMustBeAssignToThisFirst `elem` mods
+                mustBeAssignedDamageFirstBeforeInvestigator <-
+                  healthDamageableAssets' & filterM \(aid, _) -> do
+                    mods <- getModifiers aid
+                    pure $ NonDirectDamageMustBeAssignToThisFirst `elem` mods
 
                 let
                   targetCount =
@@ -1874,8 +1878,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                     | null mustBeAssignedDamage && null mustBeAssignedDamageFirstBeforeInvestigator
                     ]
                   <> map
-                    (`damageAsset` applyAll)
-                    (if null mustBeAssignedDamage then healthDamageableAssets else mustBeAssignedDamage)
+                    (\(x, n) -> damageAsset x (n >= health && applyAll))
+                    (if null mustBeAssignedDamage then healthDamageableAssets' else mustBeAssignedDamage)
                   <> map
                     (`damageInvestigator` applyAll)
                     (guard (null mustBeAssignedDamage) *> healthDamageableInvestigators)

@@ -3953,6 +3953,7 @@ library
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Script
       Arkham.Search
+      Arkham.SideStory
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied

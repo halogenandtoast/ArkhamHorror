@@ -33,7 +33,7 @@ instance RunMessage Pitchfork where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withLocationOf iid \lid -> do
         push $ PlaceAsset attrs.id $ AttachedToLocation lid
-        push $ LoseControlOfAsset attrs.id
+        afterSkillTestQuiet $ push $ LoseControlOfAsset attrs.id
       pure a
     UseThisAbility iid (isProxySource attrs -> True) 2 -> do
       push $ TakeControlOfAsset iid attrs.id

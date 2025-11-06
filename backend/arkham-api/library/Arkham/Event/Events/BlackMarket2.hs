@@ -12,9 +12,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_, modified_)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified
 import Arkham.Projection
-import Arkham.Window qualified as Window
 
 newtype BlackMarket2 = BlackMarket2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -103,16 +101,6 @@ instance RunMessage BlackMarket2Effect where
         else do
           card' <- setOwner iid card
           push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
-      pure e
-    InitiatePlayCard iid card mtarget payment windows' asAction | attrs.target == CardIdTarget card.id -> do
-      costModifier attrs iid (AsIfInHandForPlay card.id)
-      if cdSkipPlayWindows (toCardDef card)
-        then push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
-        else do
-          checkWindows [Window.mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
-          push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
-          checkWindows [Window.mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
-          push $ ResolvedPlayCard iid card
       pure e
     CardEnteredPlay _ card | attrs.target == CardIdTarget card.id -> do
       disableReturn e

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.Card
 import Arkham.Helpers.Modifiers hiding (costModifier)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -19,7 +20,8 @@ woodenSledge = asset WoodenSledge Cards.woodenSledge
 
 instance HasModifiersFor WoodenSledge where
   getModifiersFor (WoodenSledge a) =
-    modifySelectWhen a a.controlled (InvestigatorAt a.location) $ map AsIfInHand a.cardsUnderneath
+    modifySelectWhen a a.controlled (InvestigatorAt a.location)
+      $ map (AsIfInHandForPlay . toCardId) a.cardsUnderneath
 
 instance HasAbilities WoodenSledge where
   getAbilities (WoodenSledge a) =
@@ -46,9 +48,4 @@ instance RunMessage WoodenSledge where
         chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
           targets cards (placeUnderneath attrs . only)
       pure a
-    InitiatePlayCard iid card _ _ _ _ | card `elem` attrs.cardsUnderneath -> do
-      let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
-      costModifier attrs iid (AsIfInHandForPlay card.id)
-      push msg
-      pure $ WoodenSledge $ attrs & cardsUnderneathL .~ remaining
     _ -> WoodenSledge <$> liftRunMessage msg attrs

@@ -91,7 +91,7 @@ instance RunMessage LukeRobinson where
             asIfActions =
               [ targetLabel
                   (toCardId c)
-                  [InitiatePlayCard (toId attrs) c Nothing NoPayment (defaultWindows iid) usesAction]
+                  [InitiatePlayCardWithWindows (toId attrs) c Nothing NoPayment (defaultWindows iid) usesAction]
               | c <- concatMap snd lukePlayable
               ]
           LukeRobinson
@@ -120,10 +120,7 @@ instance RunMessage LukeRobinson where
 
       let
         playCard :: ReverseQueue m => QueueT Message m ()
-        playCard = unless shouldSkip do
-          checkWhen $ Window.PlayCard iid $ Window.CardPlay card asAction
-          push $ PlayCard iid card mtarget payment windows' asAction
-          checkAfter $ Window.PlayCard iid $ Window.CardPlay card asAction
+        playCard = unless shouldSkip $ push $ PlayCard iid card mtarget payment windows' asAction
 
       lukePlayable <- getLukePlayable attrs windows'
 

@@ -792,6 +792,7 @@ data Message
       Bool
   | InitiatePlayCardAs InvestigatorId Card Card [Message] ChosenCardStrategy Payment [Window] Bool
   | InitiatePlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
+  | InitiatePlayCardWithWindows InvestigatorId Card (Maybe Target) Payment [Window] Bool
   | -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | CheckAllAdditionalCommitCosts

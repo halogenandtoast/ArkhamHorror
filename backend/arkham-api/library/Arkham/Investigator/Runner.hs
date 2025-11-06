@@ -1576,13 +1576,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       checkAssets = nub $ keys horrorMap <> keys damageMap
     whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
     whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
+    let assignedHorror = count (== toTarget a) horrorTargets
     when
-      ( damageStrategy
-          == DamageFromHastur
-          && toTarget a
-          `elem` horrorTargets
-          && investigatorSanityDamage a
-          > investigatorSanity
+      ( (damageStrategy == DamageFromHastur)
+          && (toTarget a `elem` horrorTargets)
+          && (investigatorSanityDamage a + assignedHorror > investigatorSanity)
       )
       do
         push $ InvestigatorDirectDamage iid source 1 0

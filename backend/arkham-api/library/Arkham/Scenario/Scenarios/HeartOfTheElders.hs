@@ -370,7 +370,9 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           then resolutionWithChooseOne "noResolution" $ scope "noResolution" do
             labeled' "replay" $ do_ msg
             labeled' "resolution2" $ push R2
-          else resolution "noResolution"
+          else do
+            resolution "noResolution"
+            do_ msg
       Resolution 2 -> do
         resolution "resolution2"
         mouthOfKnYanTheCavernsMaw <- selectJust $ locationIs Locations.mouthOfKnYanTheCavernsMaw

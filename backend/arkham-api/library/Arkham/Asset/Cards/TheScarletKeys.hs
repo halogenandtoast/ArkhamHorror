@@ -667,6 +667,17 @@ eceSahinTheVermillionVeiledLady =
       , cdCardType = EncounterAssetType
       }
 
+desiderioDelgadoAlvarez :: CardDef
+desiderioDelgadoAlvarez =
+  (storyAsset "09607b" ("Desiderio Delgado Álvarez" <:> "In Your Debt, Despite it All") 0 DancingMad)
+      { cdCardTraits = setFromList [Ally, Conspirator]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdCardType = EncounterAssetType
+      , cdDoubleSided = True
+      , cdOtherSide = Just "09607"
+      }
+
 expeditedTicket :: CardDef
 expeditedTicket =
   permanent

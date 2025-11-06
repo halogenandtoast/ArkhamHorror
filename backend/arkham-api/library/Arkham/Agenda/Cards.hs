@@ -23,7 +23,8 @@ allAgendaCards =
   mapFromList
     $ map
       (toCardCode &&& id)
-      [ aCreatureOfTheBayou
+      [ aBetrayalOfEyes
+      , aCreatureOfTheBayou
       , agentsOfTheDark
       , agentsOfTheOuterGods
       , aHarshWindBlows
@@ -58,6 +59,7 @@ allAgendaCards =
       , decrepitDecay
       , doomFromBelow
       , drawnIn
+      , easyPrey
       , empireOfTheDead
       , empireOfTheUndead
       , emptyStreets
@@ -133,6 +135,7 @@ allAgendaCards =
       , settingSun
       , shadowsDeepen
       , showbusinessAsUsual
+      , silenceSpeaks
       , silentStirring
       , snappedThreads
       , somethingStirs
@@ -795,6 +798,15 @@ agentsOfTheDark = agenda "09567" "Agents of the Dark" 1 DealingsInTheDark
 
 theChase :: CardDef
 theChase = agenda "09570" "The Chase" 2 DealingsInTheDark
+
+silenceSpeaks :: CardDef
+silenceSpeaks = agenda "09592" "Silence Speaks" 1 DancingMad
+
+easyPrey :: CardDef
+easyPrey = agenda "09593" "Easy Prey" 2 DancingMad
+
+aBetrayalOfEyes :: CardDef
+aBetrayalOfEyes = agenda "09594" "A Betrayal of Eyes" 3 DancingMad
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

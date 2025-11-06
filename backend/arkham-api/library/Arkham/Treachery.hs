@@ -581,6 +581,8 @@ allTreacheries =
       SomeTreacheryCard shadowedDealingsInTheDark
     , SomeTreacheryCard accosted
     , SomeTreacheryCard lightOutOfVoid
+    , --- Dancing Mad [tsk]
+      SomeTreacheryCard bodySnatched
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]
@@ -599,6 +601,11 @@ allTreacheries =
     , SomeTreacheryCard keyCharge
     , --- Outsiders [tsk]
       SomeTreacheryCard substanceDissimulation
+    , --- Secret War [tsk]
+      SomeTreacheryCard memoryVariant
+    , SomeTreacheryCard secretsLost
+    , --- Agents of the Outside [tsk]
+      SomeTreacheryCard matterInversion
     , --- Agents of Yuggoth [tsk]
       SomeTreacheryCard tenebrousEclipse
     , --- Spreading Corruption [tsk]

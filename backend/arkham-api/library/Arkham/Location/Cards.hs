@@ -202,6 +202,8 @@ allLocationCards =
       , burialPit
       , burnedRuins_204
       , burnedRuins_205
+      , cafeLunaBastionOfRemembrance
+      , cafeLunaCoterieHaunt
       , canalSaintMartin
       , canalSide
       , canalsOfTenochtitlan_180
@@ -330,6 +332,7 @@ allLocationCards =
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
+      , elMalecon
       , elderChamber
       , emergencyRoom
       , enchantedWoodsFungalForest
@@ -415,6 +418,7 @@ allLocationCards =
       , glacialGrotto
       , gondola
       , gothicSet
+      , granTeatroDeLaHabana
       , grandBazaarBusyWalkway
       , grandBazaarCrowdedShops
       , grandBazaarDarkenedAlley
@@ -505,6 +509,7 @@ allLocationCards =
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
       , istanbulUniversity
+      , jardinesDeLaTropical
       , jemaaElFnaaSquare
       , jemaaElFnaaSquareAbandoned
       , joeMazurewiczsRoom
@@ -566,6 +571,7 @@ allLocationCards =
       , merchantDistrict_301
       , messHall
       , metropolitanCathedral
+      , miramarYachtClub
       , miskatonicQuad
       , miskatonicRiver
       , miskatonicUniversity
@@ -652,6 +658,7 @@ allLocationCards =
       , plainOfTheGhouls
       , plateauOfLeng
       , plateauOfLengWhereTheGodsDwell
+      , plazaHotel
       , pnakotus
       , porteDeLAvancee
       , precariousIceSheet
@@ -8566,6 +8573,82 @@ grandBazaarJewelersRoad =
     ("Grand Bazaar" <:> "Jewelers' Road")
     [Istanbul, Bazaar]
     DealingsInTheDark
+
+cafeLunaCoterieHaunt :: CardDef
+cafeLunaCoterieHaunt =
+  otherSideIs "09600b"
+    $ location
+      "09600a"
+      ("Café Luna" <:> "Coterie Haunt")
+      [Havana]
+      Spade
+      [Squiggle, T]
+      DancingMad
+
+cafeLunaBastionOfRemembrance :: CardDef
+cafeLunaBastionOfRemembrance =
+  otherSideIs "09600a"
+    $ location
+      "09600b"
+      ("Café Luna" <:> "Bastion of Remembrance")
+      [Havana]
+      Spade
+      [Squiggle, T]
+      DancingMad
+
+elMalecon :: CardDef
+elMalecon =
+  victory 1
+    $ location
+      "09601"
+      "El Malecón"
+      [Havana]
+      T
+      [Spade, Squiggle, Equals]
+      DancingMad
+
+jardinesDeLaTropical :: CardDef
+jardinesDeLaTropical =
+  victory 1
+    $ location
+      "09602"
+      "Jardines de la Tropical"
+      [Havana]
+      Squiggle
+      [Spade, T, Square]
+      DancingMad
+
+granTeatroDeLaHabana :: CardDef
+granTeatroDeLaHabana =
+  victory 1
+    $ location
+      "09603"
+      "Gran Teatro de la Habana"
+      [Havana]
+      Square
+      [Hourglass, Equals, Squiggle]
+      DancingMad
+
+miramarYachtClub :: CardDef
+miramarYachtClub =
+    location
+      "09604"
+      "Miramar Yacht Club"
+      [Havana]
+      Equals
+      [Hourglass, Square, T]
+      DancingMad
+
+plazaHotel :: CardDef
+plazaHotel =
+  victory 1
+    $ location
+      "09605"
+      "Plaza Hotel"
+      [Havana]
+      Hourglass
+      [Equals, Square]
+      DancingMad
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

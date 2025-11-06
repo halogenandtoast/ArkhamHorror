@@ -1,4 +1,19 @@
 {
+  "heading": "File #21–F: Dealings in the Dark",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of clues on a _Cultist_ enemy in play, to a maximum of 3. (If it is act 3, X is 3.)",
+      "cultist": "-5. You may place 1 doom on the nearest _Cultist_ enemy to change this token's modifier to -1.",
+      "tablet": "-3. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-2. If you fail, place 1 doom on the nearest _Cultist_ enemy."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of clues on _Cultist_ enemies in play, to a maximum of 4. (If it is act 3, X is 4.)",
+      "cultist": "-7. You may place 1 doom on the nearest _Cultist_ enemy to change this token's modifier to -3.",
+      "tablet": "-4. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-2. Place 1 doom on the nearest _Cultist_ enemy."
+    }
+  },
   "ui": {
     "entrance": "Entrance",
     "eastGate": "East Gate"

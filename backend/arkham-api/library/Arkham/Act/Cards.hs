@@ -82,6 +82,11 @@ allActCards =
       , exploringTheMoon
       , exploringTheRainforest
       , eyesInTheTower
+      , falseColorsV1
+      , falseColorsV2
+      , falseLight
+      , falseStepV1
+      , falseStepV2
       , fatedSouls
       , findAmaranth
       , findTheRelic
@@ -964,6 +969,21 @@ searchForTheManuscript = act "09568" "Search for the Manuscript" 1 DealingsInThe
 
 searchForTheTalisman :: CardDef
 searchForTheTalisman = act "09569" "Search for the Talisman" 2 DealingsInTheDark
+
+falseStepV1 :: CardDef
+falseStepV1 = act "09595" "False Step (v. I)" 1 DancingMad
+
+falseColorsV1 :: CardDef
+falseColorsV1 = act "09596" "False Colors (v. I)" 2 DancingMad
+
+falseStepV2 :: CardDef
+falseStepV2 = act "09597" "False Step (v. II)" 1 DancingMad
+
+falseColorsV2 :: CardDef
+falseColorsV2 = act "09598" "False Colors (v. II)" 2 DancingMad
+
+falseLight :: CardDef
+falseLight = act "09599" "False Light" 3 DancingMad
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

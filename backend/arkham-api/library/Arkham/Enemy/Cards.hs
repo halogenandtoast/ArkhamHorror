@@ -177,6 +177,8 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , declanPearce
+      , desiderioDelgadoAlvarez106
+      , desiderioDelgadoAlvarez107
       , dmitriKonstantinovTakingTheLongView
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
@@ -339,9 +341,11 @@ allEncounterEnemyCards =
       , oceirosMarsh
       , otheraGilmanProprietessOfTheHotel
       , otherworldlyMeddler
+      , otherworldlyMimic
       , packOfVooniths
       , padmaAmrita
       , paracausalEntity
+      , paradigmEfficer
       , pennyWhite
       , peterWarren
       , piperOfAzathoth
@@ -2914,6 +2918,26 @@ sinisterAspirantC =
     , cdVictoryPoints = Just 1
     }
 
+desiderioDelgadoAlvarez106 :: CardDef
+desiderioDelgadoAlvarez106 =
+  (enemy "09606" ("Desiderio Delgado Álvarez" <:> "The Man in the Blood-Soaked Suit") DancingMad 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1), Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+desiderioDelgadoAlvarez107 :: CardDef
+desiderioDelgadoAlvarez107 =
+  (enemy "09607" ("Desiderio Delgado Álvarez" <:> "The Man in the Blood-Soaked Suit") DancingMad 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1), Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09607b"
+    }
+
 coterieAgentA :: CardDef
 coterieAgentA =
   (enemy "09716a" "Coterie Agent (A)" CrimsonConspiracy 1)
@@ -2958,6 +2982,20 @@ apocalypticPresage =
   (enemy "09732" "Apocalyptic Presage" Outsiders 1)
     { cdCardTraits = setFromList [Monster, Outsider]
     , cdVictoryPoints = Just 1
+    }
+
+otherworldlyMimic :: CardDef
+otherworldlyMimic =
+  (enemy "09734" "Otherworldly Mimic" SecretWar 2)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdKeywords = setFromList [ Keyword.Aloof, Keyword.Hunter]
+    }
+
+paradigmEfficer :: CardDef
+paradigmEfficer =
+  (enemy "09737" "Paradigm Efficer" AgentsOfTheOutside 2)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdKeywords = setFromList [ Keyword.Aloof, Keyword.Hunter]
     }
 
 emissaryFromYuggoth :: CardDef

@@ -121,6 +121,7 @@ data Trait
   | Gug
   | Hall
   | Hardship
+  | Havana
   | Hazard
   | Hex
   | Hideout

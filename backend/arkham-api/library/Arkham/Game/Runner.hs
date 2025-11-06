@@ -1216,7 +1216,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     let
       handleCard card = case card of
         PlayerCard pc -> case pc.owner of
-          Just iid -> pushAll [ObtainCard card.id, AddToDiscard iid pc]
+          Just iid | pc.cardCode /= "90053" -> pushAll [ObtainCard card.id, AddToDiscard iid pc]
+          Just _ -> pure ()
           Nothing -> push $ ObtainCard card.id
         EncounterCard ec -> push $ AddToEncounterDiscard ec
         VengeanceCard vc -> handleCard vc

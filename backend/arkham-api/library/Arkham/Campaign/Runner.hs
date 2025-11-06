@@ -8,6 +8,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.CampaignLog
+import Arkham.SideStory
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -80,15 +81,7 @@ defaultCampaignRunner msg a = case msg of
     push $ Ask lead ContinueCampaign
     pure a
   CampaignStep (StandaloneScenarioStep sid _) -> do
-    let
-      xp = case sid of
-        "81001" -> 1
-        "82001" -> 3
-        "84001" -> 3
-        "71001" -> 2
-        "72001" -> 3
-        _ -> error $ "Unknown standalone scenario for spending xp: " <> show sid
-
+    let xp = getSideStoryCost sid
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
     select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
     pure a

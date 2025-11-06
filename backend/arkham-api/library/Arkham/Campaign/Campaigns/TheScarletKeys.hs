@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.Card
+import Arkham.SideStory
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead, getLeadPlayer)
@@ -273,4 +274,8 @@ instance RunMessage TheScarletKeys where
         $ TheScarletKeys
         $ attrs
         & overMeta ((canResetL .~ []) . (unlockedLocationsL %~ (meta.canReset <>)))
+    CampaignStep (StandaloneScenarioStep sid _) -> do
+      markTime $ getSideStoryCost sid
+      pushAll [ResetInvestigators, ResetGame, StartScenario sid]
+      pure c
     _ -> lift $ defaultCampaignRunner msg c

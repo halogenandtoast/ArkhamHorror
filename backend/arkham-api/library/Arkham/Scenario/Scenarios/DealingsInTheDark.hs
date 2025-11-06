@@ -11,16 +11,19 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Story
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -46,10 +49,17 @@ dealingsInTheDark difficulty =
 
 instance HasChaosTokenValue DealingsInTheDark where
   getChaosTokenValue iid tokenFace (DealingsInTheDark attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- getCurrentActStep
+      let maxValue = if isEasyStandard attrs then 3 else 4
+      x <-
+        if n == 3
+          then pure maxValue
+          else min maxValue <$> fieldMax EnemyClues (enemy_ #cultist)
+      pure $ ChaosTokenValue ElderThing (NegativeModifier x)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 5 7
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DealingsInTheDark where
@@ -151,6 +161,29 @@ instance RunMessage DealingsInTheDark where
       shuffleEncounterDiscardBackIn
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       drawCard iid ec
+      pure s
+    ResolveChaosToken token Cultist iid -> do
+      enemies <- select $ NearestEnemyToFallback iid #cultist
+      chooseOrRunOneM iid do
+        skip_
+        targets enemies \cultist -> do
+          placeDoom attrs cultist 1
+          withSkillTest \sid ->
+            skillTestModifier sid Cultist token
+              $ ChangeChaosTokenModifier (NegativeModifier $ if isEasyStandard attrs then 1 else 3)
+
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      cultists <- select $ NearestEnemyTo iid #cultist
+      chooseTargetM iid cultists $ placeDoomOn attrs 1
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Tablet -> placeCluesOnLocation iid Tablet 1
+        ElderThing | isEasyStandard attrs -> do
+          cultists <- select $ NearestEnemyTo iid #cultist
+          chooseTargetM iid cultists $ placeDoomOn attrs 1
+        _ -> pure ()
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

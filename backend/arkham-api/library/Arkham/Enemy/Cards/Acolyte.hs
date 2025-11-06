@@ -14,7 +14,7 @@ acolyte = enemyWith Acolyte Cards.acolyte (3, Static 1, 2) (1, 0) (spawnAtL ?~ S
 
 instance HasAbilities Acolyte where
   getAbilities (Acolyte a) =
-    extend1 a $ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
+    extend1 a $ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemyEntersPlay #after (be a)
 
 instance RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = runQueueT $ case msg of

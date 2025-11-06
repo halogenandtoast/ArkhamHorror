@@ -354,7 +354,9 @@ defaultCampaignRunner msg a = case msg of
       . (storyCardsL %~ Map.map (filter ((/= cardId) . toCardId)))
   NextCampaignStep mOverrideStep -> do
     let mstep = mOverrideStep <|> nextStep a
-    push $ maybe GameOver CampaignStep mstep
+    case mstep of
+      Nothing -> push GameOver
+      Just step -> pushAll [HandleKilledOrInsaneInvestigators, CampaignStep step]
     pure
       $ updateAttrs a
       $ \attrs ->

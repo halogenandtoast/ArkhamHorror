@@ -3434,8 +3434,8 @@ enemyMatcherFilter es matcher' = do
       mods <- getModifiers (toId enemy)
       let
         filteredKeywords = flip filter keywords \case
-          Keyword.Aloof -> IgnoreAloof `notElem` mods
-          Keyword.Retaliate -> IgnoreRetaliate `notElem` mods
+          Keyword.Aloof -> IgnoreAloof `notElem` mods && RemoveKeyword Keyword.Aloof `notElem` mods
+          Keyword.Retaliate -> IgnoreRetaliate `notElem` mods && RemoveKeyword Keyword.Retaliate `notElem` mods
           _ -> True
       pure $ k `elem` filteredKeywords
     PatrolEnemy ->

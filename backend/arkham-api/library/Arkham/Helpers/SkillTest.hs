@@ -9,9 +9,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Types qualified as Field
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosToken.Types
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.Query qualified as Query
@@ -22,6 +23,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
@@ -33,7 +35,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (IgnoreChaosToken)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message (Message (..), pattern BeginSkillTest)
 import Arkham.Modifier
@@ -383,6 +385,49 @@ getSkillTestDifficulty = do
   case mSkillTest of
     Nothing -> pure Nothing
     Just st -> Just <$> getModifiedSkillTestDifficulty st
+
+getTotalModifiedSkillValue :: (HasGame m, Tracing m) => m Int
+getTotalModifiedSkillValue = do
+  s <- getJustSkillTest
+  results <- calculateSkillTestResultsData s
+  chaosTokenValues <- totalChaosTokenValues s
+
+  pure
+    $ max
+      0
+      (skillTestResultsSkillValue results + chaosTokenValues + skillTestResultsIconValue results)
+
+totalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
+totalChaosTokenValues s = do
+  x <- sum <$> for (skillTestSetAsideChaosTokens s) (getModifiedChaosTokenValue s)
+  y <- getAdditionalChaosTokenValues s
+  pure $ x + y
+
+calculateSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData s = do
+  modifiers' <- getModifiers (SkillTestTarget s.id)
+  modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+  let cancelSkills = CancelSkills `elem` modifiers'
+  iconCount <- if cancelSkills then pure 0 else skillIconCount s
+  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
+  currentSkillValue <- getCurrentSkillValue s
+  chaosTokenValues <- totalChaosTokenValues s
+  let
+    addResultModifier n (SkillTestResultValueModifier m) = n + m
+    addResultModifier n _ = n
+    resultValueModifiers = foldl' addResultModifier 0 modifiers'
+    modifiedSkillValue' =
+      max 0 (currentSkillValue + chaosTokenValues + iconCount - subtractIconCount)
+    op = if FailTies `elem` modifiers' then (>) else (>=)
+    isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
+  pure
+    $ SkillTestResultsData
+      currentSkillValue
+      ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
+      chaosTokenValues
+      modifiedSkillTestDifficulty
+      (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+      isSuccess
 
 getCurrentSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
 getCurrentSkillValue st = do
@@ -852,3 +897,55 @@ maybeModifyThisSkillTest a body = do
       source <- MaybeT getSkillTestSource
       guard $ isSource a source
       body
+
+-- per the FAQ the double negative modifier ceases to be active
+-- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
+getModifiedChaosTokenValue :: (HasGame m, Tracing m) => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue _ t | t.cancelled = pure 0
+getModifiedChaosTokenValue s t = do
+  tokenModifiers' <- getModifiers (ChaosTokenTarget t)
+  modifiedChaosTokenFaces' <- getModifiedChaosTokenFaces [t]
+  faceModifiers <- foldMapM (getModifiers . ChaosTokenFaceTarget) modifiedChaosTokenFaces'
+
+  getSum
+    <$> foldMapM
+      ( \chaosTokenFace -> do
+          baseChaosTokenValue <- getChaosTokenValue (skillTestInvestigator s) chaosTokenFace ()
+          updatedChaosTokenValue <-
+            chaosTokenValue (foldr applyModifier baseChaosTokenValue (tokenModifiers' <> faceModifiers))
+          pure . Sum $ fromMaybe 0 updatedChaosTokenValue
+      )
+      modifiedChaosTokenFaces'
+ where
+  applyModifier IgnoreChaosTokenEffects (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
+  applyModifier IgnoreChaosToken (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
+  applyModifier IgnoreChaosTokenModifier (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
+  applyModifier (ChangeChaosTokenModifier modifier') (ChaosTokenValue token _) =
+    ChaosTokenValue token modifier'
+  applyModifier NegativeToPositive (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (PositiveModifier n)
+  applyModifier NegativeToPositive (ChaosTokenValue token (DoubleNegativeModifier n)) =
+    ChaosTokenValue token (PositiveModifier n)
+  applyModifier DoubleNegativeModifiersOnChaosTokens (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (DoubleNegativeModifier n)
+  applyModifier DoubleModifiersOnChaosTokens (ChaosTokenValue token (CalculatedModifier inner)) = ChaosTokenValue token (DoubleModifier inner)
+  applyModifier (ChaosTokenValueModifier m) (ChaosTokenValue token (PositiveModifier n)) =
+    ChaosTokenValue token (PositiveModifier (max 0 (n + m)))
+  applyModifier (ChaosTokenValueModifier m) (ChaosTokenValue token (NegativeModifier n)) =
+    ChaosTokenValue token (NegativeModifier (max 0 (n - m)))
+  applyModifier _ currentChaosTokenValue = currentChaosTokenValue
+
+getAdditionalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
+getAdditionalChaosTokenValues s = do
+  mods <- getModifiers s
+  let vs = [v | AddChaosTokenValue v <- mods]
+  getSum <$> foldMapM (fmap (Sum . fromMaybe 0) . chaosTokenValue) vs
+
+subtractSkillIconCount :: HasGame m => SkillTest -> m Int
+subtractSkillIconCount SkillTest {..} =
+  count matches <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
+ where
+  matches WildMinusIcon = True
+  matches WildIcon = False
+  matches (SkillIcon _) = False
+

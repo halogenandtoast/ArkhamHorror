@@ -386,7 +386,7 @@ runWindow attrs windows actions playableCards = do
           push
             $ asWindowChoose windows
             $ chooseOne player
-            $ [ targetLabel c [InitiatePlayCard iid c Nothing NoPayment windows True]
+            $ [ targetLabel c [InitiatePlayCardWithWindows iid c Nothing NoPayment windows True]
               | c <- playableCards
               ]
             <> map (\(ability, windows') -> AbilityLabel iid ability windows' [] []) actionsWithMatchingWindows
@@ -2139,9 +2139,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pushAll
       $ chosenCardMsgs
       <> msgs
-      <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing payment windows' asAction]
+      <> [InitiatePlayCardWithWindows iid (PlayerCard choiceAsCard) Nothing payment windows' asAction]
     pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter (/= card)
   InitiatePlayCard iid card mtarget payment windows' asAction | iid == investigatorId -> do
+    -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
+    modifiers' <- getModifiers (toTarget a)
+    let
+      shouldSkip = flip any modifiers' $ \case
+        AsIfInHand card' -> card == card'
+        _ -> False
+    unless shouldSkip $ do
+      push $ PlayCard iid card mtarget payment windows' asAction
+    pure a
+  InitiatePlayCardWithWindows iid card mtarget payment windows' asAction | iid == investigatorId -> do
     -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
     modifiers' <- getModifiers (toTarget a)
     let
@@ -2155,7 +2165,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         else
           pushAll
             [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
-            , PlayCard iid card mtarget payment windows' asAction
+            , InitiatePlayCard iid card mtarget payment windows' asAction
             , afterPlayCard
             , ResolvedPlayCard iid card
             ]
@@ -4435,7 +4445,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
              , canDraw
              , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
              ]
-          <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment windows usesAction]
+          <> [ targetLabel (toCardId c) [InitiatePlayCardWithWindows iid c Nothing NoPayment windows usesAction]
              | c <- playableCards'
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
@@ -4457,7 +4467,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           additionalActions
             <> [ targetLabel
                    c
-                   [ InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction
+                   [ InitiatePlayCardWithWindows investigatorId c Nothing NoPayment windows usesAction
                    , PlayerWindow iid additionalActions isAdditional
                    ]
                | c <- playableCards

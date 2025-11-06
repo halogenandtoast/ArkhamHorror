@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (beyondTheGatesOfSleep) w
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Types (getRandomBasicWeakness)
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
@@ -19,7 +20,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -47,7 +47,6 @@ import Arkham.Trait (
   ),
  )
 import Data.Aeson (Result (..))
-import Data.List.NonEmpty qualified as NE
 
 newtype BeyondTheGatesOfSleep = BeyondTheGatesOfSleep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -243,12 +242,8 @@ instance RunMessage BeyondTheGatesOfSleep where
         [Acts.enteringTheDreamlands, Acts.theTrialOfNashtAndKamanThah, Acts.theFinalDescent, Acts.thePath]
     SearchFound iid (LabeledTarget "Drifter" ScenarioTarget) _ cards | notNull cards -> do
       playerCount <- getPlayerCount
-      let
-        weaknessFilter =
-          if playerCount < 2
-            then notElem MultiplayerOnly . cdDeckRestrictions
-            else const True
-      newWeakness <- genCard =<< sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses)
+      classSymbol <- field InvestigatorClass iid
+      newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount
       focusCards cards do
         chooseOneM iid do
           questionLabeled "Replace basic weakness with random and take 1 trauma of your choice?"
@@ -256,6 +251,8 @@ instance RunMessage BeyondTheGatesOfSleep where
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
+            obtainCard card
+            removeCardFromDeckForCampaign iid card
             shuffleCardsIntoDeck iid [newWeakness]
             chooseOneM iid do
               labeled "Take 1 Physical trauma" $ sufferPhysicalTrauma iid 1

@@ -128,7 +128,7 @@ instance HasField "step" Campaign CampaignStep where
   getField = (.step) . toAttrs
 
 instance HasField "normalizedStep" Campaign CampaignStep where
-  getField  = (.normalize) . (.step)
+  getField = (.normalize) . (.step)
 
 instance HasField "resolutions" Campaign (Map ScenarioId Resolution) where
   getField = (.resolutions) . toAttrs
@@ -198,9 +198,8 @@ instance Entity CampaignAttrs where
   toAttrs = id
   overAttrs f = f
 
-addRandomBasicWeaknessIfNeeded
-  :: CardGen m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
-addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
+getRandomBasicWeakness :: MonadRandom m => ClassSymbol -> Int -> m CardDef
+getRandomBasicWeakness investigatorClass playerCount = do
   let
     multiplayerFilter =
       if playerCount < 2
@@ -211,10 +210,15 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
       _ -> True
     classOnlyFilter = not . any notForClass . cdDeckRestrictions
     weaknessFilter = and . sequence [multiplayerFilter, classOnlyFilter]
+  sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses)
+
+addRandomBasicWeaknessIfNeeded
+  :: CardGen m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
+addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
   runWriterT do
     Deck <$> flip filterM (unDeck deck) \card -> do
       when (toCardDef card == randomWeakness) do
-        sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= lift . genCard >>= tell . pure
+        getRandomBasicWeakness investigatorClass playerCount >>= lift . genCard >>= tell . pure
       pure $ toCardDef card /= randomWeakness
 
 campaignWith

@@ -39,6 +39,7 @@ instance RunMessage DeVermisMysteriis2 where
 
       chooseOneM iid do
         targets cards \card -> do
+          cardResolutionModifier card attrs iid $ AsIfInHandForPlay card.id
           costModifier attrs card $ ReduceCostOf (CardWithId card.id) 1
           eventModifier attrs card RemoveFromGameInsteadOfDiscard
           playCardPayingCostWithWindows iid card windows''

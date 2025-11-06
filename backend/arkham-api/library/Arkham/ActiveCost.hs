@@ -1515,7 +1515,7 @@ instance RunMessage ActiveCost where
           afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
           pushAll
             $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]
-            <> [PlayCard iid card Nothing c.payments c.windows False | not c.cancelled]
+            <> [InitiatePlayCard iid card Nothing c.payments c.windows False | not c.cancelled]
             <> [ SealedChaosToken token (Just c.investigator) (toTarget card)
                | not c.cancelled
                , token <- c.sealedChaosTokens

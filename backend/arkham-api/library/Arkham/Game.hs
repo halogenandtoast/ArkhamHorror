@@ -4302,9 +4302,10 @@ instance Projection Investigator where
       InvestigatorLocation -> do
         mods <- getModifiers iid
         let
-          mAsIfAt = headMay $ flip mapMaybe mods $ \case
-            AsIfAt lid -> Just lid
-            _ -> Nothing
+          mAsIfAt =
+            headMay $ mods & mapMaybe \case
+              AsIfAt lid -> Just lid
+              _ -> Nothing
         case investigatorPlacement of
           AtLocation lid -> pure $ mAsIfAt <|> Just lid
           InVehicle aid -> (mAsIfAt <|>) . join <$> fieldMay AssetLocation aid

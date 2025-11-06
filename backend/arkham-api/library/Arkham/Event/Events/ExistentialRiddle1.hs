@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ExistentialRiddle1 (existentialRiddle1, ExistentialRiddle1 (..)) where
+module Arkham.Event.Events.ExistentialRiddle1 (existentialRiddle1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -18,9 +18,8 @@ existentialRiddle1 :: EventCard ExistentialRiddle1
 existentialRiddle1 = event ExistentialRiddle1 Cards.existentialRiddle1
 
 instance HasModifiersFor ExistentialRiddle1 where
-  getModifiersFor (ExistentialRiddle1 a) = case a.attachedTo of
-    Just target -> modified_ a target [AddKeyword Aloof]
-    _ -> pure mempty
+  getModifiersFor (ExistentialRiddle1 a) = for_ a.attachedTo \target ->
+    modified_ a target [AddKeyword Aloof]
 
 instance RunMessage ExistentialRiddle1 where
   runMessage msg e@(ExistentialRiddle1 attrs) = runQueueT $ case msg of

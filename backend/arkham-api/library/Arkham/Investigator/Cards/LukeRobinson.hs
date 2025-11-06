@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.ForMovement
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action (canDo, getActions)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
@@ -65,11 +66,12 @@ getLukePlayable
 getLukePlayable attrs windows' = do
   let iid = toId attrs
   connectingLocations <- select (ConnectedLocation NotForMovement)
-  forToSnd connectingLocations $ \lid -> do
+  forToSnd connectingLocations \lid -> do
     enemies <- select $ enemyAt lid
-    withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
-      filter (`cardMatch` CardWithType EventType)
-        <$> getPlayableCards attrs iid (UnpaidCost NeedsAction) windows'
+    withoutModifiersFrom iid do
+      withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) do
+        filter (`cardMatch` CardWithType EventType)
+          <$> getPlayableCards attrs iid (UnpaidCost NeedsAction) windows'
 
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = runQueueT $ case msg of

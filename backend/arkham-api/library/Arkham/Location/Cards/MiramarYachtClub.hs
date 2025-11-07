@@ -8,7 +8,7 @@ newtype MiramarYachtClub = MiramarYachtClub LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miramarYachtClub :: LocationCard MiramarYachtClub
-miramarYachtClub = symbolLabel $ location MiramarYachtClub Cards.miramarYachtClub 0 (Static 0)
+miramarYachtClub = symbolLabel $ location MiramarYachtClub Cards.miramarYachtClub 1 (PerPlayer 1)
 
 instance HasAbilities MiramarYachtClub where
   getAbilities (MiramarYachtClub attrs) =

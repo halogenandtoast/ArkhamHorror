@@ -8,7 +8,7 @@ newtype ElMalecon = ElMalecon LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elMalecon :: LocationCard ElMalecon
-elMalecon = symbolLabel $ location ElMalecon Cards.elMalecon 0 (Static 0)
+elMalecon = symbolLabel $ location ElMalecon Cards.elMalecon 5 (PerPlayer 1)
 
 instance HasAbilities ElMalecon where
   getAbilities (ElMalecon attrs) =

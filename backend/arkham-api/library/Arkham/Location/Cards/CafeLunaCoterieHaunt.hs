@@ -8,7 +8,7 @@ newtype CafeLunaCoterieHaunt = CafeLunaCoterieHaunt LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cafeLunaCoterieHaunt :: LocationCard CafeLunaCoterieHaunt
-cafeLunaCoterieHaunt = symbolLabel $ location CafeLunaCoterieHaunt Cards.cafeLunaCoterieHaunt 0 (Static 0)
+cafeLunaCoterieHaunt = symbolLabel $ location CafeLunaCoterieHaunt Cards.cafeLunaCoterieHaunt 3 (PerPlayer 2)
 
 instance HasAbilities CafeLunaCoterieHaunt where
   getAbilities (CafeLunaCoterieHaunt attrs) =

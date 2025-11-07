@@ -8,7 +8,7 @@ newtype JardinesDeLaTropical = JardinesDeLaTropical LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jardinesDeLaTropical :: LocationCard JardinesDeLaTropical
-jardinesDeLaTropical = symbolLabel $ location JardinesDeLaTropical Cards.jardinesDeLaTropical 0 (Static 0)
+jardinesDeLaTropical = symbolLabel $ location JardinesDeLaTropical Cards.jardinesDeLaTropical 3 (PerPlayer 1)
 
 instance HasAbilities JardinesDeLaTropical where
   getAbilities (JardinesDeLaTropical attrs) =

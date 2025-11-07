@@ -39,10 +39,13 @@ dancingMad difficulty =
 
 instance HasChaosTokenValue DancingMad where
   getChaosTokenValue iid tokenFace (DancingMad attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      let maxValue = if attrs.difficulty == Easy then 3 else 5
+      x <- min maxValue <$> selectCount (EnemyWithPlacement InTheShadows)
+      pure $ ChaosTokenValue Cultist (if x == 0 then ZeroModifier else NegativeModifier x)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 4 6
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 1)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DancingMad where

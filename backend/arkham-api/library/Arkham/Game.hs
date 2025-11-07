@@ -4707,6 +4707,10 @@ instance Query ExtendedCardMatcher where
         flip filterM cs \c -> do
           modifiers <- getModifiers (toCardId c)
           pure $ modifier `notElem` modifiers
+      CardWithModifier modifier -> do
+        flip filterM cs \c -> do
+          modifiers <- getModifiers (toCardId c)
+          pure $ modifier `elem` modifiers
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
         let

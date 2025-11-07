@@ -37,6 +37,7 @@ import Arkham.Trait
 import Control.Monad.State.Strict (StateT)
 import Control.Monad.Writer.Strict (WriterT)
 import Data.Aeson.TH
+import Data.IntMap.Strict qualified as IntMap
 import Data.Text qualified as T
 import GHC.Records
 
@@ -428,8 +429,18 @@ instance HasField "printedCost" Card Int where
 instance HasField "level" Card (Maybe Int) where
   getField = cdLevel . toCardDef
 
+instance HasField "experienceCost" Card Int where
+  getField c =
+    let def = toCardDef c
+        exceptionalF = if def.exceptional then (* 2) else id
+        customizationLevel = (sum (map fst (IntMap.elems c.customizations)) + 1) `div` 2
+     in exceptionalF $ fromMaybe customizationLevel def.level
+
 instance HasField "kind" Card CardType where
   getField = cdCardType . toCardDef
+
+instance HasField "unique" Card Bool where
+  getField = cdUnique . toCardDef
 
 instance HasField "owner" Card (Maybe InvestigatorId) where
   getField = toCardOwner

@@ -77,6 +77,7 @@ data ExtendedCardMatcher
   | CanCancelRevelationEffect InvestigatorMatcher ExtendedCardMatcher
   | CanCancelAllEffects InvestigatorMatcher ExtendedCardMatcher
   | CardWithoutModifier ModifierType
+  | CardWithModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
   | ChosenViaCustomization ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher

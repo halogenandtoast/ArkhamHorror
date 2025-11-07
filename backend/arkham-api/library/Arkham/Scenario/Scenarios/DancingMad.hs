@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -152,7 +153,7 @@ instance RunMessage DancingMad where
         Cultist -> withLocationOf iid $ makeDecoyAt iid
         Tablet -> whenJustM getSkillTest \st -> do
           for_ (Map.assocs st.committedCards) \(iid', cards) -> do
-            for_ cards $ hollow iid'
+            for_ cards \c -> when (cardMatch c NonWeakness) $ hollow iid' c
         _ -> pure ()
       pure s
     ResolveChaosToken token ElderThing iid -> do
@@ -168,4 +169,11 @@ instance RunMessage DancingMad where
                 skillTestModifier sid Cultist token
                   $ ChangeChaosTokenModifier (NegativeModifier tkn)
       pure s
+    ScenarioSpecific "removedHollow" value -> do
+      let card = toResult @Card value
+      case card.owner of
+        Nothing -> pure s
+        Just iid -> do
+          let hollowed = getMetaKeyDefault "removedHollows" mempty attrs
+          pure $ DancingMad $ attrs & setMetaKey "removedHollows" (Map.insertWith (<>) iid [card] hollowed)
     _ -> DancingMad <$> liftRunMessage msg attrs

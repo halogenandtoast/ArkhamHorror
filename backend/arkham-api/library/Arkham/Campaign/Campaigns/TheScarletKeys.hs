@@ -2,6 +2,9 @@ module Arkham.Campaign.Campaigns.TheScarletKeys (theScarletKeys) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Types hiding (campaignChaosBag)
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
@@ -84,7 +87,12 @@ travel attrs locId doTravel n = do
 
 instance IsCampaign TheScarletKeys where
   campaignTokens = campaignChaosBag
-  invalidCards _ = ["02310"] -- The Red-Gloved Man can not be included
+  invalidCards c =
+    "02310" -- The Red-Gloved Man can not be included
+      : recordedCardCodes
+        ( findWithDefault [] (toCampaignLogKey ErasedFromExistence)
+            $ attr (campaignLogRecordedSets . campaignLog) c
+        )
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue RiddlesAndRain
     RiddlesAndRain -> continue (InterludeStep 1 Nothing)

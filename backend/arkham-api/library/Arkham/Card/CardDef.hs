@@ -194,6 +194,9 @@ instance HasField "permanent" CardDef Bool where
 instance HasField "level" CardDef (Maybe Int) where
   getField = cdLevel
 
+instance HasField "exceptional" CardDef Bool where
+  getField = cdExceptional
+
 instance HasField "kind" CardDef CardType where
   getField = cdCardType
 

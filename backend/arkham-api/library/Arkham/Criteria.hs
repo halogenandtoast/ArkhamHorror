@@ -217,7 +217,7 @@ data Criterion
   | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
   | KeyCount ValueMatcher KeyMatcher
-  | ExtendedCardCount Int ExtendedCardMatcher
+  | ExtendedCardCount ValueMatcher ExtendedCardMatcher
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
@@ -546,4 +546,9 @@ instance FromJSON Criterion where
         pure $ case contents of
           Right (vm, em) -> EnemyCount vm em
           Left (n, em) -> EnemyCount (GreaterThanOrEqualTo (Static n)) em
+      "ExtendedCardCount" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        pure $ case contents of
+          Right (vm, em) -> ExtendedCardCount vm em
+          Left (n, em) -> ExtendedCardCount (GreaterThanOrEqualTo (Static n)) em
       _ -> $(mkParseJSON defaultOptions ''Criterion) (Object o)

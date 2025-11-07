@@ -15,7 +15,11 @@
     }
   },
   "label": {
-    "elderThing": "Treat this token's modifier as -{count}."
+    "elderThing": "Treat this token's modifier as -{count}.",
+    "silenceSpeaks": {
+      "concealed": "Search the encounter deck and discard pile for an enemy with the concealed keyword and draw it (resolving its concealed keyword). Shuffle the encounter deck.",
+      "hollowed": "Reveal the top card of each investigator's deck. Each investigator draws each weakness they revealed in this way. Set each other revealed card aside, out of play, as a hollow."
+    }
   },
   "intro": {
     "title": "File #28–I: Dancing Mad",

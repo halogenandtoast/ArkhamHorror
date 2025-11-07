@@ -3605,3 +3605,6 @@ doFlip iid (toSource -> source) (toTarget -> target) = push $ Flip iid source ta
 
 campaignSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
 campaignSpecific key value = push $ CampaignSpecific key (toJSON value)
+
+scenarioSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
+scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)

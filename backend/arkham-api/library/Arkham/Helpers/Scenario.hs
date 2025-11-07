@@ -29,6 +29,8 @@ import Arkham.Token (Token, countTokens)
 import Arkham.Tracing
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer
+import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.Types
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -124,6 +126,17 @@ getScenarioDeck k =
 
 getScenarioMeta :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => m a
 getScenarioMeta = scenarioFieldMap ScenarioMeta toResult
+
+getScenarioMetaKeyDefault
+  :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => Key -> a -> m a
+getScenarioMetaKeyDefault k def = do
+  scenarioField ScenarioMeta <&> \case
+    Object o -> case KeyMap.lookup k o of
+      Nothing -> def
+      Just v -> case fromJSON v of
+        Error _ -> def
+        Success v' -> v'
+    _ -> def
 
 getEncounterDiscard :: (HasGame m, Tracing m) => ScenarioEncounterDeckKey -> m [EncounterCard]
 getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard

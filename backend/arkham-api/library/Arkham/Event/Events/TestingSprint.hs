@@ -4,6 +4,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Message (handleTargetChoice)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -51,7 +52,7 @@ instance RunMessage TestingSprint where
       pushM $ mkInvestigateLocation sid iid attrs lid
       pure . TestingSprint $ attrs `with` Meta meta'
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      afterSkillTest iid "Testing Spring" do
-        push $ Do (InvestigatorPlayEvent iid attrs.id Nothing [] FromHand)
+      withSkillTest \sid -> do
+        push $ AfterThisTestResolves sid [Do (InvestigatorPlayEvent iid attrs.id Nothing [] FromHand)]
       pure e
     _ -> TestingSprint . (`with` meta) <$> liftRunMessage msg attrs

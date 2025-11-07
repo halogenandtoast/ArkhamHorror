@@ -21,7 +21,7 @@ import Arkham.Projection
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Source
 import Arkham.Strategy
-import Arkham.Taboo.Types
+import Arkham.Taboo
 import Arkham.Target
 import Arkham.Trait
 import Data.Aeson.TH
@@ -82,6 +82,9 @@ instance AsId SkillAttrs where
 instance Is SkillAttrs SkillId where
   is = (==) . toId
   {-# INLINE is #-}
+
+instance HasField "tabooed" SkillAttrs (TabooList -> Bool) where
+  getField = flip tabooed
 
 instance HasField "taboo" SkillAttrs (Maybe TabooList) where
   getField = skillTaboo

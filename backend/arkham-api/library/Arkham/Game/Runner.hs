@@ -1136,6 +1136,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               )
           | LeaveCardWhereItIs `elem` mods ->
               (Run [RemoveFromPlay (toSource skillId)], Just skillId)
+          | ScenarioModifier "hollowed" `elem` mods ->
+              (RemoveFromGame (SkillTarget skillId), Nothing)
           | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
                 PlayerCard pc ->

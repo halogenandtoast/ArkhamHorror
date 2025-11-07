@@ -21,7 +21,7 @@ instance HasModifiersFor StoppingTheRitual where
 
 instance HasAbilities StoppingTheRitual where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny $ enemyIs Enemies.nahab
+    [ mkAbility a 1 $ forced $ EnemyDefeatedIncludingOutOfPlay #when Anyone ByAny $ enemyIs Enemies.nahab
     , restricted a 2 (exists $ enemyIs Enemies.nahab <> not_ EnemyWithAnyDoom)
         $ Objective
         $ forced AnyWindow

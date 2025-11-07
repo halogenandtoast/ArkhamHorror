@@ -85,6 +85,7 @@ type ToWhere = Where
 
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
+  | EnemyDefeatedIncludingOutOfPlay Timing Who DefeatedByMatcher EnemyMatcher
   | IfEnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | VehicleLeaves Timing AssetMatcher LocationMatcher
   | VehicleEnters Timing AssetMatcher LocationMatcher

@@ -31,7 +31,7 @@ instance HasAbilities TheHermitIX where
   getAbilities (TheHermitIX (a `With` _)) =
     [ mkAbility a 1
         $ freeReaction
-        $ EnemyDefeated #after You ByAny (mapOneOf enemyIs [Enemies.nahab, Enemies.brownJenkin])
+        $ EnemyDefeatedIncludingOutOfPlay #after You ByAny (mapOneOf enemyIs [Enemies.nahab, Enemies.brownJenkin])
     ]
 
 instance RunMessage TheHermitIX where

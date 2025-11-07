@@ -2758,6 +2758,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   MoveTo movement | isTarget a (moveTarget movement) -> do
     pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId movement.id]
     pure $ a & movementL ?~ movement
+  SetMovement iid movement | iid == investigatorId -> do
+    pure $ a & movementL ?~ movement
   EnemySpawned details -> do
     pure
       $ a

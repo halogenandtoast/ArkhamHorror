@@ -214,6 +214,7 @@ data Cost
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
+  | ConcealedXCost
   | XCost Cost
   deriving stock (Show, Eq, Ord, Data)
 
@@ -251,6 +252,7 @@ data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ConcealedXCost -> "Concealed X"
   XCost c -> "X " <> displayCostType c
   LabeledCost lbl _ -> lbl
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"

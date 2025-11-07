@@ -8,7 +8,7 @@ newtype ParadigmEfficer = ParadigmEfficer EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 paradigmEfficer :: EnemyCard ParadigmEfficer
-paradigmEfficer = enemy ParadigmEfficer Cards.paradigmEfficer (0, Static 1, 0) (0, 0)
+paradigmEfficer = enemy ParadigmEfficer Cards.paradigmEfficer (3, Static 3, 3) (1, 1)
 
 instance RunMessage ParadigmEfficer where
   runMessage msg (ParadigmEfficer attrs) = runQueueT $ case msg of

@@ -89,6 +89,7 @@ data EnemyMatcher
   | NearestEnemyToLocationFallback LocationId EnemyMatcher
   | NearestEnemyToAnInvestigator EnemyMatcher
   | EnemyIs CardCode
+  | EnemyIsExact CardCode
   | EnemyWithCardId CardId
   | AnyEnemy
   | EnemyCanAttack InvestigatorMatcher

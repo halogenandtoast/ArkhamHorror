@@ -3473,6 +3473,7 @@ enemyMatcherFilter es matcher' = do
     ReadyEnemy -> pure $ filter (not . attr enemyExhausted) es
     AnyEnemy -> pure es
     EnemyIs cardCode -> pure $ filter ((== cardCode) . toCardCode) es
+    EnemyIsExact cardCode -> pure $ filter ((== exactCardCode cardCode) . exactCardCode . toCardCode) es
     NonWeaknessEnemy -> pure $ filter (isNothing . cdCardSubType . toCardDef) es
     SignatureEnemy -> pure $ filter (isSignature . toCardDef) es
     EnemyInHandOf investigatorMatcher -> do

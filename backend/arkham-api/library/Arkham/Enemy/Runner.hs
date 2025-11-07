@@ -81,7 +81,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (do_, selectEach)
+import Arkham.Message.Lifted (capture, do_, selectEach)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
 import Arkham.Prelude
@@ -1639,13 +1639,19 @@ instance RunMessage EnemyAttrs where
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
       gatherConcealedCards a.id >>= \case
         Just (kind, cards) -> do
-          pushAll
-            $ resolve
-            $ EnemySpawn
-            $ (mkSpawnDetails eid $ SpawnPlaced InTheShadows)
-              { spawnDetailsInvestigator = Just iid
-              }
-          placeConcealed iid kind cards
+          (batchId, windowMessages) <-
+            wouldWindows $ Window.ScenarioEvent "wouldConceal" (Just iid) (toJSON (eid, kind, Static $ length cards - 1))
+          placeConcealedMsgs <- capture $ placeConcealed iid kind cards
+          push
+            $ Would batchId
+            $ windowMessages
+            <> resolve
+              ( EnemySpawn
+                  $ (mkSpawnDetails eid $ SpawnPlaced InTheShadows)
+                    { spawnDetailsInvestigator = Just iid
+                    }
+              )
+            <> placeConcealedMsgs
         Nothing -> do
           mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
           let

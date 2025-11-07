@@ -19,6 +19,7 @@ import Arkham.Asset.Types (
  )
 import Arkham.Attack
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers (addTekelili)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -200,6 +201,15 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    ConcealedXCost -> do
+      let
+        go = \case
+          ((windowType -> Window.ScenarioEvent "wouldConceal" _ val) : _) -> do
+            let (_, _, gv) = toResult @(EnemyId, ConcealedCardKind, GameValue) val
+            payCost msg c iid skipAdditionalCosts (GroupClueCost gv Anywhere)
+          (_ : rest) -> go rest
+          [] -> pure c
+      go c.windows
     XCost inner -> do
       let
         go = \case

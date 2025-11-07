@@ -265,6 +265,9 @@ assetAtLocationWith = AssetAt . locationWithInvestigator
 enemyIs :: HasCardCode a => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
+enemyIsExact :: HasCardCode a => a -> EnemyMatcher
+enemyIsExact = EnemyIsExact . toCardCode
+
 enemyAt :: (AsId a, IdOf a ~ LocationId) => a -> EnemyMatcher
 enemyAt = EnemyAt . LocationWithId . asId
 

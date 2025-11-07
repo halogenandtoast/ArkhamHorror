@@ -20,7 +20,7 @@ stepsOfYhagharl = location StepsOfYhagharl Cards.stepsOfYhagharl 3 (PerPlayer 1)
 
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =
-    extendRevealed1 attrs $ skillTestAbility $ mkAbility attrs 1 $ forced $ Leaves #when You (be attrs)
+    extendRevealed1 attrs $ skillTestAbility $ playerLimit PerMove $ mkAbility attrs 1 $ forced $ Leaves #when You (be attrs)
 
 instance RunMessage StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = runQueueT $ case msg of
@@ -40,6 +40,7 @@ instance RunMessage StepsOfYhagharl where
               Would _ msgs -> any isMovement msgs
               WhenCanMove _ msgs -> any isMovement msgs
               MoveTo m -> movement.id == m.id
+              ResolveMovement iid' -> iid == iid'
               _ -> False
           insteadOfMatching isMovement $ shuffleBackIntoEncounterDeck attrs
       pure l

@@ -28,7 +28,7 @@ instance HasModifiersFor EndsAndMeans where
 
 instance HasAbilities EndsAndMeans where
   getAbilities (EndsAndMeans a) =
-    [ mkAbility a 1 $ forced $ EnemyDefeated #when You ByAny $ InPlayEnemy $ EnemyWithTrait SilverTwilight
+    [ mkAbility a 1 $ forced $ EnemyDefeated #when You ByAny $ EnemyWithTrait SilverTwilight
     ]
 
 instance RunMessage EndsAndMeans where

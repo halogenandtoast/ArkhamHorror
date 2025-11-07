@@ -1778,7 +1778,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch
-    Matcher.EnemyDefeated timing whoMatcher defeatedByMatcher enemyMatcher ->
+    Matcher.EnemyDefeatedIncludingOutOfPlay timing whoMatcher defeatedByMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyDefeated (Just who) defeatedBy enemyId ->
           andM
@@ -1799,6 +1799,41 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                   if timing == #after
                     then orM [matches enemyId $ DefeatedEnemy enemyMatcher, matches enemyId enemyMatcher]
                     else matches enemyId enemyMatcher
+            , defeatedByMatches
+                defeatedBy
+                (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))
+            ]
+        Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
+          andM
+            [ case enemyMatcher of
+                AnyEnemy -> pure True
+                _ ->
+                  matches enemyId
+                    $ if timing == #after then oneOf [DefeatedEnemy enemyMatcher, enemyMatcher] else enemyMatcher
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        _ -> noMatch
+    Matcher.EnemyDefeated timing whoMatcher defeatedByMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyDefeated (Just who) defeatedBy enemyId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , case enemyMatcher of
+                AnyEnemy -> pure True
+                _ ->
+                  if timing == #after
+                    then orM [matches enemyId $ DefeatedEnemy enemyMatcher, matches enemyId enemyMatcher]
+                    else matches enemyId (InPlayEnemy enemyMatcher)
+            , defeatedByMatches defeatedBy defeatedByMatcher
+            ]
+        Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
+          andM
+            [ case enemyMatcher of
+                AnyEnemy -> pure True
+                _ ->
+                  if timing == #after
+                    then orM [matches enemyId $ DefeatedEnemy enemyMatcher, matches enemyId enemyMatcher]
+                    else matches enemyId (InPlayEnemy enemyMatcher)
             , defeatedByMatches
                 defeatedBy
                 (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))

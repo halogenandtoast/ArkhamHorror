@@ -3,6 +3,7 @@ module Arkham.Helpers.Cost where
 import Arkham.Action (Action)
 import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.Base
@@ -74,6 +75,15 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
   addAttribute currentSpan "cost" (tshow cost_)
   cached (CanAffordCostKey iid source actions windows' canModify cost_) do
     case cost_ of
+      ConcealedXCost -> do
+        let
+          go = \case
+            ((windowType -> Window.ScenarioEvent "wouldConceal" _ val) : _) -> do
+              let (_, _, gv) = toResult @(EnemyId, ConcealedCardKind, GameValue) val
+              getCanAffordCost_ iid source actions windows' canModify (GroupClueCost gv Matcher.Anywhere)
+            (_ : rest) -> go rest
+            [] -> pure False
+        go windows'
       XCost c -> getCanAffordCost_ iid source actions windows' canModify c -- just need to afford once
       LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
       ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> (>= n) . length <$> getScenarioDeck deckKey

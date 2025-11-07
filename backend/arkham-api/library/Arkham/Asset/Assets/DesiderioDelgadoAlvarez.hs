@@ -8,7 +8,7 @@ newtype DesiderioDelgadoAlvarez = DesiderioDelgadoAlvarez AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 desiderioDelgadoAlvarez :: AssetCard DesiderioDelgadoAlvarez
-desiderioDelgadoAlvarez = asset DesiderioDelgadoAlvarez Cards.desiderioDelgadoAlvarez
+desiderioDelgadoAlvarez = allyWith DesiderioDelgadoAlvarez Cards.desiderioDelgadoAlvarez (4, 1) noSlots
 
 instance RunMessage DesiderioDelgadoAlvarez where
   runMessage msg (DesiderioDelgadoAlvarez attrs) = runQueueT $ case msg of

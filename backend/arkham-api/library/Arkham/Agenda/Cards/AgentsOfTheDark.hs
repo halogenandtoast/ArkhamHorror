@@ -40,7 +40,7 @@ instance HasModifiersFor AgentsOfTheDark where
       \(enemyCard, concealedKind) ->
         modifySelectWith
           a
-          (enemyIs enemyCard)
+          (enemyIsExact enemyCard)
           setActiveDuringSetup
           [AddKeyword $ Concealed concealedKind (Static 1)]
 

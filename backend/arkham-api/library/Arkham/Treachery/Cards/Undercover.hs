@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.Undercover (undercover) where
 
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -29,8 +30,6 @@ instance RunMessage Undercover where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       locations <- selectMaxBy LocationConcealedCards length Anywhere
       decoy <- mkConcealedCard Decoy
-      chooseTargetM iid locations \loc -> do
-        push $ CreateConcealedCard decoy
-        push $ PlaceConcealedCards iid [decoy.id] [loc]
+      chooseTargetM iid locations $ makeDecoyAt' decoy iid
       pure t
     _ -> Undercover <$> liftRunMessage msg attrs

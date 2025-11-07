@@ -8,7 +8,7 @@ newtype PlazaHotel = PlazaHotel LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 plazaHotel :: LocationCard PlazaHotel
-plazaHotel = symbolLabel $ location PlazaHotel Cards.plazaHotel 0 (Static 0)
+plazaHotel = symbolLabel $ location PlazaHotel Cards.plazaHotel 2 (PerPlayer 1)
 
 instance HasAbilities PlazaHotel where
   getAbilities (PlazaHotel attrs) =

@@ -8,7 +8,7 @@ newtype CafeLunaBastionOfRemembrance = CafeLunaBastionOfRemembrance LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cafeLunaBastionOfRemembrance :: LocationCard CafeLunaBastionOfRemembrance
-cafeLunaBastionOfRemembrance = symbolLabel $ location CafeLunaBastionOfRemembrance Cards.cafeLunaBastionOfRemembrance 0 (Static 0)
+cafeLunaBastionOfRemembrance = symbolLabel $ location CafeLunaBastionOfRemembrance Cards.cafeLunaBastionOfRemembrance 5 (PerPlayer 1)
 
 instance HasAbilities CafeLunaBastionOfRemembrance where
   getAbilities (CafeLunaBastionOfRemembrance attrs) =

@@ -8,7 +8,7 @@ newtype GranTeatroDeLaHabana = GranTeatroDeLaHabana LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 granTeatroDeLaHabana :: LocationCard GranTeatroDeLaHabana
-granTeatroDeLaHabana = symbolLabel $ location GranTeatroDeLaHabana Cards.granTeatroDeLaHabana 0 (Static 0)
+granTeatroDeLaHabana = symbolLabel $ location GranTeatroDeLaHabana Cards.granTeatroDeLaHabana 4 (PerPlayer 1)
 
 instance HasAbilities GranTeatroDeLaHabana where
   getAbilities (GranTeatroDeLaHabana attrs) =

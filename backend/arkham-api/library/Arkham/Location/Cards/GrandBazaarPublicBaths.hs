@@ -15,7 +15,7 @@ grandBazaarPublicBaths =
 
 instance HasModifiersFor GrandBazaarPublicBaths where
   getModifiersFor (GrandBazaarPublicBaths a) = do
-    modifySelect a (AssetControlledBy $ InvestigatorAt $ be a) [Blank]
+    modifySelect a (AssetControlledBy (InvestigatorAt $ be a) <> #weapon) [Blank]
 
 instance RunMessage GrandBazaarPublicBaths where
   runMessage msg (GrandBazaarPublicBaths attrs) = GrandBazaarPublicBaths <$> runMessage msg attrs

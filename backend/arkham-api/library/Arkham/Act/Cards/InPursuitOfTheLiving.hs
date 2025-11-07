@@ -39,7 +39,7 @@ instance HasAbilities InPursuitOfTheLiving where
                  <> locationNotOneOf (usedLocationIds meta)
              )
              $ FastAbility Free
-         , restricted a 2 (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ basic "Unfinished Business")
+         , restricted a 2 (ExtendedCardCount (atLeast 4) $ VictoryDisplayCardMatch $ basic "Unfinished Business")
              $ Objective
              $ forced AnyWindow
          ]

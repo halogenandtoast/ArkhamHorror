@@ -35,6 +35,10 @@ import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
 
+pattern HollowedCard :: ExtendedCardMatcher
+pattern HollowedCard <- CardWithModifier (ScenarioModifier "hollowed") where
+  HollowedCard = CardWithModifier (ScenarioModifier "hollowed")
+
 markTime :: ReverseQueue m => Int -> m ()
 markTime = incrementRecordCount Time
 
@@ -84,6 +88,12 @@ hollow :: ReverseQueue m => InvestigatorId -> Card -> m ()
 hollow iid card = do
   setCardAside card
   createWindowModifierEffect_ (EffectHollowWindow card.id) ScenarioSource iid [Hollow card.id]
+  createWindowModifierEffect_ (EffectHollowWindow card.id) ScenarioSource card [ScenarioModifier "hollowed"]
+
+removeHollow :: (FetchCard c, ReverseQueue m) => c -> m ()
+removeHollow c = do
+  obtainCard c
+  fetchCard c >>= scenarioSpecific "removedHollow"
 
 setBearer :: ReverseQueue m => CardDef -> KeyStatus -> m ()
 setBearer skey sts@(KeyWithInvestigator iid) = do

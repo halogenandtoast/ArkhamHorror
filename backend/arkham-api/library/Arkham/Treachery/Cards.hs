@@ -2987,7 +2987,7 @@ memoryVariant =
 
 secretsLost :: CardDef
 secretsLost =
-  (treachery "09736" "Secrets Lost" SecretWar 2)
+  (treachery "09736" "Secrets Lost" SecretWar 3)
     { cdCardTraits = setFromList [Power]
     }
 

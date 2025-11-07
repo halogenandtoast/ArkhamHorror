@@ -6,6 +6,7 @@ data TheScarletKeysKey
   = AmaranthHasLeftTheCoterie
   | EceDoesNotTrustTheCell
   | EceTrustsTheCell
+  | ErasedFromExistence
   | LaChicaRojaIsOnYourSide
   | TheCellHasBeenAmbushed
   | TheCellIsDecievingEce

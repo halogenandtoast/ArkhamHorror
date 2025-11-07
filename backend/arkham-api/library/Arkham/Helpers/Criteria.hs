@@ -729,8 +729,9 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
     Criteria.EventCount valueMatcher matcher -> do
       n <- selectCount (Matcher.replaceYouMatcher iid matcher)
       gameValueMatches n valueMatcher
-    Criteria.ExtendedCardCount n matcher ->
-      (>= n) <$> selectCount matcher
+    Criteria.ExtendedCardCount valueMatcher matcher -> do
+      n <- selectCount matcher
+      gameValueMatches n valueMatcher
     Criteria.KeyCount valueMatcher matcher -> do
       n <- selectCount matcher
       gameValueMatches n valueMatcher

@@ -30,7 +30,7 @@ instance HasAbilities InPursuitOfTheBeyond where
             <> AssetWithCardsUnderneath (HasCard $ CardWithTitle "Heretic")
         )
         $ parleyAction (ClueCost (PerPlayer 1))
-    , restricted a 3 (ExtendedCardCount 3 CardIsBeneathActDeck) $ forced AnyWindow
+    , restricted a 3 (ExtendedCardCount (atLeast 3) CardIsBeneathActDeck) $ forced AnyWindow
     ]
 
 inPursuitOfTheBeyond :: ActCard InPursuitOfTheBeyond

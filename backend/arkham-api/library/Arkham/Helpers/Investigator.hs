@@ -698,6 +698,7 @@ getAsIfInHandCards =  getAsIfInHandCardsFor ForPlay
 getAsIfInHandCardsFor :: (HasCallStack, HasGame m, Tracing m) => ForPlay -> InvestigatorId -> m [Card]
 getAsIfInHandCardsFor forPlay iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
+  isSkillTest <- isJust <$> getSkillTest
   let
     modifiersPermitPlayOfDiscard discard c =
       any (modifierPermitsPlayOfDiscard discard c) modifiers
@@ -717,6 +718,7 @@ getAsIfInHandCardsFor forPlay iid = do
   cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
     AsIfInHandForPlay c | forPlay == ForPlay -> Just <$> getCard c
+    CanCommitToSkillTestsAsIfInHand c | forPlay == NotForPlay && isSkillTest -> pure $ Just c
     _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid

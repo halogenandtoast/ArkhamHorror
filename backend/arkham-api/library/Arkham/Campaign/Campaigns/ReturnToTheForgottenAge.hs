@@ -20,7 +20,7 @@ instance IsCampaign ReturnToTheForgottenAge where
     ResupplyPoint -> continue ReturnToTheBoundaryBeyond
     ReturnToTheBoundaryBeyond -> continue $ InterludeStep 3 Nothing
     InterludeStep 3 _ -> continue ReturnToHeartOfTheEldersPart1
-    ReturnToHeartOfTheEldersPart1 -> continue ReturnToHeartOfTheEldersPart2
+    ReturnToHeartOfTheEldersPart1 -> continueNoUpgrade ReturnToHeartOfTheEldersPart2
     ReturnToHeartOfTheEldersPart2 -> continue ReturnToTheCityOfArchives
     ReturnToTheCityOfArchives -> continue $ InterludeStep 4 Nothing
     InterludeStep 4 _ -> continue ReturnToTheDepthsOfYoth

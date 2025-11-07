@@ -54,7 +54,7 @@ instance IsCampaign TheForgottenAge where
     TheBoundaryBeyond -> continue $ InterludeStep 3 Nothing
     InterludeStep 3 _ -> continue HeartOfTheEldersPart1
     HeartOfTheElders -> continue TheCityOfArchives
-    HeartOfTheEldersPart1 -> continue HeartOfTheEldersPart2
+    HeartOfTheEldersPart1 -> continueNoUpgrade HeartOfTheEldersPart2
     HeartOfTheEldersPart2 -> continue TheCityOfArchives
     TheCityOfArchives -> continue $ InterludeStep 4 Nothing
     InterludeStep 4 _ -> continue TheDepthsOfYoth

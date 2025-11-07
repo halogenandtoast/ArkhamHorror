@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.DeadHeat (deadHeat) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack.Types
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
@@ -31,7 +32,9 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DeadHeat.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Strategy
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype DeadHeat = DeadHeat ScenarioAttrs
   deriving anyclass IsScenario
@@ -226,6 +229,22 @@ instance RunMessage DeadHeat where
       pure s
     ScenarioSpecific "enemyAttackedAtLocation" v -> do
       let enemy :: EnemyId = toResult v
+      checkWhen
+        $ Window.EnemyAttacks
+        $ EnemyAttackDetails
+          { attackTarget = SingleAttackTarget (InvestigatorTarget "00000") -- lies
+          , attackOriginalTarget = SingleAttackTarget (InvestigatorTarget "00000") -- lies
+          , attackEnemy = enemy
+          , attackType = RegularAttack
+          , attackDamageStrategy = DamageAny
+          , attackExhaustsEnemy = True
+          , attackSource = EnemySource enemy
+          , attackCanBeCanceled = False
+          , attackAfter = []
+          , attackDamaged = mempty
+          , attackDealDamage = True
+          , attackDespiteExhausted = True
+          }
       withLocationOf enemy slayCivilian
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

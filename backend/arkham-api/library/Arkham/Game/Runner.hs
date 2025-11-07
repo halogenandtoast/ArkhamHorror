@@ -894,8 +894,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
         then do
-          asset <- getAsset aid
-          pure $ actionRemovedEntitiesL . assetsL %~ insertEntity asset
+          -- This might be the source of issues in the future but this means the asset was removed already
+          maybeAsset aid <&> \case
+            Nothing -> id
+            Just asset -> actionRemovedEntitiesL . assetsL %~ insertEntity asset
         else pure id
     pure $ g & entitiesL . assetsL %~ deleteMap aid & removedEntitiesF
   RemoveEvent eid -> do

@@ -93,4 +93,7 @@ instance RunMessage SkillAttrs where
         OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ a & placementL .~ p
         OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ a & placementL .~ p
         _ -> pure a
+    ObtainCard c
+      | c == toCardId a ->
+          pure $ a & afterPlayL .~ AbsoluteRemoveThisFromGame
     _ -> pure a

@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.DancingMad (dancingMad) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Deck qualified as Deck
@@ -10,16 +11,22 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest (getSkillTest, withSkillTest)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Name (toTitle)
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DancingMad.Helpers
 import Arkham.Trait (Trait (Coterie, Detective, Police))
+import Data.Map.Strict qualified as Map
 
 newtype DancingMad = DancingMad ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -139,5 +146,26 @@ instance RunMessage DancingMad where
       pure s
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       drawCard iid ec
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> withLocationOf iid $ makeDecoyAt iid
+        Tablet -> whenJustM getSkillTest \st -> do
+          for_ (Map.assocs st.committedCards) \(iid', cards) -> do
+            for_ cards $ hollow iid'
+        _ -> pure ()
+      pure s
+    ResolveChaosToken token ElderThing iid -> do
+      withLocationOf iid \loc -> do
+        anyConcealed <- fieldMap LocationConcealedCards (not . null) loc
+        when anyConcealed do
+          let dmg = if isEasyStandard attrs then 1 else 2
+          let tkn = if isEasyStandard attrs then 3 else 5
+          chooseOrRunOneM iid do
+            unscoped $ countVar dmg $ labeled' "takeDamage" $ assignDamage iid ElderThing dmg
+            countVar tkn $ labeled' "elderThing" do
+              withSkillTest \sid ->
+                skillTestModifier sid Cultist token
+                  $ ChangeChaosTokenModifier (NegativeModifier tkn)
       pure s
     _ -> DancingMad <$> liftRunMessage msg attrs

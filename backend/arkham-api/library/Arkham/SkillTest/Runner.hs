@@ -471,6 +471,8 @@ instance RunMessage SkillTest where
       cmods <- getModifiers card
       pushAll $ [ObtainCard card.id | LeaveCardWhereItIs `notElem` cmods] <> [Do msg]
       pure s
+    ObtainCard cardId -> do
+      pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->

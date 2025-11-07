@@ -83,6 +83,14 @@ gatherConcealedCards a = do
     n <- getGameValue gv
     (card,) <$> (shuffle (card : replicate n Decoy) >>= traverse mkConcealedCard)
 
+makeDecoyAt :: ReverseQueue m => InvestigatorId -> LocationId -> m ()
+makeDecoyAt iid loc = mkConcealedCard Decoy >>= \decoy -> makeDecoyAt' decoy iid loc
+
+makeDecoyAt' :: ReverseQueue m => ConcealedCard -> InvestigatorId -> LocationId -> m ()
+makeDecoyAt' decoy iid loc = do
+  push $ Msg.CreateConcealedCard decoy
+  push $ Msg.PlaceConcealedCards iid [decoy.id] [loc]
+
 placeConcealed :: ReverseQueue m => InvestigatorId -> ConcealedCardKind -> [ConcealedCard] -> m ()
 placeConcealed iid kind cards = do
   locations <-
@@ -106,9 +114,10 @@ shuffleConcealedAt location = do
 
 distributeEvenlyBetween :: (ReverseQueue m, ToId a ConcealedCardId) => [a] -> [LocationId] -> m ()
 distributeEvenlyBetween concealed locations = do
-  lead  <- getLead
+  lead <- getLead
   do1 $ forTargets locations (Msg.PlaceConcealedCards lead (map asId concealed) locations)
 
 pattern InvestigatorCanExpose :: InvestigatorMatcher
-pattern InvestigatorCanExpose <- InvestigatorWithoutModifier (CampaignModifier "cannotExpose") where
-  InvestigatorCanExpose = InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+pattern InvestigatorCanExpose <- InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+  where
+    InvestigatorCanExpose = InvestigatorWithoutModifier (CampaignModifier "cannotExpose")

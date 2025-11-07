@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.Daredevil (daredevil) where
 
 import Arkham.Card
-import Arkham.Deck
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
@@ -24,13 +24,16 @@ instance RunMessage Daredevil where
           $ basic (#rogue <> #skill)
       Daredevil <$> liftRunMessage msg attrs
     RequestedPlayerCard iid (isSource attrs -> True) mcard discards -> do
+      focusCards (maybeToList mcard <> discards) do
+        chooseOneM iid do
+          case mcard of
+            Nothing -> withI18n $ labeled' "continue" nothing
+            Just c -> targeting c $ commitCard iid c
+
       let weaknesses = filter (`cardMatch` WeaknessCard) discards
-      pushAll
-        $ [CommitCard iid (PlayerCard c) | c <- maybeToList mcard]
-        <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) (map PlayerCard weaknesses)
-           | notNull weaknesses && not (tabooed TabooList21 attrs)
-           ]
-      when (tabooed TabooList21 attrs && notNull weaknesses) do
+      unless (attrs.tabooed TabooList21) $ shuffleCardsIntoDeck iid weaknesses
+
+      when (attrs.tabooed TabooList21 && notNull weaknesses) do
         afterSkillTest iid "Daredevil" do
           ifCardExists (inDiscardOf iid <> basic (mapOneOf (CardWithId . toCardId) weaknesses)) do
             chooseOneAtATimeM iid $ targets weaknesses $ addToHand iid . only

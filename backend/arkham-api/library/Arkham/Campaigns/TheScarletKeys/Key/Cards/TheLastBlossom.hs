@@ -29,7 +29,7 @@ instance HasAbilities TheLastBlossom where
               )
               $ FastAbility Free
           ]
-        else [restricted a 2 (exists EnemyWithAnyDamage) $ FastAbility Free]
+        else [restricted a 1 (exists EnemyWithAnyDamage) $ FastAbility Free]
     _ -> []
 
 instance RunMessage TheLastBlossom where
@@ -38,7 +38,7 @@ instance RunMessage TheLastBlossom where
     CampaignSpecific "shift[09544]" _ -> do
       shiftKey attrs do
         when attrs.unstable do
-          enemies <- select EnemyWithAnyDamage
+          enemies <- select $ InPlayEnemy EnemyWithAnyDamage
           for_ enemies $ healDamageOn attrs 1
           unless (null enemies) $ withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do

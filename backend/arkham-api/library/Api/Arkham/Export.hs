@@ -51,7 +51,7 @@ generateScenarioExport :: ArkhamGameId -> Handler ArkhamExport
 generateScenarioExport gameId = do
   game <- runDB $ get404 gameId
 
-  let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
+  let n = gameScenarioSteps (arkhamGameCurrentData game)
   generateExport gameId n
 
 generateExport :: ArkhamGameId -> Int -> Handler ArkhamExport

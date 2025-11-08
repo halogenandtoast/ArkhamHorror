@@ -31,6 +31,7 @@ data SkillMatcher
   | EnemySkill EnemyId
   | NotSkill SkillMatcher
   | SkillWithToken Token
+  | SkillNotRemoved
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SkillMatcher where

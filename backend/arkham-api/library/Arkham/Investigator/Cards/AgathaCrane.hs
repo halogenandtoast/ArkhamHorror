@@ -41,8 +41,9 @@ agathaRunner f msg attrs = runQueueT $ case msg of
         (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) (defaultWindows iid))
         (filterCards (card_ $ #event <> hasAnyTrait [Spell, Insight]) discards)
     focusCards cards $ chooseTargetM iid cards \card -> do
+      unfocusCards
       cardResolutionModifier card (attrs.ability 1) card RemoveFromGameInsteadOfDiscard
-      cardResolutionModifier card (attrs.ability 1) iid (AsIfInHand card)
+      cardResolutionModifier card (attrs.ability 1) iid (AsIfInHandForPlay card.id)
       playCardPayingCost iid card
     pure $ f attrs
   ResolveChaosToken token ElderSign iid | iid == attrs.id -> do

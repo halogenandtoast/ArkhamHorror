@@ -18,6 +18,11 @@
     "entrance": "Entrance",
     "eastGate": "East Gate"
   },
+  "tooltips": {
+    "grandBazaarJewelersRoad": {
+      "investigate": "_Investigate_. If you succeed, instead of discovering clues, you may play a _Charm_ or _Relic_ asset from your hand, reducing its cost by 1 for each point you succeeded by (*to a minimum of 0*)."
+    }
+  },
   "label": {
     "agentsOfTheDark": {
       "cluesUnveiled": "Place 1 clue (*from the token pool*) on Clues Unveiled",

@@ -9,6 +9,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.DealingsInTheDark.Helpers
 import Arkham.Trait (Trait (Charm, Relic))
 import Arkham.Window (defaultWindows)
 
@@ -22,7 +23,11 @@ grandBazaarJewelersRoad =
 
 instance HasAbilities GrandBazaarJewelersRoad where
   getAbilities (GrandBazaarJewelersRoad a) =
-    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here investigateAction_
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "grandBazaarJewelersRoad.investigate"
+      $ skillTestAbility
+      $ restricted a 1 Here investigateAction_
 
 instance RunMessage GrandBazaarJewelersRoad where
   runMessage msg l@(GrandBazaarJewelersRoad attrs) = runQueueT $ case msg of
@@ -30,7 +35,7 @@ instance RunMessage GrandBazaarJewelersRoad where
       sid <- getRandom
       investigateEdit_ sid iid (attrs.ability 1) (setTarget attrs)
       pure l
-    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) n -> do
+    Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) (isTarget attrs -> True) n -> do
       cards <-
         filterM
           ( getIsPlayableWithResources

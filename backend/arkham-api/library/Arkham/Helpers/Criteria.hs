@@ -404,7 +404,8 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           EventSource eid ->
             elem eid <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
           SkillSource sid ->
-            elem sid <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
+            elem sid
+              <$> select (Matcher.SkillControlledBy (Matcher.InvestigatorWithId iid) <> Matcher.SkillNotRemoved)
           _ -> pure False
        in
         go source

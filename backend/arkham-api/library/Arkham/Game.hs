@@ -3039,6 +3039,10 @@ getSkillsMatching matcher = do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement -> pure $ filter ((== placement) . attr skillPlacement) as
+    SkillNotRemoved ->
+      pure $ as & filter \a -> case a.placement of
+        OutOfPlay RemovedZone -> False
+        _ -> True
     SkillWithToken _ -> pure [] -- update if we ever have a skill that can hold tokens
     SkillIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     SkillMatches ms -> foldM filterMatcher as ms

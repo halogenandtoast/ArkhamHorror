@@ -47,8 +47,15 @@ arkhamGameToExportData ArkhamGame {..} steps =
     , agedMultiplayerVariant = arkhamGameMultiplayerVariant
     }
 
-generateExport :: ArkhamGameId -> Handler ArkhamExport
-generateExport gameId = do
+generateScenarioExport :: ArkhamGameId -> Handler ArkhamExport
+generateScenarioExport gameId = do
+  game <- runDB $ get404 gameId
+
+  let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
+  generateExport gameId n
+
+generateExport :: ArkhamGameId -> Int -> Handler ArkhamExport
+generateExport gameId n = do
   (ge, players, steps) <- runDB $ do
     ge <- get404 gameId
     players <- select $ do
@@ -59,7 +66,7 @@ generateExport gameId = do
       steps <- from $ table @ArkhamStep
       where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
       orderBy [desc $ steps ^. ArkhamStepStep]
-      limit 30
+      limit (fromIntegral n)
       pure steps
     pure (ge, players, steps)
 

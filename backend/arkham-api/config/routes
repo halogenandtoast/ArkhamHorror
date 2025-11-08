@@ -39,6 +39,7 @@
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET
           /full-export ApiV1ArkhamGameFullExportR GET
+          /scenario-export ApiV1ArkhamGameScenarioExportR GET
           /reload ApiV1ArkhamGameReloadR GET
     /admin AdminP:
       / ApiV1AdminR GET

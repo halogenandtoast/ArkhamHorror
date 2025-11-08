@@ -24,7 +24,10 @@ instance HasAbilities JimsTrumpetAdvanced where
                     $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement])
                 )
             , exists
-                (HealableAsset (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement]))
+                ( HealableAsset (toSource x) #horror
+                    $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement])
+                    <> #ally
+                )
             ]
             <> DuringSkillTest (YourSkillTest AnySkillTest)
         )
@@ -38,14 +41,14 @@ instance RunMessage JimsTrumpetAdvanced where
         $ oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)]
         <> oneOf
           [ LocationWithInvestigator (HealableInvestigator (attrs.ability 1) #horror Anyone)
-          , LocationWithAsset (HealableAsset (attrs.ability 1) #horror AnyAsset)
+          , LocationWithAsset (HealableAsset (attrs.ability 1) #horror #ally)
           ]
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       investigators <- select $ HealableInvestigator (attrs.ability 1) #horror $ investigatorAt lid
       for_ investigators \iid -> healHorror iid (attrs.ability 1) 1
 
-      assets <- select $ HealableAsset (attrs.ability 1) #horror $ assetAt lid
+      assets <- select $ HealableAsset (attrs.ability 1) #horror $ #ally <> assetAt lid
       for_ assets \aid -> healHorror aid (attrs.ability 1) 1
 
       pure a

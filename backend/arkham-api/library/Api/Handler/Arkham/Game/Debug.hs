@@ -1,6 +1,7 @@
 module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameExportR,
   getApiV1ArkhamGameFullExportR,
+  getApiV1ArkhamGameScenarioExportR,
   postApiV1ArkhamGamesImportR,
   postApiV1ArkhamGamesFixR,
   getApiV1ArkhamGamesReloadR,
@@ -27,7 +28,12 @@ import UnliftIO.Exception (catch, try)
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
   _ <- getRequestUserId
-  generateExport gameId
+  generateExport gameId 30
+
+getApiV1ArkhamGameScenarioExportR :: ArkhamGameId -> Handler ArkhamExport
+getApiV1ArkhamGameScenarioExportR gameId = do
+  _ <- getRequestUserId
+  generateScenarioExport gameId
 
 getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameFullExportR gameId = generateFullExport gameId

@@ -618,8 +618,9 @@ function localize(str: string): string {
 async function update(state: Arkham.Game) { game.value = state }
 
 function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId }
-function debugExport (full: boolean) {
-  api.get(`arkham/games/${props.gameId}/${full ? "full-" : ""}export`, { responseType: 'blob' })
+type ExportType = 'basic' | 'full' | 'scenario'
+function debugExport (exportType: ExportType) {
+  api.get(`arkham/games/${props.gameId}/${exportType == 'full' ? "full-" : (exportType == 'scenario' ? "scenario-" : "")}export`, { responseType: 'blob' })
   .then(resp => {
     const url = window.URL.createObjectURL(resp.data)
     const a = document.createElement('a')
@@ -792,10 +793,13 @@ onUnmounted(() => {
               <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> {{ $t('gameBar.toggleDebug') }} <span class="shortcut">D</span></button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="debugExport(false)"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExport') }} </button>
+              <button :class="{ active }" @click="debugExport('basic')"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExport') }} </button>
             </MenuItem>
             <MenuItem v-if="userStore.isAdmin" v-slot="{ active }">
-              <button :class="{ active }" @click="debugExport(true)"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExportFull') }} </button>
+              <button :class="{ active }" @click="debugExport('scenario')"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExportScenario') }} </button>
+            </MenuItem>
+            <MenuItem v-if="userStore.isAdmin" v-slot="{ active }">
+              <button :class="{ active }" @click="debugExport('full')"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExportFull') }} </button>
             </MenuItem>
           </template>
         </Menu>

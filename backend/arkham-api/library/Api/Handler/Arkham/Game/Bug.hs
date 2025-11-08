@@ -12,7 +12,7 @@ import UnliftIO.Exception (catch)
 postApiV1ArkhamGameBugR :: ArkhamGameId -> Handler Text
 postApiV1ArkhamGameBugR gameId = do
   _ <- getRequestUserId
-  export <- generateExport gameId
+  export <- generateScenarioExport gameId
 
   let jsonBody = encode export
   let filename = decodeUtf8 (B16.encode $ SHA256.hashlazy jsonBody) <> ".json"

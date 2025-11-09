@@ -241,6 +241,7 @@ data WindowType
   | HuntersMoveStep
   | Moves InvestigatorId Source (Maybe LocationId) LocationId MovementId
   | WouldMove InvestigatorId Source LocationId LocationId
+  | EnemyWouldMove EnemyId Source LocationId LocationId
   | NonFast
   | PassInvestigationSkillTest InvestigatorId LocationId Int
   | PassSkillTest (Maybe Action) Source InvestigatorId Int

@@ -584,7 +584,7 @@ instance RunMessage EnemyAttrs where
           push
             $ chooseOrRunOne player
             $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
-      pure a
+      pure $ a & movementL ?~ movement
     EnemyMove eid lid | eid == enemyId -> case enemyPlacement of
       AsSwarm eid' _ -> do
         push $ EnemyMove eid' lid
@@ -593,12 +593,25 @@ instance RunMessage EnemyAttrs where
         willMove <- canEnterLocation eid lid
         if willMove
           then do
+            batchId <- getRandom
+            mRunWouldMove <- runMaybeT do
+              from <- MaybeT $ getLocationOf eid
+              source <- hoistMaybe a.movement.source
+              let (whens, _ , _) = batchedTimings batchId (Window.EnemyWouldMove eid source from lid)
+              lift $ checkWindows [whens]
             enemyLocation <- field EnemyLocation enemyId
             let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
             afterWindow <- checkAfter $ Window.EnemyMoves eid lid
-            pushAll $ [EnemyEntered eid lid, EnemyCheckEngagement eid] <> leaveWindows <> [afterWindow]
-            pure $ a & placementL .~ AtLocation lid
-          else a <$ push (EnemyCheckEngagement eid)
+            pushBatched batchId
+              $ maybeToList mRunWouldMove
+              <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+              <> leaveWindows
+              <> [afterWindow]
+          else push (EnemyCheckEngagement eid)
+        pure a
+    Do (EnemyMove eid lid) | eid == enemyId -> do
+      push (EnemyCheckEngagement eid)
+      pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     BeginRoundWindow | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) && not enemyDelayEngagement -> do
@@ -1641,7 +1654,8 @@ instance RunMessage EnemyAttrs where
       gatherConcealedCards a.id >>= \case
         Just (kind, cards) -> do
           (batchId, windowMessages) <-
-            wouldWindows $ Window.ScenarioEvent "wouldConceal" (Just iid) (toJSON (eid, kind, Static $ length cards - 1))
+            wouldWindows
+              $ Window.ScenarioEvent "wouldConceal" (Just iid) (toJSON (eid, kind, Static $ length cards - 1))
           placeConcealedMsgs <- capture $ placeConcealed iid kind cards
           push
             $ Would batchId

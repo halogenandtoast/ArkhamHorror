@@ -1,6 +1,7 @@
 module Arkham.Helpers.Movement where
 
 import Arkham.Classes.HasQueue
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
@@ -8,6 +9,7 @@ import Arkham.Message.Lifted
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Window (getBatchId)
 import Control.Monad.Trans.Class
 
 replaceMovement
@@ -28,3 +30,9 @@ replaceMovement iid f =
         other -> other
     insteadOfMatchingWith isMovement (pure . pure . replace)
     priority $ push $ SetMovement iid (f movement)
+
+cancelEnemyMovement :: ReverseQueue m => enemy -> m ()
+cancelEnemyMovement _enemy =
+  getWindowStack >>= \case
+    [] -> pure ()
+    (ws : _) -> cancelBatch $ getBatchId ws

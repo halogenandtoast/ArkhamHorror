@@ -524,6 +524,7 @@ getEnemy = \case
   ((windowType -> Window.WouldPlaceDoom _ (EnemyTarget eid) _) : _) -> eid
   ((windowType -> Window.PlacedDoom _ (EnemyTarget eid) _) : _) -> eid
   ((windowType -> Window.EnemyMovesTo _ _ eid) : _) -> eid
+  ((windowType -> Window.EnemyWouldMove eid _ _ _) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -1194,6 +1195,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
+    Matcher.EnemyWouldBeMovedBy timing enemyMatcher sourceMatcher -> guardTiming timing $ \case
+      Window.EnemyWouldMove eid source' _ _ ->
+        andM
+          [ matches eid enemyMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.MovedButBeforeEnemyEngagement timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.MovedButBeforeEnemyEngagement who locationId ->
@@ -1434,6 +1442,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.WouldMove iid' source' fromLid toLid -> do
           andM
             [ matchWho iid iid' whoMatcher
+            , sourceMatches source' sourceMatcher
+            , case fromMatcher of
+                Matcher.Anywhere -> isMatch'
+                _ -> locationMatches iid source window' fromLid fromMatcher
+            , locationMatches iid source window' toLid toMatcher
+            ]
+        _ -> noMatch
+    Matcher.EnemyWouldMove timing enemyMatcher sourceMatcher fromMatcher toMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyWouldMove eid source' fromLid toLid -> do
+          andM
+            [ matches eid enemyMatcher
             , sourceMatches source' sourceMatcher
             , case fromMatcher of
                 Matcher.Anywhere -> isMatch'

@@ -26,6 +26,9 @@ data Movement = Movement
   }
   deriving stock (Show, Ord, Eq, Data)
 
+instance HasField "source" (Maybe Movement) (Maybe Source) where
+  getField = fmap moveSource
+
 instance HasField "source" Movement Source where
   getField = moveSource
 

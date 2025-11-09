@@ -547,7 +547,8 @@ instance RunMessage EnemyAttrs where
           when (lid /= loc) $ do
             lead <- getLeadPlayer
             pathIds <- getPaths a [lid]
-            pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- pathIds]]
+            unless (null pathIds) do
+              pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- pathIds]]
       pure a
     MoveUntil lid target | isTarget a target -> do
       case enemyPlacement of

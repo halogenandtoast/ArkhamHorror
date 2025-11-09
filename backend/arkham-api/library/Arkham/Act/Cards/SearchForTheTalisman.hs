@@ -66,6 +66,7 @@ instance RunMessage SearchForTheTalisman where
       selectEach OutOfGameLocation (push . ReturnLocationToGame)
 
       fetchCard Locations.galataDocks >>= placeLocationInGrid_ (Pos (-2) 1)
+      doStep (-1) msg
 
       when cultReachedTheTalisman do
         cultistClues <- getCluesPossesedByTheCult
@@ -77,7 +78,6 @@ instance RunMessage SearchForTheTalisman where
       lead <- getLead
       eachInvestigator (`loseAllClues` attrs)
       -- delayed so that all enemies are in play
-      doStep (-1) msg
       selectJust (storyIs Stories.theUnveiling) >>= flipOverBy lead attrs
       agenda <- getSetAsideCard Agendas.theChase
       push $ SetCurrentAgendaDeck 1 [agenda]

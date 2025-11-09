@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.TheAmalgam (theAmalgam, TheAmalgam (..)) where
+module Arkham.Enemy.Cards.TheAmalgam (theAmalgam) where
 
 import Arkham.Ability
 import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
+import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
@@ -49,8 +50,8 @@ instance RunMessage TheAmalgam where
         labeledI18n "theAmalgamAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 2) iid
       pure e
     UseThisAbility _ (isSource attrs -> True) 3 -> do
-      cancelEnemyDefeatWithWindows attrs.id
-      push $ PlaceEnemyOutOfPlay TheDepths attrs.id
+      insteadOfDiscarding attrs do
+        push $ PlaceEnemyOutOfPlay TheDepths attrs.id
       pure e
     PlaceEnemyOutOfPlay TheDepths eid | eid == attrs.id -> do
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages attrs.id)

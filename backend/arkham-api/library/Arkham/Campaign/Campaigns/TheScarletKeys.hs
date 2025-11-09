@@ -184,6 +184,8 @@ instance RunMessage TheScarletKeys where
     CampaignSpecific "setBearer" v -> do
       let (cardCode, status) = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
+    CampaignSpecific "desidarioVersion" v -> do
+      pure $ updateAttrs c (storeL . at "desidarioVersion" ?~ v)
     CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
       ok <- getHasRecord TuwileMasaiFledToBermuda
       flavor do

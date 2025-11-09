@@ -728,7 +728,7 @@ chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(iid, question)] -> go iid question
-    _ -> error "There must be only one question to use this function"
+    other -> error $ "There must be only one question to use this function\n" <> show other
  where
   go iid question = case question of
     QuestionLabel _ _ q -> go iid q

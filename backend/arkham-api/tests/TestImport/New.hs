@@ -89,7 +89,7 @@ drawCards :: Investigator -> Int -> TestAppT ()
 drawCards i n = run $ Helpers.drawCards (toId i) i n
 
 playCard :: Investigator -> Card -> TestAppT ()
-playCard i c = run $ InitiatePlayCard (toId i) c Nothing NoPayment (defaultWindows $ toId i) True
+playCard i c = run $ InitiatePlayCardWithWindows (toId i) c Nothing NoPayment (defaultWindows $ toId i) True
 
 addToHand :: IsCard a => Investigator -> a -> TestAppT ()
 addToHand i (toCard -> c) = run $ AddToHand (toId i) [c]

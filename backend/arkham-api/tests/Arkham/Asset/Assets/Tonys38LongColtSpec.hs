@@ -19,6 +19,7 @@ spec = describe "Tony's .38 Long Colt" do
       withProp @"hand" [tonys38LongColt, otherTonys38LongColt] self
       withProp @"resources" 3 self
       self `playCard` tonys38LongColt
+      self.hand `shouldReturn` [otherTonys38LongColt]
       self.resources `shouldReturn` 0
       useReaction
       selectCount (assetIs Assets.tonys38LongColt) `shouldReturn` 2

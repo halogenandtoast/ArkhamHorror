@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional
@@ -419,26 +420,17 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         Keyword.Seal sealing -> if costStatus == PaidCost then Nothing else sealingToCost sealing
         _ -> Nothing
 
-    investigateCosts <-
-      if #investigate `elem` cdActions pcDef
-        then
-          field InvestigatorLocation iid >>= \case
-            Nothing -> pure []
-            Just lid -> do
-              mods <- getModifiers lid
-              pure [m | AdditionalCostToInvestigate m <- mods]
-        else pure []
+    investigateCosts <- runDefaultMaybeT [] do
+      guard $ #investigate `elem` cdActions pcDef
+      lid <- MaybeT $ field InvestigatorLocation iid
+      mods <- lift $ getModifiers lid
+      pure [m | AdditionalCostToInvestigate m <- mods]
 
-    resignCosts <-
-      if #resign `elem` cdActions pcDef
-        then do
-          mLocation <- field InvestigatorLocation iid
-          case mLocation of
-            Nothing -> pure []
-            Just lid -> do
-              mods <- getModifiers lid
-              pure [m | AdditionalCostToResign m <- mods]
-        else pure []
+    resignCosts <- runDefaultMaybeT [] do
+      guard $ #resign `elem` cdActions pcDef
+      lid <- MaybeT $ field InvestigatorLocation iid
+      mods <- lift $ getModifiers lid
+      pure [m | AdditionalCostToResign m <- mods]
 
     -- NOTE: This used to be
     -- PaidCost -> pure . max 0 . subtract 1

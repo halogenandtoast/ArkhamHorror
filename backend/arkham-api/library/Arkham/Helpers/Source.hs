@@ -314,16 +314,16 @@ sourceMatches s = \case
       check = \case
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
-        ActSource _ -> True
-        AgendaSource _ -> True
-        EnemySource _ -> True
-        LocationSource _ -> True
-        TreacherySource _ -> True
-        ChaosTokenSource _ -> True
-        ChaosTokenEffectSource _ -> True
-        _ -> False
-     in
-      pure $ check s
+        AssetSource aid -> matches aid (Matcher.AssetCardMatch Matcher.IsEncounterCard <> Matcher.UncontrolledAsset)
+        ActSource _ -> pure True
+        AgendaSource _ -> pure True
+        EnemySource _ -> pure True
+        LocationSource _ -> pure True
+        TreacherySource _ -> pure True
+        ChaosTokenSource _ -> pure True
+        ChaosTokenEffectSource _ -> pure True
+        _ -> pure False
+     in check s
   Matcher.SourceIsScenarioCardEffect ->
     let
       check = \case

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional
@@ -345,7 +346,14 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       || isBobJenkins
       || noAction
 
-    ac <- getActionCost attrs (cdActions pcDef)
+    let
+      isPlayAction = \case
+        PaidCost -> False
+        UnpaidCost NoAction -> False
+        UnpaidCost NeedsAction -> True
+        AuxiliaryCost _ inner -> isPlayAction inner
+
+    ac <- getActionCost attrs (cdActions pcDef <> [#play | isPlayAction costStatus])
 
     let
       isDuringTurnWindow = \case
@@ -391,29 +399,14 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       liftGuardM $ loc <=~> InvestigatableLocation
       liftGuardM $ withoutModifier iid (CannotInvestigateLocation loc)
 
-    let
-      isPlayAction = \case
-        PaidCost -> False
-        UnpaidCost NoAction -> False
-        UnpaidCost NeedsAction -> True
-        AuxiliaryCost _ inner -> isPlayAction inner
-
     -- N.B. We're checking if the cost is paid here and ignoring the additional cost
     -- not sure if this is correct, but going to see if any new issues come up (25/11/2)
     additionalCosts <-
-      flip mapMaybeM (modifiers <> cardModifiers) \case
+      (modifiers <> cardModifiers) & mapMaybeM \case
         AdditionalCost n -> pure (guard (costStatus /= PaidCost) $> n)
         AdditionalPlayCostOf match additionalCost -> do
           isMatch' <- c <=~> match
           pure $ guard isMatch' $> additionalCost
-        AdditionalActionCostOf match n -> do
-          performedActions <- field InvestigatorActionsPerformed iid
-          takenActions <- field InvestigatorActionsTaken iid
-          let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
-          pure
-            $ guard
-              (costStatus /= PaidCost && any (matchTarget takenActions performedActions match) cardActions)
-            $> ActionCost n
         _ -> pure Nothing
 
     let
@@ -458,11 +451,14 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         AuxiliaryCost _ inner -> goActionCost inner
       actionCost = goActionCost costStatus
 
+    let debug = if c.cardCode == "60316" then traceShowId else id
+
     -- NOTE: WE just changed this to pass False for can modify We may want to
     -- consolidate this in a way where this is covered by the default case
     liftGuardM
       $ getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
       $ fold
+      $ debug
       $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
       <> additionalCosts
       <> auxiliaryCosts

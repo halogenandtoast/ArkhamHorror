@@ -2081,9 +2081,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           defaultDiscover :: Lifted.ReverseQueue n => n ()
           defaultDiscover =
             pushAll
-              $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
-                , MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
+              $ [ MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
                 , locationWindowsBefore
+                , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
                 , After $ GainClues iid d.source clueCount
                 , locationWindowsAfter
                 ]

@@ -15,29 +15,37 @@ please file a bug.
 * Multiplayer up to 4 players
 * Multiplayer solitaire
 * Tarot Readings
-* Deck import from ArkhamDB
+* Deck import from ArkhamDB and arkham.build
 
 ## Finished Content
 
 ### Player Cards
 
-* All player cards (including return to, parallel, promo, and standalone investigator cards)
+* All player cards before 2026
 
 ### Campaigns
 
 * Night of the Zealot
   * Return to Night of the Zealot
 * The Dunwich Legacy
+  * Return to The Dunwich Legacy
 * The Path To Carcosa
+  * Return to The Path To Carcosa
 * The Forgotten Age
+  * Return to The Forgotten Age
 * The Circle Undone
+  * Return to The Circle Undone
 * The Dream-Eaters
+* The Innsmouth Conspiracy
+* Edge of the Earth
 
 ### Side Stories
 
 * The Curse of the Rougarou
 * Carnevale of Horrors
 * Murder at the Excelsior Hotel
+* The Midwinter Gala
+* Film Fatale
 
 ## I just want to try this out on my computer
 

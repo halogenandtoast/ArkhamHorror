@@ -597,14 +597,14 @@ instance RunMessage EnemyAttrs where
             mRunWouldMove <- runMaybeT do
               from <- MaybeT $ getLocationOf eid
               source <- hoistMaybe a.movement.source
-              let (whens, _ , _) = batchedTimings batchId (Window.EnemyWouldMove eid source from lid)
+              let (whens, _, _) = batchedTimings batchId (Window.EnemyWouldMove eid source from lid)
               lift $ checkWindows [whens]
             enemyLocation <- field EnemyLocation enemyId
             let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
             afterWindow <- checkAfter $ Window.EnemyMoves eid lid
             pushBatched batchId
               $ maybeToList mRunWouldMove
-              <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+              <> [EnemyEntered eid lid, Do msg]
               <> leaveWindows
               <> [afterWindow]
           else push (EnemyCheckEngagement eid)

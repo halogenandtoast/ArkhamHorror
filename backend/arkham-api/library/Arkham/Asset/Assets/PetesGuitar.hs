@@ -7,6 +7,7 @@ import Arkham.Capability
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype PetesGuitar = PetesGuitar AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -38,7 +39,7 @@ instance RunMessage PetesGuitar where
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
       choices <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
-      chooseOne iid $ targetLabels choices $ only . EnemyMove eid
+      chooseTargetM iid choices $ enemyMoveTo (attrs.ability 1) eid
       doStep 1 msg
       pure a
     DoStep 1 (HandleTargetChoice iid (isAbilitySource attrs 1 -> True) _) -> do

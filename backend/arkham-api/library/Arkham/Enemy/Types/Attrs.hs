@@ -12,6 +12,7 @@ import Arkham.Json
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Modifier (Modifier)
+import Arkham.Movement
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
@@ -64,6 +65,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyLastKnownLocation :: Maybe LocationId
   , enemyReferenceCards :: [CardCode]
   , enemySpawnDetails :: Maybe SpawnDetails
+  , enemyMovement :: Maybe Movement
   }
   deriving stock (Show, Data)
 
@@ -75,6 +77,9 @@ instance Ord EnemyAttrs where
 
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId
+
+instance HasField "movement" EnemyAttrs (Maybe Movement) where
+  getField = enemyMovement
 
 instance HasField "sanityDamage" EnemyAttrs Int where
   getField = enemySanityDamage
@@ -172,4 +177,5 @@ instance FromJSON EnemyAttrs where
     enemyLastKnownLocation <- v .:? "lastKnownLocation"
     enemyReferenceCards <- v .:? "referenceCards" .!= []
     enemySpawnDetails <- v .:? "spawnDetails"
+    enemyMovement <- v .:? "movement"
     pure EnemyAttrs {..}

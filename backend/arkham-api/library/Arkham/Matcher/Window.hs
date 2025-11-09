@@ -115,6 +115,7 @@ data WindowMatcher
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
   | WouldBeMovedBy Timing Who SourceMatcher
+  | EnemyWouldBeMovedBy Timing EnemyMatcher SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
@@ -229,6 +230,7 @@ data WindowMatcher
   | Enters Timing Who Where
   | Leaves Timing Who Where
   | WouldMove Timing Who SourceMatcher FromWhere ToWhere
+  | EnemyWouldMove Timing EnemyMatcher SourceMatcher FromWhere ToWhere
   | Moves Timing Who SourceMatcher FromWhere ToWhere
   | MoveAction Timing Who FromWhere ToWhere
   | OrWindowMatcher [WindowMatcher]

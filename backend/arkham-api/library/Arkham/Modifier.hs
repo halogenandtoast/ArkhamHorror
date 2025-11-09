@@ -379,6 +379,7 @@ data ModifierType
   | ReduceStartingCluesByHalf
   | RemoveFromGameInsteadOfDiscard
   | RemoveKeyword Keyword
+  | RemoveConcealed
   | RemoveSkillIcons [SkillIcon]
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild

@@ -50,7 +50,8 @@ concealedToCardDef c = case c.kind of
   SinisterAspirantC -> Just Enemies.sinisterAspirantC
   TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
   WizardOfTheOrder -> Just Enemies.wizardOfTheOrder
-  _ -> error "Unhandled Concealed Card Kind"
+  DesiderioDelgadoAlvarez -> Just Enemies.desiderioDelgadoAlvarez106
+  _ -> error $ "Unhandled Concealed Card Kind" <> show c.kind
 
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of

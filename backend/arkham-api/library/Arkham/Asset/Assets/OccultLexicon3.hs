@@ -39,8 +39,8 @@ instance RunMessage OccultLexicon3 where
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       chooseOneM iid do
         labeled "Change each \"2\" to a \"3\"" do
-          eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
+          cardResolutionModifier card (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
         labeled "Shuffle it into your deck instead of discarding it" do
-          eventModifier (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
+          cardResolutionModifier card (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
       pure a
     _ -> OccultLexicon3 <$> liftRunMessage msg attrs

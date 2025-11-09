@@ -1276,8 +1276,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     InvestigatorWithMentalTrauma -> pure $ runMatches ((> 0) . attr investigatorMentalTrauma) as
     InvestigatorCanAddCardsToDeck -> pure $ runMatches (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
     InvestigatorCanRemoveCardsFromDeck -> pure $ runMatches (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
-    DiscoveredCluesThis historyProjection -> flip runMatchesM as $ \i -> do
-      (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
+    DiscoveredCluesThis historyProjection ->
+      as & runMatchesM \i -> do
+        (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
     InvestigatorWithKey key -> flip runMatchesM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
     InvestigatorWithSeal kind -> flip runMatchesM as $ \i ->

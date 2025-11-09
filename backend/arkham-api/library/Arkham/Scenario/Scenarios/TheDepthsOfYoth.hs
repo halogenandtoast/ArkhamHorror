@@ -86,7 +86,7 @@ standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [toCampaignLogKey TheRelicIsMissing]}
 
 setupTheDepthsOfYoth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
-setupTheDepthsOfYoth _attrs = do
+setupTheDepthsOfYoth attrs = do
   isReturnTo <- getIsReturnTo
   yigsFury <- getRecordCount YigsFury
 
@@ -158,14 +158,18 @@ setupTheDepthsOfYoth _attrs = do
   setMeta (toMeta startLocation Nothing)
   setCount CurrentDepth 1
 
-  when (startsOnAgenda5 && theHarbingerIsStillAlive) $ placeEnemy harbinger (OutOfPlay PursuitZone)
+  when theHarbingerIsStillAlive do
+    let zone = if startsOnAgenda5 then PursuitZone else SetAsideZone
+    enemy <- placeEnemyCapture harbinger (OutOfPlay zone)
+    startingDamage <- getRecordCount TheHarbingerIsStillAlive
+    when (startingDamage > 0) $ placeTokens attrs enemy #damage startingDamage
+
   when startsOnAgenda6 $ placeEnemy Enemies.yig (OutOfPlay PursuitZone)
 
   setAsidePoisonedCount <- getSetAsidePoisonedCount
   setAside
     $ Assets.relicOfAgesRepossessThePast
-    : [harbinger | theHarbingerIsStillAlive && not startsOnAgenda5]
-      <> [Enemies.yig | not startsOnAgenda6 && yigsFury > 0]
+    : [Enemies.yig | not startsOnAgenda6 && yigsFury > 0]
       <> replicate setAsidePoisonedCount Treacheries.poisoned
       <> setAsideLocations
 

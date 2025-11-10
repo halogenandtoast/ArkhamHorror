@@ -121,6 +121,9 @@
     "pinchInReality": {
       "discard": "Discard half of the non-weakness cards in your hand (rounded up)."
     },
+    "secretsLost": {
+      "hollowed": "Take 1 horror to choose a set-aside hollow and add it to its owner's hand"
+    },
     "doNotExposeConcealed": "Do not expose Concealed Card",
     "doNotRevealConcealed": "Do not reveal Concealed Card"
   },

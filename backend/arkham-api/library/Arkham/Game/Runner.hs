@@ -1458,10 +1458,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                   }
 
           whenPlayEvent <- checkWindows [mkWindow #when $ Window.PlayEvent iid eid]
+          afterPlayEvent <- checkWindows [mkWindow #after $ Window.PlayEvent iid eid]
           pushAll
             [ CardEnteredPlay iid card
             , whenPlayEvent
             , InvestigatorPlayEvent iid eid mtarget windows' zone
+            , afterPlayEvent
             , FinishedEvent eid
             , ResolvedCard iid card
             ]

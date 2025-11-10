@@ -114,6 +114,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         select mtch >>= anyM \enemy -> do
           clueCount <- field fld enemy
           pure $ maybe False (clues >=) clueCount
+      ChooseEnemyCostAndMaybeGroupFieldClueCost lmtch mtch fld -> do
+        clues <- getSpendableClueCount =<< select (Matcher.InvestigatorAt lmtch)
+        select mtch >>= anyM \enemy -> do
+          clueCount <- field fld enemy
+          pure $ maybe False (clues >=) clueCount
       ChooseExtendedCardCost mtcr -> selectAny mtcr
       ChosenEnemyCost eid -> selectAny (Matcher.EnemyWithId eid)
       ChosenCardCost cid -> selectAny (Matcher.basic $ Matcher.CardWithId cid)

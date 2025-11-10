@@ -125,6 +125,7 @@ data Cost
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
   | ChooseEnemyCostAndMaybeFieldClueCost EnemyMatcher (Field Enemy (Maybe Int))
+  | ChooseEnemyCostAndMaybeGroupFieldClueCost LocationMatcher EnemyMatcher (Field Enemy (Maybe Int))
   | ChosenEnemyCost EnemyId
   | ChooseExtendedCardCost ExtendedCardMatcher
   | ChosenCardCost CardId
@@ -266,6 +267,7 @@ displayCostType = \case
   DiscoveredCluesCost -> "Spend discovered clues"
   ChooseEnemyCost _ -> "Choose an enemy"
   ChooseEnemyCostAndMaybeFieldClueCost _ _ -> "Choose an enemy and spend X clues"
+  ChooseEnemyCostAndMaybeGroupFieldClueCost {} -> "Investigators spend X clues"
   ChooseExtendedCardCost _ -> "Choose a card that matches"
   ChosenEnemyCost _ -> "Choose an enemy"
   ChosenCardCost _ -> "Choose a card that matches"

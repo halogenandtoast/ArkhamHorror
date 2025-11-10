@@ -5,6 +5,7 @@ module Arkham.Strategy where
 import Arkham.Card.CardDef
 import Arkham.Id
 import Arkham.Matcher.Asset
+import Arkham.Matcher.Investigator
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Zone
@@ -19,6 +20,7 @@ data DamageStrategy
   | DamageFirst CardDef
   | SingleTarget
   | DamageEvenly
+  | AmongInvestigators InvestigatorMatcher
   | -- Hastur has specific damage rules
     DamageFromHastur
   deriving stock (Show, Eq, Ord, Data)

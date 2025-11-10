@@ -76,6 +76,9 @@ calculate = go
     SumEnemyMaybeFieldCalculation matcher fld -> do
       enemies <- select matcher
       getSum <$> foldMapM (fmap (Sum . fromMaybe 0 . join) . fieldMay fld) enemies
+    SumEnemyFieldCalculation matcher fld -> do
+      enemies <- select matcher
+      getSum <$> foldMapM (fmap (Sum . fromMaybe 0) . fieldMay fld) enemies
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") calculate =<< field fld eid
     EnemyFieldCalculation eid fld -> fromMaybe 0 <$> fieldMay fld eid

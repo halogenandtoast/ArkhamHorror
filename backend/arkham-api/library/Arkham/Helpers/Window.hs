@@ -584,6 +584,7 @@ getTotalDamageAmounts target =
 
 getTotalDamage :: [Window] -> Int
 getTotalDamage ((windowType -> Window.DealtDamage _ _ _ n) : rest) = n + getTotalDamage rest
+getTotalDamage ((windowType -> Window.TakeDamage _ _ _ n) : rest) = n + getTotalDamage rest
 getTotalDamage (_ : rest) = getTotalDamage rest
 getTotalDamage [] = 0
 

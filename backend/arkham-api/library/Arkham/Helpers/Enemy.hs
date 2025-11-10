@@ -40,9 +40,10 @@ import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
 import Arkham.Tracing
-import Arkham.Window (mkAfter, mkWhen)
+import Arkham.Window (mkAfter, mkWhen, windowType)
 import Arkham.Window qualified as Window
 import Arkham.Zone
+import Control.Monad.Trans.Class
 import Data.Foldable (foldrM)
 import Data.List qualified as List
 import Data.Monoid (First (..))
@@ -392,3 +393,19 @@ createWithDoom
   :: Sourceable source => source -> Int -> EnemyCreation Message -> EnemyCreation Message
 createWithDoom source n ec = ec {enemyCreationBefore = [Do (PlaceTokens (toSource source) (toTarget ec.enemy) #doom n)]}
 {-# INLINE createWithDoom #-}
+
+insteadOfDamage
+  :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId)
+  => enemy -> (DamageAssignment -> QueueT Message m ()) -> t m ()
+insteadOfDamage (asId -> eid) body = do
+  let
+    notAfterDamage = \case
+      (windowType -> Window.TakeDamage _ _ (EnemyTarget eid') _) | eid == eid' -> False
+      _ -> True
+  lift do
+    overMessagesM \case
+      CheckWindows ws -> case filter notAfterDamage ws of
+        [] -> pure []
+        ws' -> pure [CheckWindows ws']
+      EnemyDamaged eid' dmg | eid == eid' -> evalQueueT (body dmg)
+      other -> pure [other]

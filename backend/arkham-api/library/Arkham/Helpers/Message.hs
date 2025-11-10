@@ -486,6 +486,10 @@ assignHorrorLabel iid source horror = HorrorLabel iid [assignHorror iid source h
 assignDamage :: Sourceable source => InvestigatorId -> source -> Int -> Message
 assignDamage iid (toSource -> source) damage = InvestigatorAssignDamage iid source DamageAny damage 0
 
+assignDamageWithStrategy
+  :: Sourceable source => InvestigatorId -> source -> DamageStrategy -> Int -> Message
+assignDamageWithStrategy iid (toSource -> source) damageStrategy damage = InvestigatorAssignDamage iid source damageStrategy damage 0
+
 assignHorror :: Sourceable source => InvestigatorId -> source -> Int -> Message
 assignHorror iid (toSource -> source) horror = InvestigatorAssignDamage iid source DamageAny 0 horror
 

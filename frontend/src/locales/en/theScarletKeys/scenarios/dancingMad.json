@@ -14,6 +14,11 @@
       "elderThing": "-1. If there is a concealed mini-card at your location, either take 2 damage or treat this token's modifier as -5."
     }
   },
+  "tooltips": {
+    "falseColorsV2": {
+      "resign": "\"I thought we had a deal!\" You get out of the city while you still can."
+    }
+  },
   "label": {
     "elderThing": "Treat this token's modifier as -{count}.",
     "silenceSpeaks": {

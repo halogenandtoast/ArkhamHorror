@@ -155,6 +155,9 @@ placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
 placeSetAsideLocations_ :: ReverseQueue m => [CardDef] -> m ()
 placeSetAsideLocations_ = pushAll <=< Msg.placeSetAsideLocations
 
+placeSetAsideLocationsMatching_ :: ReverseQueue m => CardMatcher -> m ()
+placeSetAsideLocationsMatching_ matcher = getSetAsideCardsMatching (#location <> matcher) >>= placeSetAsideLocations_ . map toCardDef
+
 placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
@@ -452,6 +455,11 @@ assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid sourc
 assignDamageTo
   :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
 assignDamageTo source damage iid = assignDamage iid source damage
+
+assignDamageWithStrategy
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> DamageStrategy -> Int -> m ()
+assignDamageWithStrategy _ _ _ 0 = pure ()
+assignDamageWithStrategy iid (toSource -> source) strat damage = push $ Msg.assignDamageWithStrategy iid source strat damage
 
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()

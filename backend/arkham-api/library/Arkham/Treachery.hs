@@ -596,6 +596,8 @@ allTreacheries =
     , --- Dark Veiling [tsk]
       SomeTreacheryCard seeingShadows
     , SomeTreacheryCard figuresInTheDark
+    , --- Cleanup Crew [tsk]
+      SomeTreacheryCard swiftRetreat
     , --- Scarlet Sorcery [tsk]
       SomeTreacheryCard boundInRed
     , SomeTreacheryCard keyCharge

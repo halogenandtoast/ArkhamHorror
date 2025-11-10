@@ -161,6 +161,10 @@ allEncounterEnemyCards =
       , coterieAgentA
       , coterieAgentB
       , coterieAgentC
+      , coterieAssassinA
+      , coterieAssassinB
+      , coterieEnforcerA
+      , coterieEnforcerB
       , coterieEnvoy
       , covenInitiate
       , crazedGuest
@@ -2968,6 +2972,34 @@ coterieEnvoy =
           [ Keyword.Aloof
           , Keyword.Patrol (LocationWithConcealedCard <> not_ (LocationWithEnemy $ EnemyIs "09720"))
           ]
+    }
+
+coterieEnforcerA :: CardDef
+coterieEnforcerA =
+  (enemy "09726a" "Coterie Enforcer (A)" CleanupCrew 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieEnforcerA (Static 1)
+    }
+
+coterieEnforcerB :: CardDef
+coterieEnforcerB =
+  (enemy "09726b" "Coterie Enforcer (B)" CleanupCrew 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieEnforcerB (Static 1)
+    }
+
+coterieAssassinA :: CardDef
+coterieAssassinA =
+  (enemy "09727a" "Coterie Assassin (A)" CleanupCrew 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieAssassinA (Static 1)
+    }
+
+coterieAssassinB :: CardDef
+coterieAssassinB =
+  (enemy "09727b" "Coterie Assassin (B)" CleanupCrew 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieAssassinB (Static 1)
     }
 
 paracausalEntity :: CardDef

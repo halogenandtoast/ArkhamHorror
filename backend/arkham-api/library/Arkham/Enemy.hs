@@ -515,6 +515,11 @@ allEnemies =
     , SomeEnemyCard coterieAgentC
     , --- Mysteries Abound [tsk]
       SomeEnemyCard coterieEnvoy
+    , --- Cleanup Crew [tsk]
+      SomeEnemyCard coterieEnforcerA
+    , SomeEnemyCard coterieEnforcerB
+    , SomeEnemyCard coterieAssassinA
+    , SomeEnemyCard coterieAssassinB
     , --- Outsiders [tsk]
       SomeEnemyCard paracausalEntity
     , SomeEnemyCard apocalypticPresage

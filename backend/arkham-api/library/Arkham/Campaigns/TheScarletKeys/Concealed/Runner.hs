@@ -5,13 +5,12 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Runner where
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
-import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Constants
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Fight.Types
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, evade, fight)
@@ -34,24 +33,6 @@ isEnemyTarget c target =
   isTarget (EnemyId $ coerce $ unConcealedCardId c.id) target || isActionTarget c target
  where
   isActionTarget a = isTarget a . toProxyTarget
-
-concealedToCardDef :: ConcealedCard -> Maybe CardDef
-concealedToCardDef c = case c.kind of
-  Decoy -> Nothing
-  AcolyteAny -> Just Enemies.acolyte
-  ApportionedKa -> Just Enemies.apportionedKa
-  CoterieAgentA -> Just Enemies.coterieAgentA
-  CoterieAgentB -> Just Enemies.coterieAgentB
-  CoterieAgentC -> Just Enemies.coterieAgentC
-  EmissaryFromYuggoth -> Just Enemies.emissaryFromYuggoth
-  LaChicaRoja -> Just Enemies.laChicaRojaTheGirlInTheCarmineCoat
-  SinisterAspirantA -> Just Enemies.sinisterAspirantA
-  SinisterAspirantB -> Just Enemies.sinisterAspirantB
-  SinisterAspirantC -> Just Enemies.sinisterAspirantC
-  TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
-  WizardOfTheOrder -> Just Enemies.wizardOfTheOrder
-  DesiderioDelgadoAlvarez -> Just Enemies.desiderioDelgadoAlvarez106
-  _ -> error $ "Unhandled Concealed Card Kind" <> show c.kind
 
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of

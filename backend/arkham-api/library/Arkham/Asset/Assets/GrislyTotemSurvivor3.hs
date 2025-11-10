@@ -30,7 +30,7 @@ instance HasAbilities GrislyTotemSurvivor3 where
   getAbilities (GrislyTotemSurvivor3 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (CommittedCard Timing.After You AnyCard)
+          (CommittedCard Timing.After You #any)
           (ExhaustCost $ toTarget a)
     ]
 

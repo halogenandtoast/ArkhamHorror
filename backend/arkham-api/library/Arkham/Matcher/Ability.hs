@@ -38,6 +38,7 @@ data AbilityMatcher
   | AbilityIsSkillTest
   | AbilityOnEncounterCard
   | AbilityOnCard CardMatcher
+  | AbilityOnExtendedCard ExtendedCardMatcher
   | AbilityOnCardControlledBy InvestigatorId
   | AssetAbility AssetMatcher
   | HauntedAbility

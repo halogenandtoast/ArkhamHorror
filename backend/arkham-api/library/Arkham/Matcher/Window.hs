@@ -262,7 +262,7 @@ data WindowMatcher
   | NotWindow WindowMatcher
   | CommittingCardsFromHandToSkillTestStep Timing Who
   | CommittedCards Timing Who CardListMatcher
-  | CommittedCard Timing Who CardMatcher
+  | CommittedCard Timing Who ExtendedCardMatcher
   | ActivateAbility Timing Who AbilityMatcher
   | Explored Timing Who LocationMatcher ExploreMatcher
   | AttemptExplore Timing Who
@@ -329,6 +329,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CommittedCard" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ CommittedCard a b (BasicCardMatch c)
+          Right (a, b, c) -> pure $ CommittedCard a b c
       "CancelledOrIgnoredCardOrGameEffect" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

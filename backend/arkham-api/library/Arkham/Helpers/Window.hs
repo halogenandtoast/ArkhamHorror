@@ -1028,10 +1028,17 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.CommittingCardsFromHandToSkillTestStep timing whoMatcher -> guardTiming timing $ \case
       Window.CommittingCardsFromHandToSkillTestStep who -> matchWho iid who whoMatcher
       _ -> noMatch
-    Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
+    Matcher.CommittedCard timing whoMatcher (BasicCardMatch cardMatcher) -> guardTiming timing $ \case
       Window.CommittedCard who card ->
         andM
           [ pure $ cardMatch card cardMatcher
+          , matchWho iid who whoMatcher
+          ]
+      _ -> noMatch
+    Matcher.CommittedCard timing whoMatcher extendedCardMatcher -> guardTiming timing $ \case
+      Window.CommittedCard who card ->
+        andM
+          [ extendedCardMatch card extendedCardMatcher
           , matchWho iid who whoMatcher
           ]
       _ -> noMatch

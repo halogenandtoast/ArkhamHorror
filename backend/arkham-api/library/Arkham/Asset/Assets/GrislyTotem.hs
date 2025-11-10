@@ -22,7 +22,7 @@ grislyTotem = asset GrislyTotem Cards.grislyTotem
 
 instance HasAbilities GrislyTotem where
   getAbilities (GrislyTotem a) =
-    [ restricted a 1 ControlsThis $ ReactionAbility (CommittedCard #after You AnyCard) (exhaust a)
+    [ restricted a 1 ControlsThis $ ReactionAbility (CommittedCard #after You #any) (exhaust a)
     ]
 
 getCard :: [Window] -> Card

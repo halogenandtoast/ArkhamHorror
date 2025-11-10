@@ -53,6 +53,7 @@ interface Filter {
   set: string | null
   classes: string[]
   traits: string[]
+  encounterSets: string[]
 }
 
 interface CardSet {
@@ -71,7 +72,7 @@ interface CardCycle {
   code: string
 }
 
-const filter = ref<Filter>({ cardTypes: [], text: [], level: null, cycle: null, set: "core", classes: [], traits: []})
+const filter = ref<Filter>({ cardTypes: [], text: [], level: null, cycle: null, set: "core", classes: [], traits: [], encounterSets: []})
 
 await fetchData()
 
@@ -153,7 +154,7 @@ const setCountText = (set: CardSet) => {
 const cards = computed(() => {
   if (!allCards.value) return []
 
-  const { classes, traits, cycle, set, text, level, cardTypes } = filter.value
+  const { classes, encounterSets, traits, cycle, set, text, level, cardTypes } = filter.value
   const cycleSets = cycle ? sets.filter((s) => s.cycle == cycle) : null
 
   return allCards.value.filter((c) => {
@@ -174,6 +175,12 @@ const cards = computed(() => {
 
     if (traits.length > 0) {
       if (!c.cardTraits.some((cs) => traits.includes(cs.toLowerCase()))) return false
+    }
+
+    if (encounterSets.length > 0) {
+      const match: ArkhamDBCard | null = store.getDbCard(c.art)
+      if (!match) return false
+      return encounterSets.includes(match.encounter_code)
     }
 
     if (text.length > 0) {
@@ -202,6 +209,7 @@ const setFilter = () => {
   let set = null
   let classes : string[] = []
   let traits : string[] = []
+  let encounterSets : string[] = []
 
   const matchCardTypes = queryString.match(/t:([^ ]*)/)
 
@@ -245,7 +253,14 @@ const setFilter = () => {
     traits = matchTraits[1].split('|')
   }
 
-  filter.value = { classes, cycle, set, cardTypes, level, traits, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
+  const matchEncounterSets = queryString.match(/m:([^ ]*)/)
+
+  if (matchEncounterSets) {
+    queryString = queryString.replace(/m:([^ ]*)/, '')
+    encounterSets = matchEncounterSets[1].split('|').map((s) => s.toLowerCase())
+  }
+
+  filter.value = { classes, cycle, set, cardTypes, level, traits, encounterSets, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
 
 }
 
@@ -274,6 +289,10 @@ const filterString = (f: Filter): string => {
 
   if (f.traits.length > 0) {
     result += ` k:${f.traits.join('|')}`
+  }
+
+  if (f.encounterSets.length > 0) {
+    result += ` m:${f.encounterSets.join('|')}`
   }
 
   return result.trim()

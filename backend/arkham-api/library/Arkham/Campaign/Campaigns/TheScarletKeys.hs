@@ -186,6 +186,11 @@ instance RunMessage TheScarletKeys where
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
     CampaignSpecific "desidarioVersion" v -> do
       pure $ updateAttrs c (storeL . at "desidarioVersion" ?~ v)
+    CampaignSpecific "unlockedTheta" v -> do
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta (thetaL ?~ toResult v)
     CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
       ok <- getHasRecord TuwileMasaiFledToBermuda
       flavor do
@@ -201,7 +206,7 @@ instance RunMessage TheScarletKeys where
         countHasRecords
           [ EceDoesNotTrustTheCell
           , YouHaventSeenTheLastOfLaChicaRoja
-          , YouHaventSeenTheLastOfDesi
+          , YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
           , YouHaventSeenTheLastOfTheClaretKnight
           , YouHaventSeenTheLastOfThorn
           , YouHaventSeenTheLastOfAlikiZoniUperetria

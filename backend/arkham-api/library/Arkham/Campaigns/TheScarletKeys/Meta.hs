@@ -125,7 +125,7 @@ keyWithEnemy :: HasCardCode enemy => enemy -> KeyStatus
 keyWithEnemy = KeyWithEnemy . toCardCode
 
 initMeta :: TheScarletKeysMeta
-initMeta = TheScarletKeysMeta [London] initUnlockedLocations mempty worldMap London []
+initMeta = TheScarletKeysMeta [London] initUnlockedLocations mempty worldMap London [] Nothing
 
 initUnlockedLocations :: [MapLocationId]
 initUnlockedLocations =
@@ -186,6 +186,7 @@ data TheScarletKeysMeta = TheScarletKeysMeta
   , campaignMap :: WorldMap
   , currentLocation :: MapLocationId
   , canReset :: [MapLocationId]
+  , theta :: Maybe Int
   }
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

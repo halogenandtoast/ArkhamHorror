@@ -4,10 +4,12 @@ import Arkham.Prelude
 
 data TheScarletKeysKey
   = AmaranthHasLeftTheCoterie
+  | DesiIsInYourDebt
   | EceDoesNotTrustTheCell
   | EceTrustsTheCell
   | ErasedFromExistence
   | LaChicaRojaIsOnYourSide
+  | TheCellDidntDiscoverTheTruthInHavana
   | TheCellHasBeenAmbushed
   | TheCellIsDecievingEce
   | TheCellIsWorkingWithEce
@@ -22,11 +24,12 @@ data TheScarletKeysKey
   | TuwileMasaiIsOnYourSide
   | YouHaventSeenTheLastOfAlikiZoniUperetria
   | YouHaventSeenTheLastOfAmaranth
-  | YouHaventSeenTheLastOfDesi
+  | YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
   | YouHaventSeenTheLastOfLaChicaRoja
   | YouHaventSeenTheLastOfTheClaretKnight
   | YouHaventSeenTheLastOfTheRedGlovedMan
   | YouHaventSeenTheLastOfTheSanguineWatcher
   | YouHaventSeenTheLastOfThorn
+  | YouKnowThePassphrase
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

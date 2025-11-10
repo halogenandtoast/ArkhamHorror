@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
+import type { ConcealedCard } from '@/arkham/types/ConcealedCard';
 import { useMenu } from '@/composeable/menu';
 
 const props = defineProps<{
@@ -23,8 +24,6 @@ addEntry({
   action: () => emit('close')
 })
 
-
-
 const imageName = computed(() => {
   switch (props.card.kind) {
     case "Decoy": return 'decoy'
@@ -36,8 +35,8 @@ const imageName = computed(() => {
     case "CoterieAgentA": return 'coterie-agent-a'
     case "CoterieAgentB": return 'coterie-agent-b'
     case "CoterieAgentC": return 'coterie-agent-c'
-    case "CoterieAssassinA": return 'coterie-assasin-a'
-    case "CoterieAssassinB": return 'coterie-assasin-b'
+    case "CoterieAssassinA": return 'coterie-assassin-a'
+    case "CoterieAssassinB": return 'coterie-assassin-b'
     case "CoterieEnforcerA": return 'coterie-enforcer-a'
     case "CoterieEnforcerB": return 'coterie-enforcer-b'
     case "DecoyVoidChimeraEarsplitter": return 'decoy-void-chimera-earsplitter'

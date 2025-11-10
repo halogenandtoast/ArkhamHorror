@@ -149,6 +149,8 @@ concealedKindToCardDef = \case
   DesiderioDelgadoAlvarez -> Just Cards.desiderioDelgadoAlvarez106
   CoterieEnforcerA -> Just Cards.coterieEnforcerA
   CoterieEnforcerB -> Just Cards.coterieEnforcerB
+  CoterieAssassinA -> Just Cards.coterieAssassinA
+  CoterieAssassinB -> Just Cards.coterieAssassinB
   _ -> Nothing
 
 allConcealedCardDefs :: [CardDef]

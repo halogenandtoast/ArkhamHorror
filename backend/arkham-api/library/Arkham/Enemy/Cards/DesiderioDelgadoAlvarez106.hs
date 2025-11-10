@@ -45,4 +45,8 @@ instance RunMessage DesiderioDelgadoAlvarez106 where
         iid <- fromMaybe iid' <$> getSourceController dmg.source
         automaticallyEvadeEnemy iid attrs
       pure e
+    UseThisAbility _iid' (isSource attrs -> True) 2 -> do
+      selectEach (enemyIs Cards.desiderioDelgadoAlvarez107) \desi ->
+        nonAttackEnemyDamage Nothing desi 2 attrs
+      pure e
     _ -> DesiderioDelgadoAlvarez106 <$> liftRunMessage msg attrs

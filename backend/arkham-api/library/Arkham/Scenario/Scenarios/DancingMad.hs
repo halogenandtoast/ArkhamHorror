@@ -6,6 +6,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
@@ -24,6 +26,7 @@ import Arkham.Modifier
 import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DancingMad.Helpers
 import Arkham.Trait (Trait (Coterie, Detective, Police))
@@ -178,4 +181,28 @@ instance RunMessage DancingMad where
         Just iid -> do
           let hollowed = getMetaKeyDefault "removedHollows" mempty attrs
           pure $ DancingMad $ attrs & setMetaKey "removedHollows" (Map.insertWith (<>) iid [card] hollowed)
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          markTime 1
+          record TheCellDidntDiscoverTheTruthInHavana
+          record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
+          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarez106
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+        Resolution 1 -> do
+          markTime 2
+          record DesiIsInYourDebt
+          record YouKnowThePassphrase
+          time <- getTime
+          campaignSpecific "unlockedTheta" (min 35 $ time + 6)
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+        Resolution 2 -> do
+          markTime 1
+          record TheCellDidntDiscoverTheTruthInHavana
+          record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
+          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarez106
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+        _ -> error "Unknown resolution for Dancing Mad"
+      endOfScenario
+      pure s
     _ -> DancingMad <$> liftRunMessage msg attrs

@@ -280,6 +280,21 @@ payCost msg c iid skipAdditionalCosts cost = do
           , pay $ ClueCost (Static clues)
           ]
       pure c
+    ChooseEnemyCostAndMaybeGroupFieldClueCost lmtch mtch fld -> do
+      spendable <- getSpendableClueCount =<< select (InvestigatorAt lmtch)
+      enemies <-
+        select mtch >>= mapMaybeM \enemy -> runMaybeT do
+          clueCount <- MaybeT $ field fld enemy
+          guard $ spendable >= clueCount
+          pure (enemy, clueCount)
+
+      push $ chooseOne player $ flip map enemies \(enemy, clues) ->
+        targetLabel
+          enemy
+          [ pay $ ChosenEnemyCost enemy
+          , pay $ GroupClueCost (Static clues) lmtch
+          ]
+      pure c
     ChosenEnemyCost eid -> withPayment $ ChosenEnemyPayment eid
     CostIfCustomization customization cost1 cost2 -> do
       case source of

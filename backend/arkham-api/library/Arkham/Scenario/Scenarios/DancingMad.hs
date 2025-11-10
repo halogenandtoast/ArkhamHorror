@@ -106,16 +106,18 @@ instance RunMessage DancingMad where
 
       startAt
         =<< place (if n == 1 then Locations.cafeLunaBastionOfRemembrance else Locations.cafeLunaCoterieHaunt)
-      placeAll
-        [ Locations.elMalecon
-        , Locations.jardinesDeLaTropical
-        , Locations.granTeatroDeLaHabana
-        , Locations.miramarYachtClub
-        , Locations.plazaHotel
-        ]
+
+      let otherLocations =
+            [ Locations.elMalecon
+            , Locations.jardinesDeLaTropical
+            , Locations.granTeatroDeLaHabana
+            , Locations.miramarYachtClub
+            , Locations.plazaHotel
+            ]
 
       if n == 1
         then do
+          placeAll otherLocations
           setAside [Enemies.desiderioDelgadoAlvarez106]
           investigators <- allInvestigators
           desi <- fromGathered1 Assets.desiderioDelgadoAlvarez
@@ -124,14 +126,14 @@ instance RunMessage DancingMad where
             portraits investigators $ createAssetAt_ desi . InPlayArea
         else do
           setAside
-            [ Enemies.desiderioDelgadoAlvarez106
-            , Enemies.desiderioDelgadoAlvarez107
-            , Enemies.otherworldlyMimic
-            , Enemies.otherworldlyMimic
-            , Enemies.paradigmEfficer
-            , Enemies.paradigmEfficer
-            ]
-
+            $ [ Enemies.desiderioDelgadoAlvarez106
+              , Enemies.desiderioDelgadoAlvarez107
+              , Enemies.otherworldlyMimic
+              , Enemies.otherworldlyMimic
+              , Enemies.paradigmEfficer
+              , Enemies.paradigmEfficer
+              ]
+            <> otherLocations
           lead <- getLead
           desi <- fetchCard Enemies.desiderioDelgadoAlvarez106
           drawCard lead desi

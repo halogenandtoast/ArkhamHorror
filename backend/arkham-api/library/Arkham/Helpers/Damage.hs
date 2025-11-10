@@ -26,3 +26,4 @@ damageTypeMatches strategy = \case
     SingleTarget -> False
     DamageEvenly -> False
     DamageFromHastur -> False
+    AmongInvestigators {} -> False

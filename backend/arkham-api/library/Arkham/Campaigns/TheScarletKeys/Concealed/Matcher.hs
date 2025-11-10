@@ -13,6 +13,7 @@ import Data.Aeson.TH
 data ConcealedCardMatcher
   = ConcealedCardWithPlacement Placement
   | ConcealedCardAny
+  | NotConcealedCard ConcealedCardMatcher
   | ExposableConcealedCard Source
   | ConcealedCardOneOf [ConcealedCardMatcher]
   | ConcealedCardMatchAll [ConcealedCardMatcher]
@@ -24,6 +25,9 @@ pattern IsDecoy :: ConcealedCardMatcher
 pattern IsDecoy <- ConcealedCardIs Decoy
   where
     IsDecoy = ConcealedCardIs Decoy
+
+instance Not ConcealedCardMatcher where
+  not_ = NotConcealedCard
 
 instance OneOf ConcealedCardMatcher where
   oneOf = ConcealedCardOneOf

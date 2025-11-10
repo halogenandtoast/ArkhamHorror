@@ -1822,6 +1822,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 ]
           let
             go = \case
+              AmongInvestigators imatcher -> do
+                select imatcher <&> \case
+                  [] -> []
+                  [iid'] -> [damageInvestigator iid' True]
+                  xs -> [damageInvestigator iid' False | iid' <- xs]
               DamageAssetsFirst amatcher -> do
                 healthDamageableAssets' <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
                 let
@@ -1925,6 +1930,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 ]
           let
             go = \case
+              AmongInvestigators imatcher -> do
+                select imatcher <&> \case
+                  [] -> []
+                  [iid'] -> [damageInvestigator iid' True]
+                  xs -> [damageInvestigator iid' False | iid' <- xs]
               DamageAssetsFirst _ -> do
                 let
                   targetCount =

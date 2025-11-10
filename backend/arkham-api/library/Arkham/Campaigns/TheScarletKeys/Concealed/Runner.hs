@@ -133,6 +133,20 @@ instance RunMessage ConcealedCard where
       inShadows <- selectAny (EnemyWithPlacement InTheShadows)
       unless inShadows $ push RemoveAllConcealed
       pure c
+    DoStep 3 msg'@(Flip iid _ (isTarget c -> True)) -> do
+      case concealedToCardDef c of
+        Nothing -> case c.kind of
+          Decoy -> removeFromGame (toTarget c)
+          _ -> pure ()
+        Just def -> do
+          enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title
+          chooseOrRunOneM iid do
+            targets enemies \enemy -> do
+              case c.placement of
+                AtLocation location -> enemyMoveToIfInPlay c enemy location
+                _ -> error "invalid placement for concealed card"
+              doStep 2 msg'
+      pure $ c {concealedCardPlacement = Unplaced}
     AttackEnemy eid choose | eid == coerce (unConcealedCardId c.id) -> do
       let iid = choose.investigator
       let source = choose.source

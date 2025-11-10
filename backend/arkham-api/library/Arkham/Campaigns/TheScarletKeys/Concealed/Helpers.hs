@@ -39,6 +39,10 @@ exposeConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
 exposeConcealed iid source cid = doFlip iid source cid
 
+moveFromShadows
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
+moveFromShadows iid source cid = push $ Msg.DoStep 3 $ Msg.Flip iid (toSource source) (toTarget cid)
+
 revealConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
 revealConcealed iid source cid = push $ Msg.LookAtRevealed iid (toSource source) (toTarget cid)

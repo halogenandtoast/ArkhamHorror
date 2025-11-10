@@ -17,10 +17,10 @@ export type ConcealedCardKind
   | 'CoterieAgentA'
   | 'CoterieAgentB'
   | 'CoterieAgentC'
-  | 'CoterieAssasinA'
-  | 'CoterieAssasinB'
-  | 'CoteriaEnforcerA'
-  | 'CoteriaEnforcerB'
+  | 'CoterieAssassinA'
+  | 'CoterieAssassinB'
+  | 'CoterieEnforcerA'
+  | 'CoterieEnforcerB'
   | 'DecoyVoidChimeraEarsplitter'
   | 'DecoyVoidChimeraFellbeak'
   | 'DecoyVoidChimeraFellhound'
@@ -47,10 +47,10 @@ export const concealedKindCardDecoder: JsonDecoder.Decoder<ConcealedCardKind> = 
   JsonDecoder.literal('CoterieAgentA'),
   JsonDecoder.literal('CoterieAgentB'),
   JsonDecoder.literal('CoterieAgentC'),
-  JsonDecoder.literal('CoterieAssasinA'),
-  JsonDecoder.literal('CoterieAssasinB'),
-  JsonDecoder.literal('CoteriaEnforcerA'),
-  JsonDecoder.literal('CoteriaEnforcerB'),
+  JsonDecoder.literal('CoterieAssassinA'),
+  JsonDecoder.literal('CoterieAssassinB'),
+  JsonDecoder.literal('CoterieEnforcerA'),
+  JsonDecoder.literal('CoterieEnforcerB'),
   JsonDecoder.literal('DecoyVoidChimeraEarsplitter'),
   JsonDecoder.literal('DecoyVoidChimeraFellbeak'),
   JsonDecoder.literal('DecoyVoidChimeraFellhound'),

@@ -512,6 +512,7 @@ allEncounterTreacheryCards =
       , strangeSigns
       , substanceDissimulation
       , supernaturalTempest
+      , swiftRetreat
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
@@ -2959,6 +2960,12 @@ figuresInTheDark =
     (treachery "09725" "Figures in the Dark" DarkVeiling 2)
       { cdCardTraits = setFromList [Scheme]
       }
+
+swiftRetreat :: CardDef
+swiftRetreat =
+  (treachery "09728" "Swift Retreat" CleanupCrew 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
 
 boundInRed :: CardDef
 boundInRed =

@@ -17,8 +17,8 @@ data ConcealedCardKind
   | CoterieAgentA
   | CoterieAgentB
   | CoterieAgentC
-  | CoterieAssasinA
-  | CoterieAssasinB
+  | CoterieAssassinA
+  | CoterieAssassinB
   | DecoyVoidChimeraEarsplitter
   | DecoyVoidChimeraFellbeak
   | DecoyVoidChimeraFellhound
@@ -34,6 +34,6 @@ data ConcealedCardKind
   | TzuSanNiang
   | VoidChimeraTrueForm
   | WizardOfTheOrder
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Enum, Bounded)
 
 $(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''ConcealedCardKind)

@@ -6,10 +6,12 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Query
 import Arkham.Campaigns.TheScarletKeys.I18n
+import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Location
@@ -125,3 +127,29 @@ pattern InvestigatorCanExpose :: InvestigatorMatcher
 pattern InvestigatorCanExpose <- InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
   where
     InvestigatorCanExpose = InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+
+concealedToCardDef :: ConcealedCard -> Maybe CardDef
+concealedToCardDef c = concealedKindToCardDef c.kind
+
+concealedKindToCardDef :: ConcealedCardKind -> Maybe CardDef
+concealedKindToCardDef = \case
+  Decoy -> Nothing
+  AcolyteAny -> Just Cards.acolyte
+  ApportionedKa -> Just Cards.apportionedKa
+  CoterieAgentA -> Just Cards.coterieAgentA
+  CoterieAgentB -> Just Cards.coterieAgentB
+  CoterieAgentC -> Just Cards.coterieAgentC
+  EmissaryFromYuggoth -> Just Cards.emissaryFromYuggoth
+  LaChicaRoja -> Just Cards.laChicaRojaTheGirlInTheCarmineCoat
+  SinisterAspirantA -> Just Cards.sinisterAspirantA
+  SinisterAspirantB -> Just Cards.sinisterAspirantB
+  SinisterAspirantC -> Just Cards.sinisterAspirantC
+  TheRedGlovedMan -> Just Cards.theRedGlovedManShroudedInMystery
+  WizardOfTheOrder -> Just Cards.wizardOfTheOrder
+  DesiderioDelgadoAlvarez -> Just Cards.desiderioDelgadoAlvarez106
+  CoterieEnforcerA -> Just Cards.coterieEnforcerA
+  CoterieEnforcerB -> Just Cards.coterieEnforcerB
+  _ -> Nothing
+
+allConcealedCardDefs :: [CardDef]
+allConcealedCardDefs = Cards.desiderioDelgadoAlvarez107 : mapMaybe concealedKindToCardDef [minBound .. maxBound]

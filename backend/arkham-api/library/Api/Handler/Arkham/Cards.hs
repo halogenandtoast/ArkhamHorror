@@ -53,6 +53,8 @@ getApiV1ArkhamCardsR = do
       , "07209b"
       , "09586b"
       , "09716b"
+      , "09726b"
+      , "09727b"
       ]
     safeDCodes = ["03084d"]
 

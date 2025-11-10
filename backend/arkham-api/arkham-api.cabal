@@ -1780,6 +1780,10 @@ library
       Arkham.Enemy.Cards.CoterieAgentA
       Arkham.Enemy.Cards.CoterieAgentB
       Arkham.Enemy.Cards.CoterieAgentC
+      Arkham.Enemy.Cards.CoterieAssassinA
+      Arkham.Enemy.Cards.CoterieAssassinB
+      Arkham.Enemy.Cards.CoterieEnforcerA
+      Arkham.Enemy.Cards.CoterieEnforcerB
       Arkham.Enemy.Cards.CoterieEnvoy
       Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedGuest
@@ -4691,6 +4695,7 @@ library
       Arkham.Treachery.Cards.Stupor
       Arkham.Treachery.Cards.SubstanceDissimulation
       Arkham.Treachery.Cards.SupernaturalTempest
+      Arkham.Treachery.Cards.SwiftRetreat
       Arkham.Treachery.Cards.Syzygy
       Arkham.Treachery.Cards.TakenCaptive
       Arkham.Treachery.Cards.TasteOfLifeblood

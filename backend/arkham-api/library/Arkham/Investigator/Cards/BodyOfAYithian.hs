@@ -34,7 +34,7 @@ instance HasAbilities BodyOfAYithian where
     [ playerLimit PerTestOrAbility
         $ selfAbility a 1 DuringYourSkillTest
         $ freeReaction
-        $ CommittedCard #after You AnyCard
+        $ CommittedCard #after You #any
     ]
 
 instance HasChaosTokenValue BodyOfAYithian where

@@ -28,6 +28,7 @@ import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Helpers (pattern HollowedCard)
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types hiding (key)
 import Arkham.Card
@@ -1653,6 +1654,9 @@ abilityMatches a@Ability {..} = \case
       , abilitySource `sourceMatches` M.EncounterCardSource
       ]
   AbilityOnCard cardMatcher -> sourceMatches abilitySource (M.SourceWithCard cardMatcher)
+  AbilityOnExtendedCard extendedCardMatcher -> do
+    ecards <- select extendedCardMatcher
+    sourceMatches abilitySource (M.SourceWithCard $ mapOneOf (CardWithId . toCardId) ecards)
 
 getAbilitiesMatching :: (HasGame m, Tracing m) => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
@@ -1728,12 +1732,15 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityMatches xs -> foldM go as xs
     AbilityOneOf xs -> nubOrdOn (.ref) . concat <$> traverse (go as) xs
     AbilityOnEncounterCard ->
-      filterM (\a -> a.source `sourceMatches` M.EncounterCardSource)
-        $ filter
+      as
+        & filter
           ( \a -> a.index `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove]
           )
-          as
+        & filterM (\a -> a.source `sourceMatches` M.EncounterCardSource)
     AbilityOnCard cardMatcher -> filterM (\a -> a.source `sourceMatches` M.SourceWithCard cardMatcher) as
+    AbilityOnExtendedCard extendedCardMatcher -> do
+      ecards <- select extendedCardMatcher
+      as & filterM \a -> a.source `sourceMatches` M.SourceWithCard (mapOneOf (CardWithId . toCardId) ecards)
 
 getGameAbilities :: (HasGame m, Tracing m) => m [Ability]
 getGameAbilities = do
@@ -4932,6 +4939,9 @@ instance Query ExtendedCardMatcher where
           iids <- select who
           names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
           pure $ count (== name) names > 1
+      CardWithHollowedCopy -> do
+        hollows <- selectMap toTitle HollowedCard
+        pure $ cs & filter \c -> toTitle c `elem` hollows
       InEncounterDiscard -> do
         cards <- scenarioFieldMap ScenarioDiscard (map toCard)
         pure $ filter (`elem` cards) cs

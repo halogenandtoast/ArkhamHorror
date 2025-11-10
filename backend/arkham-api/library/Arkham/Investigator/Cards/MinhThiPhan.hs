@@ -26,7 +26,7 @@ instance HasAbilities MinhThiPhan where
     [ limitedAbility (PerInvestigatorLimit PerRound 1)
         $ restricted attrs 1 Self
         $ freeReaction
-        $ CommittedCard #after (affectsOthers $ at_ YourLocation) AnyCard
+        $ CommittedCard #after (affectsOthers $ at_ YourLocation) #any
     ]
 
 instance HasChaosTokenValue MinhThiPhan where

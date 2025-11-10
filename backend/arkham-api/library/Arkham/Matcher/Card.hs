@@ -49,6 +49,7 @@ data ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher
   | CardWithCopyInHand Who
+  | CardWithHollowedCopy
   | CardIsAttachedToLocation LocationMatcher
   | CardIsAttachedToEncounterCardAt LocationMatcher
   | NotThisCard

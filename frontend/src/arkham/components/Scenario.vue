@@ -86,6 +86,7 @@ const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
+const forcedShowHollowed = ref(false)
 const locationMap = ref<Element | null>(null)
 const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
@@ -411,6 +412,16 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 // Reactive
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
+const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
+  cardRowTitle.value = title
+  showCards.ref = cards
+  viewingDiscard.value = isDiscards
+}
+const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
+const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
+const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
+const hideCards = () => showCards.ref = noCards
+const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 
 // Watchers
 watchEffect(() => {
@@ -578,16 +589,6 @@ function toggleZoom(e: MouseEvent) {
   }
 }
 
-const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
-  cardRowTitle.value = title
-  showCards.ref = cards
-  viewingDiscard.value = isDiscards
-}
-const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
-const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
-const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
-const hideCards = () => showCards.ref = noCards
-const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
   c.tag === "GridLabel" && c.gridLabel === u
 )

@@ -2370,7 +2370,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     slots <- foldM handleSlotType slotsWithoutAsset slotTypes
 
     pure $ a & handL %~ filter (/= assetCard) & slotsL .~ slots
-  RemoveCampaignCard cardDef -> do
+  RemoveCampaignCardFromDeck iid cardDef | iid == investigatorId -> do
     pure
       $ a
       & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)

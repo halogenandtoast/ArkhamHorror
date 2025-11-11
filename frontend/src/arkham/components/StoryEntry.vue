@@ -386,7 +386,17 @@ a.button {
   &:has(.card) {
     flex-direction: row;
     gap: 20px;
+    flex-wrap: wrap;
   }
+
+  @media (max-width: 600px) {
+    &:has(.card) {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+  }
+
   :deep(div.wolgast) {
     font-family: "Wolgast";
     text-align: center;
@@ -417,6 +427,7 @@ a.button {
       border-radius: 4%;
     }
   }
+
 }
 
 .pick-cards {
@@ -452,5 +463,14 @@ a.button {
   border: 1px solid rgba(0, 0, 0, 0.9);
   padding: 10px;
   border-radius: 10px;
+}
+
+:deep(.card) {
+  border-radius: 10px;
+  width: clamp(200px, 25vw, 400px);
+}
+
+:deep(div) > :has(.card) {
+  flex-shrink: 0;
 }
 </style>

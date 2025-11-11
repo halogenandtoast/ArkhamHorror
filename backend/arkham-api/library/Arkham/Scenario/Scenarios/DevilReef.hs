@@ -170,7 +170,7 @@ instance RunMessage DevilReef where
       pure s
     ResolveChaosToken _ Tablet iid -> do
       when (isHardExpert attrs) do
-        whenMatch iid (InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+        whenMatch iid (not_ $ InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       when (isHardExpert attrs) do
@@ -186,7 +186,7 @@ instance RunMessage DevilReef where
               if engagedWithYou
                 then pushAll [DisengageEnemy iid eid, EnemyEngageInvestigator eid iid]
                 else push $ EnemyEngageInvestigator eid iid
-          Tablet -> whenMatch iid (InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+          Tablet -> whenMatch iid (not_ $ InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
           ElderThing -> whenM (selectAny $ locationWithInvestigator iid <> LocationWithAnyKeys) do
             assignHorror iid ElderThing 1
           _ -> pure ()

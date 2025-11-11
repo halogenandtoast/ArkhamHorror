@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SecretDoor (secretDoor, SecretDoor(..)) where
+module Arkham.Treachery.Cards.SecretDoor (secretDoor, SecretDoor (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
@@ -18,16 +18,19 @@ secretDoor = treachery SecretDoor Cards.secretDoor
 instance HasModifiersFor SecretDoor where
   getModifiersFor (SecretDoor attrs) = case attrs.placement of
     AttachedToLocation lid -> modified_ attrs lid [AdditionalCostToLeave UnpayableCost]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities SecretDoor where
-  getAbilities (SecretDoor a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (SecretDoor a) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage SecretDoor where
   runMessage msg t@(SecretDoor attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       selectWhenNotNull
-        (LocationWithMostInvestigators $ LocationWithoutTreachery $ treacheryIs Cards.secretDoor)
+        ( LocationWithMostInvestigators
+            $ LocationWithoutTreachery
+            $ mapOneOf treacheryIs [Cards.secretDoor, Cards.secretDoorTheMidwinterGala]
+        )
         \locations -> chooseOrRunOneM iid $ targets locations $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

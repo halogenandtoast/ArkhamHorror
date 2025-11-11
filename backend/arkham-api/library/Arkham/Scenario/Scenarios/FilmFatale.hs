@@ -99,7 +99,7 @@ instance RunMessage FilmFatale where
         >>= shuffle
         >>= placeUnderneath centralLot
 
-      setAside [Assets.andrePatelMadeForTheSpotlight]
+      setAside [Assets.andrePatelMadeForTheSpotlight, Assets.rocketShipRattlingWithEnergy]
       setAgendaDeck [Agendas.showbusinessAsUsual, Agendas.collidingRealities]
       setActDeck [Acts.andresRequest]
     ResolveChaosToken _ Tablet iid -> do

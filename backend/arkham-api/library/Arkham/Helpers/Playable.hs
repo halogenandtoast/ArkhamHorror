@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional
@@ -443,14 +441,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         AuxiliaryCost _ inner -> goActionCost inner
       actionCost = goActionCost costStatus
 
-    let debug = if c.cardCode == "60316" then traceShowId else id
-
     -- NOTE: WE just changed this to pass False for can modify We may want to
     -- consolidate this in a way where this is covered by the default case
     liftGuardM
       $ getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
       $ fold
-      $ debug
       $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
       <> additionalCosts
       <> auxiliaryCosts

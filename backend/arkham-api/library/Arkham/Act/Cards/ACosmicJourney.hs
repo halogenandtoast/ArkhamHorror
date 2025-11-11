@@ -50,8 +50,8 @@ instance RunMessage ACosmicJourney where
         moveTo attrs iid spaceSet
         discardAllClues attrs iid
 
-      selectEach (mapOneOf LocationWithTrait [Cosmos, RitualSite]) removeLocation
       selectEach (AssetWithTrait Cosmos) removeAsset
+      selectEach (mapOneOf LocationWithTrait [Cosmos, RitualSite]) removeLocation
 
       placeSetAsideLocations_ [Locations.jungleSet, Locations.gothicSet]
       push $ SetLayout initialLayout

@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Deck where
 
 import Arkham.Card
@@ -29,9 +28,10 @@ withDeck f (Deck xs) = Deck (f xs)
 withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
 withDeckM f (Deck xs) = Deck <$> f xs
 
-removeEachFromDeck :: (Show a, HasCardDef a) => Deck a -> [CardDef] -> Deck a
-removeEachFromDeck deck removals = deck & withDeck \cards ->
-  traceShowId $ foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards (traceShowId removals)
+removeEachFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
+removeEachFromDeck deck removals =
+  deck & withDeck \cards ->
+    foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
 
 removeEveryFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->

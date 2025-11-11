@@ -2943,7 +2943,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             , let assets = let ks = assetsInSlotsOf aid' in if null ks then [aid'] else ks
             ]
         pure a
-  ChooseEndTurn iid | iid == investigatorId -> pure a
+  ChooseEndTurn iid | iid == investigatorId -> do
+    unless (view endedTurnL a) do
+      wouldWindow <- checkWindows [mkWhen $ Window.WouldEndTurn iid]
+      msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
+      pushAll $ wouldWindow : msgs
+    pure $ a & endedTurnL .~ True
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
     current <- getMaybeLocation a.id

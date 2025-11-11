@@ -2124,11 +2124,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         | iid <- investigatorIds
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
-  ChooseEndTurn iid -> do
-    wouldWindow <- checkWindows [mkWhen $ Window.WouldEndTurn iid]
-    msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
-    pushAll $ wouldWindow : msgs
-    pure g
   After (EndTurn _) -> do
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
   ClearQueue -> do

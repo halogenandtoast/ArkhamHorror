@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.CalculatedRisk (calculatedRisk) where
 
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -20,6 +21,7 @@ instance HasModifiersFor CalculatedRisk where
 instance RunMessage CalculatedRisk where
   runMessage msg (CalculatedRisk attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      afterSkillTest iid "Calculated Risk" $ push $ ChooseEndTurn iid
+      whenM (matches iid TurnInvestigator) do
+        afterSkillTest iid "Calculated Risk" $ push $ ChooseEndTurn iid
       CalculatedRisk <$> liftRunMessage msg attrs
     _ -> CalculatedRisk <$> liftRunMessage msg attrs

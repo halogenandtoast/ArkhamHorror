@@ -3,7 +3,6 @@ module Arkham.Scenario.Scenarios.AThousandShapesOfHorror (aThousandShapesOfHorro
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Attack
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -20,12 +19,13 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (chooseOne, placeLocationCard, pushAll, story)
-import Arkham.Scenario.Runner qualified as Msg
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.AThousandShapesOfHorror.Helpers
 import Arkham.Trait (Trait (Graveyard))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -79,19 +79,19 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage AThousandShapesOfHorror where
-  runMessage msg s@(AThousandShapesOfHorror attrs) = runQueueT $ withI18n $ case msg of
+  runMessage msg s@(AThousandShapesOfHorror attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.intro1"
+      story $ i18nWithTitle "intro1"
       atYourSide <- getHasRecord TheBlackCatIsAtYourSide
       story
         $ i18nWithTitle
         $ if atYourSide
-          then "theDreamEaters.aThousandShapesOfHorror.intro2"
-          else "theDreamEaters.aThousandShapesOfHorror.intro3"
-      story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.intro4"
+          then "intro2"
+          else "intro3"
+      story $ i18nWithTitle "intro4"
       pure s
     StandaloneSetup -> do
-      push $ SetChaosTokens standaloneChaosTokens
+      setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup AThousandShapesOfHorror attrs $ do
       gather Set.AThousandShapesOfHorror
@@ -132,45 +132,35 @@ instance RunMessage AThousandShapesOfHorror where
         , Assets.theSilverKey
         ]
     ResolveChaosToken _ Cultist iid -> do
-      push $ DrawAnotherChaosToken iid
+      drawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Cultist -> do
-          mTheUnnamable <- selectOne $ enemyIs Enemies.theUnnamable
-          for_ mTheUnnamable $ \theUnnamable -> do
-            push $ InitiateEnemyAttack $ enemyAttack theUnnamable (ChaosTokenEffectSource Tablet) iid
+          selectEach (enemyIs Enemies.theUnnamable) \theUnnamable ->
+            initiateEnemyAttack theUnnamable Tablet iid
         ElderThing -> do
           playerClueCount <- field InvestigatorClues iid
-          let takeDamage = Msg.assignDamage iid (ChaosTokenEffectSource ElderThing) 1
-          if playerClueCount > 0
-            then
-              chooseOne
-                iid
-                [ Label
-                    "Place 1 of your clues on your location"
-                    [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
-                , Label "Take 1 damage" [takeDamage]
-                ]
-            else push takeDamage
+          chooseOneM iid $ unscoped $ countVar 1 do
+            labeledValidate' (playerClueCount > 0) "placeCluesOnYourLocation"
+              $ placeCluesOnLocation iid ElderThing 1
+            labeled "takeDamage" $ assignDamage iid ElderThing 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Tablet -> do
           enemies <-
-            select (CanEvadeEnemy (ChaosTokenEffectSource Tablet))
-              >>= filterM (fieldP EnemyFight (maybe False (<= n)))
-          when (notNull enemies)
-            $ chooseOne iid [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
+            select (EnemyCanBeEvadedBy (toSource Tablet)) >>= filterM (fieldP EnemyFight (maybe False (<= n)))
+          chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> push R2
         Resolution 1 -> do
           investigators <- allInvestigators
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution1"
+          story $ i18nWithTitle "resolution1"
           record RandolphSurvivedTheDescent
           record TheInvestigatorsPossessTheSilverKey
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theSilverKey
@@ -179,16 +169,16 @@ instance RunMessage AThousandShapesOfHorror where
           endOfScenario
         Resolution 2 -> do
           recoveredAStrangeKey <- remembered RecoveredAStrangeKey
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution2"
+          story $ i18nWithTitle "resolution2"
           push $ if recoveredAStrangeKey then R3 else R4
         Resolution 3 -> do
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution3"
+          story $ i18nWithTitle "resolution3"
           record RandolphSurvivedTheDescent
           allGainXp attrs
           addChaosToken Skull
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution4"
+          story $ i18nWithTitle "resolution4"
           record RandolphDidNotSurviveTheDescent
           removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
           allGainXp attrs

@@ -1227,6 +1227,7 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "RemoveCampaignCard" -> RemoveCampaignCardFromDeck "00000" <$> o .: "contents"
       "ResolvedMovement" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

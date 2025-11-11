@@ -28,6 +28,7 @@ export default
   , theDunwichLegacy
   , thePathToCarcosa
   , theForgottenAge
+  , returnToTheForgottenAge: theForgottenAge
   , theCircleUndone
   , theDreamEaters
   , theInnsmouthConspiracy

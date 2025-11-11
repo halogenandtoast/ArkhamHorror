@@ -3960,6 +3960,7 @@ library
       Arkham.Scenarios.ALightInTheFog.Helpers.Location
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.AtDeathsDoorstep.Helpers
+      Arkham.Scenarios.AThousandShapesOfHorror.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers

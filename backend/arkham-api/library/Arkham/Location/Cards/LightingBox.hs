@@ -15,7 +15,7 @@ lightingBox = location LightingBox Cards.lightingBox 4 (PerPlayer 1)
 
 instance HasModifiersFor LightingBox where
   getModifiersFor (LightingBox a) =
-    whenRevealed a $ modifySelect a (investigatorAt a) [IncreaseCostOf (basic AnyCard) 2]
+    whenRevealed a $ modifySelectMap a (investigatorAt a) \iid -> [IncreaseCostOf (InHandOf NotForPlay $ InvestigatorWithId iid) 2]
 
 instance RunMessage LightingBox where
   runMessage msg (LightingBox attrs) = LightingBox <$> runMessage msg attrs

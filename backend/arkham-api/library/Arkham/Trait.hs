@@ -42,6 +42,7 @@ data Trait
   | Bystander
   | Campsite
   | Carnevale
+  | Casino
   | Castle
   | Cave
   | Central
@@ -65,6 +66,7 @@ data Trait
   | Courage
   | Covenant
   | Creature
+  | Crew
   | CrimeScene
   | Criminal
   | Cultist
@@ -110,6 +112,7 @@ data Trait
   | Fortune
   | Future
   | Gambit
+  | Game
   | Geist
   | Ghast
   | Ghoul
@@ -132,6 +135,7 @@ data Trait
   | Hybrid
   | Illicit
   | Improvised
+  | Inconspicious
   | Injury
   | Innate
   | Innocent
@@ -200,12 +204,14 @@ data Trait
   | PresentDay
   | Private
   | Prop
+  | Public
   | Rail
   | Ranged
   | Relic
   | Reporter
   | Research
   | Resolute
+  | Restricted
   | Risen
   | Ritual
   | RitualSite
@@ -213,6 +219,7 @@ data Trait
   | River
   | Riverside
   | Road
+  | Role
   | Rot
   | Ruins
   | Salem
@@ -270,6 +277,7 @@ data Trait
   | Unbroken
   | Uncharted
   | Unhallowed
+  | Unpracticed
   | Unstable
   | Upgrade
   | Vale

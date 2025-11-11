@@ -13,6 +13,7 @@ export type Placement
   | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
+  | { tag: "NextToAct" }
   | { tag: "AttachedToAgenda" }
   | { tag: "InTheShadows" }
   | { tag: "OtherPlacement", contents: string }
@@ -20,6 +21,7 @@ export type Placement
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AsSwarm"), swarmHost: JsonDecoder.string(), swarmCard: cardDecoder }, 'AsSwarm'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("NextToAgenda")}, 'NextToAgenda'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("NextToAct")}, 'NextToAct'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAgenda")}, 'AttachedToAgenda'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("Limbo")}, 'Limbo'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AtLocation"), contents: JsonDecoder.string() }, 'AtLocation'),

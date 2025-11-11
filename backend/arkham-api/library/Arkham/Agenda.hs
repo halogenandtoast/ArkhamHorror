@@ -332,6 +332,11 @@ allAgendas =
     , SomeAgendaCard theTrueCulpritV8
     , SomeAgendaCard theTrueCulpritV9
     , SomeAgendaCard theTrueCulpritV10
+    , -- Fortune and Folly
+      SomeAgendaCard theHouseAlwaysWatches
+    , SomeAgendaCard openingHand
+    , SomeAgendaCard theTurn
+    , SomeAgendaCard allBetsDown
     , -- The Midwinter Gala
       SomeAgendaCard maskedRevelers
     , SomeAgendaCard unexpectedGuests

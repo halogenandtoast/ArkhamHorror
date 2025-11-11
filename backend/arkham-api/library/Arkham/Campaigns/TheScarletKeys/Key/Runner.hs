@@ -15,6 +15,7 @@ import Arkham.Target as X
 
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Token
 
 instance RunMessage ScarletKey where
   runMessage msg (ScarletKey a) = ScarletKey <$> runMessage msg a
@@ -43,4 +44,6 @@ instance RunMessage ScarletKeyAttrs where
         p@(AtLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = OutOfGame p}
         p@(AttachedToLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = OutOfGame p}
         _ -> pure attrs
+    PlaceTokens _source (isTarget attrs -> True) token n -> do
+      pure $ attrs & tokensL %~ addTokens token n
     _ -> pure attrs

@@ -17,6 +17,7 @@ import Arkham.Attack
 import Arkham.Calculation
 import Arkham.CampaignStep hiding (continue)
 import Arkham.CampaignStep qualified as CS
+import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -3182,11 +3183,16 @@ createAssetAt_ c placement = do
   card <- fetchCard c
   push =<< Msg.createAssetAt_ card placement
 
-createScarletKeyAt_
-  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
-createScarletKeyAt_ c placement = do
+createScarletKeyAt
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ScarletKeyId
+createScarletKeyAt c placement = do
   card <- fetchCard c
   push $ CreateScarletKeyAt card placement
+  pure $ ScarletKeyId (toCardCode card)
+
+createScarletKeyAt_
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
+createScarletKeyAt_ c placement = void $ createScarletKeyAt c placement
 
 createAssetAt
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m AssetId

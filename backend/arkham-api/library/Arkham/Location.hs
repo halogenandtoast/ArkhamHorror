@@ -1029,6 +1029,24 @@ allLocations =
     , SomeLocationCard room245
     , SomeLocationCard officeMurderAtTheExcelsiorHotel
     , SomeLocationCard basement
+    , -- Fortune and Folley
+      SomeLocationCard casinoFloorCalmNight
+    , SomeLocationCard casinoFloorBusyNight
+    , SomeLocationCard pokerTable
+    , SomeLocationCard rouletteWheel
+    , SomeLocationCard baccaratTable
+    , SomeLocationCard slotMachines
+    , SomeLocationCard highRollersTableCalmNight
+    , SomeLocationCard highRollersTableBusyNight
+    , SomeLocationCard casinoLoungeCalmNight
+    , SomeLocationCard casinoLoungeBusyNight
+    , SomeLocationCard staffAccessHallway
+    , SomeLocationCard securityOffice
+    , SomeLocationCard guardRoom
+    , SomeLocationCard ownersOffice
+    , SomeLocationCard countingRoom
+    , SomeLocationCard vaultDoor
+    , SomeLocationCard relicRoomSanctumOfFortune
     , -- The Midwinter Gala
       SomeLocationCard lobbyTheMidwinterGala
     , SomeLocationCard lanternChamber

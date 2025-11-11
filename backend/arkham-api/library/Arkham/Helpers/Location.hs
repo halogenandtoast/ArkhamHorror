@@ -91,6 +91,7 @@ placementLocation = \case
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
+  NextToAct -> pure Nothing
   Near _ -> pure Nothing
   InTheShadows -> pure Nothing
   OutOfGame _ -> pure Nothing

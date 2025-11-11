@@ -265,6 +265,8 @@ data EncounterSet
   | SinsOfThePast
   | TheBlobThatAteEverythingELSE
   | FortuneAndFolly
+  | FortunesChosen
+  | PlanInShambles
   | TheMidwinterGala
   | FilmFatale
   | CosmicJourney

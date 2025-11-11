@@ -2,6 +2,125 @@ module Arkham.Asset.Cards.Standalone where
 
 import Arkham.Asset.Cards.Import
 
+theFaceUnpracticed :: CardDef
+theFaceUnpracticed =
+  (storyAsset "88028" "The Face" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Unpracticed]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88028b"
+    }
+
+theFacePracticed :: CardDef
+theFacePracticed =
+  (storyAsset "88028b" "The Face" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Practiced]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88028"
+    }
+
+theMuscleUnpracticed :: CardDef
+theMuscleUnpracticed =
+  (storyAsset "88029" "The Muscle" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Unpracticed]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88029b"
+    }
+
+theMusclePracticed :: CardDef
+theMusclePracticed =
+  (storyAsset "88029b" "The Muscle" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Practiced]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88029"
+    }
+
+theThiefUnpracticed :: CardDef
+theThiefUnpracticed =
+  (storyAsset "88030" "The Thief" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Unpracticed]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88030b"
+    }
+
+theThiefPracticed :: CardDef
+theThiefPracticed =
+  (storyAsset "88030b" "The Thief" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Practiced]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88030"
+    }
+
+theGrifterUnpracticed :: CardDef
+theGrifterUnpracticed =
+  (storyAsset "88031" "The Grifter" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Unpracticed]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88031b"
+    }
+
+theGrifterPracticed :: CardDef
+theGrifterPracticed =
+  (storyAsset "88031b" "The Grifter" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Role, Practiced]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88031"
+    }
+
+isamaraOrdonezLoungeSingerInconspicious :: CardDef
+isamaraOrdonezLoungeSingerInconspicious =
+  (storyAsset "88032" ("Isamara Ordoñez" <:> "Lounge Singer") 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Ally, Casino, Inconspicious]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88032b"
+    }
+
+isamaraOrdonezLoungeSingerCrew :: CardDef
+isamaraOrdonezLoungeSingerCrew =
+  (storyAsset "88032b" ("Isamara Ordoñez" <:> "Lounge Singer") 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Ally, Casino, Crew]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "88032"
+    }
+
+cashCart :: CardDef
+cashCart =
+  (storyAsset "88033" "Cash Cart" 0 FortuneAndFolly)
+    { cdCardTraits = setFromList [Casino]
+    , cdCost = Nothing
+    }
+
+deckOfPossibilitiesTychokineticImplement :: CardDef
+deckOfPossibilitiesTychokineticImplement =
+  permanent
+    $ (storyAsset "88043" ("Deck of Possibilities" <:> "Tychokinetic Implement") 0 FortuneAndFolly)
+      { cdCardTraits = setFromList [Item, Relic]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdDoubleSided = True
+      , cdOtherSide = Just "88043b"
+      }
+
+isamaraOrdonezTheTorchSinger :: CardDef
+isamaraOrdonezTheTorchSinger =
+  (storyAsset "88044" ("Isamara Ordoñez" <:> "The Torch Singer") 3 FortuneAndFolly)
+    { cdCardTraits = setFromList [Ally, Performer]
+    , cdUnique = True
+    , cdSkills = [#willpower, #wild]
+    , cdSlots = [#ally]
+    }
+
 valeriyaAntonovaWantsOutOfHere :: CardDef
 valeriyaAntonovaWantsOutOfHere =
   (storyAsset "71016" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)

@@ -47,6 +47,7 @@ data EnemyMetadata = EnemyMetadata
   , emSkills :: [SkillId]
   , emModifiers :: [Modifier]
   , emScarletKeys :: [ScarletKeyId]
+  , emStories :: [StoryId]
   }
   deriving stock (Show, Eq, Generic)
 

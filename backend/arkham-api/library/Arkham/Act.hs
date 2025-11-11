@@ -385,6 +385,10 @@ allActs =
     , -- Murder at the Excelsior Hotel
       SomeActCard whatHappened
     , SomeActCard followingLeads
+    , -- Fortune and Folly
+      SomeActCard casingTheJoint
+    , SomeActCard theTake
+    , SomeActCard theExit
     , -- The Midwinter Gala
       SomeActCard meetAndGreet
     , SomeActCard findingTheJewel

@@ -41,14 +41,14 @@ const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter
   return true
 }))
 
+const dev = import.meta.env.PROD ? false : true
+
 const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) => {
   if (s.beta) return currentUser.value && currentUser.value.beta
   if (s.alpha) return alpha.value
+  if (s.dev) return dev && alpha.value
   return true
 }))
-
-const dev = import.meta.env.PROD ? false : true
-
 
 const campaigns = computed<Campaign[]>(() => campaignJSON.filter((c) => {
   if (c.dev && !dev && !alpha.value) return false

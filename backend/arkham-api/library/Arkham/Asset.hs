@@ -1334,7 +1334,21 @@ allAssets =
       SomeAssetCard sinisterSolution
     , --- Sins of the Past
       SomeAssetCard timeWornLocket
-    , --- The Blob That Ate Everything ELSE!
+    , -- Fortune and Folly
+      SomeAssetCard theFaceUnpracticed
+    , SomeAssetCard theFacePracticed
+    , SomeAssetCard theMuscleUnpracticed
+    , SomeAssetCard theMusclePracticed
+    , SomeAssetCard theThiefUnpracticed
+    , SomeAssetCard theThiefPracticed
+    , SomeAssetCard theGrifterUnpracticed
+    , SomeAssetCard theGrifterPracticed
+    , SomeAssetCard isamaraOrdonezLoungeSingerInconspicious
+    , SomeAssetCard isamaraOrdonezLoungeSingerCrew
+    , SomeAssetCard cashCart
+    , SomeAssetCard deckOfPossibilitiesTychokineticImplement
+    , SomeAssetCard isamaraOrdonezTheTorchSinger
+    , -- The Blob That Ate Everything ELSE!
       SomeAssetCard ravenousControlledHunger
     , SomeAssetCard ravenousUncontrolledHunger
     , -- Parallel Investigators

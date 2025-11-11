@@ -2533,6 +2533,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         AgendaTarget aid -> AttachedToAgenda aid
         InvestigatorTarget iid -> InThreatArea iid
         AgendaDeckTarget -> NextToAgenda
+        ActDeckTarget -> NextToAct
         _ -> error $ "unhandled attach target : " <> show target
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do

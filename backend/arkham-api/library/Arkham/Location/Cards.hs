@@ -148,6 +148,7 @@ allLocationCards =
       , attic_AThousandShapesOfHorror
       , audubonPark
       , avenidaDeMayo
+      , baccaratTable
       , backAlley
       , backstage
       , baggageCar
@@ -210,6 +211,10 @@ allLocationCards =
       , canalsOfTenochtitlan_181
       , candlelitTunnels
       , casaRosada
+      , casinoFloorBusyNight
+      , casinoFloorCalmNight
+      , casinoLoungeBusyNight
+      , casinoLoungeCalmNight
       , castleHallwaysSeeminglyEndless
       , catacombsStinksOfDeath
       , catedralMetropolitana
@@ -265,6 +270,7 @@ allLocationCards =
       , congregationalChurch_209
       , cosmicGate
       , cosmicIngress
+      , countingRoom
       , courtOfTheGreatOldOnes
       , courtOfTheGreatOldOnesANotTooDistantFuture
       , courtyard
@@ -435,6 +441,7 @@ allLocationCards =
       , greatHallOfCeleano
       , greatLibrary
       , greenRoom
+      , guardRoom
       , guestHall
       , hagiaSophia
       , hallOfBlood
@@ -467,6 +474,8 @@ allLocationCards =
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
       , hideousPalace
+      , highRollersTableBusyNight
+      , highRollersTableCalmNight
       , highRulersBastion
       , historicalSocietyBoilerRoom
       , historicalSocietyDustyArchives
@@ -635,6 +644,7 @@ allLocationCards =
       , outerWall_286
       , overgrownCairns
       , overgrownRuins
+      , ownersOffice
       , palaceOfTheKing
       , palacioErrazuriz
       , parlor
@@ -660,6 +670,7 @@ allLocationCards =
       , plateauOfLengWhereTheGodsDwell
       , plazaHotel
       , pnakotus
+      , pokerTable
       , porteDeLAvancee
       , precariousIceSheet
       , prismaticCascade
@@ -676,6 +687,7 @@ allLocationCards =
       , recessesOfYourOwnMind
       , recordsOffice
       , rehearsalRoom
+      , relicRoomSanctumOfFortune
       , relicStorage
       , remnantsOfLakesCamp
       , researchSite
@@ -735,6 +747,7 @@ allLocationCards =
       , room225
       , room245
       , ropeBridge
+      , rouletteWheel
       , ruinousStreets
       , ruinsOfCarcosaAMomentsRest
       , ruinsOfCarcosaInhabitantOfCarcosa
@@ -772,6 +785,7 @@ allLocationCards =
       , secretPassage
       , securityOffice_128
       , securityOffice_129
+      , securityOffice
       , sentinelPeak
       , serannian
       , serpentsHaven
@@ -790,6 +804,7 @@ allLocationCards =
       , skaiRiver
       , slaughteredWoods
       , sleepingCar
+      , slotMachines
       , snakePit
       , snowCoveredCrag
       , snowGraves
@@ -800,6 +815,7 @@ allLocationCards =
       , southsideHistoricalSociety
       , southsideMasBoardingHouse
       , spaceSet
+      , staffAccessHallway
       , stageOfTheWardTheatre
       , stairwell
       , standingStones
@@ -944,6 +960,7 @@ allLocationCards =
       , valusia
       , vastPassages
       , vault
+      , vaultDoor
       , vaultedCorridor
       , vaultOfRiches
       , vaultsOfZin
@@ -10450,6 +10467,185 @@ basement =
       Hourglass
       [T, Moon]
       MurderAtTheExcelsiorHotel
+
+casinoFloorCalmNight :: CardDef
+casinoFloorCalmNight =
+  otherSideIs "88009b"
+    $ location
+    "88009"
+    ("Casino Floor" <:> "Calm Night")
+    [Public, Casino]
+    Circle
+    [Square, Diamond]
+    FortuneAndFolly
+
+casinoFloorBusyNight :: CardDef
+casinoFloorBusyNight =
+  otherSideIs "88009"
+    $ location
+    "88009b"
+    ("Casino Floor" <:> "Busy Night")
+    [Public, Casino]
+    Circle
+    [Square, Diamond]
+    FortuneAndFolly
+
+pokerTable :: CardDef
+pokerTable =
+  location
+    "88010"
+    "Poker Table"
+    [Public, Casino, Game]
+    Square
+    [Plus, Circle]
+    FortuneAndFolly
+
+rouletteWheel :: CardDef
+rouletteWheel =
+  location
+    "88011"
+    "Roulette Wheel"
+    [Public, Casino, Game]
+    Triangle
+    [Diamond, T, Plus]
+    FortuneAndFolly
+
+baccaratTable :: CardDef
+baccaratTable =
+  location
+    "88012"
+    "Baccarat Table"
+    [Public, Casino, Game]
+    Plus
+    [Squiggle, Square, Triangle]
+    FortuneAndFolly
+
+slotMachines :: CardDef
+slotMachines =
+  location
+    "88013"
+    "Slot Machines"
+    [Public, Casino, Game]
+    Diamond
+    [Circle, Triangle]
+    FortuneAndFolly
+
+highRollersTableCalmNight :: CardDef
+highRollersTableCalmNight =
+  otherSideIs "88014b"
+  $ location
+    "88014"
+    ("High Rollers Table" <:> "Calm Night")
+    [Public, Casino, Game]
+    Squiggle
+    [T, Plus, Hourglass]
+    FortuneAndFolly
+
+highRollersTableBusyNight :: CardDef
+highRollersTableBusyNight =
+  otherSideIs "88014"
+  $ location
+    "88014b"
+    ("High Rollers Table" <:> "Busy Night")
+    [Public, Casino, Game]
+    Squiggle
+    [T, Plus, Hourglass]
+    FortuneAndFolly
+
+casinoLoungeCalmNight :: CardDef
+casinoLoungeCalmNight =
+  otherSideIs "88015b"
+  $ location
+    "88015"
+    ("Casino Lounge" <:> "Calm Night")
+    [Public, Casino]
+    T
+    [Triangle, Squiggle, Hourglass]
+    FortuneAndFolly
+
+casinoLoungeBusyNight :: CardDef
+casinoLoungeBusyNight =
+  victory 1
+  $ otherSideIs "88015"
+  $ location
+    "88015b"
+    ("Casino Lounge" <:> "Busy Night")
+    [Public, Casino]
+    T
+    [Triangle, Squiggle, Hourglass]
+    FortuneAndFolly
+
+staffAccessHallway :: CardDef
+staffAccessHallway =
+  location
+    "88016"
+    "Staff Access Hallway"
+    [Restricted, Casino]
+    Hourglass
+    [Moon, Equals, Squiggle, T]
+    FortuneAndFolly
+
+securityOffice :: CardDef
+securityOffice =
+  victory 1 $
+    location
+      "88017"
+      "Security Office"
+      [Restricted, Casino]
+      Moon
+      [Heart, Hourglass, Equals]
+      FortuneAndFolly
+
+guardRoom :: CardDef
+guardRoom =
+  location
+    "88018"
+    "Guard Room"
+    [Restricted, Casino]
+    Equals
+    [Hourglass, Star, Moon]
+    FortuneAndFolly
+
+ownersOffice :: CardDef
+ownersOffice =
+  victory 1 
+  $ location
+    "88019"
+    "Owner's Office"
+    [Restricted, Casino]
+    Heart
+    [Star, Moon, Droplet]
+    FortuneAndFolly
+
+countingRoom :: CardDef
+countingRoom =
+  location
+    "88020"
+    "Counting Room"
+    [Restricted, Casino]
+    Star
+    [Equals, Heart, Droplet]
+    FortuneAndFolly
+
+vaultDoor :: CardDef
+vaultDoor =
+  location
+    "88021"
+    "Vault Door"
+    [Restricted, Casino]
+    Droplet
+    [Star, Heart, Trefoil]
+    FortuneAndFolly
+
+relicRoomSanctumOfFortune :: CardDef
+relicRoomSanctumOfFortune =
+  location
+    "88022"
+    ("Relic Room" <:> "Sanctum of Fortune")
+    [Restricted, Casino]
+    Trefoil
+    [Droplet]
+    FortuneAndFolly
 
 betweenWorlds :: CardDef
 betweenWorlds =

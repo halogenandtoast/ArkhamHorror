@@ -41,6 +41,7 @@ placedInThreatArea = \case
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
+  NextToAct -> pure Nothing
   InTheShadows -> pure Nothing
   OutOfGame _ -> pure Nothing
 
@@ -115,6 +116,7 @@ onSameLocation iid = \case
   HiddenInHand _ -> pure False
   OnTopOfDeck _ -> pure False
   NextToAgenda -> pure False
+  NextToAct -> pure False
   Near _ -> pure False
   InTheShadows -> pure False
   OutOfGame _ -> pure False

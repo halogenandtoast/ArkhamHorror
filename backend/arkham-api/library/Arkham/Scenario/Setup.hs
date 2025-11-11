@@ -139,7 +139,7 @@ gather encounterSet = do
 gatherJust :: CardGen m => Set.EncounterSet -> [CardDef] -> ScenarioBuilderT m ()
 gatherJust encounterSet defs = do
   cards <-
-    filter ((`cardMatch` mapOneOf cardIs defs) . toCard)
+    filter ((`cardMatch` mapOneOf cardDefIs defs) . toCard)
       . excludeDoubleSided
       <$> gatherEncounterSet encounterSet
   attrsL . encounterDeckL %= (Deck cards <>)
@@ -224,7 +224,7 @@ fromGathered matcher = do
 
 fromGathered1 :: (HasCallStack, ReverseQueue m) => CardDef -> ScenarioBuilderT m Card
 fromGathered1 def = do
-  amongGathered (cardIs def) >>= \case
+  amongGathered (cardDefIs def) >>= \case
     [card] -> do
       removeCards [card]
       pure card
@@ -361,7 +361,7 @@ enemyAt_ def lid = do
 
 enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m EnemyId
 enemyAt def lid = do
-  mcard <- headMay <$> amongGathered (cardIs def)
+  mcard <- headMay <$> amongGathered (cardDefIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- maybe (genCard def) pure mcard
@@ -370,7 +370,7 @@ enemyAt def lid = do
 placeEnemy
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m ()
 placeEnemy def placement = do
-  mcard <- headMay <$> amongGathered (cardIs def)
+  mcard <- headMay <$> amongGathered (cardDefIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- maybe (genCard def) pure mcard
@@ -379,7 +379,7 @@ placeEnemy def placement = do
 placeEnemyCapture
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m EnemyId
 placeEnemyCapture def placement = do
-  mcard <- headMay <$> amongGathered (cardIs def)
+  mcard <- headMay <$> amongGathered (cardDefIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- maybe (genCard def) pure mcard
@@ -389,7 +389,7 @@ placeEnemyCapture def placement = do
 
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do
-  mcard <- headMay <$> amongGathered (cardIs def)
+  mcard <- headMay <$> amongGathered (cardDefIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- maybe (genCard def) pure mcard
@@ -579,3 +579,9 @@ pickFrom defs = do
 
 placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()
 placeTokensOnScenarioReference tokenType n = attrsL . tokensL %= addTokens tokenType n
+
+cardDefIs :: HasCardDef a => a -> CardMatcher
+cardDefIs a = if def.doubleSided then cardIs def else cardIsExact def
+ where
+  def = toCardDef a
+

@@ -163,6 +163,18 @@ allStories =
     , --- Return to The Circle Undone
       SomeStoryCard returnToUnfinishedBusiness_38
     , SomeStoryCard returnToUnfinishedBusiness_39
+    , -- Fortune and Folly
+      SomeStoryCard theStakeout
+    , SomeStoryCard theHeist
+    , SomeStoryCard ifTheUniformFits
+    , SomeStoryCard packageDelivery
+    , SomeStoryCard fortunesDisfavor25
+    , SomeStoryCard lightsOut
+    , SomeStoryCard fortunesDisfavor26
+    , SomeStoryCard unlikelyInjuries
+    , SomeStoryCard fortunesDisfavor27
+    , SomeStoryCard personalEntaglement
+    , SomeStoryCard deckOfPossibilities
     , -- The Midwinter Gala
       SomeStoryCard theFoundationAllied
     , SomeStoryCard theFoundationRival

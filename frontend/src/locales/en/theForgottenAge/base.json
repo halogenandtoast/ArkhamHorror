@@ -120,8 +120,10 @@
     "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read _Low on Rations_",
     "lowOnRations": "<p>_Low on Rations_: We thought we’d brought enough food and water for everybody, but the journey had taken its toll on our supplies. When the sun rose and it came time to eat, we discovered we were already running out of provisions.</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
     "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in their deck reads _The Poison Spreads_.",
-    "doNotUseMedicine": "Do not use medicine",
     "thePoisonSpreads": "<p>_The Poison Spreads_: As the days went by, the poison continued to spread through my body. By the second night, my skin was drenched in sweat. I started having difficutly breathing, and I began every morning by retching up most of the previous night’s dinner.</p><p class='basic right'>You suffer 1 physical trauma.</p>",
+    "label": {
+      "doNotUseMedicine": "Do not use medicine"
+    },
     "xp": {
       "insight": "Insight into the motivations of the Eztli"
     }

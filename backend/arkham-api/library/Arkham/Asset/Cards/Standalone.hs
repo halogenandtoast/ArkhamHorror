@@ -392,6 +392,7 @@ rocketShipRattlingWithEnergy =
     , cdCost = Nothing
     , cdDoubleSided = True
     , cdOtherSide = Just "72036b"
+    , cdCardType = EncounterAssetType
     }
 
 ladyEsprit :: CardDef

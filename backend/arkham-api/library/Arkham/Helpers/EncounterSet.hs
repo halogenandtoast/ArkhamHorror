@@ -15,4 +15,7 @@ gatherEncounterSet encounterSet =
         $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
-    filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
+    filter (and . sequence [not . hasBSide, (== Just encounterSet) . cdEncounterSet]) $ toList allEncounterCards
+  hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
+  isDoubleSided = or . sequence [cdDoubleSided, isJust . cdOtherSide] . toCardDef
+

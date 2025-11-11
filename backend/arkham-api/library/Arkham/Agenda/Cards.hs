@@ -29,6 +29,7 @@ allAgendaCards =
       , agentsOfTheOuterGods
       , aHarshWindBlows
       , aKillerParty
+      , allBetsDown
       , allIsOne
       , aSinisterRealm
       , aTearInReality
@@ -110,6 +111,7 @@ allAgendaCards =
       , manifestationsOfEvil
       , markedForSacrifice
       , maskedRevelers
+      , openingHand
       , outOfTime
       , overTheThreshold
       , pastPresentAndFuture
@@ -177,6 +179,7 @@ allAgendaCards =
       , theHangedManXII
       , theHermitIX
       , theHierophantV
+      , theHouseAlwaysWatches
       , theHouseWithNoName
       , theInfestationSpreads
       , theInitiationV1
@@ -216,6 +219,7 @@ allAgendaCards =
       , theTrueCulpritV8
       , theTrueCulpritV9
       , theTruthIsHidden
+      , theTurn
       , theWaterRises
       , theWitchLight
       , theyAreUponYou
@@ -880,6 +884,18 @@ theTrueCulpritV9 = agenda "84051" "The True Culprit (v. IX)" 3 MurderAtTheExcels
 
 theTrueCulpritV10 :: CardDef
 theTrueCulpritV10 = agenda "84052" "The True Culprit (v. X)" 3 MurderAtTheExcelsiorHotel
+
+theHouseAlwaysWatches :: CardDef
+theHouseAlwaysWatches = agenda "88002" "The House Always Watches" 1 FortuneAndFolly
+
+openingHand :: CardDef
+openingHand = agenda "88003" "Opening Hand" 2 FortuneAndFolly
+
+theTurn :: CardDef
+theTurn = agenda "88004" "The Turn" 3 FortuneAndFolly
+
+allBetsDown :: CardDef
+allBetsDown = agenda "88005" "All Bets Down" 4 FortuneAndFolly
 
 maskedRevelers :: CardDef
 maskedRevelers = agenda "71002" "Masked Revelers" 1 TheMidwinterGala

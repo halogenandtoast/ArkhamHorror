@@ -194,6 +194,7 @@ data CardMatcher
   = CardWithType CardType
   | CardWithSubType CardSubType
   | CardWithCardCode CardCode
+  | CardWithCardCodeExact CardCodeExact
   | CardWithTitle Text
   | CardWithTrait Trait
   | CardWithId CardId
@@ -468,6 +469,9 @@ instance FromJSON ExtendedCardMatcher where
 
 cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
+
+cardIsExact :: HasCardCode a => a -> CardMatcher
+cardIsExact = CardWithCardCodeExact . CardCodeExact . toCardCode
 
 cardsAre :: HasCardCode a => [a] -> CardMatcher
 cardsAre = mapOneOf cardIs

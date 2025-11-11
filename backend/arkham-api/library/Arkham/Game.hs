@@ -194,7 +194,7 @@ import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
-import Arkham.Trait
+import Arkham.Trait hiding (Game)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (
   Field (..),
@@ -372,6 +372,7 @@ withEnemyMetadata a = do
   emAssets <- select $ EnemyAsset (toId a)
   emEvents <- select $ EnemyEvent (toId a)
   emSkills <- select $ EnemySkill (toId a)
+  emStories <- select $ EnemyStory (toId a)
   emScarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToEnemy $ toId a
   pure $ a `with` EnemyMetadata {..}
 
@@ -3112,7 +3113,7 @@ getScarletKeysMatching matcher = do
     ScarletKeyWithStability s -> pure $ filter ((== s) . attr keyStability) as
     ScarletKeyOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
 
-getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
+getStoriesMatching :: (Tracing m, HasGame m) => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
   stories <- toList . view (entitiesL . storiesL) <$> getGame
   filterMatcher stories matcher
@@ -3124,6 +3125,7 @@ getStoriesMatching matcher = do
     StoryWithModifier modifier -> as & filterM \s -> elem modifier <$> getModifiers (toTarget s)
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     StoryWithCardId cardId -> pure $ filter ((== cardId) . attr storyCardId) as
+    EnemyStory eid -> filterM (fieldP StoryPlacement (== AttachedToEnemy eid) . toId) as
 
 getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid =

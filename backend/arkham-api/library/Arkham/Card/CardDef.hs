@@ -245,6 +245,9 @@ instance HasField "victoryPoints" CardDef (Maybe Int) where
 instance HasField "unique" CardDef Bool where
   getField = cdUnique
 
+instance HasField "doubleSided" CardDef Bool where
+  getField = isJust . cdOtherSide
+
 emptyCardDef :: CardCode -> Name -> CardType -> CardDef
 emptyCardDef cCode name cType =
   CardDef

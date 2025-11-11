@@ -24,6 +24,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Data.Aeson.TH
 import Data.Data
 import GHC.Records
@@ -60,6 +61,7 @@ data ScarletKeyAttrs = ScarletKeyAttrs
   , keyPlacement :: Placement
   , keyStability :: Stability
   , keyBearer :: Target
+  , keyTokens :: Tokens
   }
   deriving stock (Show, Eq)
 
@@ -113,6 +115,7 @@ key f cardDef =
                 ScenarioTarget -> Stable
                 _ -> Unstable
             , keyBearer = bearer
+            , keyTokens = mempty
             }
     }
 
@@ -222,4 +225,5 @@ instance FromJSON ScarletKeyAttrs where
     keyPlacement <- o .: "placement"
     keyStability <- o .: "stability"
     keyBearer <- o .: "bearer"
+    keyTokens <- o .:? "tokens" .!= mempty
     pure ScarletKeyAttrs {..}

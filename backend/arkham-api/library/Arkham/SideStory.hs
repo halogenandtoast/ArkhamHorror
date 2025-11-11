@@ -8,6 +8,7 @@ getSideStoryCost = \case
   "81001" -> 1
   "82001" -> 3
   "84001" -> 3
+  "88001" -> 3
   "71001" -> 2
   "72001" -> 3
   sid -> error $ "Unknown standalone scenario for spending xp: " <> show sid

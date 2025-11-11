@@ -307,6 +307,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"
+    case "c88001": return "standalone.fortuneAndFolly"
     default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

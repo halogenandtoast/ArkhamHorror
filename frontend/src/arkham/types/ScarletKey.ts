@@ -11,6 +11,7 @@ export type ScarletKey = {
   id: string
   cardId: string
   placement: Placement
+  tokens: Tokens;
   stability: Stability
 }
 
@@ -19,6 +20,7 @@ export const scarletKeyDecoder = JsonDecoder.object<ScarletKey>({
   id: JsonDecoder.string(),
   cardId: JsonDecoder.string(),
   placement: placementDecoder,
+  tokens: tokensDecoder,
   stability: JsonDecoder.oneOf<Stability>([
     JsonDecoder.literal('Stable'),
     JsonDecoder.literal('Unstable'),

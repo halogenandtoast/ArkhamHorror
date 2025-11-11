@@ -255,6 +255,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithSkillIcon skillIcon ->
     skillIcon `member` setFromList @(Set SkillIcon) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
+  CardWithCardCodeExact cardCode -> CardCodeExact (toCardCode a) == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a

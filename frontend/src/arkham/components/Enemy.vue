@@ -360,6 +360,15 @@ function onDrop(event: DragEvent) {
         @choose="choose"
         :attached="true"
       />
+      <Story
+        v-for="storyId in enemy.stories"
+        :key="storyId"
+        :story="game.stories[storyId]"
+        :game="game"
+        :playerId="playerId"
+        :atLocation="true"
+        @choose="choose"
+      />
 
       <template v-if="debug.active">
         <button @click="debugging = true">Debug</button>

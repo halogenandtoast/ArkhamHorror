@@ -6,6 +6,7 @@ import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
@@ -146,6 +147,10 @@ const breaches = computed(() => {
   return breaches ?? 0
 })
 
+const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
+  filter((s) => s.placement.tag === "NextToAct").
+  map((s) => s.id))
+
 </script>
 
 <template>
@@ -179,6 +184,13 @@ const breaches = computed(() => {
       v-for="treacheryId in act.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
+    <ScarletKey
+      v-for="scarletKeyId in nextToScarletKeys"
+      :scarletKey="game.scarletKeys[scarletKeyId]"
       :game="game"
       :playerId="playerId"
       @choose="$emit('choose', $event)"

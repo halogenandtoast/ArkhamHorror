@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Name
 import Arkham.Trait
 
@@ -92,7 +93,9 @@ allEncounterEnemyCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ abhorrentMoonBeast
+      [ abarranArrigorriagakoaAbarranUnleashed
+      , abarranArrigorriagakoaTheManWithTheRubyRing
+      , abhorrentMoonBeast
       , acolyte
       , acolyteOfUmordhoth
       , agentOfTheKing
@@ -142,6 +145,9 @@ allEncounterEnemyCards =
       , captiveSubjects
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
+      , casinoGuardA
+      , casinoGuardB
+      , casinoGuardC
       , catacombsDocent
       , catsFromSaturn
       , catsOfUlthar
@@ -195,7 +201,12 @@ allEncounterEnemyCards =
       , dholeOfTheWastes
       , dianneDevine
       , dianneDevineKnowsWhatYoureUpTo
+      , dimensionalDisplacerA
+      , dimensionalDisplacerB
+      , dimensionalDuplicatorA
+      , dimensionalDuplicatorB
       , dimensionalShambler
+      , dimensionalShamblerHunterFromBeyond
       , discipleOfTheDevourer
       , donLagorio
       , drAmyKenslerProfessorOfBiology
@@ -218,6 +229,10 @@ allEncounterEnemyCards =
       , fleshEater
       , forgottenShoggoth
       , formlessSpawn
+      , fortunesDaggerA
+      , fortunesDaggerB
+      , fortunesShieldA
+      , fortunesShieldB
       , frenziedExplorer
       , furtiveZoog
       , gavriellaMizrah
@@ -258,6 +273,8 @@ allEncounterEnemyCards =
       , hotelGuest
       , hotelManager
       , hotelSecurity
+      , houseDealerA
+      , houseDealerB
       , huntingDeepOne
       , huntingGhast
       , huntingHorror
@@ -396,6 +413,9 @@ allEncounterEnemyCards =
       , screechingBanshee
       , screechingByakhee
       , sebastienMoreau
+      , securityPatrolA
+      , securityPatrolB
+      , securityPatrolC
       , seekerOfCarcosa
       , seepingNightmare
       , senatorNathanielRhodesAdeptPolitician
@@ -2926,7 +2946,13 @@ desiderioDelgadoAlvarez106 :: CardDef
 desiderioDelgadoAlvarez106 =
   (enemy "09606" ("Desiderio Delgado Álvarez" <:> "The Man in the Blood-Soaked Suit") DancingMad 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1), Keyword.Hunter, Keyword.Retaliate]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Alert
+          , Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1)
+          , Keyword.Hunter
+          , Keyword.Retaliate
+          ]
     , cdVictoryPoints = Just 1
     , cdUnique = True
     }
@@ -2935,7 +2961,13 @@ desiderioDelgadoAlvarez107 :: CardDef
 desiderioDelgadoAlvarez107 =
   (enemy "09607" ("Desiderio Delgado Álvarez" <:> "The Man in the Blood-Soaked Suit") DancingMad 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1), Keyword.Hunter, Keyword.Retaliate]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Alert
+          , Keyword.Concealed DesiderioDelgadoAlvarez (PerPlayer 1)
+          , Keyword.Hunter
+          , Keyword.Retaliate
+          ]
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdDoubleSided = True
@@ -3020,14 +3052,14 @@ otherworldlyMimic :: CardDef
 otherworldlyMimic =
   (enemy "09734" "Otherworldly Mimic" SecretWar 2)
     { cdCardTraits = setFromList [Monster, Outsider]
-    , cdKeywords = setFromList [ Keyword.Aloof, Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 paradigmEfficer :: CardDef
 paradigmEfficer =
   (enemy "09737" "Paradigm Efficer" AgentsOfTheOutside 2)
     { cdCardTraits = setFromList [Monster, Outsider]
-    , cdKeywords = setFromList [ Keyword.Aloof, Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 emissaryFromYuggoth :: CardDef
@@ -3847,6 +3879,188 @@ vengefulSpecter =
     , cdKeywords = setFromList [Keyword.Patrol "Room 245", Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     , cdUnique = True
+    }
+
+abarranArrigorriagakoaTheManWithTheRubyRing :: CardDef
+abarranArrigorriagakoaTheManWithTheRubyRing =
+  doubleSided "88034b"
+    $ (enemy "88034a" ("Abarran Arrigorriagakoa" <:> "The Man with the RUby Ring") FortuneAndFolly 1)
+      { cdCardTraits = setFromList [Humanoid, Casino, Coterie, Elite]
+      , cdKeywords =
+          setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "abarranNext"))]
+      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "ace")]
+      , cdUnique = True
+      }
+
+abarranArrigorriagakoaAbarranUnleashed :: CardDef
+abarranArrigorriagakoaAbarranUnleashed =
+  doubleSided "88034a"
+    $ (enemy "88034b" ("Abarran Arrigorriagakoa" <:> "Abarran Unleashe") FortuneAndFolly 1)
+      { cdCardTraits = setFromList [Humanoid, Casino, Coterie, Elite]
+      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "ace")]
+      , cdUnique = True
+      , cdVictoryPoints = Just 1
+      }
+
+casinoGuardA :: CardDef
+casinoGuardA =
+  (enemy "88035a" "Casino Guard" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardANext"))]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "jack")]
+    }
+
+casinoGuardB :: CardDef
+casinoGuardB =
+  (enemy "88035b" "Casino Guard" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardBNext"))]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "ten")]
+    }
+
+casinoGuardC :: CardDef
+casinoGuardC =
+  (enemy "88035c" "Casino Guard" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardCNext"))]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "queen")]
+    }
+
+houseDealerA :: CardDef
+houseDealerA =
+  (enemy "88036a" "House Dealer" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "houseDealerANext"))]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "nine")]
+    }
+
+houseDealerB :: CardDef
+houseDealerB =
+  (enemy "88036b" "House Dealer" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "houseDealerBNext"))]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "nine")]
+    }
+
+securityPatrolA :: CardDef
+securityPatrolA =
+  (enemy "88037a" "Security Patrol" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolANext"))]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "jack")]
+    }
+
+securityPatrolB :: CardDef
+securityPatrolB =
+  (enemy "88037b" "Security Patrol" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolBNext"))]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "ten")]
+    }
+
+securityPatrolC :: CardDef
+securityPatrolC =
+  (enemy "88037c" "Security Patrol" FortuneAndFolly 1)
+    { cdCardTraits = setFromList [Humanoid, Casino]
+    , cdKeywords =
+        setFromList
+          [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolCNext"))]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "queen")]
+    }
+
+fortunesShieldA :: CardDef
+fortunesShieldA =
+  (enemy "88046a" "Fortune's Shield" FortunesChosen 1)
+    { cdCardTraits = setFromList [Humanoid, Casino, Cultist]
+    , cdKeywords =
+        setFromList
+          [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesShieldANext")), Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "king")]
+    }
+
+fortunesShieldB :: CardDef
+fortunesShieldB =
+  (enemy "88046b" "Fortune's Shield" FortunesChosen 1)
+    { cdCardTraits = setFromList [Humanoid, Casino, Cultist]
+    , cdKeywords =
+        setFromList
+          [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesShieldBNext")), Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "king")]
+    }
+
+fortunesDaggerA :: CardDef
+fortunesDaggerA =
+  (enemy "88047a" "Fortune's Dagger" FortunesChosen 1)
+    { cdCardTraits = setFromList [Humanoid, Casino, Cultist]
+    , cdKeywords =
+        setFromList
+          [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesDaggerANext")), Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "king")]
+    }
+
+fortunesDaggerB :: CardDef
+fortunesDaggerB =
+  (enemy "88047b" "Fortune's Dagger" FortunesChosen 1)
+    { cdCardTraits = setFromList [Humanoid, Casino, Cultist]
+    , cdKeywords =
+        setFromList
+          [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesDaggerBNext")), Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "king")]
+    }
+
+dimensionalShamblerHunterFromBeyond :: CardDef
+dimensionalShamblerHunterFromBeyond =
+  (enemy "88048" ("Dimensional Shambler" <:> "Hunter from Beyond") PlanInShambles 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "ace")]
+    , cdVictoryPoints = Just 1
+    }
+
+dimensionalDuplicatorA :: CardDef
+dimensionalDuplicatorA =
+  (enemy "88049a" "Dimensional Duplicator" PlanInShambles 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "six")]
+    }
+
+dimensionalDuplicatorB :: CardDef
+dimensionalDuplicatorB =
+  (enemy "88049b" "Dimensional Duplicator" PlanInShambles 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "six")]
+    }
+
+dimensionalDisplacerA :: CardDef
+dimensionalDisplacerA =
+  (enemy "88050a" "Dimensional Displacer" PlanInShambles 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "six")]
+    }
+
+dimensionalDisplacerB :: CardDef
+dimensionalDisplacerB =
+  (enemy "88050b" "Dimensional Displacer" PlanInShambles 1)
+    { cdCardTraits = setFromList [Monster, Extradimensional]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "six")]
     }
 
 vengefulShade :: CardDef

@@ -788,7 +788,33 @@ allTreacheries =
     , SomeTreacheryCard morbidAwareness
     , --- Sins of the Past
       SomeTreacheryCard chillingPresence
-    , --- The Midwinter Gala
+    , -- Fortune and Folly
+      SomeTreacheryCard inconvenientQuesitoningA
+    , SomeTreacheryCard inconvenientQuesitoningB
+    , SomeTreacheryCard inconvenientQuesitoningC
+    , SomeTreacheryCard inconvenientQuesitoningD
+    , SomeTreacheryCard arcaneSpotlightA
+    , SomeTreacheryCard arcaneSpotlightB
+    , SomeTreacheryCard arcaneSpotlightC
+    , SomeTreacheryCard avariceCallsA
+    , SomeTreacheryCard avariceCallsB
+    , SomeTreacheryCard avariceCallsC
+    , SomeTreacheryCard suspiciousGazeA
+    , SomeTreacheryCard suspiciousGazeB
+    , SomeTreacheryCard suspiciousGazeC
+    , SomeTreacheryCard obsessedGamblerA
+    , SomeTreacheryCard obsessedGamblerB
+    , SomeTreacheryCard obsessedGamblerC
+    , --- Plan in Shambles
+      SomeTreacheryCard dimensionalHypothesisA
+    , SomeTreacheryCard dimensionalHypothesisB
+    , SomeTreacheryCard dimensionalHypothesisC
+    , SomeTreacheryCard gripOfTheBeyondA
+    , SomeTreacheryCard gripOfTheBeyondB
+    , SomeTreacheryCard gripOfTheBeyondC
+    , SomeTreacheryCard huntersHungerA
+    , SomeTreacheryCard huntersHungerB
+    , -- The Midwinter Gala
       SomeTreacheryCard confusion
     , SomeTreacheryCard coldStreak
     , SomeTreacheryCard wardOfPreservation

@@ -38,6 +38,7 @@ data Placement
   | AttachedToAct ActId
   | AttachedToAgenda AgendaId
   | NextToAgenda
+  | NextToAct
   | InVehicle AssetId
   | AttachedToInvestigator InvestigatorId
   | AsSwarm {swarmHost :: EnemyId, swarmCard :: Card}
@@ -93,6 +94,7 @@ placementToAttached = \case
   AttachedToAct aid -> Just $ ActTarget aid
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   NextToAgenda -> Nothing
+  NextToAct -> Nothing
   AttachedToInvestigator iid -> Just $ InvestigatorTarget iid
   Unplaced -> Nothing
   Global -> Nothing
@@ -126,6 +128,7 @@ isInPlayPlacement = \case
   AttachedToAct {} -> True
   AttachedToAgenda {} -> True
   NextToAgenda {} -> True -- is it in play, idk
+  NextToAct {} -> True -- is it in play, idk
   AttachedToInvestigator {} -> True
   AsSwarm {} -> True
   Unplaced {} -> False

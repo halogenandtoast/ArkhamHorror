@@ -54,6 +54,7 @@ allActCards =
       , bloodbath
       , breakingAndEntering
       , campusSafety
+      , casingTheJoint
       , caughtRedHanded
       , cavernOfTheForgottenAge
       , cityOfTheDeepV1
@@ -217,6 +218,7 @@ allActCards =
       , theDreamEaters
       , theEndlessStairs
       , theEscape
+      , theExit
       , theFinalDescent
       , theFinalMirage
       , theFirstOath
@@ -260,6 +262,7 @@ allActCards =
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
       , theStrangerUnderTheCity
+      , theTake
       , theThingInTheRobes
       , theThirdOath
       , theTrialOfNashtAndKamanThah
@@ -1074,6 +1077,15 @@ whatHappened = act "84004" "What Happened...?" 1 MurderAtTheExcelsiorHotel
 
 followingLeads :: CardDef
 followingLeads = act "84005" "Following Leads" 2 MurderAtTheExcelsiorHotel
+
+casingTheJoint :: CardDef
+casingTheJoint = act "88006" "Casing the Joint" 1 FortuneAndFolly
+
+theTake :: CardDef
+theTake = act "88007" "The Take" 2 FortuneAndFolly
+
+theExit :: CardDef
+theExit = act "88008" "The Exit" 3 FortuneAndFolly
 
 meetAndGreet :: CardDef
 meetAndGreet = act "71005" "Meet and Greet" 1 TheMidwinterGala

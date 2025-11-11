@@ -218,6 +218,7 @@ allPlayerAssetCards =
       , davidRenfield
       , dayanaEsperence3
       , deathXiii1
+      , deckOfPossibilitiesTychokineticImplement
       , decoratedSkull
       , decoratedSkull3
       , dejaVu5
@@ -460,6 +461,9 @@ allPlayerAssetCards =
       , inTheKnow1
       , inTheThickOfIt
       , investments
+      , isamaraOrdonezLoungeSingerCrew
+      , isamaraOrdonezLoungeSingerInconspicious
+      , isamaraOrdonezTheTorchSinger
       , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
       , jamesCookieFredericksDubiousChoice
@@ -828,14 +832,20 @@ allPlayerAssetCards =
       , theCodexOfAgesAdvanced
       , theCouncilsCoffer2
       , theDevilXv
+      , theFacePracticed
+      , theFaceUnpracticed
       , theFool03
       , theGoldPocketWatch4
       , theGreatWorkDivideAndUnite
+      , theGrifterPracticed
+      , theGrifterUnpracticed
       , theHierophantV3
       , theHungeringBlade1
       , theKeyOfSolomonSecretsOfTheUnknown4
       , theKingInYellow
       , theMoonXiii1
+      , theMusclePracticed
+      , theMuscleUnpracticed
       , theNecronomicon
       , theNecronomiconAdvanced
       , theNecronomiconOlausWormiusTranslation
@@ -852,6 +862,8 @@ allPlayerAssetCards =
       , theSkeletonKey2
       , theStarXvii3
       , theTatteredCloak
+      , theThiefPracticed
+      , theThiefUnpracticed
       , theTowerXVI
       , theWorldXxi3
       , thievesKit
@@ -975,6 +987,7 @@ allEncounterAssetCards =
       , staffOfTheSerpentRelicOfThePast
       , accursedCapeShroudOfChaos
       , rocketShipRattlingWithEnergy
+      , cashCart
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

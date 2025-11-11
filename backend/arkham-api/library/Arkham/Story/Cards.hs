@@ -171,6 +171,17 @@ allStoryCards =
       , silverTwilightLodgeRival
       , localsOfKingsportAllied
       , localsOfKingsportRival
+      , theStakeout
+      , theHeist
+      , ifTheUniformFits
+      , packageDelivery
+      , fortunesDisfavor25
+      , lightsOut
+      , fortunesDisfavor26
+      , unlikelyInjuries
+      , fortunesDisfavor27
+      , personalEntaglement
+      , deckOfPossibilities
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -569,3 +580,36 @@ localsOfKingsportAllied = doubleSided $ addTrait Allied $ story "71039" "Locals 
 
 localsOfKingsportRival :: CardDef
 localsOfKingsportRival = doubleSided $ addTrait Rival $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala
+
+theStakeout :: CardDef
+theStakeout = doubleSided $ story "88023" "The Stakeout" FortuneAndFolly
+
+theHeist :: CardDef
+theHeist = doubleSided $ story "88023b" "The Heist" FortuneAndFolly
+
+ifTheUniformFits :: CardDef
+ifTheUniformFits = doubleSided $ story "88024" "If the Uniform Fits…" FortuneAndFolly
+
+packageDelivery :: CardDef
+packageDelivery = doubleSided $ story "88024b" "Package Delivery" FortuneAndFolly
+
+fortunesDisfavor25 :: CardDef
+fortunesDisfavor25 = doubleSided $ story "88025" "Fortune's Disfavor" FortuneAndFolly
+
+lightsOut :: CardDef
+lightsOut = doubleSided $ story "88025b" "Lights Out!" FortuneAndFolly
+
+fortunesDisfavor26 :: CardDef
+fortunesDisfavor26 = doubleSided $ story "88026" "Fortune's Disfavor" FortuneAndFolly
+
+unlikelyInjuries :: CardDef
+unlikelyInjuries = doubleSided $ story "88026b" "Unlikely Injuries" FortuneAndFolly
+
+fortunesDisfavor27 :: CardDef
+fortunesDisfavor27 = doubleSided $ story "88027" "Fortune's Disfavor" FortuneAndFolly
+
+personalEntaglement :: CardDef
+personalEntaglement = doubleSided $ story "88027b" "Personal Entanglement" FortuneAndFolly
+
+deckOfPossibilities :: CardDef
+deckOfPossibilities = doubleSided $ story "88043b" "Deck of Possibilities" FortuneAndFolly

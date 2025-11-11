@@ -644,6 +644,28 @@ allEnemies =
     , SomeEnemyCard cultistOfTheEnclave
     , --- Sins of the Past
       SomeEnemyCard vengefulSpecter
+    , -- Fortune and Folly
+      SomeEnemyCard abarranArrigorriagakoaTheManWithTheRubyRing
+    , SomeEnemyCard abarranArrigorriagakoaAbarranUnleashed
+    , SomeEnemyCard casinoGuardA
+    , SomeEnemyCard casinoGuardB
+    , SomeEnemyCard casinoGuardC
+    , SomeEnemyCard houseDealerA
+    , SomeEnemyCard houseDealerB
+    , SomeEnemyCard securityPatrolA
+    , SomeEnemyCard securityPatrolB
+    , SomeEnemyCard securityPatrolC
+    , --- Fortune's Chosen
+      SomeEnemyCard fortunesShieldA
+    , SomeEnemyCard fortunesShieldB
+    , SomeEnemyCard fortunesDaggerA
+    , SomeEnemyCard fortunesDaggerB
+    , --- Plan in Shamblers
+      SomeEnemyCard dimensionalShamblerHunterFromBeyond
+    , SomeEnemyCard dimensionalDuplicatorA
+    , SomeEnemyCard dimensionalDuplicatorB
+    , SomeEnemyCard dimensionalDisplacerA
+    , SomeEnemyCard dimensionalDisplacerB
     , -- Parallel
       --- Laid to Rest
       SomeEnemyCard vengefulShade

@@ -5,7 +5,6 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import Token from '@/arkham/components/Token.vue'
 import * as Arkham from '@/arkham/types/ScarletKey'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { TokenType } from '@/arkham/types/Token';
@@ -77,6 +76,8 @@ const abilities = computed(() => {
       return acc;
     }, []);
 })
+
+const clues = computed(() => props.scarletKey.tokens[TokenType.Clue])
 </script>
 
 <template>
@@ -89,6 +90,9 @@ const abilities = computed(() => {
           class="card scarletKey"
           @click="$emit('choose', cardAction)"
         />
+        <div class="pool">
+          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+        </div>
       </div>
       <AbilityButton
         v-for="ability in abilities"
@@ -153,5 +157,32 @@ const abilities = computed(() => {
   width: var(--card-width);
   max-width: var(--card-width);
   border-radius: 5px;
+}
+
+.image-container {
+  position: relative;
+}
+
+.pool {
+  position: absolute;
+  top: 10%;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-self: flex-start;
+  align-items: flex-end;
+  z-index: 15;
+  :deep(img) {
+    width: 20px;
+    height: auto;
+  }
+
+  :deep(.token-container) {
+    width: 20px;
+  }
+
+  &:not(:has(.key--can-interact)) {
+    pointer-events: none;
+  }
 }
 </style>

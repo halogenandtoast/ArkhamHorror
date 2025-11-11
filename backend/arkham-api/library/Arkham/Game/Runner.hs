@@ -2005,24 +2005,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   Do (RemoveCard c) -> do
     card <- getCard c
     pure $ g & removedFromPlayL %~ (card :)
-  AddToVictory (EnemyTarget eid) -> do
-    mods <- getModifiers eid
-    card <- field EnemyCard eid
-    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
-    pushAll
-      $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
-      <> [RemoveEnemy eid]
-
-    mloc <- field EnemyLocation eid
-    for_ mloc \loc -> do
-      enemy <- getEnemy eid
-      for_ enemy.keys (push . PlaceKey (toTarget loc))
-    pure
-      $ g
-      & entitiesL
-      . enemiesL
-      . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone, enemyKeys = mempty})
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
     pushAll $ windows [Window.AddedToVictory card]

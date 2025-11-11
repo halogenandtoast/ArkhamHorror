@@ -248,6 +248,7 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
   toGameMessage = \case
     ClientText txt -> GameMessage txt
     ClientError txt -> GameError txt
+    ClientUI txt -> GameUI txt
     ClientCard t v -> GameCard t v
     ClientCardOnly i t v -> GameCardOnly i t v
     ClientTarot v -> GameTarot v
@@ -256,6 +257,7 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
   toClientText = \case
     ClientText txt -> Just txt
     ClientError {} -> Nothing
+    ClientUI {} -> Nothing
     ClientCard {} -> Nothing
     ClientCardOnly {} -> Nothing
     ClientTarot {} -> Nothing

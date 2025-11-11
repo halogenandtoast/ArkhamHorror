@@ -1,4 +1,7 @@
 {
+  "label": {
+    "keepHand": "Finish Taking Mulligan"
+  },
   "intro": {
     "title": "Fortune and Folly, Part I",
     "intro1": "<p>_Intro 1_: MAN STRUCK BY LIGHTNING TWICE MINUTES AFTER WINNING BIG! This sensational headline is what first grabbed your attention. You might have written it off as just an extraordinary and unlikely event exaggerated to sell papers, if it weren’t for the other stories that followed, all centering around the same place: a casino in Monte Carlo called Défis de la Roulette. In addition to the unlucky patron being struck down mere moments after leaving the casino with his winnings, others have also met grisly yet improbable fates either within or nearby. Upon inquiring further, it seems that this casino appeared quickly and unexpectedly, and the authorities in Monaco have been suspiciously tight-lipped about where exactly it came from and who owns it. Since its opening, the casino has been a magnet for the unnatural and implausible. The more you learn, the more it seems worth at least taking a look to determine whether these events are simply coincidence, or the result of something much more sinister.</p>",

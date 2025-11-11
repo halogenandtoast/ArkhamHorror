@@ -8,18 +8,22 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding (enemyAt)
+import Arkham.Matcher hiding (Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Story
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype FortuneAndFolly = FortuneAndFolly ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -39,10 +43,12 @@ fortuneAndFolly difficulty =
 
 instance HasChaosTokenValue FortuneAndFolly where
   getChaosTokenValue iid tokenFace (FortuneAndFolly attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      alarmLevel <- getAlarmLevel iid
+      pure $ toChaosTokenValue attrs Skull ((alarmLevel + 1) `div` 2) alarmLevel
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs Tablet 5 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage FortuneAndFolly where
@@ -170,4 +176,61 @@ instance RunMessage FortuneAndFolly where
           \card -> createAssetAt_ card (InPlayArea iid)
 
       pure s
+    ResolveChaosToken _ Cultist iid -> do
+      drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      withLocationOf iid \loc -> do
+        enemies <- select $ NearestEnemyTo iid AnyEnemy
+        chooseTargetM iid enemies \enemy -> moveTowards Tablet enemy loc
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      chooseOneM iid do
+        labeled' "elderThing.alarm" do
+          raiseAlarmLevel ElderThing [iid]
+          passSkillTest
+        skip_
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> raiseAlarmLevel Cultist [iid]
+        Tablet | isEasyStandard attrs -> do
+          withLocationOf iid \loc -> do
+            enemies <- select $ NearestEnemyTo iid AnyEnemy
+            chooseTargetM iid enemies \enemy -> moveTowards Tablet enemy loc
+        _ -> pure ()
+      pure s
+    ScenarioSpecific "mulligan" val -> fmap FortuneAndFolly do
+      let params = toResult @CheckGameIcons val
+      if null params.cards
+        then scenarioSpecific "checkGameIcons" params
+        else focusCards params.cards do
+          chooseOneM params.investigator do
+            labeled' "keepHand" $ scenarioSpecific "checkGameIcons" params
+            for_ (eachWithRest params.cards) \(card, rest) ->
+              targeting card $ scenarioSpecific "mulligan" params {cards = rest}
+      pure attrs
+    ScenarioSpecific "checkGameIcons" val -> fmap FortuneAndFolly do
+      let params = toResult @CheckGameIcons val
+      let toFind = params.n - count (isJust . toPlayingCard) params.cards
+      if toFind == 0
+        then do
+          if params.mulligan == CanMulligan
+            then scenarioSpecific "mulligan" params {mulligan = NoMulligan}
+            else
+              push $ DiscardedCards params.investigator ScenarioSource params.target $ toCard <$> params.cards
+          pure attrs
+        else case attrs.encounterDeck of
+          Deck [] -> do
+            unless (scenarioInShuffle attrs) do
+              checkWhen Window.EncounterDeckRunsOutOfCards
+              shuffleEncounterDiscardBackIn
+              push msg
+            pure attrs
+          Deck (card : deck) -> do
+            checkWhen $ Window.Discarded (Just params.investigator) ScenarioSource (toCard card)
+            push $ Discarded (CardIdTarget card.id) ScenarioSource (toCard card)
+            checkAfter $ Window.Discarded (Just params.investigator) ScenarioSource (toCard card)
+            push $ ScenarioSpecific "checkGameIcons" $ toJSON params {cards = card : params.cards}
+            pure $ attrs & encounterDeckL .~ Deck deck & discardL %~ (card :)
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs

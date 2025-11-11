@@ -46,4 +46,6 @@ instance RunMessage ScarletKeyAttrs where
         _ -> pure attrs
     PlaceTokens _source (isTarget attrs -> True) token n -> do
       pure $ attrs & tokensL %~ addTokens token n
+    RemoveTokens _source (isTarget attrs -> True) token n -> do
+      pure $ attrs & tokensL %~ subtractTokens token n
     _ -> pure attrs

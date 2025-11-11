@@ -92,6 +92,8 @@ data ScenarioLogKey
   | TidiedUpTheRoom
   | ThePoliceDon'tBelieveYou
   | ThePoliceAreOnYourSide
+  | -- | Fortune and Folly
+    CleanedOutTheHouse
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards

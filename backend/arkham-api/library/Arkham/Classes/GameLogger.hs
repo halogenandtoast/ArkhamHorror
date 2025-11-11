@@ -43,11 +43,17 @@ data ClientMessage
   | ClientTarot Value
   | ClientShowDiscard InvestigatorId
   | ClientShowUnder InvestigatorId
+  | ClientUI Text
 
 send :: HasGameLogger m => Text -> m ()
 send msg = do
   f <- getLogger
   liftIO $ f (ClientText msg)
+
+sendUI :: HasGameLogger m => Text -> m ()
+sendUI msg = do
+  f <- getLogger
+  liftIO $ f (ClientUI msg)
 
 sendError :: HasGameLogger m => Text -> m ()
 sendError msg = do

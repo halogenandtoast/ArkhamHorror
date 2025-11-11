@@ -3769,14 +3769,14 @@ inconvenientQuesitoningC :: CardDef
 inconvenientQuesitoningC =
   (treachery "88038c" "Inconvenient Questioning" FortuneAndFolly 1)
     { cdCardTraits = singleton Scheme
-    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "eight")]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "eight")]
     }
 
 inconvenientQuesitoningD :: CardDef
 inconvenientQuesitoningD =
   (treachery "88038d" "Inconvenient Questioning" FortuneAndFolly 1)
     { cdCardTraits = singleton Scheme
-    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "eight")]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "eight")]
     }
 
 arcaneSpotlightA :: CardDef
@@ -3813,7 +3813,7 @@ avariceCallsB =
   peril
     $ (treachery "88040b" "Avarice Calls" FortuneAndFolly 1)
       { cdCardTraits = singleton Curse
-      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "ten")]
+      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "jack")]
       }
 
 avariceCallsC :: CardDef
@@ -3821,21 +3821,21 @@ avariceCallsC =
   peril
     $ (treachery "88040c" "Avarice Calls" FortuneAndFolly 1)
       { cdCardTraits = singleton Curse
-      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "jack")]
+      , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "ten")]
       }
 
 suspiciousGazeA :: CardDef
 suspiciousGazeA =
   (treachery "88041a" "Suspicious Gaze" FortuneAndFolly 1)
     { cdCardTraits = singleton Scheme
-    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "seven")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "eight")]
     }
 
 suspiciousGazeB :: CardDef
 suspiciousGazeB =
   (treachery "88041b" "Suspicious Gaze" FortuneAndFolly 1)
     { cdCardTraits = singleton Scheme
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "eight")]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "seven")]
     }
 
 suspiciousGazeC :: CardDef
@@ -3849,14 +3849,14 @@ obsessedGamblerA :: CardDef
 obsessedGamblerA =
   (treachery "88042a" "Obsessed Gambler" FortuneAndFolly 1)
     { cdCardTraits = singleton Terror
-    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "seven")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "eight")]
     }
 
 obsessedGamblerB :: CardDef
 obsessedGamblerB =
   (treachery "88042b" "Obsessed Gambler" FortuneAndFolly 1)
     { cdCardTraits = singleton Terror
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "eight")]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "seven")]
     }
 
 obsessedGamblerC :: CardDef
@@ -3870,14 +3870,14 @@ dimensionalHypothesisA :: CardDef
 dimensionalHypothesisA =
   (treachery "88051a" "Dimensional Hypothesis" PlanInShambles 1)
     { cdCardTraits = singleton Terror
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "five")]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "five")]
     }
 
 dimensionalHypothesisB :: CardDef
 dimensionalHypothesisB =
   (treachery "88051b" "Dimensional Hypothesis" PlanInShambles 1)
     { cdCardTraits = singleton Terror
-    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "five")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "five")]
     }
 
 dimensionalHypothesisC :: CardDef
@@ -3912,14 +3912,14 @@ huntersHungerA :: CardDef
 huntersHungerA =
   (treachery "88053a" "Hunter's Hunger" PlanInShambles 1)
     { cdCardTraits = singleton Hazard
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "four")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "four")]
     }
 
 huntersHungerB :: CardDef
 huntersHungerB =
   (treachery "88053b" "Hunter's Hunger" PlanInShambles 1)
     { cdCardTraits = singleton Hazard
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "four")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "four")]
     }
 
 realityAcid5U21 :: CardDef

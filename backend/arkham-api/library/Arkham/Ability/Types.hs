@@ -151,6 +151,9 @@ data AbilityRef = AbilityRef Source Int
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+instance Sourceable AbilityRef where
+  toSource (AbilityRef s n) = AbilitySource s n
+
 abilityToRef :: Ability -> AbilityRef
 abilityToRef a = AbilityRef a.source a.index
 

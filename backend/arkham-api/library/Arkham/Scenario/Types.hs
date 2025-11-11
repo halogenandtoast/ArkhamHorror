@@ -208,6 +208,9 @@ instance HasField "grid" ScenarioAttrs Grid where
 instance HasField "meta" ScenarioAttrs Value where
   getField = scenarioMeta
 
+instance HasField "encounterDeck" ScenarioAttrs (Deck EncounterCard) where
+  getField = scenarioEncounterDeck
+
 getMetaKeyDefault :: FromJSON a => Key -> a -> ScenarioAttrs -> a
 getMetaKeyDefault k def attrs = case attrs.meta of
   Object o -> case KeyMap.lookup k o of

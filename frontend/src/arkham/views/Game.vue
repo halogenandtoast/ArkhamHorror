@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 // Vue core & ecosystem
-import { computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { nextTick, computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import confetti   from '@/effects/confetti'
 
 // VueUse utilities
 import { useClipboard, useWebSocket } from '@vueuse/core'
@@ -88,6 +89,7 @@ type ServerResult =
   | { tag: "GameUpdate"; contents: string }
   | { tag: "GameShowDiscard"; contents: string }
   | { tag: "GameShowUnder"; contents: string }
+  | { tag: "GameUI"; contents: string }
 
 // Setup
 export interface Props {
@@ -257,6 +259,31 @@ const handleResult = (result: ServerResult) => {
     case "GameShowUnder":
       emitter.emit('showUnder', result.contents)
       return
+    case "GameUI":
+      switch (result.contents) {
+        case "confetti": {
+          setTimeout(() => {
+            var count = 500;
+            var defaults = {
+              origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+              confetti({
+                ...defaults,
+                ...opts,
+                particleCount: Math.floor(count * particleRatio)
+              });
+            }
+
+            fire(0.25, {
+              spread: 26,
+              startVelocity: 55,
+            });
+          }, 500)
+        }
+        default: return
+      }
     case "GameTarot":
       if (props.spectate) return
       if (uiLock.value) {

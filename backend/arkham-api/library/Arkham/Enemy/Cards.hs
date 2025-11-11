@@ -3909,7 +3909,7 @@ casinoGuardA =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardANext"))]
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "jack")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "queen")]
     }
 
 casinoGuardB :: CardDef
@@ -3919,7 +3919,7 @@ casinoGuardB =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardBNext"))]
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "ten")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "jack")]
     }
 
 casinoGuardC :: CardDef
@@ -3929,7 +3929,7 @@ casinoGuardC =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "casinoGuardCNext"))]
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "queen")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "ten")]
     }
 
 houseDealerA :: CardDef
@@ -3959,7 +3959,7 @@ securityPatrolA =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolANext"))]
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "jack")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "queen")]
     }
 
 securityPatrolB :: CardDef
@@ -3969,7 +3969,7 @@ securityPatrolB =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolBNext"))]
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "ten")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "jack")]
     }
 
 securityPatrolC :: CardDef
@@ -3979,7 +3979,7 @@ securityPatrolC =
     , cdKeywords =
         setFromList
           [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "securityPatrolCNext"))]
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "queen")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "ten")]
     }
 
 fortunesShieldA :: CardDef
@@ -4009,7 +4009,7 @@ fortunesDaggerA =
     , cdKeywords =
         setFromList
           [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesDaggerANext")), Keyword.Retaliate]
-    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "king")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "king")]
     }
 
 fortunesDaggerB :: CardDef
@@ -4019,7 +4019,7 @@ fortunesDaggerB =
     , cdKeywords =
         setFromList
           [Keyword.Patrol (LocationWithModifier (ScenarioModifier "fortunesDaggerBNext")), Keyword.Retaliate]
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "king")]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "king")]
     }
 
 dimensionalShamblerHunterFromBeyond :: CardDef
@@ -4036,7 +4036,7 @@ dimensionalDuplicatorA =
   (enemy "88049a" "Dimensional Duplicator" PlanInShambles 1)
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdKeywords = setFromList [Keyword.Hunter]
-    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "six")]
+    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "six")]
     }
 
 dimensionalDuplicatorB :: CardDef
@@ -4044,7 +4044,7 @@ dimensionalDuplicatorB =
   (enemy "88049b" "Dimensional Duplicator" PlanInShambles 1)
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdKeywords = setFromList [Keyword.Hunter]
-    , cdMeta = mapFromList [("suit", String "spades"), ("value", String "six")]
+    , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "six")]
     }
 
 dimensionalDisplacerA :: CardDef
@@ -4052,7 +4052,7 @@ dimensionalDisplacerA =
   (enemy "88050a" "Dimensional Displacer" PlanInShambles 1)
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
-    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "six")]
+    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "six")]
     }
 
 dimensionalDisplacerB :: CardDef
@@ -4060,7 +4060,7 @@ dimensionalDisplacerB =
   (enemy "88050b" "Dimensional Displacer" PlanInShambles 1)
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
-    , cdMeta = mapFromList [("suit", String "diamonds"), ("value", String "six")]
+    , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "six")]
     }
 
 vengefulShade :: CardDef

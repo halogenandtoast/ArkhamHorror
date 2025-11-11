@@ -847,7 +847,6 @@ removeCampaignCardFromDeck
   -> a
   -> m ()
 removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
-  push $ RemoveCampaignCard def
   push $ RemoveCampaignCardFromDeck iid def
 
 placeClues

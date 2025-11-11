@@ -160,15 +160,21 @@ instance RunMessage TheForgottenAge where
                   sufferMentalTrauma iid 1
 
         when (notNull withMedicine && notNull withPoisoned) do
-          let medicineCount = min (length withMedicine) (length withPoisoned)
-          storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (setTitle "title" >> p.green "medicine") do
-            for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
-              cardLabeled (unInvestigatorId poisoned) do
-                removeCampaignCardFromDeck poisoned Treacheries.poisoned
-                useSupply doctor Medicine
+          push $ ForInvestigators withPoisoned msg
 
         interludeStepPart 1 mkey 2
         nextCampaignStep
+        pure c
+      ForInvestigators withPoisoned msg'@(CampaignStep (InterludeStep 1 _mkey)) -> scope "interlude1" do
+        withMedicine <- getInvestigatorsWithSupply Medicine
+        for_ (nonEmpty withMedicine) \(doctor :| _) -> do
+          storyWithChooseOneM' (setTitle "title" >> p.green "medicine") do
+            labeled' "doNotUseMedicine" nothing
+            for_ (eachWithRest withPoisoned) \(poisoned, rest) -> do
+              cardLabeled (unInvestigatorId poisoned) do
+                removeCampaignCardFromDeck poisoned Treacheries.poisoned
+                useSupply doctor Medicine
+                when (notNull rest) $ push $ ForInvestigators rest msg'
         pure c
       CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
         let

@@ -89,11 +89,6 @@ defaultCampaignRunner msg a = case msg of
   AddCampaignCardToDeck iid _ card -> do
     card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card'])
-  RemoveCampaignCard cardDef -> do
-    pure
-      $ updateAttrs a
-      $ (storyCardsL %~ Map.map (filter ((/= cardDef) . toCardDef)))
-      . (decksL %~ Map.map (withDeck $ filter ((/= cardDef) . toCardDef)))
   RemoveCampaignCardFromDeck iid cardDef ->
     pure
       $ updateAttrs a

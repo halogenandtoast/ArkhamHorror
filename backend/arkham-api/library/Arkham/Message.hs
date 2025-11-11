@@ -945,7 +945,6 @@ data Message
   | RemoveAllClues Source Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
   | RemoveAllDoom Source Target
-  | RemoveCampaignCard CardDef
   | RemoveCampaignCardFromDeck InvestigatorId CardDef
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId

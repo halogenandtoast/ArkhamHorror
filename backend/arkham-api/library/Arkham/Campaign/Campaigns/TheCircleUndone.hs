@@ -95,6 +95,10 @@ instance RunMessage TheCircleUndone where
       lead <- getActivePlayer
       push $ Ask lead ContinueCampaign
       pure c
+    CampaignStep (ContinueCampaignStep ((.nextStep) -> ReturnToDisappearanceAtTheTwilightEstate)) -> do
+      lead <- getActivePlayer
+      push $ Ask lead ContinueCampaign
+      pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> scope "interlude2" do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
       let

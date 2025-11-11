@@ -6,8 +6,8 @@ import Import.NoFoundation hiding (get)
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
-import Arkham.CampaignStep qualified as CS
 import Arkham.CampaignLogKey
+import Arkham.CampaignStep qualified as CS
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Campaigns.TheCircleUndone.Memento
@@ -18,6 +18,7 @@ import Arkham.Cost
 import Arkham.Decklist
 import Arkham.Entities
 import Arkham.Game
+import Arkham.Game.Utils (modeCampaign)
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
@@ -41,7 +42,13 @@ data Answer
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
-  | ExchangeAmountsAnswer { source :: Source, fromInvestigator :: InvestigatorId, toInvestigator :: InvestigatorId, token :: Token, amount :: Int }
+  | ExchangeAmountsAnswer
+      { source :: Source
+      , fromInvestigator :: InvestigatorId
+      , toInvestigator :: InvestigatorId
+      , token :: Token
+      , amount :: Int
+      }
   | CampaignStepAnswer CS.CampaignStep
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -291,7 +298,11 @@ handleAnswer Game {..} playerId = \case
   CampaignSpecificAnswer k v -> do
     handled [CampaignSpecific k v]
   CampaignStepAnswer k -> do
-    handled [NextCampaignStep (Just k)]
+    case modeCampaign gameMode of
+      Just c -> case c.step of
+        CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
+        _ -> handled []
+      Nothing -> handled []
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do

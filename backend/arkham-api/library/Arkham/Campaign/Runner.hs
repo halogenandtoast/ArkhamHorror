@@ -8,7 +8,6 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.CampaignLog
-import Arkham.SideStory
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -30,6 +29,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.SideStory
 import Arkham.Tarot
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
@@ -228,7 +228,9 @@ defaultCampaignRunner msg a = case msg of
     UpgradeDeckStep nextStep' -> do
       push $ CampaignStep nextStep'
       pure $ updateAttrs a $ stepL .~ nextStep'
-    _ -> error $ "invalid state: " <> show (campaignStep (toAttrs a))
+    _ -> do
+      sendError $ "Your game can continue without issue, but please file a bug for this. Invalid state: " <> tshow (campaignStep (toAttrs a))
+      pure a
   ResetGame -> runMessage ReloadDecks a
   ReloadDecks -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do

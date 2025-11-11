@@ -4,10 +4,12 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
@@ -26,7 +28,7 @@ instance HasAbilities RecoverTheRelic where
     [ mkAbility a 1
         $ Objective
         $ forced
-        $ EnemyLeavesPlay #after
+        $ EnemyLeavesPlay #when
         $ EnemyWithModifier (ScenarioModifier "withRelicOfAges")
     ]
 
@@ -39,7 +41,12 @@ instance RunMessage RecoverTheRelic where
       relicOfAges <-
         selectOne (assetIs Assets.relicOfAgesADeviceOfSomeSort)
           `orWhenNothingM` createAssetAt Assets.relicOfAgesADeviceOfSomeSort Unplaced
-      iids <- select $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      findInvestigators <- runDefaultMaybeT Anyone do
+        enemy <- MaybeT $ selectOne $ EnemyWithModifier (ScenarioModifier "withRelicOfAges")
+        loc <- MaybeT (field EnemyLastKnownLocation enemy) <|> MaybeT (field EnemyLocation enemy)
+        pure $ NearestToLocation $ LocationWithId loc
+
+      iids <- select findInvestigators
       leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` relicOfAges)
       deckCount <- getActDecksInPlayCount
       push

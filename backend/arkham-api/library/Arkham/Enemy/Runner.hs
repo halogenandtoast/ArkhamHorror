@@ -81,7 +81,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (capture, do_, selectEach)
+import Arkham.Message.Lifted (capture, do_, placeKey, removeEnemy, selectEach)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
 import Arkham.Prelude
@@ -1469,7 +1469,7 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (keysL .~ mempty)
-        & (lastKnownLocationL .~ mloc)
+        & (lastKnownLocationL %~ (mloc <|>))
     Do (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       modifiedHealth <- fieldJust EnemyHealth (toId a)
       let
@@ -1504,20 +1504,26 @@ instance RunMessage EnemyAttrs where
     After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
-      let (f1, f2, f3) = frame (Window.LeavePlay (toTarget a))
-      let (g1, g2, g3) = frame (Window.AddedToVictory (toCard a))
-      pushAll [f1, g1, When msg, f2, g2, Do msg, g3, f3]
+      push $ Do msg
       pure a
     Do (DefeatedAddToVictory (isTarget a -> True)) -> do
-      mods <- getModifiers a
-      let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
-      push $ RemoveEnemy a.id
-      pure $ a & placementL .~ OutOfPlay zone & tokensL %~ mempty
+      push $ AddToVictory $ toTarget a
+      pure a
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do
       selectEach (SwarmOf a.id) (push . RemoveEnemy)
-      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
+      mloc <- getLocationOf a
+      mods <- getModifiers a
+      let card = toCard a
+      pushAll $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory card]
+      unless (StayInVictory `elem` mods) $ removeEnemy a
+      withLocationOf a $ for_ a.keys . placeKey
+      pure
+        $ a
+        & (placementL .~ OutOfPlay VictoryDisplayZone)
+        & (keysL .~ mempty)
+        & (lastKnownLocationL %~ (mloc <|>))
     Discard miid source target | a `isTarget` target -> do
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
       afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]

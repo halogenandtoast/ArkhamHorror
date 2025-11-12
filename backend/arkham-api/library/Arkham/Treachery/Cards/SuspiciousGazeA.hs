@@ -1,5 +1,8 @@
 module Arkham.Treachery.Cards.SuspiciousGazeA (suspiciousGazeA) where
 
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -12,5 +15,14 @@ suspiciousGazeA = treachery SuspiciousGazeA Cards.suspiciousGazeA
 
 instance RunMessage SuspiciousGazeA where
   runMessage msg t@(SuspiciousGazeA attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #agility (Fixed 3)
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      n <- (`div` 2) . (+ 1) <$> getAlarmLevel iid
+      chooseOneM iid $ scenarioI18n do
+        unscoped $ countVar n $ labeledValidate' (n > 0) "takeDamage" $ assignDamage iid attrs n
+        labeled' "suspiciousGaze.alarm" $ raiseAlarmLevel attrs [iid]
+      pure t
     _ -> SuspiciousGazeA <$> liftRunMessage msg attrs

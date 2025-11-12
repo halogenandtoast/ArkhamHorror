@@ -275,12 +275,14 @@ instance RunMessage FortuneAndFolly where
       pure attrs
     ScenarioSpecific "checkGameIcons" val -> fmap FortuneAndFolly do
       let params = toResult @CheckGameIcons val
-      let toFind = params.n - count (isJust . toPlayingCard) params.cards
+      pcs  <- mapMaybeM toPlayingCard params.cards
+      let toFind = params.n - length pcs
       if toFind == 0
         then do
           if params.mulligan == CanMulligan
             then scenarioSpecific "mulligan" params {mulligan = NoMulligan}
-            else
+            else do
+              checkWhen $ Window.ScenarioEvent "checkGameIcons" (Just params.investigator) (toJSON params)
               push $ DiscardedCards params.investigator ScenarioSource params.target $ toCard <$> params.cards
           pure attrs
         else case attrs.encounterDeck of

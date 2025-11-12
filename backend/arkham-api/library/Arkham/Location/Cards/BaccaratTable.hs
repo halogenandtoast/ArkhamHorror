@@ -34,7 +34,7 @@ instance RunMessage BaccaratTable where
       checkGameIcons attrs iid NoMulligan 2
       pure $ BaccaratTable $ attrs & setMeta choice
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
-      let cards' = cards & mapMaybe \c -> (c,) <$> toPlayingCard c
+      cards' <- cards & mapMaybeM \c -> (c,) <$$> toPlayingCard c
       let choice = toEnum @BaccaratChoice $ toResult @Int attrs.meta
       let total = sum $ map (numericValue . snd) cards'
       let

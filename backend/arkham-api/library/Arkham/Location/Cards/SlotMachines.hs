@@ -23,8 +23,9 @@ instance RunMessage SlotMachines where
       checkGameIcons attrs iid NoMulligan 3
       pure l
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
-      let hand = sortBy (compare `on` toPlayingCard) $ filter (isJust . toPlayingCard) cards
-      when (allSameSuit cards || allSameRank cards) $ winGame iid attrs 3
+      cards' <- cards & mapMaybeM \c -> (c,) <$$> toPlayingCard c
+      let hand = map fst $ sortBy (compare `on` snd) cards'
+      whenM (orM [allSameSuit cards, allSameRank cards]) $ winGame iid attrs 3
       focusCards hand $ continue_ iid
       pure l
     _ -> SlotMachines <$> liftRunMessage msg attrs

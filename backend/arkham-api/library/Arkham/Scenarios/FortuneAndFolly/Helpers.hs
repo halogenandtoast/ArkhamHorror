@@ -6,9 +6,10 @@ module Arkham.Scenarios.FortuneAndFolly.Helpers (module Arkham.Scenarios.Fortune
 
 import Arkham.Ability.Types
 import Arkham.Capability
-import Arkham.Card.CardDef
-import Arkham.Card.EncounterCard
+import Arkham.Card
 import Arkham.Classes.GameLogger
+import Arkham.Classes.HasGame
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
@@ -26,6 +27,7 @@ import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
 import Data.Function (on)
+import Data.Monoid (First (..))
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "fortuneAndFolly" a
@@ -69,30 +71,37 @@ checkGameIcons (toTarget -> target) iid mulligan n =
       , target
       }
 
-sameRank :: HasCardDef a => Int -> [a] -> Bool
-sameRank n cards =
-  let playingCards = mapMaybe toPlayingCard cards
-      rankGroups = groupBy (\a b -> a.rank == b.rank) (sortBy (compare `on` (.rank)) playingCards)
-   in any (\grp -> length grp >= n) rankGroups
+sameRank :: (HasGame m, HasCardDef a) => Int -> [a] -> m Bool
+sameRank n cards = do
+  playingCards <- mapMaybeM toPlayingCard cards
+  let rankGroups = groupBy (\a b -> a.rank == b.rank) (sortBy (compare `on` (.rank)) playingCards)
+  pure $ any (\grp -> length grp >= n) rankGroups
 
-allSameSuit :: HasCardDef a => [a] -> Bool
-allSameSuit cards = case mapMaybe toPlayingCard cards of
-  [] -> False
-  (x : xs) -> all (\pc -> pc.suit == x.suit) xs
+allSameSuit :: (HasCardDef a, HasGame m) => [a] -> m Bool
+allSameSuit cards =
+  mapMaybeM toPlayingCard cards <&> \case
+    [] -> False
+    (x : xs) -> all (\pc -> pc.suit == x.suit) xs
 
-allSameRank :: HasCardDef a => [a] -> Bool
-allSameRank cards = case mapMaybe toPlayingCard cards of
-  [] -> False
-  (x : xs) -> all (\pc -> pc.rank == x.rank) xs
+allSameRank :: (HasCardDef a, HasGame m) => [a] -> m Bool
+allSameRank cards =
+  mapMaybeM toPlayingCard cards <&> \case
+    [] -> False
+    (x : xs) -> all (\pc -> pc.rank == x.rank) xs
 
-sequential :: HasCardDef a => [a] -> Bool
-sequential cards =
-  let playingCards = mapMaybe toPlayingCard cards
-      sortedRanks = sort $ map rankValue playingCards
-   in and $ zipWith (\a b -> b == a + 1) sortedRanks (drop 1 sortedRanks)
+sequential :: (HasGame m, HasCardDef a) => [a] -> m Bool
+sequential cards = do
+  playingCards <- mapMaybeM toPlayingCard cards
+  let sortedRanks = sort $ map rankValue playingCards
+  pure $ and $ zipWith (\a b -> b == a + 1) sortedRanks (drop 1 sortedRanks)
 
-toPlayingCard :: HasCardDef a => a -> Maybe PlayingCard
-toPlayingCard a = PlayingCard <$> rank <*> suit
+toPlayingCard :: (HasCardDef a, HasGame m) => a -> m (Maybe PlayingCard)
+toPlayingCard a = do
+  mods <- getModifiers (CardCodeTarget $ toCardCode cardDef)
+  let mpc :: Maybe PlayingCard =
+        getFirst
+          $ fold [First (maybeResult @PlayingCard pc) | ScenarioModifierValue "setPlayingCard" pc <- mods]
+  pure $ mpc <|> (PlayingCard <$> rank <*> suit)
  where
   cardDef = toCardDef a
   suit = toSuit =<< lookup "suit" (cdMeta cardDef)

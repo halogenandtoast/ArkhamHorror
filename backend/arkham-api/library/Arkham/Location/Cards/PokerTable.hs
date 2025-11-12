@@ -23,8 +23,9 @@ instance RunMessage PokerTable where
       checkGameIcons attrs iid CanMulligan 5
       pure l
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
-      let hand = sortBy (compare `on` toPlayingCard) $ filter (isJust . toPlayingCard) cards
-      when (sequential cards || sameRank 3 cards) $ winGame iid attrs 5
+      cards' <- cards & mapMaybeM \c -> (c,) <$$> toPlayingCard c
+      let hand = map fst $ sortBy (compare `on` snd) cards'
+      whenM (orM [sequential cards, sameRank 3 cards]) $ winGame iid attrs 5
       focusCards hand $ continue_ iid
       pure l
     _ -> PokerTable <$> liftRunMessage msg attrs

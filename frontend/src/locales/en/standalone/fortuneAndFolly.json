@@ -15,6 +15,11 @@
   },
   "label": {
     "keepHand": "Finish Taking Mulligan",
+    "theGrifter": {
+      "rank": "Change Rank",
+      "suit": "Change Suit",
+      "color": "Change Color"
+    },
     "rank": {
       "Four": "Four",
       "Five": "Five",

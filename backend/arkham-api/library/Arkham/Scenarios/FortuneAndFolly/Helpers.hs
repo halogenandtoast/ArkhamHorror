@@ -32,10 +32,10 @@ scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "fortuneAndFolly" a
 
 data Suit = Hearts | Diamonds | Clubs | Spades
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show, Enum, Bounded)
 
-data Rank = Numeric Int | Jack | Queen | King | Ace
-  deriving stock (Eq, Ord, Show)
+data Rank = Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
+  deriving stock (Eq, Ord, Show, Enum, Bounded)
 
 data PlayingCard = PlayingCard
   { rank :: Rank
@@ -55,10 +55,7 @@ data CheckGameIcons = CheckGameIcons
 data Mulligan = CanMulligan | NoMulligan
   deriving stock (Eq, Show)
 
-mconcat
-  [ deriveJSON defaultOptions ''Mulligan
-  , deriveJSON defaultOptions ''CheckGameIcons
-  ]
+foldMap (deriveJSON defaultOptions) [''Mulligan, ''Rank, ''Suit, ''PlayingCard, ''CheckGameIcons]
 
 checkGameIcons
   :: (Targetable target, ReverseQueue m) => target -> InvestigatorId -> Mulligan -> Int -> m ()
@@ -98,13 +95,13 @@ toPlayingCard a = PlayingCard <$> rank <*> suit
     _ -> Nothing
   rank = toRank =<< lookup "value" (cdMeta cardDef)
   toRank = \case
-    "four" -> Just (Numeric 4)
-    "five" -> Just (Numeric 5)
-    "six" -> Just (Numeric 6)
-    "seven" -> Just (Numeric 7)
-    "eight" -> Just (Numeric 8)
-    "nine" -> Just (Numeric 9)
-    "ten" -> Just (Numeric 10)
+    "four" -> Just Four
+    "five" -> Just Five
+    "six" -> Just Six
+    "seven" -> Just Seven
+    "eight" -> Just Eight
+    "nine" -> Just Nine
+    "ten" -> Just Ten
     "jack" -> Just Jack
     "queen" -> Just Queen
     "king" -> Just King
@@ -113,7 +110,13 @@ toPlayingCard a = PlayingCard <$> rank <*> suit
 
 rankValue :: PlayingCard -> Int
 rankValue pc = case pc.rank of
-  Numeric v -> v
+  Four -> 4
+  Five -> 5
+  Six -> 6
+  Seven -> 7
+  Eight -> 8
+  Nine -> 9
+  Ten -> 10
   Jack -> 11
   Queen -> 12
   King -> 13
@@ -121,13 +124,20 @@ rankValue pc = case pc.rank of
 
 numericValue :: PlayingCard -> Int
 numericValue pc = case pc.rank of
-  Numeric v -> v
+  Four -> 4
+  Five -> 5
+  Six -> 6
+  Seven -> 7
+  Eight -> 8
+  Nine -> 9
+  Ten -> 10
   Jack -> 10
   Queen -> 10
   King -> 10
   Ace -> 10
 
-winGame :: (HasGameLogger m, ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+winGame
+  :: (HasGameLogger m, ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 winGame iid (toSource -> source) n = do
   sendUI "confetti"
   whenM (can.gain.resources iid) do

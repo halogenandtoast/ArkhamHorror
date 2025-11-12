@@ -525,6 +525,7 @@ getEnemy = \case
   ((windowType -> Window.PlacedDoom _ (EnemyTarget eid) _) : _) -> eid
   ((windowType -> Window.EnemyMovesTo _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyWouldMove eid _ _ _) : _) -> eid
+  ((windowType -> Window.WouldPatrol eid) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -984,6 +985,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.DrawingStartingHand timing whoMatcher -> guardTiming timing $ \case
       Window.DrawingStartingHand who -> matchWho iid who whoMatcher
+      _ -> noMatch
+    Matcher.WouldPatrol timing enemyMatcher -> guardTiming timing $ \case
+      Window.WouldPatrol eid -> elem eid <$> select enemyMatcher
       _ -> noMatch
     Matcher.WouldMoveFromHunter timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldMoveFromHunter eid -> elem eid <$> select enemyMatcher

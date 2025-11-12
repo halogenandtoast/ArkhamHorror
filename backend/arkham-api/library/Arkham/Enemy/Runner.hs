@@ -82,6 +82,7 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (capture, do_, placeKey, removeEnemy, selectEach)
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
 import Arkham.Prelude
@@ -823,7 +824,11 @@ instance RunMessage EnemyAttrs where
                   | l <- ls
                   ]
               pure $ a & movedFromHunterKeywordL .~ True
-    PatrolMove eid lMatcher | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
+    PatrolMove eid _lMatcher | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
+      Lifted.checkWhen $ Window.WouldPatrol eid
+      do_ msg
+      pure a
+    Do (PatrolMove eid lMatcher) | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
       field EnemyLocation enemyId >>= traverse_ \loc ->
         unlessM (loc <=~> lMatcher) do
           mods <- getModifiers enemyId

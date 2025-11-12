@@ -33,6 +33,15 @@ const id = computed(() => props.story.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choose = (idx: number) => emit('choose', idx)
 
+const checkmarks = computed(() => {
+  console.log(props.story.modifiers)
+  return props.story.modifiers?.filter(m =>
+    m.type.tag === 'UIModifier' &&
+    m.type.contents.tag === 'OverlayCheckmark'
+  ).map(m => m.type.contents) ?? []
+})
+
+
 const setAsideInfestationTokens = computed(() => props.story.meta?.infestationSetAside ?? [])
 
 function canInteract(c: Message): boolean {
@@ -95,6 +104,7 @@ const hasPool = computed(() => {
         <img :src="image"
           :class="{'story--can-interact': cardAction !== -1 }"
           :data-crossed-off="crossedOff"
+          :data-checkmarks="JSON.stringify(checkmarks)"
           class="card story"
           @click="$emit('choose', cardAction)"
         />

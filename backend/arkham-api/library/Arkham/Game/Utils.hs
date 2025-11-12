@@ -399,6 +399,9 @@ setScenario c (These a _) = These a c
 gameSkills :: Game -> EntityMap Skill
 gameSkills = entitiesSkills . gameEntities
 
+gameStories :: Game -> EntityMap Story
+gameStories = entitiesStories . gameEntities
+
 gameEvents :: Game -> EntityMap Event
 gameEvents = entitiesEvents . gameEntities
 

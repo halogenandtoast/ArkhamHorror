@@ -46,6 +46,20 @@ fortuneAndFolly difficulty =
     , "square   circle diamond"
     ]
 
+{- FOURMOLU_DISABLE -}
+chaosBag :: Difficulty -> [ChaosTokenFace]
+chaosBag difficulty =
+  if difficulty `elem` [Easy, Standard]
+    then
+      [ PlusOne , Zero , Zero, MinusOne , MinusTwo , MinusTwo, MinusThree, MinusThree, MinusFour, MinusFive
+      , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+      ]
+    else
+      [ Zero , Zero, MinusOne , MinusOne, MinusTwo , MinusTwo, MinusThree , MinusThree, MinusSix, MinusSeven
+      , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+      ]
+{- FOURMOLU_ENABLE -}
+
 instance HasChaosTokenValue FortuneAndFolly where
   getChaosTokenValue iid tokenFace (FortuneAndFolly attrs) = case tokenFace of
     Skull -> do
@@ -98,6 +112,9 @@ instance HasModifiersFor FortuneAndFolly where
 
 instance RunMessage FortuneAndFolly where
   runMessage msg s@(FortuneAndFolly attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBag attrs.difficulty
+      pure s
     PreScenarioSetup -> scope "intro" do
       c <- selectOne TheCampaign
       flavor do

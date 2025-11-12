@@ -282,7 +282,9 @@ instance RunMessage FortuneAndFolly where
           if params.mulligan == CanMulligan
             then scenarioSpecific "mulligan" params {mulligan = NoMulligan}
             else do
-              checkWhen $ Window.ScenarioEvent "checkGameIcons" (Just params.investigator) (toJSON params)
+              case params.target of
+                EnemyTarget _ -> pure ()
+                _ -> checkWhen $ Window.ScenarioEvent "checkGameIcons" (Just params.investigator) (toJSON params)
               push $ DiscardedCards params.investigator ScenarioSource params.target $ toCard <$> params.cards
           pure attrs
         else case attrs.encounterDeck of

@@ -44,6 +44,6 @@ instance RunMessage CasingTheJoint where
       resources <- selectSum InvestigatorResources Anyone
       n <- perPlayer 10
       when (resources >= n) $ remember CleanedOutTheHouse
-      push R1
+      push R2
       pure a
     _ -> CasingTheJoint <$> liftRunMessage msg attrs

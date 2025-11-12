@@ -35,7 +35,7 @@ instance RunMessage RouletteWheel where
       checkGameIcons attrs iid NoMulligan 1
       pure $ RouletteWheel $ attrs & setMeta (PlayingCard (toEnum rankN) (toEnum suitN))
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
-      let cards' = cards & mapMaybe \c -> (c,) <$> toPlayingCard c
+      cards' <- cards & mapMaybeM \c -> (c,) <$$> toPlayingCard c
       case cards' of
         ((c, pc) : _) -> do
           let pc' = toResult @PlayingCard attrs.meta

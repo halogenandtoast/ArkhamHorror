@@ -10535,7 +10535,7 @@ highRollersTableCalmNight =
   otherSideIs "88014b"
   $ location
     "88014"
-    ("High Rollers Table" <:> "Calm Night")
+    ("High Roller's Table" <:> "Calm Night")
     [Public, Casino, Game]
     Squiggle
     [T, Plus, Hourglass]
@@ -10546,7 +10546,7 @@ highRollersTableBusyNight =
   otherSideIs "88014"
   $ location
     "88014b"
-    ("High Rollers Table" <:> "Busy Night")
+    ("High Roller's Table" <:> "Busy Night")
     [Public, Casino, Game]
     Squiggle
     [T, Plus, Hourglass]

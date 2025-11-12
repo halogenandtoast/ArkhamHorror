@@ -11,7 +11,7 @@ newtype BaccaratTable = BaccaratTable LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baccaratTable :: LocationCard BaccaratTable
-baccaratTable = symbolLabel $ location BaccaratTable Cards.baccaratTable 0 (Static 0)
+baccaratTable = symbolLabel $ location BaccaratTable Cards.baccaratTable 4 (PerPlayer 1)
 
 instance HasAbilities BaccaratTable where
   getAbilities (BaccaratTable a) =

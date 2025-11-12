@@ -94,6 +94,19 @@ data ScenarioLogKey
   | ThePoliceAreOnYourSide
   | -- | Fortune and Folly
     CleanedOutTheHouse
+  | ImpersonatedAHighRoller
+  | FoundAVent
+  | ConvincedIsamaraToParticipateInTheHeist
+  | ObtainedAnEmployeeUniform
+  | StoleAbarransKeys
+  | WonACultistMedallion
+  | ObservedTheStaff
+  | FoundAbarransSigil
+  | ObtainedASchematic
+  | ImpersonatedAGuard
+  | StayedOutOfSight
+  | DeliveredADecoyPackage
+  | IsamaraMesmerizedTheGuardsWithHerSong
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards

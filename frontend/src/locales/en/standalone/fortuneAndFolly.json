@@ -1,4 +1,18 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half your alarm level (rounded up).",
+      "cultist": "Reveal another token. If you fail, raise your alarm level by 1.",
+      "tablet": "-3. If you fail, the nearest enemy moves once toward you.",
+      "elderThing": "-5. You may raise your alarm level by 1 to automatically succeed, instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is your alarm level.",
+      "cultist": "Reveal another token. If you fail, raise your alarm level by 1.",
+      "tablet": "-4. The nearest enemy moves once toward you.",
+      "elderThing": "-6. You may raise your alarm level by 1 to automatically succeed, instead."
+    }
+  },
   "label": {
     "keepHand": "Finish Taking Mulligan",
     "rank": {

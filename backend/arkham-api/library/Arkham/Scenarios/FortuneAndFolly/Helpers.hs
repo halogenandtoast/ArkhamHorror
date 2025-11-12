@@ -19,12 +19,13 @@ import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers as X (
   getAlarmLevel,
   getMaxAlarmLevel,
-  raiseAlarmLevel,
   reduceAlarmLevel,
   reduceAlarmLevelBy,
  )
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
+import Arkham.Window
 import Data.Aeson.TH
 import Data.Function (on)
 import Data.Monoid (First (..))
@@ -161,3 +162,11 @@ winGame iid (toSource -> source) n = do
   whenM (can.gain.resources iid) do
     abilityModifier (AbilityRef source 1) (AbilitySource source 1) iid (ScenarioModifier "gotResources")
     gainResources iid source n
+
+raiseAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> [InvestigatorId] -> m ()
+raiseAlarmLevel source iids = do
+  valids <- iids & filterM \iid -> (< 10) <$> getAlarmLevel iid
+  for_ valids \iid -> placeTokens source iid AlarmLevel 1
+  unless (null valids) do
+    checkWindows $ mkAfter <$> map IncreasedAlarmLevel valids
+{-# INLINE raiseAlarmLevel #-}

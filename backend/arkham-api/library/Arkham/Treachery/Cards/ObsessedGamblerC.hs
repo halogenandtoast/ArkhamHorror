@@ -14,7 +14,7 @@ obsessedGamblerC :: TreacheryCard ObsessedGamblerC
 obsessedGamblerC = treachery ObsessedGamblerC Cards.obsessedGamblerC
 
 instance HasAbilities ObsessedGamblerC where
-  getAbilities (ObsessedGamblerc a) = [restricted a 1 InYourThreatArea $ forced $ TurnEnds #when You]
+  getAbilities (ObsessedGamblerC a) = [restricted a 1 InYourThreatArea $ forced $ TurnEnds #when You]
 
 instance RunMessage ObsessedGamblerC where
   runMessage msg t@(ObsessedGamblerC attrs) = runQueueT $ case msg of

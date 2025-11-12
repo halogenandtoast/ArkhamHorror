@@ -340,6 +340,7 @@ data ModifierType
   | LeaveCardWhereItIs
   | LookAtDepth Int
   | LosePatrol
+  | ForcePatrol LocationMatcher
   | LoseVictory
   | MaxCluesDiscovered Int
   | MaxDamageTaken Int
@@ -451,6 +452,7 @@ data UIModifier
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
   | ImportantToScenario Text
+  | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

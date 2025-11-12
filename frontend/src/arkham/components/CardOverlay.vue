@@ -295,6 +295,13 @@ const crossedOff = computed<string[] | null>(() => {
   return arr.length ? arr : null
 })
 
+type Checkmark = { left: number; top: number; }
+
+const checkmarks = computed<Checkmark[] | null>(() => {
+  const arr = jsonDs<Checkmark[]>('checkmarks')
+  return arr.length ? arr : null
+})
+
 const spentKeys = computed<ArkhamKey[]>(() => jsonDs<ArkhamKey[]>('spentKeys'))
 const overlay = ds('overlay')
 
@@ -816,6 +823,25 @@ watchEffect(() => {
                   :height="badgeSize.h"
                 />
               </template>
+            </template>
+          </template>
+
+          <template v-for="pos in checkmarks" :key="`checkmark-${pos.top}-${pos.left}`">
+            <template v-if="pos.top !== undefined && pos.left !== undefined">
+              <g
+                :transform="(() => {
+                  const vbW = sideways ? viewH : VIEW_W;
+                  const vbH = sideways ? VIEW_W : viewH;
+                  const x = (pos.left! / 100) * vbW;
+                  const y = (pos.top!  / 100) * vbH;
+                  const s = tickSize;
+                  return `translate(${x - s/2}, ${y - s/2}) scale(${s/24})`;
+                })()"
+                fill="#690000"
+                aria-label="tick"
+              >
+                <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/>
+              </g>
             </template>
           </template>
         </g>

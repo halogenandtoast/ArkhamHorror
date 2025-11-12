@@ -364,6 +364,11 @@ withTreacheryMetadata a = do
   tmModifiers <- getModifiers' (toTarget a)
   pure $ a `with` TreacheryMetadata {..}
 
+withStoryMetadata :: HasGame m => Story -> m (With Story StoryMetadata)
+withStoryMetadata a = do
+  smModifiers <- getModifiers' (toTarget a)
+  pure $ a `with` StoryMetadata {..}
+
 withEnemyMetadata :: (HasGame m, Tracing m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
@@ -551,6 +556,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     agendas <- traverse withAgendaMetadata (gameAgendas g)
     treacheries <- traverse withTreacheryMetadata (gameTreacheries g)
     events <- traverse withModifiers (gameEvents g)
+    stories <- traverse withModifiers (gameStories g)
     focusedChaosTokens <- traverse withModifiers gameFocusedChaosTokens
     skillTest <- maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest
     skillTestChaosTokens <-
@@ -578,7 +584,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("events" .= events)
       <> ("concealed" .= gameConcealed g)
       <> ("skills" .= gameSkills g) -- no need for modifiers... yet
-      <> ("stories" .= entitiesStories gameEntities)
+      <> ("stories" .= stories)
       <> ("scarletKeys" .= entitiesScarletKeys gameEntities)
       <> ("playerCount" .= gamePlayerCount)
       <> ("activeInvestigatorId" .= gameActiveInvestigatorId)
@@ -646,6 +652,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     agendas <- traverse withAgendaMetadata (gameAgendas g)
     treacheries <- traverse withTreacheryMetadata (gameTreacheries g)
     events <- traverse withModifiers (gameEvents g)
+    stories <- traverse withModifiers (gameStories g)
     focusedChaosTokens <- traverse withModifiers gameFocusedChaosTokens
     skillTest <- maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest
     skillTestChaosTokens <-
@@ -674,7 +681,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "events" .= toJSON events
         , "concealed" .= toJSON (gameConcealed g)
         , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
-        , "stories" .= toJSON (entitiesStories gameEntities)
+        , "stories" .= toJSON stories
         , "scarletKeys" .= toJSON (entitiesScarletKeys gameEntities)
         , "playerCount" .= toJSON gamePlayerCount
         , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
@@ -4258,7 +4265,11 @@ getEnemyField f e = do
       modifiers' <- foldMapM getModifiers [toTarget e, CardIdTarget $ toCardId $ toAttrs e]
       let
         printedKeywords = toList $ cdKeywords (toCardDef attrs)
-        keywords' = foldl' applyRemoves (foldl' applyModifier printedKeywords modifiers') modifiers'
+        keywords' =
+          foldl'
+            (\k m -> k & (`applyModifier` m) & (`applyRemoves` m) & (`applyForced` m))
+            printedKeywords
+            modifiers'
         isPatrol = \case
           Keyword.Patrol _ -> True
           _ -> False
@@ -4268,6 +4279,9 @@ getEnemyField f e = do
         applyRemoves ks = \case
           RemoveKeyword k -> filter (/= k) ks
           LosePatrol -> filter (not . isPatrol) ks
+          _ -> ks
+        applyForced ks = \case
+          ForcePatrol fs -> Keyword.Patrol fs : filter (not . isPatrol) ks
           _ -> ks
       pure $ setFromList keywords'
     EnemyAbilities -> pure $ getAbilities e

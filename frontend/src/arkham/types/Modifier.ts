@@ -212,7 +212,12 @@ export type OtherModifier = {
   contents: string
 }
 
-type UIModifierType = 'Locus' | 'Ethereal' | 'Explosion' | { tag: 'ImportantToScenario', contents: string }
+type UIModifierType =
+  | 'Locus'
+  | 'Ethereal'
+  | 'Explosion'
+  | { tag: 'ImportantToScenario', contents: string }
+  | { tag: 'OverlayCheckmark', top: number, left: number }
 
 export type UIModifier = {
   tag: "UIModifier"
@@ -374,7 +379,12 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
         JsonDecoder.literal('Locus'),
         JsonDecoder.literal('Ethereal'),
         JsonDecoder.literal('Explosion'),
-        JsonDecoder.object({ tag: JsonDecoder.literal('ImportantToScenario'), contents: JsonDecoder.string() }, 'ImportantToScenario')
+        JsonDecoder.object({ tag: JsonDecoder.literal('ImportantToScenario'), contents: JsonDecoder.string() }, 'ImportantToScenario'),
+        JsonDecoder.object({
+          tag: JsonDecoder.literal('OverlayCheckmark'),
+          top: JsonDecoder.number(),
+          left: JsonDecoder.number()
+        }, 'OverlayCheckmark')
       ], 'UIModifierType')
     }, 'UIModifier'),
   JsonDecoder.object({

@@ -119,6 +119,7 @@ data WindowMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
+  | WouldPatrol Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
   | WouldPlaceDoomCounter Timing SourceMatcher TargetMatcher

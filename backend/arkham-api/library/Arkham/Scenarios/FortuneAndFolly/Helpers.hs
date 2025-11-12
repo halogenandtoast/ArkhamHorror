@@ -1,7 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Scenarios.FortuneAndFolly.Helpers (module Arkham.Scenarios.FortuneAndFolly.Helpers, module X) where
 
@@ -74,7 +73,17 @@ sameRank :: HasCardDef a => Int -> [a] -> Bool
 sameRank n cards =
   let playingCards = mapMaybe toPlayingCard cards
       rankGroups = groupBy (\a b -> a.rank == b.rank) (sortBy (compare `on` (.rank)) playingCards)
-   in any (\grp -> length grp >= n) (traceShowId rankGroups)
+   in any (\grp -> length grp >= n) rankGroups
+
+allSameSuit :: HasCardDef a => [a] -> Bool
+allSameSuit cards = case mapMaybe toPlayingCard cards of
+  [] -> False
+  (x : xs) -> all (\pc -> pc.suit == x.suit) xs
+
+allSameRank :: HasCardDef a => [a] -> Bool
+allSameRank cards = case mapMaybe toPlayingCard cards of
+  [] -> False
+  (x : xs) -> all (\pc -> pc.rank == x.rank) xs
 
 sequential :: HasCardDef a => [a] -> Bool
 sequential cards =

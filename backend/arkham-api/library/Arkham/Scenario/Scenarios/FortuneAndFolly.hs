@@ -12,21 +12,26 @@ import Arkham.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (LocationPrintedSymbol))
+import Arkham.LocationSymbol
 import Arkham.Matcher hiding (Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Story
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 import Arkham.Window qualified as Window
+import Data.Map.Strict qualified as Map
 
 newtype FortuneAndFolly = FortuneAndFolly ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortuneAndFolly :: Difficulty -> FortuneAndFolly
@@ -50,6 +55,46 @@ instance HasChaosTokenValue FortuneAndFolly where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     ElderThing -> pure $ toChaosTokenValue attrs Tablet 5 6
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+{- FOURMOLU_DISABLE -}
+clockwiseMap :: Map LocationSymbol LocationSymbol
+clockwiseMap = Map.fromList
+  [ (Circle, Square), (Square, Plus), (Plus, Squiggle), (Squiggle, T), (T, Triangle), (Triangle, Diamond), (Diamond, Circle)
+  , (Hourglass, Moon), (Moon, Heart), (Heart, Droplet), (Droplet, Star), (Star, Equals), (Equals, Hourglass)
+  ]
+{- FOURMOLU_ENABLE -}
+
+-- invert the clockwise map
+counterClockwiseMap :: Map LocationSymbol LocationSymbol
+counterClockwiseMap = Map.fromList [(v, k) | (k, v) <- Map.assocs clockwiseMap]
+
+data PatrolDirection = Clockwise | CounterClockwise
+  deriving stock (Eq, Show)
+
+instance HasModifiersFor FortuneAndFolly where
+  getModifiersFor (FortuneAndFolly attrs) = do
+    for_
+      [ (Enemies.abarranArrigorriagakoaTheManWithTheRubyRing, "abarranNext", Clockwise)
+      , (Enemies.casinoGuardA, "casinoGuardANext", CounterClockwise)
+      , (Enemies.casinoGuardB, "casinoGuardBNext", CounterClockwise)
+      , (Enemies.casinoGuardC, "casinoGuardCNext", Clockwise)
+      , (Enemies.houseDealerA, "houseDealerANext", Clockwise)
+      , (Enemies.houseDealerB, "houseDealerBNext", CounterClockwise)
+      , (Enemies.securityPatrolA, "securityPatrolANext", Clockwise)
+      , (Enemies.securityPatrolB, "securityPatrolBNext", Clockwise)
+      , (Enemies.securityPatrolC, "securityPatrolCNext", CounterClockwise)
+      , (Enemies.fortunesShieldA, "fortunesShieldANext", CounterClockwise)
+      , (Enemies.fortunesShieldB, "fortunesShieldBNext", Clockwise)
+      , (Enemies.fortunesDaggerA, "fortunesDaggerANext", CounterClockwise)
+      , (Enemies.fortunesDaggerB, "fortunesDaggerBNext", Clockwise)
+      ]
+      \(enemyCode, patrolDestination, patrolDirection) ->
+        selectEach (LocationWithEnemy $ enemyIs enemyCode) \loc -> do
+          sym <- field LocationPrintedSymbol loc
+          let newSym = Map.findWithDefault sym sym $ case patrolDirection of
+                Clockwise -> clockwiseMap
+                CounterClockwise -> counterClockwiseMap
+          modifySelect attrs (LocationWithSymbol newSym) [ScenarioModifier patrolDestination]
 
 instance RunMessage FortuneAndFolly where
   runMessage msg s@(FortuneAndFolly attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -98,7 +143,7 @@ instance RunMessage FortuneAndFolly where
       baccaratTable <- place Locations.baccaratTable
       assetAt_ Assets.isamaraOrdonezLoungeSingerInconspicious baccaratTable
 
-      highRollersTable <- place Locations.highRollersTableBusyNight
+      highRollersTable <- place Locations.highRollersTableCalmNight
       enemyAt_ Enemies.abarranArrigorriagakoaTheManWithTheRubyRing highRollersTable
 
       rouletteWheel <- place Locations.rouletteWheel

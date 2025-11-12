@@ -1,6 +1,30 @@
 {
   "label": {
-    "keepHand": "Finish Taking Mulligan"
+    "keepHand": "Finish Taking Mulligan",
+    "rank": {
+      "Four": "Four",
+      "Five": "Five",
+      "Six": "Six",
+      "Seven": "Seven",
+      "Eight": "Eight",
+      "Nine": "Nine",
+      "Ten": "Ten",
+      "Jack": "Jack",
+      "Queen": "Queen",
+      "King": "King",
+      "Ace": "Ace"
+    },
+    "suit": {
+      "Clubs": "Clubs",
+      "Diamonds": "Diamonds",
+      "Hearts": "Hearts",
+      "Spades": "Spades"
+    },
+    "baccarat": {
+      "Player": "Player",
+      "Banker": "Banker",
+      "Tie": "Tie"
+    }
   },
   "intro": {
     "title": "Fortune and Folly, Part I",

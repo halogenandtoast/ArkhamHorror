@@ -1754,6 +1754,10 @@ chooseFightEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
 
+fightEnemy
+  :: (ReverseQueue m, Sourceable source, ToId e EnemyId) => SkillTestId -> InvestigatorId -> source -> e -> m ()
+fightEnemy sid iid source = mkFightEnemy sid iid source >=> push . toMessage
+
 chooseFightEnemyWithModifiers
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId

@@ -1,5 +1,14 @@
 <script lang="ts" setup>
-import { ComputedRef, reactive, ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
+import {
+  ComputedRef,
+  reactive,
+  ref,
+  computed,
+  watch,
+  watchEffect,
+  onMounted,
+  onUnmounted,
+} from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import KeyToken from '@/arkham/components/Key.vue'
@@ -7,30 +16,38 @@ import { type ArkhamKey, keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
-const imgARCache = reactive(new Map<string, number>())
+/* =============================================================================
+ * Constants, basic helpers, and caches
+ * ========================================================================== */
 
+const CARD_RATIO = 0.705        // width / height (portrait)
+const OVERLAY_W = 300           // base width (portrait) or height (sideways)
+const TAROT_H = 500             // fixed tarot height
+const VIEW_W = 1000             // stable viewBox width for percent → px mapping
+
+// Cache natural aspect ratios (width / height) to infer sideways when needed
+const imgARCache = reactive(new Map<string, number>())
 const loadAR = (url: string) => {
   if (!url || imgARCache.has(url)) return
   const i = new Image()
   i.decoding = 'async'
-  i.onload = () => {
-    // width / height > 1 => landscape (treat as sideways)
-    imgARCache.set(url, i.naturalWidth / i.naturalHeight)
-  }
+  i.onload = () => imgARCache.set(url, i.naturalWidth / i.naturalHeight)
   i.src = url
 }
 
+// Small helpers
+type Pct = { top: number; left: number }
 
-/* --------------------------------- stores --------------------------------- */
+/* =============================================================================
+ * Stores & reactive top-level state
+ * ========================================================================== */
 
 const store = useDbCardStore()
 
-/* ------------------------------- DOM & state ------------------------------- */
-
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
-
 const isMobile = ref(false)
+
 onMounted(() => {
   const mq = window.matchMedia('(hover: none) and (pointer: coarse)')
   const update = () => (isMobile.value = mq.matches)
@@ -39,23 +56,20 @@ onMounted(() => {
   onUnmounted(() => mq.removeEventListener?.('change', update))
 })
 
-/* -------------------------- event handling (pointer) ----------------------- */
+/* =============================================================================
+ * Pointer/hover handling
+ * ========================================================================== */
 
 const CARD_SELECTOR = '.card,[data-image-id],[data-target],[data-image]'
 let hoverTimer: number | null = null
 let pressTimer: number | null = null
 let canDisablePress = false
 
-const clearTimer = (t: number | null) => {
-  if (t !== null) clearTimeout(t)
-  return null
-}
+const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) : null)
 
 const targetFromEvent = (e: Event): HTMLElement | null => {
   const raw = e.target as HTMLElement | null
-  if (!raw) return null
-  const cardish = raw.closest(CARD_SELECTOR) as HTMLElement | null
-  return cardish ?? null
+  return raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
 }
 
 const queueHover = (el: HTMLElement) => {
@@ -78,18 +92,16 @@ const handlePointerMove = (e: PointerEvent) => {
 }
 
 const onPointerDown = (e: PointerEvent) => {
-  // Long-press only for touch
   if (e.pointerType === 'touch') {
     const el = targetFromEvent(e)
     if (!el) return
     pressTimer = clearTimer(pressTimer)
-    pressTimer = window.setTimeout(() => queueHover(el), 200)
+    pressTimer = window.setTimeout(() => queueHover(el), 200) // long press
   }
 }
 
 const onPointerMove = (e: PointerEvent) => {
   if (e.pointerType === 'touch') {
-    // special filters: moving while showing location cards cancels
     if (hoveredElement.value?.classList.contains('card--locations')) {
       hoveredElement.value = null
     }
@@ -99,12 +111,10 @@ const onPointerMove = (e: PointerEvent) => {
   }
 }
 
-const onPointerUp = (_e: PointerEvent) => {
-  // If press revealed, first click/tap just arms disable
+const onPointerUp = () => {
   if (canDisablePress) {
     canDisablePress = false
   } else {
-    // Otherwise, hide and cancel timers
     hoveredElement.value = null
     pressTimer = clearTimer(pressTimer)
   }
@@ -128,10 +138,13 @@ onUnmounted(() => {
   pressTimer = clearTimer(pressTimer)
 })
 
-/* --------------------------- image & positioning --------------------------- */
+/* =============================================================================
+ * Image lookup & orientation
+ * ========================================================================== */
 
 const getImage = (el: HTMLElement, depth = 0): string | null => {
   if (depth > 3) return null // avoid runaway recursion
+
   if (el.dataset.imageId) return imgsrc(`cards/${el.dataset.imageId}.avif`)
 
   if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest('.revelation')) {
@@ -141,8 +154,7 @@ const getImage = (el: HTMLElement, depth = 0): string | null => {
   if (el instanceof HTMLDivElement && el.classList.contains('card')) {
     const bg = el.style.backgroundImage
     if (!bg || bg === 'none') return null
-    // url("...") -> ...
-    return bg.slice(4, -1).replaceAll('"', '')
+    return bg.slice(4, -1).replaceAll('"', '') // strip url("...")
   }
 
   if (el.dataset.target) {
@@ -150,11 +162,10 @@ const getImage = (el: HTMLElement, depth = 0): string | null => {
     return target ? getImage(target, depth + 1) : null
   }
 
-  if (el.dataset.image) return el.dataset.image
-  return null
+  return el.dataset.image ?? null
 }
 
-const card = computed<string | null>(() => hoveredElement.value ? getImage(hoveredElement.value) : null)
+const card = computed<string | null>(() => (hoveredElement.value ? getImage(hoveredElement.value) : null))
 
 const upsideDown = computed<boolean>(() => hoveredElement.value?.classList.contains('Reversed') ?? false)
 const reversed = computed<boolean>(() => hoveredElement.value?.classList.contains('reversed') ?? false)
@@ -167,43 +178,50 @@ const sideways = computed<boolean>(() => {
   if (el.dataset.sideways === 'true') return true
   if (el.dataset.sideways === 'false') return false
 
-  // known class rules
+  // class heuristics
   if (el.classList.contains('exhausted')) return false
   if (el.classList.contains('attached')) return false
   if (el.classList.contains('card--sideways') || el.classList.contains('sideways')) return true
   if (el.classList.contains('modifier')) return false
   if (el.tagName.toLowerCase() === 'span') return false
 
-  // if we’re showing an image via dataset, use its natural aspect
-  const url =
-    el.dataset.image
-      ?? (el.dataset.imageId ? imgsrc(`cards/${el.dataset.imageId}.avif`) : null)
-
+  // fall back to natural aspect for dataset image
+  const url = el.dataset.image ?? (el.dataset.imageId ? imgsrc(`cards/${el.dataset.imageId}.avif`) : null)
   if (url) {
     const ar = imgARCache.get(url)
-    if (ar != null) return ar > 1 // landscape => sideways
+    if (ar != null) return ar > 1
   }
 
-  // fallback: geometry only for actual card-ish nodes
+  // final fallback: element geometry
   return el.matches('.card, [data-image-id], [data-target]') && el.offsetWidth > el.offsetHeight
 })
+
+watch(card, (src) => { if (src) loadAR(src) })
+
+/* =============================================================================
+ * Overlay positioning
+ * ========================================================================== */
 
 const overlayPosition = ref<{ top: number; left: number }>({ top: 0, left: 0 })
 let posRAF: number | null = null
 
 const getPosition = (el: HTMLElement): { top: number; left: number } => {
   const rect = el.getBoundingClientRect()
-  const overlayWidth = 300
-  const ratio = 0.705
-  const width = sideways.value ? overlayWidth / ratio : overlayWidth
-  const height = sideways.value ? overlayWidth : width / ratio
+  const width = sideways.value ? OVERLAY_W / CARD_RATIO : OVERLAY_W
+  const height = sideways.value ? OVERLAY_W : Math.round(OVERLAY_W / CARD_RATIO)
+
   const top = rect.top + window.scrollY - 40
   const bottom = top + height
   const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
-  const left = rect.left + window.scrollX + rect.width + 10
-  return (left + width >= window.innerWidth)
-    ? { top: newTop, left: rect.left - overlayWidth - 10 }
-    : { top: newTop, left }
+
+  const gap = 2
+  const hasCust = !!customizationsCard.value
+  const totalWidth = hasCust ? (width * 2 + gap) : width
+
+  const rightSide = rect.left + window.scrollX + rect.width + 10
+  return (rightSide + totalWidth >= window.innerWidth)
+    ? { top: newTop, left: rect.left - totalWidth - 10 }
+    : { top: newTop, left: rightSide }
 }
 
 watch([hoveredElement, sideways], ([el]) => {
@@ -212,15 +230,40 @@ watch([hoveredElement, sideways], ([el]) => {
   posRAF = requestAnimationFrame(() => { overlayPosition.value = getPosition(el as HTMLElement) })
 }, { flush: 'post' })
 
-/* ------------------------------- datasets API ------------------------------ */
+/* =============================================================================
+ * SVG sizing & transforms
+ * ========================================================================== */
+
+const svgWidth = computed(() => (tarot.value ? Math.round(TAROT_H * CARD_RATIO)
+  : (sideways.value ? Math.round(OVERLAY_W / CARD_RATIO) : OVERLAY_W)))
+const svgHeight = computed(() => (tarot.value ? TAROT_H
+  : (sideways.value ? OVERLAY_W : Math.round(OVERLAY_W / CARD_RATIO))))
+
+const viewH = computed(() => Math.round(VIEW_W / CARD_RATIO))
+const viewBox = computed(() => (sideways.value ? `0 0 ${viewH.value} ${VIEW_W}` : `0 0 ${VIEW_W} ${viewH.value}`))
+
+const groupTransform = computed(() => {
+  if (!reversed.value && !upsideDown.value) return ''
+  const w = sideways.value ? viewH.value : VIEW_W
+  const h = sideways.value ? VIEW_W : viewH.value
+  return `rotate(180 ${w / 2} ${h / 2})`
+})
+
+// CSS-like % to viewBox coords
+const xyFromPct = (p: Pct) => {
+  const vbW = sideways.value ? viewH.value : VIEW_W
+  const vbH = sideways.value ? VIEW_W : viewH.value
+  return { x: (p.left / 100) * vbW, y: (p.top / 100) * vbH }
+}
+
+/* =============================================================================
+ * Dataset API helpers
+ * ========================================================================== */
 
 const ds = <T extends string = string>(key: T) =>
   computed<string | null>(() => hoveredElement.value?.dataset?.[key as any] ?? null)
 
-const dsMap = <X>(
-  key: keyof DOMStringMap,          // dataset keys
-  map: (v: string) => X
-): ComputedRef<X | null> =>
+const dsMap = <X>(key: keyof DOMStringMap, map: (v: string) => X): ComputedRef<X | null> =>
   computed(() => {
     const v = hoveredElement.value?.dataset?.[key]
     return v !== undefined ? map(v) : null
@@ -230,6 +273,10 @@ const jsonDs = <T>(key: string): T => {
   try { return JSON.parse(hoveredElement.value?.dataset?.[key] ?? '[]') as T }
   catch { return [] as unknown as T }
 }
+
+/* =============================================================================
+ * Minor overlays & simple dataset fields
+ * ========================================================================== */
 
 const fight = ds('fight')
 const health = ds('health')
@@ -249,10 +296,43 @@ const crossedOff = computed<string[] | null>(() => {
 })
 
 const spentKeys = computed<ArkhamKey[]>(() => jsonDs<ArkhamKey[]>('spentKeys'))
-
 const overlay = ds('overlay')
 
-/* ---------------------------- card code & variants ------------------------- */
+const tarot = computed<boolean>(() => !!hoveredElement.value?.classList.contains('tarot-card'))
+
+// numeric damage/horror parsed from data-* (so "0" doesn't render)
+const damage = computed<number | null>(() => {
+  const v = hoveredElement.value?.dataset?.damage
+  const n = v == null ? NaN : Number(v)
+  return Number.isFinite(n) ? n : null
+})
+const horror = computed<number | null>(() => {
+  const v = hoveredElement.value?.dataset?.horror
+  const n = v == null ? NaN : Number(v)
+  return Number.isFinite(n) ? n : null
+})
+
+// where badges go (ported from your CSS %)
+const damagePositions: Pct[] = [
+  { top: 56.1, left: 37.1 },
+  { top: 55.0, left: 30.5 },
+  { top: 53.3, left: 24.5 },
+]
+const horrorPositions: Pct[] = [
+  { top: 56.5, left: 62.9 },
+  { top: 55.0, left: 69.5 },
+  { top: 53.5, left: 75.7 },
+]
+// CSS had 22px on ~300px-tall image ⇒ ~7.33% height
+const badgeSize = computed(() => {
+  const vbH = sideways.value ? VIEW_W : viewH.value
+  const h = 0.0533 * vbH
+  return { w: h, h } // ~square
+})
+
+/* =============================================================================
+ * Card code & customization image
+ * ========================================================================== */
 
 const allCustomizations = new Set([
   '09021', '09022', '09023', '09040', '09041', '09042', '09059', '09060',
@@ -277,7 +357,9 @@ const customizationsCard = computed<string | null>(() => {
   return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`)
 })
 
-/* ------------------------------- customizations ---------------------------- */
+/* =============================================================================
+ * Customizations: parsing & geometry (ticks, labels, circles)
+ * ========================================================================== */
 
 type ChoiceTag = 'ChosenCard' | 'ChosenTrait' | 'ChosenSkill' | 'ChosenIndex'
 type CustomizationEntry = [number, [number, Array<{ tag: ChoiceTag; contents: string }>]]
@@ -289,7 +371,6 @@ const customizations = computed<CustomizationEntry[] | null>(() => {
     const parsed = JSON.parse(raw) as CustomizationEntry[]
     return parsed?.length ? parsed : null
   } catch {
-    console.log(raw)
     return null
   }
 })
@@ -325,16 +406,248 @@ const customizationSkills = computed<string[]>(() => {
   return out
 })
 
-const customizationIndexes = computed<string[]>(() => {
-  if (!cardCode.value || !customizations.value) return []
-  const out: string[] = []
-  for (const [first, [, arr]] of customizations.value) {
-    arr.forEach(a => { if (a.tag === 'ChosenIndex') out.push(`index-${cardCode.value}-${first}-${a.contents}`) })
-  }
-  return out
+/** -------------------- Tick tables ----------------- **/
+type TickTable = Record<string, { top: Record<number, number>, left: Record<number, number> }>
+const TICK_TABLE: TickTable = {
+  // Hunter's Armor (09021)
+  '09021': {
+    top: { 0: 21.0, 1: 31.9, 2: 42.8, 3: 47.0, 4: 51.3, 5: 62.2, 6: 76.3 },
+    left: { 1: 10.0, 2: 13.0, 3: 16.6 }
+  },
+  // Runic Axe (09022)
+  '09022': {
+    top: { 0: 20.5, 1: 27.2, 2: 36.8, 3: 49.1, 4: 58.6, 5: 71.2, 6: 77.8, 7: 84.3 },
+    left: { 1: 10.0, 2: 13.0, 3: 16.1, 4: 19.1 }
+  },
+  // Custom Modifications (09023)
+  '09023': {
+    top: { 0: 21.0, 1: 35.3, 2: 42.8, 3: 53.6, 4: 64.4, 5: 75.2 },
+    left: { 1: 10.0, 2: 13.3, 3: 16.8, 4: 20.5 }
+  },
+  // Alchemical Distillation (09040)
+  '09040': {
+    top: { 0: 21.0, 1: 28.6, 2: 36.2, 3: 47.0, 4: 54.7, 5: 62.1, 6: 76.2 },
+    left: { 1: 10.0, 2: 13.3, 3: 16.8, 4: 20.5, 5: 23.8 }
+  },
+  // Empirical Hypothesis (09041)
+  '09041': {
+    top: { 0: 20.3, 1: 27.1, 2: 33.7, 3: 40.2, 4: 46.9, 5: 59.3, 6: 68.9, 7: 78.4 },
+    left: { 1: 10.0, 2: 12.9, 3: 15.8, 4: 18.9 }
+  },
+  // The Raven Quill (09042)
+  '09042': {
+    top: { 1: 26.7, 2: 33.1, 3: 39.6, 4: 46.3, 5: 52.9, 6: 62.2, 7: 71.9 },
+    left: { 1: 10.0, 2: 12.9, 3: 15.8, 4: 18.9 }
+  },
+  // Damning Testimony (09059)
+  '09059': {
+    top: { 0: 20.5, 1: 34.6, 2: 42.1, 3: 49.5, 4: 63.8, 5: 74.8 },
+    left: { 1: 9.9, 2: 13.3, 3: 16.6, 4: 19.9 }
+  },
+  // Friends in Low Places (09060)
+  '09060': {
+    top: { 1: 26.2, 2: 35.9, 3: 48.4, 4: 57.9, 5: 67.3, 6: 74.0, 7: 80.5 },
+    left: { 1: 9.9, 2: 12.7, 3: 15.6 }
+  },
+  // Honed Instinct (09061)
+  '09061': {
+    top: { 0: 20.9, 1: 27.5, 2: 34.2, 3: 40.5, 4: 47.3, 5: 54.0, 6: 60.5, 7: 70.1 },
+    left: { 1: 9.8, 2: 12.7, 3: 15.6, 4: 18.7, 5: 22.0 }
+  },
+  // Living Ink (09079)
+  '09079': {
+    top: { 1: 27.4, 2: 38.4, 3: 52.6, 4: 63.5, 5: 67.6, 6: 71.8, 7: 82.7 },
+    left: { 1: 9.8, 2: 13.2, 3: 16.6 }
+  },
+  // Summoned Servitor (09080)
+  '09080': {
+    top: { 0: 20.2, 1: 29.7, 2: 39.3, 3: 51.7, 4: 58.3, 5: 67.9, 6: 74.5, 7: 83.9 },
+    left: { 1: 9.8, 2: 12.6, 3: 15.7, 4: 18.7, 5: 21.7 }
+  },
+  // Power Word (09081) — non-mutated
+  '09081': {
+    top: { 0: 20.4, 1: 30.1, 2: 39.5, 3: 49.0, 4: 58.6, 5: 65.3, 6: 74.8, 7: 81.4 },
+    left: { 1: 9.8, 2: 12.6, 3: 15.6 }
+  },
+  // Pocket Multi Tool (09099)
+  '09099': {
+    top: { 0: 21.0, 1: 31.9, 2: 39.5, 3: 46.9, 4: 54.6, 5: 62.0, 6: 69.7 },
+    left: { 1: 9.8, 2: 13.0, 3: 16.6, 4: 19.8 }
+  },
+  // Makeshift Trap (09100)
+  '09100': {
+    top: { 0: 21.1, 1: 28.7, 2: 39.5, 3: 46.9, 4: 57.8, 5: 68.8, 6: 79.7 },
+    left: { 1: 9.8, 2: 13.2, 3: 16.6, 4: 20.1 }
+  },
+  // Grizzled (09101)
+  '09101': {
+    top: { 1: 27.3, 2: 35.5, 3: 43.5, 4: 61.6, 5: 76.5 },
+    left: { 1: 9.8, 2: 13.4, 3: 16.7, 4: 20.4, 5: 23.8 }
+  },
+  // Hyperphysical Shotcaster (09119)
+  '09119': {
+    top: { 0: 20.9, 1: 30.3, 2: 42.5, 3: 57.5, 4: 69.8, 5: 82.0, 6: 88.3 },
+    left: { 1: 9.8, 2: 12.6, 3: 15.6, 4: 18.7 }
+  },
+}
+// Power Word (09081) — mutated tops override
+const TICK_TABLE_MUT_09081_TOP: Record<number, number> = {
+  0: 20.7, 1: 30.3, 2: 36.8, 3: 46.3, 4: 55.9, 5: 62.6, 6: 72.0, 7: 78.6,
+}
+
+type TickParsed = { code: string; first: number; idx: number }
+const parseTickId = (id: string): TickParsed | null => {
+  const m = id.match(/^customization-(\d+)-(\d+)-(\d+)$/)
+  return m ? { code: m[1], first: Number(m[2]), idx: Number(m[3]) } : null
+}
+
+const parsedTicks = computed<TickParsed[]>(() =>
+  (customizationTicks.value ?? []).map(parseTickId).filter((x): x is TickParsed => !!x)
+)
+
+const tickPct = (tp: TickParsed): { top?: number; left?: number } => {
+  const base = TICK_TABLE[tp.code]
+  if (!base) return {}
+  const topMap = (tp.code === '09081' && mutated.value) ? TICK_TABLE_MUT_09081_TOP : base.top
+  return { top: topMap[tp.first], left: base.left[tp.idx] }
+}
+
+// Size for the checkmark glyph (2.8% of card width)
+const tickSize = computed(() => {
+  const vbW = sideways.value ? viewH.value : VIEW_W
+  return 0.028 * vbW
 })
 
-/* --------------------------- DB card localization -------------------------- */
+/** -------------------- Label auto-fit (uniform scale, no skew) --------------- **/
+const BASE_LABEL_FONT = 16 // px inside viewBox units
+type LabelFit = { scale: number; dx: number; dy: number }
+const labelRefs = new Map<string, SVGTextElement>()
+const labelFits = reactive(new Map<string, LabelFit>())
+const labelDepsSig = new Map<string, string>()
+let fitRAF: number | null = null
+
+const queueFit = () => {
+  if (fitRAF != null) return
+  fitRAF = requestAnimationFrame(() => {
+    fitRAF = null
+    for (const [id, textEl] of labelRefs) {
+      const parent = textEl.parentElement as SVGGElement | null
+      if (!parent) continue
+      const w = Number(parent.getAttribute('data-w') || 0)
+      const h = Number(parent.getAttribute('data-h') || 0)
+      if (!(w > 0 && h > 0)) continue
+      const bbox = textEl.getBBox()
+      if (!(bbox.width > 0 && bbox.height > 0)) continue
+      const scale = Math.min(w / bbox.width, h / bbox.height) * 0.985
+      const dx = (w - bbox.width * scale) / 2 - bbox.x * scale
+      const dy = (h - bbox.height * scale) / 2 - bbox.y * scale
+      labelFits.set(id, { scale, dx, dy })
+    }
+  })
+}
+
+const setLabelRef = (id: string, deps: () => string) => (el: SVGTextElement | null) => {
+  if (!el) {
+    labelRefs.delete(id)
+    labelFits.delete(id)
+    labelDepsSig.delete(id)
+    return
+  }
+  labelRefs.set(id, el)
+  const sig = deps()
+  if (labelDepsSig.get(id) !== sig) {
+    labelDepsSig.set(id, sig)
+    queueFit()
+  }
+}
+
+const labelTransform = (id: string, item: LabelRender) => {
+  const fit = labelFits.get(id)
+  if (!fit) return `translate(${item.x}, ${item.y})`
+  return `translate(${item.x + fit.dx}, ${item.y + fit.dy}) scale(${fit.scale})`
+}
+
+/** -------------------- Label geometry for specific cards -------------------- **/
+type LabelGeom = { top: number; left: number; width: number; height: number } // % units
+const LABEL_TABLE: Record<string, Record<string, LabelGeom>> = {
+  // Grizzled (09101)
+  '09101': {
+    '0-0': { top: 18.0, left: 35.2, width: 25.0, height: 5.8 },
+    '0-1': { top: 18.0, left: 64.0, width: 25.0, height: 5.8 },
+    '1-0': { top: 27.5, left: 8.0,  width: 25.0, height: 5.8 },
+    '2-0': { top: 35.5, left: 8.0,  width: 25.0, height: 5.8 },
+  },
+  // Living Ink (09079) — labels unused; circles below.
+  '09079': {},
+  // Friends in Low Places (09060)
+  '09060': {
+    '0-0': { top: 18.0, left: 29.0, width: 40.0, height: 5.0 },
+    '2-0': { top: 33.4, left: 66.0, width: 25.0, height: 5.0 },
+  },
+  // The Raven Quill (09042)
+  '09042': {
+    '0-0': { top: 18.0, left: 52.0, width: 40.0, height: 5.0 },
+    '4-0': { top: 46.5, left: 18.0, width: 36.0, height: 5.0 },
+    '4-1': { top: 46.5, left: 55.0, width: 35.0, height: 5.0 },
+  },
+}
+
+type LabelRender = { x: number; y: number; w: number; h: number; text: string; code: string; key: string }
+const parseLabelId = (id: string) => {
+  const m = id.match(/^label-(\d+)-(\d+)-(\d+)$/)
+  return m ? { code: m[1], key: `${m[2]}-${m[3]}` } : null
+}
+
+const rectFromPct = (r: LabelGeom) => {
+  const vbW = sideways.value ? viewH.value : VIEW_W
+  const vbH = sideways.value ? VIEW_W : viewH.value
+  return { x: (r.left / 100) * vbW, y: (r.top / 100) * vbH, w: (r.width / 100) * vbW, h: (r.height / 100) * vbH }
+}
+
+const labelItems = computed<LabelRender[]>(() =>
+  (customizationLabels.value ?? []).flatMap(([id, text]) => {
+    const parsed = parseLabelId(id)
+    if (!parsed) return []
+    const table = LABEL_TABLE[parsed.code]
+    if (!table) return []
+    const geom = table[parsed.key]
+    if (!geom) return []
+    const px = rectFromPct(geom)
+    return [{ x: px.x, y: px.y, w: px.w, h: px.h, text, code: parsed.code, key: parsed.key }]
+  })
+)
+
+/** -------------------- Skills (09079 Living Ink) circles -------------------- **/
+type SkillGeom = { top: number; left: number } // % units
+const SKILL_TABLE_09079: Record<string, SkillGeom> = {
+  'SkillWillpower': { top: 18.6, left: 42.5 },
+  'SkillIntellect': { top: 18.6, left: 55.0 },
+  'SkillCombat':    { top: 18.6, left: 68.4 },
+  'SkillAgility':   { top: 18.6, left: 81.0 },
+}
+
+type SkillRender = { cx: number; cy: number; r: number; name: string }
+const skillItems = computed<SkillRender[]>(() => {
+  if (cardCode.value !== '09079') return []
+  const vbW = sideways.value ? viewH.value : VIEW_W
+  const vbH = sideways.value ? VIEW_W : viewH.value
+  const sizePct = 7.0
+  const r = 0.5 * (sizePct / 100) * vbW
+  return (customizationSkills.value ?? []).flatMap(cls => {
+    const m = cls.match(/^skill-(\d+)-(.+)$/)
+    if (!m) return []
+    const skillName = m[2]
+    const pos = SKILL_TABLE_09079[skillName]
+    if (!pos) return []
+    const cx = (pos.left / 100) * vbW + r
+    const cy = (pos.top  / 100) * vbH + r
+    return [{ cx, cy, r, name: skillName }]
+  })
+})
+
+/* =============================================================================
+ * ArkhamDB fallback text (localization overlay)
+ * ========================================================================== */
 
 const dbCardName = ref<string>('')
 const dbCardTraits = ref<string>('')
@@ -345,40 +658,6 @@ const dbCardCustomizationText = ref<string>('')
 const dbCardData = computed<boolean>(() =>
   !!(dbCardName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value || dbCardFlavor.value)
 )
-
-watchEffect(() => {
-  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
-
-  const src = card.value
-  if (!src) return
-  const m = src.match(/(\d+b?)(_.*)?\.avif$/)
-  if (!m) return
-  const code = m[1]
-  const tabooSuffix = m[2]
-  const language = localStorage.getItem('language') || 'en'
-
-  // If image already localized, skip DB text overlay
-  if (imgsrc(`cards/${m[0]}`).includes(language)) return
-
-  const dbCard = store.getDbCard(code)
-  if (!dbCard) return
-
-  const needBack = dbCard.code !== code
-
-  const name = getCardName(dbCard, needBack)
-  const traits = getCardTraits(dbCard, needBack)
-  const text = getCardText(dbCard, needBack)
-  const flavor = getCardFlavor(dbCard, needBack)
-  const cust = getCardCustomizationText(dbCard)
-
-  dbCardName.value = name ? `${tabooSuffix ? '[Taboo] ' : ''}${name}` : ''
-  dbCardTraits.value = traits ?? ''
-  dbCardText.value = text ?? ''
-  dbCardFlavor.value = flavor ?? ''
-  dbCardCustomizationText.value = cust ?? ''
-})
-
-/* ----------------------------- text replacement ---------------------------- */
 
 const TOKEN_MAP: Record<string, string> = {
   '[action]': '<span class="action-icon"></span>',
@@ -412,97 +691,198 @@ const TOKEN_MAP: Record<string, string> = {
   '[seal_e]': '<span class="seal-e-icon"></span>',
 }
 
-function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
-}
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const tokenRE = new RegExp(Object.keys(TOKEN_MAP).map(escapeRegExp).join('|'), 'g')
-
-const replaceText = (text: string): string => {
-  if (!text) return ''
-  return text
+const replaceText = (text: string): string => !text ? '' :
+  text
     .replaceAll('[[', '<span style="font-style: italic; font-weight: bold">')
     .replaceAll(']]', '</span>')
     .replaceAll('<i>', '<span style="font-style: italic;">')
     .replaceAll('</i>', '</span>')
     .replace(tokenRE, (m) => TOKEN_MAP[m] ?? m)
-}
-
-/* ----------------------------- DB helpers (pure) --------------------------- */
 
 const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (!card.value) return null
-  if (isLocalized(card.value)) return null
-
+  if (!card.value || isLocalized(card.value)) return null
   if (dbCard.name === dbCard.real_name) return null
-  let name = (needBack ? (dbCard.double_sided ? (dbCard.back_name || dbCard.name) : dbCard.back_name) : dbCard.name) || null;
+  let name = (needBack ? (dbCard.double_sided ? (dbCard.back_name || dbCard.name) : dbCard.back_name) : dbCard.name) || null
   if (!name) return null
   if (!needBack && dbCard.subname) name = `${name}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) name = `${name} (${dbCard.xp})`
-  if ((dbCard.is_unique)) name = `*${name}`
+  if (dbCard.is_unique) name = `*${name}`
   return name
 }
-
-const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (!card.value) return null
-  if (isLocalized(card.value)) return null
-
-  return (needBack ? (dbCard.double_sided ? (dbCard.back_traits || dbCard.traits) : dbCard.back_traits) : dbCard.traits) || null
-
-}
+const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null =>
+  (!card.value || isLocalized(card.value)) ? null :
+    (needBack ? (dbCard.double_sided ? (dbCard.back_traits || dbCard.traits) : dbCard.back_traits) : dbCard.traits) || null
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (!card.value) return null
-  if (isLocalized(card.value)) return null
-  
+  if (!card.value || isLocalized(card.value)) return null
   const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
   return t ? replaceText(t) : null
 }
 
 const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (!card.value) return null
-  if (isLocalized(card.value)) return null
-
+  if (!card.value || isLocalized(card.value)) return null
   const t = needBack ? (dbCard.back_flavor || null) : (dbCard.flavor || null)
   return t ? replaceText(t) : null
 }
 
+const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null =>
+  (!card.value || isLocalized(card.value)) ? null : replaceText(dbCard.customization_text || '')
 
-const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
-  if (!card.value) return null
-  if (isLocalized(card.value)) return null
-  return replaceText(dbCard.customization_text || '')
-}
+watchEffect(() => {
+  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
+  const src = card.value
+  if (!src) return
+  const m = src.match(/(\d+b?)(_.*)?\.avif$/)
+  if (!m) return
+  const code = m[1]
+  const tabooSuffix = m[2]
+  const language = localStorage.getItem('language') || 'en'
+  if (imgsrc(`cards/${m[0]}`).includes(language)) return
 
-const tarot = computed<boolean>(() => !!hoveredElement.value?.classList.contains('tarot-card'))
+  const dbCard = store.getDbCard(code)
+  if (!dbCard) return
+  const needBack = dbCard.code !== code
 
-// numeric damage/horror parsed from data-* (so "0" doesn't render)
-const damage = computed<number | null>(() => {
-  const v = hoveredElement.value?.dataset?.damage
-  const n = v == null ? NaN : Number(v)
-  return Number.isFinite(n) ? n : null
+  const name = getCardName(dbCard, needBack)
+  const traits = getCardTraits(dbCard, needBack)
+  const text = getCardText(dbCard, needBack)
+  const flavor = getCardFlavor(dbCard, needBack)
+  const cust = getCardCustomizationText(dbCard)
+
+  dbCardName.value = name ? `${tabooSuffix ? '[Taboo] ' : ''}${name}` : ''
+  dbCardTraits.value = traits ?? ''
+  dbCardText.value = text ?? ''
+  dbCardFlavor.value = flavor ?? ''
+  dbCardCustomizationText.value = cust ?? ''
 })
-
-const horror = computed<number | null>(() => {
-  const v = hoveredElement.value?.dataset?.horror
-  const n = v == null ? NaN : Number(v)
-  return Number.isFinite(n) ? n : null
-})
-
-watch(card, (src) => { if (src) loadAR(src) })
-
 </script>
 
 <template>
-  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways, tarot, isMobile }">
+  <div
+    class="card-overlay"
+    ref="cardOverlay"
+    :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}"
+    :class="{ sideways, tarot, isMobile }"
+  >
     <div class="card-image">
-      <img v-if="card" :src="card" :class="{ reversed, Reversed: upsideDown }" />
-      <img
-        v-if="overlay"
-        class="card-overlay"
-        :src="overlay"
-      />
+      <svg
+        v-if="card"
+        class="card-svg"
+        :viewBox="viewBox"
+        :width="svgWidth"
+        :height="svgHeight"
+        :style="`width:${svgWidth}px;height:${svgHeight}px`"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g :transform="groupTransform">
+          <image
+            :href="card"
+            x="0" y="0"
+            :width="sideways ? viewH : VIEW_W"
+            :height="sideways ? VIEW_W : viewH"
+          />
+          <image
+            v-if="overlay"
+            :href="overlay"
+            x="0" y="0"
+            :width="sideways ? viewH : VIEW_W"
+            :height="sideways ? VIEW_W : viewH"
+          />
+
+          <template v-if="damage">
+            <template v-for="i in Math.min(damage, 3)" :key="'d'+i">
+              <template v-if="damagePositions[i-1]">
+                <image
+                  :href="imgsrc('damage-overlay.png')"
+                  :x="xyFromPct(damagePositions[i-1]).x - badgeSize.w/2"
+                  :y="xyFromPct(damagePositions[i-1]).y - badgeSize.h/2"
+                  :width="badgeSize.w"
+                  :height="badgeSize.h"
+                />
+              </template>
+            </template>
+          </template>
+
+          <template v-if="horror">
+            <template v-for="i in Math.min(horror, 3)" :key="'h'+i">
+              <template v-if="horrorPositions[i-1]">
+                <image
+                  :href="imgsrc('horror-overlay.png')"
+                  :x="xyFromPct(horrorPositions[i-1]).x - badgeSize.w/2"
+                  :y="xyFromPct(horrorPositions[i-1]).y - badgeSize.h/2"
+                  :width="badgeSize.w"
+                  :height="badgeSize.h"
+                />
+              </template>
+            </template>
+          </template>
+        </g>
+      </svg>
+
+      <svg
+        v-if="customizationsCard"
+        class="card-svg customizations-svg"
+        :width="svgWidth"
+        :height="svgHeight"
+        :style="`width:${svgWidth}px;height:${svgHeight}px`"
+        :viewBox="viewBox"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g :transform="groupTransform">
+          <image
+            :href="customizationsCard"
+            x="0" y="0"
+            :width="sideways ? viewH : VIEW_W"
+            :height="sideways ? VIEW_W : viewH"
+          />
+
+          <template v-for="tp in parsedTicks" :key="`cust-${tp.code}-${tp.first}-${tp.idx}`">
+            <template v-if="tickPct(tp).top !== undefined && tickPct(tp).left !== undefined">
+              <g
+                :transform="(() => {
+                  const vbW = sideways ? viewH : VIEW_W;
+                  const vbH = sideways ? VIEW_W : viewH;
+                  const pos = tickPct(tp);
+                  const x = (pos.left! / 100) * vbW;
+                  const y = (pos.top!  / 100) * vbH;
+                  const s = tickSize;
+                  return `translate(${x - s/2}, ${y - s/2}) scale(${s/24})`;
+                })()"
+                fill="currentColor"
+                aria-label="tick"
+              >
+                <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/>
+              </g>
+            </template>
+          </template>
+
+          <template v-for="item in labelItems" :key="`lbl-${item.code}-${item.key}`">
+            <g :data-w="item.w" :data-h="item.h" :transform="labelTransform(`lbl-${item.code}-${item.key}`, item)">
+              <text
+                :ref="setLabelRef(
+                  `lbl-${item.code}-${item.key}`,
+                  () => [item.text, item.w.toFixed(2), item.h.toFixed(2), sideways ? 'S' : 'P'].join('|')
+                )"
+                x="0" y="0"
+                :font-size="BASE_LABEL_FONT"
+                style="font-weight: 600;"
+              >
+                {{ item.text }}
+              </text>
+            </g>
+          </template>
+
+          <template v-for="s in skillItems" :key="`skill-09079-${s.name}`">
+            <circle :cx="s.cx" :cy="s.cy" :r="s.r" fill="rgba(0,0,0,0.4)" stroke="#222" stroke-width="2" />
+          </template>
+        </g>
+      </svg>
+
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
+
     <div class="card-data" v-if="dbCardData" :class="{ reversed, Reversed: upsideDown }">
       <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
@@ -511,40 +891,19 @@ watch(card, (src) => { if (src) loadAR(src) })
       <p v-if="dbCardFlavor"><br></p>
       <p v-if="dbCardFlavor" v-html="dbCardFlavor" style="font-size: 0.75em; font-style: italic;"></p>
     </div>
+
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
     <span class="evade" v-if="evade">{{ evade }}</span>
     <span class="victory" v-if="victory">Victory {{ victory }}.</span>
     <span class="keywords" v-if="keywords">{{ keywords }}.</span>
-    <img class="damage damage-1" v-if="damage && damage >= 1" :src="imgsrc('damage-overlay.png')"/>
-    <img class="damage damage-2" v-if="damage && damage >= 2" :src="imgsrc('damage-overlay.png')"/>
-    <img class="damage damage-3" v-if="damage && damage >= 3" :src="imgsrc('damage-overlay.png')"/>
-    <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
-    <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
-    <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
     <PoolItem class="depth" v-if="depth" type="resource" :amount="depth" />
+
     <div class="spent-keys" v-if="spentKeys.length > 0">
       <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" @choose="() => {}"/>
     </div>
-    <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
-      <img :src="customizationsCard" />
-      <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" viewBox="0 0 100 20">
-         <g>
-          <path id="svg-text" d="M 0 10 H 100" fill="transparent" stroke="lightgray" />
-          <text><textPath xlink:href="#svg-text" method="stretch" lengthAdjust="spacingAndGlyphs" textLength="100%">{{ label[1] }}</textpath></text>
-         </g>
-        </svg>
-      </div>
-      <div v-for="skill in customizationSkills" :key="skill" :class="`skill skill-${cardCode} ${skill}`">
-      </div>
-      <div v-for="index in customizationIndexes" :key="index" :class="`index index-${cardCode} ${index}`">
-      </div>
-      <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
-      </div>
-    </div>
+
     <div class="card-data" v-if="dbCardCustomizationText">
       <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
@@ -565,7 +924,6 @@ watch(card, (src) => { if (src) loadAR(src) })
     -1px -1px 0 #000,
     1px -1px 0 #000;
 }
-
 .swarm {
   inset: 0;
   width: var(--card-width);
@@ -621,1619 +979,52 @@ watch(card, (src) => { if (src) loadAR(src) })
   white-space: pre-wrap;
   word-wrap: break-word;
   aspect-ratio: var(--card-aspect);
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   scroll-behavior: smooth;
   background-color: rgba(185, 185, 185, 0.85);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
 }
-
 .card-data::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera*/
+  display: none;
 }
 
 .card-overlay {
   position: absolute;
   z-index: 1000;
   display: flex;
-  img {
-    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
-    border-radius: 15px;
-    width: 300px;
-    height: fit-content;
-    aspect-ratio: var(--card-aspect);
-  }
-  img.damage {
-    box-shadow: none;
-    width: auto;
-    height: 22px;
-    position: absolute;
-    top: 53.5%;
-    left: 34.5%;
-    &.damage-2 {
-      top: 52%;
-      left: 27.5%;
-    }
-
-    &.damage-3 {
-      top: 50.5%;
-      left: 20.5%;
-    }
-
-
-  }
-  img.horror {
-    box-shadow: none;
-    width: auto;
-    height: 22px;
-    position: absolute;
-    top: 53.5%;
-    left: 57.5%;
-    &.horror-2 {
-      top: 52%;
-      left: 64.5%;
-    }
-
-    &.horror-3 {
-      top: 50.5%;
-      left: 71.5%;
-    }
-
-  }
-  &.sideways {
-    height: 300px !important;
-    /*width: fit-content !important;*/
-    /*aspect-ratio: var(--card-sideways-aspect);*/
-    width: auto;
-    @media (max-width: 800px) and (orientation: portrait){
-      overflow: auto;
-    }
-    img {
-      aspect-ratio: var(--card-sideways-aspect);
-      border-radius: 15px;
-      height: 300px;
-      width: auto;
-      max-width: unset;
-    }
-  }
-  &.tarot {
-    height: 500px !important;
-    width: fit-content !important;
-    img {
-      aspect-ratio: var(--card-tarot-aspect);
-      border-radius: 15px;
-      height: 500px;
-      width: fit-content;
-    }
-  }
-}
-
-.reversed {
-  transform: rotateZ(180deg);
-}
-
-.customizations-wrapper {
-  position: relative;
-  width: fit-content;
-  height: fit-content;
-  margin-left: 2px;
-}
-
-.label {
-  line-height: 1;
-  position: absolute;
-  width: 100%;
-  height: 1em;
-}
-
-.tick {
-  line-height: 0;
-  position: absolute;
-  width: 2.8%;
-  height: 2.8%;
-
-  svg {
-    width: 100%;
-    height: 100%;
-  }
-}
-
-.skill {
-  line-height: 0;
-  position: absolute;
-  width: 7%;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  border: 1px solid #222;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.index {
-  line-height: 0;
-  position: absolute;
-  width: 7%;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  border: 1px solid #222;
-  background-color: rgba(0,0,0,0.4);
-}
-
-/* Hunter's Armor */
-.tick-09021 {
-  --top-0: 19.1%;
-  --top-1: 30.0%;
-  --top-2: 40.9%;
-  --top-3: 45.1%;
-  --top-4: 49.4%;
-  --top-5: 60.3%;
-  --top-6: 74.4%;
-  --left-1: 8.6%;
-  --left-2: 11.6%;
-  --left-3: 15.2%;
-}
-
-.customization-09021-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09021-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09021-1-2 {
-  top: var(--top-1);
-  left: var(--left-2);
-}
-.customization-09021-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09021-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09021-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09021-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09021-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09021-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09021-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09021-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09021-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09021-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09021-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09021-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-
-/* Runic Axe */
-.tick-09022 {
-  --top-0: 18.6%;
-  --top-1: 25.3%;
-  --top-2: 34.9%;
-  --top-3: 47.2%;
-  --top-4: 56.7%;
-  --top-5: 69.3%;
-  --top-6: 75.9%;
-  --top-7: 82.4%;
-  --left-1: 8.6%;
-  --left-2: 11.6%;
-  --left-3: 14.7%;
-  --left-4: 17.7%;
-}
-
-.customization-09022-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09022-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09022-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09022-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09022-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09022-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09022-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09022-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09022-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09022-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09022-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09022-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09022-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09022-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09022-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-.customization-09022-7-4 {
-  top: var(--top-7);
-  left: var(--left-4);
-}
-
-/* Custom Modifications */
-.tick-09023 {
-  --top-0: 19.1%;
-  --top-1: 33.4%;
-  --top-2: 40.9%;
-  --top-3: 51.7%;
-  --top-4: 62.5%;
-  --top-5: 73.3%;
-  --left-1: 8.6%;
-  --left-2: 11.9%;
-  --left-3: 15.4%;
-  --left-4: 19.1%;
-}
-
-.customization-09023-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09023-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09023-1-2 {
-  top: var(--top-1);
-  left: var(--left-2);
-}
-.customization-09023-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09023-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09023-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09023-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09023-3-3 {
-  top: var(--top-3);
-  left: var(--left-3);
-}
-.customization-09023-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09023-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09023-4-3 {
-  top: var(--top-4);
-  left: var(--left-3);
-}
-.customization-09023-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09023-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09023-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09023-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-
-/* Alchemical Distillation */
-.tick-09040 {
-  --top-0: 19.1%;
-  --top-1: 26.7%;
-  --top-2: 34.3%;
-  --top-3: 45.1%;
-  --top-4: 52.8%;
-  --top-5: 60.2%;
-  --top-6: 74.3%;
-  --left-1: 8.6%;
-  --left-2: 11.9%;
-  --left-3: 15.4%;
-  --left-4: 19.1%;
-  --left-5: 22.4%;
-}
-
-.customization-09040-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09040-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09040-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09040-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09040-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09040-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09040-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09040-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09040-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09040-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-.customization-09040-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09040-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09040-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09040-6-4 {
-  top: var(--top-6);
-  left: var(--left-4);
-}
-.customization-09040-6-5 {
-  top: var(--top-6);
-  left: var(--left-5);
-}
-
-/* Empirical Hypothesis */
-.tick-09041 {
-  --top-0: 18.4%;
-  --top-1: 25.2%;
-  --top-2: 31.8%;
-  --top-3: 38.3%;
-  --top-4: 45.0%;
-  --top-5: 57.4%;
-  --top-6: 67.0%;
-  --top-7: 76.5%;
-  --left-1: 8.6%;
-  --left-2: 11.5%;
-  --left-3: 14.4%;
-  --left-4: 17.5%;
-}
-
-.customization-09041-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09041-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09041-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09041-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09041-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09041-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09041-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09041-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09041-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09041-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-.customization-09041-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09041-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09041-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09041-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09041-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09041-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-.customization-09041-7-4 {
-  top: var(--top-7);
-  left: var(--left-4);
-}
-
-/* The Raven Quill */
-.tick-09042 {
-  --top-1: 24.8%;
-  --top-2: 31.2%;
-  --top-3: 37.7%;
-  --top-4: 44.4%;
-  --top-5: 51.0%;
-  --top-6: 60.3%;
-  --top-7: 70.0%;
-  --left-1: 8.6%;
-  --left-2: 11.5%;
-  --left-3: 14.4%;
-  --left-4: 17.5%;
-}
-
-.label-09042-0-0 {
-  top: 18%;
-  left: 52%;
-  width: 40%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.label-09042-4-0 {
-  top: 46.5%;
-  left: 18%;
-  width: 36%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.label-09042-4-1 {
-  top: 46.5%;
-  left: 55%;
-  width: 35%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.customization-09042-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09042-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09042-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09042-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09042-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09042-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09042-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09042-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09042-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09042-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09042-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09042-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09042-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09042-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-.customization-09042-7-4 {
-  top: var(--top-7);
-  left: var(--left-4);
-}
-
-/* Damning Testimony */
-.tick-09059 {
-  --top-0: 18.6%;
-  --top-1: 32.7%;
-  --top-2: 40.2%;
-  --top-3: 47.6%;
-  --top-4: 61.9%;
-  --top-5: 72.9%;
-  --left-1: 8.5%;
-  --left-2: 11.9%;
-  --left-3: 15.2%;
-  --left-4: 18.5%;
-}
-
-.customization-09059-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09059-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09059-1-2 {
-  top: var(--top-1);
-  left: var(--left-2);
-}
-.customization-09059-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09059-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09059-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09059-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09059-3-3 {
-  top: var(--top-3);
-  left: var(--left-3);
-}
-.customization-09059-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09059-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09059-4-3 {
-  top: var(--top-4);
-  left: var(--left-3);
-}
-.customization-09059-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09059-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09059-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09059-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-
-/* Friends in Low Places */
-.tick-09060 {
-  --top-1: 24.3%;
-  --top-2: 34.0%;
-  --top-3: 46.5%;
-  --top-4: 56.0%;
-  --top-5: 65.4%;
-  --top-6: 72.1%;
-  --top-7: 78.6%;
-  --left-1: 8.5%;
-  --left-2: 11.3%;
-  --left-3: 14.2%;
-}
-
-.label-09060-0-0 {
-  top: 18%;
-  left: 29%;
-  width: 40%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.label-09060-2-0 {
-  top: 33.4%;
-  left: 66%;
-  width: 25%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.customization-09060-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09060-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09060-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09060-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09060-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09060-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09060-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09060-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09060-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09060-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09060-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09060-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09060-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09060-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09060-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-
-/* Honed Instinct */
-.tick-09061 {
-  --top-0: 19.0%;
-  --top-1: 25.6%;
-  --top-2: 32.3%;
-  --top-3: 38.6%;
-  --top-4: 45.4%;
-  --top-5: 52.1%;
-  --top-6: 58.6%;
-  --top-7: 68.2%;
-  --left-1: 8.4%;
-  --left-2: 11.3%;
-  --left-3: 14.2%;
-  --left-4: 17.3%;
-  --left-5: 20.6%;
-}
-
-.customization-09061-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09061-0-2 {
-  top: var(--top-0);
-  left: var(--left-2);
-}
-.customization-09061-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09061-1-2 {
-  top: var(--top-1);
-  left: var(--left-2);
-}
-.customization-09061-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09061-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09061-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09061-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09061-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09061-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09061-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09061-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09061-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09061-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-.customization-09061-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09061-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09061-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09061-6-4 {
-  top: var(--top-6);
-  left: var(--left-4);
-}
-.customization-09061-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09061-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09061-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-.customization-09061-7-4 {
-  top: var(--top-7);
-  left: var(--left-4);
-}
-.customization-09061-7-5 {
-  top: var(--top-7);
-  left: var(--left-5);
-}
-
-/* Living Ink */
-.tick-09079 {
-  --top-1: 25.5%;
-  --top-2: 36.5%;
-  --top-3: 50.7%;
-  --top-4: 61.6%;
-  --top-5: 65.7%;
-  --top-6: 69.9%;
-  --top-7: 80.8%;
-  --left-1: 8.4%;
-  --left-2: 11.8%;
-  --left-3: 15.2%;
-}
-
-.skill-09079-SkillWillpower {
-  top: 18.6%;
-  left: 42.5%;
-}
-
-.skill-09079-SkillIntellect {
-  top: 18.6%;
-  left: 55%;
-}
-
-.skill-09079-SkillCombat {
-  top: 18.6%;
-  left: 68.4%;
-}
-
-.skill-09079-SkillAgility {
-  top: 18.6%;
-  left: 81%;
-}
-
-.customization-09079-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09079-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09079-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09079-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09079-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09079-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09079-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09079-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09079-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09079-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09079-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09079-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09079-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09079-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09079-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-
-/* Summoned Servitor */
-.tick-09080 {
-  --top-0: 18.3%;
-  --top-1: 27.8%;
-  --top-2: 37.4%;
-  --top-3: 49.8%;
-  --top-4: 56.4%;
-  --top-5: 66.0%;
-  --top-6: 72.6%;
-  --top-7: 82.0%;
-  --left-1: 8.4%;
-  --left-2: 11.2%;
-  --left-3: 14.3%;
-  --left-4: 17.3%;
-  --left-5: 20.3%;
-}
-
-.index-09080-5-0 {
-  top: 68.4%;
-  height: 4%;
-  border-radius: 40%;
-  left: 36.5%;
-  width: 11.5%;
-}
-
-.index-09080-5-1 {
-  top: 68.4%;
-  height: 4%;
-  border-radius: 40%;
-  left: 49.5%;
-  width: 14%;
-}
-
-.customization-09080-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09080-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09080-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09080-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09080-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09080-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09080-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09080-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09080-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09080-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09080-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09080-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09080-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-.customization-09080-7-4 {
-  top: var(--top-7);
-  left: var(--left-4);
-}
-.customization-09080-7-5 {
-  top: var(--top-7);
-  left: var(--left-5);
-}
-
-/* Power Word */
-.tick-09081 {
-  --top-0: 18.5%;
-  --top-1: 28.2%;
-  --top-2: 37.6%;
-  --top-3: 47.1%;
-  --top-4: 56.7%;
-  --top-5: 63.4%;
-  --top-6: 72.9%;
-  --top-7: 79.5%;
-  --left-1: 8.4%;
-  --left-2: 11.2%;
-  --left-3: 14.2%;
-}
-
-/* Power Word (Mutated) */
-.mutated .tick-09081 {
-  --top-0: 18.8%;
-  --top-1: 28.4%;
-  --top-2: 34.9%;
-  --top-3: 44.4%;
-  --top-4: 54.0%;
-  --top-5: 60.7%;
-  --top-6: 70.1%;
-  --top-7: 76.7%;
-  --left-1: 8.4%;
-  --left-2: 11.2%;
-  --left-3: 14.2%;
-}
-
-.customization-09081-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09081-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09081-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09081-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09081-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09081-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09081-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09081-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09081-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09081-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09081-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09081-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09081-7-1 {
-  top: var(--top-7);
-  left: var(--left-1);
-}
-.customization-09081-7-2 {
-  top: var(--top-7);
-  left: var(--left-2);
-}
-.customization-09081-7-3 {
-  top: var(--top-7);
-  left: var(--left-3);
-}
-
-/* Pocket Multi Tool */
-.tick-09099 {
-  --top-0: 19.1%;
-  --top-1: 30.0%;
-  --top-2: 37.6%;
-  --top-3: 45.0%;
-  --top-4: 52.7%;
-  --top-5: 60.1%;
-  --top-6: 67.8%;
-  --left-1: 8.4%;
-  --left-2: 11.6%;
-  --left-3: 15.2%;
-  --left-4: 18.4%;
-}
-
-.customization-09099-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09099-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09099-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09099-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09099-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09099-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09099-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09099-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09099-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09099-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09099-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09099-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09099-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09099-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09099-6-4 {
-  top: var(--top-6);
-  left: var(--left-4);
-}
-
-/* Makeshift Trap */
-.tick-09100 {
-  --top-0: 19.2%;
-  --top-1: 26.8%;
-  --top-2: 37.6%;
-  --top-3: 45.0%;
-  --top-4: 55.9%;
-  --top-5: 66.9%;
-  --top-6: 77.8%;
-  --left-1: 8.4%;
-  --left-2: 11.8%;
-  --left-3: 15.2%;
-  --left-4: 18.7%;
-}
-
-.customization-09100-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09100-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09100-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09100-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09100-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09100-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09100-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09100-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09100-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09100-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09100-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09100-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09100-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09100-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09100-6-4 {
-  top: var(--top-6);
-  left: var(--left-4);
-}
-
-/* Grizzled */
-.tick-09101 {
-  --top-1: 25.4%;
-  --top-2: 33.6%;
-  --top-3: 41.6%;
-  --top-4: 59.7%;
-  --top-5: 74.6%;
-  --left-1: 8.4%;
-  --left-2: 12.0%;
-  --left-3: 15.3%;
-  --left-4: 19.0%;
-  --left-5: 22.4%;
-}
-
-.label-09101-0-0 {
-  top: 18%;
-  left: 35.2%;
-  width: 25%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-.label-09101-0-1 {
-  top: 18%;
-  left: 64%;
-  width: 25%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-.label-09101-1-0 {
-  top: 27.5%;
-  left: 8%;
-  width: 25%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-.label-09101-2-0 {
-  top: 35.5%;
-  left: 8%;
-  width: 25%;
-  height: 5%;
-  svg {
-    width: 100%;
-    height: 100%;
-    path {
-      d: path("M 0 14 H 100");
-    }
-  }
-}
-
-.customization-09101-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09101-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09101-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09101-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09101-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09101-3-3 {
-  top: var(--top-3);
-  left: var(--left-3);
-}
-.customization-09101-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09101-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09101-4-3 {
-  top: var(--top-4);
-  left: var(--left-3);
-}
-.customization-09101-4-4 {
-  top: var(--top-4);
-  left: var(--left-4);
-}
-.customization-09101-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09101-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09101-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09101-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-.customization-09101-5-5 {
-  top: var(--top-5);
-  left: var(--left-5);
-}
-
-/* Hyperphysical Shotcaster */
-.tick-09119 {
-  --top-0: 19.0%;
-  --top-1: 28.4%;
-  --top-2: 40.6%;
-  --top-3: 55.6%;
-  --top-4: 67.9%;
-  --top-5: 80.1%;
-  --top-6: 86.4%;
-  --left-1: 8.4%;
-  --left-2: 11.2%;
-  --left-3: 14.2%;
-  --left-4: 17.3%;
-}
-
-.customization-09119-0-1 {
-  top: var(--top-0);
-  left: var(--left-1);
-}
-.customization-09119-0-2 {
-  top: var(--top-0);
-  left: var(--left-2);
-}
-.customization-09119-1-1 {
-  top: var(--top-1);
-  left: var(--left-1);
-}
-.customization-09119-1-2 {
-  top: var(--top-1);
-  left: var(--left-2);
-}
-.customization-09119-2-1 {
-  top: var(--top-2);
-  left: var(--left-1);
-}
-.customization-09119-2-2 {
-  top: var(--top-2);
-  left: var(--left-2);
-}
-.customization-09119-3-1 {
-  top: var(--top-3);
-  left: var(--left-1);
-}
-.customization-09119-3-2 {
-  top: var(--top-3);
-  left: var(--left-2);
-}
-.customization-09119-4-1 {
-  top: var(--top-4);
-  left: var(--left-1);
-}
-.customization-09119-4-2 {
-  top: var(--top-4);
-  left: var(--left-2);
-}
-.customization-09119-5-1 {
-  top: var(--top-5);
-  left: var(--left-1);
-}
-.customization-09119-5-2 {
-  top: var(--top-5);
-  left: var(--left-2);
-}
-.customization-09119-5-3 {
-  top: var(--top-5);
-  left: var(--left-3);
-}
-.customization-09119-5-4 {
-  top: var(--top-5);
-  left: var(--left-4);
-}
-.customization-09119-6-1 {
-  top: var(--top-6);
-  left: var(--left-1);
-}
-.customization-09119-6-2 {
-  top: var(--top-6);
-  left: var(--left-2);
-}
-.customization-09119-6-3 {
-  top: var(--top-6);
-  left: var(--left-3);
-}
-.customization-09119-6-4 {
-  top: var(--top-6);
-  left: var(--left-4);
-}
-
-.Reversed {
-  transform: rotateZ(180deg);
-}
-
-.card-image {
-  position: relative;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.card-overlay {
   width: max-content;
   height: auto;
-  position: absolute;
   top: 0;
   left: 2px;
   pointer-events: none;
   animation: fadeIn 0.5s;
-  @media (max-width: 800px) and (orientation: portrait) {
-    position: auto;
+}
+.card-overlay.sideways {
+  /* on narrow portrait screens, allow horizontal scroll if both SVGs visible */
+  @media (max-width: 800px) and (orientation: portrait){
+    overflow: auto;
   }
 }
+.card-overlay.tarot {
+  height: 500px !important;
+  width: fit-content !important;
+}
+
+.card-svg {
+  filter: drop-shadow(1px 1px 6px rgba(0, 0, 0, 0.75));
+  border-radius: 15px;
+  width: 300px;
+  height: fit-content;
+  aspect-ratio: var(--card-aspect);
+  overflow: hidden;
+}
+
+.reversed, .Reversed { transform: rotateZ(180deg); }
+
+.card-image { position: relative; }
+
+@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 
 .crossed-off {
   position: absolute;
@@ -2263,20 +1054,11 @@ watch(card, (src) => { if (src) loadAR(src) })
   margin-inline: auto;
   display: flex;
   gap: 2px;
-
-  &:deep(img) {
-    border-radius: 2px;
-    width: 25px;
-    height: 25px;
-  }
 }
-
-.isMobile {
-  inset: 0 !important;
-  margin: auto;
-  align-self: center;
-  justify-content: center;
-  width: fit-content;
+.spent-keys :deep(img) {
+  border-radius: 2px;
+  width: 25px;
+  height: 25px;
 }
 
 .depth {
@@ -2286,4 +1068,11 @@ watch(card, (src) => { if (src) loadAR(src) })
   width: 40px;
 }
 
+.isMobile {
+  inset: 0 !important;
+  margin: auto;
+  align-self: center;
+  justify-content: center;
+  width: fit-content;
+}
 </style>

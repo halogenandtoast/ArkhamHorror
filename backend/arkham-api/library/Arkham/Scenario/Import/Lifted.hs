@@ -37,6 +37,7 @@ import Arkham.Scenario.Runner as X (
   discardL,
   encounterDeckL,
   getMetaKeyDefault,
+  locationLayoutL,
   metaL,
   push,
   pushAll,

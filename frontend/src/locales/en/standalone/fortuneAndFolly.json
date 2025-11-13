@@ -1,4 +1,12 @@
 {
+  "headings": {
+    "checkpoint1": "Checkpoint"
+  },
+  "names": {
+    "checkpoint1": "The Plan",
+    "part1": "Fortune and Folly, Part I",
+    "part2": "Fortune and Folly, Part II"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half your alarm level (rounded up).",
@@ -79,6 +87,16 @@
     "label": {
       "skip": "Skip to _Fortune and Folly, Part II_.",
       "doNotSkip": "Proceed to _Intro 5_."
+    }
+  },
+  "checkpoint1": {
+    "thePlan1": {
+      "title": "Checkpoint: The Plan",
+      "body": "<p>_The Plan 1_: With the stakeout completed, the time has come to plan out the actual heist. There are only a few days until Saturday night at Défis de la Roulette, the busiest night of the week and the perfect time to get lost in a crowd. The plan for the heist is simple, at least in theory. With the casino staff and security occupied by the Saturday crowd, you will first enter the public areas, just as you did last time. There, you will try to avoid notice as much as you can while completing any needed tasks. Once that’s done, you will slip into the restricted areas in the back of the casino that are reserved for staff. This area holds the vault itself, where the Wellspring of Fortune is located. According to Isamara, the vault door is not only secured by solid steel, but also held shut by some kind of energy. If that wasn’t enough, it is constantly monitored by guards, patrols, and the cultists of the Fortune’s Chosen. It will take a carefully executed plan, and some improvisation, to succeed against all odds. With only a short time to gather supplies and practice the approach, there may not be enough time to rest and recuperate from your first tangle with the casino.</p>"
+    },
+    "thePlan3": {
+      "title": "Checkpoint: The Plan",
+      "body": "<p>_The Plan 3_: With a deep breath, you make your final preparations…</p><ul><li>In your Campaign Log, record each line of text that you were instructed to remember during this scenario. (*You will have to remember these for Part II, as well.*)</li><li>Check the total amount of damage and horror on each investigator. If any investigator has 6 or more combined damage and horror, record in your Campaign Log that *the investigators need time to rest*.</li><li>Record the name of each _Role_ card under an investigator’s control when the game ended.</li><li>For every 1 {'{'}perPlayer{'}'} clues on The Stakeout story card at the conclusion of part I, the investigators, as a group, choose one of the following options:<ul><li>Reduce each investigator’s alarm level by 1.</li><li>Choose a _Role_ card that was under an investigator’s control when the game ended. In your Campaign Log, write _Practiced_ next to the title of the chosen card.</li></ul></li><li>Record each investigator’s alarm level in your Campaign Log.</li><li>Record the number of clues on The Wellspring of Fortune in your Campaign Log.</li><li>Gather the facedown assets from beneath Casino Floor that are part of the “stash for the heist.” In your Campaign Log, record “Stashed:” and next to this, the names of each gathered asset.</li><li>Clean up the game as normal.</li><li>When you are ready to play again, proceed to _Fortune and Folly, Part II_.</li></ul>"
     }
   }
 }

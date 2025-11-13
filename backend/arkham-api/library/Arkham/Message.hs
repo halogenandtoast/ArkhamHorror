@@ -562,6 +562,7 @@ data Message
   | Blanked Message
   | HandleOption CampaignOption
   | CampaignStep CampaignStep
+  | ScenarioCampaignStep CampaignStep
   | CancelEachNext (Maybe CardId) Source [MessageType]
   | CancelSkillEffects -- used by scenarios to cancel skill cards
   | CancelHorror InvestigatorId Int
@@ -878,6 +879,7 @@ data Message
   | MoveAllCluesTo Source Target
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | NextCampaignStep (Maybe CampaignStep)
+  | NextScenarioCampaignStep (Maybe CampaignStep)
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | Noop
   | PassSkillTest

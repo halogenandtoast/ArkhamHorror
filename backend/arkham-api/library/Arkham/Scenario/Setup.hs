@@ -114,7 +114,7 @@ runScenarioSetup f attrs body =
     . (.attrs)
     <$> execStateT
       (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
-      (ScenarioBuilderState attrs [] False)
+      (ScenarioBuilderState (attrs & campaignStepL .~ Nothing) [] False)
 
 shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do

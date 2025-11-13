@@ -58,4 +58,5 @@ allCampaigns =
     , ("52", SomeCampaign returnToThePathToCarcosa)
     , ("53", SomeCampaign returnToTheForgottenAge)
     , ("54", SomeCampaign returnToTheCircleUndone)
+    , ("00", SomeCampaign standaloneCampaign)
     ]

@@ -49,5 +49,7 @@
     "bugSubmittingContent": "When this process is done, it will open GitHub in a new window and you will be able to resume your game.",
     "bugSubmittingFail": "Unable to file bug",
 
-    "toggleSidebar": "Toggle Sidebar"
+    "toggleSidebar": "Toggle Sidebar",
+
+    "rotateLayout": "Rotate Location Layout"
 }

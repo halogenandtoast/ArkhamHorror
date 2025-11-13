@@ -18,7 +18,6 @@ import Arkham.Cost
 import Arkham.Decklist
 import Arkham.Entities
 import Arkham.Game
-import Arkham.Game.Utils (modeCampaign)
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
@@ -28,6 +27,7 @@ import Arkham.Token
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import Data.These
 import Data.UUID (UUID)
 import Foundation
 import Json
@@ -298,11 +298,18 @@ handleAnswer Game {..} playerId = \case
   CampaignSpecificAnswer k v -> do
     handled [CampaignSpecific k v]
   CampaignStepAnswer k -> do
-    case modeCampaign gameMode of
-      Just c -> case c.step of
+    case gameMode of
+      This c -> case c.step of
         CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
         _ -> handled []
-      Nothing -> handled []
+      These c s -> case s.step of
+        Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
+        _ -> case c.step of
+          CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
+          _ -> handled []
+      That s -> case s.step of
+        Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
+        _ -> handled []
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do

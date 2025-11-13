@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   onMounted,
@@ -86,7 +86,6 @@ const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
-const forcedShowHollowed = ref(false)
 const locationMap = ref<Element | null>(null)
 const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
@@ -201,6 +200,17 @@ addEntry({
   action: () => showRemovedFromPlay()
 })
 
+addEntry({
+  id: "rotateLayout",
+  icon: ArrowPathIcon,
+  content: t('gameBar.rotateLayout'),
+  shortcut: ">",
+  nested: 'view',
+  action: () => {
+    rotationSteps.value = (rotationSteps.value + 1) % 4
+  }
+})
+
 // Computed
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario
@@ -252,12 +262,37 @@ const abilities = computed(() => {
     }, []);
 })
 
+const rotationSteps = ref(0)
+const transpose = <T>(grid: T[][]): T[][] =>
+  grid[0].map((_col, i) => grid.map(row => row[i]))
+
+const rotateClockwise = <T>(grid: T[][]): T[][] =>
+  transpose([...grid].reverse())
+
+const rotateCounterClockwise = <T>(grid: T[][]): T[][] =>
+  [...transpose(grid)].reverse()
+
+const rotateNTimes = <T>(grid: T[][], steps: number): T[][] => {
+  const k = ((steps % 4) + 4) % 4
+  switch (k) {
+    case 0: return grid
+    case 1: return rotateClockwise(grid)
+    case 2: return rotateClockwise(rotateClockwise(grid))
+    case 3: return rotateCounterClockwise(grid)
+    default: return grid
+  }
+}
 const gridAreas = computed(()=>{
   const { locationLayout } = props.scenario
   if (!locationLayout) return null
 
   // fast path when no barriers meta
-  if (!barriers.value) return locationLayout.map(row => `"${row}"`).join(' ')
+  if (!barriers.value) {
+    const normalizeRow = (row: string): string[] => row.trim().split(/\s+/)
+    const baseRows: string[][] = locationLayout.map(normalizeRow)
+    const rotatedRows = rotateNTimes(baseRows, rotationSteps.value)
+    return rotatedRows.map(r => `"${r.join(' ')}"`).join(' ')
+  }
 
   const grid: any = {}
   for (const l of locations.value) grid[l.label] = l.id
@@ -294,7 +329,8 @@ const gridAreas = computed(()=>{
       if (need) finalRows.push(barrierRow)
     }
   }
-  return finalRows.map(r => `"${r.join(' ')}"`).join(' ')
+  const rotatedRows = rotateNTimes(finalRows, rotationSteps.value)
+  return rotatedRows.map(r => `"${r.join(' ')}"`).join(' ')
 })
 
 // keep object identity stable; only its fields change

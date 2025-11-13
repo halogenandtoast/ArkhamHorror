@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
+import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
 
 const props = defineProps<{
   game: Game
@@ -62,6 +63,15 @@ const questionHash = computed(() => {
 
   return null
 })
+
+const continueCampaign = computed(() => {
+  if (props.game.scenario.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario.campaignStep.contents
+  return null
+})
+
+const inStep = computed(() => {
+  return !!props.game.scenario.campaignStep
+})
 </script>
 
 <template>
@@ -70,8 +80,18 @@ const questionHash = computed(() => {
     <ChooseDeck :game="game" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
+    <ContinueCampaign
+      v-if="continueCampaign"
+      :game="game"
+      :scenario="game.scenario ?? undefined"
+      :playerId="playerId"
+      :canUpgradeDecks="continueCampaign.canUpgradeDecks"
+      :step="continueCampaign.nextStep"
+      :chooseSideStory="continueCampaign.chooseSideStory"
+      @choose="choose"
+    />
     <Scenario
-      v-if="game.scenario && game.phase !== 'CampaignPhase'"
+      v-else-if="game.scenario && game.phase !== 'CampaignPhase' && !inStep"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
@@ -134,7 +154,6 @@ const questionHash = computed(() => {
 }
 
 .game {
-  background-image: linear-gradient(#ced3d4, #E5EAEC);
   width: 100%;
   z-index: 1;
 }

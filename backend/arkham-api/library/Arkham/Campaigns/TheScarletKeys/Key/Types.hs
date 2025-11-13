@@ -7,9 +7,9 @@ module Arkham.Campaigns.TheScarletKeys.Key.Types (
   Field (..),
 ) where
 
-import Arkham.Campaigns.TheScarletKeys.Key.Stability
 import Arkham.Campaigns.TheScarletKeys.Key.Cards
 import Arkham.Campaigns.TheScarletKeys.Key.Id
+import Arkham.Campaigns.TheScarletKeys.Key.Stability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -53,7 +53,7 @@ data instance Field ScarletKey :: Type -> Type where
   ScarletKeyStability :: Field ScarletKey Stability
   ScarletKeyPlacement :: Field ScarletKey Placement
   ScarletKeyBearer :: Field ScarletKey Target
-
+  ScarletKeyTokens :: Field ScarletKey Tokens
 
 data ScarletKeyAttrs = ScarletKeyAttrs
   { keyId :: ScarletKeyId

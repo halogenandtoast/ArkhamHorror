@@ -1,12 +1,12 @@
 module Arkham.Asset.Assets.TheGrifterUnpracticed (theGrifterUnpracticed) where
 
 import Arkham.Ability
-import Arkham.Card.CardCode
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Card.CardCode
 import Arkham.Helpers.Ref (targetToSource)
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenarios.FortuneAndFolly.Helpers
@@ -92,5 +92,9 @@ instance RunMessage TheGrifterUnpracticed where
                     Diamonds -> Clubs
                     Clubs -> Hearts
                     Spades -> Hearts
+      pure a
+    InvestigatorEliminated _ -> pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.theGrifterPracticed
       pure a
     _ -> TheGrifterUnpracticed <$> liftRunMessage msg attrs

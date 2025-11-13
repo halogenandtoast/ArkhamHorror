@@ -14,7 +14,7 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (Field (..))
-import Arkham.CampaignLog
+import Arkham.CampaignLog hiding (optionsL)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Capability
@@ -1610,7 +1610,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       <> [ChooseLeadInvestigator, SetPlayerOrder]
       <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
       <> [CheckDestiny, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
-    pure $ a & startedL .~ True
+    pure $ a & startedL .~ True & optionsL ?~ opts
   CheckDestiny ->
     fromMaybe a <$> runMaybeT do
       c <- MaybeT $ selectOne Matcher.TheCampaign
@@ -1665,6 +1665,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   RemoveTokens _ ScenarioTarget token amount -> do
     pure $ a & tokensL %~ subtractTokens token amount
   RestartScenario -> do
+    standalone <- getIsStandalone
+    pushAll
+      $ ResetGame
+      : [StandaloneSetup | standalone]
+        <> [ ChooseLeadInvestigator
+           , SetPlayerOrder
+           , SetupInvestigators
+           , SetChaosTokensForScenario -- (chaosBagOf campaign')
+           , InvestigatorsMulligan
+           , Setup
+           , EndSetup
+           ]
     pure $ a & (inResolutionL .~ False)
   PerformReading Chaos -> do
     card <- TarotCard <$> sample2 Upright Reversed <*> sample (NE.fromList scenarioTarotDeck)

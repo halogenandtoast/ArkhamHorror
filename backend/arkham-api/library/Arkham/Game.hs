@@ -5453,6 +5453,7 @@ instance Projection ScarletKey where
       ScarletKeyStability -> attr keyStability c
       ScarletKeyPlacement -> attr keyPlacement c
       ScarletKeyBearer -> attr keyBearer c
+      ScarletKeyTokens -> attr keyTokens c
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid

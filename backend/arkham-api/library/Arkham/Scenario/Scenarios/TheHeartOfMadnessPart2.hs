@@ -26,7 +26,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Import.Lifted hiding (optionsL)
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Monad.State.Strict (execStateT, modify)

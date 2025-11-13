@@ -107,6 +107,7 @@ data ScenarioLogKey
   | StayedOutOfSight
   | DeliveredADecoyPackage
   | IsamaraMesmerizedTheGuardsWithHerSong
+  | TheInvestigatorsNeedTimeToRest
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Window (defeatedEnemy)
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Trait (Trait (Casino))
 
@@ -25,5 +25,9 @@ instance RunMessage TheMuscleUnpracticed where
       byTwo <-
         selectNone $ EnemyAt (orConnected_ (locationWithInvestigator iid)) <> not_ (EnemyWithId eid)
       reduceAlarmLevelBy (if byTwo then 2 else 1) (attrs.ability 1) iid
+      pure a
+    InvestigatorEliminated _ -> pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.theMusclePracticed
       pure a
     _ -> TheMuscleUnpracticed <$> liftRunMessage msg attrs

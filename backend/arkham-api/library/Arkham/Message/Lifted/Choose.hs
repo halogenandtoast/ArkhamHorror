@@ -481,7 +481,7 @@ storyWithContinue txt button = storyWithChooseOneM txt $ labeled button nothing
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
 storyWithChooseOneM txt choices = do
   (_, choices') <- runChooseT choices
-  storyWithChooseOne txt choices'
+  unless (null choices') $ storyWithChooseOne txt choices'
 
 storyWithContinue' :: (HasI18n, ReverseQueue m) => FlavorTextBuilder () -> m ()
 storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' "continue" nothing
@@ -489,7 +489,7 @@ storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' 
 storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
-  storyWithChooseOne (buildFlavor builder) choices'
+  unless (null choices') $ storyWithChooseOne (buildFlavor builder) choices'
 
 playerStoryWithChooseOneM'
   :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()

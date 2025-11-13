@@ -457,6 +457,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (entitiesL . effectsL %~ filterMap effectIsForNextGame)
       & (entitiesL . skillsL .~ mempty)
       & (entitiesL . storiesL .~ mempty)
+      & (entitiesL . scarletKeysL .~ mempty)
+      & (entitiesL . concealedL .~ mempty)
+      & (modeL %~ fmap (\s -> toResultDefault s (toJSON s)))
       & (inDiscardEntitiesL .~ mempty)
       & (inHandEntitiesL .~ mempty)
       & (gameStateL .~ IsActive)
@@ -509,20 +512,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         , Label "Choice" [PerformReading Tarot.Choice]
         ]
     pure g
-  RestartScenario -> do
-    let standalone = isNothing $ modeCampaign $ g ^. modeL
-    pushAll
-      $ ResetGame
-      : [StandaloneSetup | standalone]
-        <> [ ChooseLeadInvestigator
-           , SetPlayerOrder
-           , SetupInvestigators
-           , SetChaosTokensForScenario -- (chaosBagOf campaign')
-           , InvestigatorsMulligan
-           , Setup
-           , EndSetup
-           ]
-    pure $ g & (phaseL .~ InvestigationPhase)
+  RestartScenario -> pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
     let (before, _, after) = frame Window.GameBegins
     iids <- getInvestigatorsInOrder

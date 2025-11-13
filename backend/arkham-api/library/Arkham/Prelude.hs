@@ -3,7 +3,7 @@ module Arkham.Prelude (
   module Arkham.Prelude,
 ) where
 
-import ClassyPrelude as X hiding (foldlM, on, (\\))
+import ClassyPrelude as X hiding (foldlM, on, (\\), orElse)
 import Data.Type.Equality as X (type (~))
 
 import Control.Exception as X (throw)
@@ -214,6 +214,11 @@ sampleNonEmptyN n xs = do
 sampleListN
   :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
 sampleListN n xs = maybe (pure []) (sampleN n) (nonEmpty $ otoList xs)
+
+orElse :: Maybe a -> a -> a
+orElse Nothing a = a
+orElse (Just a) _ = a
+{-# INLINE orElse #-}
 
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a

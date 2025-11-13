@@ -4,6 +4,7 @@ module Arkham.Scenario.Types (module Arkham.Scenario.Types, module X, Field (..)
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes.Entity
@@ -144,6 +145,7 @@ data ScenarioAttrs = ScenarioAttrs
     scenarioStoryCards :: Map InvestigatorId [Card]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   , scenarioXpBreakdown :: Maybe XpBreakdown
+  , scenarioCampaignStep :: Maybe CampaignStep
   }
   deriving stock (Show, Eq)
 
@@ -211,6 +213,9 @@ instance HasField "meta" ScenarioAttrs Value where
 instance HasField "encounterDeck" ScenarioAttrs (Deck EncounterCard) where
   getField = scenarioEncounterDeck
 
+instance HasField "step" ScenarioAttrs (Maybe CampaignStep) where
+  getField = scenarioCampaignStep
+
 getMetaKeyDefault :: FromJSON a => Key -> a -> ScenarioAttrs -> a
 getMetaKeyDefault k def attrs = case attrs.meta of
   Object o -> case KeyMap.lookup k o of
@@ -228,6 +233,9 @@ setMetaKey k v attrs = case attrs.meta of
 
 instance HasField "id" Scenario ScenarioId where
   getField = (.id) . toAttrs
+
+instance HasField "step" Scenario (Maybe CampaignStep) where
+  getField = (.step) . toAttrs
 
 instance HasField "difficulty" Scenario Difficulty where
   getField = (.difficulty) . toAttrs
@@ -322,6 +330,7 @@ scenario f cardCode name difficulty layout =
       , scenarioIsSideStory = False
       , scenarioInShuffle = False
       , scenarioXpBreakdown = Nothing
+      , scenarioCampaignStep = Nothing
       , scenarioSearch = Nothing
       , scenarioStarted = False
       , scenarioScope = toScope $ case T.stripPrefix "Return to " (toTitle name) of
@@ -444,6 +453,7 @@ instance FromJSON ScenarioAttrs where
       (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))
     scenarioPlayerDecks <- o .: "playerDecks"
     scenarioXpBreakdown <- o .:? "xpBreakdown"
+    scenarioCampaignStep <- o .:? "campaignStep"
     scenarioSearch <- o .:? "search"
     scenarioStarted <- o .:? "started" .!= True
     scenarioScope <- o .:? "scope" .!= "missing"

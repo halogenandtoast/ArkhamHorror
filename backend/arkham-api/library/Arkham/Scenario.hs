@@ -681,6 +681,7 @@ allScenarios =
     , ("82001", SomeScenario carnevaleOfHorrors)
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
     , ("88001", SomeScenario fortuneAndFolly)
+    , ("88001b", SomeScenario fortuneAndFollyPart2)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -799,4 +800,5 @@ scenarioEncounterSets =
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)
     , ("88001", EncounterSet.FortuneAndFolly)
+    , ("88001b", EncounterSet.FortuneAndFolly)
     ]

@@ -16,6 +16,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.CampaignStep
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard (setPlayerCardOwner)
@@ -44,9 +45,9 @@ import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Calculation
-import Arkham.Helpers.Enemy
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable
@@ -1828,4 +1829,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             push $ PlaceConcealedCard iid card (AtLocation lid)
             Lifted.do1 $ Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
     pure a
+  ScenarioCampaignStep cs@(ContinueCampaignStep _step') -> do
+    lead <- getLeadPlayer
+    push $ Ask lead ContinueCampaign
+    pure $ a & campaignStepL ?~ cs
+  NextScenarioCampaignStep (Just step) -> do
+    pushAll [HandleKilledOrInsaneInvestigators, ScenarioCampaignStep step]
+    pure $ a & campaignStepL ?~ step
   _ -> pure a

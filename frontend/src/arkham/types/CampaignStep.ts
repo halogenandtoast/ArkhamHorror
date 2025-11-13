@@ -1,8 +1,10 @@
 import * as JsonDecoder from 'ts.data.json'
 import scenarios from '@/arkham/data/scenarios'
 import type { Game } from '@/arkham/types/Game'
+import type { Scenario } from '@/arkham/types/Scenario'
 import { toCamelCase } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n';
+import { scenarioIdToI18n } from '@/arkham/types/Scenario'
 
 export type CampaignStep
   = PrologueStep
@@ -184,10 +186,23 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   'Question',
 );
 
-export function campaignStepName(game: Game, step: CampaignStep) {
+export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scenario) {
   const { t, te } = useI18n();
-  if (step.tag === 'ScenarioStep') {
-    const scenarioId = step.contents.slice(1)
+  if (scenario) {
+    const scenarioId = scenario.id.replace(/^c/, '')
+    if (step.tag === 'CheckpointStep') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const key = `${prefix}.names.checkpoint${step.contents}`
+      if (te(key)) return t(key)
+    }
+    if (step.tag === 'ScenarioStep') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const part = step.contents.slice(-1) === 'b' ? 'part2' : 'part1'
+      const key = `${prefix}.names.${part}`
+      console.log(key)
+      if (te(key)) return t(key)
+    }
+
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
     if (result && result.returnTo && result.returnTo === scenarioId) {
       return result.returnToName
@@ -197,6 +212,27 @@ export function campaignStepName(game: Game, step: CampaignStep) {
 
   if (step.tag === 'StandaloneScenarioStep') {
     const scenarioId = step.contents[0].slice(1)
+    if (step.contents[1]?.tag === 'CheckpointStep') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const key = `${prefix}.names.checkpoint${step.contents[1].contents}`
+      if (te(key)) return t(key)
+    }
+    if (step.contents[1]?.tag === 'ScenarioStep') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const part = step.contents[1].contents.slice(-1) === 'b' ? 'part2' : 'part1'
+      const key = `${prefix}.names.${part}`
+      console.log(key)
+      if (te(key)) return t(key)
+    }
+    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
+    if (result && result.returnTo && result.returnTo === scenarioId) {
+      return result.returnToName
+    }
+    return result?.name || "Unknown Scenario"
+  }
+
+  if (step.tag === 'ScenarioStep') {
+    const scenarioId = step.contents.slice(1)
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
     if (result && result.returnTo && result.returnTo === scenarioId) {
       return result.returnToName

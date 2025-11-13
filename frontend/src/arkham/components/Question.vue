@@ -698,7 +698,6 @@ section {
   max-width: 50vw;
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
-  padding: 10px;
   border-radius: 5px;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
@@ -1144,8 +1143,37 @@ h2 {
 }
 
 .intro-text {
-  padding-inline: 20px;
-  padding-block: 30px;
+  max-height: 60vh;
+  > ul:first-of-type, div:first-of-type {
+    padding-top: 30px;
+  }
+  > ul, div {
+    padding-inline: 20px;
+  }
+  > ul:last-of-type, div:last-of-type {
+    padding-bottom: 30px;
+
+  }
+
+  &:deep(> div.composite:first-of-type) {
+    > div {
+      padding-top: 30px;
+    }
+  }
+
+  &:deep(> div.composite:last-of-type) {
+    > div {
+      padding-bottom: 30px;
+    }
+  }
+
+  &:deep(> div.composite) {
+    > div {
+      padding-inline: 20px;
+    }
+  }
+
+
   &:has(.resolution) {
     background-color: #BAA597;
     box-shadow: unset;

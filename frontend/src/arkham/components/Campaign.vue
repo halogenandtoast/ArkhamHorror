@@ -105,6 +105,15 @@ const questionHash = computed(() => {
   let question = JSON.stringify(props.game.question[props.playerId])
   return btoa(encodeURIComponent(question))
 })
+
+const continueScenario = computed(() => {
+  if (props.game.scenario?.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario?.campaignStep.contents
+  return null
+})
+
+const inScenarioStep = computed(() => {
+  return !!props.game.scenario?.campaignStep
+})
 </script>
 
 <template>
@@ -130,8 +139,18 @@ const questionHash = computed(() => {
     <template v-if="pickDestiny">
       <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
     </template>
+    <ContinueCampaign
+      v-if="continueScenario"
+      :game="game"
+      :scenario="game.scenario ?? undefined"
+      :playerId="playerId"
+      :canUpgradeDecks="continueScenario.canUpgradeDecks"
+      :step="continueScenario.nextStep"
+      :chooseSideStory="continueScenario.chooseSideStory"
+      @choose="choose"
+    />
     <Scenario
-      v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0"
+      v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0 && !inScenarioStep"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"

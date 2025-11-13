@@ -5,6 +5,7 @@ import { imgsrc } from '@/arkham/helpers'
 import { Game } from '@/arkham/types/Game'
 import { scenarioIdToI18n } from '@/arkham/types/Scenario'
 import type { Campaign } from '@/arkham/types/Campaign'
+import type { Scenario } from '@/arkham/types/Scenario'
 import type { Investigator } from '@/arkham/types/Investigator'
 import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
 import { useI18n } from 'vue-i18n'
@@ -14,7 +15,8 @@ import sideStories from '@/arkham/data/side-stories.json'
 
 const props = defineProps<{
   game: Game
-  campaign: Campaign
+  campaign?: Campaign
+  scenario?: Scenario
   canUpgradeDecks: boolean
   chooseSideStory: boolean
   step: CampaignStep
@@ -34,7 +36,7 @@ const sendOnce = (payload: unknown) => {
 onMounted(() => { hasSent.value = false })
 const stepKey = computed(() => `${props.step.tag}:${JSON.stringify(props.step.contents)}`)
 watch(stepKey, () => { hasSent.value = false })
-const bonusXp = computed(() => props.campaign.meta?.bonusXp ?? null)
+const bonusXp = computed(() => props.campaign?.meta?.bonusXp ?? null)
 const scenario = computed(() => {
   if (props.step.tag === 'ScenarioStep') {
     return props.step.contents.slice(1)
@@ -45,7 +47,7 @@ const scenario = computed(() => {
   return null
 })
 
-const name = computed(() => campaignStepName(props.game, props.step))
+const name = computed(() => campaignStepName(props.game, props.step, props.scenario))
 
 const numToRomanNumeral = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
@@ -63,8 +65,30 @@ const numToRomanNumeral = (num: number): string => {
   return romanNumerals[num] || num.toString();
 }
 const kind = computed(() => {
-  if (props.step.tag === 'ScenarioStep' || props.step.tag === 'StandaloneScenarioStep') {
-    const scenarioId = props.step.tag === 'ScenarioStep' ? props.step.contents : props.step.contents[0]
+  if (props.scenario) {
+    const scenarioId = props.scenario.id
+    const prefix = scenarioIdToI18n(scenarioId)
+    let key = `${prefix}.heading`
+    if (props.step.tag === 'CheckpointStep') {
+      key = `${prefix}.headings.checkpoint${props.step.contents}`
+    }
+    if (te(key)) return t(key)
+    return t('headings.scenario')
+  }
+
+  if (props.step.tag === 'StandaloneScenarioStep') {
+    const scenarioId = props.step.contents[0]
+    const prefix = scenarioIdToI18n(scenarioId)
+    let key = `${prefix}.heading`
+    if (props.step.contents[1]?.tag === 'CheckpointStep') {
+      key = `${prefix}.headings.checkpoint${props.step.contents[1].contents}`
+    }
+    if (te(key)) return t(key)
+    return t('headings.scenario')
+  }
+
+  if (props.step.tag === 'ScenarioStep') {
+    const scenarioId = props.step.contents
     const prefix = scenarioIdToI18n(scenarioId)
     const key = `${prefix}.heading`
     if (te(key)) return t(key)
@@ -97,6 +121,7 @@ const investigators = computed(() => {
 })
 
 const minXp = computed<number>(() => {
+  if(!props.campaign) return 0
   const time = props.campaign.log.recordedCounts.find(([c, v]) => c.tag === 'TheScarletKeysKey' && c.contents === 'Time')
   if (time) return (35 - time[1])
   return investigators.value.reduce((acc: number | null, investigator: Investigator) => {
@@ -109,6 +134,7 @@ const minXp = computed<number>(() => {
 })
 
 const canUpgrade = computed(() => {
+  if (!props.campaign) return false
   if (!props.canUpgradeDecks) return false
   if (props.step.tag !== "ScenarioStep" && props.step.tag !== "StandaloneScenarioStep") return false
   if (props.step.tag === "ContinueCampaignStep" && !props.step.contents.canUpgradeDecks) return false
@@ -116,6 +142,7 @@ const canUpgrade = computed(() => {
 })
 
 const standalones = computed(() => {
+  if (!props.campaign) return []
   if (!props.chooseSideStory && props.step.tag !== "ScenarioStep") return []
   const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {

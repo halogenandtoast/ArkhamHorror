@@ -1,9 +1,10 @@
-module Arkham.Scenario.Scenarios.FortuneAndFolly (fortuneAndFolly) where
+module Arkham.Scenario.Scenarios.FortuneAndFolly (fortuneAndFolly, fortuneAndFollyPart2) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCardCode))
+import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -14,6 +15,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
+import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationPrintedSymbol))
 import Arkham.LocationSymbol
@@ -23,7 +25,9 @@ import Arkham.Message.Lifted.Move
 import Arkham.Message.Story
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (ScenarioAttrs (..), campaignStepL)
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
@@ -33,6 +37,10 @@ import Data.Map.Strict qualified as Map
 newtype FortuneAndFolly = FortuneAndFolly ScenarioAttrs
   deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+newtype FortuneAndFollyPart2 = FortuneAndFollyPart2 FortuneAndFolly
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 fortuneAndFolly :: Difficulty -> FortuneAndFolly
 fortuneAndFolly difficulty =
@@ -45,6 +53,32 @@ fortuneAndFolly difficulty =
     , "plus     .      triangle"
     , "square   circle diamond"
     ]
+
+fortuneAndFollyPart2 :: Difficulty -> FortuneAndFollyPart2
+fortuneAndFollyPart2 difficulty =
+  scenario
+    (FortuneAndFollyPart2 . FortuneAndFolly)
+    "88001b"
+    "Fortune And Folly"
+    difficulty
+    part2Layout
+
+part2Layout :: [GridTemplateRow]
+part2Layout =
+  [ ".        trefoil   ."
+  , ".        trefoil   ."
+  , ".        droplet   ."
+  , "heart    droplet   star"
+  , "heart    .         star"
+  , "moon     .         equals"
+  , "moon     hourglass equals"
+  , "squiggle hourglass t"
+  , "squiggle .         t"
+  , "plus     .         triangle"
+  , "plus     .         triangle"
+  , "square   circle    diamond"
+  , "square   circle    diamond"
+  ]
 
 {- FOURMOLU_DISABLE -}
 chaosBag :: Difficulty -> [ChaosTokenFace]
@@ -118,6 +152,15 @@ instance RunMessage FortuneAndFolly where
       pure s
     PreScenarioSetup -> scope "intro" do
       c <- selectOne TheCampaign
+      when (isNothing c) do
+        push
+          $ ScenarioCampaignStep
+          $ ContinueCampaignStep
+          $ Continuation (ScenarioStep "88001") False False
+      doStep 1 PreScenarioSetup
+      pure s
+    DoStep 1 PreScenarioSetup -> scope "intro" do
+      c <- selectOne TheCampaign
       flavor do
         setTitle "title"
         p "intro1"
@@ -126,7 +169,7 @@ instance RunMessage FortuneAndFolly where
       if c == Just "08"
         then doStep 2 PreScenarioSetup
         else doStep 3 PreScenarioSetup
-      pure s
+      pure $ FortuneAndFolly $ attrs & campaignStepL .~ Nothing
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"
       doStep 4 PreScenarioSetup
@@ -144,7 +187,11 @@ instance RunMessage FortuneAndFolly where
       flavor $ setTitle "title" >> p "intro5"
       pure s
     DoStep (-1) PreScenarioSetup -> do
-      pure $ FortuneAndFolly $ attrs & setMetaKey "skip" True
+      push
+        $ ScenarioCampaignStep
+        $ ContinueCampaignStep
+        $ Continuation (CheckpointStep 1) False False
+      pure s
     Setup -> runScenarioSetup FortuneAndFolly attrs do
       gather Set.FortuneAndFolly
       gatherAndSetAside Set.FortunesChosen
@@ -275,7 +322,7 @@ instance RunMessage FortuneAndFolly where
       pure attrs
     ScenarioSpecific "checkGameIcons" val -> fmap FortuneAndFolly do
       let params = toResult @CheckGameIcons val
-      pcs  <- mapMaybeM toPlayingCard params.cards
+      pcs <- mapMaybeM toPlayingCard params.cards
       let toFind = params.n - length pcs
       if toFind == 0
         then do
@@ -300,4 +347,111 @@ instance RunMessage FortuneAndFolly where
             checkAfter $ Window.Discarded (Just params.investigator) ScenarioSource (toCard card)
             push $ ScenarioSpecific "checkGameIcons" $ toJSON params {cards = card : params.cards}
             pure $ attrs & encounterDeckL .~ Deck deck & discardL %~ (card :)
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
+        Resolution 1 -> do
+          selectEach (not_ ResignedInvestigator) \iid -> do
+            twice $ raiseAlarmLevel attrs [iid]
+          resolution "resolution1"
+          -- what if we just set our id
+          push
+            $ ScenarioCampaignStep
+            $ ContinueCampaignStep
+            $ Continuation (CheckpointStep 1) False False
+        Resolution 2 -> do
+          resolution "resolution2"
+          push
+            $ ScenarioCampaignStep
+            $ ContinueCampaignStep
+            $ Continuation (CheckpointStep 1) False False
+        _ -> error "invalid resolution"
+      pure s
+    ScenarioCampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
+      story $ i18nWithTitle "thePlan1"
+      story $ i18nWithTitle "thePlan3"
+      push
+        $ ScenarioCampaignStep
+        $ ContinueCampaignStep
+        $ Continuation (ScenarioStep "88001b") False False
+      pure s
+    ScenarioCampaignStep (ScenarioStep "88001b") -> do
+      pushAll [RestartScenario]
+      pure
+        $ FortuneAndFolly
+        $ attrs {scenarioId = "88001b"}
+        & locationLayoutL
+        .~ part2Layout
+        & campaignStepL
+        .~ Nothing
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs
+
+instance RunMessage FortuneAndFollyPart2 where
+  runMessage msg s@(FortuneAndFollyPart2 fortuneAndFolly'@(FortuneAndFolly attrs)) = runQueueT $ scenarioI18n $ case msg of
+    Setup -> runScenarioSetup (FortuneAndFollyPart2 . FortuneAndFolly) attrs do
+      gather Set.FortuneAndFolly
+      gatherAndSetAside Set.FortunesChosen
+      gatherAndSetAside Set.PlanInShambles
+
+      setAgendaDeck [Agendas.openingHand, Agendas.theTurn, Agendas.allBetsDown]
+      setActDeck [Acts.theTake, Acts.theExit]
+
+      startAt =<< place Locations.casinoFloorBusyNight
+
+      vaultDoor <- place Locations.vaultDoor
+      theHeist <- genCard Stories.theStakeout
+      push $ PlaceStory theHeist (AtLocation vaultDoor)
+
+      relicRoom <- place Locations.relicRoomSanctumOfFortune
+      theWellspringOfFortune <-
+        createScarletKeyAt Keys.theWellspringOfFortune (AttachedToLocation relicRoom)
+      placeTokens attrs theWellspringOfFortune Clue =<< perPlayer 7
+
+      placeAll
+        [ Locations.casinoLoungeBusyNight
+        , Locations.pokerTable
+        , Locations.slotMachines
+        , Locations.staffAccessHallway
+        , Locations.securityOffice
+        , Locations.guardRoom
+        , Locations.ownersOffice
+        , Locations.countingRoom
+        , Locations.baccaratTable
+        , Locations.highRollersTableBusyNight
+        , Locations.rouletteWheel
+        ]
+
+      setAside
+        [ Agendas.theHouseAlwaysWatches
+        , Acts.casingTheJoint
+        , Stories.fortunesDisfavor25
+        , Stories.fortunesDisfavor26
+        , Stories.fortunesDisfavor27
+        , Stories.packageDelivery
+        , Assets.cashCart
+        , Assets.deckOfPossibilitiesTychokineticImplement
+        , Assets.isamaraOrdonezTheTorchSinger
+        , Enemies.abarranArrigorriagakoaAbarranUnleashed
+        ]
+
+      eachInvestigator \iid -> placeTokens attrs iid AlarmLevel 1
+
+      n <- getPlayerCount
+      if n == 1
+        then do
+          iid <- getLead
+          chooseNM iid 2 do
+            cardsLabeled
+              [ Assets.theFaceUnpracticed
+              , Assets.theMuscleUnpracticed
+              , Assets.theThiefUnpracticed
+              , Assets.theGrifterUnpracticed
+              ]
+              \card -> createAssetAt_ card (InPlayArea iid)
+        else eachInvestigator (`forInvestigator` msg)
+    ScenarioResolution _r -> do
+      endOfScenario
+      pure s
+    _ -> FortuneAndFollyPart2 <$> liftRunMessage msg fortuneAndFolly'

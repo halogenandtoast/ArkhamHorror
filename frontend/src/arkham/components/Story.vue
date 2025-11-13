@@ -34,7 +34,6 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choose = (idx: number) => emit('choose', idx)
 
 const checkmarks = computed(() => {
-  console.log(props.story.modifiers)
   return props.story.modifiers?.filter(m =>
     m.type.tag === 'UIModifier' &&
     m.type.contents.tag === 'OverlayCheckmark'

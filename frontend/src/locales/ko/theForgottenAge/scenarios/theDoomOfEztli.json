@@ -1,4 +1,5 @@
 {
+  "heading": "시나리오 II",
   "tokens": {
     "easyStandard": {
       "skull": "-1 (당신이 위치한 장소에 파멸이 있다면, -1 대신 -3).",

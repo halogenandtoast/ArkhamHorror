@@ -275,7 +275,7 @@ const abilities = computed(() => {
 
 const rotationSteps = ref(0)
 const transpose = <T>(grid: T[][]): T[][] =>
-  grid[0].map((_col, i) => grid.map(row => row[i]))
+  (grid[0] ?? []).map((_col, i) => grid.map(row => row[i]))
 
 const rotateClockwise = <T>(grid: T[][]): T[][] =>
   transpose([...grid].reverse())

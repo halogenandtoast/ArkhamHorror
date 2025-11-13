@@ -441,7 +441,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       These c _ -> pure $ update $ g & (modeL .~ This c)
       _ -> pure $ update g
   ResetGame -> do
-    -- clearCardCache
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)

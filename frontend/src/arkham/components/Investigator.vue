@@ -317,6 +317,22 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const heartInjury = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "heartInjury") ?? false
+})
+
+const diamondInjury = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "diamondInjury") ?? false
+})
+
+const clubInjury = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "clubInjury") ?? false
+})
+
+const spadeInjury = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "spadeInjury") ?? false
+})
 </script>
 
 <template>
@@ -367,7 +383,13 @@ function onDrop(event: DragEvent) {
       </div>
       <div>
         <div class="player-buttons">
-          <span v-if="!isMobile" class="action-container"><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
+          <span v-if="!isMobile" class="action-container">
+            <i class="spade" v-if="spadeInjury"></i>
+            <i class="heart" v-if="heartInjury"></i>
+            <i class="diamond" v-if="diamondInjury"></i>
+            <i class="club" v-if="clubInjury"></i>
+            <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+          </span>
           <span v-if="investigator.additionalActions.length > 0">
             <template v-for="action in investigator.additionalActions" :key="action">
             <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
@@ -774,5 +796,73 @@ button.active {
   border-radius: 2px;
   border-style: solid;
   color: white;
+}
+
+i.spade {
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  color: #EEE;
+  margin-right: 4px;
+  filter: drop-shadow(0 0 2px white);
+
+  &:before {
+    content: "♠️";
+  }
+}
+
+i.club {
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  color: #EEE;
+  margin-right: 4px;
+  filter: drop-shadow(0 0 2px white);
+
+  &:before {
+    content: "♣️";
+  }
+}
+
+i.heart {
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  color: #EEE;
+  margin-right: 4px;
+  filter: drop-shadow(0 0 2px white);
+
+  &:before {
+    content: "♥️";
+  }
+}
+
+i.diamond {
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  color: #EEE;
+  margin-right: 4px;
+  filter: drop-shadow(0 0 2px white);
+
+  &:before {
+    content: "♦️";
+  }
 }
 </style>

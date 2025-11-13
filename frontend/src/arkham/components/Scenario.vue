@@ -211,6 +211,17 @@ addEntry({
   }
 })
 
+addEntry({
+  id: "rotateLayoutCounterClockwise",
+  icon: ArrowPathIcon,
+  content: t('gameBar.rotateLayout'),
+  shortcut: "<",
+  nested: 'hidden',
+  action: () => {
+    rotationSteps.value = (rotationSteps.value - 1) % 4
+  }
+})
+
 // Computed
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario

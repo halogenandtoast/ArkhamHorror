@@ -26,7 +26,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Import.Lifted hiding (optionsL)
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Eidolon))
 import Control.Monad.State.Strict

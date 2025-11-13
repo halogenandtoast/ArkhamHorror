@@ -29,7 +29,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (ScenarioAttrs (scenarioTarotDeck), startedL)
+import Arkham.Scenario.Types (ScenarioAttrs (scenarioTarotDeck))
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
 import Arkham.Tarot
 import Arkham.Treachery.Cards qualified as Treacheries

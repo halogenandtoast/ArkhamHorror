@@ -39,6 +39,7 @@ import Arkham.Scenario.Runner as X (
   getMetaKeyDefault,
   locationLayoutL,
   metaL,
+  optionsL,
   push,
   pushAll,
   pushWhen,
@@ -50,6 +51,7 @@ import Arkham.Scenario.Runner as X (
   setMetaKey,
   sideStory,
   standaloneCampaignLogL,
+  startedL,
   tarotDeckL,
  )
 import Arkham.Scenario.Setup as X

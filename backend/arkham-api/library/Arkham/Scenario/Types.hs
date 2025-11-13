@@ -24,6 +24,7 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
+import Arkham.Scenario.Options
 import Arkham.ScenarioLogKey
 import Arkham.Search
 import Arkham.Search qualified as Search
@@ -146,6 +147,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   , scenarioXpBreakdown :: Maybe XpBreakdown
   , scenarioCampaignStep :: Maybe CampaignStep
+  , scenarioOptions :: Maybe ScenarioOptions
   }
   deriving stock (Show, Eq)
 
@@ -333,6 +335,7 @@ scenario f cardCode name difficulty layout =
       , scenarioCampaignStep = Nothing
       , scenarioSearch = Nothing
       , scenarioStarted = False
+      , scenarioOptions = Nothing
       , scenarioScope = toScope $ case T.stripPrefix "Return to " (toTitle name) of
           Just suffix -> suffix
           Nothing -> toTitle name
@@ -457,4 +460,5 @@ instance FromJSON ScenarioAttrs where
     scenarioSearch <- o .:? "search"
     scenarioStarted <- o .:? "started" .!= True
     scenarioScope <- o .:? "scope" .!= "missing"
+    scenarioOptions <- o .:? "options"
     pure ScenarioAttrs {..}

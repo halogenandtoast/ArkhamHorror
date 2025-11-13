@@ -52,6 +52,8 @@ data CampaignLogKey
   | -- | The Midwinter Gala
     TheInvestigatorsSurvivedTheMidwinterGala
   | TheInvestigatorsWereDefeatedAtTheMidwinterGala
+  | -- | Fortune and Folly
+    PracticedRoles
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs

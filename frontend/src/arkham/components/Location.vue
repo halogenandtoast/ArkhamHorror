@@ -684,7 +684,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     width: calc(var(--card-width) * 0.8) !important;
   }
   &:deep(.pool) {
-    width: 200% !important;
     height: fit-content;
     top:1em;
     font-size: .5em;

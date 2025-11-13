@@ -1,18 +1,26 @@
 module Arkham.Story.Cards.TheStakeout (theStakeout) where
 
+import Arkham.Ability
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Modifier (UIModifier (..))
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Import.Lifted
+import Arkham.Story.Import.Lifted hiding (InvestigatorEliminated)
 
 newtype TheStakeout = TheStakeout StoryAttrs
-  deriving anyclass (IsStory, HasAbilities)
+  deriving anyclass IsStory
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStakeout :: StoryCard TheStakeout
 theStakeout = story TheStakeout Cards.theStakeout
+
+instance HasAbilities TheStakeout where
+  getAbilities (TheStakeout a) =
+    [mkAbility a 1 $ forced $ InvestigatorEliminated #when (You <> InvestigatorWithAnyClues)]
 
 instance HasModifiersFor TheStakeout where
   getModifiersFor (TheStakeout a) = do
@@ -33,5 +41,10 @@ instance HasModifiersFor TheStakeout where
 instance RunMessage TheStakeout where
   runMessage msg s@(TheStakeout attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
+      pure s
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      clueCount <- field InvestigatorClues iid
+      discardAllClues (attrs.ability 1) iid
+      placeTokens (attrs.ability 1) attrs #clue clueCount
       pure s
     _ -> TheStakeout <$> liftRunMessage msg attrs

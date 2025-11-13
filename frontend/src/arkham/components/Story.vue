@@ -184,9 +184,22 @@ const hasPool = computed(() => {
 .image-container {
   position: relative;
   isolation: isolate;
+  display: grid;
+  grid-template-areas: "base";
+  place-items: center;
+  place-content: center;
+
+  > .pool {
+    grid-area: base;
+    pointer-events: none;
+  }
+
+  > .card {
+    grid-area: base;
+  }
 }
 
-.civilians, .pool {
+.civilians {
   position: absolute;
   bottom: 0;
   right: 0;

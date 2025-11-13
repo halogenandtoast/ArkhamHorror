@@ -34,7 +34,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Import.Lifted hiding (optionsL)
 import Arkham.Scenario.Types (Scenario (..), victoryDisplayL)
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Trait (Trait (Eidolon, Otherworld, Resolute))

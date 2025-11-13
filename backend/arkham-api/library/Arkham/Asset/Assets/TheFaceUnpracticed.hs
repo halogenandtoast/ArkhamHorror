@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.TheFaceUnpracticed (theFaceUnpracticed) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.SkillTest.Base
@@ -33,5 +33,9 @@ instance RunMessage TheFaceUnpracticed where
       when (attrs.ready && n > 0) do
         exhaustThis attrs
         reduceAlarmLevel (attrs.ability 1) iid
+      pure a
+    InvestigatorEliminated _ -> pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.theFacePracticed
       pure a
     _ -> TheFaceUnpracticed <$> liftRunMessage msg attrs

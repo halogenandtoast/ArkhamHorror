@@ -3,34 +3,44 @@ module Arkham.Scenario.Scenarios.FortuneAndFolly (fortuneAndFolly, fortuneAndFol
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (AssetCardCode))
+import Arkham.Asset.Types (Field (AssetCard, AssetPlacement, AssetCardCode))
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (ScarletKeyTokens))
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (getLead, getPlayerCount)
+import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
+import Arkham.Id
+import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (LocationPrintedSymbol))
+import Arkham.Location.Types (Field (LocationCardsUnderneath, LocationPrintedSymbol))
 import Arkham.LocationSymbol
-import Arkham.Matcher hiding (Discarded, enemyAt)
+import Arkham.Matcher hiding (AssetCard, Discarded, enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Story
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
+import Arkham.Scenario.Options
 import Arkham.Scenario.Types (ScenarioAttrs (..), campaignStepL)
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.Types (Field (StoryClues))
 import Arkham.Token
+import Arkham.Trait (Trait (Role, Unpracticed))
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -150,7 +160,11 @@ instance RunMessage FortuneAndFolly where
     StandaloneSetup -> do
       setChaosTokens $ chaosBag attrs.difficulty
       pure s
-    PreScenarioSetup -> scope "intro" do
+    LoadScenario opts -> do
+      pushAll
+        [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
+      pure $ FortuneAndFolly $ attrs & startedL .~ True & optionsL ?~ opts
+    PreScenarioSetup -> do
       c <- selectOne TheCampaign
       when (isNothing c) do
         push
@@ -185,13 +199,19 @@ instance RunMessage FortuneAndFolly where
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro5"
+      let opts = scenarioOptions attrs `orElse` ScenarioOptions True False
+      pushAll
+        $ [StandaloneSetup | scenarioOptionsStandalone opts]
+        <> [ChooseLeadInvestigator, SetPlayerOrder]
+        <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
+        <> [CheckDestiny, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
       pure s
     DoStep (-1) PreScenarioSetup -> do
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
-        $ Continuation (CheckpointStep 1) False False
-      pure s
+        $ Continuation (ScenarioStep "88001b") False False
+      pure $ FortuneAndFolly $ attrs & setMetaKey "skipped" True
     Setup -> runScenarioSetup FortuneAndFolly attrs do
       gather Set.FortuneAndFolly
       gatherAndSetAside Set.FortunesChosen
@@ -372,25 +392,88 @@ instance RunMessage FortuneAndFolly where
     ScenarioCampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
       story $ i18nWithTitle "thePlan1"
       story $ i18nWithTitle "thePlan3"
+      theStakeout <- selectJust $ storyIs Stories.theStakeout
+      n <- perPlayer 1
+      x <- fieldMap StoryClues (`div` n) theStakeout
+      doStep x msg
+      doStep (-1) msg
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
         $ Continuation (ScenarioStep "88001b") False False
       pure s
+    DoStep (-1) (ScenarioCampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
+      roles <- forMaybeM
+        [ Assets.theFaceUnpracticed
+        , Assets.theMuscleUnpracticed
+        , Assets.theThiefUnpracticed
+        , Assets.theGrifterUnpracticed
+        , Assets.theFacePracticed
+        , Assets.theMusclePracticed
+        , Assets.theThiefPracticed
+        , Assets.theGrifterPracticed
+        ]
+        \card -> runMaybeT do
+          asset <- MaybeT $ selectOne (assetIs card)
+          placement <- lift $ field AssetPlacement asset
+          case placement of
+            InPlayArea iid -> pure (card.cardCode, iid)
+            _ -> mzero
+      alarms <- traverse (traverseToSnd getAlarmLevel) =<< allInvestigators
+      stash <- field LocationCardsUnderneath =<< selectJust (locationIs Locations.casinoFloorCalmNight)
+      cluesOnWellspring <-
+        fieldMap ScarletKeyTokens (countTokens #clue)
+          =<< selectJust (scarletKeyIs Keys.theWellspringOfFortune)
+      pure
+        $ FortuneAndFolly
+        $ attrs
+        & setMetaKey "roles" roles
+        & setMetaKey "alarms" alarms
+        & setMetaKey "stash" stash
+        & setMetaKey "cluesOnWellspring" cluesOnWellspring
+    DoStep n msg'@(ScenarioCampaignStep (CheckpointStep 1)) | n > 0 -> scope "checkpoint1" do
+      alarmLevels <- traverse getAlarmLevel =<< allInvestigators
+      let alarm = any (> 0) alarmLevels
+      roles <- selectWithField AssetCard (AssetWithTrait Role <> AssetWithTrait Unpracticed)
+      when (alarm || notNull roles) do
+        lead <- getLead
+        storyWithChooseOneM' (p "choices") do
+          labeledValidate' alarm "alarm" do
+            eachInvestigator $ reduceAlarmLevel attrs
+            doStep (n - 1) msg'
+          labeledValidate' (notNull roles) "flipRole" do
+            leadChooseOneM do
+              for_ roles \(roleAsset, roleCard) -> do
+                cardLabeled roleCard $ flipOver lead roleAsset
+            doStep (n - 1) msg'
+      pure s
     ScenarioCampaignStep (ScenarioStep "88001b") -> do
-      pushAll [RestartScenario]
+      investigators <- allInvestigators
+      needToRest <-
+        investigators & anyM \iid -> do
+          totalHorror <- field InvestigatorHorror iid
+          totalDamage <- field InvestigatorDamage iid
+          pure $ totalHorror + totalDamage >= 6
+
+      when needToRest $ remember TheInvestigatorsNeedTimeToRest
+
+      pushAll [ResetGame, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
       pure
         $ FortuneAndFolly
         $ attrs {scenarioId = "88001b"}
-        & locationLayoutL
-        .~ part2Layout
-        & campaignStepL
-        .~ Nothing
+        & (locationLayoutL .~ part2Layout)
+        & (campaignStepL .~ Nothing)
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs
 
 instance RunMessage FortuneAndFollyPart2 where
   runMessage msg s@(FortuneAndFollyPart2 fortuneAndFolly'@(FortuneAndFolly attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (FortuneAndFollyPart2 . FortuneAndFolly) attrs do
+      let stash = getMetaKeyDefault @[Card] "stash" [] attrs
+      for_ stash \card -> do
+        for_ card.owner \owner -> do
+          replaceCard card.id card
+          addToHand owner (only card)
+      
       gather Set.FortuneAndFolly
       gatherAndSetAside Set.FortunesChosen
       gatherAndSetAside Set.PlanInShambles
@@ -407,7 +490,9 @@ instance RunMessage FortuneAndFollyPart2 where
       relicRoom <- place Locations.relicRoomSanctumOfFortune
       theWellspringOfFortune <-
         createScarletKeyAt Keys.theWellspringOfFortune (AttachedToLocation relicRoom)
-      placeTokens attrs theWellspringOfFortune Clue =<< perPlayer 7
+
+      clues <- perPlayer 7
+      placeTokens attrs theWellspringOfFortune Clue (getMetaKeyDefault "cluesOnWellspring" clues attrs)
 
       placeAll
         [ Locations.casinoLoungeBusyNight
@@ -436,21 +521,66 @@ instance RunMessage FortuneAndFollyPart2 where
         , Enemies.abarranArrigorriagakoaAbarranUnleashed
         ]
 
-      eachInvestigator \iid -> placeTokens attrs iid AlarmLevel 1
+      let alarms = Map.fromList $ getMetaKeyDefault @[(InvestigatorId, Int)] "alarms" [] attrs
+      eachInvestigator \iid -> placeTokens attrs iid AlarmLevel $ Map.findWithDefault 1 iid alarms
 
-      n <- getPlayerCount
-      if n == 1
+      let roles = getMetaKeyDefault @[(CardCode, InvestigatorId)] "roles" [] attrs
+      if notNull roles
         then do
-          iid <- getLead
-          chooseNM iid 2 do
-            cardsLabeled
+          for_ roles \(roleCardCode, iid) -> do
+            for_ (lookupCardDef roleCardCode) \card -> do
+              createAssetAt_ card (InPlayArea iid)
+        else do
+          n <- getPlayerCount
+          if n == 1
+            then do
+              iid <- getLead
+              chooseNM iid 2 do
+                cardsLabeled
+                  [ Assets.theFaceUnpracticed
+                  , Assets.theMuscleUnpracticed
+                  , Assets.theThiefUnpracticed
+                  , Assets.theGrifterUnpracticed
+                  ]
+                  \card -> createAssetAt_ card (InPlayArea iid)
+            else eachInvestigator (`forInvestigator` msg)
+    ForInvestigator iid Setup -> do
+      inPlayAlready <-
+        selectField AssetCardCode
+          $ mapOneOf
+            assetIs
+            [ Assets.theFaceUnpracticed
+            , Assets.theMuscleUnpracticed
+            , Assets.theThiefUnpracticed
+            , Assets.theGrifterUnpracticed
+            ]
+      chooseOneM iid do
+        cardsLabeled
+          ( filter
+              ((`notElem` inPlayAlready) . toCardCode)
               [ Assets.theFaceUnpracticed
               , Assets.theMuscleUnpracticed
               , Assets.theThiefUnpracticed
               , Assets.theGrifterUnpracticed
               ]
-              \card -> createAssetAt_ card (InPlayArea iid)
-        else eachInvestigator (`forInvestigator` msg)
+          )
+          \card -> createAssetAt_ card (InPlayArea iid)
+
+      pure s
+    SetupInvestigators -> do
+      iids <- allInvestigators
+      pushAll $ map SetupInvestigator iids
+
+      let stash = getMetaKeyDefault @[Card] "stash" [] attrs
+      cards <- forMaybeM stash \card -> do
+        findCard \c -> c.cardCode == card.cardCode && c.owner == card.owner
+
+      for_ cards obtainCard
+      doStep 1 SetupInvestigators
+      pure s
+    DoStep 1 SetupInvestigators -> do
+      push DrawStartingHands
+      pure s
     ScenarioResolution _r -> do
       endOfScenario
       pure s

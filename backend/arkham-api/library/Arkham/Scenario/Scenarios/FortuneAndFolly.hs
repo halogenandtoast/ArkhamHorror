@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.FortuneAndFolly (fortuneAndFolly, fortuneAndFol
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (AssetCard, AssetPlacement, AssetCardCode))
+import Arkham.Asset.Types (Field (AssetCard, AssetCardCode, AssetPlacement))
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
@@ -458,11 +458,26 @@ instance RunMessage FortuneAndFolly where
       when needToRest $ remember TheInvestigatorsNeedTimeToRest
 
       pushAll [ResetGame, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
-      pure
-        $ FortuneAndFolly
-        $ attrs {scenarioId = "88001b"}
-        & (locationLayoutL .~ part2Layout)
-        & (campaignStepL .~ Nothing)
+      pure $ scenarioWith
+        FortuneAndFolly
+        "88001b"
+        (scenarioName attrs)
+        (scenarioDifficulty attrs)
+        part2Layout
+        \s' ->
+          s'
+            { scenarioStandaloneCampaignLog = scenarioStandaloneCampaignLog attrs
+            , scenarioChaosBag = scenarioChaosBag attrs
+            , scenarioMeta = scenarioMeta attrs
+            , scenarioStoryCards = scenarioStoryCards attrs
+            , scenarioPlayerDecks = scenarioPlayerDecks attrs
+            , scenarioTarotCards = scenarioTarotCards attrs
+            , scenarioTarotDeck = scenarioTarotDeck attrs
+            , scenarioIsSideStory = scenarioIsSideStory attrs
+            , scenarioXpBreakdown = scenarioXpBreakdown attrs
+            , scenarioOptions = scenarioOptions attrs
+            , scenarioLog = scenarioLog attrs
+            }
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs
 
 instance RunMessage FortuneAndFollyPart2 where
@@ -473,7 +488,7 @@ instance RunMessage FortuneAndFollyPart2 where
         for_ card.owner \owner -> do
           replaceCard card.id card
           addToHand owner (only card)
-      
+
       gather Set.FortuneAndFolly
       gatherAndSetAside Set.FortunesChosen
       gatherAndSetAside Set.PlanInShambles
@@ -484,7 +499,7 @@ instance RunMessage FortuneAndFollyPart2 where
       startAt =<< place Locations.casinoFloorBusyNight
 
       vaultDoor <- place Locations.vaultDoor
-      theHeist <- genCard Stories.theStakeout
+      theHeist <- genCard Stories.theHeist
       push $ PlaceStory theHeist (AtLocation vaultDoor)
 
       relicRoom <- place Locations.relicRoomSanctumOfFortune
@@ -494,9 +509,24 @@ instance RunMessage FortuneAndFollyPart2 where
       clues <- perPlayer 7
       placeTokens attrs theWellspringOfFortune Clue (getMetaKeyDefault "cluesOnWellspring" clues attrs)
 
+      casinoLounge <- place Locations.casinoLoungeBusyNight
+      convinced <- remembered ConvincedIsamaraToParticipateInTheHeist
+      when convinced do
+        assetAt_ Assets.isamaraOrdonezLoungeSingerCrew casinoLounge
+
+      highRollersTable <- place Locations.highRollersTableBusyNight
+      cleanedOutTheHouse <- remembered CleanedOutTheHouse
+      when cleanedOutTheHouse do
+        assetAt_ Assets.cashCart highRollersTable
+
+      (`enemyAt_` highRollersTable)
+        =<< sampleOneOf (Enemies.casinoGuardA :| [Enemies.casinoGuardB, Enemies.casinoGuardC])
+
+      (`enemyAt_` casinoLounge)
+        =<< sampleOneOf (Enemies.securityPatrolA :| [Enemies.securityPatrolB, Enemies.securityPatrolC])
+
       placeAll
-        [ Locations.casinoLoungeBusyNight
-        , Locations.pokerTable
+        [ Locations.pokerTable
         , Locations.slotMachines
         , Locations.staffAccessHallway
         , Locations.securityOffice
@@ -504,22 +534,22 @@ instance RunMessage FortuneAndFollyPart2 where
         , Locations.ownersOffice
         , Locations.countingRoom
         , Locations.baccaratTable
-        , Locations.highRollersTableBusyNight
         , Locations.rouletteWheel
         ]
 
       setAside
-        [ Agendas.theHouseAlwaysWatches
-        , Acts.casingTheJoint
-        , Stories.fortunesDisfavor25
-        , Stories.fortunesDisfavor26
-        , Stories.fortunesDisfavor27
-        , Stories.packageDelivery
-        , Assets.cashCart
-        , Assets.deckOfPossibilitiesTychokineticImplement
-        , Assets.isamaraOrdonezTheTorchSinger
-        , Enemies.abarranArrigorriagakoaAbarranUnleashed
-        ]
+        $ [ Agendas.theHouseAlwaysWatches
+          , Acts.casingTheJoint
+          , Stories.fortunesDisfavor25
+          , Stories.fortunesDisfavor26
+          , Stories.fortunesDisfavor27
+          , Stories.packageDelivery
+          , Assets.deckOfPossibilitiesTychokineticImplement
+          , Assets.isamaraOrdonezTheTorchSinger
+          , Enemies.abarranArrigorriagakoaAbarranUnleashed
+          ]
+        <> [Assets.isamaraOrdonezLoungeSingerCrew | not convinced]
+        <> [Assets.cashCart | not cleanedOutTheHouse]
 
       let alarms = Map.fromList $ getMetaKeyDefault @[(InvestigatorId, Int)] "alarms" [] attrs
       eachInvestigator \iid -> placeTokens attrs iid AlarmLevel $ Map.findWithDefault 1 iid alarms

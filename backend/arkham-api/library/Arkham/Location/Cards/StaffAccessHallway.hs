@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.StaffAccessHallway (staffAccessHallway) where
 
 import Arkham.Ability
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -28,5 +29,6 @@ instance RunMessage StaffAccessHallway where
   runMessage msg l@(StaffAccessHallway attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       createEnemyAtLocationMatching_ Enemies.abarranArrigorriagakoaAbarranUnleashed "Owner's Office"
+      shuffleSetAsideIntoEncounterDeck Set.FortunesChosen
       pure l
     _ -> StaffAccessHallway <$> liftRunMessage msg attrs

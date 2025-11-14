@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Enemy where
 
 import Arkham.Asset.Types (Field (..))
@@ -127,9 +129,10 @@ noSpawn attrs miid = do
 
 getModifiedDamageAmount :: (HasGame m, Targetable target) => target -> DamageAssignment -> m Int
 getModifiedDamageAmount target damageAssignment = do
-  modifiers' <- getModifiers target
+  modifiers' <- traceShowId <$> getModifiers target
   updatedAmount <- foldrM applyModifier amount modifiers'
-  pure $ foldr applyModifierCaps updatedAmount modifiers'
+  updatedAmount' <- foldrM applyAfterModifier updatedAmount modifiers'
+  pure $ foldr applyModifierCaps updatedAmount' modifiers'
  where
   direct = damageAssignmentDirect damageAssignment
   amount = damageAssignmentAmount damageAssignment
@@ -137,8 +140,10 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifier (Modifier.DamageTakenFrom effect m) n | not direct = do
     match <- damageEffectMatches damageEffect effect
     pure $ if match then max 0 (n + m) else n
-  applyModifier (Modifier.DamageTaken m) n | not direct = pure $ max 0 (n + m)
+  applyModifier (Modifier.DamageTaken m) n | not direct && m > 0 = pure $ max 0 (n + m)
   applyModifier _ n = pure n
+  applyAfterModifier (Modifier.DamageTaken m) n | not direct && m < 0 = pure $ max 0 (n + m)
+  applyAfterModifier _ n = pure n
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 

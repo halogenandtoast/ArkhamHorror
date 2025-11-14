@@ -2292,6 +2292,10 @@ cardDrawModifier
   => CardDrawId -> source -> target -> ModifierType -> m ()
 cardDrawModifier cid source target modifier = Msg.pushM $ Msg.cardDrawModifier cid source target modifier
 
+damageModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+damageModifier source target modifier = Msg.pushM $ Msg.damageModifier source target modifier
+
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 enemyAttackModifier source target modifier = Msg.pushM $ Msg.enemyAttackModifier source target modifier

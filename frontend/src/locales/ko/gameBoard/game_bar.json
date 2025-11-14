@@ -48,6 +48,6 @@
     "bugSubmittingTitle": "버그를 제출하는 데 몇 분 정도 걸릴 수 있습니다. 잠시만 기다려주세요...",
     "bugSubmittingContent": "이 프로세스가 완료되면 새 창에서 GitHub가 열리고 게임을 다시 시작할 수 있습니다.",
     "bugSubmittingFail": "버그를 제출할 수 없습니다.",
-
-    "toggleSidebar": "측면 표시줄 전환"
+    "toggleSidebar": "측면 표시줄 전환",
+    "rotateLayout": "장소 배열 회전"
 }

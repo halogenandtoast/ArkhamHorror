@@ -5465,6 +5465,7 @@ instance Projection Story where
       StoryCard -> getCard storyCardId
       StoryPlacement -> pure storyPlacement
       StoryClues -> pure $ Token.countTokens Token.Clue storyTokens
+      StoryTokens -> pure storyTokens
       StoryOtherSide -> pure storyOtherSide
       StoryCardsUnderneath -> pure storyCardsUnderneath
 

@@ -7,8 +7,12 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.FortuneAndFolly.Helpers
+import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.Types (Field (StoryTokens))
+import Arkham.Token
 import Arkham.Trait (Trait (Casino))
 
 newtype TheHouseAlwaysWatches = TheHouseAlwaysWatches AgendaAttrs
@@ -37,8 +41,10 @@ instance RunMessage TheHouseAlwaysWatches where
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       resources <- selectSum InvestigatorResources Anyone
+      eliminatedResources <-
+        fieldMap StoryTokens (countTokens #resource) =<< selectJust (storyIs Stories.theStakeout)
       n <- perPlayer 10
-      when (resources >= n) $ remember CleanedOutTheHouse
+      when (resources + eliminatedResources >= n) $ remember CleanedOutTheHouse
       push R1
       pure a
     _ -> TheHouseAlwaysWatches <$> liftRunMessage msg attrs

@@ -90,10 +90,11 @@ const abilities = computed(() => {
 
 const clues = computed(() => props.story.tokens[TokenType.Clue])
 const horror = computed(() => props.story.tokens[TokenType.Horror])
+const resources = computed(() => props.story.tokens[TokenType.Resource])
 const civilians = computed(() => props.story.tokens[TokenType.Civilian])
 
 const hasPool = computed(() => {
-  return (clues.value && clues.value > 0) || (horror.value && horror.value > 0)
+  return (clues.value && clues.value > 0) || (horror.value && horror.value > 0) || (resources.value && resources.value > 0)
 })
 </script>
 
@@ -111,6 +112,7 @@ const hasPool = computed(() => {
         <div class="pool" v-if="hasPool">
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
+          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
         </div>
         <PoolItem class="civilians" v-if="civilians" type="resource" :amount="civilians" />
       </div>

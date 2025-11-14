@@ -66,6 +66,7 @@ export type ModifierType
   | DoubleSuccess
   | HandSizeCardCount
   | HandSize
+  | ScenarioModifierValue
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -86,6 +87,11 @@ export type ScenarioModifier = {
 export type HandSize = {
   tag: "HandSize"
   contents: number
+}
+
+export type ScenarioModifierValue = {
+  tag: "ScenarioModifierValue"
+  contents: [string, any]
 }
 
 export type HandSizeCardCount = {
@@ -253,6 +259,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('ScenarioModifier'),
       contents: JsonDecoder.string()
     }, 'ScenarioModifier'),
+  JsonDecoder.object<ScenarioModifierValue>(
+    {
+      tag: JsonDecoder.literal('ScenarioModifierValue'),
+      contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed()], 'ScenarioModifierValue')
+    }, 'ScenarioModifierValue'),
   JsonDecoder.object<HandSizeCardCount>(
     {
       tag: JsonDecoder.literal('HandSizeCardCount'),

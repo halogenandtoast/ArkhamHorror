@@ -5,7 +5,10 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Trait (Trait (Game))
 
@@ -39,6 +42,15 @@ instance RunMessage TheTake where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      mabbaran <- selectOne $ InPlayEnemy $ enemyIs Enemies.abarranArrigorriagakoaAbarranUnleashed
+      case mabbaran of
+        Just abbaran -> enemyMoveTo attrs abbaran =<< getJustLocationByName "Relic Room"
+        Nothing -> eachInvestigator \iid -> do
+          sid <- getRandom
+          beginSkillTest sid iid attrs iid #agility (Fixed 3)
       advanceActDeck attrs
+      pure a
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignDamage iid attrs 2
       pure a
     _ -> TheTake <$> liftRunMessage msg attrs

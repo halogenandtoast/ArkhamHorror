@@ -283,6 +283,7 @@ const health = ds('health')
 const evade = ds('evade')
 const victory = ds('victory')
 const keywords = ds('keywords')
+const playingCardOverlay = ds('pc')
 const swarm = dsMap('swarm', v => v === 'true')
 
 const depth = computed<number | null>(() => {
@@ -783,12 +784,19 @@ watchEffect(() => {
         :style="`width:${svgWidth}px;height:${svgHeight}px`"
         preserveAspectRatio="xMidYMid meet"
       >
-        <g :transform="groupTransform">
+        <g :transform="groupTransform" :data-pc="playingCardOverlay">
           <image
             :href="card"
             x="0" y="0"
             :width="sideways ? viewH : VIEW_W"
             :height="sideways ? VIEW_W : viewH"
+          />
+          <image
+            v-if="playingCardOverlay"
+            :href="playingCardOverlay"
+            class="playing-card-overlay"
+            x="25" y="30"
+            width="160"
           />
           <image
             v-if="overlay"

@@ -319,7 +319,7 @@ instance RunMessage FortuneAndFolly where
         labeled' "elderThing.alarm" do
           raiseAlarmLevel ElderThing [iid]
           passSkillTest
-        skip_
+        unscoped skip_
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
@@ -346,12 +346,15 @@ instance RunMessage FortuneAndFolly where
       let toFind = params.n - length pcs
       if toFind == 0
         then do
-          if params.mulligan == CanMulligan
-            then scenarioSpecific "mulligan" params {mulligan = NoMulligan}
+          if params.mulligan /= NoMulligan
+            then scenarioSpecific "mulligan" params {mulligan = decrementMulligan params.mulligan}
             else do
               case params.target of
                 EnemyTarget _ -> pure ()
-                _ -> checkWhen $ Window.ScenarioEvent "checkGameIcons" (Just params.investigator) (toJSON params)
+                _ ->
+                  focusCards params.cards
+                    $ checkWhen
+                    $ Window.ScenarioEvent "checkGameIcons" (Just params.investigator) (toJSON params)
               push $ DiscardedCards params.investigator ScenarioSource params.target $ toCard <$> params.cards
           pure attrs
         else case attrs.encounterDeck of
@@ -466,7 +469,8 @@ instance RunMessage FortuneAndFolly where
         part2Layout
         \s' ->
           s'
-            { scenarioStandaloneCampaignLog = scenarioStandaloneCampaignLog attrs
+            { scenarioReference = scenarioReference attrs
+            , scenarioStandaloneCampaignLog = scenarioStandaloneCampaignLog attrs
             , scenarioChaosBag = scenarioChaosBag attrs
             , scenarioMeta = scenarioMeta attrs
             , scenarioStoryCards = scenarioStoryCards attrs

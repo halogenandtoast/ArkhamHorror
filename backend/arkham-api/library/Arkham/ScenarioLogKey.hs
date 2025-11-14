@@ -108,6 +108,7 @@ data ScenarioLogKey
   | DeliveredADecoyPackage
   | IsamaraMesmerizedTheGuardsWithHerSong
   | TheInvestigatorsNeedTimeToRest
+  | TheVentIsOpen
   | -- | Film Fatale
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards

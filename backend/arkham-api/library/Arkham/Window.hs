@@ -200,6 +200,7 @@ data WindowType
   | EnemyDefeated (Maybe InvestigatorId) DefeatedBy EnemyId
   | IfEnemyDefeated (Maybe InvestigatorId) DefeatedBy EnemyId
   | EnemyEngaged InvestigatorId EnemyId
+  | EnemyWouldEngage InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId

@@ -16,7 +16,7 @@ instance RunMessage SilentStirring where
   runMessage msg a@(SilentStirring attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleEncounterDiscardBackIn
-      raiseAlarmLevel attrs =<< allInvestigators
+      raiseAlarmLevel attrs =<< getInvestigators
       advanceAgendaDeck attrs
       pure a
     _ -> SilentStirring <$> liftRunMessage msg attrs

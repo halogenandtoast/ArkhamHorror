@@ -2,7 +2,7 @@ module Arkham.Story.Cards.PackageDelivery (packageDelivery) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.Query (allInvestigators, getJustLocationByName)
+import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
 import Arkham.Location.Types (Field (LocationCardsUnderneath))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -39,7 +39,7 @@ instance RunMessage PackageDelivery where
       pure s
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       remember DeliveredADecoyPackage
-      investigators <- allInvestigators
+      investigators <- getInvestigators
       leadChooseOneM do
         portraits investigators \iid ->
           search
@@ -58,7 +58,9 @@ instance RunMessage PackageDelivery where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       vaultDoor <- getJustLocationByName "Vault Door"
       cards <- field LocationCardsUnderneath vaultDoor
-      for_ cards $ putCardIntoPlay iid
+      for_ cards \card -> do
+        obtainCard card
+        putCardIntoPlay iid card
       removeStory attrs
       pure s
     SearchFound iid (isTarget attrs -> True) _ cards -> do

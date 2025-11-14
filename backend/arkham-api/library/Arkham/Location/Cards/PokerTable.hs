@@ -20,7 +20,7 @@ instance HasAbilities PokerTable where
 instance RunMessage PokerTable where
   runMessage msg l@(PokerTable attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      checkGameIcons attrs iid CanMulligan 5
+      checkGameIcons attrs iid (CanMulligan 1) 5
       pure l
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
       cards' <- cards & mapMaybeM \c -> (c,) <$$> toPlayingCard c

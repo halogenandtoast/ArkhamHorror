@@ -20,7 +20,7 @@ theStakeout = story TheStakeout Cards.theStakeout
 
 instance HasAbilities TheStakeout where
   getAbilities (TheStakeout a) =
-    [mkAbility a 1 $ forced $ InvestigatorEliminated #when (You <> InvestigatorWithAnyClues)]
+    [mkAbility a 1 $ forced $ InvestigatorEliminated #when (You <> oneOf [InvestigatorWithAnyClues, InvestigatorWithResources (atLeast 1)])]
 
 instance HasModifiersFor TheStakeout where
   getModifiersFor (TheStakeout a) = do
@@ -44,7 +44,9 @@ instance RunMessage TheStakeout where
       pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       clueCount <- field InvestigatorClues iid
+      resourceCount <- field InvestigatorResources iid
       discardAllClues (attrs.ability 1) iid
       placeTokens (attrs.ability 1) attrs #clue clueCount
+      placeTokens (attrs.ability 1) attrs #resource resourceCount
       pure s
     _ -> TheStakeout <$> liftRunMessage msg attrs

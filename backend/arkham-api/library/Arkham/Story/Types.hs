@@ -43,6 +43,7 @@ type StoryCard a = CardBuilder (Maybe Target, StoryId) a
 data instance Field Story :: Type -> Type where
   StoryCard :: Field Story Card
   StoryClues :: Field Story Int
+  StoryTokens :: Field Story Tokens
   StoryPlacement :: Field Story Placement
   StoryOtherSide :: Field Story (Maybe Target)
   StoryCardsUnderneath :: Field Story [Card]

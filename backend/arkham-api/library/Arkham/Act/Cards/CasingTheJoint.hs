@@ -10,7 +10,11 @@ import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Story.Cards qualified as Stories
+import Arkham.Story.Types (Field (StoryTokens))
+import Arkham.Token
 import Arkham.Trait (Trait (Game))
 
 newtype CasingTheJoint = CasingTheJoint ActAttrs
@@ -42,8 +46,10 @@ instance RunMessage CasingTheJoint where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       resources <- selectSum InvestigatorResources Anyone
+      eliminatedResources <-
+        fieldMap StoryTokens (countTokens #resource) =<< selectJust (storyIs Stories.theStakeout)
       n <- perPlayer 10
-      when (resources >= n) $ remember CleanedOutTheHouse
+      when (resources + eliminatedResources >= n) $ remember CleanedOutTheHouse
       push R2
       pure a
     _ -> CasingTheJoint <$> liftRunMessage msg attrs

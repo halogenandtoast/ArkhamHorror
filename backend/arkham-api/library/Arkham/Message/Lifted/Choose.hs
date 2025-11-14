@@ -329,7 +329,12 @@ clueLabeled iid action = unterminated do
 cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
 cardLabeled a action = unterminated do
   msgs <- lift $ capture action
-  tell [CardLabel (toCardCode a) msgs]
+  tell [CardLabel (toCardCode a) False msgs]
+
+flippableCardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
+flippableCardLabeled a action = unterminated do
+  msgs <- lift $ capture action
+  tell [CardLabel (toCardCode a) True msgs]
 
 keyLabeled :: ReverseQueue m => ArkhamKey -> QueueT Message m () -> ChooseT m ()
 keyLabeled a action = unterminated do

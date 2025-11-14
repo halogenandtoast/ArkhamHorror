@@ -66,7 +66,7 @@ data UI msg
   = Label {label :: Text, messages :: [msg]}
   | InvalidLabel {label :: Text}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}
-  | CardLabel {cardCode :: CardCode, messages :: [msg]}
+  | CardLabel {cardCode :: CardCode, flippable :: Bool, messages :: [msg]}
   | KeyLabel {key :: ArkhamKey, messages :: [msg]}
   | PortraitLabel {investigatorId :: InvestigatorId, messages :: [msg]}
   | TargetLabel {target :: Target, messages :: [msg]}
@@ -263,7 +263,20 @@ concat
         parseJSON (Object o) = $(mkParseJSON defaultOptions ''ReadChoices) (Object o)
         parseJSON other = fail $ "Unexpected json type: " <> show other
       |]
-  , deriveJSON defaultOptions ''UI
+  , deriveToJSON defaultOptions ''UI
+  , [d|
+      instance FromJSON msg => FromJSON (UI msg) where
+        parseJSON (Object o) = do
+          tag :: Text <- o .: "tag"
+          case tag of
+            "CardLabeled" -> do
+              cardCode <- o .: "cardCode"
+              flippable <- o .:? "flippable" .!= False
+              messages <- o .: "messages"
+              pure $ CardLabel {..}
+            _ -> $(mkParseJSON defaultOptions ''UI) (Object o)
+        parseJSON other = $(mkParseJSON defaultOptions ''UI) other
+      |]
   , deriveToJSON defaultOptions ''Question
   , [d|
       instance FromJSON msg => FromJSON (Question msg) where

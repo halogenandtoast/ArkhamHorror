@@ -428,6 +428,22 @@ const cardPiles = computed(() => {
     return choice.tag === "CardPile" ? [{pile: choice.pile, index}] : []
   })
 })
+
+const flippableCard = (cardCode: string) => {
+  return {
+    cardCode,
+    doubleSided: true,
+    classSymbols: [],
+    cardType: 'UnknownType',
+    art: cardCode.replace('c', ''),
+    level: 0,
+    traits: [],
+    name: "",
+    skills: [],
+    cost: null,
+    otherSide: `${cardCode}b`
+  }
+}
 </script>
 
 <template>
@@ -444,7 +460,8 @@ const cardPiles = computed(() => {
 
     <div v-if="cardLabels.length > 0" class="cardLabels">
       <template v-for="{choice, index} in cardLabels" :key="index">
-        <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
+        <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
+        <img v-else class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
       </template>
     </div>
 
@@ -716,6 +733,9 @@ section {
     max-width: 100%;
     font-size: 1.2em;
     text-justify: inter-character;
+  }
+  &:deep(.resolution) {
+    padding: 40px;
   }
   &:has(.resolution) {
     background: #BAA898;

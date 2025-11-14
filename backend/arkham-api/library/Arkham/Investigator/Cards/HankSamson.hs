@@ -70,7 +70,7 @@ instance RunMessage HankSamson where
           _ -> False
       pushWhenM (canHaveHorrorHealed attrs iid) $ HealHorror (toTarget iid) (toSource attrs) 5
       pushWhenM (canHaveDamageHealed attrs iid) $ HealDamage (toTarget iid) (toSource attrs) 5
-      chooseOne iid [CardLabel "10016a" [DoStep 1 msg], CardLabel "10016b" [DoStep 2 msg]]
+      chooseOne iid [CardLabel "10016a" False [DoStep 1 msg], CardLabel "10016b" False [DoStep 2 msg]]
       pure
         . HankSamson
         $ attrs {investigatorAssignedHealthDamage = 0, investigatorAssignedSanityDamage = 0}

@@ -367,7 +367,7 @@ instance RunMessage FortuneAndFolly where
             checkAfter $ Window.Discarded (Just params.investigator) ScenarioSource (toCard card)
             push $ ScenarioSpecific "checkGameIcons" $ toJSON params {cards = card : params.cards}
             pure $ attrs & encounterDeckL .~ Deck deck & discardL %~ (card :)
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "part1.resolutions" do
       case r of
         NoResolution -> do
           resolution "noResolution"
@@ -442,9 +442,9 @@ instance RunMessage FortuneAndFolly where
             eachInvestigator $ reduceAlarmLevel attrs
             doStep (n - 1) msg'
           labeledValidate' (notNull roles) "flipRole" do
-            leadChooseOneM do
+            storyWithChooseOneM' (p.basic "chooseRoleToFlip") do
               for_ roles \(roleAsset, roleCard) -> do
-                cardLabeled roleCard $ flipOver lead roleAsset
+                flippableCardLabeled roleCard $ flipOver lead roleAsset
             doStep (n - 1) msg'
       pure s
     ScenarioCampaignStep (ScenarioStep "88001b") -> do

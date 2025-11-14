@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
+import type { Modifier } from '@/arkham/types/Modifier';
 import { TokenType } from '@/arkham/types/Token';
 import type { Card, CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
@@ -137,15 +138,41 @@ const forceSideways = computed(() => {
   return false
 })
 
+const modifiers = computed(() => {
+  return props.game.modifiers.reduce<Modifier[]>((acc, [target, ms]) => {
+    if (target.tag === 'CardCodeTarget' && target.contents === cardContents.value.cardCode) {
+      return [...acc, ...ms]
+    }
+    return acc
+  }, [])
+})
+
+const modifiedPlayingCard = computed(() => {
+  const playingCardModifier = modifiers.value.find(m => m.type.tag === 'ScenarioModifierValue' && m.type.contents[0] === 'setPlayingCard')
+  if (playingCardModifier && playingCardModifier.type.tag === 'ScenarioModifierValue') {
+    const playingCard = playingCardModifier.type.contents[1]
+    if (!playingCard) return
+    return imgsrc(`playing-cards/${playingCard.rank}-${playingCard.suit}.png`)
+  }
+  return null
+
+})
+
 </script>
 
 <template>
   <div class="card-container" :data-index="id">
     <img
+      v-if="modifiedPlayingCard"
+      :src="modifiedPlayingCard"
+      class="playing-card-overlay"
+    />
+    <img
       :class="{'card--can-interact': cardAction !== -1, 'sideways': forceSideways}"
       class="card"
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"
+      :data-pc="modifiedPlayingCard ? modifiedPlayingCard : null"
       @click="emit('choose', cardAction)"
     />
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">{{$t('card.vengeance', {value: 1})}}</span>
@@ -179,6 +206,16 @@ const forceSideways = computed(() => {
   border-radius: 6px;
   margin: 2px;
   display: inline-block;
+}
+
+.playing-card-overlay {
+  width: calc(var(--card-width) * 0.3);
+  position: absolute;
+  top: 1%;
+  left: 1%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.23), 0 2px 4px rgba(0,0,0,0.53);
 }
 
 .card--can-interact {

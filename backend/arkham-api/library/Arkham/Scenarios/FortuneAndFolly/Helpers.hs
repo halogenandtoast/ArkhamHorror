@@ -29,6 +29,7 @@ import Arkham.Window
 import Data.Aeson.TH
 import Data.Function (on)
 import Data.Monoid (First (..))
+import GHC.Records
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "fortuneAndFolly" a
@@ -54,8 +55,12 @@ data CheckGameIcons = CheckGameIcons
   }
   deriving stock (Eq, Show)
 
-data Mulligan = CanMulligan | NoMulligan
+data Mulligan = CanMulligan Int | NoMulligan
   deriving stock (Eq, Show)
+
+decrementMulligan :: Mulligan -> Mulligan
+decrementMulligan (CanMulligan n) | n > 1 = CanMulligan (n -1)
+decrementMulligan _ = NoMulligan
 
 foldMap (deriveJSON defaultOptions) [''Mulligan, ''Rank, ''Suit, ''PlayingCard, ''CheckGameIcons]
 
@@ -154,6 +159,9 @@ numericValue pc = case pc.rank of
   Queen -> 10
   King -> 10
   Ace -> 10
+
+instance HasField "value" PlayingCard Int where
+  getField = numericValue
 
 winGame
   :: (HasGameLogger m, ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()

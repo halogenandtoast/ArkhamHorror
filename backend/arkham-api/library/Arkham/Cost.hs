@@ -27,6 +27,7 @@ import Arkham.Key
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Scenario.Deck
+import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
@@ -180,6 +181,7 @@ data Cost
   | CostWhenTreacheryElse TreacheryMatcher Cost Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost
+  | CostIfRemembered ScenarioLogKey Cost Cost
   | UpTo GameCalculation Cost
   | AtLeastOne GameCalculation Cost
   | SealCost ChaosTokenMatcher
@@ -286,6 +288,7 @@ displayCostType = \case
   CostWhenTreacheryElse _ _ c -> displayCostType c
   CostIfEnemy _ _ c -> displayCostType c
   CostIfCustomization _ _ c -> displayCostType c
+  CostIfRemembered _ _ c -> displayCostType c
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddFrostTokenCost n -> "Add " <> tshow n <> " {frost} " <> pluralize n "token" <> "to the chaos bag"

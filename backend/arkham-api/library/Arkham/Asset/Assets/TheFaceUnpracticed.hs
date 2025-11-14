@@ -3,6 +3,8 @@ module Arkham.Asset.Assets.TheFaceUnpracticed (theFaceUnpracticed) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Query (getInvestigators)
+import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.FortuneAndFolly.Helpers
@@ -29,10 +31,13 @@ instance RunMessage TheFaceUnpracticed where
         chooseBeginSkillTestEdit sid iid (attrs.ability 1) enemy [#willpower, #intellect] (Fixed 3) \st -> st {skillTestAction = Just #parley}
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      n <- getAlarmLevel iid
-      when (attrs.ready && n > 0) do
-        exhaustThis attrs
-        reduceAlarmLevel (attrs.ability 1) iid
+      investigators <- getInvestigators >>= filterM \iid' -> (> 0) <$> getAlarmLevel iid'
+      when (attrs.ready && notNull investigators) do
+        chooseOneM iid $ withI18n do
+          targets investigators \iid' -> do
+            exhaustThis attrs
+            reduceAlarmLevel (attrs.ability 1) iid'
+          skip_
       pure a
     InvestigatorEliminated _ -> pure a
     Flip _ _ (isTarget attrs -> True) -> do

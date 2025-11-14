@@ -18,20 +18,21 @@ newtype CasinoFloorBusyNight = CasinoFloorBusyNight LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 casinoFloorBusyNight :: LocationCard CasinoFloorBusyNight
-casinoFloorBusyNight = symbolLabel $ location CasinoFloorBusyNight Cards.casinoFloorBusyNight 0 (Static 0)
+casinoFloorBusyNight = symbolLabel $ location CasinoFloorBusyNight Cards.casinoFloorBusyNight 2 (Static 0)
 
 instance HasAbilities CasinoFloorBusyNight where
   getAbilities (CasinoFloorBusyNight a) =
     extendRevealed
       a
       [ scenarioI18n $ withI18nTooltip "casinoFloorBusyNight.resign" $ locationResignAction a
-      , restricted
-          a
-          1
-          ( Here
-              <> Remembered ImpersonatedAHighRoller
-              <> youExist (HasTokens AlarmLevel $ LessThanOrEqualTo $ Static 6)
-          )
+      , groupLimit PerGame
+          $ restricted
+            a
+            1
+            ( Here
+                <> Remembered ImpersonatedAHighRoller
+                <> youExist (HasTokens AlarmLevel $ LessThanOrEqualTo $ Static 6)
+            )
           $ actionAbilityWithCost (ResourceCost 2)
       ]
 

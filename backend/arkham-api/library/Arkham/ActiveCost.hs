@@ -45,6 +45,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Game
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Log
 import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -308,6 +309,9 @@ payCost msg c iid skipAdditionalCosts cost = do
     CostIfEnemy mtchr cost1 cost2 -> do
       hasEnemy <- selectAny mtchr
       payCost msg c iid skipAdditionalCosts $ if hasEnemy then cost1 else cost2
+    CostIfRemembered skey cost1 cost2 -> do
+      ok <- remembered skey
+      payCost msg c iid skipAdditionalCosts $ if ok then cost1 else cost2
     CostWhenEnemy mtchr cost' -> do
       hasEnemy <- selectAny mtchr
       if hasEnemy

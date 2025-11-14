@@ -1,6 +1,6 @@
 module Arkham.Story.Cards.OffTheGalley (offTheGalley) where
 
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -31,7 +31,7 @@ instance RunMessage OffTheGalley where
           for_ investigators $ \iid ->
             moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
         else do
-          raiseAlarmLevel attrs =<< allInvestigators
+          raiseAlarmLevel attrs =<< getInvestigators
           eachInvestigator $ \iid ->
             moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
           for_ enemies $ \eid -> enemyMoveTo attrs eid moonForest

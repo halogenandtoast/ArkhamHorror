@@ -1757,6 +1757,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
+    Matcher.EnemyWouldEngage timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyWouldEngage who enemyId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
+            ]
+        _ -> noMatch
     Matcher.MythosStep mythosStepMatcher -> guardTiming #when $ \case
       Window.AllDrawEncounterCard ->
         pure $ mythosStepMatcher == Matcher.WhenAllDrawEncounterCard

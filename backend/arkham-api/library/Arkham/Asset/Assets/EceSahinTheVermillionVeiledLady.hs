@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -29,7 +29,7 @@ instance HasAbilities EceSahinTheVermillionVeiledLady where
 instance RunMessage EceSahinTheVermillionVeiledLady where
   runMessage msg a@(EceSahinTheVermillionVeiledLady attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- allInvestigators
+      investigators <- getInvestigators
       chooseTargetM iid investigators \iid' ->
         lookAt
           iid

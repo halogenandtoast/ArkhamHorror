@@ -23,6 +23,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
 import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (getSpendableClueCount)
+import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
@@ -189,6 +190,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       CostWhenTreacheryElse mtchr c1 c2 -> do
         hasTreachery <- selectAny mtchr
         getCanAffordCost_ iid source actions windows' canModify $ if hasTreachery then c1 else c2
+      CostIfRemembered skey c1 c2 -> do
+        ok <- remembered skey
+        getCanAffordCost_ iid source actions windows' canModify $ if ok then c1 else c2
       CostIfEnemy mtchr c1 c2 -> do
         hasEnemy <- selectAny mtchr
         getCanAffordCost_ iid source actions windows' canModify $ if hasEnemy then c1 else c2

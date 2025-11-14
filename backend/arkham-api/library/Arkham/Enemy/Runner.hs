@@ -607,11 +607,10 @@ instance RunMessage EnemyAttrs where
               $ maybeToList mRunWouldMove
               <> [EnemyEntered eid lid, Do msg]
               <> leaveWindows
-              <> [afterWindow]
+              <> [afterWindow, EnemyCheckEngagement eid]
           else push (EnemyCheckEngagement eid)
         pure a
     Do (EnemyMove eid lid) | eid == enemyId -> do
-      push (EnemyCheckEngagement eid)
       pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     BeginRoundWindow | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
@@ -1596,14 +1595,22 @@ instance RunMessage EnemyAttrs where
                 maybe (pure False) (\loc -> (enemyLocation == Just loc ||) <$> canEnterLocation enemyId loc) mlid
 
               when (not massive && canEnter) do
-                pushAll
-                  $ [before, PlaceEnemy eid (InThreatArea iid)]
-                  <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
-                  <> [after]
+                Lifted.batched \_ -> do
+                  Lifted.checkWhen $ Window.EnemyWouldEngage iid eid
+                  Lifted.do_ msg
+      pure a
+    Do (EngageEnemy iid eid _mTarget False) | eid == enemyId -> do
+      let (before, _, after) = frame (Window.EnemyEngaged iid eid)
+      mlid <- getMaybeLocation iid
+      enemyLocation <- field EnemyLocation eid
+      pushAll
+        $ [before, PlaceEnemy eid (InThreatArea iid)]
+        <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
+        <> [after]
 
-                selectEach (SwarmOf eid) \s -> do
-                  let (sbefore, _, safter) = frame (Window.EnemyEngaged iid s)
-                  pushAll [sbefore, safter]
+      selectEach (SwarmOf eid) \s -> do
+        let (sbefore, _, safter) = frame (Window.EnemyEngaged iid s)
+        pushAll [sbefore, safter]
       pure a
     WhenWillEnterLocation iid lid -> do
       case enemyPlacement of
@@ -1823,6 +1830,18 @@ instance RunMessage EnemyAttrs where
     PlaceReferenceCard (isTarget a -> True) cardCode -> do
       pure $ a & referenceCardsL %~ (cardCode :)
     PlaceEnemy eid placement | eid == enemyId -> do
+      mods <- getModifiers a
+      let cannotEngage = [x | CannotEngage x <- mods]
+      let handlePlacement placement' = do
+            checkEntersThreatArea a placement'
+            pushM $ checkAfter $ Window.EnemyPlaced enemyId placement'
+            when (not (isInPlayPlacement a.placement) && isInPlayPlacement placement') do
+              pushM $ checkWhen $ Window.EnterPlay (toTarget a)
+              pushM $ checkAfter $ Window.EnterPlay (toTarget a)
+            when (isInPlayPlacement a.placement && not (isInPlayPlacement placement')) do
+              pushM $ checkWhen $ Window.LeavePlay (toTarget a)
+              pushM $ checkAfter $ Window.LeavePlay (toTarget a)
+            pure $ a & placementL .~ placement'
       case placement of
         AtLocation lid -> do
           let details = mkSpawnDetails enemyId (X.SpawnAtLocation lid)
@@ -1834,16 +1853,13 @@ instance RunMessage EnemyAttrs where
             ]
           pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
           pure a
-        _ -> do
-          checkEntersThreatArea a placement
-          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
-          when (not (isInPlayPlacement a.placement) && isInPlayPlacement placement) do
-            pushM $ checkWhen $ Window.EnterPlay (toTarget a)
-            pushM $ checkAfter $ Window.EnterPlay (toTarget a)
-          when (isInPlayPlacement a.placement && not (isInPlayPlacement placement)) do
-            pushM $ checkWhen $ Window.LeavePlay (toTarget a)
-            pushM $ checkAfter $ Window.LeavePlay (toTarget a)
-          pure $ a & placementL .~ placement
+        InThreatArea iid | iid `elem` cannotEngage -> do
+          getLocationOf iid >>= \case
+            Just lid -> handlePlacement (AtLocation lid)
+            Nothing -> do
+              Lifted.toDiscard GameSource a
+              pure a
+        _ -> handlePlacement placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       sid <- getRandom

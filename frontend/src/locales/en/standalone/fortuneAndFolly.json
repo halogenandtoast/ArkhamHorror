@@ -27,9 +27,19 @@
     },
     "casinoFloorCalmNight": {
       "resign": "It's time to get out of here!"
+    },
+    "relicRoom": {
+      "reveal": "{'{'}action{'}'} Take 1 damage and 1 horror unless an investigator \"found Abarran's sigil\": Test {'{'}willpower{'}'} or {'{'}agility{'}'} (4). If you succeed, investigators at Vault Door may spend 4 {'{'}perPlayer{'}'} clues, as a group, to reveal Relic Room"
     }
   },
   "label": {
+    "elderThing": {
+      "alarm": "Raise your alarm level by 1 to automatically succeed"
+    },
+    "relicRoom": {
+      "reveal": "Spend 4 {'{'}perPlayer{'}'} clues, as a group, to reveal Relic Room"
+    },
+    "cardsToDiscard": "Cards to Discard",
     "avariceCalls": {
       "test": "Test {'{'}willpower{'}'} (X), where X is half your alarm level (rounded up)."
     },

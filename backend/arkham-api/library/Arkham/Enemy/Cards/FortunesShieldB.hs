@@ -4,12 +4,11 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 
 newtype FortunesShieldB = FortunesShieldB EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortunesShieldB :: EnemyCard FortunesShieldB
 fortunesShieldB = enemy FortunesShieldB Cards.fortunesShieldB (2, Static 4, 3) (1, 1)

@@ -1755,7 +1755,8 @@ chooseFightEnemy
 chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
 
 fightEnemy
-  :: (ReverseQueue m, Sourceable source, ToId e EnemyId) => SkillTestId -> InvestigatorId -> source -> e -> m ()
+  :: (ReverseQueue m, Sourceable source, ToId e EnemyId)
+  => SkillTestId -> InvestigatorId -> source -> e -> m ()
 fightEnemy sid iid source = mkFightEnemy sid iid source >=> push . toMessage
 
 chooseFightEnemyWithModifiers
@@ -2291,6 +2292,10 @@ cardDrawModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDrawId -> source -> target -> ModifierType -> m ()
 cardDrawModifier cid source target modifier = Msg.pushM $ Msg.cardDrawModifier cid source target modifier
+
+reduceDamageTaken
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+reduceDamageTaken source target n = damageModifier source target (DamageTaken (-n))
 
 damageModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

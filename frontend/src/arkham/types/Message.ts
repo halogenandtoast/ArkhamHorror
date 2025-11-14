@@ -222,12 +222,14 @@ export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
 
 export type CardLabel = {
   tag: MessageType.CARD_LABEL
+  flippable: boolean
   cardCode: string
 }
 
 export const cardLabelDecoder = JsonDecoder.object<CardLabel>(
   {
     tag: JsonDecoder.literal(MessageType.CARD_LABEL),
+    flippable: JsonDecoder.boolean(),
     cardCode: JsonDecoder.string(),
   }, 'CardLabel')
 

@@ -1,8 +1,15 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { useAttrs, ref, computed } from 'vue'
 import { imgsrc } from '@/arkham/helpers'
 import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
+
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const attrs = useAttrs()
 
 const props = defineProps<{ card: CardDef }>()
 
@@ -83,13 +90,23 @@ const backImage = computed(() => {
 </script>
 
 <template>
-  <div class='card-container' :class="{vertical}">
+  <div class='card-container' :class="[{vertical}]">
     <div class='front' :class="{flipped}">
-      <img loading="lazy" class="card card-front" :class="{flipped}" :src="image" />
+      <img
+        loading="lazy"
+        :class="['card', 'card-front', { flipped }, attrs.class]"
+        :src="image"
+        v-bind="attrs"
+      />
       <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
     <div class="back" :class="{flipped}">
-      <img loading="lazy" class="card card-back" :class="{flipped}" :src="backImage" />
+      <img
+        loading="lazy"
+        :class="['card', 'card-back', { flipped }, attrs.class]"
+        :src="backImage"
+        v-bind="attrs"
+      />
       <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
   </div>
@@ -101,7 +118,7 @@ const backImage = computed(() => {
 }
 .card-container {
   overflow: hidden;
-  width: calc(100% - 20px);
+  width: fit-content;
   max-width: 250px;
   margin: 10px;
   border-radius: 10px;

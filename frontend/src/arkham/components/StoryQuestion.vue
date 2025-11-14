@@ -108,6 +108,22 @@ const questionImage = computed(() => {
 })
 
 const choose = (idx: number) => emit('choose', idx)
+
+const flippableCard = (cardCode: string) => {
+  return {
+    cardCode,
+    doubleSided: true,
+    classSymbols: [],
+    cardType: 'UnknownType',
+    art: cardCode.replace('c', ''),
+    level: 0,
+    traits: [],
+    name: "",
+    skills: [],
+    cost: null,
+    otherSide: `${cardCode}b`
+  }
+}
 </script>
 
 <template>
@@ -141,7 +157,8 @@ const choose = (idx: number) => emit('choose', idx)
           <template v-for="[choice, index] in labelChoices" :key="index">
             <template v-if="choice.tag === MessageType.CARD_LABEL">
               <a href='#' @click.prevent="choose(index)">
-                <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+                <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
+                <img v-else class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
               </a>
             </template>
           </template>
@@ -180,7 +197,8 @@ const choose = (idx: number) => emit('choose', idx)
         <template v-for="[choice, index] in labelChoices" :key="index">
           <template v-if="choice.tag === MessageType.CARD_LABEL">
             <a href='#' @click.prevent="choose(index)">
-              <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+              <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
+              <img v-else class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
             </a>
           </template>
         </template>

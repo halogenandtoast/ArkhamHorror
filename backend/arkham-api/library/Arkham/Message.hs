@@ -1437,7 +1437,7 @@ uiToRun = \case
   InvalidLabel {} -> error "InvalidLabel in uiToRun"
   Info {} -> error "Info in uiToRun"
   TooltipLabel _ _ msgs -> Run msgs
-  CardLabel _ msgs -> Run msgs
+  CardLabel _ _ msgs -> Run msgs
   PortraitLabel _ msgs -> Run msgs
   KeyLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs

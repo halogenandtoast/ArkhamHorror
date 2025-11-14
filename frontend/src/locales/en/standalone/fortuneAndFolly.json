@@ -21,6 +21,14 @@
       "elderThing": "-6. You may raise your alarm level by 1 to automatically succeed, instead."
     }
   },
+  "tooltips": {
+    "casinoFloorBusyNight": {
+      "resign": "It's time to get out of here!"
+    },
+    "casinoFloorCalmNight": {
+      "resign": "It's time to get out of here!"
+    }
+  },
   "label": {
     "avariceCalls": {
       "test": "Test {'{'}willpower{'}'} (X), where X is half your alarm level (rounded up)."
@@ -89,6 +97,30 @@
       "doNotSkip": "Proceed to _Intro 5_."
     }
   },
+  "part1": {
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator was defeated)_: Proceed to _Resolution 1_.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: You find yourself forcefully removed from the casino after attracting far too much attention. It is certain that soon your description will circulate among the staff. This will undoubtedly make matters much more difficult when the heist begins.</p><ul><li>Each investigator who did not resign raises their alarm level by 2.</li><li>Investigators cannot spend experience or alter their decks in between Fortune and Folly, Part I and Fortune and Folly, Part II. Proceed to _Checkpoint: The Plan_. (Do not clean up the game yet.)</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: You hope that what you were able to learn and accomplish tonight will be enough. You can at least rest a little easier knowing that the staff did not seem to take any special interest in you. That will make it easier to keep a low profile when the heist begins in earnest.</p><ul><li>Investigators cannot spend experience or alter their decks in between Fortune and Folly, Part I and Fortune and Folly, Part II. Proceed to _Checkpoint: The Plan_. (Do not clean up the game yet.)</li></ul>"
+      }
+    }
+  },
+  "part2": {
+    "resolutions": {
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: By all accounts, escaping from the clutches of those horrible creatures and an army of casino staff and security could be called a successful night. Yet the Wellspring, the whole purpose for this ill-fated heist, has eluded your grasp. In the days that follow, you wonder if you are courageous or mad enough to try again, but the casino never reopens its doors and there is no further sign of Abarran or the Fortune’s Chosen. The newspapers are strangely muted regarding the night’s events, making no mention of the fantastical monsters that terrorized casino patrons. More than ever, it seems that some person or group helped Abarran set up his operation here and is protecting him after the fact as well. More importantly, after your attempted heist and the strange dimensional incursion, Abarran has taken the Wellspring somewhere far from here. It is possible that you could track him down and find some other way to obtain the relic, but for now, there are no leads and no sign of where he may have gone. You leave Monte Carlo, licking your wounds and wondering if you will have the fortune, or misfortune, of running into Abarran and the Wellspring again one day.</p><ul><li>If you are playing *The Scarlet Keys* campaign:<ul><li>In your Campaign Log, record that *the cell meddled in Abarran’s affairs*.</li><li>Abarran Arrigorriagakoa is the bearer of The Wellspring of Fortune. Update the Campaign Log accordingly.</li></ul></li><li>In your Campaign Log, record that *Fortune’s Chosen have bound you with bad luck*. Choose any number token in the chaos bag. Replace it with a number token of a value 2 lower (*e.g. You may replace a 0 token with a –2 token, or a –3 token with a –5 token*).</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Proceed to _Additional Rewards_.</li></ul>"
+      }
+    }
+  },
   "checkpoint1": {
     "thePlan1": {
       "title": "Checkpoint: The Plan",
@@ -102,6 +134,7 @@
     "label": {
       "alarm": "Reduce each investigator’s alarm level by 1.",
       "flipRole": "Choose a _Role_ card that was under an investigator’s control when the game ended. In your Campaign Log, write _Practiced_ next to the title of the chosen card."
-    }
+    },
+    "chooseRoleToFlip": "<p>Choose a _Role_ card that was under an investigator’s control when the game ended. In your Campaign Log, write _Practiced_ next to the title of the chosen card.</p>"
   }
 }

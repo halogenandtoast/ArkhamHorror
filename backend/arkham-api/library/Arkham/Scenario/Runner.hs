@@ -179,7 +179,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                   pid <- getPlayer iid
                   let cards = nub $ map toCardCode $ filterCards (card_ $ #asset <> #spell) (unDeck deck)
                   pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
-                    CardLabel c [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
+                    CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
                 Just _ -> pure Nothing
             else pure Nothing
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck

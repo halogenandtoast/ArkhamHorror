@@ -8,6 +8,7 @@ import { MessageType } from '@/arkham/types/Message';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 export interface Props {
   game: Game
@@ -33,7 +34,7 @@ const readCards = computed(() => props.question.readCards ?? [])
 
 const pickCards = computed(() => props.question.readChoices.contents.reduce((acc, v, i) => {
   if ("cardCode" in v) {
-    return [...acc, { cardCode: v.cardCode, index: i }]
+    return [...acc, { cardCode: v.cardCode, flippable: "flippable" in v ? v.flippable : false, index: i }]
   }
   return acc
 }, [] as { cardCode: string, index: number }[]))
@@ -80,6 +81,22 @@ const readChoices = computed(() => {
 })
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
+
+const flippableCard = (cardCode: string) => {
+  return {
+    cardCode,
+    doubleSided: true,
+    classSymbols: [],
+    cardType: 'UnknownType',
+    art: cardCode.replace('c', ''),
+    level: 0,
+    traits: [],
+    name: "",
+    skills: [],
+    cost: null,
+    otherSide: `${cardCode}b`
+  }
+}
 </script>
 <template>
   <div class="intro-text">
@@ -93,7 +110,10 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
       </div>
       <div class="pick-cards" v-if="pickCards.length > 0">
-        <img :src="imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)" v-for="card in pickCards" class="card no-overlay pick" :key="card.index" @click="choose(card.index)" />
+        <template v-for="card in pickCards" :key="card.index">
+          <CardImage v-if="card.flippable" :card="flippableCard(card.cardCode)" class="no-overlay pick" @click="choose(card.index)" />
+          <img v-else :src="imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)" class="card no-overlay pick" @click="choose(card.index)" />
+        </template>
       </div>
     </div>
     <div class="options">
@@ -436,20 +456,25 @@ a.button {
   gap: 10px;
   justify-content: center;
 
-  img {
-    transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+  img, .card-container {
+    transition: filter 0.1s ease-in-out, transform 0.1s ease-in-out;
     border-radius: 4%;
     flex: 1;
     max-width: min(500px, 30vw);
   }
 
-  img:hover {
-    box-shadow: 0 0 10px rgba(0,0,0,0.9);
+  img:hover, .card-container:hover {
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.9));
     transform: scale(1.05);
+  }
+
+  .card-container {
+    width: clamp(200px, 25vw, 400px);
+    max-width: fit-content;
   }
 }
 
-.pick {
+.pick, :deep(.pick) {
   cursor: pointer;
   flex-basis: 20%;
 }

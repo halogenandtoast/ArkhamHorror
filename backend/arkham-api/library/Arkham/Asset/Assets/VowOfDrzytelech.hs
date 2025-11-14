@@ -16,7 +16,7 @@ vowOfDrzytelech :: AssetCard VowOfDrzytelech
 vowOfDrzytelech = assetWith VowOfDrzytelech Cards.vowOfDrzytelech (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities VowOfDrzytelech where
-  getAbilities (VowOfDrzytelech attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
+  getAbilities (VowOfDrzytelech attrs) = [controlled_ attrs 1 doubleActionAbility]
 
 instance HasModifiersFor VowOfDrzytelech where
   getModifiersFor (VowOfDrzytelech a) = case a.placement of

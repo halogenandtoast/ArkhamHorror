@@ -20,11 +20,23 @@ import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Scenario
 import Arkham.Modifier
+import Arkham.Window (Window)
+import Arkham.Window qualified as Window
 
 intFromMetadata :: EffectMetadata a -> Int
 intFromMetadata = \case
   EffectInt n -> n
   _ -> 0
+
+isTakeDamage :: EffectAttrs -> Window -> Bool
+isTakeDamage attrs window = case attrs.target of
+  EnemyTarget eid -> go eid
+  _ -> False
+ where
+  go eid = case Window.windowType window of
+    Window.TakeDamage _ _ (EnemyTarget eid') _ ->
+      eid == eid' && window.timing == #after
+    _ -> False
 
 instance RunMessage EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
@@ -80,6 +92,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     After (PerformEnemyAttack {}) | isEndOfWindow a EffectAttackWindow -> do
       a <$ push (DisableEffect effectId)
+    Do (CheckWindows windows') | any (isTakeDamage a) windows' && isEndOfWindow a EffectDamageWindow -> do
+      a <$ push (DisableEffect effectId)
     AfterRevelation _ tid | isEndOfWindow a (EffectRevelationWindow tid) -> do
       a <$ push (DisableEffect effectId)
     ResolvedCard _ card | isEndOfWindow a (EffectCardResolutionWindow $ toCardId card) -> do
@@ -114,15 +128,17 @@ instance RunMessage EffectAttrs where
         Nothing -> pure a
         Just st ->
           if st.id == stId && st.source == a.source
-            then pure $ a
-              { effectWindow = case a.window of
-                  Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
-                  other -> other
-              , effectSkillTest = Just sid
-              , effectDisableWindow = case a.disableWindow of
-                  Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
-                  other -> other
-              }
+            then
+              pure
+                $ a
+                  { effectWindow = case a.window of
+                      Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
+                      other -> other
+                  , effectSkillTest = Just sid
+                  , effectDisableWindow = case a.disableWindow of
+                      Just (EffectSkillTestWindow sid') | sid' == stId -> Just $ EffectSkillTestWindow sid
+                      other -> other
+                  }
             else pure a
     UpdateEffectMeta eid meta | eid == effectId -> do
       pure $ a {effectMetadata = Just meta}

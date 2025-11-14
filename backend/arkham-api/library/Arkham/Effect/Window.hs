@@ -30,6 +30,7 @@ data EffectWindow
   | EffectGameWindow
   | EffectResolutionWindow
   | EffectAttackWindow
+  | EffectDamageWindow
   | FirstEffectWindow [EffectWindow]
   | EffectEventWindow
   | EffectAbilityWindow AbilityRef

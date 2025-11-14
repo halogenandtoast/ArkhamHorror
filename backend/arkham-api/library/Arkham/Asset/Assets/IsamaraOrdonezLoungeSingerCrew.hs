@@ -14,7 +14,8 @@ newtype IsamaraOrdonezLoungeSingerCrew = IsamaraOrdonezLoungeSingerCrew AssetAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 isamaraOrdonezLoungeSingerCrew :: AssetCard IsamaraOrdonezLoungeSingerCrew
-isamaraOrdonezLoungeSingerCrew = asset IsamaraOrdonezLoungeSingerCrew Cards.isamaraOrdonezLoungeSingerCrew
+isamaraOrdonezLoungeSingerCrew =
+  allyWith IsamaraOrdonezLoungeSingerCrew Cards.isamaraOrdonezLoungeSingerCrew (1, 3) noSlots
 
 instance HasAbilities IsamaraOrdonezLoungeSingerCrew where
   getAbilities (IsamaraOrdonezLoungeSingerCrew a) =

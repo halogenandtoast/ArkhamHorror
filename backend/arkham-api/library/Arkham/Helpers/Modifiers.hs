@@ -688,6 +688,16 @@ endOfNextPhaseModifier
   -> m Message
 endOfNextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfNextPhaseWindowFor phase) source target [modifier]
 
+reduceDamageTaken
+  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  => source -> target -> Int -> m Message
+reduceDamageTaken source target n = damageModifier source target (DamageTaken (-n))
+
+damageModifier
+  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  => source -> target -> ModifierType -> m Message
+damageModifier source target modifier = createWindowModifierEffect EffectDamageWindow source target [modifier]
+
 enemyAttackModifier
   :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => source -> target -> ModifierType -> m Message

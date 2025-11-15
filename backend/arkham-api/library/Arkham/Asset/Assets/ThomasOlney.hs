@@ -7,13 +7,17 @@ import Arkham.Card
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Trait
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype ThomasOlney = ThomasOlney AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasOlney :: AssetCard ThomasOlney
 thomasOlney = ally ThomasOlney Cards.thomasOlney (3, 1)
+
+instance HasModifiersFor ThomasOlney where
+  getModifiersFor (ThomasOlney a) = handleSpellbound a
 
 instance HasAbilities ThomasOlney where
   getAbilities (ThomasOlney a) =
@@ -41,8 +45,8 @@ instance RunMessage ThomasOlney where
       whenM (getIsCommittable iid (toCard card)) $ commitCard iid card
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ ThomasOlney $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ ThomasOlney $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ ThomasOlney $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ ThomasOlney $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> ThomasOlney <$> liftRunMessage msg attrs

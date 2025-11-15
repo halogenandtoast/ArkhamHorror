@@ -6,13 +6,17 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype ClaireWilson = ClaireWilson AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 claireWilson :: AssetCard ClaireWilson
 claireWilson = allyWith ClaireWilson Cards.claireWilson (2, 2) noSlots
+
+instance HasModifiersFor ClaireWilson where
+  getModifiersFor (ClaireWilson a) = handleSpellbound a
 
 instance HasAbilities ClaireWilson where
   getAbilities (ClaireWilson a) =
@@ -26,8 +30,8 @@ instance RunMessage ClaireWilson where
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ ClaireWilson $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ ClaireWilson $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ ClaireWilson $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ ClaireWilson $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> ClaireWilson <$> liftRunMessage msg attrs

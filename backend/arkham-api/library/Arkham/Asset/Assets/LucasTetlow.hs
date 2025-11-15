@@ -8,13 +8,17 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
 import Arkham.Trait
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype LucasTetlow = LucasTetlow AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lucasTetlow :: AssetCard LucasTetlow
 lucasTetlow = allyWith LucasTetlow Cards.lucasTetlow (3, 1) noSlots
+
+instance HasModifiersFor LucasTetlow where
+  getModifiersFor (LucasTetlow a) = handleSpellbound a
 
 instance HasAbilities LucasTetlow where
   getAbilities (LucasTetlow a) =
@@ -51,8 +55,8 @@ instance RunMessage LucasTetlow where
       for_ attrs.controller shuffleDeck
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ LucasTetlow $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ LucasTetlow $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ LucasTetlow $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ LucasTetlow $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> LucasTetlow <$> liftRunMessage msg attrs

@@ -1129,7 +1129,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorThatMovedDuringTurn -> flip runMatchesM as \i -> do
       history <- getHistory TurnHistory (toId i)
-      pure $ historyMoved history
+      pure $ historyMoved history > 0
     InvestigatorWhenCriteria criteria -> flip runMatchesM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
     NotInvestigator x -> negateMatches x as go
     InvestigatorIfLocation lMatcher i1 i2 -> do
@@ -3324,6 +3324,12 @@ enemyMatcherFilter es matcher' = do
       flip filterM es \enemy -> do
         lmAssets <- select $ EnemyAsset $ toId enemy
         pure . notNull $ List.intersect assets lmAssets
+    EnemyWithoutAttachedEncounterCard -> do
+      es & filterM \e -> do
+        andM
+          [ selectNone $ TreacheryOnEnemy (EnemyWithId e.id)
+          , selectNone $ StoryWithPlacement (AttachedToEnemy e.id)
+          ]
     EnemyWithAttachedEvent eventMatcher -> do
       events <- selectWithField EventPlacement eventMatcher
       pure $ flip filter es \enemy -> do

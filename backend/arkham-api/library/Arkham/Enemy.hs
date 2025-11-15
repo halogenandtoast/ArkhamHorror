@@ -666,6 +666,7 @@ allEnemies =
     , SomeEnemyCard dimensionalDuplicatorB
     , SomeEnemyCard dimensionalDisplacerA
     , SomeEnemyCard dimensionalDisplacerB
+    , SomeEnemyCard extradimensionalEnemy
     , -- Parallel
       --- Laid to Rest
       SomeEnemyCard vengefulShade

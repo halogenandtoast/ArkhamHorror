@@ -148,6 +148,7 @@ data WindowMatcher
   | AttachCard Timing (Maybe Who) CardMatcher TargetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
+  | EnemyDisengaged Timing Who EnemyMatcher
   | EnemyWouldEngage Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | LocationEntersPlay Timing LocationMatcher

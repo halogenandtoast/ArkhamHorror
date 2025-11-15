@@ -286,9 +286,9 @@ allEncounterTreacheryCards =
       , despoiled
       , dholeTunnel
       , diabolicVoices
-      , dimensionalHypothesisA
-      , dimensionalHypothesisB
-      , dimensionalHypothesisC
+      , dimensionalHypnosisA
+      , dimensionalHypnosisB
+      , dimensionalHypnosisC
       , dismalCurse
       , disquietingDreams
       , dissonantVoices
@@ -3866,23 +3866,23 @@ obsessedGamblerC =
     , cdMeta = mapFromList [("suit", String "hearts"), ("value", String "seven")]
     }
 
-dimensionalHypothesisA :: CardDef
-dimensionalHypothesisA =
-  (treachery "88051a" "Dimensional Hypothesis" PlanInShambles 1)
+dimensionalHypnosisA :: CardDef
+dimensionalHypnosisA =
+  (treachery "88051a" "Dimensional Hypnosis" PlanInShambles 1)
     { cdCardTraits = singleton Terror
     , cdMeta = mapFromList [("suit", String "spades"), ("value", String "five")]
     }
 
-dimensionalHypothesisB :: CardDef
-dimensionalHypothesisB =
-  (treachery "88051b" "Dimensional Hypothesis" PlanInShambles 1)
+dimensionalHypnosisB :: CardDef
+dimensionalHypnosisB =
+  (treachery "88051b" "Dimensional Hypnosis" PlanInShambles 1)
     { cdCardTraits = singleton Terror
     , cdMeta = mapFromList [("suit", String "clubs"), ("value", String "five")]
     }
 
-dimensionalHypothesisC :: CardDef
-dimensionalHypothesisC =
-  (treachery "88051c" "Dimensional Hypothesis" PlanInShambles 1)
+dimensionalHypnosisC :: CardDef
+dimensionalHypnosisC =
+  (treachery "88051c" "Dimensional Hypnosis" PlanInShambles 1)
     { cdCardTraits = singleton Terror
     , cdMeta = mapFromList [("suit", String "spades"), ("value", String "four")]
     }

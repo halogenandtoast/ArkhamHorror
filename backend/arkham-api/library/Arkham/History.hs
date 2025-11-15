@@ -36,7 +36,7 @@ data History = History
   , historyEnemiesDrawn :: [CardCode]
   , historyDealtDamageTo :: [Target]
   , historyEnemiesDefeated :: [DefeatedEnemyAttrs]
-  , historyMoved :: Bool
+  , historyMoved :: Int
   , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
@@ -59,7 +59,7 @@ data HistoryField k where
   HistoryDealtDamageTo :: HistoryField [Target]
   HistoryEnemiesDefeated :: HistoryField [DefeatedEnemyAttrs]
   HistoryEnemiesAttackedBy :: HistoryField [EnemyId]
-  HistoryMoved :: HistoryField Bool
+  HistoryMoved :: HistoryField Int
   HistoryLocationsSuccessfullyInvestigated :: HistoryField (Set LocationId)
   HistorySuccessfulExplore :: HistoryField Bool
   HistoryActionsCompleted :: HistoryField Int
@@ -169,7 +169,7 @@ insertHistoryItem (HistoryItem fld k) h =
     HistoryDealtDamageTo -> h {historyDealtDamageTo = nub $ historyDealtDamageTo h <> k}
     HistoryEnemiesDefeated -> h {historyEnemiesDefeated = nub $ historyEnemiesDefeated h <> k}
     HistoryEnemiesAttackedBy -> h {historyEnemiesAttackedBy = nub $ historyEnemiesAttackedBy h <> k}
-    HistoryMoved -> h {historyMoved = historyMoved h || k}
+    HistoryMoved -> h {historyMoved = historyMoved h + k}
     HistoryLocationsSuccessfullyInvestigated ->
       h
         { historyLocationsSuccessfullyInvestigated =
@@ -195,7 +195,7 @@ instance Semigroup History where
       , historyEnemiesAttackedBy = historyEnemiesAttackedBy h <> historyEnemiesAttackedBy g
       , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
       , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
-      , historyMoved = historyMoved h || historyMoved g
+      , historyMoved = historyMoved h + historyMoved g
       , historyLocationsSuccessfullyInvestigated =
           historyLocationsSuccessfullyInvestigated h
             <> historyLocationsSuccessfullyInvestigated g
@@ -213,7 +213,7 @@ instance Semigroup History where
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0 [] 0 0
+  mempty = History [] [] [] [] 0 mempty False 0 [] [] mempty 0 0 0 0 [] 0 0
 
 insertHistory
   :: InvestigatorId
@@ -230,7 +230,9 @@ instance FromJSON History where
     historyDealtDamageTo <- o .: "historyDealtDamageTo"
     historyEnemiesDefeated <- o .: "historyEnemiesDefeated"
     historyEnemiesAttackedBy <- o .:? "historyEnemiesAttackedBy" .!= []
-    historyMoved <- o .: "historyMoved"
+    historyMoved <- o .: "historyMoved" <|> do
+      moved <- o .: "historyMoved"
+      pure $ if moved then 1 else 0
     historyLocationsSuccessfullyInvestigated <- o .: "historyLocationsSuccessfullyInvestigated"
     historySuccessfulExplore <- o .: "historySuccessfulExplore"
     historyActionsCompleted <- o .: "historyActionsCompleted"

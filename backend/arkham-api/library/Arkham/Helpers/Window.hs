@@ -1749,6 +1749,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
+    Matcher.EnemyDisengaged timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyDisengaged who enemyId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
+            ]
+        _ -> noMatch
     Matcher.EnemyEngaged timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEngaged who enemyId ->

@@ -1,13 +1,9 @@
-module Arkham.Enemy.Cards.FlyingPolyp (
-  flyingPolyp,
-  FlyingPolyp (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.FlyingPolyp (flyingPolyp) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Prelude
 
 newtype FlyingPolyp = FlyingPolyp EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

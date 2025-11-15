@@ -741,7 +741,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
   After (MoveTo (moveTarget -> InvestigatorTarget iid)) -> do
     let
-      historyItem = HistoryItem HistoryMoved True
+      historyItem = HistoryItem HistoryMoved 1
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id

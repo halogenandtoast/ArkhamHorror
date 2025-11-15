@@ -16,6 +16,7 @@ data TheScarletKeysKey
   | TheCellKnowsAmaranthsRealName
   | TheCellKnowsOfDesisPast
   | TheCellMadeADealWithDesi
+  | TheCellMeddledInAbarransAffairs
   | TheCellRefusedEcesOffer
   | TheLoversAreReunited
   | TheSanguineWatchersTormentContinues

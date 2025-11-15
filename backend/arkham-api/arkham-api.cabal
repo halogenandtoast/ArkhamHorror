@@ -3988,6 +3988,7 @@ library
       Arkham.Scenarios.FilmFatale.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.FortuneAndFolly.Helpers
+      Arkham.Scenarios.FortuneAndFolly.PlayingCard
       Arkham.Scenarios.HeartOfTheElders.Helpers
       Arkham.Scenarios.HorrorInHighGear.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers

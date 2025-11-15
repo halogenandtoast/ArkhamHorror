@@ -90,6 +90,7 @@ import Arkham.Asset.Assets (
   wither4Effect,
   witherEffect,
   yaotl1Effect,
+  isamaraOrdonezTheTorchSingerEffect,
  )
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Enemy.Enemies (
@@ -587,6 +588,7 @@ allEffects =
     , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
+    , ("88044", SomeEffect isamaraOrdonezTheTorchSingerEffect)
     , ("89004", SomeEffect realityAcid5U21Effect)
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)
     , ("90009", SomeEffect onTheLamAdvancedEffect)

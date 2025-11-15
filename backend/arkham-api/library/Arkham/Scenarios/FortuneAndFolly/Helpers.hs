@@ -4,6 +4,7 @@
 
 module Arkham.Scenarios.FortuneAndFolly.Helpers (module Arkham.Scenarios.FortuneAndFolly.Helpers, module X) where
 
+import Arkham.Scenarios.FortuneAndFolly.PlayingCard as X
 import Arkham.Ability.Types
 import Arkham.Capability
 import Arkham.Card
@@ -29,22 +30,9 @@ import Arkham.Window
 import Data.Aeson.TH
 import Data.Function (on)
 import Data.Monoid (First (..))
-import GHC.Records
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ standaloneI18n "fortuneAndFolly" a
-
-data Suit = Hearts | Diamonds | Clubs | Spades
-  deriving stock (Eq, Ord, Show, Enum, Bounded)
-
-data Rank = Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
-  deriving stock (Eq, Ord, Show, Enum, Bounded)
-
-data PlayingCard = PlayingCard
-  { rank :: Rank
-  , suit :: Suit
-  }
-  deriving stock (Ord, Eq, Show)
 
 data CheckGameIcons = CheckGameIcons
   { target :: Target
@@ -62,7 +50,7 @@ decrementMulligan :: Mulligan -> Mulligan
 decrementMulligan (CanMulligan n) | n > 1 = CanMulligan (n -1)
 decrementMulligan _ = NoMulligan
 
-foldMap (deriveJSON defaultOptions) [''Mulligan, ''Rank, ''Suit, ''PlayingCard, ''CheckGameIcons]
+foldMap (deriveJSON defaultOptions) [''Mulligan, ''CheckGameIcons]
 
 checkGameIcons
   :: (Targetable target, ReverseQueue m) => target -> InvestigatorId -> Mulligan -> Int -> m ()
@@ -107,61 +95,9 @@ toPlayingCard a = do
   let mpc :: Maybe PlayingCard =
         getFirst
           $ fold [First (maybeResult @PlayingCard pc) | ScenarioModifierValue "setPlayingCard" pc <- mods]
-  pure $ mpc <|> (PlayingCard <$> rank <*> suit)
+  pure $ mpc <|> toPlayingCardPure a
  where
   cardDef = toCardDef a
-  suit = toSuit =<< lookup "suit" (cdMeta cardDef)
-  toSuit = \case
-    "hearts" -> Just Hearts
-    "diamonds" -> Just Diamonds
-    "clubs" -> Just Clubs
-    "spades" -> Just Spades
-    _ -> Nothing
-  rank = toRank =<< lookup "value" (cdMeta cardDef)
-  toRank = \case
-    "four" -> Just Four
-    "five" -> Just Five
-    "six" -> Just Six
-    "seven" -> Just Seven
-    "eight" -> Just Eight
-    "nine" -> Just Nine
-    "ten" -> Just Ten
-    "jack" -> Just Jack
-    "queen" -> Just Queen
-    "king" -> Just King
-    "ace" -> Just Ace
-    _ -> Nothing
-
-rankValue :: PlayingCard -> Int
-rankValue pc = case pc.rank of
-  Four -> 4
-  Five -> 5
-  Six -> 6
-  Seven -> 7
-  Eight -> 8
-  Nine -> 9
-  Ten -> 10
-  Jack -> 11
-  Queen -> 12
-  King -> 13
-  Ace -> 14
-
-numericValue :: PlayingCard -> Int
-numericValue pc = case pc.rank of
-  Four -> 4
-  Five -> 5
-  Six -> 6
-  Seven -> 7
-  Eight -> 8
-  Nine -> 9
-  Ten -> 10
-  Jack -> 10
-  Queen -> 10
-  King -> 10
-  Ace -> 10
-
-instance HasField "value" PlayingCard Int where
-  getField = numericValue
 
 winGame
   :: (HasGameLogger m, ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()

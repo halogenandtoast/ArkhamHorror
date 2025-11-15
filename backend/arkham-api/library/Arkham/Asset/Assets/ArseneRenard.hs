@@ -8,13 +8,17 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Token qualified as Token
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype ArseneRenard = ArseneRenard AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arseneRenard :: AssetCard ArseneRenard
 arseneRenard = allyWith ArseneRenard Cards.arseneRenard (1, 3) noSlots
+
+instance HasModifiersFor ArseneRenard where
+  getModifiersFor (ArseneRenard a) = handleSpellbound a
 
 instance HasAbilities ArseneRenard where
   getAbilities (ArseneRenard a) =
@@ -40,8 +44,8 @@ instance RunMessage ArseneRenard where
         countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 2) 2
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ ArseneRenard $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ ArseneRenard $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ ArseneRenard $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ ArseneRenard $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> ArseneRenard <$> liftRunMessage msg attrs

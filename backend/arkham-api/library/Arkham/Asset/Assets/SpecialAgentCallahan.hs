@@ -7,13 +7,17 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Trait (Trait (Ally, Weapon))
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype SpecialAgentCallahan = SpecialAgentCallahan AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 specialAgentCallahan :: AssetCard SpecialAgentCallahan
 specialAgentCallahan = allyWith SpecialAgentCallahan Cards.specialAgentCallahan (3, 1) noSlots
+
+instance HasModifiersFor SpecialAgentCallahan where
+  getModifiersFor (SpecialAgentCallahan a) = handleSpellbound a
 
 instance HasAbilities SpecialAgentCallahan where
   getAbilities (SpecialAgentCallahan a) =
@@ -40,8 +44,8 @@ instance RunMessage SpecialAgentCallahan where
         nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ SpecialAgentCallahan $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ SpecialAgentCallahan $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ SpecialAgentCallahan $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ SpecialAgentCallahan $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> SpecialAgentCallahan <$> liftRunMessage msg attrs

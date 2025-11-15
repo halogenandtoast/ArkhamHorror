@@ -9,13 +9,17 @@ import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 import Arkham.Script (yourNextSkillTest)
 import Arkham.Token qualified as Token
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype MirandaKeeper = MirandaKeeper AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mirandaKeeper :: AssetCard MirandaKeeper
 mirandaKeeper = allyWith MirandaKeeper Cards.mirandaKeeper (2, 2) noSlots
+
+instance HasModifiersFor MirandaKeeper where
+  getModifiersFor (MirandaKeeper a) = handleSpellbound a
 
 instance HasAbilities MirandaKeeper where
   getAbilities (MirandaKeeper a) =
@@ -38,8 +42,8 @@ instance RunMessage MirandaKeeper where
       gainResources iid (attrs.ability 2) 2
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ MirandaKeeper $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ MirandaKeeper $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ MirandaKeeper $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ MirandaKeeper $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> MirandaKeeper <$> liftRunMessage msg attrs

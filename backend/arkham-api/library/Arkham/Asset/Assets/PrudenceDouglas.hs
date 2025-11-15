@@ -10,13 +10,17 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
 import Arkham.Token (Token (Portent))
 import Arkham.Trait (Trait (Elite), toTraits)
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype PrudenceDouglas = PrudenceDouglas AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prudenceDouglas :: AssetCard PrudenceDouglas
 prudenceDouglas = allyWith PrudenceDouglas Cards.prudenceDouglas (2, 2) noSlots
+
+instance HasModifiersFor PrudenceDouglas where
+  getModifiersFor (PrudenceDouglas a) = handleSpellbound a
 
 instance HasAbilities PrudenceDouglas where
   getAbilities (PrudenceDouglas a) =
@@ -43,8 +47,8 @@ instance RunMessage PrudenceDouglas where
           targets discardable $ \c -> push $ AddToEncounterDiscard c
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ PrudenceDouglas $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ PrudenceDouglas $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ PrudenceDouglas $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ PrudenceDouglas $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> PrudenceDouglas <$> liftRunMessage msg attrs

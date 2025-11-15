@@ -7,7 +7,7 @@ import Arkham.Modifier
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype SarahVanShaw = SarahVanShaw AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sarahVanShaw :: AssetCard SarahVanShaw

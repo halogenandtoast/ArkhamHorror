@@ -7,13 +7,17 @@ import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype ElizabethConrad = ElizabethConrad AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elizabethConrad :: AssetCard ElizabethConrad
 elizabethConrad = allyWith ElizabethConrad Cards.elizabethConrad (1, 3) noSlots
+
+instance HasModifiersFor ElizabethConrad where
+  getModifiersFor (ElizabethConrad a) = handleSpellbound a
 
 instance HasAbilities ElizabethConrad where
   getAbilities (ElizabethConrad a) =
@@ -31,8 +35,8 @@ instance RunMessage ElizabethConrad where
           moveTo (attrs.ability 1) iid' lid
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ ElizabethConrad $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ ElizabethConrad $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ ElizabethConrad $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ ElizabethConrad $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> ElizabethConrad <$> liftRunMessage msg attrs

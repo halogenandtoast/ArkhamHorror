@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Matcher
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype HoracioMartinez = HoracioMartinez AssetAttrs
   deriving anyclass IsAsset
@@ -15,8 +16,10 @@ horacioMartinez :: AssetCard HoracioMartinez
 horacioMartinez = allyWith HoracioMartinez Cards.horacioMartinez (4, 1) noSlots
 
 instance HasModifiersFor HoracioMartinez where
-  getModifiersFor (HoracioMartinez a) = for_ a.controller \iid ->
-    modifySelect a (notInvestigator iid <> colocatedWith iid) [CanAssignDamageToAsset a.id]
+  getModifiersFor (HoracioMartinez a) = do
+    for_ a.controller \iid ->
+      modifySelect a (notInvestigator iid <> colocatedWith iid) [CanAssignDamageToAsset a.id]
+    handleSpellbound a
 
 instance HasAbilities HoracioMartinez where
   getAbilities (HoracioMartinez a) =
@@ -29,8 +32,8 @@ instance RunMessage HoracioMartinez where
       roundModifier (attrs.ability 1) attack.enemy CannotReady
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ HoracioMartinez $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ HoracioMartinez $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ HoracioMartinez $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ HoracioMartinez $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> HoracioMartinez <$> liftRunMessage msg attrs

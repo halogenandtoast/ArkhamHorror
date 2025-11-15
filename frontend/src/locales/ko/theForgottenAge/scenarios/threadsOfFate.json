@@ -1,4 +1,9 @@
 {
+  "heading": "시나리오 III",
+  "ui": {
+    "ichtacasDestination": "이츠타카의 목적",
+    "ichtacasPrey": "이츠타카의 적"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X는 파멸이 가장 많이 올려진 _추종자_ 적 하나에 놓인 파멸 개수입니다.",

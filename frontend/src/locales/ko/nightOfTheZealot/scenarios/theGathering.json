@@ -1,4 +1,5 @@
 {
+  "heading": "1장",
   "setup": {
     "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *회합*, *쥐 떼*, *구울*, *엄습하는 공포*, *고대의 악*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
     "placeLocations": "서재’ 장소 카드를 플레이 영역에 둡니다. 다른 장소 카드는 비플레이 상태로 치워 둡니다. 모든 조사자는 ‘서재’에서 시작합니다.",
@@ -17,7 +18,7 @@
     }
   },
   "intro": {
-    "title": "시나리오 I: 회합",
+    "title": "1장: 회합",
     "body": "<p>당신과 당신의 파트너는 당신의 고향인 메사추세츠 주, 아컴시에서 벌어진 기이한 사건을 조사하고 있습니다. 지난 몇 주간, 마을 사람들이 잇달아 실종되는 묘한 사건이 일어났습니다. 최근, 그들의 시체가 숲에서 발견되었는데, 몸뚱아리가 반쯤 뜯어먹힌 너덜너덜한 상태였습니다. 경찰과 신문은 굶주린 야생 동물이 벌인 짓이라고 설명했지만, 당신의 직감은 무언가가 더 있다고 말하고 있습니다. 당신은 동료들을 모아 대표 조사자의 집에서 이 이상한 사건에 대해 이야기하려 합니다.<p>"
   },
   "resolutions": {

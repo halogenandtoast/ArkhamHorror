@@ -36,22 +36,19 @@
   },
   "shuffleRemainder": "남은 조우 카드를 함께 섞어, 조우 덱을 만듭니다.",
   "readyToBegin": "이제 시작할 준비가 되었습니다.",
-
   "Yes": "예",
   "No": "아니오",
-
-
   "Parley": "협상",
   "Resign": "후퇴",
   "Investigate": "조사",
   "Evade": "회피",
+  "Explore": "탐사",
   "Fight": "전투",
   "Engage": "교전",
   "Forced": "강제",
   "Delayed": "지연됨",
   "Objective": "주요목적",
   "Haunted": "신들린",
-
   "Results": "결말",
   "Story": "이야기",
   "ChooseOne": "하나만 선택",
@@ -59,10 +56,16 @@
   "setup": "게임 준비",
   "addToken": "남은 캠페인 동안, 혼돈 주머니에 {'{'}{token}{'}'} 토큰 1개를 추가합니다.",
   "choice": {
+    "ammo": "탄약",
+    "breaches": "침수",
+    "cards": "카드",
+    "charge": "충전",
     "clues": "단서",
-    "resources": "자원",
-    "physical": "육체적",
     "mental": "정신적",
+    "physical": "육체적",
+    "resources": "자원",
+    "secret": "비밀",
+    "supply": "보급",
     "supplyPoints": "획득할 보급 점수"
   },
   "proceedToSetup": "_게임 준비_로 이어집니다.",
@@ -73,5 +76,52 @@
     "body": "신체",
     "hand": "손",
     "tarot": "타로"
-  }
+  },
+  "destiny": {
+    "theWitchingHour": "마녀의 시간",
+    "atDeathsDoorStep": "죽음의 문턱에서",
+    "theSecretName": "비밀 이름",
+    "theWagesOfSin": "죄악의 응보",
+    "forTheGreaterGood": "대의를 위하여",
+    "unionAndDisillusion": "합일과 환멸",
+    "inTheClutchesOfChaos": "혼돈의 손아귀에서",
+    "beforeTheBlackThrone": "검은 옥좌 앞에"
+  },
+  "pickDestiny": {
+    "title": "운명 점치기",
+    "instructions": "카드의 절반(반올림)을 뒤집으십시오."
+  },
+  "tarot": {
+    "TheFool0": "광대 • 0",
+    "TheMagicianI": "마법사 • I",
+    "TheHighPriestessII": "여사제 • II",
+    "TheEmpressIII": "여제 • III",
+    "TheEmperorIV": "황제 • IV",
+    "TheHierophantV": "법황 • V",
+    "TheLoversVI": "연인 • VI",
+    "TheChariotVII": "전차 • VII",
+    "StrengthVIII": "힘 • VIII",
+    "TheHermitIX": "은둔자 • IX",
+    "WheelOfFortuneX": "운명의 수레바퀴 • X",
+    "JusticeXI": "정의 • XI",
+    "TheHangedManXII": "매달린 남자 • XII",
+    "DeathXIII": "죽음 • XIII",
+    "TemperanceXIV": "절제 • XIV",
+    "TheDevilXV": "악마 • XV",
+    "TheTowerXVI": "탑 • XVI",
+    "TheStarXVII": "별 • XVII",
+    "TheMoonXVIII": "달 • XVIII",
+    "TheSunXIX": "태양 • XIX",
+    "JudgementXX": "심판 • XX",
+    "TheWorldXXI": "세계 • XXI"
+  },
+  "headings": {
+    "prologue": "서막",
+    "epilogue": "후일담",
+    "scenario": "시나리오",
+    "interlude": "막간 {number}",
+    "deckCreation": "덱 생성"
+  },
+  "upgradeDecks": "덱 향상",
+  "addSideScenario": "외전 시나리오 추가"
 }

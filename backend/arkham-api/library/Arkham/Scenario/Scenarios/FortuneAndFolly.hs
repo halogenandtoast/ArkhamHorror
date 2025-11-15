@@ -5,9 +5,12 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCard, AssetCardCode, AssetPlacement))
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (ScarletKeyTokens))
+import Arkham.Campaigns.TheScarletKeys.Meta hiding (Standard)
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -41,6 +44,7 @@ import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (StoryClues))
 import Arkham.Token
 import Arkham.Trait (Trait (Role, Unpracticed))
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -178,9 +182,9 @@ instance RunMessage FortuneAndFolly where
       flavor do
         setTitle "title"
         p "intro1"
-        p.basic.right.validate (c == Just "08") "scarletKeys"
-        p.basic.right.validate (c /= Just "08") "notScarletKeys"
-      if c == Just "08"
+        p.basic.right.validate (c == Just "09") "scarletKeys"
+        p.basic.right.validate (c /= Just "09") "notScarletKeys"
+      if c == Just "09"
         then doStep 2 PreScenarioSetup
         else doStep 3 PreScenarioSetup
       pure $ FortuneAndFolly $ attrs & campaignStepL .~ Nothing
@@ -481,6 +485,7 @@ instance RunMessage FortuneAndFolly where
             , scenarioXpBreakdown = scenarioXpBreakdown attrs
             , scenarioOptions = scenarioOptions attrs
             , scenarioLog = scenarioLog attrs
+            , scenarioStarted = True
             }
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs
 
@@ -615,7 +620,109 @@ instance RunMessage FortuneAndFollyPart2 where
     DoStep 1 SetupInvestigators -> do
       push DrawStartingHands
       pure s
-    ScenarioResolution _r -> do
-      endOfScenario
+    ScenarioResolution r -> scope "part2.resolutions" do
+      c <- selectOne TheCampaign
+      let isScarletKeys = c == Just "09"
+      case r of
+        NoResolution -> do
+          anyResigned <- selectAny ResignedInvestigator
+          push $ if anyResigned then R2 else R3
+        Resolution 1 -> do
+          xp <- allGainXp' attrs
+          when isScarletKeys do
+            record TheCellMeddledInAbarransAffairs
+
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested.validate isScarletKeys "scarletKeys" do
+                li "meddled"
+                li "bearer"
+              li "xp"
+              li "additionalRewards"
+
+          when isScarletKeys do
+            chooseBearer Keys.theWellspringOfFortune
+          do_ msg
+          endOfScenario
+        Resolution 2 -> do
+          xp <- allGainXp' attrs
+          when isScarletKeys do
+            record TheCellMeddledInAbarransAffairs
+            setBearer Keys.theWellspringOfFortune $ keyWithEnemy Enemies.abarranArrigorriagakoaAbarranUnleashed
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution2" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested.validate isScarletKeys "scarletKeys" do
+                li "meddled"
+                li "bearer"
+              li "fortunesChosen"
+              li "xp"
+              li "additionalRewards"
+          do_ msg
+          endOfScenario
+        Resolution 3 -> do
+          xp <- allGainXp' attrs
+          when isScarletKeys do
+            record TheCellMeddledInAbarransAffairs
+            setBearer Keys.theWellspringOfFortune $ keyWithEnemy Enemies.abarranArrigorriagakoaAbarranUnleashed
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution3" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested.validate isScarletKeys "scarletKeys" do
+                li "meddled"
+                li "bearer"
+              li "fortunesChosen"
+              li "xp"
+              li "additionalRewards"
+          do_ msg
+          endOfScenario
+        _ -> error "invalid resolution"
+      pure s
+    Do (ScenarioResolution _) -> scope "part2.additionalRewards" do
+      flavor $ setTitle "title" >> p "body"
+
+      n <-
+        countM
+          remembered
+          [ WonACultistMedallion
+          , ObservedTheStaff
+          , FoundAbarransSigil
+          , ObtainedASchematic
+          , ImpersonatedAGuard
+          , StayedOutOfSight
+          , DeliveredADecoyPackage
+          , IsamaraMesmerizedTheGuardsWithHerSong
+          ]
+
+      when (n > 4) do
+        eachInvestigator \iid -> gainXp iid attrs "additionalRewardXp" (n - 4)
+
+      investigators <- allInvestigators
+      when (n >= 5) do
+        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.isamaraOrdonezTheTorchSinger
+
+      when (n >= 6) do
+        addCampaignCardToDeckChoice
+          investigators
+          DoNotShuffleIn
+          Assets.deckOfPossibilitiesTychokineticImplement
+        setGlobal CampaignTarget "deckOfPossibilities"
+          =<< traverse
+            fetchCard
+            [ Enemies.casinoGuardB
+            , Enemies.securityPatrolB
+            , Treacheries.arcaneSpotlightB
+            , Treacheries.avariceCallsB
+            , Treacheries.avariceCallsA
+            , Treacheries.arcaneSpotlightA
+            , Enemies.fortunesDaggerA
+            , Enemies.fortunesShieldB
+            , Enemies.dimensionalShamblerHunterFromBeyond
+            ]
+
       pure s
     _ -> FortuneAndFollyPart2 <$> liftRunMessage msg fortuneAndFolly'

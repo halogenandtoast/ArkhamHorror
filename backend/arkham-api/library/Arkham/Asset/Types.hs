@@ -624,14 +624,16 @@ getMetaKey k attrs = case attrs.meta of
       Success v' -> v'
   _ -> False
 
+getMetaKeyMaybe :: FromJSON a => Key -> AssetAttrs -> Maybe a
+getMetaKeyMaybe k attrs = case attrs.meta of
+  Object o -> KeyMap.lookup k o >>= \v ->
+    case fromJSON v of
+      Error _ -> Nothing
+      Success v' -> Just v'
+  _ -> Nothing
+
 getMetaKeyDefault :: FromJSON a => Key -> a -> AssetAttrs -> a
-getMetaKeyDefault k def attrs = case attrs.meta of
-  Object o -> case KeyMap.lookup k o of
-    Nothing -> def
-    Just v -> case fromJSON v of
-      Error _ -> def
-      Success v' -> v'
-  _ -> def
+getMetaKeyDefault k def attrs = fromMaybe def $ getMetaKeyMaybe k attrs
 
 $(deriveToJSON (aesonOptions $ Just "asset") ''AssetAttrs)
 

@@ -22,6 +22,7 @@ import Arkham.Asset.Runner as X (
   getAssetMetaDefault,
   getMetaKey,
   getMetaKeyDefault,
+  getMetaKeyMaybe,
   handleTargetChoice,
   hasUses,
   healthL,

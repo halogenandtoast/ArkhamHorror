@@ -248,6 +248,9 @@ instance HasField "unique" CardDef Bool where
 instance HasField "doubleSided" CardDef Bool where
   getField = isJust . cdOtherSide
 
+instance HasField "printedTraits" CardDef (Set Trait) where
+  getField = cdCardTraits
+
 emptyCardDef :: CardCode -> Name -> CardType -> CardDef
 emptyCardDef cCode name cType =
   CardDef

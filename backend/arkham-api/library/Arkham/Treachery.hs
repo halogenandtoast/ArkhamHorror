@@ -806,9 +806,9 @@ allTreacheries =
     , SomeTreacheryCard obsessedGamblerB
     , SomeTreacheryCard obsessedGamblerC
     , --- Plan in Shambles
-      SomeTreacheryCard dimensionalHypothesisA
-    , SomeTreacheryCard dimensionalHypothesisB
-    , SomeTreacheryCard dimensionalHypothesisC
+      SomeTreacheryCard dimensionalHypnosisA
+    , SomeTreacheryCard dimensionalHypnosisB
+    , SomeTreacheryCard dimensionalHypnosisC
     , SomeTreacheryCard gripOfTheBeyondA
     , SomeTreacheryCard gripOfTheBeyondB
     , SomeTreacheryCard gripOfTheBeyondC

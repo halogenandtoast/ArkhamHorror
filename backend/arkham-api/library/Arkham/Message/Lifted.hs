@@ -2210,6 +2210,15 @@ movementModifier
   -> m ()
 movementModifier source target modifier = Msg.pushM $ Msg.movementModifier source target modifier
 
+thisMovementModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => MovementId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+thisMovementModifier mid source target modifier = Msg.pushM $ Msg.thisMovementModifier mid source target modifier
+
 dealAdditionalDamage
   :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
 dealAdditionalDamage iid amount additionalMessages = lift $ Msg.dealAdditionalDamage iid amount additionalMessages
@@ -3449,7 +3458,7 @@ cancelMovement
 cancelMovement source investigator = do
   field InvestigatorMovement (asId investigator) >>= \case
     Nothing -> movementModifier source investigator CannotMove
-    Just movement -> movementModifier source investigator (CancelMovement movement.id)
+    Just movement -> thisMovementModifier movement.id source investigator (CancelMovement movement.id)
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg

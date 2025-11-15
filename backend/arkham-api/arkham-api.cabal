@@ -1859,6 +1859,7 @@ library
       Arkham.Enemy.Cards.EnragedGug
       Arkham.Enemy.Cards.EnthralledSecurityGuard
       Arkham.Enemy.Cards.ErikaStrandPossessedProducer
+      Arkham.Enemy.Cards.ExtradimensionalEnemy
       Arkham.Enemy.Cards.EztliGuardian
       Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FangOfYig
@@ -4481,9 +4482,9 @@ library
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DholeTunnel
       Arkham.Treachery.Cards.DiabolicVoices
-      Arkham.Treachery.Cards.DimensionalHypothesisA
-      Arkham.Treachery.Cards.DimensionalHypothesisB
-      Arkham.Treachery.Cards.DimensionalHypothesisC
+      Arkham.Treachery.Cards.DimensionalHypnosisA
+      Arkham.Treachery.Cards.DimensionalHypnosisB
+      Arkham.Treachery.Cards.DimensionalHypnosisC
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DisquietingDreams
       Arkham.Treachery.Cards.DisruptivePoltergeist

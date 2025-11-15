@@ -737,6 +737,11 @@ movementModifier
   => source -> target -> ModifierType -> m Message
 movementModifier source target modifier = createWindowModifierEffect EffectMoveWindow source target [modifier]
 
+thisMovementModifier
+  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
+  => MovementId -> source -> target -> ModifierType -> m Message
+thisMovementModifier mid source target modifier = createWindowModifierEffect (EffectThisMoveWindow mid) source target [modifier]
+
 phaseModifier
   :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => source -> target -> ModifierType -> m Message

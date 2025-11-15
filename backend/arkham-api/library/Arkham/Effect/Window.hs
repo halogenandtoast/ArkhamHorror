@@ -40,6 +40,7 @@ data EffectWindow
   | EffectCardDrawWindow CardDrawId
   | EffectUI
   | EffectMoveWindow
+  | EffectThisMoveWindow MovementId
   | EffectRevelationWindow TreacheryId
   | EffectDefeatWindow EnemyId
   | EffectHollowWindow CardId

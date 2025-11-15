@@ -106,6 +106,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     MoveAction _ _ _ False | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    Move movement | isEndOfWindow a (EffectThisMoveWindow movement.id) -> do
+      a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
     EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do

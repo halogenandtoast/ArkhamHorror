@@ -1759,6 +1759,7 @@ instance RunMessage EnemyAttrs where
         canDisengage <- iid <=~> InvestigatorCanDisengage
         if canDisengage
           then do
+            pushM $ checkAfter $ Window.EnemyDisengaged iid enemyId
             lid <- getJustLocation iid
             pure $ a & placementL .~ AtLocation lid
           else pure a
@@ -1772,6 +1773,7 @@ instance RunMessage EnemyAttrs where
         if canDisengage
           then do
             lid <- getJustLocation iid
+            pushM $ checkAfter $ Window.EnemyDisengaged iid enemyId
             pure $ a & placementL .~ AtLocation lid
           else pure a
       AsSwarm eid' _ -> do

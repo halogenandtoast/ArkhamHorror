@@ -77,6 +77,7 @@ data EnemyMatcher
   | EnemyWithMostClues EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
+  | EnemyWithoutAttachedEncounterCard
   | EnemyWithAttachedEvent EventMatcher
   | EnemyWithAttachedAsset AssetMatcher
   | EnemyWithAttachedTreachery TreacheryMatcher

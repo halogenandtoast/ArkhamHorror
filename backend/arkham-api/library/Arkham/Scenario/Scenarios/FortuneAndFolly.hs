@@ -21,6 +21,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Layout
@@ -642,8 +643,7 @@ instance RunMessage FortuneAndFollyPart2 where
               li "xp"
               li "additionalRewards"
 
-          when isScarletKeys do
-            chooseBearer Keys.theWellspringOfFortune
+          when isScarletKeys $ chooseBearer Keys.theWellspringOfFortune
           do_ msg
           endOfScenario
         Resolution 2 -> do
@@ -699,7 +699,7 @@ instance RunMessage FortuneAndFollyPart2 where
           ]
 
       when (n > 4) do
-        eachInvestigator \iid -> gainXp iid attrs "additionalRewardXp" (n - 4)
+        eachInvestigator \iid -> gainXp iid attrs (ikey "xp.additionalReward") (n - 4)
 
       investigators <- allInvestigators
       when (n >= 5) do

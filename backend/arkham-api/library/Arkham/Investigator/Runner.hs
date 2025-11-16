@@ -3387,7 +3387,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     afterPlacedWindowMsg <-
       Helpers.checkWindow $ mkAfter $ Window.PlacedToken source (toTarget a) token n
     push afterPlacedWindowMsg
-    when (token == #resource) $ Lifted.updateHistory investigatorId $ HistoryItem HistoryResourcesGained n
+    when (token == #resource)
+      $ Lifted.updateHistory investigatorId
+      $ HistoryItem HistoryResourcesGained n
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
     case token of

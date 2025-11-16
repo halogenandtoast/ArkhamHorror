@@ -43,6 +43,8 @@ instance RunMessage DeckOfPossibilitiesTychokineticImplement where
               && isJust def.cost
       let cards = mapMaybe lookupCardDef $ toList allPlayerCards
       for_ (getMetaKeyMaybe @[Card] "extraDeck" attrs >>= nonEmpty) \(c :| rest) -> do
+        focusCards [c] $ continue_ iid
+        doStep 1 msg
         for_ (toPlayingCardPure c) \pc -> do
           case (pc.rank, pc.suit) of
             (Jack, Hearts) -> gainActions iid (attrs.ability 1) 3
@@ -68,7 +70,9 @@ instance RunMessage DeckOfPossibilitiesTychokineticImplement where
             (Ace, Spades) -> gameModifier (attrs.ability 1) iid (ForcedChaosTokenChange ElderSign [AutoFail])
             _ -> pure ()
         setGlobal CampaignTarget "deckOfPossibilities" (toJSON rest)
-      pure a
+      pure $ DeckOfPossibilitiesTychokineticImplement $ attrs & flippedL .~ True
+    DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
+      pure $ DeckOfPossibilitiesTychokineticImplement $ attrs & flippedL .~ False
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       for_ (lookupCardDef cardCode) \def -> do
         card <- genCard def

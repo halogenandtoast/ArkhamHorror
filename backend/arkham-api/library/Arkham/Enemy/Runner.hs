@@ -754,7 +754,11 @@ instance RunMessage EnemyAttrs where
                   $ fromJustNote "must have bearer" enemyBearer
               (Nothing, OnlyPrey onlyPrey) -> do
                 preyIds <- select onlyPrey
-                pure $ LocationWithInvestigator $ mapOneOf InvestigatorWithId preyIds <> NearestToEnemy (be eid)
+                pure
+                  $ locationMatcherModifier
+                  $ NearestLocationToLocation loc
+                  $ LocationWithInvestigator
+                  $ mapOneOf InvestigatorWithId preyIds
               (Nothing, _prey) -> do
                 investigatorLocations <-
                   select

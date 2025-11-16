@@ -367,7 +367,8 @@ instance RunMessage EnemyAttrs where
                     then do
                       afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
                       pushAll $ EnemyEntered enemyId lid
-                        : [EnemyEngageInvestigator enemyId iid | not (spawnDetailsUnengaged details) || forcedEngagement]
+                        : [ Will (EnemyEngageInvestigator enemyId iid) | not (spawnDetailsUnengaged details) || forcedEngagement
+                          ]
                           <> [afterSpawns, EnemySpawned details]
                       case swarms of
                         [] -> pure ()
@@ -447,7 +448,7 @@ instance RunMessage EnemyAttrs where
                         [] -> pushAll [EnemyEntered eid lid, afterSpawns, EnemySpawned details]
                         [iid] -> do
                           pushAll $ EnemyEntered eid lid
-                            : [EnemyEngageInvestigator eid iid | not onlyPrey || iid `elem` preyIds]
+                            : [Will (EnemyEngageInvestigator eid iid) | not onlyPrey || iid `elem` preyIds]
                               <> [afterSpawns, EnemySpawned details]
                         iids -> do
                           let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
@@ -458,7 +459,7 @@ instance RunMessage EnemyAttrs where
                                 $ chooseOne lead
                                 $ [ targetLabel
                                       iid
-                                      [EnemyEntered eid lid, EnemyEngageInvestigator eid iid, afterSpawns, EnemySpawned details]
+                                      [EnemyEntered eid lid, Will (EnemyEngageInvestigator eid iid), afterSpawns, EnemySpawned details]
                                   | iid <- choices
                                   ]
                 else
@@ -1569,7 +1570,8 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     Will msg'@(EnemyEngageInvestigator eid _) | eid == enemyId -> do
-      unless enemyExhausted $ push msg'
+      kws <- getModifiedKeywords a
+      unless (enemyExhausted || Keyword.Aloof `elem` kws) $ push msg'
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       eliminated <- not <$> matches iid UneliminatedInvestigator

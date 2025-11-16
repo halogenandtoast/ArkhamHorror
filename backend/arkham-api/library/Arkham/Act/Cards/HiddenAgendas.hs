@@ -54,7 +54,7 @@ instance RunMessage HiddenAgendas where
         replaceLocation wineCellar =<< getSetAsideCard Locations.wineCellarSpectral
 
       doStep 0 msg
-      eachInvestigator (`forInvestigator` msg)
+      doStep 1 msg
 
       theSpectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
       spawnEnemyAt_ theSpectralWatcher entryHall
@@ -71,6 +71,12 @@ instance RunMessage HiddenAgendas where
       pure a
     DoStep 0 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       selectEach (LocationWithInvestigator Anyone) reveal
+      pure a
+    DoStep 1 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+      monsters <- getSetAsideCardsMatching $ CardWithTrait Monster
+      unless (null monsters) do
+        eachInvestigator (`forInvestigator` msg')
+        doStep 1 msg'
       pure a
     ForInvestigator iid (AdvanceAct (isSide B attrs -> True) _ _) -> do
       monsters <- getSetAsideCardsMatching $ CardWithTrait Monster

@@ -16,7 +16,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Window
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
-import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -118,7 +118,7 @@ setupKeys = do
 
 chooseBearer :: ReverseQueue m => CardDef -> m ()
 chooseBearer def = do
-  investigators <- getInvestigators
+  investigators <- allInvestigators
   leadChooseOneM do
     questionLabeled "Choose bearer"
     questionLabeledCard def

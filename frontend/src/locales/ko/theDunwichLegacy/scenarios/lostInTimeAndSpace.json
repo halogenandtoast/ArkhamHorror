@@ -1,4 +1,5 @@
 {
+  "heading": "시나리오 VII",
   "tokens": {
     "easyStandard": {
       "skull": "플레이 상태인 _초차원_ 장소마다 -1(최대 -5).",
@@ -54,7 +55,7 @@
     }
   },
   "label": {
-    "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
+    "yogSothoth": "덱 최상위 {cards}장을 버리고 공포를 {horror}만큼 받습니다.",
     "tearThroughSpace": {
       "placeDoom": "‘공간을 가로질러 난 균열’에 파멸을 1개 올려놓습니다.",
       "discard": "‘공간을 가로질러 난 균열’을 버립니다."

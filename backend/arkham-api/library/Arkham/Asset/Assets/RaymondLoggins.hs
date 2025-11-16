@@ -6,13 +6,17 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 import Arkham.Token (Token (Truth))
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype RaymondLoggins = RaymondLoggins AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 raymondLoggins :: AssetCard RaymondLoggins
 raymondLoggins = allyWith RaymondLoggins Cards.raymondLoggins (1, 2) noSlots
+
+instance HasModifiersFor RaymondLoggins where
+  getModifiersFor (RaymondLoggins a) = handleSpellbound a
 
 instance HasAbilities RaymondLoggins where
   getAbilities (RaymondLoggins a) =
@@ -31,8 +35,8 @@ instance RunMessage RaymondLoggins where
       assignHorror iid attrs 1
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ RaymondLoggins $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ RaymondLoggins $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ RaymondLoggins $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ RaymondLoggins $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> RaymondLoggins <$> liftRunMessage msg attrs

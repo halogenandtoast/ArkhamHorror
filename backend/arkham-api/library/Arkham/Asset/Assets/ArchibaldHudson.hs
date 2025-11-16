@@ -6,13 +6,17 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype ArchibaldHudson = ArchibaldHudson AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archibaldHudson :: AssetCard ArchibaldHudson
 archibaldHudson = allyWith ArchibaldHudson Cards.archibaldHudson (2, 2) noSlots
+
+instance HasModifiersFor ArchibaldHudson where
+  getModifiersFor (ArchibaldHudson a) = handleSpellbound a
 
 instance HasAbilities ArchibaldHudson where
   getAbilities (ArchibaldHudson a) =
@@ -47,8 +51,8 @@ instance RunMessage ArchibaldHudson where
         chooseTargetM iid enemies \eid -> moveTokens (attrs.ability 2) aid eid #damage 1
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ ArchibaldHudson $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ ArchibaldHudson $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ ArchibaldHudson $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ ArchibaldHudson $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> ArchibaldHudson <$> liftRunMessage msg attrs

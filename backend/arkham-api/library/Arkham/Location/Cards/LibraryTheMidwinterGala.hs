@@ -24,6 +24,7 @@ instance HasModifiersFor LibraryTheMidwinterGala where
     getSkillTestInvestigator >>= traverse_ \iid -> do
       maybeModified_ a iid do
         guardM isParley
+        guardM $ iid <=~> investigatorAt (locationId a)
         pure [AnySkillValue 1]
 
 instance HasAbilities LibraryTheMidwinterGala where

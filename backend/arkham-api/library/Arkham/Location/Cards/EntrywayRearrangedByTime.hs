@@ -33,11 +33,11 @@ instance HasAbilities EntrywayRearrangedByTime where
 instance RunMessage EntrywayRearrangedByTime where
   runMessage msg l@(EntrywayRearrangedByTime attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      explorationDeck <- getExplorationDeck
-      let (viewing, rest) = splitAt 2 explorationDeck
+      (viewing, rest) <- splitAt 2 <$> getExplorationDeck
       let (discardable, other) = partition (`cardMatch` mapOneOf CardWithType [TreacheryType, EnemyType]) viewing
       focusCards viewing do
         setScenarioDeck ExplorationDeck $ other <> rest
+        when (null discardable) $ continue_ iid
         chooseOneM iid $ targets (onlyEncounterCards discardable) (addToEncounterDiscard . only)
       for_ other $ putCardOnBottomOfDeck iid ExplorationDeck
       shuffleDeck ExplorationDeck

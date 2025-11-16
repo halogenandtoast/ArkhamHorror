@@ -308,7 +308,7 @@ instance RunMessage TheMidwinterGala where
     Do (ScenarioResolution r) -> scope "resolutions" do
       case r of
         NoResolution -> do
-          resolution "noResolutions" >> do_ R7
+          resolution "noResolution" >> do_ R7
         Resolution 1 -> do
           let Meta {ally} = toResult attrs.meta
           storyBuild do

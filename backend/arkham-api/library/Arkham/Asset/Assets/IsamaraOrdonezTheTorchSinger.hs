@@ -25,7 +25,7 @@ instance HasModifiersFor IsamaraOrdonezTheTorchSinger where
 instance HasAbilities IsamaraOrdonezTheTorchSinger where
   getAbilities (IsamaraOrdonezTheTorchSinger x) =
     [ controlled x 1 (exists $ NonEliteEnemy <> at_ (orConnected_ YourLocation))
-        $ actionAbilityWithCost (exhaust x <> HorrorCost (x.ability 1) (toTarget x) 1)
+        $ FastAbility (exhaust x <> HorrorCost (x.ability 1) (toTarget x) 1)
     ]
 
 instance RunMessage IsamaraOrdonezTheTorchSinger where
@@ -38,6 +38,7 @@ instance RunMessage IsamaraOrdonezTheTorchSinger where
             modifiers <- getModifiers iid
             unless (ControlledAssetsCannotReady `elem` modifiers) do
               chooseOneM iid $ withI18n do
+                questionLabeledCard attrs
                 labeled "Ready" $ push $ Ready $ toTarget attrs
                 skip_
           _ -> push (Ready $ toTarget attrs)
@@ -50,11 +51,14 @@ instance RunMessage IsamaraOrdonezTheTorchSinger where
     _ -> IsamaraOrdonezTheTorchSinger <$> liftRunMessage msg attrs
 
 newtype IsamaraOrdonezTheTorchSingerEffect = IsamaraOrdonezTheTorchSingerEffect EffectAttrs
-  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 isamaraOrdonezTheTorchSingerEffect :: EffectArgs -> IsamaraOrdonezTheTorchSingerEffect
 isamaraOrdonezTheTorchSingerEffect = cardEffect IsamaraOrdonezTheTorchSingerEffect Cards.isamaraOrdonezTheTorchSinger
+
+instance HasModifiersFor IsamaraOrdonezTheTorchSingerEffect where
+  getModifiersFor (IsamaraOrdonezTheTorchSingerEffect a) = modified_ a a.target [CannotMove]
 
 instance RunMessage IsamaraOrdonezTheTorchSingerEffect where
   runMessage msg e@(IsamaraOrdonezTheTorchSingerEffect attrs) = runQueueT $ case msg of

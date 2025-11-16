@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Card (
   module Arkham.Card,
@@ -54,6 +55,9 @@ lookupCard (toCardCode -> cardCode) cardId =
 lookupCardDef :: HasCardCode cardCode => cardCode -> Maybe CardDef
 lookupCardDef (toCardCode -> cardCode) =
   lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
+
+instance HasField "flip" CardDef (Maybe CardDef) where
+  getField def = def.otherSide >>= lookupCardDef
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode

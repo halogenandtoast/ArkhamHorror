@@ -359,6 +359,12 @@ const mutated = computed<string>(() => {
   return m ? m[1] : ''
 })
 
+const additionalCard = computed<string | null>(() => {
+  if (!cardCode.value) return null
+  if (!["88043"].includes(cardCode.value)) return null
+  return imgsrc(`cards/${cardCode.value}b.avif`)
+})
+
 const customizationsCard = computed<string | null>(() => {
   if (!cardCode.value) return null
   if (!allCustomizations.has(cardCode.value)) return null
@@ -852,6 +858,25 @@ watchEffect(() => {
               </g>
             </template>
           </template>
+        </g>
+      </svg>
+
+      <svg
+        v-if="additionalCard"
+        class="card-svg customizations-svg"
+        :width="svgWidth"
+        :height="svgHeight"
+        :style="`width:${svgWidth}px;height:${svgHeight}px`"
+        :viewBox="viewBox"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g :transform="groupTransform">
+          <image
+            :href="additionalCard"
+            x="0" y="0"
+            :width="sideways ? viewH : VIEW_W"
+            :height="sideways ? VIEW_W : viewH"
+          />
         </g>
       </svg>
 

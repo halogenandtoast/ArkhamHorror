@@ -128,7 +128,7 @@ button, a.button {
   background-color: #532e61;
   border-radius: 0.6em;
   border: 0;
-  color: #EEE;
+  color: #DDD;
   font-size: 1.2em;
   font-weight: bold;
   font-family: Arial, sans-serif;
@@ -139,6 +139,11 @@ button, a.button {
   width: 100%;
   text-transform: uppercase;
   display: flex;
+
+  &:deep(strong) {
+    display: contents;
+    color: #FFF;
+  }
 
   &[disabled] {
     cursor: not-allowed;

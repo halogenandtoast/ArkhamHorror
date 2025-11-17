@@ -105,17 +105,8 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
-  Entity userId' user <- getRequestUser
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
-
-  -- if admin we masquerade as the current player
-
-  userId <-
-    if user.admin
-      then do
-        player <- runDB $ get404 $ coerce $ gameActivePlayerId $ arkhamGameCurrentData game
-        pure $ coerce $ arkhamPlayerUserId player
-      else pure userId'
 
   ArkhamGame {..} <- stepBack userId gameId game
   writeChannel <- socketChannel <$> getRoom gameId

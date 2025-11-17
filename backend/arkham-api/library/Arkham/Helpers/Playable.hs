@@ -418,12 +418,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         Keyword.Seal sealing -> if costStatus == PaidCost then Nothing else sealingToCost sealing
         _ -> Nothing
 
-    investigateCosts <- runDefaultMaybeT [] do
-      guard $ #investigate `elem` cdActions pcDef
-      lid <- MaybeT $ field InvestigatorLocation iid
-      mods <- lift $ getModifiers lid
-      pure [m | AdditionalCostToInvestigate m <- mods]
-
     resignCosts <- runDefaultMaybeT [] do
       guard $ #resign `elem` cdActions pcDef
       lid <- MaybeT $ field InvestigatorLocation iid
@@ -449,7 +443,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
       <> additionalCosts
       <> auxiliaryCosts
-      <> investigateCosts
       <> resignCosts
       <> sealedChaosTokenCost
       <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]

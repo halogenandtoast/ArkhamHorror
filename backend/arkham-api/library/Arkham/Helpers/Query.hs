@@ -29,6 +29,9 @@ getLead = do
   mOthers <- selectOne $ IncludeEliminated Anyone
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
+getLeadMay :: (HasCallStack, HasGame m, Tracing m) => m (Maybe InvestigatorId)
+getLeadMay = runMaybeT $ MaybeT (selectOne LeadInvestigator) <|> MaybeT (selectOne $ IncludeEliminated Anyone)
+
 inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
 inTurnOrder xs =
   getTurnOrder <&> \case
@@ -61,7 +64,7 @@ allPlayers :: HasGame m => m [PlayerId]
 allPlayers = getAllPlayers
 
 getLeadPlayer :: (HasCallStack, HasGame m, Tracing m) => m PlayerId
-getLeadPlayer = field InvestigatorPlayerId =<< getLead
+getLeadPlayer = maybe getActivePlayer (field InvestigatorPlayerId) =<< getLeadMay
 
 getLeadInvestigatorPlayer :: (HasCallStack, HasGame m, Tracing m) => m (InvestigatorId, PlayerId)
 getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLead

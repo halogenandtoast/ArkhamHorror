@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Enemy where
 
 import Arkham.Asset.Types (Field (..))
@@ -129,7 +127,7 @@ noSpawn attrs miid = do
 
 getModifiedDamageAmount :: (HasGame m, Targetable target) => target -> DamageAssignment -> m Int
 getModifiedDamageAmount target damageAssignment = do
-  modifiers' <- traceShowId <$> getModifiers target
+  modifiers' <- getModifiers target
   updatedAmount <- foldrM applyModifier amount modifiers'
   updatedAmount' <- foldrM applyAfterModifier updatedAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount' modifiers'

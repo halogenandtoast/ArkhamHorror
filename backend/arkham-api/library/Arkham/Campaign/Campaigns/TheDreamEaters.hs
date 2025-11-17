@@ -125,21 +125,19 @@ instance IsCampaign TheDreamEaters where
      in case attrs.normalizedStep of
           PrologueStep -> error $ "Unhandled campaign step: " <> show a
           BeyondTheGatesOfSleep ->
-            continue
-              $ case campaignMode meta of
-                FullMode ->
-                  if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
-                    then InterludeStep 1 Nothing
-                    else WakingNightmare
-                PartialMode _ -> InterludeStep 1 Nothing
+            case campaignMode meta of
+              FullMode ->
+                if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
+                  then continue $ InterludeStep 1 Nothing
+                  else continueNoUpgrade $ WakingNightmare
+              PartialMode _ -> continue $ InterludeStep 1 Nothing
           WakingNightmare ->
-            continue
-              $ case campaignMode meta of
-                FullMode ->
-                  if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
-                    then InterludeStep 1 Nothing
-                    else BeyondTheGatesOfSleep
-                PartialMode _ -> InterludeStep 1 Nothing
+            case campaignMode meta of
+              FullMode ->
+                if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
+                  then continue $ InterludeStep 1 Nothing
+                  else continueNoUpgrade $ BeyondTheGatesOfSleep
+              PartialMode _ -> continue $ InterludeStep 1 Nothing
           InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
           TheSearchForKadath ->
             continue
@@ -299,83 +297,85 @@ instance RunMessage TheDreamEaters where
                     , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty})
                     }
             }
+      Do msg'@(CampaignStep (ContinueCampaignStep (Continuation (ScenarioStep _) _ _))) -> do
+        lift $ defaultCampaignRunner msg' c
+      CampaignStep s@(ContinueCampaignStep (Continuation sc@(ScenarioStep _) _ _)) -> do
+        if
+          | sc `elem` theDreamQuestSteps && currentCampaignMode meta == Just TheWebOfDreams -> do
+              if sc == BeyondTheGatesOfSleep
+                then do
+                  pushAll [ClearInvestigators, Do msg]
+                else do
+                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                    push $ Priority $ SetInvestigator pid i
+                  pushAll [Do msg]
+              investigators <- allInvestigators
+              currentPlayers <- for investigators \i -> do
+                player <- getPlayer i
+                iattrs <- getAttrs @Investigator i
+                pure (player, iattrs)
+              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+              pure
+                $ TheDreamEaters
+                $ newAttrs
+                  { campaignCompletedSteps = campaignCompletedSteps attrs
+                  , campaignStep = s
+                  , campaignMeta =
+                      toJSON
+                        $ meta
+                          { currentCampaignMode = Just TheDreamQuest
+                          , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
+                          , currentCampaignPlayers = otherCampaignPlayers meta
+                          , otherCampaignPlayers = mapFromList currentPlayers
+                          }
+                  }
+          | sc `elem` theWebOfDreamsSteps && currentCampaignMode meta == Just TheDreamQuest -> do
+              if sc == WakingNightmare
+                then do
+                  pushAll [ClearInvestigators, Do msg]
+                else do
+                  for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                    let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+                    push $ Priority $ SetInvestigator pid i
+                  pushAll [Do msg]
+              investigators <- allInvestigators
+              currentPlayers <- for investigators \i -> do
+                player <- getPlayer i
+                iattrs <- getAttrs @Investigator i
+                pure (player, iattrs)
+              let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+              pure
+                $ TheDreamEaters
+                $ newAttrs
+                  { campaignCompletedSteps = campaignCompletedSteps attrs
+                  , campaignStep = s
+                  , campaignMeta =
+                      toJSON
+                        $ meta
+                          { currentCampaignMode = Just TheWebOfDreams
+                          , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
+                          , currentCampaignPlayers = otherCampaignPlayers meta
+                          , otherCampaignPlayers = mapFromList currentPlayers
+                          }
+                  }
+          | otherwise -> do
+              do_ msg
+              pure c
       CampaignStep s@(ScenarioStep _) -> do
-        c' <- case s of
-          _ | s `elem` theDreamQuestSteps -> do
-            if currentCampaignMode meta == Just TheWebOfDreams
-              then do
-                investigators <- allInvestigators
-                currentPlayers <- for investigators \i -> do
-                  player <- getPlayer i
-                  iattrs <- getAttrs @Investigator i
-                  pure (player, iattrs)
-
-                if s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs
-                  then do
-                    players <- allPlayers
-                    pushAll
-                      $ ChoosingDecks
-                      : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
-                        <> [DoneChoosingDecks]
-                  else do
-                    for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-                      let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-                      push $ Priority $ SetInvestigator pid i
-                let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-                pure
-                  $ TheDreamEaters
-                    ( newAttrs
-                        { campaignCompletedSteps = campaignCompletedSteps attrs
-                        , campaignStep = s
-                        , campaignMeta =
-                            toJSON
-                              $ meta
-                                { currentCampaignMode = Just TheDreamQuest
-                                , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
-                                , currentCampaignPlayers = otherCampaignPlayers meta
-                                , otherCampaignPlayers = mapFromList currentPlayers
-                                }
-                        }
-                    )
-              else pure c
-          _ | s `elem` theWebOfDreamsSteps -> do
-            if currentCampaignMode meta == Just TheDreamQuest
-              then do
-                investigators <- allInvestigators
-                currentPlayers <- for investigators \i -> do
-                  player <- getPlayer i
-                  iattrs <- getAttrs @Investigator i
-                  pure (player, iattrs)
-                if s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs
-                  then do
-                    players <- allPlayers
-                    pushAll
-                      $ ChoosingDecks
-                      : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
-                        <> [DoneChoosingDecks]
-                  else do
-                    for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-                      let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-                      push $ Priority $ SetInvestigator pid i
-                let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-                pure
-                  $ TheDreamEaters
-                    ( newAttrs
-                        { campaignCompletedSteps = campaignCompletedSteps attrs
-                        , campaignStep = s
-                        , campaignMeta =
-                            toJSON
-                              $ meta
-                                { currentCampaignMode = Just TheWebOfDreams
-                                , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
-                                , currentCampaignPlayers = otherCampaignPlayers meta
-                                , otherCampaignPlayers = mapFromList currentPlayers
-                                }
-                        }
-                    )
-              else pure c
-          _ -> error $ "Unknown scenario: " <> show s
-        lift $ defaultCampaignRunner msg c'
+        when (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs) do
+          players <- allPlayers
+          pushAll
+            $ ChoosingDecks
+            : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+              <> [DoneChoosingDecks]
+        when (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs) do
+          players <- allPlayers
+          pushAll
+            $ ChoosingDecks
+            : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+              <> [DoneChoosingDecks]
+        lift $ defaultCampaignRunner msg c
       CampaignStep (InterludeStep 1 _) -> do
         case campaignMode meta of
           PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)

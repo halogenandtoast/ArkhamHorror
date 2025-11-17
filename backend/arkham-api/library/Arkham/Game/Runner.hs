@@ -382,6 +382,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   IfCardExists cMatcher msgs -> do
     whenM (selectAny cMatcher) $ pushAll msgs
     pure g
+  ClearInvestigators -> do
+    pure
+      $ g
+      & (entitiesL . investigatorsL .~ mempty)
+      & (activeInvestigatorIdL .~ InvestigatorId "00000")
+      & (leadInvestigatorIdL .~ InvestigatorId "00000")
   BeginAction ->
     pure
       $ g

@@ -49,6 +49,20 @@ instance HasAbilities TheBrotherhoodIsRevealed where
     | onSide E a
     ]
 
+storeLastLocation
+  :: ReverseQueue m => TheBrotherhoodIsRevealed -> EnemyId -> m TheBrotherhoodIsRevealed
+storeLastLocation a@(TheBrotherhoodIsRevealed (attrs `With` _)) eid = do
+  isPrey <- isIchtacasPrey eid
+  isMariaDeSilva <- eid <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
+  if isPrey && isMariaDeSilva
+    then do
+      location <- join <$> fieldMay EnemyLastKnownLocation eid
+      pure
+        . TheBrotherhoodIsRevealed
+        $ attrs
+        `with` Metadata (Just $ fromJustNote "missing location" location)
+    else pure a
+
 instance RunMessage TheBrotherhoodIsRevealed where
   runMessage msg a@(TheBrotherhoodIsRevealed (attrs `With` metadata)) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
@@ -59,22 +73,12 @@ instance RunMessage TheBrotherhoodIsRevealed where
       ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
       lid <- maybe (selectJust $ locationIs Locations.blackCave) pure (mariaDeSilvasLocation metadata)
       iids <- select $ NearestToLocation $ LocationWithId lid
-      -- TODO: we need to know the prey details
       leadChooseOrRunOneM $ targets iids (`takeControlOfSetAsideAsset` ichtaca)
       push
         $ if deckCount <= 1
           then R1
           else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
-    RemoveEnemy eid -> do
-      isPrey <- isIchtacasPrey eid
-      isMariaDeSilva <- eid <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-      if isPrey && isMariaDeSilva
-        then do
-          location <- join <$> fieldMay EnemyLastKnownLocation eid
-          pure
-            . TheBrotherhoodIsRevealed
-            $ attrs
-            `with` Metadata (Just $ fromJustNote "missing location" location)
-        else pure a
+    RemoveEnemy eid -> storeLastLocation a eid
+    AddToVictory (EnemyTarget eid) -> storeLastLocation a eid
     _ -> TheBrotherhoodIsRevealed . (`with` metadata) <$> liftRunMessage msg attrs

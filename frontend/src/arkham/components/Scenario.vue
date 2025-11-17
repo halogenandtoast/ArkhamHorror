@@ -1043,8 +1043,10 @@ async function addChaosToken(face: any){
             <CardView
               :game="game"
               :card="hollowed[0]"
+              :playerId="playerId"
               class="card"
               @click="showHollowed"
+              @choose="choose"
             />
             <span class="deck-size">{{hollowed.length}}</span>
           </div>

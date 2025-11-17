@@ -959,8 +959,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
     if null investigatorDeck
       then do
-        isDefeated <- field AssetIsDefeated aid
-        when isDefeated $ Lifted.toDiscard GameSource aid
+        mIsDefeated <- fieldMay AssetIsDefeated aid
+        for_ mIsDefeated \isDefeated -> do
+          when isDefeated $ Lifted.toDiscard GameSource aid
         pure a
       else do
         card <- field AssetCard aid

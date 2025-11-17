@@ -6773,134 +6773,99 @@ blackReef =
 bootleggersHideaway_174a :: CardDef
 bootleggersHideaway_174a =
   victory 1
-    $ locationWithUnrevealed
+    $ locationWithUnrevealed_
       "07174a"
       "Tidal Tunnel"
       [Cave]
-      NoSymbol
-      []
       "Bootlegger's Hideaway"
       [Cave]
-      NoSymbol
-      []
       DevilReef
 
 bootleggersHideaway_174b :: CardDef
 bootleggersHideaway_174b =
   victory 1
-    $ locationWithUnrevealed
+    $ locationWithUnrevealed_
       "07174b"
       "Tidal Tunnel"
       [Cave]
-      NoSymbol
-      []
       "Bootlegger's Hideaway"
       [Cave]
-      NoSymbol
-      []
       DevilReef
 
 deepOneGrotto_175a :: CardDef
 deepOneGrotto_175a =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07175a"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Deep One Grotto"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 deepOneGrotto_175b :: CardDef
 deepOneGrotto_175b =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07175b"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Deep One Grotto"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 cyclopeanRuins_176a :: CardDef
 cyclopeanRuins_176a =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07176a"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Cyclopean Ruins"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 cyclopeanRuins_176b :: CardDef
 cyclopeanRuins_176b =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07176b"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Cyclopean Ruins"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 templeOfTheUnion_177a :: CardDef
 templeOfTheUnion_177a =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07177a"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Temple of the Union"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 templeOfTheUnion_177b :: CardDef
 templeOfTheUnion_177b =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     "07177b"
     "Unfathomable Depths"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     "Temple of the Union"
     [Cave, Yhanthlei]
-    NoSymbol
-    []
     DevilReef
 
 oldInnsmouthRoad :: CardCode -> Name -> CardDef
 oldInnsmouthRoad cardCode name =
-  locationWithUnrevealed
+  locationWithUnrevealed_
     cardCode
     "Old Innsmouth Road"
     [Road]
-    NoSymbol
-    []
     name
     [Road]
-    NoSymbol
-    []
     HorrorInHighGear
 
 falconPointApproach :: CardDef
 falconPointApproach = oldInnsmouthRoad "07203" "Falcon Point Approach"
 
+{- HLINT disable "Use camelCase" -}
 -- road 1
 dimlyLitRoad_a :: CardDef
 dimlyLitRoad_a = oldInnsmouthRoad "07204a" "Dimly Lit Road"
@@ -6956,6 +6921,7 @@ desolateRoad_a = victory 1 $ oldInnsmouthRoad "07209a" "Desolate Road"
 -- road 1
 desolateRoad_b :: CardDef
 desolateRoad_b = victory 1 $ oldInnsmouthRoad "07209b" "Desolate Road"
+{- HLINT enable "Use camelCase" -}
 
 -- road 1
 longWayAround :: CardDef
@@ -8648,13 +8614,13 @@ granTeatroDeLaHabana =
 
 miramarYachtClub :: CardDef
 miramarYachtClub =
-    location
-      "09604"
-      "Miramar Yacht Club"
-      [Havana]
-      Equals
-      [Hourglass, Square, T]
-      DancingMad
+  location
+    "09604"
+    "Miramar Yacht Club"
+    [Havana]
+    Equals
+    [Hourglass, Square, T]
+    DancingMad
 
 plazaHotel :: CardDef
 plazaHotel =
@@ -10472,23 +10438,23 @@ casinoFloorCalmNight :: CardDef
 casinoFloorCalmNight =
   otherSideIs "88009b"
     $ location
-    "88009"
-    ("Casino Floor" <:> "Calm Night")
-    [Public, Casino]
-    Circle
-    [Square, Diamond]
-    FortuneAndFolly
+      "88009"
+      ("Casino Floor" <:> "Calm Night")
+      [Public, Casino]
+      Circle
+      [Square, Diamond]
+      FortuneAndFolly
 
 casinoFloorBusyNight :: CardDef
 casinoFloorBusyNight =
   otherSideIs "88009"
     $ location
-    "88009b"
-    ("Casino Floor" <:> "Busy Night")
-    [Public, Casino]
-    Circle
-    [Square, Diamond]
-    FortuneAndFolly
+      "88009b"
+      ("Casino Floor" <:> "Busy Night")
+      [Public, Casino]
+      Circle
+      [Square, Diamond]
+      FortuneAndFolly
 
 pokerTable :: CardDef
 pokerTable =
@@ -10533,47 +10499,47 @@ slotMachines =
 highRollersTableCalmNight :: CardDef
 highRollersTableCalmNight =
   otherSideIs "88014b"
-  $ location
-    "88014"
-    ("High Roller's Table" <:> "Calm Night")
-    [Public, Casino, Game]
-    Squiggle
-    [T, Plus, Hourglass]
-    FortuneAndFolly
+    $ location
+      "88014"
+      ("High Roller's Table" <:> "Calm Night")
+      [Public, Casino, Game]
+      Squiggle
+      [T, Plus, Hourglass]
+      FortuneAndFolly
 
 highRollersTableBusyNight :: CardDef
 highRollersTableBusyNight =
   otherSideIs "88014"
-  $ location
-    "88014b"
-    ("High Roller's Table" <:> "Busy Night")
-    [Public, Casino, Game]
-    Squiggle
-    [T, Plus, Hourglass]
-    FortuneAndFolly
+    $ location
+      "88014b"
+      ("High Roller's Table" <:> "Busy Night")
+      [Public, Casino, Game]
+      Squiggle
+      [T, Plus, Hourglass]
+      FortuneAndFolly
 
 casinoLoungeCalmNight :: CardDef
 casinoLoungeCalmNight =
   otherSideIs "88015b"
-  $ location
-    "88015"
-    ("Casino Lounge" <:> "Calm Night")
-    [Public, Casino]
-    T
-    [Triangle, Squiggle, Hourglass]
-    FortuneAndFolly
+    $ location
+      "88015"
+      ("Casino Lounge" <:> "Calm Night")
+      [Public, Casino]
+      T
+      [Triangle, Squiggle, Hourglass]
+      FortuneAndFolly
 
 casinoLoungeBusyNight :: CardDef
 casinoLoungeBusyNight =
   victory 1
-  $ otherSideIs "88015"
-  $ location
-    "88015b"
-    ("Casino Lounge" <:> "Busy Night")
-    [Public, Casino]
-    T
-    [Triangle, Squiggle, Hourglass]
-    FortuneAndFolly
+    $ otherSideIs "88015"
+    $ location
+      "88015b"
+      ("Casino Lounge" <:> "Busy Night")
+      [Public, Casino]
+      T
+      [Triangle, Squiggle, Hourglass]
+      FortuneAndFolly
 
 staffAccessHallway :: CardDef
 staffAccessHallway =
@@ -10587,8 +10553,8 @@ staffAccessHallway =
 
 securityOffice :: CardDef
 securityOffice =
-  victory 1 $
-    location
+  victory 1
+    $ location
       "88017"
       "Security Office"
       [Restricted, Casino]
@@ -10608,14 +10574,14 @@ guardRoom =
 
 ownersOffice :: CardDef
 ownersOffice =
-  victory 1 
-  $ location
-    "88019"
-    "Owner's Office"
-    [Restricted, Casino]
-    Heart
-    [Star, Moon, Droplet]
-    FortuneAndFolly
+  victory 1
+    $ location
+      "88019"
+      "Owner's Office"
+      [Restricted, Casino]
+      Heart
+      [Star, Moon, Droplet]
+      FortuneAndFolly
 
 countingRoom :: CardDef
 countingRoom =

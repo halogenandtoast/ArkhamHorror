@@ -1318,7 +1318,7 @@ instance RunMessage EnemyAttrs where
                     <> show l
                     <> "\nnew assignment: "
                     <> show r
-          push $ AssignedDamage (toTarget a)
+          push $ AssignedDamage (toTarget a) amount' 0
           unless (damageAssignmentDelayed damageAssignment')
             $ push
             $ checkDefeated source eid

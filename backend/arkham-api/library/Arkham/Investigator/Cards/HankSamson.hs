@@ -66,7 +66,7 @@ instance RunMessage HankSamson where
             _ -> error "invalid match"
         Msg.removeAllMessagesMatching \case
           AssignDamage (InvestigatorTarget iid') -> iid == iid'
-          AssignedDamage (InvestigatorTarget iid') -> iid == iid'
+          AssignedDamage (InvestigatorTarget iid') _ _ -> iid == iid'
           _ -> False
       pushWhenM (canHaveHorrorHealed attrs iid) $ HealHorror (toTarget iid) (toSource attrs) 5
       pushWhenM (canHaveDamageHealed attrs iid) $ HealDamage (toTarget iid) (toSource attrs) 5

@@ -2463,8 +2463,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
 
     pure a
   AssignDamage target | isTarget a target -> do
-    push $ AssignedDamage target
-
+    push $ AssignedDamage target investigatorAssignedHealthDamage investigatorAssignedSanityDamage
     pure
       $ a
       & tokensL

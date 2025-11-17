@@ -422,6 +422,7 @@ data Message
   | MoveWithSkillTest Message
   | MovedWithSkillTest SkillTestId Message
   | NextSkillTest SkillTestId
+  | ClearInvestigators
   | SetInvestigator PlayerId Investigator
   | SetDriver AssetId InvestigatorId
   | IncreaseFloodLevel LocationId

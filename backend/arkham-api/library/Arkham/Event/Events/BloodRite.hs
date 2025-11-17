@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Event.Events.BloodRite (bloodRite) where
 
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers

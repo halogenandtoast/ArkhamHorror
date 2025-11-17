@@ -11,8 +11,8 @@ import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
-import Arkham.Classes.HasGame
 import Arkham.Classes.HasChaosTokenValue
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.Query qualified as Query
@@ -612,7 +612,7 @@ getIsCommittable a c = runValidT do
           OnlyIfYourLocationHasClues -> maybe (pure False) (fieldMap LocationClues (> 0)) mlid
           OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
           ScenarioAbility -> getIsScenarioAbility
-          SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+          SelfCanCommitWhen matcher -> maybe (pure False) (`Query.matches` matcher) card.owner
           MinSkillTestValueDifference n -> do
             x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
             pure $ x >= n
@@ -948,4 +948,3 @@ subtractSkillIconCount SkillTest {..} =
   matches WildMinusIcon = True
   matches WildIcon = False
   matches (SkillIcon _) = False
-

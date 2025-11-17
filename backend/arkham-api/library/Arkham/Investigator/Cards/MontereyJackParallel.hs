@@ -1,8 +1,4 @@
-module Arkham.Investigator.Cards.MontereyJackParallel (
-  montereyJackParallel,
-  MontereyJackParallel (..),
-)
-where
+module Arkham.Investigator.Cards.MontereyJackParallel (montereyJackParallel) where
 
 import Arkham.Ability
 import Arkham.Capability
@@ -31,7 +27,7 @@ montereyJackParallel =
 instance HasAbilities MontereyJackParallel where
   getAbilities (MontereyJackParallel a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 (Self <> can.search.deck You)
+        $ restricted a 1 (Self <> can.search.deck You)
         $ freeReaction
         $ DiscoveringLastClue #after You (YourLocation <> LocationWithShroud (atLeast 1))
     ]
@@ -45,18 +41,13 @@ instance RunMessage MontereyJackParallel where
   runMessage msg i@(MontereyJackParallel attrs) = runQueueT $ case msg of
     ElderSignEffect (is attrs -> True) -> do
       n <- selectCount $ assetControlledBy attrs.id <> oneOf [#charm, #relic]
-      gainResourcesIfCan attrs.id (#elderSign :: Source) n
+      gainResources attrs.id (#elderSign :: Source) n
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         field LocationShroud lid >>= traverse_ \x -> do
-          search
-            iid
-            (attrs.ability 1)
-            iid
-            [fromTopOfDeck x]
-            (PlayableCardWithCostReduction NoAction x $ basic $ #asset <> oneOf [#charm, #relic])
-            (defer attrs IsNotDraw)
+          let match = PlayableCardWithCostReduction NoAction x $ basic $ #asset <> oneOf [#charm, #relic]
+          search iid (attrs.ability 1) iid [fromTopOfDeck x] match (defer attrs IsNotDraw)
       pure i
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
@@ -72,8 +63,7 @@ instance RunMessage MontereyJackParallel where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       withLocationOf iid \lid -> do
         field LocationShroud lid >>= traverse_ \x -> do
-          push $ AddFocusedToHand iid (toTarget iid) FromDeck cid
           costModifier (attrs.ability 1) cid (ReduceCostOf (CardWithId cid) x)
-          putCardIntoPlay iid =<< getCard cid
+          playCardPayingCost iid =<< getCard cid
       pure i
     _ -> MontereyJackParallel <$> liftRunMessage msg attrs

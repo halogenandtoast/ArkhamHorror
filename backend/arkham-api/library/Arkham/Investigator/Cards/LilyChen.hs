@@ -83,7 +83,7 @@ instance RunMessage LilyChenEffect where
           & (if balanced then setEffectKey else unsetEffectKey) "balanced"
     StartSkillTest iid | isTarget iid attrs.target -> do
       pure $ LilyChenEffect $ attrs & unsetEffectKey "prescient"
-    InvestigatorDamage iid _source damage horror | isTarget iid attrs.target -> do
+    AssignedDamage (InvestigatorTarget iid) damage horror | isTarget iid attrs.target -> do
       pure
         $ if damage > 0 || horror > 0
           then LilyChenEffect $ attrs & unsetEffectKey "aligned"
@@ -91,8 +91,8 @@ instance RunMessage LilyChenEffect where
     _ -> case attrs.target.investigator of
       Nothing -> pure e
       Just iid -> do
-        quiescent <- fieldMap InvestigatorHand ((< 2) . length) iid
-        balanced <- selectNone $ enemyAtLocationWith iid
-        let setQuiescent = (if quiescent then setEffectKey else unsetEffectKey) "quiescent"
-        let setBalanced = (if balanced then setEffectKey else unsetEffectKey) "balanced"
+        unquiescent <- fieldMap InvestigatorHand ((> 2) . length) iid
+        unbalanced <- selectAny $ enemyAtLocationWith iid
+        let setQuiescent = (if unquiescent then unsetEffectKey else const id) "quiescent"
+        let setBalanced = (if unbalanced then unsetEffectKey else const id) "balanced"
         LilyChenEffect <$> liftRunMessage msg (attrs & setQuiescent & setBalanced)

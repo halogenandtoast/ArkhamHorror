@@ -574,7 +574,7 @@ data Message
   | CheckDefeated Source Target
   | AssignDamage Target
   | CancelAssignedDamage Target Int Int
-  | AssignedDamage Target
+  | AssignedDamage Target Int Int
   | AssignedHealing Target
   | CheckHandSize InvestigatorId
   | CheckWindows [Window]
@@ -1231,6 +1231,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AssignedDamage" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ AssignedDamage a b c
+          Left a -> pure $ AssignedDamage a 0 0
       "RemoveCampaignCard" -> RemoveCampaignCardFromDeck "00000" <$> o .: "contents"
       "ResolvedMovement" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")

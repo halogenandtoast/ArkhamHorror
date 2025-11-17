@@ -93,5 +93,5 @@ graysAnatomyTheDoctorsBible5Effect =
 instance RunMessage GraysAnatomyTheDoctorsBible5Effect where
   runMessage msg e@(GraysAnatomyTheDoctorsBible5Effect attrs) = runQueueT $ case msg of
     AssignedHealing target | attrs.target == target && attrs.metaInt == Just 1 -> disableReturn e
-    AssignedDamage target | attrs.target == target && attrs.metaInt == Just 2 -> disableReturn e
+    AssignedDamage target _ _ | attrs.target == target && attrs.metaInt == Just 2 -> disableReturn e
     _ -> GraysAnatomyTheDoctorsBible5Effect <$> liftRunMessage msg attrs

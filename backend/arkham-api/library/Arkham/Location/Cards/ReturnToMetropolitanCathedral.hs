@@ -28,7 +28,7 @@ instance HasAbilities ReturnToMetropolitanCathedral where
 instance RunMessage ReturnToMetropolitanCathedral where
   runMessage msg l@(ReturnToMetropolitanCathedral attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gainResources iid (attrs.ability 1) 1
+      gainResources iid (attrs.ability 1) 2
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ Explore iid (attrs.ability 1) $ CardWithPrintedLocationSymbol $ locationSymbol attrs

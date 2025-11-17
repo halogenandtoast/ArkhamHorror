@@ -51,8 +51,14 @@ excludeBSides = filter (not . hasBSide)
 hasBSide :: EncounterCard -> Bool
 hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
 
+-- Location cards are weird because they are always double sided, but when we
+-- gather cards we want to include them even when the suffix is a "b", in these
+-- cases we just look to ensure it's not the other side of a card.
 isDoubleSided :: EncounterCard -> Bool
-isDoubleSided = or . sequence [cdDoubleSided, isJust . cdOtherSide] . toCardDef
+isDoubleSided =
+  or
+    . sequence [and . sequence [cdDoubleSided, (/= LocationType) . cdCardType], isJust . cdOtherSide]
+    . toCardDef
 
 buildEncounterDeckWith
   :: CardGen m

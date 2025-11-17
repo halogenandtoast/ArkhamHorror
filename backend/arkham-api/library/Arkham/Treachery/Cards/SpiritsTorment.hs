@@ -17,7 +17,7 @@ spiritsTorment = treachery SpiritsTorment Cards.spiritsTorment
 
 instance HasAbilities SpiritsTorment where
   getAbilities (SpiritsTorment a) =
-    [ mkAbility a 1 $ forced $ Leaves #when You $ locationWithTreachery a
+    [ forcedAbility a 1 $ Leaves #after You $ locationWithTreachery a
     , restricted a 2 OnSameLocation $ actionAbilityWithCost (PlaceClueOnLocationCost 1)
     ]
 

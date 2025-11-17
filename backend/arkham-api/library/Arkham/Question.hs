@@ -269,7 +269,7 @@ concat
         parseJSON (Object o) = do
           tag :: Text <- o .: "tag"
           case tag of
-            "CardLabeled" -> do
+            "CardLabel" -> do
               cardCode <- o .: "cardCode"
               flippable <- o .:? "flippable" .!= False
               messages <- o .: "messages"

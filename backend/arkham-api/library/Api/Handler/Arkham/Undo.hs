@@ -13,6 +13,7 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
+import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.))
 import Json
@@ -106,6 +107,7 @@ putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
   userId <- getRequestUserId
   game <- runDB $ get404 gameId
+
   ArkhamGame {..} <- stepBack userId gameId game
   writeChannel <- socketChannel <$> getRoom gameId
 

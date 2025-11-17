@@ -21,7 +21,7 @@ const allScarletKeys = {
   c88045: "The Wellspring of Fortune"
 }
 
-const toBearer = (cardCode: string): string => {
+const toBearer = (cardCode: string): string | null => {
   const status = props.keys[cardCode]
   if (!status) return null
   if (status.tag === "KeyWithInvestigator") return props.toTitle(status.contents)

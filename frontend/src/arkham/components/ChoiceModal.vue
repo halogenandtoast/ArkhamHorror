@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { choiceRequiresModal } from '@/arkham/types/Message';
-import { replaceIcons } from '@/arkham/helpers';
+import { formatContent, replaceIcons } from '@/arkham/helpers';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
@@ -92,7 +92,7 @@ const amountsLabel = computed(() => {
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
-    return t(body.slice(1).split(' ')[0])
+    return formatContent(t(body.slice(1).split(' ')[0]))
   }
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
 }

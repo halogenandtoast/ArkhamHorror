@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, maybeModifie
 import Arkham.Helpers.SkillTest (isInvestigation, isParley)
 import Arkham.Matcher
 import Arkham.Trait
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype DeloresGadling = DeloresGadling AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -22,12 +23,13 @@ instance HasModifiersFor DeloresGadling where
       n <- selectCount $ EnemyAt YourLocation <> EnemyWithTrait Humanoid
       guard (n > 0)
       pure [SkillModifier #intellect n]
+    handleSpellbound a
 
 instance RunMessage DeloresGadling where
   runMessage msg (DeloresGadling attrs) = runQueueT $ case msg of
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ DeloresGadling $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ DeloresGadling $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ DeloresGadling $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ DeloresGadling $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> DeloresGadling <$> liftRunMessage msg attrs

@@ -711,6 +711,11 @@ section {
     overflow-y: auto;
   }
 
+  header {
+    padding-inline: 20px;
+    padding-bottom: 20px;
+  }
+
   color: #222;
   max-width: 50vw;
   text-align: justify;
@@ -1164,13 +1169,13 @@ h2 {
 
 .intro-text {
   max-height: 60vh;
-  > ul:first-of-type, div:first-of-type {
+  > *:first-child {
     padding-top: 30px;
   }
   > ul, div {
     padding-inline: 20px;
   }
-  > ul:last-of-type, div:last-of-type {
+  > *:last-child {
     padding-bottom: 30px;
 
   }

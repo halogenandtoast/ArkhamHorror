@@ -1221,6 +1221,7 @@ data Message
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
   | SetCampaignStep CampaignStep
+  | CreateCard CardId CardCode
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveToJSON defaultOptions ''Message)

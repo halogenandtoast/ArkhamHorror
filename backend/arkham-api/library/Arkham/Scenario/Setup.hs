@@ -228,7 +228,29 @@ fromGathered1 def = do
     [card] -> do
       removeCards [card]
       pure card
-    _ -> error "expected exactly one matching card in gathered cards"
+    [] ->
+      amongGathered (mapOneOf cardIs $ def : maybeToList def.flip) >>= \case
+        [card] -> do
+          removeCards [card]
+          let otherSide = flipCard card
+          replaceCard card.id otherSide
+          pure otherSide
+        xs ->
+          error
+            $ unlines
+              [ "expected exactly one matching card in gathered cards: "
+              , show def
+              , show xs
+              , prettyCallStack callStack
+              ]
+    xs ->
+      error
+        $ unlines
+          [ "expected exactly one matching card in gathered cards: "
+          , show def
+          , show xs
+          , prettyCallStack callStack
+          ]
 
 removeCards :: Monad m => [Card] -> ScenarioBuilderT m ()
 removeCards xs = do
@@ -584,4 +606,3 @@ cardDefIs :: HasCardDef a => a -> CardMatcher
 cardDefIs a = if def.doubleSided then cardIs def else cardIsExact def
  where
   def = toCardDef a
-

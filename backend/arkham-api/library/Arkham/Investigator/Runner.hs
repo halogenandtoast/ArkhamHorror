@@ -959,8 +959,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
     if null investigatorDeck
       then do
-        isDefeated <- field AssetIsDefeated aid
-        when isDefeated $ Lifted.toDiscard GameSource aid
+        mIsDefeated <- fieldMay AssetIsDefeated aid
+        for_ mIsDefeated \isDefeated -> do
+          when isDefeated $ Lifted.toDiscard GameSource aid
         pure a
       else do
         card <- field AssetCard aid
@@ -3387,7 +3388,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     afterPlacedWindowMsg <-
       Helpers.checkWindow $ mkAfter $ Window.PlacedToken source (toTarget a) token n
     push afterPlacedWindowMsg
-    when (token == #resource) $ Lifted.updateHistory investigatorId $ HistoryItem HistoryResourcesGained n
+    when (token == #resource)
+      $ Lifted.updateHistory investigatorId
+      $ HistoryItem HistoryResourcesGained n
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
     case token of

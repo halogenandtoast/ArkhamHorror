@@ -48,6 +48,9 @@ const image = computed(() => {
     if (cardCode.value === "c90052") {
       return imgsrc(`cards/90052b.avif`)
     }
+    if (cardCode.value === "c88043") {
+      return imgsrc(`cards/88043b.avif`)
+    }
     return imgsrc(`player_back.jpg`)
   }
   return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)

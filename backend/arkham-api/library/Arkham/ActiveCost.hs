@@ -414,7 +414,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             ResourceCost resources -> do
               availableResources <- getSpendableResources iid
               pure $ min n (availableResources `div` resources)
-            SealCost matcher -> selectCount matcher
+            SealCost matcher -> min n <$> selectCount matcher
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
           choiceId <- getRandom

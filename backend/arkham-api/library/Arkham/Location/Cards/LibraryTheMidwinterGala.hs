@@ -3,6 +3,7 @@ module Arkham.Location.Cards.LibraryTheMidwinterGala (libraryTheMidwinterGala) w
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Helpers.Location (isAt)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isParley)
 import Arkham.I18n
@@ -24,7 +25,7 @@ instance HasModifiersFor LibraryTheMidwinterGala where
     getSkillTestInvestigator >>= traverse_ \iid -> do
       maybeModified_ a iid do
         guardM isParley
-        guardM $ iid <=~> investigatorAt (locationId a)
+        guardM $ iid `isAt` a
         pure [AnySkillValue 1]
 
 instance HasAbilities LibraryTheMidwinterGala where

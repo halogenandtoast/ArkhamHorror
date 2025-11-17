@@ -2100,6 +2100,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   ClearQueue -> do
     clearQueue
     pure g
+  CreateCard cardId cardCode -> do
+    let card = lookupCard cardCode cardId
+    replaceCard cardId card
+    pure g
   After EndPhase -> do
     clearQueue
     case g ^. phaseL of

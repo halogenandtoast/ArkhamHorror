@@ -238,6 +238,7 @@ instance RunMessage ThreadsOfFate where
         labeled' "beWary" do
           record YouAreForgingYourOwnWay
           unlessStandalone do
+            removeCampaignCard Assets.alejandroVela
             removeAllChaosTokens Cultist
             removeAllChaosTokens Tablet
             addChaosToken ElderThing

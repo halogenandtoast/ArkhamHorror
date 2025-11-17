@@ -29,7 +29,7 @@ evidence =
   (event "01022" "Evidence!" 1 Guardian)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight]
-    , cdFastWindow = Just $ EnemyDefeated #after You ByAny AnyEnemy
+    , cdFastWindow = Just $ IfEnemyDefeated #after You ByAny AnyEnemy
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdAlternateCardCodes = ["01522"]
     }

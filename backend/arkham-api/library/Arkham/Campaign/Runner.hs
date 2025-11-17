@@ -346,7 +346,10 @@ defaultCampaignRunner msg a = case msg of
     let mstep = mOverrideStep <|> nextStep a
     case mstep of
       Nothing -> push GameOver
-      Just step -> pushAll [HandleKilledOrInsaneInvestigators, CampaignStep step]
+      Just step -> 
+        case step.unwrap.normalize of
+          EpilogueStep -> push $ CampaignStep step
+          _ -> pushAll [HandleKilledOrInsaneInvestigators, CampaignStep step]
     pure
       $ updateAttrs a
       $ \attrs ->

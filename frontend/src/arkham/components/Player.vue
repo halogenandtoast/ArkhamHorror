@@ -15,7 +15,7 @@ import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Asset from '@/arkham/components/Asset.vue';
-import Event from '@/arkham/components/Event.vue';
+import EventView from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
@@ -86,6 +86,13 @@ const hunchDeck = computed(() => {
 
   return null
 })
+
+const showHunchDeck = (e: Event) => {
+  e.preventDefault()
+  if (hunchDeck.value) {
+    doShowCards(e, hunchDeck as ComputedRef<CardT.Card[]>, t("investigators.joeDiamond.hunchDeck"), false)
+  }
+}
 
 const topOfHunchDeckRevealed = computed(() => {
   const { revealedHunchCard } = props.investigator
@@ -416,7 +423,7 @@ function toggleHandAreaMarginBottom(event: Event) {
             @choose="$emit('choose', $event)"
             @showCards="doShowCards"
           />
-          <Event
+          <EventView
             v-for="event in events"
             :event="event"
             :game="game"
@@ -504,22 +511,25 @@ function toggleHandAreaMarginBottom(event: Event) {
     />
 
     <div class="player">
-      <div v-if="hunchDeck" class="top-of-deck hunch-deck">
-        <HandCard
-          v-if="topOfHunchDeck && topOfHunchDeckRevealed"
-          :card="topOfHunchDeck"
-          :game="game"
-          :ownerId="investigator.id"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-        <img
-          v-else
-          class="deck card"
-          :src="imgsrc('player_back.jpg')"
-          width="150px"
-        />
-        <span class="deck-size">{{hunchDeck.length}}</span>
+      <div v-if="hunchDeck" class="hunch-deck">
+        <div class="top-of-deck">
+          <HandCard
+            v-if="topOfHunchDeck && topOfHunchDeckRevealed"
+            :card="topOfHunchDeck"
+            :game="game"
+            :ownerId="investigator.id"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <img
+            v-else
+            class="deck card"
+            :src="imgsrc('player_back.jpg')"
+            width="150px"
+          />
+          <span class="deck-size">{{hunchDeck.length}}</span>
+        </div>
+        <button v-if="debug" @click="showHunchDeck">View Deck</button>
       </div>
 
       <div class="investigator-and-deck">
@@ -746,8 +756,31 @@ function toggleHandAreaMarginBottom(event: Event) {
 
 .hunch-deck {
   display: flex;
-  justify-self: self-start;
-  align-self: start;
+  flex-direction: column;
+  .top-of-deck {
+    display: grid;
+    grid: 1fr / 1fr;
+    justify-items: center;
+    > * {
+      grid-area: 1 / 1;
+    }
+    .deck-size {
+      font-size: 1.2rem;
+      font-weight: bold;
+      width: 1.5rem;
+      height: auto;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      aspect-ratio: 1;
+      line-height: 1.2rem;
+      text-align: center;
+      display: grid;
+      align-self: center;
+      place-items: center;
+      transform: translateY(-34%);
+    }
+  }
   img {
     width: var(--card-width);
     border-radius: 2px;

@@ -11,7 +11,9 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Insight))
@@ -45,7 +47,12 @@ instance HasModifiersFor JoeDiamond where
       _ -> pure mempty
 
 instance HasAbilities JoeDiamond where
-  getAbilities (JoeDiamond (a `With` _)) = [selfAbility_ a 1 $ forced $ PhaseBegins #when #investigation]
+  getAbilities (JoeDiamond (a `With` _)) =
+    [ selfAbility_ a 1 $ forced $ PhaseBegins #when #investigation
+    , mkAbility a 2
+        $ SilentForcedAbility
+        $ WouldBeShuffledIntoDeck (DeckIs $ Deck.HunchDeck a.id) (cardIs Events.unsolvedCase)
+    ]
 
 instance HasChaosTokenValue JoeDiamond where
   getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _)) | attrs `is` iid = do
@@ -120,4 +127,18 @@ instance RunMessage JoeDiamond where
       attrs' <- liftRunMessage msg attrs
       let hunchDeck' = filter (/= insight) (hunchDeck attrs) <> [insight]
       pure $ JoeDiamond . (`with` meta) $ attrs' & decksL . at HunchDeck ?~ hunchDeck'
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      let
+        go = \case
+          ((windowType -> Window.WouldBeShuffledIntoDeck _ card) : _) -> do
+            don'tMatching \case
+              ShuffleCardsIntoDeck (Deck.HunchDeck _) [card'] -> card == card'
+              _ -> False
+            chooseOneM attrs.id do
+              abilityLabeled attrs.id (mkAbility (SourceableWithCardCode card $ CardIdSource card.id) 1 $ forced AnyWindow) do
+                push $ CreateEventAt attrs.id card (InThreatArea attrs.id)
+          (_ : xs) -> go xs
+          [] -> pure ()
+      go ws
+      pure i
     _ -> JoeDiamond . (`with` meta) <$> liftRunMessage msg attrs

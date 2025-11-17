@@ -39,8 +39,12 @@ instance RunMessage FluteOfTheOuterGods4 where
   runMessage msg a@(FluteOfTheOuterGods4 attrs) = runQueueT $ case msg of
     PaidForCardCost iid card payment | toCardId card == toCardId attrs -> do
       let x = totalResourcePayment payment
+      curseTokens <- min x <$> selectCount (ChaosTokenFaceIs #curse)
+      chooseAmount iid ("Seal up to " <> tshow x <> " curse tokens") "{curse} tokens" 0 curseTokens attrs
+      pure a
+    ResolveAmounts iid (getChoiceAmount "{curse} tokens" -> x) (isTarget attrs -> True) -> do
       curseTokens <- take x <$> select (ChaosTokenFaceIs #curse)
-      for_ curseTokens $ \token -> do
+      for_ curseTokens \token -> do
         pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget attrs)]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -55,7 +59,7 @@ instance RunMessage FluteOfTheOuterGods4 where
         [] -> pure []
         [x] ->
           select
-            $ EnemyAt YourLocation
+            $ at_ (locationWithInvestigator iid)
             <> NonEliteEnemy
             <> not_ (EnemyWithId x)
             <> EnemyWithDamage (atLeast 1)
@@ -75,7 +79,7 @@ instance RunMessage FluteOfTheOuterGods4 where
       damage <- field Enemy.EnemyHealthDamage eid
       damageableEnemies <-
         select
-          $ EnemyAt YourLocation
+          $ at_ (locationWithInvestigator iid)
           <> EnemyCanBeDamagedBySource (attrs.ability 1)
           <> not_ (EnemyWithId eid)
 

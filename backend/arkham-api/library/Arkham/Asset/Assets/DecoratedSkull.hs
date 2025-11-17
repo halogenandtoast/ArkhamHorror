@@ -1,17 +1,9 @@
-module Arkham.Asset.Assets.DecoratedSkull (
-  decoratedSkull,
-  DecoratedSkull (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DecoratedSkull (decoratedSkull) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (
-  AssetDefeated,
-  EnemyDefeated,
-  InvestigatorDefeated,
- )
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated, EnemyDefeated, InvestigatorDefeated)
+import Arkham.Asset.Uses
 import Arkham.Matcher
 
 newtype DecoratedSkull = DecoratedSkull AssetAttrs
@@ -23,25 +15,23 @@ decoratedSkull = asset DecoratedSkull Cards.decoratedSkull
 
 instance HasAbilities DecoratedSkull where
   getAbilities (DecoratedSkull a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          ( OrWindowMatcher
-              [ EnemyDefeated #after Anyone ByAny AnyEnemy
-              , InvestigatorDefeated #after ByAny Anyone
-              , AssetDefeated #after ByAny AllyAsset
-              ]
-          )
-          Free
-    , restrictedAbility a 2 ControlsThis (actionAbilityWithCost $ assetUseCost a Charge 1)
+    [ controlled_ a 1
+        $ freeReaction
+        $ oneOf
+          [ EnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)
+          , InvestigatorDefeated #after ByAny (colocatedWithMatch You)
+          , AssetDefeated #after ByAny (AllyAsset <> AssetAt YourLocation)
+          ]
+    , controlled_ a 2 (actionAbilityWithCost $ assetUseCost a Charge 1)
     ]
 
 instance RunMessage DecoratedSkull where
-  runMessage msg a@(DecoratedSkull attrs) = case msg of
+  runMessage msg a@(DecoratedSkull attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AddUses (attrs.ability 1) (toId attrs) Charge 1
+      addUses (attrs.ability 1) attrs Charge 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let drawing = drawCards iid (toAbilitySource attrs 2) 1
-      pushAll [drawing, TakeResources iid 1 (toAbilitySource attrs 2) False]
+      drawCards iid (attrs.ability 2) 1
+      gainResources iid (attrs.ability 2) 1
       pure a
-    _ -> DecoratedSkull <$> runMessage msg attrs
+    _ -> DecoratedSkull <$> liftRunMessage msg attrs

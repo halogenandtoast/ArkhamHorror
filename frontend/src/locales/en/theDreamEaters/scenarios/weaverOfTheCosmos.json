@@ -19,6 +19,9 @@
     "body": "<p>Everything has led to this. Virgil’s writings, your companions’ never-ending sleep, St. Mary’s, the black cat, all of it. You have no choice but to press on. This transdimensional space is home to a creature that would obliterate your world and replace it with a new reality, a nightmarescape of pitch-black darkness and creatures that prey on your kind. If you cannot stop its weaving, there will be no Earth left to wake up to. You have to do something, even if it means your end.</p>"
   },
   "resolutions": {
+    "xp": {
+      "resolution1": "Prevented the Dreamlands and reality from merging."
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "_If no resolution was reached because each investigator was defeated:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."

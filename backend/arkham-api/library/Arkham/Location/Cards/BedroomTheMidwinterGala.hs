@@ -34,10 +34,11 @@ instance RunMessage BedroomTheMidwinterGala where
             sid
             iid
             (attrs.ability 1)
-            (EnemyAt $ LocationWithTrait SecondFloor)
+            (fightOverride $ EnemyAt $ LocationWithTrait SecondFloor)
             (withSkillType #agility)
         chooseUseSkill #combat do
-          chooseFightEnemyMatch sid iid (attrs.ability 1) (EnemyAt $ LocationWithTrait SecondFloor)
+          chooseFightEnemyMatch sid iid (attrs.ability 1)
+            $ fightOverride (EnemyAt $ LocationWithTrait SecondFloor)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       clues <- getSpendableClueCount [iid]

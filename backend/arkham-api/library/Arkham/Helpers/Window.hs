@@ -972,7 +972,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             Just cid -> Just <$> getCard cid
           andM
             [ sourceMatches source' sourceMatcher
-            , pure $ maybe True (\cmatcher -> maybe True (`cardMatch` cmatcher) mCard) mCardMatcher
+            , pure $ maybe True (\cmatcher -> maybe False (`cardMatch` cmatcher) mCard) mCardMatcher
             ]
         _ -> noMatch
     Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case wType of

@@ -52,7 +52,7 @@ theStarsAreRight :: CardDef
 theStarsAreRight =
   (event "06028" "The Stars Are Right" 0 Mystic)
     { cdCardTraits = singleton Augury
-    , cdKeywords = singleton (Keyword.Bonded 1 "06027")
+    , cdKeywords = singleton (Keyword.Bonded 2 "06027")
     , cdCost = Nothing
     , cdRevelation = IsRevelation
     , cdCardType = EncounterEventType

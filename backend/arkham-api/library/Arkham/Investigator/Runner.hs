@@ -4257,6 +4257,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   RemoveFromDiscard iid cardId | iid == investigatorId -> do
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
+  CreateInBonded iid cardCode | iid == investigatorId -> do
+    for_ (lookupCardDef cardCode) (genCard >=> Lifted.placeInBonded iid)
+    pure a
   PlaceInBonded iid card | iid == investigatorId -> do
     pure
       $ a

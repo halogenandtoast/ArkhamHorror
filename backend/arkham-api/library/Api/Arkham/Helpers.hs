@@ -45,7 +45,7 @@ newLogEntry gameId step now body =
     , arkhamLogEntryCreatedAt = now
     }
 
-getGameLog :: MonadIO m => ArkhamGameId -> Maybe Int -> SqlPersistT m GameLog
+getGameLog :: ArkhamGameId -> Maybe Int -> DB GameLog
 getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   entries <- from $ table @ArkhamLogEntry
   where_ $ entries.arkhamGameId ==. val gameId
@@ -172,3 +172,16 @@ displayCardType = \case
   EncounterEventType -> "event"
   InvestigatorType -> "investigator"
   KeyType -> "key"
+
+lockGame :: ArkhamGameId -> DB ()
+lockGame gameId = void $ select do
+  game <- from $ table @ArkhamGame
+  where_ $ game.id ==. val gameId
+  locking forUpdate
+
+atomicallyWithGame :: ArkhamGameId -> (ArkhamGame -> DB a) -> DB a
+atomicallyWithGame gameId f = do
+  lockGame gameId
+  game <- get404 gameId
+  f game
+

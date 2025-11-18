@@ -38,7 +38,6 @@ import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (msgMessage, pubSub, publish, runRedis, subscribe)
 import Entity.Answer
 import Entity.Arkham.GameRaw
-import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
@@ -49,8 +48,8 @@ import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
-gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
-gameStream mUserId gameId = catchingConnectionException do
+gameStream :: ArkhamGameId -> WebSocketsT Handler ()
+gameStream gameId = catchingConnectionException do
   writeChannel :: TChan BSL.ByteString <- lift $ (.channel) <$> getRoom gameId
   broker <- lift $ getsYesod appMessageBroker
   roomsVar <- getsYesod appGameRooms
@@ -82,12 +81,11 @@ gameStream mUserId gameId = catchingConnectionException do
       stopSub
  where
   handleData writeChannel dataPacket = lift do
-    for_ mUserId \userId ->
-      case eitherDecodeStrict dataPacket of
-        Left err -> $(logWarn) $ tshow err
-        Right answer ->
-          updateGame answer gameId userId writeChannel `catch` \(e :: SomeException) -> do
-            atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
+    case eitherDecodeStrict dataPacket of
+      Left err -> $(logWarn) $ tshow err
+      Right answer ->
+        updateGame answer gameId writeChannel `catch` \(e :: SomeException) -> do
+          atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
 
   closeConnection _ = do
     roomsVar <- getsYesod appGameRooms
@@ -158,68 +156,59 @@ instance ToJSON GameDetailsEntry where
     FailedGameDetails t -> object ["error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
-updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
-updateGame response gameId userId writeChannel = do
+updateGame :: Answer -> ArkhamGameId -> TChan BSL.ByteString -> Handler ()
+updateGame response gameId writeChannel = do
   tracer <- getTracer
-  ArkhamGame {..} <- runDB do
-    user <- get404 userId
-    unless user.admin $ void $ getBy404 (UniquePlayer userId gameId)
-    get404 gameId
-  mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
-  let
-    gameJson@Game {..} = arkhamGameCurrentData
-    currentQueue =
-      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+  oldLog <- runDB $ getGameLog gameId Nothing
+  (ArkhamGame {..}, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+    mLastStep <- getBy $ UniqueStep gameId arkhamGameStep
+    let
+      gameJson@Game {..} = arkhamGameCurrentData
+      currentQueue =
+        maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
-  activePlayer <- runReaderT getActivePlayer gameJson
+    activePlayer <- runReaderT getActivePlayer gameJson
 
-  let playerId = fromMaybe activePlayer (answerPlayer response)
+    let playerId = fromMaybe activePlayer (answerPlayer response)
 
-  logRef <- newIORef []
-  handleAnswer gameJson playerId response >>= \case
-    Unhandled _ -> pure ()
-    Handled answerMessages -> do
-      let
-        messages =
-          [SetActivePlayer playerId | activePlayer /= playerId]
-            <> answerMessages
-            <> [SetActivePlayer activePlayer | activePlayer /= playerId]
-      gameRef <- newIORef gameJson
-      queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
-      genRef <- newIORef $ mkStdGen gameSeed
+    logRef <- newIORef []
+    handleAnswer gameJson playerId response >>= \case
+      Unhandled _ -> pure (g, [])
+      Handled answerMessages -> do
+        let
+          messages =
+            [SetActivePlayer playerId | activePlayer /= playerId]
+              <> answerMessages
+              <> [SetActivePlayer activePlayer | activePlayer /= playerId]
+        gameRef <- newIORef gameJson
+        queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
+        genRef <- newIORef $ mkStdGen gameSeed
 
-      runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
-        runMessages (gameIdToText gameId) Nothing
+        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
+          runMessages (gameIdToText gameId) Nothing
 
-      ge <- readIORef gameRef
-      let diffDown = diff ge arkhamGameCurrentData
+        ge <- readIORef gameRef
+        let diffDown = diff ge arkhamGameCurrentData
 
-      oldLog <- runDB $ getGameLog gameId Nothing
-      updatedQueue <- readIORef $ queueToRef queueRef
-      updatedLog <- readIORef logRef
+        updatedQueue <- readIORef $ queueToRef queueRef
+        updatedLog <- readIORef logRef
 
-      now <- liftIO getCurrentTime
-      runDB do
-        void $ select do
-          game <- from $ table @ArkhamGame
-          where_ $ game.id ==. val gameId
-          locking forUpdate
-          pure ()
+        now <- liftIO getCurrentTime
         deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
-        replace gameId
-          $ ArkhamGame
-            arkhamGameName
-            ge
-            (arkhamGameStep + 1)
-            arkhamGameMultiplayerVariant
-            arkhamGameCreatedAt
-            now
+        let g' =
+              ArkhamGame
+                arkhamGameName
+                ge
+                (arkhamGameStep + 1)
+                arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
+        replace gameId g'
         insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
         void
           $ upsertBy
             (UniqueStep gameId (arkhamGameStep + 1))
-            ( ArkhamStep
-                gameId
+            ( ArkhamStep gameId
                 (Choice diffDown updatedQueue)
                 (arkhamGameStep + 1)
                 (ActionDiff $ view actionDiffL ge)
@@ -227,10 +216,15 @@ updateGame response gameId userId writeChannel = do
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
+        pure (g', updatedLog)
 
-      publishToRoom gameId
-        $ GameUpdate
-        $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
+  publishToRoom gameId
+    $ GameUpdate
+    $ PublicGame
+      gameId
+      arkhamGameName
+      (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
+      arkhamGameCurrentData
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

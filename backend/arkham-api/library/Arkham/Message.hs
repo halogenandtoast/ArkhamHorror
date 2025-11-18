@@ -969,6 +969,7 @@ data Message
   | SetCardAside Card
   | PlaceInvestigator InvestigatorId Placement
   | PlaceInBonded InvestigatorId Card
+  | CreateInBonded InvestigatorId CardCode
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | SlotSourceRemovedFromPlay Source

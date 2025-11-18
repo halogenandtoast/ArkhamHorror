@@ -21,7 +21,7 @@ reliable1 = event Reliable1 Cards.reliable1
 instance HasModifiersFor Reliable1 where
   getModifiersFor (Reliable1 a) = maybeModified_ a a.controller do
     AssetTarget aid <- hoistMaybe a.attachedTo
-    owner <- MaybeT $ field AssetController aid
+    owner <- MaybeT $ fieldMayJoin AssetController aid
     guard $ owner == a.controller
     abilities <- lift getActiveAbilities
     let isAttachedTargetAbility = (== AssetSource aid) . abilitySource

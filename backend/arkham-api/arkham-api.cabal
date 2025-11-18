@@ -5209,7 +5209,9 @@ test-suite spec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
+      Arkham.Campaign.NightOfTheZealotSpec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
+      Arkham.Campaign.TheDunwichLegacySpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec

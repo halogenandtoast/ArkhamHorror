@@ -5209,6 +5209,7 @@ test-suite spec
       Arkham.Asset.Assets.Tonys38LongColtSpec
       Arkham.Asset.Assets.WendysAmuletSpec
       Arkham.Asset.Assets.ZoeysCrossSpec
+      Arkham.Campaign.TheCircleUndone.ScenariosSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
       Arkham.Enemy.Cards.SilverTwilightAcolyteSpec
@@ -5268,6 +5269,7 @@ test-suite spec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
+      Arkham.Scenario.SpecHelpers
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.FearlessSpec
       Arkham.Skill.Cards.GutsSpec
@@ -5334,6 +5336,7 @@ test-suite spec
       cards-discover:cards-discover
   build-depends:
       arkham-api
+    , async
     , base
     , containers
     , exceptions

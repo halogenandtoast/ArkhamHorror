@@ -11,14 +11,14 @@ module Api.Handler.Arkham.Games.Admin (
   putApiV1AdminGameR,
   getApiV1AdminGamesR,
   putApiV1AdminGameRawR,
-  deleteApiV1AdminRoomR
+  deleteApiV1AdminRoomR,
 ) where
 
-import Control.Concurrent.MVar
 import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Game
 import Conduit
+import Control.Concurrent.MVar
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
@@ -26,7 +26,7 @@ import Database.Esqueleto.Experimental qualified as E
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Player
-import Import hiding (readMVar, delete, exists, on, (==.), (>=.))
+import Import hiding (delete, exists, on, readMVar, (==.), (>=.))
 import Yesod.WebSockets
 
 data AdminData = AdminData
@@ -68,17 +68,18 @@ getApiV1AdminR = do
         where_ (games.updatedAt >=. val recent)
         pure (countDistinct users.id)
 
-    activeGames <- map toGameDetailsEntry <$> select do
-      games <- from $ table @ArkhamGameRaw
-      where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
-      pure games
+    activeGames <-
+      map toGameDetailsEntry <$> select do
+        games <- from $ table @ArkhamGameRaw
+        where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
+        pure games
     recentGames <- getRecentGames 20
 
     pure $ AdminData {..}
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
-  webSockets $ gameStream Nothing gameId
+  webSockets $ gameStream gameId
   g <- runDB $ get404 gameId
   let Game {..} = g.currentData
   gameLog <- runDB $ getGameLog gameId Nothing
@@ -106,18 +107,16 @@ getApiV1AdminGamesR = runDB $ getRecentGames 20
 
 putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do
-  userId <- getRequestUserId
   response <- requireCheckJsonBody
   writeChannel <- (.channel) <$> getRoom gameId
-  updateGame response gameId userId writeChannel
+  updateGame response gameId writeChannel
 
 -- TODO: Make this a websocket message
 putApiV1AdminGameRawR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameRawR gameId = do
-  Entity userId _ <- getAdminUser
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
-  updateGame (Raw response.gameMessage) gameId userId writeChannel
+  updateGame (Raw response.gameMessage) gameId writeChannel
 
 getApiV1AdminRoomsR :: Handler [RoomData]
 getApiV1AdminRoomsR = getRoomData

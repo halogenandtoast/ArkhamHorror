@@ -280,12 +280,12 @@ handled = pure . Handled
 unhandled :: Applicative m => Text -> m Reply
 unhandled = pure . Unhandled
 
-handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m Reply
+handleAnswer :: Game -> PlayerId -> Answer -> DB Reply
 handleAnswer Game {..} playerId = \case
   DeckAnswer deckId _ -> do
-    deck <- runDB $ get404 deckId
+    deck <- get404 deckId
     let investigatorId = investigator_code $ arkhamDeckList deck
-    runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
+    update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     let question' = Map.delete playerId gameQuestion
     handled $ LoadDecklist playerId (arkhamDeckList deck)
       : [AskMap question' | not (Map.null question')]

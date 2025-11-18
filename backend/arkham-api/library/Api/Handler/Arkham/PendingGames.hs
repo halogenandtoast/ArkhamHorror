@@ -30,52 +30,42 @@ getApiV1ArkhamPendingGameR gameId = do
 putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do
   userId <- getRequestUserId
-  original@ArkhamGame {..} <- runDB $ get404 gameId
+  tracer <- getTracer
+  now <- liftIO getCurrentTime
+  game@ArkhamGame {..} <- runDB $ atomicallyWithGame gameId \original@ArkhamGame {..} -> do
+    case gameGameState arkhamGameCurrentData of
+      IsPending _ -> do
+        alreadyExists <- exists [ArkhamPlayerArkhamGameId ==. gameId, ArkhamPlayerUserId ==. userId]
 
-  case gameGameState arkhamGameCurrentData of
-    IsPending _ -> do
-      alreadyExists <- runDB $ exists [ArkhamPlayerArkhamGameId ==. gameId, ArkhamPlayerUserId ==. userId]
+        if alreadyExists
+          then pure original
+          else do
+            mLastStep <- getBy (UniqueStep gameId arkhamGameStep)
+            let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
-      if alreadyExists
-        then pure $ toPublicGame (Entity gameId original) mempty
-        else do
-          mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
-          let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+            gameRef <- liftIO $ newIORef arkhamGameCurrentData
+            queueRef <- liftIO $ newQueue currentQueue
+            genRef <- liftIO $ newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
 
-          gameRef <- newIORef arkhamGameCurrentData
-          queueRef <- newQueue currentQueue
-          genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
+            pid <- insert $ ArkhamPlayer userId gameId "00000"
 
-          pid <- runDB $ insert $ ArkhamPlayer userId gameId "00000"
-          tracer <- getTracer
+            runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
+              addPlayer (PlayerId $ coerce pid)
+              runMessages (gameIdToText gameId) Nothing
 
-          runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
-            addPlayer (PlayerId $ coerce pid)
-            runMessages (gameIdToText gameId) Nothing
+            updatedGame <- liftIO $ readIORef gameRef
+            updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
 
-          updatedGame <- readIORef gameRef
-          updatedQueue <- readIORef (queueToRef queueRef)
+            let
+              game' =
+                ArkhamGame
+                  arkhamGameName
+                  updatedGame
+                  (arkhamGameStep + 1)
+                  arkhamGameMultiplayerVariant
+                  arkhamGameCreatedAt
+                  now
 
-          writeChannel <- (.channel) <$> getRoom gameId
-          atomically
-            $ writeTChan writeChannel
-            $ encode
-            $ GameUpdate
-            $ PublicGame gameId arkhamGameName [] updatedGame
-
-          now <- liftIO getCurrentTime
-
-          let
-            game' =
-              ArkhamGame
-                arkhamGameName
-                updatedGame
-                (arkhamGameStep + 1)
-                arkhamGameMultiplayerVariant
-                arkhamGameCreatedAt
-                now
-
-          runDB $ do
             replace gameId game'
             insert_
               $ ArkhamStep
@@ -84,5 +74,13 @@ putApiV1ArkhamPendingGameR gameId = do
                 (arkhamGameStep + 1)
                 (ActionDiff $ view actionDiffL updatedGame)
 
-          pure $ toPublicGame (Entity gameId game') mempty
-    _ -> pure $ toPublicGame (Entity gameId original) mempty
+            pure game' 
+      _ -> pure original
+
+  writeChannel <- (.channel) <$> getRoom gameId
+  atomically
+    $ writeTChan writeChannel
+    $ encode
+    $ GameUpdate
+    $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
+  pure $ toPublicGame (Entity gameId game) mempty

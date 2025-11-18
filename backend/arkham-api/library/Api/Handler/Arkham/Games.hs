@@ -37,7 +37,7 @@ import Yesod.WebSockets
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
   userId <- getRequestUserId
-  webSockets $ gameStream (Just userId) gameId
+  webSockets $ gameStream gameId
   runDB do
     g <- get404 gameId
     gameLog <- getGameLog gameId Nothing
@@ -52,7 +52,7 @@ getApiV1ArkhamGameR gameId = do
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
-  webSockets $ gameStream Nothing gameId
+  webSockets $ gameStream gameId
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData
@@ -133,15 +133,17 @@ putApiV1ArkhamGameR gameId = do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
   writeChannel <- (.channel) <$> getRoom gameId
-  updateGame response gameId userId writeChannel
+  updateGame response gameId writeChannel
 
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
-  userId <- getRequestUserId
+  Entity userId user <- getRequestUser
+  unless user.admin do
+    void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
-  updateGame (Raw response.gameMessage) gameId userId writeChannel
+  updateGame (Raw response.gameMessage) gameId writeChannel
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

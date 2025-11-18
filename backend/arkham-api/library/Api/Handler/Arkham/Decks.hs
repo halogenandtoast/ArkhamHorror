@@ -101,59 +101,62 @@ postApiV1ArkhamDecksValidateR = do
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
   _ <- getRequestUserId
-  ArkhamGame {..} <- runDB $ get404 gameId
-  mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
   postData <- requireCheckJsonBody
-  let Game {..} = arkhamGameCurrentData
-  let investigatorId = udpInvestigatorId postData
-  let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
-
-  gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newQueue currentQueue
-  genRef <- newIORef $ mkStdGen gameSeed
   tracer <- getTracer
-  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
-    playerId <- getPlayer investigatorId
-
-    let question' = Map.delete (coerce playerId) gameQuestion
-    unless (Map.null question') (push $ AskMap question')
-    for_ (udpDeckUrl postData) \deckUrl -> do
-      getDeckList deckUrl >>= either (error . show) \decklist -> do
-        push
-          $ if investigatorId /= decklist.investigator
-            then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
-              Nothing -> ReplaceInvestigator investigatorId decklist
-              Just def ->
-                if toCardCode investigatorId `elem` def.cardCodes
-                  then UpgradeDecklist investigatorId decklist
-                  else ReplaceInvestigator investigatorId decklist
-            else UpgradeDecklist investigatorId decklist
-    runMessages (gameIdToText gameId) Nothing
-  ge <- readIORef gameRef
-
-  let diffDown = diff ge arkhamGameCurrentData
-  updatedQueue <- readIORef (queueToRef queueRef)
-  writeChannel <- (.channel) <$> getRoom gameId
-  atomically
-    $ writeTChan
-      writeChannel
-      (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty ge)
   now <- liftIO getCurrentTime
-  runDB do
-    replace gameId
-      $ ArkhamGame
-        arkhamGameName
-        ge
-        (arkhamGameStep + 1)
-        arkhamGameMultiplayerVariant
-        arkhamGameCreatedAt
-        now
+  ArkhamGame {..} <- runDB $ atomicallyWithGame gameId \ArkhamGame {..} -> do
+    mLastStep <- getBy (UniqueStep gameId arkhamGameStep)
+    let Game {..} = arkhamGameCurrentData
+    let investigatorId = udpInvestigatorId postData
+    let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
+    gameRef <- liftIO $ newIORef arkhamGameCurrentData
+    queueRef <- liftIO $ newQueue currentQueue
+    genRef <- liftIO $ newIORef $ mkStdGen gameSeed
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
+      playerId <- getPlayer investigatorId
+      let question' = Map.delete (coerce playerId) gameQuestion
+      unless (Map.null question') (push $ AskMap question')
+      for_ (udpDeckUrl postData) \deckUrl -> do
+        getDeckList deckUrl >>= either (error . show) \decklist -> do
+          push
+            $ if investigatorId /= decklist.investigator
+              then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
+                Nothing -> ReplaceInvestigator investigatorId decklist
+                Just def ->
+                  if toCardCode investigatorId `elem` def.cardCodes
+                    then UpgradeDecklist investigatorId decklist
+                    else ReplaceInvestigator investigatorId decklist
+              else UpgradeDecklist investigatorId decklist
+      runMessages (gameIdToText gameId) Nothing
+    ge <- liftIO $ readIORef gameRef
+
+    let diffDown = diff ge arkhamGameCurrentData
+    updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
+
+    let g' =
+          ArkhamGame
+            arkhamGameName
+            ge
+            (arkhamGameStep + 1)
+            arkhamGameMultiplayerVariant
+            arkhamGameCreatedAt
+            now
+
+    replace gameId g'
     insert_
       $ ArkhamStep
         gameId
         (Choice diffDown updatedQueue)
         (arkhamGameStep + 1)
         (ActionDiff $ view actionDiffL ge)
+    pure g'
+
+  writeChannel <- (.channel) <$> getRoom gameId
+  atomically
+    $ writeTChan
+      writeChannel
+      (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty arkhamGameCurrentData)
 
 fromPostData :: UserId -> CreateDeckPost -> ArkhamDeck
 fromPostData userId CreateDeckPost {..} = do

@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 import Arkham.Scenario.Deck
 
 newtype MouthOfKnYanTheDepthsBeneath = MouthOfKnYanTheDepthsBeneath LocationAttrs
@@ -20,7 +21,7 @@ mouthOfKnYanTheDepthsBeneath =
 
 instance HasAbilities MouthOfKnYanTheDepthsBeneath where
   getAbilities (MouthOfKnYanTheDepthsBeneath attrs) =
-    extendRevealed1 attrs $ restricted attrs 1 (Here <> HasSupply Map) actionAbility
+    extendRevealed1 attrs $ restricted attrs 1 (oneOf [IsReturnTo, Here] <> HasSupply Map) actionAbility
 
 instance RunMessage MouthOfKnYanTheDepthsBeneath where
   runMessage msg l@(MouthOfKnYanTheDepthsBeneath attrs) = runQueueT $ case msg of

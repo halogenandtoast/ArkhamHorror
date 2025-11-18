@@ -21,26 +21,27 @@ hallowedMirror3 = asset HallowedMirror3 Cards.hallowedMirror3
 
 instance HasAbilities HallowedMirror3 where
   getAbilities (HallowedMirror3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1
         $ freeReaction
         $ Matcher.PlayCard #when You (basic $ cardIs Events.soothingMelody)
+    , controlled_ a 2 $ forced $ Matcher.AssetEntersPlay #after (be a)
     ]
 
 instance RunMessage HallowedMirror3 where
   runMessage msg a@(HallowedMirror3 attrs) = runQueueT $ case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
-      bonded <- take 3 <$> searchBonded iid Events.soothingMelody
-      case bonded of
-        [] -> pure ()
-        (handSoothingMelody : deckSoothingMelodies) -> do
-          addToHand iid (only handSoothingMelody)
-          whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckSoothingMelodies
-      HallowedMirror3 <$> liftRunMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       chooseOneM iid do
         labeled "Change each \"2\" to a \"3\""
           $ eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
         labeled "Shuffle it into your deck instead of discarding it"
           $ eventModifier (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      bonded <- take 3 <$> searchBonded iid Events.soothingMelody
+      case bonded of
+        [] -> pure ()
+        (handSoothingMelody : deckSoothingMelodies) -> do
+          addToHand iid (only handSoothingMelody)
+          whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckSoothingMelodies
       pure a
     _ -> HallowedMirror3 <$> liftRunMessage msg attrs

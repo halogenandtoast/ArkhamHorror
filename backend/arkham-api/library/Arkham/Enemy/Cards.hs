@@ -1387,6 +1387,7 @@ pitWarden =
   (enemy "04297" "Pit Warden" TheDepthsOfYoth 3)
     { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
     , cdVengeancePoints = Just 1
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 eaterOfTheDepths :: CardDef

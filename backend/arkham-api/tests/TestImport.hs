@@ -9,7 +9,7 @@ module TestImport (
   module TestImport,
 ) where
 
-import Arkham.Prelude as X hiding (assert)
+import Arkham.Prelude as X hiding (assert, async)
 
 import Arkham.Agenda as X
 import Arkham.Asset as X (createAsset, lookupAsset)
@@ -55,6 +55,7 @@ import Data.UUID.V4 as X
 import Helpers.Message as X hiding (playEvent)
 import Test.Hspec as X
 
+import Arkham.CampaignLogKey
 import Arkham.ActiveCost
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
@@ -94,13 +95,17 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Tracing
 import Arkham.Trait (Trait (Elite))
+import Control.Concurrent.Async (async)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import GHC.OverloadedLabels
 import GHC.TypeLits
+import OpenTelemetry.Attributes qualified as A
+import OpenTelemetry.Processor.Span (ShutdownResult (..), SpanProcessor (..))
 import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Core hiding (Event, inSpan')
 import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 import System.Random (StdGen, mkStdGen)
 
@@ -685,15 +690,6 @@ withGame b = do
   g <- getGame
   runReaderT b g
 
-replaceScenario
-  :: (MonadReader env m, HasGameRef env, MonadIO m)
-  => (ScenarioAttrs -> ScenarioAttrs)
-  -> m ()
-replaceScenario f = do
-  scenario' <- testScenario "00000" f
-  ref <- view gameRefL
-  atomicModifyIORef' ref (\g -> (g {gameMode = That scenario'}, ()))
-
 skip :: HasCallStack => TestAppT ()
 skip = chooseOptionMatching "skip" \case
   SkipTriggersButton {} -> True
@@ -802,8 +798,7 @@ gameTestFromFile fp body = do
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
   debugLevelRef <- newIORef 0
-  provider <- Trace.initializeGlobalTracerProvider
-  let tracer = Trace.makeTracer provider $(Trace.detectInstrumentationLibrary) Trace.tracerOptions
+  tracer <- mkTestTracer
   let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
@@ -811,20 +806,46 @@ gameTestFromFile fp body = do
 gameTestWith :: CardDef -> (Investigator -> TestAppT ()) -> IO ()
 gameTestWith investigatorDef body = do
   investigator <- testInvestigator investigatorDef
-  g <- newGame investigator
+  scenario' <- testScenario "01104" id
+  g <- newGame scenario' investigator
   gameRef <- newIORef g
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
   debugLevelRef <- newIORef 0
-  provider <- Trace.initializeGlobalTracerProvider
-  let tracer = Trace.makeTracer provider $(Trace.detectInstrumentationLibrary) Trace.tracerOptions
+  tracer <- mkTestTracer
   let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
-newGame :: MonadIO m => Investigator -> m Game
-newGame investigator = do
-  scenario' <- testScenario "01104" id
+mkTestTracer :: IO Trace.Tracer
+mkTestTracer = do
+  let dummyProcessor =
+        SpanProcessor
+          { spanProcessorOnStart = \_ _ -> pure ()
+          , spanProcessorOnEnd = \_ -> pure ()
+          , spanProcessorShutdown = async (pure ShutdownSuccess)
+          , spanProcessorForceFlush = pure ()
+          }
+  tp <- createTracerProvider [dummyProcessor] emptyTracerProviderOptions
+  let instrLib = InstrumentationLibrary "test" "1.0.0" "" A.emptyAttributes
+  pure $ makeTracer tp instrLib tracerOptions
+
+scenarioTest :: ScenarioId -> (Investigator -> TestAppT ()) -> IO ()
+scenarioTest scenarioId body = do
+  investigator <- testInvestigator Investigators.jennyBarnes
+  let scenario' = lookupScenario scenarioId Easy
+  g <- newGame scenario' investigator
+  gameRef <- newIORef g
+  queueRef <- newQueue []
+  genRef <- newIORef $ mkStdGen (gameSeed g)
+  debugLevelRef <- newIORef 0
+  tracer <- mkTestTracer
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer
+  runReaderT (overGameM preloadModifiers) testApp
+  runTestApp testApp (body investigator)
+
+newGame :: MonadIO m => Scenario -> Investigator -> m Game
+newGame scenario' investigator = do
   seed <- liftIO getRandom
   let
     game =
@@ -1030,3 +1051,6 @@ withHand :: HasCardDef a => Investigator -> [a] -> TestAppT ()
 withHand self cs = do
   hand <- traverse genCard cs
   withProp @"hand" hand self
+
+record :: IsCampaignLogKey k => k -> TestAppT ()
+record = pushAndRun . Record . toCampaignLogKey

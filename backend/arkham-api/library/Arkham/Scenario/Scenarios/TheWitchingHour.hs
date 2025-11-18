@@ -86,18 +86,17 @@ setupTheWitchingHour attrs = do
   isReturnTo <- getIsReturnTo
 
   witchHauntedWoods <-
-    sampleN 5
-      $ Locations.witchHauntedWoodsAbandonedMine
-      :| ( [ Locations.witchHauntedWoodsCairnStones
-           , Locations.witchHauntedWoodsTheLonelyTree
-           , Locations.witchHauntedWoodsChildsTreeHouse
-           , Locations.witchHauntedWoodsTaintedWell
-           , Locations.witchHauntedWoodsHermitsHouse
-           , Locations.witchHauntedWoodsOvergrownBarn
-           ]
-             <> ( guard isReturnTo
-                    *> [Locations.witchHauntedWoodsWitchTree, Locations.witchHauntedWoodsUnmarkedGraveyard]
-                )
+    pickN 5
+      $ [ Locations.witchHauntedWoodsAbandonedMine
+        , Locations.witchHauntedWoodsCairnStones
+        , Locations.witchHauntedWoodsTheLonelyTree
+        , Locations.witchHauntedWoodsChildsTreeHouse
+        , Locations.witchHauntedWoodsTaintedWell
+        , Locations.witchHauntedWoodsHermitsHouse
+        , Locations.witchHauntedWoodsOvergrownBarn
+        ]
+      <> ( guard isReturnTo
+             *> [Locations.witchHauntedWoodsWitchTree, Locations.witchHauntedWoodsUnmarkedGraveyard]
          )
 
   setAside

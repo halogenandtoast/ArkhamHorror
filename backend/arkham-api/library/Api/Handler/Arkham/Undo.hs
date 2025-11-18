@@ -16,7 +16,7 @@ import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.))
+import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.), (>.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
 import OpenTelemetry.Eventlog (withSpan_)
@@ -165,7 +165,7 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
     let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
     when (n <= 0) $ throwError "No scenario steps to undo"
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
-    let toStep = min 0 (arkhamGameStep game - n)
+    let toStep = max 0 (arkhamGameStep game - n)
     steps <- lift $ select do
       steps <- from $ table @ArkhamStep
       where_ $ steps.arkhamGameId ==. val gameId
@@ -186,7 +186,7 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
       delete do
         entries <- from $ table @ArkhamLogEntry
         where_ $ entries.arkhamGameId ==. val gameId
-        where_ $ entries.step >=. val toStep
+        where_ $ entries.step >. val toStep
 
     now <- liftIO getCurrentTime
 
@@ -208,7 +208,7 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
         delete do
           entries <- from $ table @ArkhamLogEntry
           where_ $ entries.arkhamGameId ==. val gameId
-          where_ $ entries.step >=. val toStep
+          where_ $ entries.step >. val toStep
 
         case arkhamGameMultiplayerVariant game of
           Solo ->

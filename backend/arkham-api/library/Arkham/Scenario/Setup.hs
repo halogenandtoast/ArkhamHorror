@@ -120,9 +120,12 @@ shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderSta
 shuffleEncounterDeck = do
   mods <- getModifiers ScenarioTarget
   let extraCards = nubBy ((==) `on` toCardId) [card | StartsInEncounterDeck card <- mods]
-  encounterDeck <- use (attrsL . encounterDeckL)
+  encounterDeck <- removeNonEncounterBackLocationCards <$> use (attrsL . encounterDeckL)
   shuffledEncounterDeck <- withDeckM shuffleM (Deck $ unDeck encounterDeck <> extraCards)
   attrsL . encounterDeckL .= shuffledEncounterDeck
+ where
+  removeNonEncounterBackLocationCards = filter (not . isNonEncounterBackLocationCard)
+  isNonEncounterBackLocationCard = and . sequence [(== LocationType) . cdCardType, cdDoubleSided] . toCardDef
 
 clearCards :: MonadState ScenarioBuilderState m => m ()
 clearCards = do

@@ -165,7 +165,7 @@ calculateScore attrs = do
       , (BloodlessManInVictory, if bloodless || bloodlessUnleashed then 4 else 0)
       , (PaleLanternInVictory, if paleLantern then 3 else 0)
       , (DeclanPearceInVictory, if declan then 3 else 0)
-      , (RivalInVictory, if rivalInVictory then 3 else 0)
+      , (RivalInVictory, if rivalInVictory then 4 else 0)
       , (DamageBonus, damageBonus)
       , (HorrorBonus, horrorBonus)
       , (HardMode, if attrs.difficulty == Hard then 3 else 0)

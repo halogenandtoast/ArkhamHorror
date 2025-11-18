@@ -31,11 +31,10 @@ instance HasAbilities LocalsOfKingsportAllied where
         a
         3
         ( exists
-            ( assetIs Assets.jewelOfSarnath
+            $ assetIs Assets.jewelOfSarnath
                 <> AssetControlledBy Anyone
-                <> not_ (AssetWithTokens AnyValue Damage)
-                <> not_ (AssetWithTokens AnyValue Doom)
-            )
+                <> not_ (AssetWithTokens (atLeast 1) Damage)
+                <> not_ (AssetWithTokens (atLeast 1) Doom)
         )
         $ Objective
         $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 3) Anywhere)

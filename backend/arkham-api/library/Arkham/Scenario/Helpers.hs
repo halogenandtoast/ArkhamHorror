@@ -55,10 +55,11 @@ hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCo
 -- gather cards we want to include them even when the suffix is a "b", in these
 -- cases we just look to ensure it's not the other side of a card.
 isDoubleSided :: EncounterCard -> Bool
-isDoubleSided =
-  or
-    . sequence [and . sequence [cdDoubleSided, (/= LocationType) . cdCardType], isJust . cdOtherSide]
-    . toCardDef
+isDoubleSided ec = if cdCardType def == LocationType
+  then cdDoubleSided def
+  else isJust (cdOtherSide def)
+ where
+   def = toCardDef ec
 
 buildEncounterDeckWith
   :: CardGen m

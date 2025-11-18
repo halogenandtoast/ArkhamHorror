@@ -145,7 +145,7 @@ instance RunMessage BloodOnTheAltar where
             , houseInTheReeds
             , schoolhouse
             ]
-      for_ (zip locations cardsToPutUnderneath) $ \(location, card) -> do
+      for_ (zip locations cardsToPutUnderneath) \(location, card) -> do
         l <- place location
         placeUnderneath l [toCard card]
 

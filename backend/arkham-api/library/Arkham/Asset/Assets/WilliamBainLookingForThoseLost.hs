@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.WilliamBainLookingForThoseLost (williamBainLookingFor
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.GameValue (GameValue (..), perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types (Field (..))
@@ -33,7 +33,9 @@ instance HasModifiersFor WilliamBainLookingForThoseLost where
 instance HasAbilities WilliamBainLookingForThoseLost where
   getAbilities (WilliamBainLookingForThoseLost a) =
     [ controlled a 1 (DuringSkillTest (YourSkillTest AnySkillTest) <> ScenarioDeckWithCard GuestDeck)
-        $ triggered (CommittedCards #after You $ LengthIs $ atLeast 1) (exhaust a)
+        $ triggered
+          (CommittedCards #after You $ LengthIs $ atLeast 1)
+          (exhaust a <> CalculatedResourceCost (GameValueCalculation $ PerPlayer 1))
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 

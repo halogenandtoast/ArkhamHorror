@@ -17,7 +17,10 @@ pursuitOfTheUnknownV2 = act (2, A) PursuitOfTheUnknownV2 Cards.pursuitOfTheUnkno
 
 instance HasAbilities PursuitOfTheUnknownV2 where
   getAbilities (PursuitOfTheUnknownV2 x) =
-    [ restricted x 1 (exists $ DeckWith $ HasCard $ CardWithTitle "Tekeli-li")
+    [ restricted
+        x
+        1
+        (exists (DeckWith $ HasCard $ CardWithTitle "Tekeli-li") <> ScenarioDeckWithCard TekeliliDeck)
         $ actionAbilityWithCost (SpendTokenKeyCost 2 #tablet)
     , restricted
         x

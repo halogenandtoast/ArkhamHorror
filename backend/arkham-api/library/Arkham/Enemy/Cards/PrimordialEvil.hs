@@ -2,9 +2,9 @@ module Arkham.Enemy.Cards.PrimordialEvil (primordialEvil) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Matcher
 
 newtype PrimordialEvil = PrimordialEvil EnemyAttrs
@@ -23,11 +23,9 @@ instance HasAbilities PrimordialEvil where
 instance RunMessage PrimordialEvil where
   runMessage msg e@(PrimordialEvil attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      canManipulateDeck <- can.manipulate.deck iid
       tekelili <- getTekelili 1
-
-      if not canManipulateDeck || null tekelili
-        then initiateEnemyAttack attrs (attrs.ability 1) iid
-        else addTekelili iid tekelili
+      getCanShuffleIn iid tekelili >>= \case
+        True -> addTekelili iid tekelili
+        False -> initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     _ -> PrimordialEvil <$> liftRunMessage msg attrs

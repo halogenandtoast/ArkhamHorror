@@ -37,6 +37,9 @@ removeEveryFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> filter ((/= m) . toCardDef) cs) cards removals
 
+isDeckEmpty :: (HasGame m, Tracing m, Deck.IsDeck deck) => deck -> m Bool
+isDeckEmpty = fmap null . getDeck . Deck.toDeck
+
 getDeck :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.NoDeck -> pure []

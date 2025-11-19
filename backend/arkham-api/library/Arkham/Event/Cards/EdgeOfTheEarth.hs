@@ -107,7 +107,8 @@ unearthTheAncients2 =
     { cdSkills = [#intellect, #intellect, #agility]
     , cdCardTraits = singleton Insight
     , cdActions = [#investigate]
-    , cdCriteria = Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
+    , cdCriteria =
+        Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
     , cdLevel = Just 2
     }
 
@@ -133,7 +134,12 @@ counterespionage1 =
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = setFromList [Favor, Service]
     , cdCriteria = Just $ oneOf [Criteria.EventWindowInvestigatorIs You, Criteria.CanAffordCostIncrease 2] -- WindowInvestigatorIs only handles draw card right now
-    , cdFastWindow = Just $ DrawCard #when Anyone (basic NonWeaknessTreachery) AnyDeck
+    , cdFastWindow =
+        Just
+          $ oneOf
+            [ DrawCard #when You (basic NonWeaknessTreachery) AnyDeck
+            , DrawCard #when (not_ You) (basic $ NonWeaknessTreachery <> VisibleToAll) AnyDeck
+            ]
     , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 1
     }

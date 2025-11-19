@@ -4,6 +4,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Helpers.Window (entering)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -24,7 +25,8 @@ instance HasAbilities RunningOutOfTime where
 instance RunMessage RunningOutOfTime where
   runMessage msg a@(RunningOutOfTime attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      allInvestigators >>= traverse_ \iid -> getTekelili 1 >>= addTekelili iid
+      allInvestigators >>= traverse_ \iid ->
+        getTekelili 1 >>= \c -> whenCanShuffleIn iid c $ addTekelili iid c
       locations <- select LocationWithoutClues
 
       if null locations
@@ -33,8 +35,7 @@ instance RunMessage RunningOutOfTime where
           forTarget crashSite msg
         else do
           lead <- getLead
-          chooseOrRunOneM lead do
-            targets locations \lid -> forTarget lid msg
+          chooseOrRunOneM lead $ targets locations (`forTarget` msg)
 
       pure a
     ForTarget (LocationTarget lid) (AdvanceAgenda (isSide B attrs -> True)) -> do

@@ -72,6 +72,7 @@ import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution, getIsStandalone)
+import Arkham.Helpers.Shuffle
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
@@ -2091,19 +2092,22 @@ revealingEdit
 revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ Msg.revealingEdit iid source target zone f
 
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
-shuffleIntoDeck deck target = guardPlayerDeckIsNotEmpty deck do
+shuffleIntoDeck deck target = whenCanShuffleIn deck (toTarget target) do
   push $ Msg.shuffleIntoDeck deck target
 
 shuffleCardsIntoDeck
-  :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  :: ( ReverseQueue m
+     , IsDeck deck
+     , MonoFoldable cards
+     , Element cards ~ card
+     , IsCard card
+     , CanShuffleIn cards
+     )
   => deck
   -> cards
   -> m ()
-shuffleCardsIntoDeck deck cards =
-  case length cards of
-    0 -> pure ()
-    1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoDeck deck cards
-    _ -> push $ Msg.shuffleCardsIntoDeck deck cards
+shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
+  push $ Msg.shuffleCardsIntoDeck deck cards
 
 shuffleCardsIntoTopOfDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)

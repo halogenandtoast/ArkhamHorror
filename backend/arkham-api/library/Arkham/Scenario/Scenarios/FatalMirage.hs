@@ -23,6 +23,7 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Query
+import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Helpers.Text
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -33,7 +34,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (optionsL)
 import Arkham.Scenario.Types (Scenario (..), victoryDisplayL)
 import Arkham.Scenarios.FatalMirage.Helpers
@@ -66,7 +66,7 @@ instance HasChaosTokenValue FatalMirage where
       pure $ toChaosTokenValue attrs Skull n (n + m)
     Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
-    ElderThing -> pure $ toChaosTokenValue attrs Tablet 4 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage FatalMirage where
@@ -222,16 +222,18 @@ instance RunMessage FatalMirage where
         Cultist -> placeCluesOnLocation iid Cultist 1
         Tablet -> do
           atPrison <- iid <=~> investigatorAt (locationIs Locations.prisonOfMemories)
+          tekelili <- getTekelili 1
           if isHardExpert attrs && n >= 2
             then do
               unless atPrison $ moveTo_ Tablet iid Locations.prisonOfMemories
-              addTekelili iid . take 1 =<< getScenarioDeck TekeliliDeck
+              whenCanShuffleIn iid tekelili $ addTekelili iid tekelili
             else do
               chooseOneM iid do
                 unless atPrison do
                   labeled "Move to the Prison of Memories" $ moveTo_ Tablet iid Locations.prisonOfMemories
-                labeled "Shuffle the top card of the Tekeli-li deck into your deck without looking at it." do
-                  addTekelili iid . take 1 =<< getScenarioDeck TekeliliDeck
+                whenCanShuffleIn iid tekelili do
+                  labeled "Shuffle the top card of the Tekeli-li deck into your deck without looking at it."
+                    $ addTekelili iid tekelili
         ElderThing ->
           chooseSelectM iid (EnemyWithTrait Eidolon) \enemy -> placeDoom ElderThing enemy 1
         _ -> pure ()

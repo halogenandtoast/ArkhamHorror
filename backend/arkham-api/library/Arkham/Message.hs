@@ -1073,7 +1073,7 @@ data Message
   | SpendUses Source Target UseType Int
   | SpentAllUses Target
   | StartCampaign
-  | StartScenario ScenarioId
+  | StartScenario ScenarioId (Maybe ScenarioOptions)
   | LoadScenario ScenarioOptions
   | RestartScenario
   | StartSkillTest InvestigatorId
@@ -1232,6 +1232,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "StartScenrio" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ StartScenario a b
+          Left a -> pure $ StartScenario a Nothing
       "AssignedDamage" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

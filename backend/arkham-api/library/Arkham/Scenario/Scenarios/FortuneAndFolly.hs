@@ -175,7 +175,7 @@ instance RunMessage FortuneAndFolly where
         push
           $ ScenarioCampaignStep
           $ ContinueCampaignStep
-          $ Continuation (ScenarioStep "88001") False False
+          $ Continuation (ScenarioStep "88001") False False Nothing
       doStep 1 PreScenarioSetup
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
@@ -204,10 +204,20 @@ instance RunMessage FortuneAndFolly where
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro5"
-      let opts = scenarioOptions attrs `orElse` ScenarioOptions True False
+      let opts =
+            scenarioOptions attrs
+              `orElse` defaultScenarioOptions
+                { scenarioOptionsStandalone = True
+                , scenarioOptionsPerformTarotReading = False
+                }
       pushAll
         $ [StandaloneSetup | scenarioOptionsStandalone opts]
-        <> [ChooseLeadInvestigator, SetPlayerOrder]
+        <> [ maybe
+               ChooseLeadInvestigator
+               (`ChoosePlayer` SetLeadInvestigator)
+               (scenarioOptionsLeadInvestigator opts)
+           , SetPlayerOrder
+           ]
         <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
         <> [CheckDestiny, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
       pure s
@@ -215,7 +225,7 @@ instance RunMessage FortuneAndFolly where
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
-        $ Continuation (ScenarioStep "88001b") False False
+        $ Continuation (ScenarioStep "88001b") False False Nothing
       pure $ FortuneAndFolly $ attrs & setMetaKey "skipped" True
     Setup -> runScenarioSetup FortuneAndFolly attrs do
       gather Set.FortuneAndFolly
@@ -388,13 +398,13 @@ instance RunMessage FortuneAndFolly where
           push
             $ ScenarioCampaignStep
             $ ContinueCampaignStep
-            $ Continuation (CheckpointStep 1) False False
+            $ Continuation (CheckpointStep 1) False False Nothing
         Resolution 2 -> do
           resolution "resolution2"
           push
             $ ScenarioCampaignStep
             $ ContinueCampaignStep
-            $ Continuation (CheckpointStep 1) False False
+            $ Continuation (CheckpointStep 1) False False Nothing
         _ -> error "invalid resolution"
       pure s
     ScenarioCampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
@@ -408,7 +418,7 @@ instance RunMessage FortuneAndFolly where
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
-        $ Continuation (ScenarioStep "88001b") False False
+        $ Continuation (ScenarioStep "88001b") False False Nothing
       pure s
     DoStep (-1) (ScenarioCampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       roles <- forMaybeM

@@ -28,6 +28,7 @@ async function choose(idx: number) {
 }
 
 const chooseDeck = computed(() => {
+  if (props.game.campaign && props.game.campaign.step?.tag === 'ChooseDecksStep') return true
   const question = Object.values(props.game.question)[0]
 
   if (question === null || question == undefined) {

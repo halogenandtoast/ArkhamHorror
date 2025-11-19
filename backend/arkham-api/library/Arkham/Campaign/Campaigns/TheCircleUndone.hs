@@ -19,7 +19,6 @@ import Arkham.Helpers.Xp (XpBonus (WithBonus), toBonus)
 import Arkham.I18n
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher
-import Arkham.Message (chooseDecks)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
@@ -36,7 +35,7 @@ instance IsCampaign TheCircleUndone where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue DisappearanceAtTheTwilightEstate
-    DisappearanceAtTheTwilightEstate -> continueNoUpgrade TheWitchingHour
+    DisappearanceAtTheTwilightEstate -> ChooseDecksStep <$> continueNoUpgrade TheWitchingHour
     TheWitchingHour -> continue AtDeathsDoorstep
     AtDeathsDoorstep -> continue TheSecretName
     InterludeStep 2 _ -> continue TheSecretName
@@ -75,14 +74,6 @@ instance RunMessage TheCircleUndone where
           then PrologueStep
           else attrs.step.unwrap
       pure c
-    CampaignStep TheWitchingHour -> do
-      players <- allPlayers
-      push $ chooseDecks players
-      lift $ defaultCampaignRunner msg c
-    CampaignStep ReturnToTheWitchingHour -> do
-      players <- allPlayers
-      push $ chooseDecks players
-      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> scope "prologue" do
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep

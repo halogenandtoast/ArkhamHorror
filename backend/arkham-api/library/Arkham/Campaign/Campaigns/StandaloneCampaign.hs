@@ -14,6 +14,7 @@ instance IsCampaign StandaloneCampaign where
     PrologueStep -> Nothing
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
+    ChooseDecksStep nextStep' -> Just nextStep'
     _ -> Nothing
 
 instance RunMessage StandaloneCampaign where

@@ -297,9 +297,9 @@ instance RunMessage TheDreamEaters where
                     , otherCampaignAttrs = Just (attrs {campaignChaosBag = initChaosBag TheDreamQuest difficulty})
                     }
             }
-      Do msg'@(CampaignStep (ContinueCampaignStep (Continuation (ScenarioStep _) _ _))) -> do
+      Do msg'@(CampaignStep (ContinueCampaignStep (Continuation (ScenarioStep _) _ _ _))) -> do
         lift $ defaultCampaignRunner msg' c
-      CampaignStep s@(ContinueCampaignStep (Continuation sc@(ScenarioStep _) _ _)) -> do
+      CampaignStep s@(ContinueCampaignStep (Continuation sc@(ScenarioStep _) _ _ _)) -> do
         if
           | sc `elem` theDreamQuestSteps && currentCampaignMode meta == Just TheWebOfDreams -> do
               if sc == BeyondTheGatesOfSleep

@@ -7,7 +7,7 @@ import { scenarioIdToI18n } from '@/arkham/types/Scenario'
 import type { Campaign } from '@/arkham/types/Campaign'
 import type { Scenario } from '@/arkham/types/Scenario'
 import type { Investigator } from '@/arkham/types/Investigator'
-import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
+import { type CampaignStep, campaignStepName, extendWithOptions } from '@/arkham/types/CampaignStep'
 import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
@@ -141,6 +141,13 @@ const canUpgrade = computed(() => {
   return props.campaign.completedSteps.some((step: CampaignStep) => step.tag === 'ScenarioStep' || step.tag === 'StandaloneScenarioStep')
 })
 
+const isScenario = computed(() =>  {
+  // We do not yet handle the standalone step
+  // return ["ScenarioStep", "StandaloneScenarioStep", "ScenarioStepWithOptions"].includes(props.step.tag)
+  if (!(Object.values(props.game.investigators).length > 1)) return false
+  return ["ScenarioStep", "StandaloneScenarioStep", "ScenarioStepWithOptions", "StandaloneScenarioStepWithOptions"].includes(props.step.tag)
+})
+
 const standalones = computed(() => {
   if (!props.campaign) return []
   if (!props.chooseSideStory && props.step.tag !== "ScenarioStep") return []
@@ -198,8 +205,27 @@ async function upgradeDecks() {
 }
 
 async function startStep() {
+  if (props.step.tag === 'ScenarioStep' || props.step.tag === 'StandaloneScenarioStep') {
+    if (isScenario.value && leadInvestigatorId.value !== null) {
+      // inform the server of the lead investigator
+      sendOnce({
+        tag: 'CampaignStepAnswer',
+        contents: extendWithOptions(props.step, { scenarioOptionsLeadInvestigator: leadInvestigatorId.value })
+      })
+      return
+    }
+  }
   sendOnce({ tag: 'CampaignStepAnswer', contents: props.step })
 }
+
+const leadInvestigatorId = ref<string | null>(null)
+
+const expeditionLeader = computed(() => {
+  if (!props.campaign) return null
+  if (!scenario.value) return null
+  if (!['53016', '04043', '04054', '53017'].includes(scenario.value)) return null
+  return props.campaign.meta?.expeditionLeader
+})
 
 </script>
 
@@ -237,12 +263,33 @@ async function startStep() {
     </div>
 
     <template v-if="!addSideStory && !chooseSideStory">
-      <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
+      <div v-if="investigators.length > 0" id="investigators">
+        <section v-if="isScenario" id="investigators-header"><i class="secret"></i> {{t('lead')}}</section>
+        <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
+          <template v-if="isScenario" #back="{ investigator }">
+            <label class="secret-radio">
+              <input
+                type="radio"
+                class="secret-radio__input"
+                name="lead-player"
+                :disabled="expeditionLeader && investigator.id !== expeditionLeader"
+                :checked="investigator.id === expeditionLeader"
+                :value="investigator.id"
+                v-model="leadInvestigatorId"
+              />
+              <span class="secret-radio__visual">
+                <span class="secret-radio__circle"></span>
+                <i class="secret"></i>
+              </span>
+            </label>
+          </template>
+        </InvestigatorRow>
+      </div>
     </template>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .next-scenario {
   display: flex;
   justify-content: space-between;
@@ -381,5 +428,111 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.investigators {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.secret-radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  cursor: pointer;
+
+  &__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  &__visual {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  &__circle {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: #333;
+    transform: scale(0);
+    opacity: 0;
+    transition:
+      transform 0.18s ease-out,
+      opacity 0.18s ease-out;
+    transform-origin: center;
+  }
+
+  i.secret {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:before {
+      font-family: "Arkham";
+      content: "\0048";
+    }
+
+    font-size: 1.5em;
+    color: var(--title);
+
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+      opacity 0.12s ease-out 0.08s,
+      transform 0.12s ease-out 0.08s;
+  }
+
+  &__input:checked + .secret-radio__visual .secret-radio__circle {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  &__input:checked + .secret-radio__visual i.secret {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#investigators {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  border-radius: 8px;
+}
+
+
+#investigators-header {
+  color: var(--title);
+  text-align: end;
+  border-bottom: 1px solid oklch(from var(--title) calc(l - 0.4) c h);
+  padding-bottom: 4px;
+  i.secret {
+    &:before {
+      font-family: "Arkham";
+      content: "\0048";
+    }
+
+    font-size: 1.5em;
+  }
 }
 </style>

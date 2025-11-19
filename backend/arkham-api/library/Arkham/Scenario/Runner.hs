@@ -71,7 +71,6 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Options
 import Arkham.Search hiding (drawnCardsL, foundCardsL)
 import Arkham.Search qualified as Search
 import Arkham.Skill.Types qualified as Field
@@ -160,7 +159,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         <> [ chooseDecks players
            , ResetInvestigators
            , ResetGame
-           , StartScenario scenarioId
+           , StartScenario scenarioId Nothing
            ]
     pure a
   InitDeck iid _ deck -> do
@@ -1604,12 +1603,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pushAll [RemoveAllDoom (toSource a) target | target <- xs]
     pure a
   LoadScenario opts -> do
+    unless opts.delayChoosingLead do
+      push $ maybe ChooseLeadInvestigator (`ChoosePlayer` SetLeadInvestigator) opts.leadInvestigator
+      push SetPlayerOrder
     pushAll
-      $ [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
-      <> [StandaloneSetup | scenarioOptionsStandalone opts]
-      <> [ChooseLeadInvestigator, SetPlayerOrder]
-      <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
-      <> [CheckDestiny, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
+      [ LoadTarotDeck
+      , SetChaosTokensForScenario
+      , PreScenarioSetup
+      , HandleKilledOrInsaneInvestigators
+      ]
+    when opts.standalone $ push StandaloneSetup 
+    when opts.performTarotReading $ push PerformTarotReading
+    pushAll [CheckDestiny, SetupInvestigators, InvestigatorsMulligan]
+    when opts.delayChoosingLead do
+      push $ maybe ChooseLeadInvestigator (`ChoosePlayer` SetLeadInvestigator) opts.leadInvestigator
+      push SetPlayerOrder
+    pushAll [Setup, EndSetup]
     pure $ a & startedL .~ True & optionsL ?~ opts
   CheckDestiny ->
     fromMaybe a <$> runMaybeT do

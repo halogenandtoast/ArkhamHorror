@@ -67,8 +67,12 @@ defaultCampaignRunner msg a = case msg of
       [] -> pure ()
       xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
+  CampaignStep (ScenarioStepWithOptions sid opts) -> do
+    pushAll [ResetInvestigators, ResetGame, StartScenario sid (Just opts)]
+    -- [ALERT] Update TheDreamEaters if this alters a
+    pure a
   CampaignStep (ScenarioStep sid) -> do
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid]
+    pushAll [ResetInvestigators, ResetGame, StartScenario sid Nothing]
     -- [ALERT] Update TheDreamEaters if this alters a
     pure a
   CampaignStep (UpgradeDeckStep _) -> do
@@ -76,13 +80,22 @@ defaultCampaignRunner msg a = case msg of
     players <- traverse getPlayer investigators
     pushAll $ ResetGame : chooseUpgradeDecks players : [FinishedUpgradingDecks]
     pure a
+  CampaignStep (ChooseDecksStep _ ) -> do
+    players <- allPlayers
+    pushAll $ chooseDecks players : [FinishedUpgradingDecks]
+    pure a
   CampaignStep (ContinueCampaignStep _step') -> do
     lead <- getLeadPlayer
     push $ Ask lead ContinueCampaign
     pure a
   CampaignStep (StandaloneScenarioStep sid _) -> do
     let xp = getSideStoryCost sid
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid]
+    pushAll [ResetInvestigators, ResetGame, StartScenario sid Nothing]
+    select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
+    pure a
+  CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) -> do
+    let xp = getSideStoryCost sid
+    pushAll [ResetInvestigators, ResetGame, StartScenario sid (Just opts)]
     select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
@@ -225,11 +238,16 @@ defaultCampaignRunner msg a = case msg of
   ReplaceInvestigator oldIid _ -> do
     pure $ updateAttrs a $ decksL %~ deleteMap oldIid
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of
+    ChooseDecksStep nextStep' -> do
+      push $ CampaignStep nextStep'
+      pure $ updateAttrs a $ stepL .~ nextStep'
     UpgradeDeckStep nextStep' -> do
       push $ CampaignStep nextStep'
       pure $ updateAttrs a $ stepL .~ nextStep'
     _ -> do
-      sendError $ "Your game can continue without issue, but please file a bug for this. Invalid state: " <> tshow (campaignStep (toAttrs a))
+      sendError
+        $ "Your game can continue without issue, but please file a bug for this. Invalid state: "
+        <> tshow (campaignStep (toAttrs a))
       pure a
   ResetGame -> runMessage ReloadDecks a
   ReloadDecks -> do
@@ -310,9 +328,8 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
   IncrementRecordCount key int ->
     pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key
-  ScenarioResolution r -> case campaignStep (toAttrs a) of
-    ScenarioStep sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
-    StandaloneScenarioStep sid _ -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
+  ScenarioResolution r -> case (toAttrs a).step.scenario of
+    Just sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
     _ -> error $ "must be called in a scenario, but called in " <> show (campaignStep (toAttrs a))
   DrivenInsane iid ->
     pure
@@ -346,14 +363,16 @@ defaultCampaignRunner msg a = case msg of
     let mstep = mOverrideStep <|> nextStep a
     case mstep of
       Nothing -> push GameOver
-      Just step -> 
+      Just step ->
         case step.unwrap.normalize of
           EpilogueStep -> push $ CampaignStep step
           _ -> pushAll [HandleKilledOrInsaneInvestigators, CampaignStep step]
     pure
       $ updateAttrs a
       $ \attrs ->
-        attrs & (stepL %~ maybe id const mstep) & (completedStepsL %~ completeStep (campaignStep attrs))
+        attrs
+          & (stepL %~ maybe id const mstep)
+          & (completedStepsL %~ completeStep (campaignStep attrs).unwrapScenario)
   SetCampaignStep step' -> pure $ updateAttrs a $ stepL .~ step'
   SetCampaignLog newLog -> pure $ updateAttrs a $ logL .~ newLog
   SpendXP iid n -> do

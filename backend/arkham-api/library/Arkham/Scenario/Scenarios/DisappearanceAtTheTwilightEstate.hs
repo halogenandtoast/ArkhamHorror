@@ -29,6 +29,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Options
 import Arkham.Scenario.Types (ScenarioAttrs (scenarioTarotDeck))
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
 import Arkham.Tarot
@@ -139,7 +140,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         else doStep 1 msg
       pure s
     DoStep 1 (LoadScenario opts) -> do
-      result <- liftRunMessage (LoadScenario opts) attrs
+      result <-
+        liftRunMessage (LoadScenario opts {scenarioOptionsDelayChoosingLead = True}) attrs
       pure $ DisappearanceAtTheTwilightEstate $ result & startedL .~ False
     DoStep 3 (LoadScenario opts) -> scope "intro" do
       when (null $ scenarioTarotDeck attrs) $ push LoadTarotDeck

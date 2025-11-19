@@ -484,7 +484,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (turnHistoryL .~ mempty)
       & (roundHistoryL .~ mempty)
       & (cardsL .~ mempty)
-  StartScenario sid -> do
+  StartScenario sid mopts -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.
     let
@@ -498,10 +498,14 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
 
       standalone = isNothing $ modeCampaign $ g ^. modeL
       setPlayerDecks = overAttrs (playerDecksL .~ playerDecks)
-
+      opts =
+        (fromMaybe defaultScenarioOptions mopts)
+          { scenarioOptionsStandalone = standalone
+          , scenarioOptionsPerformTarotReading = gamePerformTarotReadings g
+          }
     pushAll
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
-      <> [LoadScenario (ScenarioOptions standalone (gamePerformTarotReadings g))]
+      <> [LoadScenario opts]
     pure
       $ g
       & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))
@@ -3375,7 +3379,7 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
       & (removedFromPlayL .~ [])
       & (playerOrderL %~ \po -> if null po then view (entitiesL . investigatorsL . to Map.keys) g else po)
   Setup -> pure $ g & inSetupL .~ True
-  StartScenario _ -> pure $ g & inSetupL .~ True & scenarioStepsL .~ 0
+  StartScenario {} -> pure $ g & inSetupL .~ True & scenarioStepsL .~ 0
   EndSetup -> pure $ g & inSetupL .~ False
   _ -> pure g
 

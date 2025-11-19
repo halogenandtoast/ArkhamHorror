@@ -29,7 +29,7 @@ instance IsCampaign ReturnToTheCircleUndone where
   campaignTokens = campaignTokens @TheCircleUndone
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue ReturnToDisappearanceAtTheTwilightEstate
-    ReturnToDisappearanceAtTheTwilightEstate -> continue ReturnToTheWitchingHour
+    ReturnToDisappearanceAtTheTwilightEstate -> ChooseDecksStep <$> continueNoUpgrade ReturnToTheWitchingHour
     ReturnToTheWitchingHour -> continue ReturnToAtDeathsDoorstep
     ReturnToAtDeathsDoorstep -> continue ReturnToTheSecretName
     InterludeStep 2 _ -> continue ReturnToTheSecretName

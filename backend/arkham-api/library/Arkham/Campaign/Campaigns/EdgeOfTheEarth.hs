@@ -1130,7 +1130,7 @@ instance RunMessage EdgeOfTheEarth where
       storyWithChooseOneM (i18nWithTitle "proceed") do
         labeled
           "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
-          $ pushAll [ResetInvestigators, ResetGame, StartScenario "08648a"]
+          $ pushAll [ResetInvestigators, ResetGame, StartScenario "08648a" Nothing]
         labeled
           "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_." do
           push $ NextCampaignStep $ continue TheHeartOfMadnessPart2

@@ -28,15 +28,17 @@ instance HasAbilities VengefulShade where
       case enemyBearer a of
         Nothing -> error "No bearer"
         Just iid ->
-          [ restricted
-              a
-              AbilityAttack
-              ( exists (You <> InvestigatorWithId iid)
-                  <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
-                  <> CanAttack
-              )
+          [ basicAbility
+              $ restricted
+                a
+                AbilityAttack
+                ( exists (You <> InvestigatorWithId iid)
+                    <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+                    <> CanAttack
+                )
               $ ActionAbility [#fight] (ActionCost 1)
-          , restricted a AbilityEvade (exists (You <> InvestigatorWithId iid))
+          , basicAbility
+              $ restricted a AbilityEvade (exists (You <> InvestigatorWithId iid))
               $ ActionAbility [#evade] (ActionCost 1)
           , mkAbility a 1 $ forced NotAnyWindow -- the beyond will call this
           ]

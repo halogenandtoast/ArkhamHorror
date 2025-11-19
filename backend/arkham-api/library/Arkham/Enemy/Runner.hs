@@ -859,7 +859,43 @@ instance RunMessage EnemyAttrs where
                   | l <- ls
                   ]
       pure a
-    EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
+    ForInvestigator iid EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
+      mods <- getModifiers (EnemyTarget enemyId)
+      unless (CannotAttack `elem` mods) do
+        let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
+        iids <-
+          select (fromMaybe enemyAttacks mOverride) >>= filterM \iid' -> do
+            imods <- getModifiers iid'
+            flip allM imods \case
+              CannotBeAttackedBy matcher -> notElem enemyId <$> select matcher
+              CannotBeAttacked -> pure False
+              _ -> pure True
+        when (iid `elem` iids) do
+          case iids of
+            [] -> do
+              whenM
+                (selectAny $ locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
+                do
+                  push $ ScenarioSpecific "enemyAttackedAtLocation" (toJSON enemyId)
+              pure ()
+            [x] ->
+              push
+                $ EnemyWillAttack
+                $ (enemyAttack enemyId a x)
+                  { attackDamageStrategy = enemyDamageStrategy
+                  , attackExhaustsEnemy = True
+                  }
+            (x : xs) ->
+              push
+                $ EnemyWillAttack
+                $ (enemyAttack enemyId a x)
+                  { attackDamageStrategy = enemyDamageStrategy
+                  , attackExhaustsEnemy = True
+                  , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                  , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                  }
+      pure a
+    Do EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
         let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]

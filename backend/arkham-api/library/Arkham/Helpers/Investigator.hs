@@ -563,6 +563,9 @@ getCanShuffleDeck iid =
     , fieldMap InvestigatorDeck notNull iid
     ]
 
+whenCanShuffleIn :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
+whenCanShuffleIn iid = whenM (getCanShuffleDeck iid)
+
 check
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability

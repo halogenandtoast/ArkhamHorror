@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Investigator
 import Arkham.Matcher.Card
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -25,10 +26,11 @@ instance HasAbilities BlasphemousVisions where
 instance RunMessage BlasphemousVisions where
   runMessage msg t@(BlasphemousVisions attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      cards <- getTekelili 1
-      unless (null cards) do
-        addTekelili iid cards
-        placeInThreatArea attrs iid
+      whenCanShuffleIn iid do
+        cards <- getTekelili 1
+        unless (null cards) do
+          addTekelili iid cards
+          placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

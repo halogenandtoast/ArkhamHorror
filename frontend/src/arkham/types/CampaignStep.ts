@@ -5,19 +5,23 @@ import type { Scenario } from '@/arkham/types/Scenario'
 import { toCamelCase } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n';
 import { scenarioIdToI18n } from '@/arkham/types/Scenario'
+import { ScenarioOptions, defaultScenarioOptions, scenarioOptionsDecoder } from '@/arkham/types/ScenarioOptions';
 
 export type CampaignStep
   = PrologueStep
   | ScenarioStep
+  | ScenarioStepWithOptions
   | InterludeStep
   | InterludeStepPart
   | UpgradeDeckStep
+  | ChooseDecksStep
   | EpilogueStep
   | ResupplyPoint
   | CheckpointStep
   | CampaignSpecificStep
   | ContinueCampaignStep
   | StandaloneScenarioStep
+  | StandaloneScenarioStepWithOptions
 
 export type PrologueStep = {
   tag: 'PrologueStep'
@@ -26,6 +30,11 @@ export type PrologueStep = {
 export type StandaloneScenarioStep = {
   tag: 'StandaloneScenarioStep'
   contents: [string, any]
+}
+
+export type StandaloneScenarioStepWithOptions = {
+  tag: 'StandaloneScenarioStepWithOptions'
+  contents: [string, any, ScenarioOptions]
 }
 
 export type ResupplyPoint = {
@@ -103,12 +112,33 @@ export const standaloneScenarioStepDecoder = JsonDecoder.object<StandaloneScenar
   'StandabloneScenarioStep',
 );
 
+export const standaloneScenarioStepWithOptionsDecoder = JsonDecoder.object<StandaloneScenarioStepWithOptions>(
+  {
+    tag: JsonDecoder.literal('StandaloneScenarioStepWithOptions'),
+    contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed(), scenarioOptionsDecoder], 'contents'),
+  },
+  'StandabloneScenarioWithOptionsStep',
+);
+
 export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
   {
     tag: JsonDecoder.literal('ScenarioStep'),
     contents: JsonDecoder.string()
   },
   'ScenarioStep',
+);
+
+export type ScenarioStepWithOptions = {
+  tag: 'ScenarioStepWithOptions';
+  contents: [string, ScenarioOptions];
+}
+
+export const scenarioStepWithOptionsDecoder = JsonDecoder.object<ScenarioStepWithOptions>(
+  {
+    tag: JsonDecoder.literal('ScenarioStepWithOptions'),
+    contents: JsonDecoder.tuple([JsonDecoder.string(), scenarioOptionsDecoder], 'contents'),
+  },
+  'ScenarioStepWithOptions',
 );
 
 export type InterludeStep = {
@@ -161,6 +191,17 @@ export const upgradeStepDecoder = JsonDecoder.object<UpgradeDeckStep>(
   'UpgradeDeckStep',
 );
 
+export type ChooseDecksStep = {
+  tag: 'ChooseDecksStep';
+}
+
+export const chooseDecksStepDecoder = JsonDecoder.object<ChooseDecksStep>(
+  {
+    tag: JsonDecoder.literal('ChooseDecksStep'),
+  },
+  'ChooseDecksStep',
+);
+
 export const continueCampaignStepDecoder: JsonDecoder.Decoder<ContinueCampaignStep> = JsonDecoder.object<ContinueCampaignStep>(
   {
     tag: JsonDecoder.literal('ContinueCampaignStep'),
@@ -175,16 +216,37 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
     resupplyPointStepDecoder,
     campaignSpecificStepDecoder,
     scenarioStepDecoder,
+    scenarioStepWithOptionsDecoder,
     standaloneScenarioStepDecoder,
+    standaloneScenarioStepWithOptionsDecoder,
     interludeStepDecoder,
     interludeStepPartDecoder,
     checkpointStepDecoder,
     upgradeStepDecoder,
+    chooseDecksStepDecoder,
     epilogueStepDecoder,
     continueCampaignStepDecoder
   ],
   'Question',
 );
+
+export function extendWithOptions(step: ScenarioStep | StandaloneScenarioStep, options: Partial<ScenarioOptions>): ScenarioStepWithOptions | StandaloneScenarioStepWithOptions {
+  const mergedOptions: ScenarioOptions = {
+    ...defaultScenarioOptions,
+    ...options,
+  }
+  if (step.tag === 'StandaloneScenarioStep') {
+    return {
+      tag: 'StandaloneScenarioStepWithOptions',
+      contents: [step.contents[0], step.contents[1], mergedOptions],
+    }
+  }
+
+  return {
+    tag: 'ScenarioStepWithOptions',
+    contents: [step.contents, mergedOptions],
+  }
+}
 
 export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scenario) {
   const { t, te } = useI18n();

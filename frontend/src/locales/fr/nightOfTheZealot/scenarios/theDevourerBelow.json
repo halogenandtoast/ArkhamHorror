@@ -13,7 +13,7 @@
       "elderThing": "–7. S'il y a un ennemi _Grand Ancien_ en jeu, révélez un autre pion Chaos."
     }
   },
-  "label": {
+  "tooltips": {
     "mainPath": {
       "resign": "« Il n'y a rien que nous puissions faire pour les arrêter ! » Vous fuyez à travers bois, abandonnant Arkham à son funeste sort."
     }

@@ -127,6 +127,9 @@ instance HasField "id" Campaign CampaignId where
 instance HasField "step" Campaign CampaignStep where
   getField = (.step) . toAttrs
 
+instance HasField "scenario" Campaign (Maybe ScenarioId) where
+  getField = (.scenario) . (.step) . toAttrs
+
 instance HasField "normalizedStep" Campaign CampaignStep where
   getField = (.normalize) . (.step)
 
@@ -250,7 +253,7 @@ campaign f campaignId' name difficulty =
       , campaignDifficulty = difficulty
       , campaignChaosBag = campaignTokens @a difficulty
       , campaignLog = mkCampaignLog
-      , campaignStep = ContinueCampaignStep $ Continuation PrologueStep False False
+      , campaignStep = ContinueCampaignStep $ Continuation PrologueStep False False Nothing
       , campaignCompletedSteps = []
       , campaignResolutions = mempty
       , campaignModifiers = mempty

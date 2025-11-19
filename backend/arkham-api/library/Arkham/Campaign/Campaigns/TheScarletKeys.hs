@@ -53,7 +53,12 @@ campaignChaosBag = \case
 {- FOURMOLU_ENABLE -}
 
 pickSideStory :: ReverseQueue m => CampaignAttrs -> m ()
-pickSideStory attrs = push $ NextCampaignStep $ Just $ ContinueCampaignStep $ Continuation (embark attrs) False True
+pickSideStory attrs =
+  push
+    $ NextCampaignStep
+    $ Just
+    $ ContinueCampaignStep
+    $ Continuation (embark attrs) False True Nothing
 
 travel :: ReverseQueue m => CampaignAttrs -> MapLocationId -> Bool -> Int -> m TheScarletKeys
 travel attrs locId doTravel n = do
@@ -294,6 +299,6 @@ instance RunMessage TheScarletKeys where
         & overMeta ((canResetL .~ []) . (unlockedLocationsL %~ (meta.canReset <>)))
     CampaignStep (StandaloneScenarioStep sid _) -> do
       markTime $ getSideStoryCost sid
-      pushAll [ResetInvestigators, ResetGame, StartScenario sid]
+      pushAll [ResetInvestigators, ResetGame, StartScenario sid Nothing]
       pure c
     _ -> lift $ defaultCampaignRunner msg c

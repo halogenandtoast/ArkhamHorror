@@ -17,7 +17,7 @@ theKingInTatters = act (3, A) TheKingInTatters Cards.theKingInTatters Nothing
 instance HasAbilities TheKingInTatters where
   getAbilities (TheKingInTatters a) =
     [ restricted a 1 (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped) $ FastAbility Free
-    , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when $ EnemyWithTitle "Hastur"
+    , mkAbility a 2 $ Objective $ forced $ EnemyWouldBeDefeated #when $ EnemyWithTitle "Hastur"
     ]
 
 instance RunMessage TheKingInTatters where

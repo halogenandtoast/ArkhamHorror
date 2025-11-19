@@ -14,7 +14,7 @@
       "elderThing": "-7. If there is an _Ancient One_ enemy in play, reveal another token."
     }
   },
-  "label": {
+  "tooltips": {
     "mainPath": {
       "resign": "\"There's nothing we can do to stop them!\" You flee from the woods, leaving Arkham to its grisly fate."
     }

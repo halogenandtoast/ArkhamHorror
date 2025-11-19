@@ -14,6 +14,11 @@
       "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a Brood of Yog-Sothoth, it immediately attacks you."
     }
   },
+  "tooltips": {
+    "dunwichVillage": {
+      "resign": "You hide from the creatures."
+    }
+  },
   "intro": {
     "title": "Scenario V: Undimensioned and Unseen",
     "body": "<p>Your search of the village of Dunwich has uncovered a number of documents, journal entries, and esoteric theories. Reading through these materials leaves you exhausted and emotionally drained. Most of the content was written by a single source­ —a man named Seth Bishop. When you ask around town, you learn that Seth is a citizen of Dunwich. Along with several others, Seth had witnessed firsthand the devastation wrought by the events of “the Dunwich horror,” as Armitage had dubbed the incident. Curiously, since that time, very few people had seen Seth around town, and those who did claimed his eyes had been bloodshot and his face sweaty and pale.</p><p>You don’t doubt that somebody who has seen what Seth has seen would appear nervous or paranoid. But the more you read of his frantic and unhinged writings, the more you believe he is involved in recent events. His writings speak of having “gathered the remains” and of using arcane methods to “imbue the fathers’ essence” into other creatures, and eventually, into other people. The explanations and diagrams that follow are unfathomably complex and defy understanding.</p><p>Before you are able to find Seth and confront him, several men and women from the village approach you in a panic. “It’s back!” one of them wails. You recognize him as Curtis Whateley, of the undecayed branch. “Whatever it was that killed them Fryes, it’s back! Up and smashed the Bishops’ home like it were made o’ paper!” Curtis and the other townsfolk are clamoring amongst themselves, raising their voices in a panic.</p>",

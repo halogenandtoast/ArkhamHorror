@@ -70,9 +70,11 @@ const deck = computed(() => {
         <svg v-tooltip="'Physical Trauma'" v-for="n in investigator.physicalTrauma" :key="n" class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
         <svg v-tooltip="'Mental Trauma'" v-for="n in investigator.mentalTrauma" :key="n" class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>
       </section>
-      <section class="expand" @click="expanded = !expanded">
-        <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
-      </section>
+      <slot name="back" :investigator="props.investigator">
+        <section class="expand" @click="expanded = !expanded">
+          <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
+        </section>
+      </slot>
     </div>
     <div v-if="expanded" class="expanded-details">
       <div><strong>Total XP:</strong> {{investigator.xp}}<span v-if="bonusXp" class="bonus-xp"> ({{bonusXp}} unspendable)</span></div>

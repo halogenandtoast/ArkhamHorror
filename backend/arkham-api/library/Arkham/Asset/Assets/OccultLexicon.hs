@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
-import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
+import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
@@ -23,7 +23,7 @@ instance RunMessage OccultLexicon where
       bonded <- take 3 <$> searchBonded iid Events.bloodRite
       for_ (nonEmpty bonded) \(handBloodRite :| deckBloodRites) -> do
         addToHand iid (only handBloodRite)
-        whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckBloodRites
+        shuffleCardsIntoDeck iid deckBloodRites
       OccultLexicon <$> liftRunMessage msg attrs
     RemovedFromPlay (isSource attrs -> True) -> do
       for_ attrs.owner \iid -> do

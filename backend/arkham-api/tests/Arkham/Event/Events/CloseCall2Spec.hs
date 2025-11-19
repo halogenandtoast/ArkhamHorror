@@ -10,6 +10,8 @@ import TestImport.New
 spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" . gameTest $ \self -> do
+    swarmOfRats <- genEncounterCard Cards.swarmOfRats
+    run $ SetEncounterDeck (Deck [swarmOfRats])
     withProp @"resources" 2 self
     enemy <- testEnemy
     location <- testLocation
@@ -20,7 +22,7 @@ spec = describe "Close Call (2)" $ do
     self `evadedEnemy` enemy
     chooseTarget closeCall2
     deckSize <- scenarioFieldMap ScenarioEncounterDeck length
-    deckSize `shouldBe` (1 :: Int)
+    deckSize `shouldBe` (2 :: Int)
     selectCount (InPlayEnemy AnyEnemy) `shouldReturn` 0
 
   it "does not work on Elite enemies" . gameTest $ \self -> do

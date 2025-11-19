@@ -2,10 +2,10 @@ module Arkham.Enemy.Cards.GlacialPhantasm (glacialPhantasm) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.ForMovement
+import Arkham.Helpers.Shuffle
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 
@@ -28,13 +28,9 @@ instance RunMessage GlacialPhantasm where
       pure e
     ForInvestigator iid (UseThisAbility _ (isSource attrs -> True) 1) -> do
       whenM (iid <=~> InvestigatorAt (orConnected NotForMovement $ locationWithEnemy attrs)) do
-        canShuffle <- can.manipulate.deck iid
-        if canShuffle
-          then do
-            cards <- getTekelili 1
-            if null cards
-              then assignHorror iid (attrs.ability 1) 1
-              else addTekelili iid cards
-          else assignHorror iid (attrs.ability 1) 1
+        cards <- getTekelili 1
+        getCanShuffleIn iid cards >>= \case
+          True -> addTekelili iid cards
+          False -> assignHorror iid (attrs.ability 1) 1
       pure e
     _ -> GlacialPhantasm <$> liftRunMessage msg attrs

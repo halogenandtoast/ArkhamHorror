@@ -2,6 +2,7 @@ module Arkham.Location.Cards.RockyLedge (rockyLedge) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -18,7 +19,7 @@ rockyLedge = locationWith RockyLedge Cards.rockyLedge 4 (PerPlayer 1) (connectsT
 instance HasAbilities RockyLedge where
   getAbilities (RockyLedge a) =
     extendRevealed1 a
-      $ restricted a 1 (ScenarioDeckWithCard TekeliliDeck)
+      $ restricted a 1 (ScenarioDeckWithCard TekeliliDeck <> youExist CanShuffleIn)
       $ forced
       $ Moves #after You AnySource (below a) (be a)
 
@@ -29,6 +30,7 @@ instance HasModifiersFor RockyLedge where
 instance RunMessage RockyLedge where
   runMessage msg l@(RockyLedge attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      addTekelili iid =<< getTekelili 1
+      tekelili <- getTekelili 1
+      whenCanShuffleIn iid tekelili $ addTekelili iid tekelili
       pure l
     _ -> RockyLedge <$> liftRunMessage msg attrs

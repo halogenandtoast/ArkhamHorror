@@ -15,6 +15,12 @@ import Arkham.Trait
 
 -- ** Investigator Patterns **
 
+pattern CanShuffleIn :: InvestigatorMatcher
+pattern CanShuffleIn <-
+  InvestigatorMatches [DeckWith AnyCards, InvestigatorWithoutModifier CannotManipulateDeck]
+  where
+    CanShuffleIn = InvestigatorMatches [DeckWith AnyCards, InvestigatorWithoutModifier CannotManipulateDeck]
+
 pattern AtYourLocation :: InvestigatorMatcher
 pattern AtYourLocation =
   InvestigatorIfLocation
@@ -350,6 +356,11 @@ pattern NonSignature <- NotCard SignatureCard
 
 pattern NonWeaknessTreachery :: CardMatcher
 pattern NonWeaknessTreachery = CardMatches [NonWeakness, CardWithType TreacheryType]
+
+pattern VisibleToAll :: CardMatcher
+pattern VisibleToAll <- CardMatches [CardWithoutKeyword Keyword.Peril, CardWithoutKeyword Keyword.Hidden]
+  where
+    VisibleToAll = CardMatches [CardWithoutKeyword Keyword.Peril, CardWithoutKeyword Keyword.Hidden]
 
 pattern NonPeril :: CardMatcher
 pattern NonPeril <- CardWithoutKeyword Keyword.Peril

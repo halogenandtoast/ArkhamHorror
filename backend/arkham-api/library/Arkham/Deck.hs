@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Data.Aeson.TH
 import GHC.OverloadedLabels
+import GHC.Records
 
 deckSignifierToScenarioDeckKey :: DeckSignifier -> Maybe ScenarioDeckKey
 deckSignifierToScenarioDeckKey (ScenarioDeckByKey key) = Just key
@@ -24,6 +25,17 @@ data DeckSignifier
   | EncounterDeckByKey ScenarioEncounterDeckKey
   | NoDeck
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "investigator" DeckSignifier (Maybe InvestigatorId) where
+  getField = \case
+    InvestigatorDeck iid -> Just iid
+    InvestigatorDiscard iid -> Just iid
+    InvestigatorDeckByKey iid _ -> Just iid
+    EncounterDeckByKey _ -> Nothing
+    ScenarioDeckByKey _ -> Nothing
+    EncounterDeck -> Nothing
+    EncounterDiscard -> Nothing
+    NoDeck -> Nothing
 
 instance IsLabel "none" DeckSignifier where
   fromLabel = NoDeck

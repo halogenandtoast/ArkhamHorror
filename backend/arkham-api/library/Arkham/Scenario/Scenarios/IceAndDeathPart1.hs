@@ -6,13 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
-import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Investigator.Cards qualified as Investigators
@@ -25,7 +25,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Uncharted))
@@ -185,13 +184,12 @@ instance RunMessage IceAndDeathPart1 where
       case token.face of
         Cultist -> do
           let x = if isEasyStandard attrs then 1 else n
-          tekelili <- take x <$> getScenarioDeck TekeliliDeck
-          canModifyDeck <- can.manipulate.deck iid
-          if null tekelili || not canModifyDeck
-            then assignHorror iid Cultist x
-            else do
+          tekelili <- getTekelili x
+          getCanShuffleIn iid tekelili >>= \case
+            True -> do
               addTekelili iid tekelili
               when (length tekelili < x) $ assignHorror iid Cultist (x - length tekelili)
+            False -> assignHorror iid Cultist x
         Tablet -> push $ DiscardTopOfDeck iid n (toSource Tablet) (Just $ toTarget attrs)
         _ -> pure ()
       pure s

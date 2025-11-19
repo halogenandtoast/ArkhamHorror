@@ -1,10 +1,10 @@
-module Arkham.Enemy.Cards.ManifestationOfMadness (manifestationOfMadness, ManifestationOfMadness (..)) where
+module Arkham.Enemy.Cards.ManifestationOfMadness (manifestationOfMadness) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.Shuffle
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -22,13 +22,12 @@ instance HasAbilities ManifestationOfMadness where
 instance RunMessage ManifestationOfMadness where
   runMessage msg e@(ManifestationOfMadness attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      canShuffle <- can.manipulate.deck iid
-      if canShuffle
-        then do
-          cards <- getTekelili 2
-          when (notNull cards) $ addTekelili iid cards
+      cards <- getTekelili 2
+      getCanShuffleIn iid cards >>= \case
+        True -> do
+          addTekelili iid cards
           let x = max 0 (2 - length cards)
           when (x > 0) $ enemyAttackModifiers (attrs.ability 1) attrs [DamageDealt x, HorrorDealt x]
-        else enemyAttackModifiers (attrs.ability 1) attrs [DamageDealt 2, HorrorDealt 2]
+        False -> enemyAttackModifiers (attrs.ability 1) attrs [DamageDealt 2, HorrorDealt 2]
       pure e
     _ -> ManifestationOfMadness <$> liftRunMessage msg attrs

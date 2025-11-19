@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.PickpocketingSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
@@ -31,6 +32,8 @@ spec = describe "Pickpocketing" $ do
         enemy <- testEnemy & prop @"evade" 0
         location <- testLocation
         closeCall2 <- genPlayerCard Events.closeCall2
+        swarmOfRats <- genEncounterCard Enemies.swarmOfRats
+        run $ SetEncounterDeck (Deck [swarmOfRats])
         withProp @"agility" 1 self
         withProp @"resources" 2 self
         withProp @"deck" (Deck [closeCall2]) self
@@ -44,4 +47,5 @@ spec = describe "Pickpocketing" $ do
         useReaction
         chooseTarget closeCall2
         assert $ selectNone $ InPlayEnemy AnyEnemy
-        scenarioField ScenarioEncounterDeck `shouldReturn` Deck (onlyEncounterCards [toCard enemy])
+        (unDeck <$> scenarioField ScenarioEncounterDeck)
+          `shouldMatchListM` onlyEncounterCards [toCard enemy, toCard swarmOfRats]

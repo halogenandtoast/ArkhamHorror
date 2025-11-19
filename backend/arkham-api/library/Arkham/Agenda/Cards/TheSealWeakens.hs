@@ -8,6 +8,7 @@ import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -47,9 +48,11 @@ instance RunMessage TheSealWeakens where
           drawCardFrom iid deck card
       doStep 1 $ SearchFound iid target deck cards
       pure a
-    DoStep 2 (SearchFound _iid (isTarget attrs -> True) deck _) -> do
+    DoStep 2 (SearchFound iid (isTarget attrs -> True) deck _) -> do
       let cards :: [Card] = toResultDefault [] attrs.meta
-      shuffleCardsIntoDeck deck cards
+      getCanShuffleIn iid cards >>= \case
+        True -> shuffleCardsIntoDeck deck cards
+        False -> addToDiscard iid cards
       pure a
     PutCardOnBottomOfDeck _ (ScenarioDeckByKey TekeliliDeck) card -> do
       -- because cards can be returned to the deck by Miasmic Crystal we

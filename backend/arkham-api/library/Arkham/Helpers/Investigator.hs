@@ -556,16 +556,6 @@ canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType
 eliminationWindow :: InvestigatorId -> WindowMatcher
 eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId iid)]
 
-getCanShuffleDeck :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
-getCanShuffleDeck iid =
-  andM
-    [ withoutModifier iid CannotManipulateDeck
-    , fieldMap InvestigatorDeck notNull iid
-    ]
-
-whenCanShuffleIn :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
-whenCanShuffleIn iid = whenM (getCanShuffleDeck iid)
-
 check
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
@@ -696,9 +686,10 @@ getAsIfInHandCardsNotForPlay iid = do
     <> cardsAddedViaModifiers
 
 getAsIfInHandCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
-getAsIfInHandCards =  getAsIfInHandCardsFor ForPlay
+getAsIfInHandCards = getAsIfInHandCardsFor ForPlay
 
-getAsIfInHandCardsFor :: (HasCallStack, HasGame m, Tracing m) => ForPlay -> InvestigatorId -> m [Card]
+getAsIfInHandCardsFor
+  :: (HasCallStack, HasGame m, Tracing m) => ForPlay -> InvestigatorId -> m [Card]
 getAsIfInHandCardsFor forPlay iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isSkillTest <- isJust <$> getSkillTest
@@ -774,8 +765,10 @@ getCanLoseActions (asId -> iid) = do
   additional <- fieldLength InvestigatorAdditionalActions iid
   pure $ remaining + additional > 0
 
-selectAffectsOthers :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
+selectAffectsOthers
+  :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
 selectAffectsOthers iid matcher = withActiveInvestigator iid $ select $ affectsOthers matcher
 
-selectAffectsColocated :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
+selectAffectsColocated
+  :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
 selectAffectsColocated iid matcher = selectAffectsOthers iid (colocatedWith iid <> matcher)

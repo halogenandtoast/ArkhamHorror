@@ -21,8 +21,11 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Shuffle
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
-import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (getSpendableClueCount)
+import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (
+  getSpendableClueCount,
+ )
 import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
@@ -87,7 +90,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         go windows'
       XCost c -> getCanAffordCost_ iid source actions windows' canModify c -- just need to afford once
       LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
-      ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> (>= n) . length <$> getScenarioDeck deckKey
+      ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> do
+        cs <- take n <$> getScenarioDeck deckKey
+        andM [pure (length cs >= n), getCanShuffleIn iid cs]
       RemoveEnemyDamageCost x matcher -> do
         n <- getGameValue x
         selectAny $ matcher <> Matcher.EnemyWithDamage (Matcher.atLeast n)

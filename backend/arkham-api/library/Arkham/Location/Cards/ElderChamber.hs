@@ -3,6 +3,7 @@ module Arkham.Location.Cards.ElderChamber (elderChamber) where
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card.CardDef
+import Arkham.Helpers.Shuffle (whenCanShuffleIn)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -28,7 +29,10 @@ instance HasAbilities ElderChamber where
     extendRevealed
       a
       [ mirage a 2 mirageCards
-      , restricted a 1 (ScenarioDeckWithCard TekeliliDeck)
+      , restricted
+          a
+          1
+          (ScenarioDeckWithCard TekeliliDeck <> youExist CanShuffleIn)
           $ forced
           $ DiscoverClues #after You (be a) (atLeast 2)
       ]
@@ -36,6 +40,7 @@ instance HasAbilities ElderChamber where
 instance RunMessage ElderChamber where
   runMessage msg l@(ElderChamber attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      addTekelili iid =<< getTekelili 1
+      tekelili <- getTekelili 1
+      whenCanShuffleIn iid tekelili $ addTekelili iid tekelili
       pure l
     _ -> ElderChamber <$> mirageRunner Stories.elderChamber mirageCards 2 msg attrs

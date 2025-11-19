@@ -2732,6 +2732,7 @@ library
       Arkham.Helpers.Ref
       Arkham.Helpers.Scenario
       Arkham.Helpers.Search
+      Arkham.Helpers.Shuffle
       Arkham.Helpers.SkillTest
       Arkham.Helpers.SkillTest.Lifted
       Arkham.Helpers.SkillTest.Target

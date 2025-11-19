@@ -7,14 +7,14 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog hiding (optionsL)
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
-import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard, allInvestigators)
+import Arkham.Helpers.Query (allInvestigators, getPlayerCount, getSetAsideCard)
+import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Text
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
@@ -24,7 +24,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -142,7 +141,7 @@ instance RunMessage IceAndDeathPart2 where
 
           sv <- fromMaybe 0 <$> getCurrentShelterValue
           story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
-          investigators <- zip [0..] <$> allInvestigators
+          investigators <- zip [0 ..] <$> allInvestigators
           for_ investigators \(idx, investigator) ->
             forInvestigator investigator (DoStep idx PreScenarioSetup)
           pure s
@@ -276,13 +275,12 @@ instance RunMessage IceAndDeathPart2 where
       case token.face of
         Cultist -> do
           let x = if isEasyStandard attrs then 1 else n
-          tekelili <- take x <$> getScenarioDeck TekeliliDeck
-          canModifyDeck <- can.manipulate.deck iid
-          if null tekelili || not canModifyDeck
-            then assignHorror iid Cultist x
-            else do
+          tekelili <- getTekelili x
+          getCanShuffleIn iid tekelili >>= \case
+            True -> do
               addTekelili iid tekelili
               when (length tekelili < x) $ assignHorror iid Cultist (x - length tekelili)
+            False -> assignHorror iid Cultist x
         Tablet -> push $ DiscardTopOfDeck iid n (toSource Tablet) (Just $ toTarget attrs)
         _ -> pure ()
       pure s

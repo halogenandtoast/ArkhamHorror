@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.ShockingDiscovery (shockingDiscovery) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Shuffle
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -26,11 +26,11 @@ instance HasAbilities ShockingDiscovery where
 instance RunMessage ShockingDiscovery where
   runMessage msg t@(ShockingDiscovery attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      canShuffleDeck <- getCanShuffleDeck iid
-      hasEncounterDeck <- can.target.encounterDeck iid
-      if canShuffleDeck
-        then shuffleIntoDeck iid attrs
-        else when hasEncounterDeck $ drawEncounterCards iid attrs 1
+      getCanShuffleIn iid (toTarget attrs) >>= \case
+        True -> shuffleIntoDeck iid attrs
+        False -> do
+          hasEncounterDeck <- can.target.encounterDeck iid
+          when hasEncounterDeck $ drawEncounterCards iid attrs 1
       pure t
     InSearch (UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _) -> do
       let card = fromJustNote "is player card" $ preview _PlayerCard (toCard attrs)

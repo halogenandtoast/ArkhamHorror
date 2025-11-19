@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.HallowedMirror3 (hallowedMirror3, HallowedMirror3) where
+module Arkham.Asset.Assets.HallowedMirror3 (hallowedMirror3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
-import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
+import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -38,10 +38,8 @@ instance RunMessage HallowedMirror3 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       bonded <- take 3 <$> searchBonded iid Events.soothingMelody
-      case bonded of
-        [] -> pure ()
-        (handSoothingMelody : deckSoothingMelodies) -> do
-          addToHand iid (only handSoothingMelody)
-          whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckSoothingMelodies
+      for_ (nonEmpty bonded) \(handSoothingMelody :| deckSoothingMelodies) -> do
+        addToHand iid (only handSoothingMelody)
+        shuffleCardsIntoDeck iid deckSoothingMelodies
       pure a
     _ -> HallowedMirror3 <$> liftRunMessage msg attrs

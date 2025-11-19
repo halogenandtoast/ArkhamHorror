@@ -26,15 +26,16 @@ watcherFromAnotherDimension =
 instance HasAbilities WatcherFromAnotherDimension where
   getAbilities (WatcherFromAnotherDimension a) = case a.placement of
     HiddenInHand iid ->
-      [ restricted
-          a
-          AbilityAttack
-          ( youExist (InvestigatorWithId iid)
-              <> thisEnemy (EnemyWithoutModifier CannotBeAttacked)
-              <> CanAttack
-          )
-          fightAction_
-      , restricted a AbilityEvade (youExist $ InvestigatorWithId iid) evadeAction_
+      [ basicAbility
+          $ restricted
+            a
+            AbilityAttack
+            ( youExist (InvestigatorWithId iid)
+                <> thisEnemy (EnemyWithoutModifier CannotBeAttacked)
+                <> CanAttack
+            )
+            fightAction_
+      , basicAbility $ restricted a AbilityEvade (youExist $ InvestigatorWithId iid) evadeAction_
       , mkAbility a 1 $ forced $ Matcher.DeckHasNoCards #when (You <> InvestigatorWithId iid)
       ]
     _ -> getAbilities a

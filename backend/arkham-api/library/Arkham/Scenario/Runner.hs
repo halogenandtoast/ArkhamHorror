@@ -1602,6 +1602,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           ]
     pushAll [RemoveAllDoom (toSource a) target | target <- xs]
     pure a
+  EnemiesAttack -> do
+    Lifted.eachInvestigator (`Lifted.forInvestigator` EnemiesAttack)
+    do_ EnemiesAttack
+    pure a
   LoadScenario opts -> do
     unless opts.delayChoosingLead do
       push $ maybe ChooseLeadInvestigator (`ChoosePlayer` SetLeadInvestigator) opts.leadInvestigator

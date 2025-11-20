@@ -24,7 +24,7 @@ instance HasAbilities MapRoom where
 instance RunMessage MapRoom where
   runMessage msg l@(MapRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      ls <- select $ UnrevealedLocation <> not_ "Hidden Tunnel"
+      ls <- select $ not_ "Hidden Tunnel" <> oneOf [UnrevealedLocation, LocationWithAnyClues]
       chooseNM iid 3 $ targets ls \lid -> do
         reveal lid
         -- Need to delay discovering until after the location has been revealed

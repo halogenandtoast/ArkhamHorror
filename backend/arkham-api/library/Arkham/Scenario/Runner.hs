@@ -548,11 +548,24 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     VengeanceCard _ -> error "vengeance card"
   PutCardOnBottomOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
+      let
+        deleteCard :: IsCard c => [c] -> [c]
+        deleteCard = deleteFirstMatch ((== card.id) . toCardId)
       let encounterDeck = withDeck ((<> [ec]) . deleteFirst ec) scenarioEncounterDeck
       pure
         $ a
-        & (setAsideCardsL %~ deleteFirstMatch (== card))
+        & (setAsideCardsL %~ deleteCard)
         & (encounterDeckL .~ encounterDeck)
+        & (victoryDisplayL %~ deleteCard)
+        & (discardL %~ deleteCard)
+        & (cardsUnderScenarioReferenceL %~ deleteCard)
+        & (cardsUnderAgendaDeckL %~ deleteCard)
+        & (cardsUnderActDeckL %~ deleteCard)
+        & (cardsNextToActDeckL %~ deleteCard)
+        & (cardsNextToAgendaDeckL %~ deleteCard)
+        & (decksL . each %~ deleteCard)
+        & (foundCardsL . each %~ deleteCard)
+        & (encounterDecksL . each %~ bimap (withDeck deleteCard) deleteCard)
     PlayerCard _ ->
       error "can not place player card on bottom of encounter deck"
     VengeanceCard _ -> error "vengeance card"

@@ -30,6 +30,7 @@ enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
     , attackDamaged = mempty
     , attackDealDamage = True
     , attackDespiteExhausted = False
+    , attackCancelled = False
     }
 
 attackOfOpportunity

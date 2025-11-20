@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes, NoxiousFumes (..)) where
 
-import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Choose
@@ -34,7 +34,7 @@ instance RunMessage NoxiousFumes where
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
       pure . NoxiousFumes $ attrs & waitingL .~ False
     PassedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
-      locations <- getCanMoveToLocations iid attrs
+      locations <- getConnectedMoveLocations iid attrs
       chooseTargetM iid locations $ moveTo attrs iid
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do

@@ -234,6 +234,14 @@ export default defineComponent({
   display: contents;
 }
 
+:deep(p.cursive) {
+  font-family: "ArkhamCursive";
+  display: block;
+  font-size: 1.3em;
+  line-height: 1.3em;
+  padding-bottom: 1.3em;
+}
+
 :deep(b) { font-family: none; }
 :deep(i) { font-style: italic; }
 

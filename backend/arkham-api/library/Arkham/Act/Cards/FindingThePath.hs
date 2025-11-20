@@ -47,7 +47,7 @@ instance RunMessage FindingThePath where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      selectForMaybeM (enemyIs Enemies.oceirosMarsh) addToVictory
+      selectForMaybeM (enemyIs Enemies.oceirosMarsh) addToVictory_
       basement <- selectJust $ locationIs Locations.sunkenGrottoUpperDepths
       reveal basement
 

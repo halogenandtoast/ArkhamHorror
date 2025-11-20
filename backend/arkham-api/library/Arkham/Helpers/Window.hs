@@ -1815,8 +1815,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.ChaosTokenSealed who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
         _ -> noMatch
-    Matcher.AddedToVictory timing cardMatcher -> guardTiming timing $ \case
-      Window.AddedToVictory card -> pure $ cardMatch card cardMatcher
+    Matcher.AddedToVictory timing mWhoMatcher cardMatcher -> guardTiming timing $ \case
+      Window.AddedToVictory mWho card -> andM [pure $ cardMatch card cardMatcher
+        , maybe
+          (pure True)
+          (\whoMatcher -> maybe (pure False) (\who -> matchWho iid who whoMatcher) mWho)
+          mWhoMatcher
+        ]
       _ -> noMatch
     Matcher.AssetDefeated timing defeatedByMatcher assetMatcher ->
       guardTiming timing $ \case

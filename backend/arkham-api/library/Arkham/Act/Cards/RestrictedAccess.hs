@@ -38,7 +38,7 @@ instance RunMessage RestrictedAccess where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      addToVictory (toTarget attrs)
+      addToVictory_ (toTarget attrs)
       advanceActDeck attrs
       pure a
     _ -> RestrictedAccess <$> liftRunMessage msg attrs

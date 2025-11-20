@@ -19,12 +19,12 @@ memoryOfALostPatient = story MemoryOfALostPatient Cards.memoryOfALostPatient
 
 instance RunMessage MemoryOfALostPatient where
   runMessage msg s@(MemoryOfALostPatient attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       record DrSinhaHasConfrontedHerDemons
       setPartnerStatus Assets.drMalaSinhaDaringPhysician Resolute
       selectForMaybeM (assetIs Assets.drMalaSinhaDaringPhysician) \drSinha ->
         push $ ReplaceAsset drSinha Assets.drMalaSinhaDaringPhysicianResolute
-      addToVictory attrs
+      addToVictory iid attrs
       mayAdvance attrs
       pure s
     _ -> MemoryOfALostPatient <$> liftRunMessage msg attrs

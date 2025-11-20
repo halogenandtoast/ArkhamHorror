@@ -1473,8 +1473,11 @@ addToHandQuiet iid (toList -> cards) = do
 returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
 returnToHand iid = push . ReturnToHand iid . toTarget
 
-addToVictory :: (ReverseQueue m, Targetable target) => target -> m ()
-addToVictory = push . AddToVictory . toTarget
+addToVictory :: (ReverseQueue m, Targetable target, ToId investigator InvestigatorId) => investigator -> target -> m ()
+addToVictory (asId -> iid) = push . AddToVictory (Just iid) . toTarget
+
+addToVictory_ :: (ReverseQueue m, Targetable target) => target -> m ()
+addToVictory_ = push . AddToVictory Nothing . toTarget
 
 createAbilityEffect :: ReverseQueue m => Msg.EffectWindow -> Ability -> m ()
 createAbilityEffect ew ab = push =<< Msg.createAbilityEffect ew ab
@@ -2294,7 +2297,9 @@ don'tMatching :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m 
 don'tMatching f = lift $ popMessageMatching_ f
 
 don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
-don'tAddToVictory eid = don't $ DefeatedAddToVictory (toTarget eid)
+don'tAddToVictory eid = matchingDon't \case
+  DefeatedAddToVictory _ target -> isTarget eid target
+  _ -> False
 
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
 fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
@@ -3396,7 +3401,7 @@ removeLocation (asId -> lid) = do
     noClues <- lid <=~> LocationWithoutClues
     if noClues
       then
-        maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid)
+        maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory_ lid)
           =<< field LocationVictory lid
       else pushAll $ resolve (RemoveLocation lid)
 

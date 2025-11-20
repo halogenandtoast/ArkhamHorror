@@ -12,7 +12,7 @@ theTrialOfKamanThah = story TheTrialOfKamanThah Cards.theTrialOfKamanThah
 
 instance RunMessage TheTrialOfKamanThah where
   runMessage msg s@(TheTrialOfKamanThah attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
-      addToVictory attrs
+    ResolveThisStory iid (is attrs -> True) -> do
+      addToVictory iid attrs
       pure s
     _ -> TheTrialOfKamanThah <$> liftRunMessage msg attrs

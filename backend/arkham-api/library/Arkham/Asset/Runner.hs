@@ -28,6 +28,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Ref (sourceToTarget)
+import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Use
 import Arkham.Helpers.Window (
   checkAfter,
@@ -320,12 +321,19 @@ instance RunMessage AssetAttrs where
     CancelAssetHorror aid _ n | aid == assetId -> do
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a) Nothing
       pure $ a & tokensL %~ decrementTokensBy Token.Horror n
-    When (DefeatedAddToVictory target) | target `elem` placementToAttached a.placement -> do
-      push $ Priority $ toDiscard GameSource a
+    When (DefeatedAddToVictory miid target) | target `elem` placementToAttached a.placement -> do
+      push $ Priority $ case miid of
+        Nothing -> toDiscard GameSource a
+        Just iid -> toDiscardBy iid GameSource a
       pure a
     AssetDefeated source aid | aid == assetId -> do
       mVictory <- getVictoryPoints (toCard a)
-      push $ maybe (toDiscard source a) (\_ -> AddToVictory (toTarget a)) mVictory
+      mcontroller <- getSourceController source
+      push
+        $ maybe
+          (maybe (toDiscard source a) (\iid -> toDiscardBy iid source a) mcontroller)
+          (\_ -> AddToVictory mcontroller (toTarget a))
+          mVictory
       pure a
     ReassignHorror source (isTarget a -> True) n -> do
       alreadyChecked <- assertQueue \case
@@ -589,7 +597,7 @@ instance RunMessage AssetAttrs where
       pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
-    AddToVictory (AssetTarget aid) | aid == assetId -> do
+    AddToVictory _ (AssetTarget aid) | aid == assetId -> do
       pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll

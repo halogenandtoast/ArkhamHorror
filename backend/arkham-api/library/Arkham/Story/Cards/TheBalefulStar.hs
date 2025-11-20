@@ -17,13 +17,13 @@ theBalefulStar = story TheBalefulStar Cards.theBalefulStar
 
 instance RunMessage TheBalefulStar where
   runMessage msg s@(TheBalefulStar attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       cityWhichAppearsOnNoMap <- getJustLocationByName "City-Which-Appears-On-No-Map"
       templeOfUnattainableDesires <- getJustLocationByName "Temple of Unattainable Desires"
       push $ ScenarioCountIncrementBy SignOfTheGods 2
       selectEach (enemyAt cityWhichAppearsOnNoMap) (toDiscard attrs)
-      selectEach (investigatorAt cityWhichAppearsOnNoMap) \iid -> do
-        moveToEdit attrs iid templeOfUnattainableDesires uncancellableMove
-      addToVictory cityWhichAppearsOnNoMap
+      selectEach (investigatorAt cityWhichAppearsOnNoMap) \iid' -> do
+        moveToEdit attrs iid' templeOfUnattainableDesires uncancellableMove
+      addToVictory iid cityWhichAppearsOnNoMap
       pure s
     _ -> TheBalefulStar <$> liftRunMessage msg attrs

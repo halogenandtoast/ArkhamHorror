@@ -585,8 +585,11 @@ placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target 
 placeHorror :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeHorror (toSource -> source) (toTarget -> target) n = PlaceHorror source target n
 
-addToVictory :: Targetable target => target -> Message
-addToVictory (toTarget -> target) = AddToVictory target
+addToVictory :: (ToId investigator InvestigatorId, Targetable target) => investigator -> target -> Message
+addToVictory (asId -> iid) (toTarget -> target) = AddToVictory (Just iid) target
+
+addToVictory_ :: Targetable target => target -> Message
+addToVictory_ (toTarget -> target) = AddToVictory Nothing target
 
 -- This is obviously very complicated, but it feels like it shouldn't be
 -- However we find the correct message and only remove the amount indicated

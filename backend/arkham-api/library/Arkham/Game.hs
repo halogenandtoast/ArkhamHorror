@@ -4660,12 +4660,12 @@ instance Query PreyMatcher where
       enemy <- getEnemy enemyId
       case enemyBearer (toAttrs enemy) of
         Just iid -> select $ InvestigatorWithId iid
-        Nothing -> error "Invalid bearer situation"
+        Nothing -> error $ "Invalid bearer situation: " <> prettyCallStack callStack
     RestrictedBearerOf enemyId restriction -> do
       enemy <- getEnemy enemyId
       case enemyBearer (toAttrs enemy) of
         Just iid -> select $ InvestigatorWithId iid <> restriction
-        Nothing -> error "Invalid bearer situation"
+        Nothing -> error $ "Invalid bearer situation: " <> prettyCallStack callStack
 
 -- Helper function to measure time and trace call stack
 showBS :: (HasCallStack, Monad m) => m ()

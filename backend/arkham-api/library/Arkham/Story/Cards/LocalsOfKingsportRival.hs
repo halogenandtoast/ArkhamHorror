@@ -50,10 +50,10 @@ instance RunMessage LocalsOfKingsportRival where
       whenMatch iid InvestigatorWithAnyClues do
         moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       bain <- selectJust $ enemyIs Enemies.williamBainDefiantToTheLast
-      addToVictory attrs
-      addToVictory bain
+      addToVictory iid attrs
+      addToVictory iid bain
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.unlucky)
       removeStory attrs
       pure s

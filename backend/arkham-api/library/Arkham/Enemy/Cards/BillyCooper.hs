@@ -25,7 +25,7 @@ instance HasAbilities BillyCooper where
 
 instance RunMessage BillyCooper where
   runMessage msg e@(BillyCooper attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure e
     _ -> BillyCooper <$> liftRunMessage msg attrs

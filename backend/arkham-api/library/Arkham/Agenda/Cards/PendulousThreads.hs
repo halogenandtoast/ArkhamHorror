@@ -39,7 +39,7 @@ instance RunMessage PendulousThreads where
 
       mVictory <- selectOne $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.formlessSpawn
       for_ mVictory \formlessSpawn -> shuffleCardsIntoDeck Deck.EncounterDeck [formlessSpawn]
-      addToVictory attrs
+      addToVictory_ attrs
       advanceAgendaDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

@@ -44,9 +44,9 @@ instance RunMessage ForsakenTowerOfInfiniteTruth where
       sid <- getRandom
       push $ EvadeEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #intellect False
       pure l
-    Successful (Action.Evade, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
+    Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       discardWhisperingChaos attrs
-      push $ AddToVictory (toTarget eid)
+      addToVictory iid eid
       pure l
     Failed (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       shuffleWhisperingChaosBackIntoEncounterDeck attrs

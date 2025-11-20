@@ -22,7 +22,7 @@ instance HasAbilities JeremiahPierce where
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+      addToVictory iid attrs
       sid <- getRandom
       parley sid iid attrs iid #willpower (Fixed 4)
       pure e

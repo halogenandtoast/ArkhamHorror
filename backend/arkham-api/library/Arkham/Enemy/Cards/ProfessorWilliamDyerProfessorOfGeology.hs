@@ -36,9 +36,9 @@ instance RunMessage ProfessorWilliamDyerProfessorOfGeology where
       placeTokens (attrs.ability 1) attrs #resource (length cards)
       doStep 2 msg
       pure e
-    DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
+    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       n <- perPlayer 3
-      when (attrs.token #resource >= n) $ addToVictory attrs
+      when (attrs.token #resource >= n) $ addToVictory iid attrs
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       eliminatePartner attrs

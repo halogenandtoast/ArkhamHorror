@@ -31,7 +31,7 @@ instance RunMessage ShowbusinessAsUsual where
           cards <- shuffle =<< field LocationCardsUnderneath =<< selectJust (LocationWithTitle "Central Lot")
           for_ (nonEmpty cards) \(x :| xs) -> do
             setCardAside x
-            for_ xs addToVictory
+            for_ xs addToVictory_
           push $ AdvanceToAct 1 Acts.andresRequest Act.B (toSource attrs)
         else do
           eachInvestigator \iid -> do

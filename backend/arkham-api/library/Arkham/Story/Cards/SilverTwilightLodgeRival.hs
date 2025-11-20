@@ -48,10 +48,10 @@ instance RunMessage SilverTwilightLodgeRival where
       whenMatch iid InvestigatorWithAnyClues do
         moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       carl <- selectJust $ enemyIs Enemies.carlSanfordIntimidatingPresence
-      addToVictory attrs
-      addToVictory carl
+      addToVictory iid attrs
+      addToVictory iid carl
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.wardOfPreservation)
       removeStory attrs
       pure s

@@ -109,16 +109,20 @@ instance RunMessage TreacheryAttrs where
       pure a
     Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do
       pure $ a & discardedByL .~ miid
-    DefeatedAddToVictory target | target `elem` treacheryAttachedTarget a -> do
-      toDiscard GameSource a
+    DefeatedAddToVictory miid target | target `elem` treacheryAttachedTarget a -> do
+      case miid of
+        Nothing -> toDiscard GameSource a
+        Just iid -> toDiscardBy iid GameSource a
       pure a
     After (RemoveTreachery tid) | tid == treacheryId -> do
       pure $ a & placementL .~ Unplaced
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
       pushAll [RemoveTreachery $ toId a, PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
-    AddToVictory target | target `elem` treacheryAttachedTarget a -> do
-      toDiscard GameSource a
+    AddToVictory miid target | target `elem` treacheryAttachedTarget a -> do
+      case miid of
+        Nothing -> toDiscard GameSource a
+        Just iid -> toDiscardBy iid GameSource a
       pure a
     When (Revelation iid (isSource a -> True)) -> do
       mods <- getModifiers (toCardId a)
@@ -132,7 +136,7 @@ instance RunMessage TreacheryAttrs where
       when (treacheryPlacement == Limbo) do
         hasVictory <- getHasVictoryPoints (toCard a)
         if hasVictory
-          then addToVictory a
+          then addToVictory iid a
           else toDiscardBy iid GameSource a
       pure $ a & resolvedL %~ insertSet iid
     RemoveAllAttachments source target -> do

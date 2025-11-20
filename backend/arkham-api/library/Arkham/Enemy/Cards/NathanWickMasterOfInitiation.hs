@@ -31,7 +31,7 @@ instance RunMessage NathanWickMasterOfInitiation where
       n <- perPlayer 1
       when (attrs.token #resource >= n) do
         for_ attrs.keys (placeKey iid)
-        addToVictory attrs
+        addToVictory iid attrs
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       initiateEnemyAttack attrs (attrs.ability 1) iid

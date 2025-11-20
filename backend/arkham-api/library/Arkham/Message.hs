@@ -508,8 +508,8 @@ data Message
   | RemoveCardFromScenarioDeck ScenarioDeckKey Card
   | SwapPlaces (Target, LocationId) (Target, LocationId) -- we include the placement so it is up to date
   | -- Victory
-    AddToVictory Target
-  | DefeatedAddToVictory Target
+    AddToVictory (Maybe InvestigatorId) Target
+  | DefeatedAddToVictory (Maybe InvestigatorId) Target
   | -- Tokens
     AddChaosToken ChaosTokenFace
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
@@ -1232,6 +1232,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AddToVictory" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ AddToVictory a b
+          Left a -> pure $ AddToVictory Nothing a
+      "DefeatedAddToVictory" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ DefeatedAddToVictory a b
+          Left a -> pure $ DefeatedAddToVictory Nothing a
       "StartScenrio" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

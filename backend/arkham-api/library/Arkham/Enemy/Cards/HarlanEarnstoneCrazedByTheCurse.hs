@@ -22,7 +22,7 @@ instance HasAbilities HarlanEarnstoneCrazedByTheCurse where
 
 instance RunMessage HarlanEarnstoneCrazedByTheCurse where
   runMessage msg e@(HarlanEarnstoneCrazedByTheCurse attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure e
     _ -> HarlanEarnstoneCrazedByTheCurse <$> liftRunMessage msg attrs

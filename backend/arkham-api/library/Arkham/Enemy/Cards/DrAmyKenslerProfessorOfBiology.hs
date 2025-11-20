@@ -30,9 +30,9 @@ instance RunMessage DrAmyKenslerProfessorOfBiology where
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       doStep 2 msg
       pure e
-    DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
+    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       n <- perPlayer 2
-      when (attrs.token #resource >= n) $ addToVictory attrs
+      when (attrs.token #resource >= n) $ addToVictory iid attrs
       pure e
     PassedThisSkillTestBy _ (isAbilitySource attrs 1 -> True) n -> do
       placeTokens (attrs.ability 1) attrs #resource n

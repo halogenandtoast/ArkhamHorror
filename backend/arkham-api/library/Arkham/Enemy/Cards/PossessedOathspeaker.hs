@@ -41,8 +41,8 @@ instance RunMessage PossessedOathspeaker where
             countVar 1 $ nameVar attrs $ labeled' "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
         else placeDoom (attrs.ability 1) attrs 1
       pure e
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      addToVictory iid attrs
       push R3
       pure e
     _ -> PossessedOathspeaker <$> liftRunMessage msg attrs

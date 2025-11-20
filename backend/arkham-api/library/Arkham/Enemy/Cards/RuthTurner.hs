@@ -18,7 +18,7 @@ instance HasAbilities RuthTurner where
 
 instance RunMessage RuthTurner where
   runMessage msg e@(RuthTurner attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure e
     _ -> RuthTurner <$> liftRunMessage msg attrs

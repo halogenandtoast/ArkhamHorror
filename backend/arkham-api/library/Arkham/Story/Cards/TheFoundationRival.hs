@@ -50,10 +50,10 @@ instance RunMessage TheFoundationRival where
       whenMatch iid InvestigatorWithAnyClues do
         moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       valeriya <- selectJust $ enemyIs Enemies.valeriyaAntonovaDontMessWithHer
-      addToVictory attrs
-      addToVictory valeriya
+      addToVictory iid attrs
+      addToVictory iid valeriya
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Enemies.rookieCop)
       removeStory attrs
       pure s

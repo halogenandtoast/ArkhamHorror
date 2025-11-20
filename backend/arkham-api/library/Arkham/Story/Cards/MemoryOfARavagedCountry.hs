@@ -19,12 +19,12 @@ memoryOfARavagedCountry = story MemoryOfARavagedCountry Cards.memoryOfARavagedCo
 
 instance RunMessage MemoryOfARavagedCountry where
   runMessage msg s@(MemoryOfARavagedCountry attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       record CookieHasConfrontedHisDemons
       setPartnerStatus Assets.jamesCookieFredericksDubiousChoice Resolute
       selectForMaybeM (assetIs Assets.jamesCookieFredericksDubiousChoice) \cookie ->
         push $ ReplaceAsset cookie Assets.jamesCookieFredericksDubiousChoiceResolute
-      addToVictory attrs
+      addToVictory iid attrs
       mayAdvance attrs
       pure s
     _ -> MemoryOfARavagedCountry <$> liftRunMessage msg attrs

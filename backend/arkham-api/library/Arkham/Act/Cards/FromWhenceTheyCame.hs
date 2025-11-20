@@ -56,7 +56,7 @@ instance RunMessage FromWhenceTheyCame where
         selectAny $ assetIs Assets.heliosTelescopeGateToTheCosmos <> AssetWithUseCount Shard (static 0)
       unless viaForced do
         heliosTelescope <- selectJust $ assetIs Assets.heliosTelescopeGateToTheCosmos
-        addToVictory heliosTelescope
+        addToVictory_ heliosTelescope
 
       push $ if viaForced then R1 else R2
       pure a

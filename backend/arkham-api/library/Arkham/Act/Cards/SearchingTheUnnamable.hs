@@ -35,7 +35,7 @@ instance RunMessage SearchingTheUnnamable where
       allLocations <- select Anywhere
       victoryLocations <- select (RevealedLocation <> LocationWithoutClues <> LocationWithVictory)
       pushAll [PlaceInvestigator iid Unplaced | iid <- investigators]
-      pushAll $ map (AddToVictory . toTarget) victoryLocations
+      pushAll $ map (AddToVictory Nothing . toTarget) victoryLocations
       pushAll [RemoveLocation location | location <- allLocations, location `notElem` victoryLocations]
 
       -- Shuffle the set-aside Mysterious Stairs locations and put 5 of them

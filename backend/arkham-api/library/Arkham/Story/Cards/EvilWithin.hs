@@ -18,6 +18,6 @@ instance RunMessage EvilWithin where
     ResolveThisStory iid (is attrs -> True) -> do
       eidolons <- select $ EnemyWithTrait Eidolon <> NonEliteEnemy
       chooseTargetM iid eidolons $ toDiscardBy iid attrs
-      addToVictory attrs
+      addToVictory iid attrs
       pure s
     _ -> EvilWithin <$> liftRunMessage msg attrs

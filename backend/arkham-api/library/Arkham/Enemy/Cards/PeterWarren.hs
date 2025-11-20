@@ -25,7 +25,7 @@ instance HasAbilities PeterWarren where
 
 instance RunMessage PeterWarren where
   runMessage msg e@(PeterWarren attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure e
     _ -> PeterWarren <$> liftRunMessage msg attrs

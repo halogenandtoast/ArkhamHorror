@@ -25,7 +25,7 @@ instance RunMessage BrianBurnhamWantsOut where
       moveTokens (attrs.ability 1) attrs iid #clue 1
       doStep 2 msg
       pure e
-    DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
-      when (attrs.token #clue == 0) $ addToVictory attrs
+    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      when (attrs.token #clue == 0) $ addToVictory iid attrs
       pure e
     _ -> BrianBurnhamWantsOut <$> liftRunMessage msg attrs

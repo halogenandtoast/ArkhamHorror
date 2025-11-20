@@ -363,7 +363,8 @@ instance RunMessage Scenario where
                   $ Matcher.BasicWeaknessCard
           pure x
         RequestedPlayerCard iid (TarotSource (TarotCard Reversed TheTowerXVI)) (Just c) _ -> do
-          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard c]
+          card <- setOwner iid (toCard c)
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
           pure x
         UseThisAbility iid source@(TarotSource (TarotCard facing TheStarXVII)) 1 -> do
           player <- getPlayer iid

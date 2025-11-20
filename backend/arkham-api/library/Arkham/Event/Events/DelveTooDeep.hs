@@ -22,6 +22,6 @@ instance RunMessage DelveTooDeep where
       push $ SetActiveInvestigator iid
 
       allInvestigators <- select UneliminatedInvestigator
-      when (length investigators == length allInvestigators) $ addToVictory attrs
+      when (length investigators == length allInvestigators) $ addToVictory iid attrs
       pure e
     _ -> DelveTooDeep <$> liftRunMessage msg attrs

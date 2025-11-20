@@ -14,7 +14,7 @@ letGodSortThemOut = event LetGodSortThemOut Cards.letGodSortThemOut
 instance RunMessage LetGodSortThemOut where
   runMessage msg e@(LetGodSortThemOut attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      addToVictory attrs
+      addToVictory iid attrs
       gameModifier attrs iid $ XPModifier "Let God sort them out..." 1
       endYourTurn iid
       pure e

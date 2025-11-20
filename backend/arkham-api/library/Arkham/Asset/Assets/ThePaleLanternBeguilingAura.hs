@@ -47,7 +47,7 @@ instance RunMessage ThePaleLanternBeguilingAura where
     PassedThisSkillTest iid (isAbilitySource attrs 3 -> True) -> do
       placeTokens (attrs.ability 3) attrs #damage 1
       when (attrs.damage >= 3) do
-        addToVictory attrs
+        addToVictory iid attrs
         selectEach (SpellboundAsset $ at_ (locationWithInvestigator iid))
           $ flipOverBy iid (attrs.ability 3)
       pure a

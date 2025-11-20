@@ -80,5 +80,5 @@ instance RunMessage TheBrotherhoodIsRevealed where
           else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
     RemoveEnemy eid -> storeLastLocation a eid
-    AddToVictory (EnemyTarget eid) -> storeLastLocation a eid
+    AddToVictory _ (EnemyTarget eid) -> storeLastLocation a eid
     _ -> TheBrotherhoodIsRevealed . (`with` metadata) <$> liftRunMessage msg attrs

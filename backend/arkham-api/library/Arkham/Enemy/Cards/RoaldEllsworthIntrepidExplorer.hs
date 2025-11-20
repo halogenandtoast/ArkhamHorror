@@ -33,9 +33,9 @@ instance RunMessage RoaldEllsworthIntrepidExplorer where
           skillLabeled sType $ parley sid iid (attrs.ability 1) attrs sType (Fixed 5)
       doStep 2 msg
       pure e
-    DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
+    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       n <- perPlayer 1
-      when (attrs.token #resource >= n) $ addToVictory attrs
+      when (attrs.token #resource >= n) $ addToVictory iid attrs
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       placeTokens (attrs.ability 1) attrs #resource 1

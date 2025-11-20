@@ -96,7 +96,7 @@ data WindowMatcher
   | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType
   | WouldPayCardCost Timing Who CardMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
-  | AddedToVictory Timing CardMatcher
+  | AddedToVictory Timing (Maybe Who) CardMatcher
   | PerformAction Timing Who ActionMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher
   | PerformedDifferentTypesOfActionsInARow Timing Who Int ActionMatcher
@@ -332,6 +332,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AddedToVictory" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b) -> pure $ AddedToVictory a Nothing b
+          Right (a, b, c) -> pure $ AddedToVictory a b c
       "CommittedCard" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

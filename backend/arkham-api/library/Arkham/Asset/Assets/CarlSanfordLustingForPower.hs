@@ -38,7 +38,7 @@ instance RunMessage CarlSanfordLustingForPower where
     UseCardAbility iid (isSource attrs -> True) 1 (cancelledCard -> cardId) _ -> do
       card <- fetchCard cardId
       obtainCard card
-      addToVictory cardId
+      addToVictory iid cardId
       drawCards iid (attrs.ability 1) 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

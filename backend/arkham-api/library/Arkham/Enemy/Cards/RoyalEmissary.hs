@@ -35,7 +35,7 @@ instance HasAbilities RoyalEmissary where
     extend
       a
       [ restricted a 1 (exists $ investigatorMatcher a) $ forced $ PhaseEnds #when #enemy
-      , restricted a 2 IsReturnTo $ forced $ AddedToVictory #after (CardWithId a.cardId)
+      , restricted a 2 IsReturnTo $ forced $ AddedToVictory #after Nothing (CardWithId a.cardId)
       ]
 
 instance RunMessage RoyalEmissary where
@@ -46,7 +46,7 @@ instance RunMessage RoyalEmissary where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       placeTokens (attrs.ability 2) attrs #warning 1
       pure e
-    Do (DefeatedAddToVictory (isTarget attrs -> True)) -> do
+    Do (DefeatedAddToVictory _ (isTarget attrs -> True)) -> do
       let warnings = attrs.token #warning
       attrs' <- liftRunMessage msg attrs
       pure $ RoyalEmissary $ attrs' & tokensL %~ insertMap #warning warnings

@@ -47,12 +47,12 @@ instance RunMessage EndlessDescent where
       for_ (zip shuffled labels) (uncurry setLocationLabel)
       doStep 2 msg'
       pure t
-    DoStep 2 (Revelation _iid (isSource attrs -> True)) -> do
+    DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
       locations <- selectSortedBy LocationLabel $ LocationWithTitle "Mysterious Stairs"
 
       for_ (zip locations (drop 1 locations)) \(l1, l2) -> do
         placedLocationDirection l1 Above l2
 
-      addToVictory attrs
+      addToVictory iid attrs
       pure t
     _ -> EndlessDescent <$> liftRunMessage msg attrs

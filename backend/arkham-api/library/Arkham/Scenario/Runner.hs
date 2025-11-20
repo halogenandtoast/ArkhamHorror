@@ -609,27 +609,27 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
-  AddToVictory (SkillTarget sid) -> do
+  AddToVictory _ (SkillTarget sid) -> do
     card <- field Field.SkillCard sid
     pure $ a & (victoryDisplayL %~ (card :))
-  AddToVictory (EventTarget eid) -> do
+  AddToVictory _ (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ a & (victoryDisplayL %~ (card :))
-  AddToVictory (StoryTarget eid) -> do
+  AddToVictory _ (StoryTarget eid) -> do
     card <- field StoryCard eid
     pure $ a & (victoryDisplayL %~ nub . (card :))
-  AddToVictory (AssetTarget tid) -> do
+  AddToVictory _ (AssetTarget tid) -> do
     card <- field AssetCard tid
     pure $ a & (victoryDisplayL %~ nub . (card :))
-  AddToVictory (TreacheryTarget tid) -> do
+  AddToVictory _ (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     pure $ a & (victoryDisplayL %~ nub . (card :))
-  AddToVictory (ActTarget aid) -> do
+  AddToVictory _ (ActTarget aid) -> do
     flipped <- field ActFlipped aid
     card <- field ActCard aid
     let card' = if flipped then flipCard card else card
     pure $ a & (victoryDisplayL %~ nub . (card' :))
-  AddToVictory (AgendaTarget aid) -> do
+  AddToVictory _ (AgendaTarget aid) -> do
     card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ nub . (card :))
   RemoveEnemy eid -> do
@@ -640,13 +640,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           Just card -> a & (victoryDisplayL %~ nub . (card :))
           Nothing -> a
       _ -> pure a
-  AddToVictory (LocationTarget lid) -> do
+  AddToVictory _ (LocationTarget lid) -> do
     card <- field LocationCard lid
     pure $ a & (victoryDisplayL %~ nub . (card :))
-  AddToVictory (EnemyTarget eid) -> do
+  AddToVictory _ (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     pure $ a & (victoryDisplayL %~ nub . (card :))
-  AddToVictory (CardIdTarget cid) -> do
+  AddToVictory _ (CardIdTarget cid) -> do
     card <- getCard cid
     selectOne (Matcher.EnemyWithCardId cid) >>= \case
       Nothing -> pure $ a & (victoryDisplayL %~ nub . (card :))

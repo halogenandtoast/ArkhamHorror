@@ -28,7 +28,7 @@ instance RunMessage TheBarrierIsThin where
     AdvanceAgenda (isSide B attrs -> True) -> do
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
-      selectEach (LocationWithTrait Tenochtitlan <> LocationWithoutClues) addToVictory
+      selectEach (LocationWithTrait Tenochtitlan <> LocationWithoutClues) addToVictory_
       doStep 1 msg
       eachInvestigator (discardAllClues attrs)
       doStep 2 msg

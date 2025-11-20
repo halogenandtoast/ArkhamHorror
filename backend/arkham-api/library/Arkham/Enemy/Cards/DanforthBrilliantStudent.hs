@@ -37,9 +37,9 @@ instance RunMessage DanforthBrilliantStudent where
       placeTokens (attrs.ability 1) attrs #resource n
       doStep 2 msg
       pure e
-    DoStep 2 (ResolveAmounts _ _ (isTarget attrs -> True)) -> do
+    DoStep 2 (ResolveAmounts iid _ (isTarget attrs -> True)) -> do
       n <- perPlayer 3
-      when (attrs.token #resource >= n) $ addToVictory attrs
+      when (attrs.token #resource >= n) $ addToVictory iid attrs
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       eliminatePartner attrs

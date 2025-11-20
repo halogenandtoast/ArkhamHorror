@@ -33,7 +33,7 @@ instance HasAbilities CityOfTheDeepV2 where
 instance RunMessage CityOfTheDeepV2 where
   runMessage msg a@(CityOfTheDeepV2 attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      addToVictory attrs
+      addToVictory_ attrs
       otherActs <- selectAny $ NotAct $ ActWithId attrs.id
       if otherActs
         then do

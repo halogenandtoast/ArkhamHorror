@@ -39,8 +39,8 @@ instance RunMessage Cnidathqua where
       lid <- getJustLocation iid
       push $ SpawnEnemyAtEngagedWith (EncounterCard card) lid iid
       pure e
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      addToVictory iid attrs
       push R2
       pure e
     _ -> Cnidathqua <$> liftRunMessage msg attrs

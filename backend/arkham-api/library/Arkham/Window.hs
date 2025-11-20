@@ -152,7 +152,7 @@ data WindowType
   | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId
   | ActivateAbility InvestigatorId [Window] Ability
-  | AddedToVictory Card
+  | AddedToVictory (Maybe InvestigatorId) Card
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId
   | AllDrawEncounterCard
@@ -351,54 +351,59 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "AddedToVictory" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Left c -> pure $ AddedToVictory Nothing c
+                Right (i, c) -> pure $ AddedToVictory i c
             "Moves" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (i, s, md1, d1) -> pure $ Moves i s md1 d1 (MovementId UUID.nil)
                 Right (i, s, md1, d1, mId) -> pure $ Moves i s md1 d1 mId
             "SuccessfulEvadeEnemy" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (i, e, n) -> pure $ SuccessfulEvadeEnemy i GameSource e n
                 Right (i, s, e, n) -> pure $ SuccessfulEvadeEnemy i s e n
             "WouldDrawCard" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Right (i, cid, deck) -> pure $ WouldDrawCard i cid deck
                 Left (i, deck) -> pure $ WouldDrawCard i (CardDrawId UUID.nil) deck
             "WouldDrawEncounterCard" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Right (i, cid, p) -> pure $ WouldDrawEncounterCard i cid p
                 Left (i, p) -> pure $ WouldDrawEncounterCard i (CardDrawId UUID.nil) p
             "CancelledOrIgnoredCardOrGameEffect" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left a -> pure $ CancelledOrIgnoredCardOrGameEffect a Nothing
                 Right (a, b) -> pure $ CancelledOrIgnoredCardOrGameEffect a b
             "Explored" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (a, b) -> pure $ Explored a Nothing b
                 Right (a, b, c) -> pure $ Explored a b c
             "DeckRanOutOfCards" -> DeckHasNoCards <$> o .: "contents"
             "ScenarioEvent" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (a, b) -> pure $ ScenarioEvent a Nothing b
                 Right (a, b, c) -> pure $ ScenarioEvent a b c
             "AttemptToEvadeEnemy" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (i, e) -> pure $ AttemptToEvadeEnemy (SkillTestId UUID.nil) i e
                 Right (sid, i, e) -> pure $ AttemptToEvadeEnemy sid i e
             "PlayCard" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|>  (Left <$> o .: "contents")
               case contents of
                 Left (i, c) -> pure $ PlayCard i (CardPlay c True)
                 Right (i, cp) -> pure $ PlayCard i cp
             "WouldAddChaosTokensToChaosBag" -> do
-              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
                 Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs

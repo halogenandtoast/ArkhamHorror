@@ -35,8 +35,8 @@ instance RunMessage RobertFriendlyDisgruntledDockworker where
       moveTokens (attrs.ability 1) attrs iid #clue 1
       doStep 2 msg
       pure e
-    DoStep 2 (PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True)) -> do
-      when (attrs.token #clue == 0) $ addToVictory attrs
+    DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
+      when (attrs.token #clue == 0) $ addToVictory iid attrs
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       assignDamage iid (attrs.ability 1) 1

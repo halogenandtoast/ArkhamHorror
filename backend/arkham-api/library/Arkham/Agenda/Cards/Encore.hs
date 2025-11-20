@@ -14,7 +14,7 @@ encore :: AgendaCard Encore
 encore = agenda (2, A) Encore Cards.encore (Static 6)
 
 instance HasAbilities Encore where
-  getAbilities (Encore a) = [mkAbility a 1 $ forced $ AddedToVictory #after $ cardIs Cards.royalEmissary]
+  getAbilities (Encore a) = [mkAbility a 1 $ forced $ AddedToVictory #after Nothing $ cardIs Cards.royalEmissary]
 
 instance RunMessage Encore where
   runMessage msg a@(Encore attrs) = runQueueT $ case msg of

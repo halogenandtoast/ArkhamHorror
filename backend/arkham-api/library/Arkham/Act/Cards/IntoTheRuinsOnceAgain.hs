@@ -26,7 +26,7 @@ instance RunMessage IntoTheRuinsOnceAgain where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       chamberOfTime <- fetchCard [Locations.chamberOfTime, Locations.chamberOfTimeRearrangedByTime]
       shuffleCardsIntoDeck ExplorationDeck [chamberOfTime]
-      addToVictory (toTarget attrs)
+      addToVictory_ (toTarget attrs)
       advanceActDeck attrs
       pure a
     _ -> IntoTheRuinsOnceAgain <$> liftRunMessage msg attrs

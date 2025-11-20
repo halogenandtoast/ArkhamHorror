@@ -66,6 +66,6 @@ instance RunMessage ReturnToUnfinishedBusiness_39 where
       batched \_ -> do
         checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
         send $ format card <> " is \"banished\""
-        addToVictory attrs
+        addToVictory iid attrs
       pure s
     _ -> ReturnToUnfinishedBusiness_39 <$> liftRunMessage msg attrs

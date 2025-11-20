@@ -38,7 +38,7 @@ instance RunMessage RadicalTreatment where
         for_ [#willpower, #intellect] \kind ->
           skillLabeled kind $ beginSkillTest sid iid (attrs.ability 2) attrs kind (Fixed 6)
       pure t
-    PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do
-      addToVictory attrs
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      addToVictory iid attrs
       pure t
     _ -> RadicalTreatment <$> liftRunMessage msg attrs

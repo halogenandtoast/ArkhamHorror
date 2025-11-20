@@ -34,8 +34,8 @@ instance RunMessage TheExperiment where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       readyThis attrs
       pure e
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      addToVictory iid attrs
       push $ AdvanceToAct 1 Acts.campusSafety B (toSource attrs)
       pure e
     _ -> TheExperiment <$> liftRunMessage msg attrs

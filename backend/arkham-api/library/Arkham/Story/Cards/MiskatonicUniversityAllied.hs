@@ -56,7 +56,7 @@ instance RunMessage MiskatonicUniversityAllied where
         threshold <- perPlayer 3
         when (current + n >= threshold) do
           takeControlOfAsset iid aid
-          addToVictory declan
+          addToVictory iid declan
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceCurrentAct (attrs.ability 2)

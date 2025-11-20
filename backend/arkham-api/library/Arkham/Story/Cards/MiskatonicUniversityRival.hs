@@ -48,10 +48,10 @@ instance RunMessage MiskatonicUniversityRival where
       whenMatch iid InvestigatorWithAnyClues do
         moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      addToVictory iid attrs
       caldwell <- selectJust $ enemyIs Enemies.caldwellPhilipsCompelledByDreams
-      addToVictory caldwell
+      addToVictory iid caldwell
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.confusion)
       removeStory attrs
       pure s

@@ -106,7 +106,8 @@ handleMemory source partner location memory = do
         moveTo_ source investigator (locationIs Locations.prisonOfMemories)
       selectEach (oneOf [UnengagedEnemy, MassiveEnemy] <> enemyAt loc) \enemy ->
         enemyMoveToMatch source enemy (locationIs Locations.prisonOfMemories)
-      addToVictory (asId source)
+      -- Could be wrong to not pass an iid here, but we do not currently have one
+      addToVictory_ (asId source)
       removeLocation loc
       mayAdvance source
     _ -> getSetAsideCard memory >>= (`createEnemy_` location)

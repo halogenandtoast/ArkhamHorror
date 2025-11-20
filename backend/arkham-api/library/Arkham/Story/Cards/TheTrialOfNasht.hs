@@ -12,7 +12,7 @@ theTrialOfNasht = story TheTrialOfNasht Cards.theTrialOfNasht
 
 instance RunMessage TheTrialOfNasht where
   runMessage msg s@(TheTrialOfNasht attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
-      addToVictory attrs
+    ResolveThisStory iid (is attrs -> True) -> do
+      addToVictory iid attrs
       pure s
     _ -> TheTrialOfNasht <$> liftRunMessage msg attrs

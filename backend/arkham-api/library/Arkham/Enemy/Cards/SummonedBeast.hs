@@ -41,8 +41,8 @@ instance RunMessage SummonedBeast where
       for_ humanoids \(humanoid, _) -> defeatEnemy humanoid lead (attrs.ability 1)
       placeDoom (attrs.ability 1) attrs (sum $ map snd humanoids)
       pure e
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      addToVictory attrs
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      addToVictory iid attrs
       push R3
       pure e
     _ -> SummonedBeast <$> liftRunMessage msg attrs

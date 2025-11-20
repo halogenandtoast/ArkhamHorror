@@ -48,13 +48,11 @@ instance RunMessage HiddenTunnelEntranceToTheDepths where
       pure l
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
-      when (n == 2) $ skillTestModifier sid (attrs.ability n) iid (AnySkillValue 5)
-      chooseBeginSkillTest sid iid (attrs.ability n) iid [minBound ..] (Fixed 4)
-      pure l
+      when (n == 2) $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 5)
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [minBound ..] (Fixed 4)
+      pure $ HiddenTunnelEntranceToTheDepths $ attrs & setMeta True
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      removeTokens (attrs.ability 1) attrs #clue 1
-      pure l
-    PassedThisSkillTest _iid (isAbilitySource attrs 2 -> True) -> do
-      removeTokens (attrs.ability 1) attrs #clue 2
+      let spentSkull = getLocationMetaDefault False attrs
+      removeTokens (attrs.ability 1) attrs #clue $ if spentSkull then 2 else 1
       pure l
     _ -> HiddenTunnelEntranceToTheDepths <$> liftRunMessage msg attrs

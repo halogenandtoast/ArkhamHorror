@@ -201,7 +201,7 @@ data ModifierType
   | CannotMove
   | CancelMovement MovementId
   | CannotMoveExceptByScenarioCardEffects
-  | CannotMoveMoreThanOnceEachTurn
+  | CannotMoveMoreThanOnceEachTurn -- DEPRECATED
   | CannotMulligan
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest

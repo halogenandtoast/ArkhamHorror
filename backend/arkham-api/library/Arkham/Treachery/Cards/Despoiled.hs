@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Despoiled (despoiled) where
 
 import Arkham.Ability
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Modifier
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
@@ -16,7 +16,9 @@ despoiled = treachery Despoiled Cards.despoiled
 
 instance HasAbilities Despoiled where
   getAbilities (Despoiled a) =
-    [ restricted a 1 InYourThreatArea $ forced $ SkillTestResult #after You AnySkillTest #success
+    [ restricted a 1 (InYourThreatArea <> DuringTurn You)
+        $ forced
+        $ SkillTestResult #after You AnySkillTest #success
     , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 

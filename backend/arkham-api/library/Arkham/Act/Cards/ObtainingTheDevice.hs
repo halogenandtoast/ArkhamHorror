@@ -18,7 +18,7 @@ obtainingTheDevice = act (2, A) ObtainingTheDevice Cards.obtainingTheDevice Noth
 
 instance HasAbilities ObtainingTheDevice where
   getAbilities (ObtainingTheDevice attrs) =
-    [mkAbility attrs 1 $ Objective $ forced $ AddedToVictory #at $ CardWithTitle "Nathan Wick"]
+    [mkAbility attrs 1 $ Objective $ forced $ AddedToVictory #at Nothing $ CardWithTitle "Nathan Wick"]
 
 instance RunMessage ObtainingTheDevice where
   runMessage msg a@(ObtainingTheDevice attrs) = runQueueT $ case msg of

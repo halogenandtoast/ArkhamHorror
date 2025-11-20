@@ -89,8 +89,8 @@ instance RunMessage Grizzled where
               skillTestResultOption "Grizzled" do
                 chooseOneM iid do
                   labeled "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)" do
-                    addToVictory attrs
-                    addToVictory tid
+                    addToVictory iid attrs
+                    addToVictory iid tid
                   labeled "Do not add to victory" nothing
         _ -> pure ()
       pure s

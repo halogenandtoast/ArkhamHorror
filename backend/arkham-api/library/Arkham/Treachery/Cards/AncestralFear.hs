@@ -19,6 +19,6 @@ instance RunMessage AncestralFear where
       mLocation <- selectOne $ locationWithInvestigator iid
       chooseOrRunOneM iid $ campaignI18n do
         for_ mLocation \lid -> labeled' "ancestralFear.placeDoom" $ placeDoom attrs lid 1
-        labeled' "ancestralFear.addToVictory" $ addToVictory attrs
+        labeled' "ancestralFear.addToVictory" $ addToVictory iid attrs
       pure t
     _ -> AncestralFear <$> liftRunMessage msg attrs

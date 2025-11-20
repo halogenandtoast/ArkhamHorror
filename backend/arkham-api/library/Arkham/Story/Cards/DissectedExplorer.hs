@@ -19,7 +19,7 @@ instance RunMessage DissectedExplorer where
   runMessage msg s@(DissectedExplorer attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       search iid attrs iid [fromDeck] (basic $ CardWithTitle "Tekeli-li") (defer attrs IsNotDraw)
-      addToVictory attrs
+      addToVictory iid attrs
       pure s
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       chooseTargetM iid cards $ putCardOnBottomOfDeck iid TekeliliDeck

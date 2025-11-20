@@ -19,7 +19,7 @@ instance RunMessage SomberRemains where
   runMessage msg s@(SomberRemains attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       search iid attrs iid [fromTopOfDeck 9] (basic $ CardWithTitle "Tekeli-li") (defer attrs IsNotDraw)
-      addToVictory attrs
+      addToVictory iid attrs
       pure s
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       chooseOneAtATimeM iid $ targets cards $ putCardOnBottomOfDeck iid TekeliliDeck

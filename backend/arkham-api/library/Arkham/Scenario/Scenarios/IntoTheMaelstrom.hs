@@ -179,7 +179,7 @@ instance RunMessage IntoTheMaelstrom where
                 , Enemies.hydraAwakenedAndEnraged
                 ]
             )
-            addToVictory
+            addToVictory_
           shatteredTheAlignment <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV1
           conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
           conspiracyDismantled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV3

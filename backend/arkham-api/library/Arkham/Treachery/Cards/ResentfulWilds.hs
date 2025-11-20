@@ -26,7 +26,7 @@ instance RunMessage ResentfulWilds where
       ls <- select $ NearestLocationTo iid $ LocationWithoutTreachery (treacheryIs Cards.resentfulWilds)
       chooseTargetM iid ls $ place attrs . AttachedToLocation
       pure t
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure t
     _ -> ResentfulWilds <$> liftRunMessage msg attrs

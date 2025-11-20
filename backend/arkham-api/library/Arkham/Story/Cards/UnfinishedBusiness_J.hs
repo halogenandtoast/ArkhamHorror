@@ -37,7 +37,7 @@ instance RunMessage UnfinishedBusiness_J where
             send $ format card <> " was \"Banished\""
             for_ mEnemy (push . RemoveEnemy)
             push $ ReplaceCard attrs.cardId (toCard attrs)
-            addToVictory attrs
+            addToVictory iid attrs
         else do
           let card = lookupCard Enemies.heretic_I (toCardId attrs)
           enemy <- createEnemy card attrs.placement

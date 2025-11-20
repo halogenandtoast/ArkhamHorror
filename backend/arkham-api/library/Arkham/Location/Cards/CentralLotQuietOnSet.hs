@@ -24,11 +24,11 @@ instance HasAbilities CentralLotQuietOnSet where
 
 instance RunMessage CentralLotQuietOnSet where
   runMessage msg l@(CentralLotQuietOnSet attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       case attrs.underneath of
         [] -> error "no cards underneath"
         (x : xs) -> do
-          addToVictory x
+          addToVictory iid x
           pure $ CentralLotQuietOnSet $ attrs & cardsUnderneathL .~ xs
     Flip _ _ (isTarget attrs -> True) -> do
       let blurred = lookupCard Cards.centralLotBlurred attrs.cardId

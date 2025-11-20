@@ -28,7 +28,7 @@ instance RunMessage BloodOfKnYan3 where
         skillLabeled sType $ chooseFightEnemyEdit sid iid attrs (withSkillType sType)
       pure e
     EnemyDefeated eid _ (isSource attrs -> True) _ -> do
-      addToVictory eid
-      addToVictory attrs
+      addToVictory attrs.controller eid
+      addToVictory attrs.controller attrs
       pure e
     _ -> BloodOfKnYan3 <$> liftRunMessage msg attrs

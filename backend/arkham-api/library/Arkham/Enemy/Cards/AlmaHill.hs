@@ -17,6 +17,6 @@ instance HasAbilities AlmaHill where
 instance RunMessage AlmaHill where
   runMessage msg e@(AlmaHill attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawEncounterCardsEdit iid attrs 3 (`andThen` AddToVictory (toTarget attrs))
+      drawEncounterCardsEdit iid attrs 3 (`andThen` AddToVictory (Just iid) (toTarget attrs))
       pure e
     _ -> AlmaHill <$> liftRunMessage msg attrs

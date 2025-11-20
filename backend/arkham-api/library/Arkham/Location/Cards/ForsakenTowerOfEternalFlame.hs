@@ -46,9 +46,9 @@ instance RunMessage ForsakenTowerOfEternalFlame where
       sid <- getRandom
       push $ FightEnemy nyarlathotep $ setTarget attrs $ mkChooseFightPure sid iid (attrs.ability 1)
       pure l
-    Successful (Action.Fight, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
+    Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       discardWhisperingChaos attrs
-      push $ AddToVictory (toTarget eid)
+      addToVictory iid eid
       pure l
     Failed (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       shuffleWhisperingChaosBackIntoEncounterDeck attrs

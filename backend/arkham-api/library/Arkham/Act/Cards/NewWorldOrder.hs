@@ -29,8 +29,8 @@ instance RunMessage NewWorldOrder where
       removeBreaches (toTarget attrs) 3
       placeClues (attrs.ability 1) location 1
       pure a
-    UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      selectEach (enemyIs Enemies.carlSanfordDeathlessFanatic) addToVictory
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      selectEach (enemyIs Enemies.carlSanfordDeathlessFanatic) (addToVictory iid)
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

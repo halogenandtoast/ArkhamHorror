@@ -28,9 +28,9 @@ instance RunMessage SaturniteMonarchGraciousHost where
       placeTokens (attrs.ability 1) attrs #resource 1
       doStep 1 msg
       pure e
-    DoStep 1 (PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True)) -> do
+    DoStep 1 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       n <- perPlayer 1
-      when (countTokens #resource attrs.tokens >= n) $ addToVictory attrs
+      when (countTokens #resource attrs.tokens >= n) $ addToVictory iid attrs
       pure e
     Flip _ _ (isTarget attrs -> True) -> do
       let inAnAlienLand = lookupCard Cards.saturniteMonarchInAnAlienLand attrs.cardId

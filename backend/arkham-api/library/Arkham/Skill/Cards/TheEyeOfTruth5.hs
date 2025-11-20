@@ -25,11 +25,11 @@ theEyeOfTruth5 = skill TheEyeOfTruth5 Cards.theEyeOfTruth5
 
 instance RunMessage TheEyeOfTruth5 where
   runMessage msg s@(TheEyeOfTruth5 attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       source <- fromJustNote "must be a skill test" <$> getSkillTestSource
       for_ source.treachery \tid -> skillTestResultOption "The Eye of Truth (5)" do
-        addToVictory tid
-        addToVictory attrs
+        addToVictory iid tid
+        addToVictory iid attrs
         card <- field TreacheryCard tid
         createCardEffect Cards.theEyeOfTruth5 Nothing attrs (toCardId card)
       pure s
@@ -60,7 +60,7 @@ instance HasModifiersFor TheEyeOfTruth5Effect where
 
 instance RunMessage TheEyeOfTruth5Effect where
   runMessage msg e@(TheEyeOfTruth5Effect attrs) = runQueueT $ case msg of
-    AddToVictory (TreacheryTarget tid) -> do
+    AddToVictory _ (TreacheryTarget tid) -> do
       -- If the card left the victory display and we are now adding it back, it
       -- won't be attached, so we should disable this
       cardId <- fieldMap TreacheryCard toCardId tid

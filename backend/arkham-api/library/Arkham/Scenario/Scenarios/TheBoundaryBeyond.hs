@@ -294,7 +294,7 @@ instance RunMessage TheBoundaryBeyond where
         Resolution 2 -> "resolution2"
         _ -> error "invalid resolution"
       when addLocationsToVictory do
-        for_ locations addToVictory
+        for_ locations addToVictory_
       doStep 1 msg
 
       vengeance <- getTotalVengeanceInVictoryDisplay

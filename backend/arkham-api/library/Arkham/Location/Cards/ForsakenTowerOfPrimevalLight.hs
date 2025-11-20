@@ -45,9 +45,9 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
         #willpower
         (EnemyMaybeGameValueFieldCalculation nyarlathotep EnemyHealthActual)
       pure l
-    PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
       discardWhisperingChaos attrs
-      push $ AddToVictory target
+      addToVictory iid target
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) (Initiator (EnemyTarget eid)) _ _ -> do
       shuffleWhisperingChaosBackIntoEncounterDeck attrs

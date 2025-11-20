@@ -29,7 +29,7 @@ instance RunMessage UnfinishedBusiness_L where
           batched \_ -> do
             checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
             send $ format card <> " was \"Banished\""
-            addToVictory attrs
+            addToVictory iid attrs
         else afterStoryResolution attrs do
           removeStory attrs
           enemy <- createEnemy card attrs.placement

@@ -48,10 +48,10 @@ instance RunMessage TheSyndicateRival where
       whenMatch iid InvestigatorWithAnyClues do
         moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       johnny <- selectJust $ enemyIs Enemies.johnnyValoneHereToCollect
-      addToVictory attrs
-      addToVictory johnny
+      addToVictory iid attrs
+      addToVictory iid johnny
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.coldStreak)
       removeStory attrs
       pure s

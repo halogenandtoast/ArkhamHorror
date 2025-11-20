@@ -32,8 +32,8 @@ instance HasAbilities BiancaDieKatz where
 
 instance RunMessage BiancaDieKatz where
   runMessage msg e@(BiancaDieKatz (With attrs meta)) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure . BiancaDieKatz $ attrs `with` Meta True
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       obtainCard $ toCard attrs

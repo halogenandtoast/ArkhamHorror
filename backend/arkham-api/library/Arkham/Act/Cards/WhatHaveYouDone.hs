@@ -21,8 +21,8 @@ instance HasAbilities WhatHaveYouDone where
 
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = runQueueT $ scenarioI18n $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      selectEach (InPlayEnemy $ enemyIs Cards.ghoulPriest) addToVictory
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      selectEach (InPlayEnemy $ enemyIs Cards.ghoulPriest) (addToVictory iid)
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

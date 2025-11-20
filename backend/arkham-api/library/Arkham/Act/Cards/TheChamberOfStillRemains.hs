@@ -43,7 +43,7 @@ instance RunMessage TheChamberOfStillRemains where
 
       yig <- genCard Enemies.yig
       createEnemyAt_ yig chamberOfTime
-      addToVictory (toTarget attrs)
+      addToVictory_ (toTarget attrs)
       advanceActDeck attrs
       pure a
     _ -> TheChamberOfStillRemains <$> liftRunMessage msg attrs

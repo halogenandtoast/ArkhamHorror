@@ -15,9 +15,9 @@ theCryptOfZulanThek = story TheCryptOfZulanThek Cards.theCryptOfZulanThek
 
 instance RunMessage TheCryptOfZulanThek where
   runMessage msg s@(TheCryptOfZulanThek attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       push $ ScenarioCountIncrementBy SignOfTheGods 1
       mHordeOfNight <- selectOne $ enemyIs Enemies.hordeOfNight <> IsHost
-      for_ mHordeOfNight addToVictory
+      for_ mHordeOfNight (addToVictory iid)
       pure s
     _ -> TheCryptOfZulanThek <$> liftRunMessage msg attrs

@@ -28,6 +28,6 @@ instance RunMessage NathanWickMasterOfIndoctrination where
   runMessage msg e@(NathanWickMasterOfIndoctrination attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.keys (placeKey iid)
-      addToVictory attrs
+      addToVictory iid attrs
       pure e
     _ -> NathanWickMasterOfIndoctrination <$> liftRunMessage msg attrs

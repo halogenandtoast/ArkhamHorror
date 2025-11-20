@@ -60,8 +60,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
         lift (runMessage (Successful (Action.Investigate, other) iid (toSource attrs) target n) attrs)
       case toResult @(Maybe EnemyId) attrs.meta of
         Nothing -> error "Invalid meta"
-        Just nyarlathotep -> do
-          push $ AddToVictory (toTarget nyarlathotep)
+        Just nyarlathotep -> addToVictory iid nyarlathotep
       pure $ ForsakenTowerOfIllusionAndMyth attrs'
     Failed (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
       shuffleWhisperingChaosBackIntoEncounterDeck attrs

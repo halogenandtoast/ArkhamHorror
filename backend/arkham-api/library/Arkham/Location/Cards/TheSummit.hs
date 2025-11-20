@@ -35,7 +35,7 @@ instance RunMessage TheSummit where
       addChaosToken #frost
       pure l
     UseThisAbility iid (isSource attrs -> True) ResignAbility -> do
-      selectEach (assetControlledBy iid <> withTrait Expedition) addToVictory
+      selectEach (assetControlledBy iid <> withTrait Expedition) (addToVictory iid)
       discardAllClues (attrs.ability 1) iid
       TheSummit <$> liftRunMessage msg attrs
     _ -> TheSummit <$> liftRunMessage msg attrs

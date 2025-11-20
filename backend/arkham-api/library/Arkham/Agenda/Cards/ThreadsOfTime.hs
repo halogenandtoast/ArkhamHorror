@@ -32,7 +32,7 @@ instance RunMessage ThreadsOfTime where
       formlessSpawn <- getSetAsideCard Enemies.formlessSpawn
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       createEnemyAt_ formlessSpawn nexus
-      addToVictory attrs
+      addToVictory_ attrs
       advanceAgendaDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

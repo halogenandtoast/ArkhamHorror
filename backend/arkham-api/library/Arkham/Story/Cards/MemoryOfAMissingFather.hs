@@ -19,12 +19,12 @@ memoryOfAMissingFather = story MemoryOfAMissingFather Cards.memoryOfAMissingFath
 
 instance RunMessage MemoryOfAMissingFather where
   runMessage msg s@(MemoryOfAMissingFather attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       record TakadaHasConfrontedHerDemons
       setPartnerStatus Assets.takadaHirokoAeroplaneMechanic Resolute
       selectForMaybeM (assetIs Assets.takadaHirokoAeroplaneMechanic) \takada ->
         push $ ReplaceAsset takada Assets.takadaHirokoAeroplaneMechanicResolute
-      addToVictory attrs
+      addToVictory iid attrs
       mayAdvance attrs
       pure s
     _ -> MemoryOfAMissingFather <$> liftRunMessage msg attrs

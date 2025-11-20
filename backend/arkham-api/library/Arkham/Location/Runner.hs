@@ -324,7 +324,7 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ pc -> do
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
-    AddToVictory (CardIdTarget cid) -> do
+    AddToVictory _ (CardIdTarget cid) -> do
       pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
     ObtainCard c -> do
       pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)

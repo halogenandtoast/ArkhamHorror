@@ -56,7 +56,7 @@ instance RunMessage HuntressOfTheEztli where
           advanceToAct attrs Acts.theGuardedRuins A
         else do
           itchtaca <- selectJust $ enemyIs Enemies.ichtaca
-          addToVictory itchtaca
+          addToVictory_ itchtaca
           remember IchtachaIsLeadingTheWay
           addChaosToken Cultist
           shuffleCardsIntoDeck ExplorationDeck ruins

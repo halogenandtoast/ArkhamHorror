@@ -53,7 +53,7 @@ instance RunMessage ReturnToUnfinishedBusiness_38 where
       batched \_ -> do
         checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
         send $ format card <> " is \"banished\""
-        addToVictory attrs
+        addToVictory iid attrs
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
       let heretic = lookupCard Enemies.returnToHeretic_38 (toCardId attrs)

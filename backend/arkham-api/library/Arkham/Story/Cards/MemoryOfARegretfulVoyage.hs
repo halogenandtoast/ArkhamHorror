@@ -19,12 +19,12 @@ memoryOfARegretfulVoyage = story MemoryOfARegretfulVoyage Cards.memoryOfARegretf
 
 instance RunMessage MemoryOfARegretfulVoyage where
   runMessage msg s@(MemoryOfARegretfulVoyage attrs) = runQueueT $ case msg of
-    ResolveThisStory _ (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       record DyerHasConfrontedHisDemons
       setPartnerStatus Assets.professorWilliamDyerProfessorOfGeology Resolute
       selectForMaybeM (assetIs Assets.professorWilliamDyerProfessorOfGeology) \dyer ->
         push $ ReplaceAsset dyer Assets.professorWilliamDyerProfessorOfGeologyResolute
-      addToVictory attrs
+      addToVictory iid attrs
       mayAdvance attrs
       pure s
     _ -> MemoryOfARegretfulVoyage <$> liftRunMessage msg attrs

@@ -29,7 +29,7 @@ instance HasAbilities HotelManager where
 
 instance RunMessage HotelManager where
   runMessage msg e@(HotelManager attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
       edibleGuests <- select $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Guest
       otherGuests <-
@@ -40,7 +40,7 @@ instance RunMessage HotelManager where
                      lead
                      [ targetLabel
                          guest
-                         [AddToVictory (toTarget guest), PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2]
+                         [AddToVictory (Just iid) (toTarget guest), PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2]
                      | guest <- edibleGuests
                      ]
                  ]

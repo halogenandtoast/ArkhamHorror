@@ -482,7 +482,7 @@ instance RunMessage SkillTest where
       -- not want to remove them as subscribers from the stack
       push $ ResetChaosTokens (toSource s)
       pure $ s & (setAsideChaosTokensL .~ mempty)
-    AddToVictory (SkillTarget sid) -> do
+    AddToVictory _ (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
       pure $ s & committedCardsL . each %~ filter (/= card)
     Do (SkillTestEnds _ _ _) -> do

@@ -22,7 +22,7 @@ instance RunMessage MadnessInside where
     ResolveThisStory iid (is attrs -> True) -> do
       possessed <- select $ EnemyWithTrait Possessed <> NonEliteEnemy
       chooseTargetM iid possessed $ handleTarget iid attrs
-      addToVictory attrs
+      addToVictory iid attrs
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       doom <- field EnemyDoom eid

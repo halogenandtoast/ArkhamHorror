@@ -29,7 +29,7 @@ instance HasAbilities AccursedCapeShroudOfChaos where
 
 instance RunMessage AccursedCapeShroudOfChaos where
   runMessage msg a@(AccursedCapeShroudOfChaos attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addToVictory attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addToVictory iid attrs
       pure a
     _ -> AccursedCapeShroudOfChaos <$> liftRunMessage msg attrs

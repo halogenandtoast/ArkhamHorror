@@ -2004,29 +2004,29 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   Do (RemoveCard c) -> do
     card <- getCard c
     pure $ g & removedFromPlayL %~ (card :)
-  AddToVictory (SkillTarget sid) -> do
+  AddToVictory miid (SkillTarget sid) -> do
     card <- field SkillCard sid
-    pushAll $ windows [Window.AddedToVictory card]
+    pushAll $ windows [Window.AddedToVictory miid card]
     pure $ g & (entitiesL . skillsL %~ deleteMap sid) -- we might not want to remove here?
-  AddToVictory (EventTarget eid) -> do
+  AddToVictory miid (EventTarget eid) -> do
     card <- field EventCard eid
-    pushAll $ windows [Window.AddedToVictory card]
+    pushAll $ windows [Window.AddedToVictory miid card]
     pure $ g & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
-  AddToVictory (ActTarget aid) -> do
+  AddToVictory miid (ActTarget aid) -> do
     card <- field ActCard aid
-    pushAll $ windows [Window.AddedToVictory card]
+    pushAll $ windows [Window.AddedToVictory miid card]
     pure $ g & (entitiesL . actsL %~ deleteMap aid) -- we might not want to remove here?
-  AddToVictory (StoryTarget sid) -> do
+  AddToVictory miid (StoryTarget sid) -> do
     card <- field StoryCard sid
-    pushAll $ windows [Window.AddedToVictory card]
+    pushAll $ windows [Window.AddedToVictory miid card]
     pure $ g & (entitiesL . storiesL %~ deleteMap sid)
-  AddToVictory (TreacheryTarget tid) -> do
+  AddToVictory miid (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
-    pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory card]
+    pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
     pure g
-  AddToVictory (LocationTarget lid) -> do
+  AddToVictory miid (LocationTarget lid) -> do
     card <- field LocationCard lid
-    pushAll $ RemoveLocation lid : windows [Window.AddedToVictory card]
+    pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
     pure g
   PlayerWindow iid _ _ -> do
     player <- getPlayer iid

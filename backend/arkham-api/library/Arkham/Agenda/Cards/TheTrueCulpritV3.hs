@@ -27,19 +27,19 @@ instance HasAbilities TheTrueCulpritV3 where
   getAbilities (TheTrueCulpritV3 attrs) =
     guard (onSide A attrs)
       *> [ doesNotProvokeAttacksOfOpportunity
-            $ controlledAbility
-              (proxied (assetIs Cards.alienDevice) attrs)
-              1
-              (exists (EnemyAt YourLocation <> EnemyWithTrait Staff))
-              ( actionAbilityWithCost
-                  $ ExhaustAssetCost (assetIs Cards.alienDevice)
-                  <> AssetClueCost "Alien Device" (assetIs Cards.alienDevice) (Static 2)
-              )
+             $ controlledAbility
+               (proxied (assetIs Cards.alienDevice) attrs)
+               1
+               (exists (EnemyAt YourLocation <> EnemyWithTrait Staff))
+               ( actionAbilityWithCost
+                   $ ExhaustAssetCost (assetIs Cards.alienDevice)
+                   <> AssetClueCost "Alien Device" (assetIs Cards.alienDevice) (Static 2)
+               )
          , mkAbility attrs 2
-            $ Objective
-            $ ForcedAbility
-            $ EnemyDefeated #after Anyone ByAny
-            $ enemyIs Cards.hotelManager
+             $ Objective
+             $ ForcedAbility
+             $ EnemyDefeated #after Anyone ByAny
+             $ enemyIs Cards.hotelManager
          ]
 
 instance RunMessage TheTrueCulpritV3 where
@@ -54,8 +54,11 @@ instance RunMessage TheTrueCulpritV3 where
           $ chooseOrRunOne
             player
             [ targetLabel
-              staff
-              [if isElite then AddToVictory (toTarget staff) else EnemyDamage staff $ nonAttack (Just iid) originalSource 2]
+                staff
+                [ if isElite
+                    then AddToVictory (Just iid) (toTarget staff)
+                    else EnemyDamage staff $ nonAttack (Just iid) originalSource 2
+                ]
             | (staff, isElite) <- staffWithIsElite
             ]
         pure a

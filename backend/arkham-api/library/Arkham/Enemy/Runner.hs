@@ -1531,7 +1531,7 @@ instance RunMessage EnemyAttrs where
       let
         placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm && LoseVictory `notElem` mods
         victoryMsgs =
-          guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
+          guard (not a.placement.isInVictory) *> [DefeatedAddToVictory miid $ toTarget a | placeInVictory]
         defeatMsgs =
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
@@ -1550,20 +1550,20 @@ instance RunMessage EnemyAttrs where
       pure a
     After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
-    DefeatedAddToVictory (isTarget a -> True) -> do
+    DefeatedAddToVictory _miid (isTarget a -> True) -> do
       push $ Do msg
       pure a
-    Do (DefeatedAddToVictory (isTarget a -> True)) -> do
-      push $ AddToVictory $ toTarget a
+    Do (DefeatedAddToVictory miid (isTarget a -> True)) -> do
+      push $ AddToVictory miid $ toTarget a
       pure a
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
-    AddToVictory (isTarget a -> True) -> do
+    AddToVictory miid (isTarget a -> True) -> do
       selectEach (SwarmOf a.id) (push . RemoveEnemy)
       mloc <- getLocationOf a
       mods <- getModifiers a
       let card = toCard a
-      pushAll $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory card]
+      pushAll $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory miid card]
       unless (StayInVictory `elem` mods) $ removeEnemy a
       withLocationOf a $ for_ a.keys . placeKey
       pure

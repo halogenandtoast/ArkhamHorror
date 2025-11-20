@@ -49,7 +49,7 @@ instance HasAbilities IchtacaTheForgottenGuardian where
               , exists $ HealableAsset (a.ability 1) #horror (be a)
               ]
           )
-          $ triggered (AddedToVictory #after $ CardWithType EnemyType) (exhaust a)
+          $ triggered (AddedToVictory #after (Just You) $ CardWithType EnemyType) (exhaust a)
       ]
     _ -> []
 

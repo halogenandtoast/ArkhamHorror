@@ -155,8 +155,6 @@ instance RunMessage FollowingLeads where
               card <- fetchCard Enemies.hotelManager
               createEnemyAtLocationMatching_ card "Restaurant"
             (_, Just _timeWornLocket, _, _, Just _tomeOfRituals) -> do
-              agenda <- genCard Agendas.theTrueCulpritV7
-              push $ SetCurrentAgendaDeck 1 [agenda]
               card <- fetchCard Enemies.dimensionalShambler
               createEnemyAtLocationMatching_ card "Basement"
               guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
@@ -166,6 +164,8 @@ instance RunMessage FollowingLeads where
               discardUntilN (1 + x) lead attrs attrs Deck.EncounterDeck
                 $ basic
                 $ mapOneOf CardWithTrait [Guest, Cultist]
+              agenda <- genCard Agendas.theTrueCulpritV7
+              push $ SetCurrentAgendaDeck 1 [agenda]
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV8
               push $ SetCurrentAgendaDeck 1 [agenda]

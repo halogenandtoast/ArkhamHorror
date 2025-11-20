@@ -269,6 +269,7 @@ instance RunMessage EnemyAttrs where
                 ( EnemySpawn
                     $ (mkSpawnDetails eid $ SpawnAtLocation lid)
                       { spawnDetailsInvestigator = Just iid
+                      , spawnDetailsOverridden = True
                       }
                 )
           | (iid, lid) <- toList iidsWithLocations
@@ -1606,8 +1607,18 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     Will msg'@(EnemyEngageInvestigator eid _) | eid == enemyId -> do
+      mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]
+      let
+        isForcedEngagement = \case
+          ForceSpawn _ -> True
+          ForceSpawnLocation _ -> True
+          _ -> False
+
+      let forcedEngagement = any isForcedEngagement mods
       kws <- getModifiedKeywords a
-      unless (enemyExhausted || Keyword.Aloof `elem` kws) $ push msg'
+      if forcedEngagement
+        then push msg'
+        else unless (enemyExhausted || Keyword.Aloof `elem` kws) $ push msg'
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       eliminated <- not <$> matches iid UneliminatedInvestigator

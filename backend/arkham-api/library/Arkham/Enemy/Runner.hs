@@ -1266,7 +1266,7 @@ instance RunMessage EnemyAttrs where
                     sanityDamage
 
           pushAll
-            $ [attackMessage | allowAttack]
+            $ [attackMessage | allowAttack && not details.cancelled]
             <> [ Exhaust (toTarget a)
                | allowAttack
                , swarmExhaust
@@ -1285,6 +1285,7 @@ instance RunMessage EnemyAttrs where
                       [EnemyAttack $ details {attackTarget = SingleAttackTarget t, attackExhaustsEnemy = False}]
                   | t <- ts
                   ]
+              | allowAttack && not details.cancelled
               ]
             <> [ Exhaust (toTarget a)
                | allowAttack
@@ -1714,12 +1715,17 @@ instance RunMessage EnemyAttrs where
               , attackDamaged = mempty
               , attackDealDamage = True
               , attackDespiteExhausted = False
+              , attackCancelled = False
               }
       case mtchr of
         Nothing -> handleAttack
         Just AnyEnemy -> pure ()
         Just m -> whenM (enemyId <!=~> m) handleAttack
       pure a
+    ForTarget (isTarget a -> True) (CancelNext _ AttackMessage) -> do
+      let details = fromJustNote "missing attack details" enemyAttacking
+          details' = details {attackCancelled = True}
+      pure $ a & attackingL ?~ details'
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
       gatherConcealedCards a.id >>= \case

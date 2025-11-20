@@ -1,7 +1,8 @@
 module Arkham.Treachery.Cards.WhispersInYourHeadDread (whispersInYourHeadDread) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.History
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,7 +16,9 @@ whispersInYourHeadDread = treachery WhispersInYourHeadDread Cards.whispersInYour
 
 instance HasModifiersFor WhispersInYourHeadDread where
   getModifiersFor (WhispersInYourHeadDread a) = case a.placement of
-    HiddenInHand iid -> modified_ a iid [CannotMoveMoreThanOnceEachTurn]
+    HiddenInHand iid -> do
+      n <- getHistoryField TurnHistory iid HistoryMoved
+      modifiedWhen_ a (n > 0) iid [CannotMove]
     _ -> pure ()
 
 instance HasAbilities WhispersInYourHeadDread where

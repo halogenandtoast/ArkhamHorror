@@ -17,7 +17,7 @@ hallowedMirror = asset HallowedMirror Cards.hallowedMirror
 
 instance HasAbilities HallowedMirror where
   getAbilities (HallowedMirror a) =
-    [controlled_ a 2 $ forced $ Matcher.AssetEntersPlay #after (be a)]
+    [controlled_ a 1 $ forced $ Matcher.AssetEntersPlay #after (be a)]
 
 instance RunMessage HallowedMirror where
   runMessage msg a@(HallowedMirror attrs) = runQueueT $ case msg of

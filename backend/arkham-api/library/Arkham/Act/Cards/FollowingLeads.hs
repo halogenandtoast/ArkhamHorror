@@ -105,55 +105,55 @@ instance RunMessage FollowingLeads where
           push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
           case (mAlienDevice, mTimeWornLocket, mSinisterSolution, mManagersKey, mTomeOfRituals) of
             (Just alienDevice, Just timeWornLocket, _, _, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV1
-              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues timeWornLocket
               removeClues attrs timeWornLocket clues
               placeClues attrs alienDevice clues
               card <- fetchCard Enemies.vengefulSpecter
               createEnemyAtLocationMatching_ card "Room 245"
-            (Just alienDevice, _, Just sinisterSolution, _, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV2
+              agenda <- genCard Agendas.theTrueCulpritV1
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (Just alienDevice, _, Just sinisterSolution, _, _) -> do
               clues <- field AssetClues alienDevice
               removeClues attrs alienDevice clues
               placeClues attrs sinisterSolution clues
               card <- fetchCard Enemies.otherworldlyMeddler
               doom <- perPlayer 1
               createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs doom)
-            (Just alienDevice, _, _, Just managersKey, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV3
+              agenda <- genCard Agendas.theTrueCulpritV2
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (Just alienDevice, _, _, Just managersKey, _) -> do
               clues <- field AssetClues managersKey
               removeClues attrs managersKey clues
               placeClues attrs alienDevice clues
               card <- fetchCard Enemies.hotelManager
               createEnemyAtLocationMatching_ card "Restaurant"
-            (Just alienDevice, _, _, _, Just tomeOfRituals) -> do
-              agenda <- genCard Agendas.theTrueCulpritV4
+              agenda <- genCard Agendas.theTrueCulpritV3
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (Just alienDevice, _, _, _, Just tomeOfRituals) -> do
               clues <- field AssetClues alienDevice
               removeClues attrs alienDevice clues
               placeClues attrs tomeOfRituals clues
               card <- fetchCard Enemies.otherworldlyMeddler
               doom <- perPlayer 2
               createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs $ 2 + doom)
-            (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV5
+              agenda <- genCard Agendas.theTrueCulpritV4
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
               clues <- field AssetClues timeWornLocket
               removeClues attrs timeWornLocket clues
               placeClues attrs sinisterSolution clues
               card <- fetchCard Enemies.vengefulSpecter
               createEnemyAtLocationMatching_ card "Room 245"
-            (_, Just timeWornLocket, _, Just managersKey, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV6
+              agenda <- genCard Agendas.theTrueCulpritV5
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (_, Just timeWornLocket, _, Just managersKey, _) -> do
               clues <- field AssetClues managersKey
               removeClues attrs managersKey clues
               placeClues attrs timeWornLocket clues
               card <- fetchCard Enemies.hotelManager
               createEnemyAtLocationMatching_ card "Restaurant"
+              agenda <- genCard Agendas.theTrueCulpritV6
+              push $ SetCurrentAgendaDeck 1 [agenda]
             (_, Just _timeWornLocket, _, _, Just _tomeOfRituals) -> do
               card <- fetchCard Enemies.dimensionalShambler
               createEnemyAtLocationMatching_ card "Basement"
@@ -167,8 +167,6 @@ instance RunMessage FollowingLeads where
               agenda <- genCard Agendas.theTrueCulpritV7
               push $ SetCurrentAgendaDeck 1 [agenda]
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
-              agenda <- genCard Agendas.theTrueCulpritV8
-              push $ SetCurrentAgendaDeck 1 [agenda]
               staff <- select $ VictoryDisplayCardMatch $ basic $ withTrait Staff
               shuffleCardsIntoDeck Deck.EncounterDeck staff
               shuffleEncounterDiscardBackIn
@@ -180,9 +178,9 @@ instance RunMessage FollowingLeads where
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- fetchCard Treacheries.harvestedBrain
               push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
-            (_, _, Just sinisterSolution, _, Just tomeOfRituals) -> do
-              agenda <- genCard Agendas.theTrueCulpritV9
+              agenda <- genCard Agendas.theTrueCulpritV8
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (_, _, Just sinisterSolution, _, Just tomeOfRituals) -> do
               clues <- field AssetClues sinisterSolution
               removeClues attrs sinisterSolution clues
               placeClues attrs tomeOfRituals clues
@@ -190,14 +188,16 @@ instance RunMessage FollowingLeads where
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- fetchCard Treacheries.harvestedBrain
               push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
-            (_, _, _, Just _managersKey, Just _tomeOfRituals) -> do
-              agenda <- genCard Agendas.theTrueCulpritV10
+              agenda <- genCard Agendas.theTrueCulpritV9
               push $ SetCurrentAgendaDeck 1 [agenda]
+            (_, _, _, Just _managersKey, Just _tomeOfRituals) -> do
               card <- fetchCard Enemies.dimensionalShambler
               createEnemyAtLocationMatching_ card "Basement"
               guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
               shuffleCardsIntoDeck Deck.EncounterDeck guests
               shuffleEncounterDiscardBackIn
+              agenda <- genCard Agendas.theTrueCulpritV10
+              push $ SetCurrentAgendaDeck 1 [agenda]
               placeDoom attrs (AgendaMatcherTarget AnyAgenda) =<< perPlayer 2
             _ -> error "invalid combination"
 

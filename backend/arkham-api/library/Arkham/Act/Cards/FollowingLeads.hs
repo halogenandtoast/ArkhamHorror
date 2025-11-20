@@ -10,14 +10,16 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (createWithDoom)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (CrimeScene, Cultist, Guest, Innocent, Lead, Staff))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -40,50 +42,68 @@ instance RunMessage FollowingLeads where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       advanceVia #other attrs (attrs.ability 1)
       pure a
-    AdvanceAct (isSide B attrs -> True) _ _ -> do
-      storyWithChooseOneM theTruth1 do
-        labeled "Tell Sergeant Monroe the truth." $ doStep 2 msg
-        labeled "Lie about your involvement." $ doStep 3 msg
+    AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n $ scope "interlude" do
+      storyWithChooseOneM' (h "title" >> p "theTruth1") do
+        labeled' "truth" $ doStep 2 msg
+        labeled' "lie" $ doStep 3 msg
       pure a
-    DoStep n msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+    DoStep n msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
       lead <- getLead
       noInnocents <- selectNone $ VictoryDisplayCardMatch $ basic $ CardWithTrait Innocent
       mSergeantMonroe <- selectOne $ assetIs Assets.sergeantMonroe
 
       case n of
         2 -> do
-          story theTruth2
           didn'tCoverAnythingUp <- noneM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
-          evidence <- selectCount $ withTrait Lead <> AssetWithClues (atLeast 2)
-          let believableTruth = didn'tCoverAnythingUp && evidence == 2 && noInnocents
+          hasEvidence <- selectNone $ withTrait Lead <> AssetWithClues (LessThan $ PerPlayer 2)
+          let believableTruth = didn'tCoverAnythingUp && hasEvidence && noInnocents
+          flavor do
+            h "title"
+            p "theTruth2"
+            ul do
+              li.validate didn'tCoverAnythingUp "nothingToHide"
+              li.validate hasEvidence "evidence"
+              li.validate noInnocents "innocent"
           doStep (if believableTruth then 5 else 4) msg'
         3 -> do
-          story theTruth3
           coveredUpYourInvolvement <- allM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
           let believableLie = coveredUpYourInvolvement && noInnocents
+          flavor do
+            h "title"
+            p "theTruth3"
+            ul do
+              li.validate coveredUpYourInvolvement "coveredUp"
+              li.validate noInnocents "innocent"
           doStep (if believableLie then 6 else 4) msg'
         4 -> do
-          story theTruth4
+          flavor $ h "title" >> p "theTruth4"
           remember ThePoliceDon'tBelieveYou
           for_ mSergeantMonroe removeFromGame
           push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)
           shuffleEncounterDiscardBackIn
           doStep 7 msg'
         5 -> do
-          story theTruth5
+          flavor $ h "title" >> p "theTruth5"
           remember ThePoliceAreOnYourSide
 
           iids <- getInvestigators
           case mSergeantMonroe of
-            Just sergeantMonroe -> chooseOrRunOneM lead $ targets iids (`takeControlOfAsset` sergeantMonroe)
+            Just sergeantMonroe ->
+              leadChooseOneM do
+                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.sergeantMonroe
+                portraits iids (`takeControlOfAsset` sergeantMonroe)
             Nothing -> do
               sergeantMonroe <- fetchCard Assets.sergeantMonroe
-              chooseOrRunOneM lead $ targets iids (`takeControlOfSetAsideAsset` sergeantMonroe)
+              leadChooseOneM do
+                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.sergeantMonroe
+                portraits iids (`takeControlOfSetAsideAsset` sergeantMonroe)
           push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)
           shuffleEncounterDiscardBackIn
           doStep 7 msg'
         6 -> do
-          story theTruth6
+          flavor $ h "title" >> p "theTruth6"
           remember ThePoliceAreOnYourSide
 
           iids <- getInvestigators
@@ -103,7 +123,7 @@ instance RunMessage FollowingLeads where
           mSinisterSolution <- selectOne $ assetIs Assets.sinisterSolution
           mTimeWornLocket <- selectOne $ assetIs Assets.timeWornLocket
           push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
-          case (mAlienDevice, mTimeWornLocket, mSinisterSolution, mManagersKey, mTomeOfRituals) of
+          version <- case (mAlienDevice, mTimeWornLocket, mSinisterSolution, mManagersKey, mTomeOfRituals) of
             (Just alienDevice, Just timeWornLocket, _, _, _) -> do
               clues <- field AssetClues timeWornLocket
               removeClues attrs timeWornLocket clues
@@ -112,6 +132,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatching_ card "Room 245"
               agenda <- genCard Agendas.theTrueCulpritV1
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "alienDeviceAndTimeWornLocket"
             (Just alienDevice, _, Just sinisterSolution, _, _) -> do
               clues <- field AssetClues alienDevice
               removeClues attrs alienDevice clues
@@ -121,6 +142,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs doom)
               agenda <- genCard Agendas.theTrueCulpritV2
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "alienDeviceAndSinisterSolution"
             (Just alienDevice, _, _, Just managersKey, _) -> do
               clues <- field AssetClues managersKey
               removeClues attrs managersKey clues
@@ -129,6 +151,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatching_ card "Restaurant"
               agenda <- genCard Agendas.theTrueCulpritV3
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "alienDeviceAndManagersKey"
             (Just alienDevice, _, _, _, Just tomeOfRituals) -> do
               clues <- field AssetClues alienDevice
               removeClues attrs alienDevice clues
@@ -138,6 +161,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs $ 2 + doom)
               agenda <- genCard Agendas.theTrueCulpritV4
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "alienDeviceAndTomeOfRituals"
             (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
               clues <- field AssetClues timeWornLocket
               removeClues attrs timeWornLocket clues
@@ -146,6 +170,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatching_ card "Room 245"
               agenda <- genCard Agendas.theTrueCulpritV5
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "timeWornLocketAndSinisterSolution"
             (_, Just timeWornLocket, _, Just managersKey, _) -> do
               clues <- field AssetClues managersKey
               removeClues attrs managersKey clues
@@ -154,6 +179,7 @@ instance RunMessage FollowingLeads where
               createEnemyAtLocationMatching_ card "Restaurant"
               agenda <- genCard Agendas.theTrueCulpritV6
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "timeWornLocketAndManagersKey"
             (_, Just _timeWornLocket, _, _, Just _tomeOfRituals) -> do
               card <- fetchCard Enemies.dimensionalShambler
               createEnemyAtLocationMatching_ card "Basement"
@@ -166,6 +192,7 @@ instance RunMessage FollowingLeads where
                 $ mapOneOf CardWithTrait [Guest, Cultist]
               agenda <- genCard Agendas.theTrueCulpritV7
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "timeWornLocketAndTomeOfRituals"
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
               staff <- select $ VictoryDisplayCardMatch $ basic $ withTrait Staff
               shuffleCardsIntoDeck Deck.EncounterDeck staff
@@ -180,6 +207,7 @@ instance RunMessage FollowingLeads where
               push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
               agenda <- genCard Agendas.theTrueCulpritV8
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "sinisterSolutionAndManagersKey"
             (_, _, Just sinisterSolution, _, Just tomeOfRituals) -> do
               clues <- field AssetClues sinisterSolution
               removeClues attrs sinisterSolution clues
@@ -190,6 +218,7 @@ instance RunMessage FollowingLeads where
               push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
               agenda <- genCard Agendas.theTrueCulpritV9
               push $ SetCurrentAgendaDeck 1 [agenda]
+              pure "sinisterSolutionAndTomeOfRituals"
             (_, _, _, Just _managersKey, Just _tomeOfRituals) -> do
               card <- fetchCard Enemies.dimensionalShambler
               createEnemyAtLocationMatching_ card "Basement"
@@ -199,9 +228,14 @@ instance RunMessage FollowingLeads where
               agenda <- genCard Agendas.theTrueCulpritV10
               push $ SetCurrentAgendaDeck 1 [agenda]
               placeDoom attrs (AgendaMatcherTarget AnyAgenda) =<< perPlayer 2
+              pure "managersKeyAndTomeOfRituals"
             _ -> error "invalid combination"
 
-          story theTruth7
+          flavor do
+            h "title"
+            p "theTruth7"
+            p version
+            p "continue"
           toDiscard GameSource attrs
         _ -> error "unknown step"
 

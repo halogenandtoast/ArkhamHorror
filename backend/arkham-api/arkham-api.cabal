@@ -3997,7 +3997,6 @@ library
       Arkham.Scenarios.InTooDeep.Helpers
       Arkham.Scenarios.IntoTheMaelstrom.Helpers
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
-      Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
       Arkham.Scenarios.SanguineShadows.Helpers

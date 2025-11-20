@@ -7,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query
@@ -24,7 +25,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -75,14 +76,36 @@ chaosBag difficulty =
 {- FOURMOLU_ENABLE -}
 
 instance RunMessage MurderAtTheExcelsiorHotel where
-  runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
+  runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
       n <- getPlayerCount
-      story intro1
-      story $ if n == 1 then intro2 else intro3
-      story intro4
+      flavor do
+        h "title"
+        p "intro1"
+        p.basic.validate (n == 1) "solo"
+        p.basic.validate (n > 1) "multiplayer"
+      flavor do
+        h "title"
+        p $ if n == 1 then "intro2" else "intro3"
+      flavor do
+        h "title"
+        p "intro4"
       pure s
     Setup -> runScenarioSetup MurderAtTheExcelsiorHotel attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setSetsOutOfPlay"
+        li "constructActsAndAgendas"
+        li "trueCulprit"
+        li "bloodstainedDagger"
+        li "leadsDeck"
+        li.nested "placeLocations" do
+          li "leadBeginPlay"
+          li "othersBeginPlay"
+          li "setLocationsAside"
+        li "setOutOfPlay"
+        unscoped $ li "shuffleRemainder"
+        li "begin"
       lead <- getLead
       otherPlayers <- deleteFirst lead <$> allInvestigators
       gather Set.MurderAtTheExcelsiorHotel
@@ -94,7 +117,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
 
       moveTo_ attrs lead room225
       beginWithStoryAsset lead Assets.bloodstainedDagger
-      for_ otherPlayers \p -> moveTo_ attrs p foyer
+      for_ otherPlayers \other -> moveTo_ attrs other foyer
 
       setAside
         [ Assets.sergeantMonroe
@@ -141,25 +164,27 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           when (n > 0) $ assignHorror iid Tablet $ if isEasyStandard attrs then 1 else n
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
           anyResigned <- selectAny ResignedInvestigator
           if anyResigned
             then do
-              story noResolutionResigned
+              resolution "noResolutionResigned"
               record TheInvestigatorsFledTheSceneOfTheCrime
               push R3
             else do
-              story noResolution
+              resolution "noResolution"
               record TheExcelsiorClaimsAnotherVictim
               push R2
         Resolution 1 -> do
           investigators <- allInvestigators
           lead <- getLead
 
-          story resolution1
           record TheExcelsiorIsQuietForNow
+
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.whatHaveYouDone
           addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.bloodstainedDagger
 
@@ -170,27 +195,24 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           policeInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Police
           when (not policeOnYourSide && policeInVictory) do
             searchCollectionForRandom lead attrs (hasAnyTrait [Detective, Madness] <> BasicWeaknessCard)
-          allGainXp attrs
           endOfScenario
         Resolution 2 -> do
           if scenarioTimesPlayed attrs == 0
             then do
-              story resolution2
-              leadChooseOneM do
-                labeled "Play again" $ push $ ScenarioResolutionStep 10 (Resolution 2)
-                labeled "Leave things alone" $ push $ ScenarioResolutionStep 2 (Resolution 2)
+              resolutionWithChooseOne "resolution2" do
+                labeled' "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 2)
+                labeled' "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 2)
             else do
-              story resolution2
+              resolution "resolution2"
               push $ ScenarioResolutionStep 2 (Resolution 2)
         Resolution 3 -> do
           if scenarioTimesPlayed attrs == 0
             then do
-              story resolution3
-              leadChooseOneM do
-                labeled "Play again" $ push $ ScenarioResolutionStep 10 (Resolution 3)
-                labeled "Leave things alone" $ push $ ScenarioResolutionStep 2 (Resolution 3)
+              resolutionWithChooseOne "resolution3" do
+                labeled' "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 3)
+                labeled' "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 3)
             else do
-              story resolution3
+              resolution "resolution3"
               push $ ScenarioResolutionStep 2 (Resolution 3)
         _ -> error "Invalid Resolution"
       pure s

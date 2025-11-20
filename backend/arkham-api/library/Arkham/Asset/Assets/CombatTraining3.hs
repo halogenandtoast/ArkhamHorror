@@ -3,9 +3,10 @@ module Arkham.Asset.Assets.CombatTraining3 (combatTraining3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype CombatTraining3 = CombatTraining3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,15 +23,14 @@ instance HasAbilities CombatTraining3 where
 
 instance HasModifiersFor CombatTraining3 where
   getModifiersFor (CombatTraining3 a) = do
-    self <-
-      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-    controller <- controllerGets a [SkillModifier #combat 1, SkillModifier #agility 1]
-    pure $ self <> controller
+    modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controllerGets a [SkillModifier #combat 1, SkillModifier #agility 1]
 
 instance RunMessage CombatTraining3 where
   runMessage msg a@(CombatTraining3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 1, SkillModifier #agility 1]
+        chooseSkillM iid [#combat, #agility] \kind ->
+          skillTestModifier sid (attrs.ability 1) iid (SkillModifier kind 1)
       pure a
     _ -> CombatTraining3 <$> liftRunMessage msg attrs

@@ -23,17 +23,14 @@ instance HasAbilities ScientificTheory3 where
 
 instance HasModifiersFor ScientificTheory3 where
   getModifiersFor (ScientificTheory3 a) = do
-    self <-
-      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-    controller <- controllerGets a [SkillModifier #intellect 1, SkillModifier #combat 1]
-    pure $ self <> controller
+    modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controllerGets a [SkillModifier #intellect 1, SkillModifier #combat 1]
 
 instance RunMessage ScientificTheory3 where
   runMessage msg a@(ScientificTheory3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        chooseOneM iid do
-          skillLabeled #intellect $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
-          skillLabeled #combat $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
+        chooseSkillM iid [#intellect, #combat] \kind ->
+          skillTestModifier sid (attrs.ability 1) iid (SkillModifier kind 1)
       pure a
     _ -> ScientificTheory3 <$> liftRunMessage msg attrs

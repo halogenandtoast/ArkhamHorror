@@ -383,10 +383,22 @@ assetHorrorLabeled aid action = unterminated do
   msgs <- lift $ capture action
   tell [AssetHorrorLabel aid msgs]
 
+chooseSkillM
+  :: ReverseQueue m
+  => InvestigatorId -> [SkillType] -> (SkillType -> QueueT Message m ()) -> m ()
+chooseSkillM iid skills action =
+  chooseOneM iid $ for_ skills \skillType -> skillLabeled skillType (action skillType)
+
 skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m ()
 skillLabeled skillType action = unterminated do
   msgs <- lift $ capture action
   tell [SkillLabel skillType msgs]
+
+skillsLabeled :: ReverseQueue m => [SkillType] -> (SkillType -> QueueT Message m ()) -> ChooseT m ()
+skillsLabeled skills action = unterminated do
+  for_ skills \skillType -> do
+    msgs <- lift $ capture (action skillType)
+    tell [SkillLabel skillType msgs]
 
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do

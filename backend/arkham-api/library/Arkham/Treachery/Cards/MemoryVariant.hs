@@ -23,7 +23,7 @@ instance HasModifiersFor MemoryVariant where
 
 instance HasAbilities MemoryVariant where
   getAbilities (MemoryVariant a) =
-    [ mkAbility a 1 $ forced $ PlayEvent #after You AnyEvent
+    [ mkAbility a 1 $ forced $ PlayEventDiscarding #after You AnyEvent
     , skillTestAbility $ mkAbility a 2 actionAbility
     ]
 

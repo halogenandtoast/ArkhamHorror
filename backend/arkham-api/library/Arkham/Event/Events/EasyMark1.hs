@@ -52,9 +52,10 @@ instance HasAbilities EasyMark1Effect where
 instance RunMessage EasyMark1Effect where
   runMessage msg e@(EasyMark1Effect attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mcard <- selectOne $ inHandOf ForPlay iid <> basic (cardIs Cards.easyMark1)
-      for_ mcard \card -> do
-        costModifier attrs card IgnoreAllCosts
-        playCardPayingCost iid card
+      cards <- select $ inHandOf ForPlay iid <> basic (cardIs Cards.easyMark1)
+      focusCards cards do
+        chooseOrRunOneM iid $ targets cards \card -> do
+          costModifier attrs card IgnoreAllCosts
+          playCardPayingCost iid card
       pure e
     _ -> EasyMark1Effect <$> liftRunMessage msg attrs

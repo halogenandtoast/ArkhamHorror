@@ -17,7 +17,7 @@ spec = do
       self `moveTo` location
       enemy `attacks` self
 
-      let attackMessage = PerformEnemyAttack (toId enemy)
+      let attackMessage = InvestigatorAssignDamage self.id (EnemyAttackSource $ toId enemy) DamageAny 1 0
 
       withRewind $ assertRunsMessage attackMessage skip
       assertDoesNotRunMessage attackMessage $ chooseTarget dodge

@@ -29,7 +29,7 @@ instance RunMessage ReturnToUptown where
       act <- selectJust AnyAct
       removeBreaches attrs breaches
       placeBreaches act breaches
-      beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed breaches)
+      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed breaches)
       pure l
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       assignDamage iid (attrs.ability 1) n

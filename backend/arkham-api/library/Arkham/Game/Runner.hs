@@ -1928,21 +1928,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           & (entitiesL . eventsL %~ deleteMap eid)
           & (removedFromPlayL %~ (card :))
   RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
-  PlaceEnemyOutOfPlay _oZone eid -> do
-    let
-      isDiscardEnemy = \case
-        Discard _ _ (EnemyTarget eid') -> eid == eid'
-        RemovedFromPlay (EnemySource eid') -> eid == eid'
-        _ -> False
-    withQueue_ $ filter (not . isDiscardEnemy)
-    pure g
-  EnemySpawnFromOutOfPlay _oZone miid lid eid -> do
-    pushAll
-      $ resolve
-      $ EnemySpawn
-      $ (mkSpawnDetails eid $ Arkham.Spawn.SpawnAtLocation lid)
-        { spawnDetailsInvestigator = miid
-        }
+  EnemySpawnFromOutOfPlay {} -> do
     pure $ g & (activeCardL .~ Nothing) & (focusedCardsL .~ mempty)
   Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
@@ -1968,33 +1954,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure $ g & entitiesL . actsL %~ Map.filterWithKey (\k _ -> k /= aid)
   Discard _ _ (AgendaTarget aid) ->
     pure $ g & entitiesL . agendasL %~ Map.filterWithKey (\k _ -> k /= aid)
-  Discarded (EnemyTarget eid) source _ -> do
-    enemy <- getEnemy eid
-    case attr enemyPlacement enemy of
-      AsSwarm {} -> pure () -- will be handled when leaves play
-      _ -> case toCard (toAttrs enemy) of
-        PlayerCard pc -> case enemyBearer (toAttrs enemy) of
-          Nothing -> push (RemoveFromGame $ EnemyTarget eid)
-          -- The Man in the Pallid Mask has not bearer in Curtain Call
-          Just iid' -> push (AddToDiscard iid' pc)
-        EncounterCard _ -> pure ()
-        VengeanceCard _ -> error "Vengeance card"
-
-    miid <- getSourceController source
-    mLocation <- field EnemyLocation eid
-
-    let
-      handleKey k =
-        case miid of
-          Nothing -> case mLocation of
-            Just location -> PlaceKey (toTarget location) k
-            Nothing -> error "Could not place key"
-          Just iid -> PlaceKey (toTarget iid) k
-
-    ks <- fieldMap EnemyKeys toList eid
-    pushAll $ map handleKey ks
-
-    pure g
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   RemoveCard c -> do
     pushAll [ObtainCard c, Do (RemoveCard c)]

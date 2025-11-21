@@ -216,10 +216,11 @@ instance HasAbilities EffectAttrs
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
 isEndOfWindow EffectAttrs {effectWindow, effectDisableWindow} effectWindow' =
   effectWindow' `elem` toEffectWindowList (effectDisableWindow <|> effectWindow)
- where
-  toEffectWindowList Nothing = []
-  toEffectWindowList (Just (FirstEffectWindow xs)) = xs
-  toEffectWindowList (Just x) = [x]
+
+toEffectWindowList :: Maybe EffectWindow -> [EffectWindow]
+toEffectWindowList Nothing = []
+toEffectWindowList (Just (FirstEffectWindow xs)) = xs
+toEffectWindowList (Just x) = [x]
 
 instance Entity EffectAttrs where
   type EntityId EffectAttrs = EffectId

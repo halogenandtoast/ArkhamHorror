@@ -1305,7 +1305,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           none
             (`elem` mods)
             (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
-    when canMove $ pushAll . resolve . Move =<< move a iid lid
+    if canMove
+      then pushAll . resolve . Move =<< move a iid lid
+      else push $ MoveIgnored iid
     push afterWindowMsg
     pure a
   Move movement | isTarget a (moveTarget movement) -> do

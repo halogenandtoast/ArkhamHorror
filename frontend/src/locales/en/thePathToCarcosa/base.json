@@ -3,6 +3,10 @@
     "1": "Lunacy’s Reward",
     "2": "Lost Soul"
   },
+  "label": {
+    "doubt": "Doubt",
+    "conviction": "Conviction"
+  },
   "key": {
     "theStrangerIsOnToYou": "The Stranger is on to you",
     "chasingTheStranger": "Chasing the Stranger",

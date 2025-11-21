@@ -121,8 +121,7 @@ isHardExpert ScenarioAttrs {scenarioDifficulty} =
   scenarioDifficulty `elem` [Hard, Expert]
 
 getScenarioDeck :: (HasGame m, Tracing m) => ScenarioDeckKey -> m [Card]
-getScenarioDeck k =
-  scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
+getScenarioDeck k = scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
 getScenarioMeta :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => m a
 getScenarioMeta = scenarioFieldMap ScenarioMeta toResult

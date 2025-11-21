@@ -16,7 +16,6 @@ unsolvedCase =
     { cdCardTraits = setFromList [Insight, Mystery]
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 lodgeDebts :: CardDef

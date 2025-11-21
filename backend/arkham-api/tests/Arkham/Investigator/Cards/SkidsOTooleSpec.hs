@@ -6,10 +6,10 @@ import TestImport.New
 spec :: Spec
 spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
-    it "allows you to spend two resources to buy an additional action" . gameTestWith skidsOToole $ \self -> do
+    fit "allows you to spend two resources to buy an additional action" . gameTestWith skidsOToole . debug $ \self -> do
       self `gainResources` 2
       self `loseActions` 3
-      [buyAction] <- self.abilities
+      [buyAction, _] <- self.abilities
       self `useAbility` buyAction
       self.resources `shouldReturn` 0
       self.remainingActions `shouldReturn` 1

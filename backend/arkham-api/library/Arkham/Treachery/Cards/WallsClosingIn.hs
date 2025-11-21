@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.WallsClosingIn (wallsClosingIn) where
 
 import Arkham.Choose
+import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Choose
@@ -24,9 +25,10 @@ instance RunMessage WallsClosingIn where
         $ InvestigatorLocationMaybeFieldCalculation iid LocationShroud
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      monsters <- getScenarioDeck MonstersDeck
       chooseOneM iid do
         withI18n $ countVar n $ labeled' "takeHorror" $ assignHorror iid attrs n
-        scenarioI18n $ labeled' "wallsClosingIn.chooseEnemy" do
+        scenarioI18n $ labeledValidate' (notNull monsters) "wallsClosingIn.chooseEnemy" do
           push $ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
       pure t
     ChoseCards _ chosen | isTarget attrs chosen.target -> do

@@ -3416,7 +3416,7 @@ sellYourSoul = (weakness "53015" "Sell Your Soul") {cdCardTraits = singleton Pac
 perilsOfYoth :: CardDef
 perilsOfYoth =
   peril
-    (treachery "53060" "Perils of Yoth" ReturnToTheDepthsOfYoth 2)
+    (treachery "53060" "Perils of Yoth" ReturnToTheDepthsOfYoth 1)
       { cdCardTraits = setFromList [Hazard]
       }
 

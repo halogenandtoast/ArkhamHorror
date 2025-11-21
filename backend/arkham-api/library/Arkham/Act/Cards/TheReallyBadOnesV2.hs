@@ -2,6 +2,8 @@ module Arkham.Act.Cards.TheReallyBadOnesV2 (theReallyBadOnesV2) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -24,6 +26,8 @@ instance RunMessage TheReallyBadOnesV2 where
   runMessage msg a@(TheReallyBadOnesV2 attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       danielsCell <- getJustLocationByName ("Patient Confinement" <:> "Daniel's Cell")
+      daniel <- fetchCard Assets.danielChesterfield
+      replaceCard daniel.id $ flipCard daniel
       createEnemyAt_ Enemies.danielChesterfield danielsCell
       advanceActDeck attrs
       pure a

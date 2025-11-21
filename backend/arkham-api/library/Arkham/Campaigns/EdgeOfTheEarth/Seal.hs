@@ -31,16 +31,22 @@ data SealKind = SealA | SealB | SealC | SealD | SealE
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+sealName :: Seal -> Text
+sealName = sealKindName . sealKind
+
+sealKindName :: SealKind -> Text
+sealKindName = \case
+  SealA -> "{sealA}"
+  SealB -> "{sealB}"
+  SealC -> "{sealC}"
+  SealD -> "{sealD}"
+  SealE -> "{sealE}"
+
 instance ToGameLoggerFormat Seal where
   format c = format c.kind
 
 instance ToGameLoggerFormat SealKind where
-  format = \case
-    SealA -> "{sealA}"
-    SealB -> "{sealB}"
-    SealC -> "{sealC}"
-    SealD -> "{sealD}"
-    SealE -> "{sealE}"
+  format = sealKindName
 
 instance Eq Seal where
   (==) = (==) `on` sealKind

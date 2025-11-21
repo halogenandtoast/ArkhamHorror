@@ -1629,7 +1629,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       , PreScenarioSetup
       , HandleKilledOrInsaneInvestigators
       ]
-    when opts.standalone $ push StandaloneSetup 
+    when opts.standalone $ push StandaloneSetup
     when opts.performTarotReading $ push PerformTarotReading
     pushAll [CheckDestiny, SetupInvestigators, InvestigatorsMulligan]
     when opts.delayChoosingLead do

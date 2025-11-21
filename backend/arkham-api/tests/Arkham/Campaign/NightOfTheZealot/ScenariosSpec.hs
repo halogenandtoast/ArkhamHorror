@@ -1,4 +1,4 @@
-module Arkham.Campaign.NightOfTheZealotSpec ( spec) where
+module Arkham.Campaign.NightOfTheZealot.ScenariosSpec (spec) where
 
 import Arkham.Scenario.SpecHelpers
 import TestImport

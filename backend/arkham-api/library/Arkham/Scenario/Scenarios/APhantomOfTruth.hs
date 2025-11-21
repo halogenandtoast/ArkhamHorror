@@ -174,8 +174,8 @@ instance RunMessage APhantomOfTruth where
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       chooseOneM lead $ popScope do
-        labeled' "key.conviction" markConviction
-        labeled' "key.doubt" markDoubt
+        labeled' "conviction" markConviction
+        labeled' "doubt" markDoubt
       addCampaignCardToDeck lead ShuffleIn theManInThePallidMask
       pure s
     PreScenarioSetup -> scope "intro" do

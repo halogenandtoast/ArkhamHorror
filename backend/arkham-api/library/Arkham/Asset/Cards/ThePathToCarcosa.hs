@@ -148,6 +148,7 @@ constanceDumaine =
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
     , cdCost = Nothing
+    , cdOtherSide = Just "03076b"
     }
 
 jordanPerry :: CardDef
@@ -158,6 +159,7 @@ jordanPerry =
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
     , cdCost = Nothing
+    , cdOtherSide = Just "03077b"
     }
 
 ishimaruHaruko :: CardDef
@@ -168,6 +170,7 @@ ishimaruHaruko =
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
     , cdCost = Nothing
+    , cdOtherSide = Just "03078b"
     }
 
 sebastienMoreau :: CardDef
@@ -177,6 +180,7 @@ sebastienMoreau =
     , cdUnique = True
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
+    , cdOtherSide = Just "03079b"
     , cdCost = Nothing
     }
 
@@ -187,6 +191,7 @@ ashleighClarke =
     , cdUnique = True
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
+    , cdOtherSide = Just "03080b"
     , cdCost = Nothing
     }
 

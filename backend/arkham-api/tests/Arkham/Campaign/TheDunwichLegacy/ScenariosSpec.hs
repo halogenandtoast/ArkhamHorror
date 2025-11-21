@@ -1,4 +1,4 @@
-module Arkham.Campaign.TheDunwichLegacySpec (spec) where
+module Arkham.Campaign.TheDunwichLegacy.ScenariosSpec (spec) where
 
 import Arkham.Scenario.SpecHelpers
 import TestImport

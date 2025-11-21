@@ -120,13 +120,8 @@ instance RunMessage BloodOnTheAltar where
       setAside
         [Enemies.silasBishop, Assets.powderOfIbnGhazi, Locations.theHiddenChamber, Assets.keyToTheChamber]
 
-      encounterCardsToPutUnderneath <- map toCard <$> sampleEncounterDeck 3
-
       theHiddenChamber <- fromSetAside Locations.theHiddenChamber
       keyToTheChamber <- fromSetAside Assets.keyToTheChamber
-
-      cardsToPutUnderneath <-
-        shuffleM $ keyToTheChamber : theHiddenChamber : encounterCardsToPutUnderneath
 
       delayedOnTheirWayToDunwich <-
         getHasRecordOrStandalone
@@ -136,8 +131,9 @@ instance RunMessage BloodOnTheAltar where
       startAt =<< place Locations.villageCommons
 
       locations <-
-        drop 1
-          <$> shuffleM
+        placeAllCapture
+          . drop 1
+          =<< shuffleM
             [ bishopsBrook
             , burnedRuins
             , osbornsGeneralStore
@@ -145,8 +141,12 @@ instance RunMessage BloodOnTheAltar where
             , houseInTheReeds
             , schoolhouse
             ]
-      for_ (zip locations cardsToPutUnderneath) \(location, card) -> do
-        l <- place location
+
+      encounterCardsToPutUnderneath <- map toCard <$> sampleEncounterDeck 3
+      cardsToPutUnderneath <-
+        shuffleM $ keyToTheChamber : theHiddenChamber : encounterCardsToPutUnderneath
+
+      for_ (zip locations cardsToPutUnderneath) \(l, card) -> do
         placeUnderneath l [toCard card]
 
       when delayedOnTheirWayToDunwich (placeDoomOnAgenda 1)

@@ -126,6 +126,7 @@ data EnemyMatcher
   | EvadingEnemy
   | AttackedEnemy
   | OnlyEnemyEngagedWith InvestigatorMatcher
+  | EnemyCanEngage InvestigatorMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher

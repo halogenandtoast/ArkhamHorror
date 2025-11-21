@@ -51,6 +51,7 @@ import Arkham.Asset.Assets (
   charlesRossEsqEffect,
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
+  deckOfPossibilitiesTychokineticImplementEffect,
   disciplinePrescienceOfFateEffect,
   eldritchTongueEffect,
   empiricalHypothesisEffect,
@@ -66,6 +67,7 @@ import Arkham.Asset.Assets (
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
   highRoller2Effect,
+  isamaraOrdonezTheTorchSingerEffect,
   laChicaRojaYourWatchfulShadowEffect,
   lockpicks1Effect,
   lockpicksEffect,
@@ -90,7 +92,6 @@ import Arkham.Asset.Assets (
   wither4Effect,
   witherEffect,
   yaotl1Effect,
-  isamaraOrdonezTheTorchSingerEffect,
  )
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Enemy.Enemies (
@@ -208,7 +209,8 @@ createEffect builder = do
   pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect
-  :: (HasGame m, Tracing m, MonadRandom m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
+  :: (HasGame m, Tracing m, MonadRandom m)
+  => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
 createChaosTokenValueEffect sid n source target = do
   eid <- getRandom
   (eid,) <$> buildChaosTokenValueEffect sid eid n source target
@@ -588,6 +590,7 @@ allEffects =
     , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
+    , ("88043", SomeEffect deckOfPossibilitiesTychokineticImplementEffect)
     , ("88044", SomeEffect isamaraOrdonezTheTorchSingerEffect)
     , ("89004", SomeEffect realityAcid5U21Effect)
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)

@@ -45,7 +45,7 @@ instance HasAbilities TheTrueCulpritV7 where
              <> [ restrictedAbility
                     attrs
                     2
-                    (Negate $ exists (EnemyWithTrait Cultist))
+                    (Negate $ exists (InPlayEnemy $ EnemyWithTrait Cultist))
                     $ Objective
                     $ ForcedAbility AnyWindow
                 ]

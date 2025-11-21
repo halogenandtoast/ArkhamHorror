@@ -26,7 +26,7 @@ instance HasModifiersFor UnsolvedCase where
 
 instance HasAbilities UnsolvedCase where
   getAbilities (UnsolvedCase a) =
-    [ restricted a 1 InYourHand
+    [ restricted a 1 Never
         $ forced
         $ WouldBeShuffledIntoDeck (DeckIs $ HunchDeck (eventOwner a)) (CardWithId $ toCardId a)
     , restricted a 2 (InThreatAreaOf You)
@@ -36,12 +36,13 @@ instance HasAbilities UnsolvedCase where
 
 instance RunMessage UnsolvedCase where
   runMessage msg e@(UnsolvedCase attrs) = runQueueT $ case msg of
-    InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid == iid' -> do
-      don'tMatching \case
-        ShuffleCardsIntoDeck (HunchDeck _) [card] -> card == toCard attrs
-        _ -> False
-      push $ CreateEventAt iid (toCard attrs) (InThreatArea iid)
-      pure e
+    -- Ability can't do anything because we can't preload
+    -- UseThisAbility iid (isSource attrs -> True) 1 -> do
+    --   don'tMatching \case
+    --     ShuffleCardsIntoDeck (HunchDeck _) [card] -> card == toCard attrs
+    --     _ -> False
+    --   push $ CreateEventAt iid (toCard attrs) (InThreatArea iid)
+    --   pure e
     PlayThisEvent iid (is attrs -> True) -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       highestShroud <- select $ HighestShroud Anywhere

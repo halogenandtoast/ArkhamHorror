@@ -48,11 +48,15 @@ instance HasModifiersFor JoeDiamond where
 
 instance HasAbilities JoeDiamond where
   getAbilities (JoeDiamond (a `With` _)) =
-    [ selfAbility_ a 1 $ forced $ PhaseBegins #when #investigation
-    , mkAbility a 2
-        $ SilentForcedAbility
-        $ WouldBeShuffledIntoDeck (DeckIs $ Deck.HunchDeck a.id) (cardIs Events.unsolvedCase)
-    ]
+    selfAbility_ a 1 (forced $ PhaseBegins #when #investigation)
+      : case hunchDeck a of
+        c : _
+          | c.cardCode == Events.unsolvedCase.cardCode ->
+              [ mkAbility a 2
+                  $ SilentForcedAbility
+                  $ WouldBeShuffledIntoDeck (DeckIs $ Deck.HunchDeck a.id) (cardIs Events.unsolvedCase)
+              ]
+        _ -> []
 
 instance HasChaosTokenValue JoeDiamond where
   getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _)) | attrs `is` iid = do
@@ -117,28 +121,32 @@ instance RunMessage JoeDiamond where
     ResolveChaosToken _drawnToken ElderSign iid | attrs `is` iid -> do
       insights <- filter (`cardMatch` (CardWithTrait Insight <> #event)) <$> field InvestigatorDiscard iid
       when (notNull insights) do
-        chooseOne iid
-          $ Label "Do not move an insight" []
-          : [ targetLabel insight.id [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
-            | insight <- insights
-            ]
+        chooseOneM iid do
+          labeled "Do not move an insight" nothing
+          targets insights $ putCardOnBottomOfDeck iid (Deck.HunchDeck iid)
       pure i
     PutCardOnBottomOfDeck _ (Deck.HunchDeck iid) insight | attrs `is` iid -> do
       attrs' <- liftRunMessage msg attrs
       let hunchDeck' = filter (/= insight) (hunchDeck attrs) <> [insight]
       pure $ JoeDiamond . (`with` meta) $ attrs' & decksL . at HunchDeck ?~ hunchDeck'
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
-      let
-        go = \case
-          ((windowType -> Window.WouldBeShuffledIntoDeck _ card) : _) -> do
-            don'tMatching \case
-              ShuffleCardsIntoDeck (Deck.HunchDeck _) [card'] -> card == card'
-              _ -> False
-            chooseOneM attrs.id do
-              abilityLabeled attrs.id (mkAbility (SourceableWithCardCode card $ CardIdSource card.id) 1 $ forced AnyWindow) do
-                push $ CreateEventAt attrs.id card (InThreatArea attrs.id)
-          (_ : xs) -> go xs
-          [] -> pure ()
-      go ws
+      case hunchDeck attrs of
+        c : _ | c.cardCode == Events.unsolvedCase.cardCode -> do
+          let
+            go = \case
+              ((windowType -> Window.WouldBeShuffledIntoDeck _ card) : _) -> do
+                don'tMatching \case
+                  ShuffleCardsIntoDeck (Deck.HunchDeck _) [card'] -> card == card'
+                  _ -> False
+                chooseOneM attrs.id do
+                  abilityLabeled
+                    attrs.id
+                    (mkAbility (SourceableWithCardCode card $ CardIdSource card.id) 1 $ forced AnyWindow)
+                    do
+                      push $ CreateEventAt attrs.id card (InThreatArea attrs.id)
+              (_ : xs) -> go xs
+              [] -> pure ()
+          go ws
+        _ -> pure ()
       pure i
     _ -> JoeDiamond . (`with` meta) <$> liftRunMessage msg attrs

@@ -593,7 +593,7 @@ getIsCommittable a c = runValidT do
         committedCardTitles = map toTitle allCommittedCards
         passesCommitRestriction = \case
           OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
-          OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest matcher
+          OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest (replaceYouMatcher iid matcher)
           CommittableTreachery -> error "unhandled"
           AnyCommitRestriction cs -> anyM passesCommitRestriction cs
           OnlyFightAgainst matcher -> case skillTest.target.enemy of

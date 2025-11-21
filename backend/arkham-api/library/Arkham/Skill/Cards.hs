@@ -972,6 +972,7 @@ contemplative :: CardDef
 contemplative =
   (skill "11088" "Contemplative" [] Survivor)
     { cdCardTraits = setFromList [Innate]
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCommitRestrictions =
         [ OnlySkillTest
             $ oneOf

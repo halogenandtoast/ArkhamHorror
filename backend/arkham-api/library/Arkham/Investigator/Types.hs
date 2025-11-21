@@ -580,7 +580,7 @@ instance HasAbilities Investigator where
                $ restricted
                  i
                  501
-                 (Self <> exists (colocatedWith a <> not_ (InvestigatorWithId $ toId a)))
+                 (Self <> exists (colocatedWith (toId a) <> not_ (InvestigatorWithId $ toId a)))
                  actionAbility
            | notNull (investigatorSeals $ toAttrs a)
            ]

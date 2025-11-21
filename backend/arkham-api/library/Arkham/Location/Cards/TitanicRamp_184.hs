@@ -18,7 +18,7 @@ titanicRamp_184 = location TitanicRamp_184 Cards.titanicRamp_184 3 (PerPlayer 1)
 
 instance HasModifiersFor TitanicRamp_184 where
   getModifiersFor (TitanicRamp_184 a) =
-    modifySelf a [AdditionalCostToLeave $ SkillTestCost (a.ability 1) #agility (Fixed 2)]
+    modifySelf a [AdditionalCostToLeave $ SkillTestCost (IndexedSource 1 (LocationSource a.id)) #agility (Fixed 2)]
 
 instance HasAbilities TitanicRamp_184 where
   getAbilities (TitanicRamp_184 a) =
@@ -33,7 +33,7 @@ instance HasAbilities TitanicRamp_184 where
         You
         AnySkillType
         AnySkillTestValue
-        (SkillTestSourceMatches (SourceIs (a.ability 1)))
+        (SkillTestSourceMatches (SourceIs (IndexedSource 1 (LocationSource a.id))))
 
 instance RunMessage TitanicRamp_184 where
   runMessage msg l@(TitanicRamp_184 attrs) = runQueueT $ case msg of

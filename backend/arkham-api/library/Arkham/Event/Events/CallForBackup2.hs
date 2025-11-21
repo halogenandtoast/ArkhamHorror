@@ -62,7 +62,7 @@ instance RunMessage CallForBackup2 where
         andM
           [ control chosen Mystic
           , orM
-              [ selectAny (HealableInvestigator (toSource attrs) #horror $ colocatedWith iid)
+              [ selectAny (HealableInvestigator (toSource attrs) #horror $ affectsOthers Anyone)
               , selectAny (healableAsset attrs #horror)
               ]
           ]

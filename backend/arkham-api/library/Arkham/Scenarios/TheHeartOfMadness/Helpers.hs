@@ -88,8 +88,8 @@ getChaosTokenValueFromScenario iid tokenFace (toAttrs -> attrs) = case tokenFace
     ancient <- selectAny $ withTrait Ancient <> EnemyAt (locationWithInvestigator iid)
     pure
       $ if ancient
-        then toChaosTokenValue attrs Skull 1 3
-        else toChaosTokenValue attrs Skull 2 4
+        then toChaosTokenValue attrs Skull 2 4
+        else toChaosTokenValue attrs Skull 1 3
   Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 1)
   Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
   ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5

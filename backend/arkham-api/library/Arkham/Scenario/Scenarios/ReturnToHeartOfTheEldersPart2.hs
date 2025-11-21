@@ -26,7 +26,7 @@ returnToHeartOfTheEldersPart2 difficulty =
     , ".        .        equals    equals    .     ."
     , ".        .        equals    equals    .     ."
     ]
-    (referenceL .~ "04205b")
+    (referenceL .~ "04205")
 
 instance RunMessage ReturnToHeartOfTheEldersPart2 where
   runMessage msg (ReturnToHeartOfTheEldersPart2 heartOfTheElders'@(HeartOfTheElders (attrs `With` metadata))) = runQueueT $ scenarioI18n $ case msg of

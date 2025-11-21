@@ -1054,3 +1054,11 @@ withHand self cs = do
 
 record :: IsCampaignLogKey k => k -> TestAppT ()
 record = pushAndRun . Record . toCampaignLogKey
+
+recordCount :: IsCampaignLogKey k => k -> Int -> TestAppT ()
+recordCount k = pushAndRun . RecordCount (toCampaignLogKey k)
+
+addCampaignCardToDeck :: CardDef -> TestAppT ()
+addCampaignCardToDeck def = do
+  card <- genCard def
+  selectJust Anyone >>= \iid -> pushAndRun (AddCampaignCardToDeck iid ShuffleIn card)

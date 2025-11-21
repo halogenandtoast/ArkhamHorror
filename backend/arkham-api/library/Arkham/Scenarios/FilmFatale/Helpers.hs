@@ -17,8 +17,9 @@ scenarioI18n a = withI18n $ standaloneI18n "filmFatale" a
 
 initialLayout :: [GridTemplateRow]
 initialLayout =
-  [ "jungleSet spaceSet   gothicSet"
-  , ".         centralLot ."
+  [ "jungleSet     spaceSet   gothicSet"
+  , ".             centralLot ."
+  , "lostAsteroid1 .          lostAsteroid2"
   ]
 
 moveContessa

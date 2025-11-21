@@ -169,9 +169,9 @@ instance RunMessage AndresRequest where
           ]
         push
           $ SetLayout
-            [ ".         .            tarPit                ."
-            , "jungleSet westernRidge ruinsOfTheSerpentKing easternRidge"
-            , ".         .            jungleRiver           ."
+            [ ".             .            tarPit                ."
+            , "jungleSet     westernRidge ruinsOfTheSerpentKing easternRidge"
+            , "lostAsteroid1 .            jungleRiver           lostAsteroid2"
             ]
         placeTokens attrs ruinsOfTheSerpentKing Seal 4
         createAssetAt_ Assets.staffOfTheSerpentRelicOfThePast (AtLocation ruinsOfTheSerpentKing)
@@ -213,7 +213,7 @@ instance RunMessage AndresRequest where
           ]
         push
           $ SetLayout
-            [ ".              throneOfBlood ."
+            [ "lostAsteroid1  throneOfBlood lostAsteroid2"
             , "moonlitGarden  throneOfBlood clockTower"
             , "moonlitGarden  gothicSet     clockTower"
             , "castleHallways gothicSet     catacombs"

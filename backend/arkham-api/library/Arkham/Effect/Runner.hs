@@ -110,11 +110,29 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    MoveIgnored iid -> do
+      for_ a.target.investigator \iid' -> do
+        when (iid == iid') do
+          let ws = toEffectWindowList (effectDisableWindow <|> effectWindow)
+          let isMovement = \case
+                EffectMoveWindow -> True
+                EffectThisMoveWindow _ -> True
+                _ -> False
+          when (any isMovement ws) $ push (DisableEffect effectId)
+      pure a
     EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
       a <$ push (DisableEffect effectId)
-    WhenCanMove _ _ | isEndOfWindow a EffectMoveWindow -> do
+    WhenCanMove iid _ -> do
       -- We've killed the entire batch at this point so we can resume
-      a <$ push (DisableEffect effectId)
+      for_ a.target.investigator \iid' -> do
+        when (iid == iid') do
+          let ws = toEffectWindowList (effectDisableWindow <|> effectWindow)
+          let isMovement = \case
+                EffectMoveWindow -> True
+                EffectThisMoveWindow _ -> True
+                _ -> False
+          when (any isMovement ws) $ push (DisableEffect effectId)
+      pure a
     AddToHand _ cards | any (\c -> isEndOfWindow a (EffectHollowWindow c.id)) cards -> do
       a <$ push (DisableEffect effectId)
     ObtainCard cid | isEndOfWindow a (EffectHollowWindow cid) -> do

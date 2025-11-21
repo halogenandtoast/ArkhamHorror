@@ -88,6 +88,7 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType ()
+import Arkham.Spawn qualified
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Tracing
@@ -1556,7 +1557,13 @@ instance RunMessage EnemyAttrs where
     Do (DefeatedAddToVictory miid (isTarget a -> True)) -> do
       push $ AddToVictory miid $ toTarget a
       pure a
-    EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
+    EnemySpawnFromOutOfPlay _ miid lid eid | eid == a.id -> do
+      pushAll
+        $ resolve
+        $ EnemySpawn
+        $ (mkSpawnDetails eid $ Arkham.Spawn.SpawnAtLocation lid)
+          { spawnDetailsInvestigator = miid
+          }
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory _miid (isTarget a -> True) -> do
       push $ RemovedFromPlay (toSource a)
@@ -1611,6 +1618,14 @@ instance RunMessage EnemyAttrs where
         $ map (toDiscard GameSource) enemyAssets
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
         <> [RemoveEnemy a.id]
+      pure a
+    PlaceEnemyOutOfPlay _oZone eid | a.id == eid -> do
+      let
+        isDiscardEnemy = \case
+          Discard _ _ (EnemyTarget eid') -> eid == eid'
+          RemovedFromPlay (EnemySource eid') -> eid == eid'
+          _ -> False
+      withQueue_ $ filter (not . isDiscardEnemy)
       pure a
     Will msg'@(EnemyEngageInvestigator eid _) | eid == enemyId -> do
       mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]
@@ -1972,6 +1987,32 @@ instance RunMessage EnemyAttrs where
             _ -> False
           _ -> False
         push $ RemoveFromGame (toTarget a)
+      pure a
+    Discarded (isTarget a -> True) source _ -> do
+      case a.placement of
+        AsSwarm {} -> pure () -- will be handled when leaves play
+        _ -> case toCard a of
+          PlayerCard pc -> case enemyBearer of
+            Nothing -> push (RemoveFromGame $ EnemyTarget a.id)
+            -- The Man in the Pallid Mask has not bearer in Curtain Call
+            Just iid' -> push (AddToDiscard iid' pc)
+          EncounterCard _ -> pure ()
+          VengeanceCard _ -> error "Vengeance card"
+
+      miid <- getSourceController source
+      mLocation <- getLocationOf a
+
+      let
+        handleKey k =
+          case miid of
+            Nothing -> case mLocation of
+              Just location -> PlaceKey (toTarget location) k
+              Nothing -> error "Could not place key"
+            Just iid -> PlaceKey (toTarget iid) k
+
+      ks <- fieldMap EnemyKeys toList a.id
+      pushAll $ map handleKey ks
+
       pure a
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)

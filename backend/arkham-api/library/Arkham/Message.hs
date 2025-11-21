@@ -877,6 +877,7 @@ data Message
   | -- | Move target one location at a time until arrive at location
     MoveUntil LocationId Target
   | WhenCanMove InvestigatorId [Message]
+  | MoveIgnored InvestigatorId
   | MoveAllCluesTo Source Target
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | NextCampaignStep (Maybe CampaignStep)

@@ -6,7 +6,7 @@ import TestImport.New
 spec :: Spec
 spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
-    fit "allows you to spend two resources to buy an additional action" . gameTestWith skidsOToole . debug $ \self -> do
+    it "allows you to spend two resources to buy an additional action" . gameTestWith skidsOToole $ \self -> do
       self `gainResources` 2
       self `loseActions` 3
       [buyAction, _] <- self.abilities

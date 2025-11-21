@@ -1,14 +1,17 @@
-module Arkham.Asset.Assets.DeckOfPossibilitiesTychokineticImplement (deckOfPossibilitiesTychokineticImplement) where
+module Arkham.Asset.Assets.DeckOfPossibilitiesTychokineticImplement (
+  deckOfPossibilitiesTychokineticImplement,
+  deckOfPossibilitiesTychokineticImplementEffect,
+) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.ChaosToken.Types
+import Arkham.Effect.Import
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.PlayerCard
 import Arkham.Scenarios.FortuneAndFolly.PlayingCard
 import Arkham.Trait (Trait (Ally, Item))
@@ -67,7 +70,8 @@ instance RunMessage DeckOfPossibilitiesTychokineticImplement where
               chooseOneM iid do
                 targets enemies removeFromGame
                 targets treacheries removeFromGame
-            (Ace, Spades) -> gameModifier (attrs.ability 1) iid (ForcedChaosTokenChange ElderSign [AutoFail])
+            (Ace, Spades) ->
+              createCardEffect Cards.deckOfPossibilitiesTychokineticImplement Nothing attrs iid
             _ -> pure ()
         setGlobal CampaignTarget "deckOfPossibilities" (toJSON rest)
       pure $ DeckOfPossibilitiesTychokineticImplement $ attrs & flippedL .~ True
@@ -79,3 +83,23 @@ instance RunMessage DeckOfPossibilitiesTychokineticImplement where
         putCardIntoPlay iid card
       pure a
     _ -> DeckOfPossibilitiesTychokineticImplement <$> liftRunMessage msg attrs
+
+newtype DeckOfPossibilitiesTychokineticImplementEffect
+  = DeckOfPossibilitiesTychokineticImplementEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor DeckOfPossibilitiesTychokineticImplementEffect where
+  getModifiersFor (DeckOfPossibilitiesTychokineticImplementEffect a) = for_ a.target.investigator \iid -> do
+    modifySelect a (ChaosTokenRevealedBy $ be iid) [ForcedChaosTokenChange #eldersign [#autofail]]
+
+deckOfPossibilitiesTychokineticImplementEffect
+  :: EffectArgs -> DeckOfPossibilitiesTychokineticImplementEffect
+deckOfPossibilitiesTychokineticImplementEffect =
+  cardEffect
+    DeckOfPossibilitiesTychokineticImplementEffect
+    Cards.deckOfPossibilitiesTychokineticImplement
+
+instance RunMessage DeckOfPossibilitiesTychokineticImplementEffect where
+  runMessage msg (DeckOfPossibilitiesTychokineticImplementEffect attrs) =
+    DeckOfPossibilitiesTychokineticImplementEffect <$> runMessage msg attrs

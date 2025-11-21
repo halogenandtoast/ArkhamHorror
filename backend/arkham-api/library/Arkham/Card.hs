@@ -59,6 +59,9 @@ lookupCardDef (toCardCode -> cardCode) =
 instance HasField "flip" CardDef (Maybe CardDef) where
   getField def = def.otherSide >>= lookupCardDef
 
+instance HasField "defs" CardDef [CardDef] where
+  getField def = def : maybeToList def.flip
+
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
   , cbCardBuilder :: CardId -> ident -> a

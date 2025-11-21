@@ -198,7 +198,7 @@ removeEvery defs = attrsL . encounterDeckL %= flip removeEveryFromDeck defs
 
 -- does not handle other encounter decks
 removeOneOf :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
-removeOneOf def = removeOneOfEach [def]
+removeOneOf def = removeOneOfEach def.defs
 
 -- does not handle other encounter decks
 removeOneOfEach :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
@@ -265,8 +265,8 @@ doNotShuffleIn = removeCards
 
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   placeLocationCard def
 
 placeLabeled_ :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m ()
@@ -274,21 +274,21 @@ placeLabeled_ lbl def = void $ placeLabeled lbl def
 
 placeLabeled :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m LocationId
 placeLabeled lbl def = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   lid <- placeLocationCard def
   push $ SetLocationLabel lid lbl
   pure lid
 
 placeInGrid :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m LocationId
 placeInGrid pos def = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
   otherCardsL %= deleteFirstMatch ((== def) . toCardDef)
   placeLocationCardInGrid pos def
 
 placeInGrid_ :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m ()
 placeInGrid_ pos def = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
   void $ placeLocationCardInGrid pos def
 
 place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
@@ -352,8 +352,8 @@ addToEncounterDeck (toList -> defs) = do
 
 assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m AssetId
 assetAt def lid = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- genCard def
   createAssetAt card (AtLocation lid)
 
@@ -365,8 +365,8 @@ placeAsset_ def p = void $ placeAsset def p
 
 placeAsset :: ReverseQueue m => CardDef -> Placement -> ScenarioBuilderT m AssetId
 placeAsset def p = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- genCard def
   createAssetAt card p
 
@@ -379,16 +379,16 @@ excludeFromEncounterDeck (toList -> cards) = do
 
 enemyAt_ :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 enemyAt_ def lid = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- genCard def
   createEnemyAt_ card lid
 
 enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m EnemyId
 enemyAt def lid = do
   mcard <- headMay <$> amongGathered (cardDefIs def)
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- maybe (genCard def) pure mcard
   createEnemyAt card lid
 
@@ -396,8 +396,8 @@ placeEnemy
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m ()
 placeEnemy def placement = do
   mcard <- headMay <$> amongGathered (cardDefIs def)
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- maybe (genCard def) pure mcard
   pushM $ createEnemyWithPlacement_ card (toPlacement placement)
 
@@ -405,8 +405,8 @@ placeEnemyCapture
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m EnemyId
 placeEnemyCapture def placement = do
   mcard <- headMay <$> amongGathered (cardDefIs def)
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- maybe (genCard def) pure mcard
   (enemyId, msg) <- createEnemyWithPlacement card (toPlacement placement)
   push msg
@@ -415,8 +415,8 @@ placeEnemyCapture def placement = do
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do
   mcard <- headMay <$> amongGathered (cardDefIs def)
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   card <- maybe (genCard def) pure mcard
   createEnemyAtLocationMatching_ card matcher
 
@@ -498,8 +498,8 @@ placeUnderScenarioReference defs = do
 beginWithStoryAsset :: ReverseQueue m => InvestigatorId -> CardDef -> ScenarioBuilderT m ()
 beginWithStoryAsset iid def = do
   a <- genCard def
-  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
   push $ TakeControlOfSetAsideAsset iid a
 
 class VictoryPlaceable a where

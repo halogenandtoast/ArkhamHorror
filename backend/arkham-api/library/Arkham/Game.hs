@@ -3517,6 +3517,22 @@ enemyMatcherFilter es matcher' = do
       flip filterM es \enemy -> do
         engagedInvestigators <- enemyEngagedInvestigators (toId enemy)
         pure $ any (`elem` engagedInvestigators) iids
+    EnemyCanEngage investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      es & filterM \enemy -> do
+        emods <- getModifiers (toId enemy)
+        if CannotBeEngaged `elem` emods
+          then pure False
+          else do
+            let
+              canBeEngaged iid = do
+                mods <- getModifiers iid
+                (mods <> emods) & noneM \case
+                  CannotBeEngagedBy eMatcher -> toId enemy <=~> eMatcher
+                  CannotBeEngaged -> pure True
+                  CannotEngage iid' -> pure $ iid == iid'
+                  _ -> pure False
+            anyM canBeEngaged iids
     OnlyEnemyEngagedWith investigatorMatcher -> do
       select (EnemyIsEngagedWith investigatorMatcher) >>= \case
         [x] -> pure $ filter (\enemy -> enemy.id == x) es

@@ -290,7 +290,7 @@ instance HasAbilities EnemyAttrs where
               <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
               <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
               <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
-              <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
+              <> EnemyCriteria (ThisEnemy $ EnemyCanEngage You)
               <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotBeEngaged)
           )
         $ ActionAbility [#engage] (ActionCost 1)

@@ -6,7 +6,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import TestImport
 
 spec :: Spec
-spec = fdescribe "The Path to Carcosa" do
+spec = describe "The Path to Carcosa" do
   context "Curtain Call" $ encounterDeckCountIs "03043" 32
   context "The Last King" $ encounterDeckCountIs "03061" 22
   context "Echoes of the Past" $ encounterDeckCountIs "03120" 33

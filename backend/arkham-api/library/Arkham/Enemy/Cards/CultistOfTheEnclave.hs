@@ -1,18 +1,10 @@
-module Arkham.Enemy.Cards.CultistOfTheEnclave (
-  cultistOfTheEnclave,
-  CultistOfTheEnclave (..),
-)
-where
+module Arkham.Enemy.Cards.CultistOfTheEnclave (cultistOfTheEnclave) where
 
-import Arkham.Prelude
-
-import Arkham.ChaosBag.RevealStrategy
+import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.RequestedChaosTokenStrategy
 
 newtype CultistOfTheEnclave = CultistOfTheEnclave EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -20,33 +12,23 @@ newtype CultistOfTheEnclave = CultistOfTheEnclave EnemyAttrs
 
 cultistOfTheEnclave :: EnemyCard CultistOfTheEnclave
 cultistOfTheEnclave =
-  enemyWith
-    CultistOfTheEnclave
-    Cards.cultistOfTheEnclave
-    (3, Static 2, 3)
-    (1, 0)
-    (spawnAtL ?~ "Basement")
+  enemy CultistOfTheEnclave Cards.cultistOfTheEnclave (3, Static 2, 3) (1, 0)
+    & setSpawnAt "Basement"
 
 instance HasAbilities CultistOfTheEnclave where
-  getAbilities (CultistOfTheEnclave attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ EnemyAttacks #after You AnyEnemyAttack
-          $ EnemyWithId
-          $ toId attrs
-      ]
+  getAbilities (CultistOfTheEnclave a) =
+    extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)
 
 instance RunMessage CultistOfTheEnclave where
-  runMessage msg e@(CultistOfTheEnclave attrs) = case msg of
+  runMessage msg e@(CultistOfTheEnclave attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside
+      requestChaosTokens iid (attrs.ability 1) 1
       pure e
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) _ (map chaosTokenFace -> tokens) -> do
-      push $ ResetChaosTokens (toAbilitySource attrs 1)
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
+      continue_ iid
+      resetChaosTokens (attrs.ability 1)
       when (any (`elem` tokens) [#skull, #cultist, #tablet, #elderthing, #autofail]) $ do
         agenda <- selectJust AnyAgenda
-        push $ PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1
+        placeDoom (attrs.ability 1) agenda 1
       pure e
-    _ -> CultistOfTheEnclave <$> runMessage msg attrs
+    _ -> CultistOfTheEnclave <$> liftRunMessage msg attrs

@@ -1281,8 +1281,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     runMessage (RemoveEvent eventId) g
   RemovedFromPlay (SkillSource skillId) -> do
     runMessage (RemoveSkill skillId) g
-  RemovedFromPlay (EnemySource enemyId) -> do
-    runMessage (RemoveEnemy enemyId) g
   RemovedFromPlay (TreacherySource treacheryId) -> do
     runMessage (RemoveTreachery treacheryId) g
   ReturnToHand iid (EventTarget eventId) -> do

@@ -1558,7 +1558,11 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
-    AddToVictory miid (isTarget a -> True) -> do
+    AddToVictory _miid (isTarget a -> True) -> do
+      push $ RemovedFromPlay (toSource a)
+      push $ Do msg
+      pure a
+    Do (AddToVictory miid (isTarget a -> True)) -> do
       selectEach (SwarmOf a.id) (push . RemoveEnemy)
       mloc <- getLocationOf a
       mods <- getModifiers a
@@ -1606,6 +1610,7 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ map (toDiscard GameSource) enemyAssets
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
+        <> [RemoveEnemy a.id]
       pure a
     Will msg'@(EnemyEngageInvestigator eid _) | eid == enemyId -> do
       mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]

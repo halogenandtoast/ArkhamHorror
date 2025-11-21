@@ -572,11 +572,27 @@ instance HasAbilities Investigator where
       [ restricted
           i
           500
-          (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
-          $ ActionAbility []
-          $ ActionCost 1
+          (Self <> exists (colocatedWith (toId a) <> not_ (InvestigatorWithId $ toId a)))
+          actionAbility
       | notNull (investigatorKeys $ toAttrs a)
       ]
+        <> [ withTooltip "Give Seal"
+               $ restricted
+                 i
+                 501
+                 (Self <> exists (colocatedWith a <> not_ (InvestigatorWithId $ toId a)))
+                 actionAbility
+           | notNull (investigatorSeals $ toAttrs a)
+           ]
+        <> [ withTooltip "Take Seal"
+               $ restricted
+                 i
+                 502
+                 ( Self
+                     <> exists (colocatedWith (toId a) <> not_ (InvestigatorWithId $ toId a) <> InvestigatorWithAnySeal)
+                 )
+                 actionAbility
+           ]
         <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
            , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
            ]

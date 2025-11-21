@@ -4558,6 +4558,47 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             | iid' <- x : xs
             ]
     pure a
+  UseCardAbility iid (isSource a -> True) 501 _ _ -> do
+    otherInvestigators <- select $ colocatedWith a <> not_ (InvestigatorWithId investigatorId)
+    case nonEmpty otherInvestigators of
+      Nothing -> error "No other investigators"
+      Just (x :| xs) -> do
+        player <- getPlayer iid
+        push
+          $ chooseOrRunOne player
+          $ [ targetLabel
+                iid'
+                [ chooseOne
+                    player
+                    [ Label ("Give " <> sealName k <> " key") [PlaceSeal (toTarget iid') k]
+                    | k <- toList investigatorSeals
+                    ]
+                ]
+            | iid' <- x : xs
+            ]
+    pure a
+  UseCardAbility iid (isSource a -> True) 502 _ _ -> do
+    otherInvestigators <-
+      selectWithField InvestigatorSeals $ colocatedWith a
+        <> not_ (InvestigatorWithId investigatorId)
+        <> InvestigatorWithAnySeal
+    case nonEmpty otherInvestigators of
+      Nothing -> error "No other investigators"
+      Just (x :| xs) -> do
+        player <- getPlayer iid
+        push
+          $ chooseOrRunOne player
+          $ [ targetLabel
+                iid'
+                [ chooseOne
+                    player
+                    [ Label ("Take " <> sealName k <> " key") [PlaceSeal (toTarget iid) k]
+                    | k <- toList seals
+                    ]
+                ]
+            | (iid', seals) <- x : xs
+            ]
+    pure a
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg
     pure a

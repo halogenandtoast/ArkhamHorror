@@ -24,7 +24,7 @@ import Arkham.Message as X (
   pattern FailedSkillTestWithToken,
   pattern PassedSkillTestWithToken,
  )
-import Arkham.Message.Lifted as X hiding (setActDeck, setActDeckN, setAgendaDeck, setAgendaDeckN)
+import Arkham.Message.Lifted as X hiding (reveal, setActDeck, setActDeckN, setAgendaDeck, setAgendaDeckN)
 import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Scenario.Runner as X (

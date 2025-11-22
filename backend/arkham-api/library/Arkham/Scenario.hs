@@ -373,8 +373,9 @@ instance RunMessage Scenario where
               canHealDamage <- Helpers.canHaveDamageHealed source iid
               canHealHorror <- Helpers.canHaveHorrorHealed source iid
               push
-                $ chooseOrRunOne player
-                $ [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
+                $ chooseOne player
+                $ Label "Skip" []
+                : [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
                 <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
             Reversed -> do
               push

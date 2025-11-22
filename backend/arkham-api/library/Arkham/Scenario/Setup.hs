@@ -18,7 +18,8 @@ import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message
-import Arkham.Message.Lifted
+import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted hiding (reveal)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Placement
@@ -333,6 +334,9 @@ placeGroupCapture groupName defs = do
 
 placeGroupChooseN :: ReverseQueue m => Int -> Text -> NonEmpty CardDef -> ScenarioBuilderT m ()
 placeGroupChooseN n groupName = sampleN n >=> placeGroup groupName
+
+reveal :: ReverseQueue m  => location -> ScenarioBuilderT m ()
+reveal (asId -> lid) = push $ Msg.RevealLocation Nothing lid
 
 startAt :: ReverseQueue m => LocationId -> ScenarioBuilderT m ()
 startAt lid = do

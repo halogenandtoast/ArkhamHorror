@@ -105,8 +105,14 @@ instance HasField "ready" EnemyAttrs Bool where
 instance HasField "exhausted" EnemyAttrs Bool where
   getField = enemyExhausted
 
+instance HasField "defeated" EnemyAttrs Bool where
+  getField = enemyDefeated
+
 instance HasField "tokens" EnemyAttrs Tokens where
   getField = enemyTokens
+
+instance HasField "clues" EnemyAttrs Int where
+  getField = enemyClues
 
 instance HasField "token" EnemyAttrs (Token -> Int) where
   getField a tType = countTokens tType a.tokens

@@ -15,19 +15,14 @@ newtype DarkYoungHost = DarkYoungHost EnemyAttrs
 
 darkYoungHost :: EnemyCard DarkYoungHost
 darkYoungHost =
-  enemyWith
-    DarkYoungHost
-    Cards.darkYoungHost
-    (4, Static 5, 2)
-    (2, 2)
-    $ spawnAtL
-    ?~ SpawnAt (LocationWithTrait Bayou)
+  enemy DarkYoungHost Cards.darkYoungHost (4, Static 5, 2) (2, 2)
+    & setSpawnAt (LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost a) =
     extend
       a
-      [ mkAbility a 1
+      [ restricted a 1 (prohibit $ getEnemyMetaDefault False a)
           $ forced
           $ PlacedCounterOnLocation #when (locationWithEnemy a) AnySource #clue (atLeast 1)
       , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
@@ -40,6 +35,6 @@ instance RunMessage DarkYoungHost where
       placeClues (attrs.ability 1) attrs n
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      withLocationOf attrs \loc -> placeClues (attrs.ability 2) loc (enemyClues attrs)
-      pure e
+      withLocationOf attrs \loc -> moveAllTokens (attrs.ability 2) attrs loc #clue
+      pure $ DarkYoungHost $ attrs & setMeta True
     _ -> DarkYoungHost <$> liftRunMessage msg attrs

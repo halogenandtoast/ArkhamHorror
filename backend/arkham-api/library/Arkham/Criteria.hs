@@ -458,6 +458,13 @@ canFightCriteria = canFightCriteriaObeyAloof True
 canFightIgnoreAloof :: Criterion
 canFightIgnoreAloof = canFightCriteriaObeyAloof False
 
+require :: Bool -> Criterion
+require True = NoRestriction
+require False = Never
+
+prohibit :: Bool -> Criterion
+prohibit = require . not
+
 canFightCriteriaObeyAloof :: Bool -> Criterion
 canFightCriteriaObeyAloof obeyAloof =
   OnSameLocation <> EnemyCriteria (ThisEnemy $ wrapAloof $ CanBeAttackedBy You) <> CanAttack

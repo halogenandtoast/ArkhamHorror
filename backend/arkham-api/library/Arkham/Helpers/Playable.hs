@@ -193,7 +193,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       _ -> pure True
 
     modifiers <- getModifiers iid
-
     guard $ none prevents modifiers
 
     let
@@ -331,7 +330,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       $ maybe
         (pure True)
         (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
-        (foldl' handleCriteriaReplacement (replaceThisCardSource $ cdCriteria pcDef) cardModifiers)
+        ( foldl'
+            handleCriteriaReplacement
+            (replaceYouMatcher iid $ replaceThisCardSource $ cdCriteria pcDef)
+            cardModifiers
+        )
 
     inFastWindow <-
       maybe

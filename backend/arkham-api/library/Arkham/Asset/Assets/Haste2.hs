@@ -31,7 +31,10 @@ getActionTypes = concatMap ((^. _PerformedSameTypeOfAction . _2) . windowType)
 
 instance RunMessage Haste2 where
   runMessage msg a@(Haste2 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getActionTypes -> as) _ -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      resolveAbilityAndThen (Just $ AbilityRef (toSource attrs) 1) $ doStep 1 msg
+      pure a
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 (getActionTypes -> as) _) -> do
       a' <- getAttrs @Investigator iid
       actions <- withGrantedAction iid attrs do
         filter (\x -> any (abilityIs x) as) <$> getActions iid (defaultWindows iid)

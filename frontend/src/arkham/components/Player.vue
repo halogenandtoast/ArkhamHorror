@@ -9,7 +9,7 @@ import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
-import Enemy from '@/arkham/components/Enemy.vue';
+import EnemyView from '@/arkham/components/Enemy.vue';
 import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -27,6 +27,7 @@ import { useI18n } from 'vue-i18n';
 import Draw from '@/arkham/components/Draw.vue'
 import { IsMobile } from '@/arkham/isMobile';
 import { Modifier } from '@/arkham/types/Modifier';
+import { Enemy } from '@/arkham/types/Enemy';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -45,6 +46,14 @@ const solo = inject<Ref<boolean>>('solo')
 
 const investigatorId = computed(() => props.investigator.id)
 const ENCOUNTER_BACK = imgsrc("encounter_back.jpg")
+const PLAYER_BACK = imgsrc("player_back.jpg")
+
+function backForEnemy(enemy: Enemy) {
+  const card = props.game.cards[enemy.cardId]
+  if (!card) return ENCOUNTER_BACK
+  if (card.tag === 'PlayerCard') return PLAYER_BACK
+  return ENCOUNTER_BACK
+}
 
 const assets = computed(() => {
   const xs = props.investigator.assets.map(a => props.game.assets[a])
@@ -468,7 +477,7 @@ function toggleHandAreaMarginBottom(event: Event) {
             <img :src="slotImg(slot)" />
           </div>
 
-          <Enemy
+          <EnemyView
             v-for="enemy in engagedEnemies"
             :key="enemy.id"
             :enemy="enemy"
@@ -569,7 +578,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           />
 
           <template v-for="enemy in inHandEnemies" :key="enemy.id">
-            <Enemy
+            <EnemyView
               v-if="solo || (playerId == investigator.playerId)"
               :enemy="enemy"
               :game="game"
@@ -578,7 +587,7 @@ function toggleHandAreaMarginBottom(event: Event) {
               @choose="$emit('choose', $event)"
             />
             <div class="card-container" v-else>
-              <img class="card" :src="ENCOUNTER_BACK" />
+              <img class="card" :src="backForEnemy(enemy)" />
             </div>
           </template>
 
@@ -619,7 +628,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           @dragstart="startHandDrag($event, card)"
         />
         <template v-for="enemy in inHandEnemies" :key="enemy.id">
-          <Enemy
+          <EnemyView
             v-if="solo || (playerId == investigator.playerId)"
             :enemy="enemy"
             :game="game"
@@ -628,7 +637,7 @@ function toggleHandAreaMarginBottom(event: Event) {
             @choose="$emit('choose', $event)"
           />
           <div class="card-container" v-else>
-            <img class="card" :src="ENCOUNTER_BACK" />
+            <img class="card" :src="backForEnemy(enemy)" />
           </div>
         </template>
         <template v-for="treachery in inHandTreacheries" :key="treachery.id">

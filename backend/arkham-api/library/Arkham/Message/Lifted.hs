@@ -1473,7 +1473,9 @@ addToHandQuiet iid (toList -> cards) = do
 returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
 returnToHand iid = push . ReturnToHand iid . toTarget
 
-addToVictory :: (ReverseQueue m, Targetable target, ToId investigator InvestigatorId) => investigator -> target -> m ()
+addToVictory
+  :: (ReverseQueue m, Targetable target, ToId investigator InvestigatorId)
+  => investigator -> target -> m ()
 addToVictory (asId -> iid) = push . AddToVictory (Just iid) . toTarget
 
 addToVictory_ :: (ReverseQueue m, Targetable target) => target -> m ()
@@ -2416,6 +2418,50 @@ afterThisTestResolves :: ReverseQueue m => SkillTestId -> QueueT Message m () ->
 afterThisTestResolves sid body = do
   msgs <- capture body
   push $ AfterThisTestResolves sid msgs
+
+resolveAbilityAndThen
+  :: ( MonadTrans t
+     , HasQueue Message m
+     , HasQueue Message (t m)
+     , HasGame (t m)
+     , HasCallStack
+     )
+  => Maybe AbilityRef -> QueueT Message (t m) () -> t m ()
+resolveAbilityAndThen mref body = do
+  getSkillTest >>= \case
+    Just _ -> afterMaybeSkillTest body
+    Nothing -> do
+      msgs <- capture body
+      mmsg <- lift $ findFromQueue \case
+        ResolvedAbility ab -> Just ab.ref /= mref
+        MoveWithSkillTest (ResolvedAbility ab) -> Just ab.ref /= mref
+        _ -> False
+      case mmsg of
+        Nothing -> pushAll msgs
+        Just msg -> insertAfterMatching msgs (== msg)
+
+afterMaybeSkillTest
+  :: ( MonadTrans t
+     , HasQueue Message m
+     , HasQueue Message (t m)
+     , HasGame (t m)
+     )
+  => QueueT Message (t m) a -> t m ()
+afterMaybeSkillTest body = do
+  msgs <- capture body
+  msource <- Msg.getSkillTestSource
+  lift $ case msource of
+    Just (AbilitySource s n) -> do
+      let
+        isEndOfAbility = \case
+          MovedWithSkillTest _ msg -> isEndOfAbility msg
+          MoveWithSkillTest msg -> isEndOfAbility msg
+          ResolvedAbility ab -> ab.source == s && ab.index == n
+          _ -> False
+      insertAfterMatchingOrNow msgs isEndOfAbility
+    Just (EventSource e) ->
+      insertAfterMatchingOrNow msgs (== FinishedEvent e)
+    _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
 
 afterSkillTest
   :: ( MonadTrans t

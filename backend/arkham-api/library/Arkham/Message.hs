@@ -396,7 +396,13 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
 
 data GroupKey = HunterGroup | FailSkillTestGroup
   deriving stock (Show, Ord, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON GroupKey where
+  parseJSON = withText "GroupKey" \case
+    "HunterGroup" -> pure HunterGroup
+    "FailSkillTestGroup" -> pure FailSkillTestGroup
+    _ -> pure HunterGroup
 
 data AutoStatus = Auto | Manual | NoAutoStatus
   deriving stock (Show, Ord, Eq, Generic, Data)

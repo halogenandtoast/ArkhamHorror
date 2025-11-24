@@ -9,7 +9,7 @@ import Arkham.I18n
 import Arkham.I18n as X (HasI18n, countVar, scope, unscoped, withVar, withVars)
 import Arkham.Id
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (story)
+import Arkham.Message.Lifted (story, storyOnly)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Tarot
@@ -21,6 +21,16 @@ setup :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 setup body = scope "setup" $ flavor do
   unscoped $ setTitle "setup"
   body
+
+resolutionOnly
+  :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> (HasI18n => FlavorTextBuilder ()) -> m ()
+resolutionOnly iids builder = storyOnly iids do
+  case buildFlavor builder of
+    FlavorText {..} ->
+      FlavorText
+        { flavorTitle
+        , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
+        }
 
 resolutionFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 resolutionFlavor builder = story do
@@ -58,7 +68,7 @@ ul = addEntry . FT.ul
 cols :: FlavorTextBuilder () -> FlavorTextBuilder ()
 cols body = do
   let dup x = (x, x)
-  inner <- FlavorTextBuilder $ StateT $ Identity .  dup . execState (runStoryBuilder body)
+  inner <- FlavorTextBuilder $ StateT $ Identity . dup . execState (runStoryBuilder body)
   addEntry $ FT.cols inner.flavorBody
 
 img :: HasCardCode a => a -> FlavorTextBuilder ()

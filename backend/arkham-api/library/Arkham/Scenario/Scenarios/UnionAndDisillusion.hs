@@ -157,9 +157,6 @@ setupUnionAndDisillusion _attrs = do
 
   placeEnemy Enemies.theSpectralWatcher (OutOfPlay SetAsideZone)
 
-  hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
-  placeDoomOnAgenda hereticCount
-
   sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
   when sidedWithTheCoven do
     traverse_ lightBrazier (forbiddingShore : unvisitedIsles)
@@ -186,6 +183,9 @@ setupUnionAndDisillusion _attrs = do
 
   setAgendaDeck [Agendas.theLoversVI, Agendas.crossroadsOfFate]
   setActDeck [Acts.theUnvisitedIsle, Acts.fatedSouls, act3, act4]
+
+  hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
+  placeDoomOnAgenda hereticCount
 
   whenReturnTo $ addAdditionalReferences ["54016b"]
 

@@ -399,10 +399,11 @@ data GroupKey = HunterGroup | FailSkillTestGroup
   deriving anyclass ToJSON
 
 instance FromJSON GroupKey where
-  parseJSON = withText "GroupKey" \case
+  parseJSON (Array _) = pure HunterGroup
+  parseJSON v = flip (withText "GroupKey") v \case
     "HunterGroup" -> pure HunterGroup
     "FailSkillTestGroup" -> pure FailSkillTestGroup
-    _ -> pure HunterGroup
+    _ -> fail "Invalid GroupKey"
 
 data AutoStatus = Auto | Manual | NoAutoStatus
   deriving stock (Show, Ord, Eq, Generic, Data)

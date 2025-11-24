@@ -258,8 +258,12 @@ placeLocationCardM
 placeLocationCardM = (>>= placeLocationCard)
 
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
-reveal (asId -> lid) = whenMatch lid UnrevealedLocation do
-  push $ Msg.RevealLocation Nothing lid
+reveal (asId -> lid) = do
+  inSetup <- getInSetup
+  if inSetup
+    then push $ Msg.RevealLocation Nothing lid
+    else whenMatch lid UnrevealedLocation do
+      push $ Msg.RevealLocation Nothing lid
 
 revealMatching :: ReverseQueue m => LocationMatcher -> m ()
 revealMatching matcher = selectEach matcher (push . Msg.RevealLocation Nothing)

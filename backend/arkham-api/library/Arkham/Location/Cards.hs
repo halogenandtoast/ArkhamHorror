@@ -6921,6 +6921,7 @@ desolateRoad_a = victory 1 $ oldInnsmouthRoad "07209a" "Desolate Road"
 -- road 1
 desolateRoad_b :: CardDef
 desolateRoad_b = victory 1 $ oldInnsmouthRoad "07209b" "Desolate Road"
+
 {- HLINT enable "Use camelCase" -}
 
 -- road 1
@@ -7057,17 +7058,14 @@ theMoonRoom =
 
 sunkenArchives :: CardDef
 sunkenArchives =
-  locationWithUnrevealed
-    "07250"
-    "Tidal Tunnel"
-    [Cave]
-    NoSymbol
-    []
-    "Sunken Archives"
-    [Cave]
-    NoSymbol
-    []
-    ALightInTheFog
+  victory 1
+    $ locationWithUnrevealed_
+      "07250"
+      "Tidal Tunnel"
+      [Cave]
+      "Sunken Archives"
+      [Cave]
+      ALightInTheFog
 
 pumpRoom :: CardDef
 pumpRoom =

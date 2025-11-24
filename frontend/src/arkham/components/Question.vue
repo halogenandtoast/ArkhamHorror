@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import { useDbCardStore } from '@/stores/dbCards'
 import { useI18n } from 'vue-i18n';
+import { useDebouncedRef } from '@/composeable/debouncedRef';
 import { handleI18n } from '@/arkham/i18n';
-import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { AmountChoice, QuestionType } from '@/arkham/types/Question';
@@ -409,7 +411,7 @@ const tarotChoices = computed<TarotChoice[]>(() => {
 
 
 
-const cardLabels = computed(() =>
+const cardLabels = computed<{ choice: CardLabel, index: number}[]>(() =>
   choices.value.
     flatMap((choice, index) => {
       return choice.tag === "CardLabel" ? [{choice, index}] : []
@@ -444,6 +446,20 @@ const flippableCard = (cardCode: string) => {
     otherSide: `${cardCode}b`
   }
 }
+
+const cardFilter = useDebouncedRef('')
+const store = useDbCardStore()
+
+const filteredCards = computed<{ choice: CardLabel, index: number }[]>(() => {
+  if (cardFilter.value === '') return cardLabels.value
+
+  return cardLabels.value.filter(({choice}) => {
+    const card = store.getDbCard(choice.cardCode.replace(/^c/, ''))
+    if (!card) return false
+    return card.name.includes(cardFilter.value)
+  })
+})
+
 </script>
 
 <template>
@@ -459,7 +475,10 @@ const flippableCard = (cardCode: string) => {
     </div>
 
     <div v-if="cardLabels.length > 0" class="cardLabels">
-      <template v-for="{choice, index} in cardLabels" :key="index">
+      <div v-if="cardLabels.length > 10" class="filter">
+        <input v-model="cardFilter" @keydown.stop placeholder="Filter" />
+      </div>
+      <template v-for="{choice, index} in filteredCards" :key="index">
         <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
         <img v-else class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
       </template>
@@ -1407,6 +1426,14 @@ h2 {
     flex-basis: 100%;
     height: auto;
     border-radius: 3px;
+  }
+}
+
+.filter {
+  padding-bottom: 10px;
+  width: 100%;
+  input {
+    width: 100%;
   }
 }
 </style>

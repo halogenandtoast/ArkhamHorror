@@ -54,4 +54,8 @@ instance RunMessage HuntingHorror where
         & (placementL .~ OutOfPlay VoidZone)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)
+    RemovedFromPlay (isSource attrs -> True) -> do
+      selectEach (EnemyAsset attrs.id) $ toDiscard GameSource
+      for_ (enemySealedChaosTokens attrs) unsealChaosToken
+      pure e
     _ -> HuntingHorror <$> liftRunMessage msg attrs

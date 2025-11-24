@@ -394,7 +394,7 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
-data GroupKey = HunterGroup
+data GroupKey = HunterGroup | FailSkillTestGroup
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -3699,3 +3699,9 @@ campaignSpecific key value = push $ CampaignSpecific key (toJSON value)
 
 scenarioSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
 scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
+
+handleGroupTarget
+  :: (ReverseQueue m, Targetable target) => GroupKey -> target -> QueueT Message m () -> m ()
+handleGroupTarget groupTarget target body = do
+  msgs <- capture body
+  push $ HandleGroupTarget groupTarget (toTarget target) msgs

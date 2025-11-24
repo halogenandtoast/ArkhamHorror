@@ -327,14 +327,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
     guard $ (costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost)
 
     liftGuardM
-      $ maybe
-        (pure True)
-        (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
-        ( foldl'
-            handleCriteriaReplacement
-            (replaceYouMatcher iid $ replaceThisCardSource $ cdCriteria pcDef)
-            cardModifiers
-        )
+      $ maybe (pure True) (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
+      $ foldl'
+        handleCriteriaReplacement
+        (replaceYouMatcher iid $ replaceThisCardSource $ cdCriteria pcDef)
+        cardModifiers
 
     inFastWindow <-
       maybe

@@ -14,7 +14,8 @@ takeHeart = skill TakeHeart Cards.takeHeart
 instance RunMessage TakeHeart where
   runMessage msg s@(TakeHeart attrs) = runQueueT $ case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      drawCards iid attrs 2
-      gainResources iid attrs 2
+      handleGroupTarget FailSkillTestGroup attrs do
+        drawCards iid attrs 2
+        gainResources iid attrs 2
       pure s
     _ -> TakeHeart <$> liftRunMessage msg attrs

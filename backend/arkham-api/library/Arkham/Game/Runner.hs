@@ -1677,6 +1677,22 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             askMap
       _ -> push $ AskMap askMap
     pure g
+  HandleGroupTarget FailSkillTestGroup t msgs -> do
+    peekMessage >>= \case
+      Just (HandleGroupTarget FailSkillTestGroup t' msgs') -> do
+        _ <- popMessage
+        push $ HandleGroupTargets NoAutoStatus FailSkillTestGroup (mapFromList [(t, msgs), (t', msgs')])
+      Just (HandleGroupTargets st FailSkillTestGroup m) -> do
+        _ <- popMessage
+        push $ HandleGroupTargets st FailSkillTestGroup (insertMap t msgs m)
+      Just msg'@(FailedSkillTest {}) -> do
+        _ <- popMessage
+        pushAll [msg', msg]
+      Just msg'@(Failed {}) -> do
+        _ <- popMessage
+        pushAll [msg', msg]
+      _ -> pushAll msgs
+    pure g
   HandleGroupTarget k t msgs -> do
     peekMessage >>= \case
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
@@ -1695,6 +1711,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       Just (HandleGroupTargets st' k' m) | k == k' -> do
         _ <- popMessage
         push $ HandleGroupTargets (st <> st') k' (m <> targetMap)
+      Just msg'@FailedSkillTest {} | k == FailSkillTestGroup -> do
+        _ <- popMessage
+        pushAll [msg', msg]
+      Just msg'@Failed {} | k == FailSkillTestGroup -> do
+        _ <- popMessage
+        pushAll [msg', msg]
       _ -> do
         validTargetsForKey :: Map Target [Message] <- case k of
           HunterGroup ->
@@ -1706,6 +1728,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 Keyword.Hunter -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
                 _ -> pure False
               pure (target, msgs)
+          FailSkillTestGroup -> pure targetMap
         case st of
           NoAutoStatus -> do
             let

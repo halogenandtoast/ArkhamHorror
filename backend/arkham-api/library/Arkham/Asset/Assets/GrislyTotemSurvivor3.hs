@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.GrislyTotemSurvivor3 (
-  grislyTotemSurvivor3,
-  grislyTotemSurvivor3Effect,
-  GrislyTotemSurvivor3 (..),
-) where
+module Arkham.Asset.Assets.GrislyTotemSurvivor3 (grislyTotemSurvivor3, grislyTotemSurvivor3Effect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,11 +9,12 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (getCommittedCard)
+import Arkham.Helpers.Ref
+import Arkham.Message (GroupKey(..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype GrislyTotemSurvivor3 = GrislyTotemSurvivor3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,11 +25,7 @@ grislyTotemSurvivor3 = asset GrislyTotemSurvivor3 Cards.grislyTotemSurvivor3
 
 instance HasAbilities GrislyTotemSurvivor3 where
   getAbilities (GrislyTotemSurvivor3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (CommittedCard Timing.After You #any)
-          (ExhaustCost $ toTarget a)
-    ]
+    [controlled_ a 1 $ triggered (CommittedCard #after You #any) (exhaust a)]
 
 toSkillLabel :: SkillIcon -> Text
 toSkillLabel WildMinusIcon = "Choose Minus {wild}"
@@ -52,7 +45,7 @@ instance RunMessage GrislyTotemSurvivor3 where
           for_ (setToList icons) \icon -> do
             labeled (toSkillLabel icon) do
               skillTestModifier sid attrs (toCardId card) (AddSkillIcons [icon])
-              createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardIdTarget card.id)
+        createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardIdTarget card.id)
       pure a
     _ -> GrislyTotemSurvivor3 <$> liftRunMessage msg attrs
 
@@ -67,12 +60,13 @@ instance RunMessage GrislyTotemSurvivor3Effect where
   runMessage msg e@(GrislyTotemSurvivor3Effect attrs) = runQueueT $ case msg of
     FailedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do
       withSkillTest \sid -> do
-        when (attrs.metaTarget == Just (SkillTestTarget sid)) $ do
+        when (attrs.metaTarget == Just (SkillTestTarget sid)) do
           case attrs.target of
             CardIdTarget cid -> do
               card <- getCard cid
-              for_ (toCardOwner card) $ \iid ->
-                push $ ReturnToHand iid (toTarget $ toCardId card)
+              for_ (toCardOwner card) \iid ->
+                handleGroupTarget FailSkillTestGroup (sourceToTarget attrs.source)
+                  $ returnToHand iid (toTarget $ toCardId card)
             _ -> pure ()
       pure e
     SkillTestEnds sid _ _ | attrs.metaTarget == Just (SkillTestTarget sid) -> disableReturn e

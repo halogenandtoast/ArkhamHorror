@@ -32,4 +32,13 @@ instance RunMessage ReturnToTheDoomOfEztli where
         (ReturnToTheDoomOfEztli . TheDoomOfEztli)
         attrs
         (setIsReturnTo >> setupTheDoomOfEztli attrs)
+    DoStep 4 (Do (ScenarioResolution _)) -> do
+      let resetAttrs = toAttrs $ returnToTheDoomOfEztli attrs.difficulty
+      let resolution4Count = toResultDefault @Int 0 attrs.meta + 1
+      pure
+        . ReturnToTheDoomOfEztli
+        . TheDoomOfEztli
+        $ resetAttrs
+        & (metaL .~ toJSON resolution4Count)
+        & (startedL .~ True)
     _ -> ReturnToTheDoomOfEztli <$> liftRunMessage msg theDoomOfEztli'

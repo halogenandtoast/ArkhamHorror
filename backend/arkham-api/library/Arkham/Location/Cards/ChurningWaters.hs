@@ -26,9 +26,9 @@ instance RunMessage ChurningWaters where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       act <- selectJust AnyAct
       selectEach (InVehicleMatching $ assetIs Assets.fishingVessel) \iid -> do
-        resign iid
         ks <- iid.keys
         for_ ks \k -> when (k `elem` [PurpleKey, WhiteKey, BlackKey]) $ placeKey act k
+        resign iid
       mFishingVessel <- selectOne $ assetIs Assets.fishingVessel
       for_ mFishingVessel removeFromGame
       pure l

@@ -64,7 +64,7 @@ readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
   defeated <- select DefeatedInvestigator
   unless (null defeated) $ scenarioI18n $ scope "resolutions" do
-    storyOnly' defeated "investigatorDefeat"
+    storyOnly' defeated "investigatorDefeat.body"
     for_ defeated drivenInsane
 
 {- FOURMOLU_DISABLE -}

@@ -63,9 +63,13 @@ instance RunMessage IntelReport where
         else discoverAtYourLocation NotInvestigate iid attrs clueCount
       pure e
     InHand iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
-      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["clueCount" .= (2 :: Int)]
+      cardResolutionModifier (toCard attrs) attrs (toCardId attrs)
+        $ MetaModifier
+        $ object ["clueCount" .= (2 :: Int)]
       pure e
     InHand iid (UseCardAbility iid' (isSource attrs -> True) 2 _ _) | iid == iid' -> do
-      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["discoverUpToTwoAway" .= True]
+      cardResolutionModifier (toCard attrs) attrs (toCardId attrs)
+        $ MetaModifier
+        $ object ["discoverUpToTwoAway" .= True]
       pure e
     _ -> IntelReport <$> liftRunMessage msg attrs

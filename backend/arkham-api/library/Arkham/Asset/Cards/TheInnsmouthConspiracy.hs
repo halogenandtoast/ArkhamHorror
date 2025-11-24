@@ -698,4 +698,5 @@ divingSuit =
   (storyAsset "07338" "Diving Suit" 4 IntoTheMaelstrom)
     { cdCardTraits = setFromList [Item, Armor]
     , cdCardType = EncounterAssetType
+    , cdSlots = [#body]
     }

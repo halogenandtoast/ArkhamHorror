@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Trait (Trait (Coterie))
 
 newtype DesiderioDelgadoAlvarezRedInHisLedger = DesiderioDelgadoAlvarezRedInHisLedger EnemyAttrs
@@ -28,8 +29,8 @@ instance HasAbilities DesiderioDelgadoAlvarezRedInHisLedger where
 
 instance RunMessage DesiderioDelgadoAlvarezRedInHisLedger where
   runMessage msg e@(DesiderioDelgadoAlvarezRedInHisLedger attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (damagedEnemyWithSource -> (eid, s)) _ -> do
-      push $ CancelEnemyDamage eid s 1
+    UseCardAbility _ (isSource attrs -> True) 1 (damagedEnemy -> eid) _ -> do
+      damageModifier (attrs.ability 1) eid (DamageTaken (-1))
       nonAttackEnemyDamage Nothing (attrs.ability 1) 1 attrs
       pure e
     _ -> DesiderioDelgadoAlvarezRedInHisLedger <$> liftRunMessage msg attrs

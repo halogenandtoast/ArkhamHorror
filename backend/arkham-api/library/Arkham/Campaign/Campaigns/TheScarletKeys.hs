@@ -595,11 +595,11 @@ instance RunMessage TheScarletKeys where
         p "body"
         ul do
           li.nested.validate deliveringIntel "deliveringIntel" do
-            li.validate inTokyo "deliveringIntelInTokyo"
-            li.validate (not inTokyo) "deliveringIntelInLagos"
+            li.validate (deliveringIntel && inTokyo) "deliveringIntelInTokyo"
+            li.validate (deliveringIntel && not inTokyo) "deliveringIntelInLagos"
           li.nested.validate (not deliveringIntel) "notDeliveringIntel" do
-            li.validate inTokyo "notDeliveringIntelInTokyo"
-            li.validate (not inTokyo) "notDeliveringIntelInLagos"
+            li.validate (not deliveringIntel && inTokyo) "notDeliveringIntelInTokyo"
+            li.validate (not deliveringIntel && not inTokyo) "notDeliveringIntelInLagos"
       if
         | deliveringIntel && inTokyo -> doStep 2 msg
         | deliveringIntel && not inTokyo -> doStep 4 msg

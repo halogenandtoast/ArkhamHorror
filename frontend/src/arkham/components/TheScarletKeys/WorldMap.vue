@@ -77,7 +77,7 @@ const data = {
   'Constantinople': { x: 1675, y: 503, subtitle: t('theScarletKeys.locations.Constantinople.subtitle') },
   'Havana': { x: 617, y: 712, subtitle: t('theScarletKeys.locations.Havana.subtitle') },
   'HongKong': { x: 2515, y: 719 },
-  'Kabul': { x: 2064, y: 568 },
+  'Kabul': { x: 2064, y: 568 , subtitle: t('theScarletKeys.locations.Kabul.subtitle') },
   'Kathmandu': { x: 2238, y: 673, subtitle: t('theScarletKeys.locations.Kathmandu.subtitle') },
   'KualaLumpur': { x: 2412, y: 944 },
   'Lagos': { x: 1437, y: 904, subtitle: t('theScarletKeys.locations.Lagos.subtitle') },
@@ -636,7 +636,7 @@ document.addEventListener('fullscreenchange', () => {
               </template>
               <template v-else-if="embark === true">
                 <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
-                <div v--if="selectedLocation === 'Venice'" class="side-story-info">
+                <div v-if="selectedLocation === 'Venice'" class="side-story-info">
                   <p>This is a side-story location.</p>
                   <p>If you wish to add a side-story to this campaign, you may travel to this location and spend additional time equal to the normal experience for playing that side story.</p>
                 </div>
@@ -1124,6 +1124,8 @@ document.addEventListener('fullscreenchange', () => {
                     only if Masai has reason to trust them.
                   </p>
                 </section>
+              </div>
+              <div v-else-if="selectedLocation === 'Kabul'" class='dossier'>
               </div>
             </div>
           </div>

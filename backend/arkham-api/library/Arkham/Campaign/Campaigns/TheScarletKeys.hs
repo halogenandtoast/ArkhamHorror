@@ -12,6 +12,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
@@ -81,6 +82,10 @@ travel attrs locId doTravel n = do
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       Constantinople -> campaignStep_ DealingsInTheDark
       Havana -> campaignStep_ DancingMad
+      Kabul -> campaignStep_ (InterludeStep 14 Nothing)
+      Quito -> campaignStep_ (InterludeStep 14 Nothing)
+      SanJuan -> campaignStep_ (InterludeStep 14 Nothing)
+      Reykjavik -> campaignStep_ (InterludeStep 14 Nothing)
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'
@@ -239,6 +244,68 @@ instance RunMessage TheScarletKeys where
           addChaosToken Cultist
       -- handle via Embark
       pure c
+    CampaignStep (InterludeStep 14 _) -> scope "rusesAndReclamation" do
+      wrongLeads <- getRecordCount WrongLeads
+      if wrongLeads == 3
+        then doStep 2 msg
+        else do
+          found <- sample $ True :| replicate (3 - wrongLeads) False
+          doStep (if found then 2 else 1) msg
+      pure c
+    DoStep 1 (CampaignStep (InterludeStep 14 _)) -> scope "rusesAndReclamation" do
+      incrementRecordCount WrongLeads 1
+      flavor $ setTitle "title" >> p "rusesAndReclamation1"
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 14 _)) -> scope "rusesAndReclamation" do
+      flavor $ setTitle "title" >> p "rusesAndReclamation2"
+      wrongLeads <- getRecordCount WrongLeads
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let
+        stolen =
+          meta.keyStatus & Map.assocs & mapMaybe \case
+            (k, KeyWithEnemy e (Just iid)) -> (,e,iid) <$> lookupCardDef k
+            _ -> Nothing
+      for_ (nonEmpty stolen) \((_k, e, _iid) :| _) -> do
+        if
+          | e == Enemies.theRedGlovedManPurposeUnknown.cardCode ->
+              flavor $ setTitle "title" >> p "theRedGlovedMan"
+          | e == Enemies.laChicaRojaHotOnYourTrail.cardCode ->
+              flavor $ setTitle "title" >> p "laChicaRoja"
+          | e == Enemies.theSanguineWatcherHeSeesWhatIsNotThere.cardCode ->
+              flavor $ setTitle "title" >> p "theSanguineWatcher"
+          | e == Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction.cardCode ->
+              flavor $ setTitle "title" >> p "theBeastInACowl"
+          | e == Enemies.theClaretKnightHoldsYouInContempt.cardCode ->
+              flavor $ setTitle "title" >> p "theClaretKnight"
+          | e == Enemies.thorneOpenToNegotiation.cardCode ->
+              flavor $ setTitle "title" >> p "thorne"
+          | e == Enemies.desiderioDelgadoAlvarezRedInHisLedger.cardCode ->
+              flavor $ setTitle "title" >> p "desiderioDelgadoAlvarez"
+          | e == Enemies.amaranthScarletScorn.cardCode ->
+              flavor $ setTitle "title" >> p "amaranth"
+          | e == Enemies.tzuSanNiangAWhisperInYourEar.cardCode ->
+              flavor $ setTitle "title" >> p "tzuSanNiang"
+          | e == Enemies.alikiZoniUperetriaSpeaksInDeath.cardCode ->
+              flavor $ setTitle "title" >> p "alikiZoniUperetria"
+          | otherwise -> error "unknown scarlet key enemy"
+      for_ stolen \(k, _, iid) -> setBearer k (KeyWithInvestigator iid)
+      interludeXpAll (toBonus "bonus" $ 1 + wrongLeads)
+      markTime 1
+      campaignStep_ (embark attrs)
+
+      let removes = [Kabul, Quito, SanJuan, Reykjavik]
+      let visited = removes \\ meta.visitedLocations
+      -- removes are the intersection
+
+      let
+        attrs' =
+          attrs
+            & overMeta
+              ( (visitedLocationsL <>~ visited)
+                  . (unlockedLocationsL %~ filter (`notElem` removes))
+              )
+      pure $ TheScarletKeys attrs'
     CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
       ok <- getHasRecord TuwileMasaiFledToBermuda
       flavor do

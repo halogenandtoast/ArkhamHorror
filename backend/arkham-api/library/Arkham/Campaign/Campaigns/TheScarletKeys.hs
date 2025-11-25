@@ -230,12 +230,12 @@ instance RunMessage TheScarletKeys where
           flavor $ setTitle "title" >> p "gamma"
           addChaosToken Cultist
           eachInvestigator \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.paradimensionalUnderstanding
-        Theta -> flavor $ setTitle "title" >> p "gamma"
+        Theta -> flavor $ setTitle "title" >> p "theta"
         Psi -> do
-          flavor $ setTitle "title" >> p "beta"
-          campaignSpecific "unlock" Tunguska
+          flavor $ setTitle "title" >> p "psi"
+          campaignSpecific "unlock" HongKong
         Omega -> do
-          flavor $ setTitle "title" >> p "gamma"
+          flavor $ setTitle "title" >> p "omega"
           addChaosToken Cultist
       -- handle via Embark
       pure c

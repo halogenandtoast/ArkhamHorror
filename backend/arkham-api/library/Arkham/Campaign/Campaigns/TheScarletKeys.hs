@@ -21,6 +21,7 @@ import Arkham.Modifier
 import Arkham.Question
 import Arkham.SideStory
 import Arkham.Source
+import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
@@ -196,6 +197,36 @@ instance RunMessage TheScarletKeys where
         $ TheScarletKeys
         $ attrs
         & overMeta (thetaL ?~ toResult v)
+    CampaignSpecific "statusReport" v -> scope "statusReport" do
+      let statusReport = toResult v
+      case statusReport of
+        Alpha -> do
+          flavor $ setTitle "title" >> p "alpha"
+          addChaosToken Cultist
+        Beta -> do
+          flavor $ setTitle "title" >> p "beta"
+          addChaosToken Cultist
+          campaignSpecific "unlock" Tunguska
+        Epsilon -> flavor $ setTitle "title" >> p "epsilon"
+        Zeta -> do
+          flavor $ setTitle "title" >> p "zeta"
+          campaignSpecific "unlock" Kabul
+          campaignSpecific "unlock" Quito
+          campaignSpecific "unlock" SanJuan
+          campaignSpecific "unlock" Reykjavik
+        Gamma -> do
+          flavor $ setTitle "title" >> p "gamma"
+          addChaosToken Cultist
+          eachInvestigator \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.paradimensionalUnderstanding
+        Theta -> flavor $ setTitle "title" >> p "gamma"
+        Psi -> do
+          flavor $ setTitle "title" >> p "beta"
+          campaignSpecific "unlock" Tunguska
+        Omega -> do
+          flavor $ setTitle "title" >> p "gamma"
+          addChaosToken Cultist
+          -- handle via Embark
+      pure c
     CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
       ok <- getHasRecord TuwileMasaiFledToBermuda
       flavor do
@@ -213,7 +244,7 @@ instance RunMessage TheScarletKeys where
           , YouHaventSeenTheLastOfLaChicaRoja
           , YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
           , YouHaventSeenTheLastOfTheClaretKnight
-          , YouHaventSeenTheLastOfThorn
+          , YouHaventSeenTheLastOfThorne
           , YouHaventSeenTheLastOfAlikiZoniUperetria
           ]
 

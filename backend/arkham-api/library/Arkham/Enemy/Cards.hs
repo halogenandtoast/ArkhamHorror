@@ -100,11 +100,13 @@ allEncounterEnemyCards =
       , acolyteOfUmordhoth
       , agentOfTheKing
       , alejandroVela
+      , alikiZoniUperetriaSpeaksInDeath
       , allosaurusIndomitablePredator
       , allosaurusRampagingPredator
       , almaHill
-      , amaranthLurkingCorruption
       , amaranthCorruptionRevealed
+      , amaranthLurkingCorruption
+      , amaranthScarletScorn
       , ancientRaider
       , ancientZoog
       , anetteMason
@@ -189,6 +191,7 @@ allEncounterEnemyCards =
       , declanPearce
       , desiderioDelgadoAlvarez106
       , desiderioDelgadoAlvarez107
+      , desiderioDelgadoAlvarezRedInHisLedger
       , dmitriKonstantinovTakingTheLongView
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
@@ -306,6 +309,7 @@ allEncounterEnemyCards =
       , khalidBelovedCompanion
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
+      , laChicaRojaHotOnYourTrail
       , laChicaRojaTheGirlInTheCarmineCoat
       , laComtesseSubverterOfPlans
       , laboringGug
@@ -455,8 +459,10 @@ allEncounterEnemyCards =
       , terrorOfTheStarsBringerOfIceAndDeath
       , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
+      , theBeastInACowlOfCrimsonLeavingATrailOfDestruction
       , theBloodlessMan
       , theBloodlessManUnleashed
+      , theClaretKnightHoldsYouInContempt
       , theContessaEnraged
       , theContessaNeedlesslySmug
       , theCrawlingMist
@@ -466,8 +472,10 @@ allEncounterEnemyCards =
       , theNamelessMadness
       , theOrganistDrapedInMystery
       , theOrganistHopelessIDefiedHim
+      , theRedGlovedManPurposeUnknown
       , theRedGlovedManShroudedInMystery
       , theSanguineWatcherWithTheRubySpectacles
+      , theSanguineWatcherHeSeesWhatIsNotThere
       , theSpectralWatcher
       , theTerrorOfDevilReef_164
       , theTerrorOfDevilReef_165
@@ -476,10 +484,12 @@ allEncounterEnemyCards =
       , theUnnamable
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
+      , thorneOpenToNegotiation  
       , thrall
       , thrallDeadHeat
       , tidalTerror
       , tindalosAlpha
+      , tzuSanNiangAWhisperInYourEar
       , umbralHarbinger
       , umordhoth
       , unsealedPhantasm
@@ -3071,6 +3081,95 @@ emissaryFromYuggoth =
     , cdKeywords =
         setFromList [Keyword.Concealed EmissaryFromYuggoth (Static 2), Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 1
+    }
+
+theRedGlovedManPurposeUnknown :: CardDef
+theRedGlovedManPurposeUnknown =
+  (enemy "09752" ("The Red-Gloved Man" <:> "Purpose Unknown") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+laChicaRojaHotOnYourTrail :: CardDef
+laChicaRojaHotOnYourTrail =
+  (enemy "09753" ("La Chica Roja" <:> "Hot on Your Trail") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+theSanguineWatcherHeSeesWhatIsNotThere :: CardDef
+theSanguineWatcherHeSeesWhatIsNotThere =
+  (enemy "09754" ("The Sanguine Watcher" <:> "He Sees What Is Not There") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+theBeastInACowlOfCrimsonLeavingATrailOfDestruction :: CardDef
+theBeastInACowlOfCrimsonLeavingATrailOfDestruction =
+  (enemy "09755" ("The Beast in a Cowl of Crimson" <:> "Leaving a Trail of Destruction") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+theClaretKnightHoldsYouInContempt :: CardDef
+theClaretKnightHoldsYouInContempt =
+  (enemy "09756" ("The Claret Knight" <:> "Holds You in Contempt") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+thorneOpenToNegotiation :: CardDef
+thorneOpenToNegotiation =
+  (enemy "09757" ("Thorne" <:> "Open to Negotiation") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+desiderioDelgadoAlvarezRedInHisLedger :: CardDef
+desiderioDelgadoAlvarezRedInHisLedger =
+  (enemy "09758" ("Desiderio Delgado Alvarez" <:> "Red in His Ledger") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Patrol (LocationWithEnemy (EnemyWithTrait Coterie <> not_ (EnemyIs "09758")))]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+amaranthScarletScorn :: CardDef
+amaranthScarletScorn =
+  (enemy "09759" ("Amaranth" <:> "Scarlet Scorn") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+tzuSanNiangAWhisperInYourEar :: CardDef
+tzuSanNiangAWhisperInYourEar =
+  (enemy "09760" ("Tzu San Niang" <:> "A Whisper in Your Ear") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+alikiZoniUperetriaSpeaksInDeath :: CardDef
+alikiZoniUperetriaSpeaksInDeath =
+  (enemy "09761" ("Aliki Zoni Uperetria" <:> "Speaks in Death") RedCoterie 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
     }
 
 zamacona :: CardDef

@@ -27,10 +27,12 @@ data TheScarletKeysKey
   | YouHaventSeenTheLastOfAmaranth
   | YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
   | YouHaventSeenTheLastOfLaChicaRoja
+  | YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
   | YouHaventSeenTheLastOfTheClaretKnight
   | YouHaventSeenTheLastOfTheRedGlovedMan
   | YouHaventSeenTheLastOfTheSanguineWatcher
-  | YouHaventSeenTheLastOfThorn
+  | YouHaventSeenTheLastOfThorne
+  | YouHaventSeenTheLastOfTzuSanNiang
   | YouKnowThePassphrase
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

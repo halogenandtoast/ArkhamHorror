@@ -545,7 +545,14 @@ getEnemies = \case
 
 damagedEnemy :: [Window] -> EnemyId
 damagedEnemy = \case
+  ((windowType -> Window.WouldTakeDamage _ (EnemyTarget eid) _ _) : _) -> eid
   ((windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _) : _) -> eid
+  _ -> error "Expected DealtDamage window"
+
+damagedEnemyWithSource :: [Window] -> (EnemyId, Source)
+damagedEnemyWithSource = \case
+  ((windowType -> Window.WouldTakeDamage s (EnemyTarget eid) _ _) : _) -> (eid, s)
+  ((windowType -> Window.DealtDamage s _ (EnemyTarget eid) _) : _) -> (eid, s)
   _ -> error "Expected DealtDamage window"
 
 damagedAsset :: [Window] -> AssetId
@@ -895,6 +902,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matchWho iid who whoMatcher
             , sourceMatches source' sourceMatcher
             ]
+        _ -> noMatch
+    Matcher.EnemyWouldTakeDamage timing enemyMatcher ->
+      guardTiming timing $ \case
+        Window.WouldTakeDamage _source (EnemyTarget eid) _ _strategy ->
+          matches eid enemyMatcher
         _ -> noMatch
     Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher damageTypeMatcher ->
       guardTiming timing $ \case
@@ -1816,12 +1828,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
         _ -> noMatch
     Matcher.AddedToVictory timing mWhoMatcher cardMatcher -> guardTiming timing $ \case
-      Window.AddedToVictory mWho card -> andM [pure $ cardMatch card cardMatcher
-        , maybe
-          (pure True)
-          (\whoMatcher -> maybe (pure False) (\who -> matchWho iid who whoMatcher) mWho)
-          mWhoMatcher
-        ]
+      Window.AddedToVictory mWho card ->
+        andM
+          [ pure $ cardMatch card cardMatcher
+          , maybe
+              (pure True)
+              (\whoMatcher -> maybe (pure False) (\who -> matchWho iid who whoMatcher) mWho)
+              mWhoMatcher
+          ]
       _ -> noMatch
     Matcher.AssetDefeated timing defeatedByMatcher assetMatcher ->
       guardTiming timing $ \case

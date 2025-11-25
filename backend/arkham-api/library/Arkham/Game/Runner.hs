@@ -2456,6 +2456,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     let scarletKey = createScarletKey card starget keyId
     push $ PlaceScarletKey keyId placement
     pure $ g & entitiesL . scarletKeysL . at keyId ?~ scarletKey
+  RemoveScarletKey keyId -> do
+    pure $ g & entitiesL . scarletKeysL %~ deleteMap keyId
   CreateEventAt iid card placement -> do
     eventId <- getRandom
     let event' = createEvent card iid eventId

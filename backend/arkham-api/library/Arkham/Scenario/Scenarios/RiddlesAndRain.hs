@@ -165,13 +165,13 @@ instance RunMessage RiddlesAndRain where
         Resolution 3 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
           markTime 1
-          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution3" $ allGainXp' attrs
           endOfScenario
         Resolution 4 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
           markTime 2
-          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution4" $ allGainXp' attrs
           endOfScenario
         _ -> error "invalid resolution"

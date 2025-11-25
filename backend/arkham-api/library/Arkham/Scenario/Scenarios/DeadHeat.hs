@@ -113,6 +113,7 @@ instance RunMessage DeadHeat where
       gather Set.SpreadingCorruption
       gather Set.Ghouls
       gather Set.StrikingFear
+      handleRedCoterie
 
       setAgendaDeck [Agendas.gnashingTeeth, Agendas.emptyStreets]
       if n >= 15
@@ -195,13 +196,13 @@ instance RunMessage DeadHeat where
             flipOverBy lead ScenarioSource (StoryId Stories.saveTheCivilians.cardCode)
           push $ if razin then R1 else R2
         Resolution 1 -> do
-          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
           record TheLoversAreReunited
           markTime 1
           resolutionWithXp "resolution1" $ allGainXp' attrs
           endOfScenario
         Resolution 2 -> do
-          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
           record YouHaventSeenTheLastOfAmaranth
           markTime 1
           resolutionWithXp "resolution2" $ allGainXp' attrs
@@ -221,7 +222,7 @@ instance RunMessage DeadHeat where
         Resolution 5 -> do
           record YouHaventSeenTheLastOfAmaranth
           eachInvestigator (`sufferMentalTrauma` 1)
-          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
           markTime 1
           resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs (toBonus "bonus" 3)
           endOfScenario

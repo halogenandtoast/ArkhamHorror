@@ -1736,11 +1736,13 @@ library
       Arkham.Enemy.Cards.AgentFletcher
       Arkham.Enemy.Cards.AgentOfTheKing
       Arkham.Enemy.Cards.AlejandroVela
+      Arkham.Enemy.Cards.AlikiZoniUperetriaSpeaksInDeath
       Arkham.Enemy.Cards.AllosaurusIndomitablePredator
       Arkham.Enemy.Cards.AllosaurusRampagingPredator
       Arkham.Enemy.Cards.AlmaHill
       Arkham.Enemy.Cards.AmaranthCorruptionRevealed
       Arkham.Enemy.Cards.AmaranthLurkingCorruption
+      Arkham.Enemy.Cards.AmaranthScarletScorn
       Arkham.Enemy.Cards.AncientRaider
       Arkham.Enemy.Cards.AncientZoog
       Arkham.Enemy.Cards.AnetteMason
@@ -1832,6 +1834,7 @@ library
       Arkham.Enemy.Cards.DeepOnePredator
       Arkham.Enemy.Cards.DesiderioDelgadoAlvarez106
       Arkham.Enemy.Cards.DesiderioDelgadoAlvarez107
+      Arkham.Enemy.Cards.DesiderioDelgadoAlvarezRedInHisLedger
       Arkham.Enemy.Cards.DevoteeOfTheKey
       Arkham.Enemy.Cards.DholeOfTheWastes
       Arkham.Enemy.Cards.DianneDevine
@@ -1949,6 +1952,7 @@ library
       Arkham.Enemy.Cards.KnightOfTheInnerCircle
       Arkham.Enemy.Cards.KnightOfTheOuterVoid
       Arkham.Enemy.Cards.LaboringGug
+      Arkham.Enemy.Cards.LaChicaRojaHotOnYourTrail
       Arkham.Enemy.Cards.LaChicaRojaTheGirlInTheCarmineCoat
       Arkham.Enemy.Cards.LaComtesseSubverterOfPlans
       Arkham.Enemy.Cards.LanternClubMember
@@ -2108,8 +2112,10 @@ library
       Arkham.Enemy.Cards.TerrorOfTheStarsBringerOfIceAndDeath
       Arkham.Enemy.Cards.TerrorOfTheStarsGuardianOfForbiddenPeaks
       Arkham.Enemy.Cards.TheAmalgam
+      Arkham.Enemy.Cards.TheBeastInACowlOfCrimsonLeavingATrailOfDestruction
       Arkham.Enemy.Cards.TheBloodlessMan
       Arkham.Enemy.Cards.TheBloodlessManUnleashed
+      Arkham.Enemy.Cards.TheClaretKnightHoldsYouInContempt
       Arkham.Enemy.Cards.TheConductorBeastFromBeyondTheGate
       Arkham.Enemy.Cards.TheContessaEnraged
       Arkham.Enemy.Cards.TheContessaNeedlesslySmug
@@ -2120,8 +2126,10 @@ library
       Arkham.Enemy.Cards.TheNamelessMadness
       Arkham.Enemy.Cards.TheOrganistDrapedInMystery
       Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim
+      Arkham.Enemy.Cards.TheRedGlovedManPurposeUnknown
       Arkham.Enemy.Cards.TheRedGlovedManShroudedInMystery
       Arkham.Enemy.Cards.TheRougarou
+      Arkham.Enemy.Cards.TheSanguineWatcherHeSeesWhatIsNotThere
       Arkham.Enemy.Cards.TheSanguineWatcherWithTheRubySpectacles
       Arkham.Enemy.Cards.TheSpectralWatcher
       Arkham.Enemy.Cards.TheTerrorOfDevilReef_164
@@ -2131,12 +2139,14 @@ library
       Arkham.Enemy.Cards.TheUnnamable
       Arkham.Enemy.Cards.TheWingedSerpent
       Arkham.Enemy.Cards.TheWingedSerpentTheFuryOfYig
+      Arkham.Enemy.Cards.ThorneOpenToNegotiation
       Arkham.Enemy.Cards.Thrall
       Arkham.Enemy.Cards.ThrallDeadHeat
       Arkham.Enemy.Cards.TidalTerror
       Arkham.Enemy.Cards.TindalosAlpha
       Arkham.Enemy.Cards.TommyMalloy
       Arkham.Enemy.Cards.TonysQuarry
+      Arkham.Enemy.Cards.TzuSanNiangAWhisperInYourEar
       Arkham.Enemy.Cards.UmbralHarbinger
       Arkham.Enemy.Cards.Umordhoth
       Arkham.Enemy.Cards.UnboundBeast
@@ -4687,6 +4697,7 @@ library
       Arkham.Treachery.Cards.Overzealous
       Arkham.Treachery.Cards.PainfulReflection
       Arkham.Treachery.Cards.Panic
+      Arkham.Treachery.Cards.ParadimensionalUnderstanding
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
       Arkham.Treachery.Cards.PerilsOfYoth

@@ -577,6 +577,7 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
   | CancelAssetHorror AssetId Source Int
+  | CancelEnemyDamage EnemyId Source Int
   | CheckAttackOfOpportunity InvestigatorId Bool (Maybe EnemyMatcher)
   | CheckDefeated Source Target
   | AssignDamage Target
@@ -643,6 +644,7 @@ data Message
   | CreateTreacheryAt TreacheryId Card Placement
   | PlaceAsset AssetId Placement
   | PlaceScarletKey ScarletKeyId Placement
+  | RemoveScarletKey ScarletKeyId
   | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement

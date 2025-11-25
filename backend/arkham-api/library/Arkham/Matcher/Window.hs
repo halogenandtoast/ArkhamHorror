@@ -105,6 +105,7 @@ data WindowMatcher
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
+  | EnemyWouldTakeDamage Timing EnemyMatcher
   | WouldSearchDeck Timing Who DeckMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
   | LookedAtDeck Timing Who DeckMatcher

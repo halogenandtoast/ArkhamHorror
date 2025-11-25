@@ -992,7 +992,10 @@ allAssets =
     , --- Dancing Mad [tsk]
       SomeAssetCard desiderioDelgadoAlvarez
     , --- Globetrotting [tsk]
-      SomeAssetCard expeditedTicket
+      SomeAssetCard inspectorFlintWithPrideAndCare
+    , SomeAssetCard agentAriQuinnFoundationResearcher
+    , SomeAssetCard drDewiIrawanCryptozoologist
+    , SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale
       --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive

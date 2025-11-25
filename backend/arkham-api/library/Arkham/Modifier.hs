@@ -218,6 +218,7 @@ data ModifierType
   | CannotSpendKeys
   | CannotTakeKeys
   | CannotLeavePlay
+  | CannotLeaveYourHand
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher

@@ -564,6 +564,7 @@ library
       Arkham.Asset.Assets.AdamLynch
       Arkham.Asset.Assets.Adaptable1
       Arkham.Asset.Assets.AgencyBackup5
+      Arkham.Asset.Assets.AgentAriQuinnFoundationResearcher
       Arkham.Asset.Assets.AlchemicalConcoction
       Arkham.Asset.Assets.AlchemicalDistillation
       Arkham.Asset.Assets.AlchemicalTransmutation
@@ -807,6 +808,7 @@ library
       Arkham.Asset.Assets.DrAmyKenslerProfessorOfBiologyResolute
       Arkham.Asset.Assets.DrawingThin
       Arkham.Asset.Assets.DrCharlesWestIIIKnowsHisPurpose
+      Arkham.Asset.Assets.DrDewiIrawanCryptozoologist
       Arkham.Asset.Assets.DreamDiary
       Arkham.Asset.Assets.DreamDiaryDreamsOfAChild3
       Arkham.Asset.Assets.DreamDiaryDreamsOfAMadman3
@@ -919,6 +921,7 @@ library
       Arkham.Asset.Assets.FortyFiveThompsonRogue3
       Arkham.Asset.Assets.FortyOneDerringer
       Arkham.Asset.Assets.FortyOneDerringer2
+      Arkham.Asset.Assets.FoundationIntel
       Arkham.Asset.Assets.FourOfCups1
       Arkham.Asset.Assets.FoxMaskTheWiseTrickster
       Arkham.Asset.Assets.GabrielCarilloTrustedConfidante1
@@ -1009,6 +1012,7 @@ library
       Arkham.Asset.Assets.IneffableTruth3
       Arkham.Asset.Assets.IneffableTruth5
       Arkham.Asset.Assets.InnocentReveler
+      Arkham.Asset.Assets.InspectorFlintWithPrideAndCare
       Arkham.Asset.Assets.InTheKnow1
       Arkham.Asset.Assets.InTheThickOfIt
       Arkham.Asset.Assets.Intrepid

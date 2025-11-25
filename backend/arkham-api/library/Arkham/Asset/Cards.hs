@@ -31,6 +31,7 @@ allPlayerAssetCards =
       , aceOfRods1
       , aceOfSwords1
       , adaptable1
+      , agentAriQuinnFoundationResearcher
       , agencyBackup5
       , alchemicalDistillation
       , alchemicalTransmutation
@@ -269,6 +270,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAMadman3
       , dreamDiaryDreamsOfAnExplorer3
       , dreamEnhancingSerum
+      , drDewiIrawanCryptozoologist
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
@@ -371,6 +373,7 @@ allPlayerAssetCards =
       , fortyFiveThompsonRogue3
       , fortyOneDerringer
       , fortyOneDerringer2
+      , foundationIntel
       , fourOfCups1
       , foxMaskTheWiseTrickster
       , gabrielCarilloTrustedConfidante1
@@ -458,6 +461,7 @@ allPlayerAssetCards =
       , ineffableTruth3
       , ineffableTruth5
       , innocentReveler
+      , inspectorFlintWithPrideAndCare
       , inTheKnow1
       , inTheThickOfIt
       , investments

@@ -209,6 +209,18 @@ instance RunMessage TheScarletKeys where
           campaignSpecific "unlock" Tunguska
         Epsilon -> flavor $ setTitle "title" >> p "epsilon"
         Zeta -> do
+          let meta = toResult @TheScarletKeysMeta attrs.meta
+          let
+            skeys =
+              meta.keyStatus & Map.assocs & mapMaybe \case
+                (k, KeyWithInvestigator iid) -> (,iid) <$> lookupCardDef k
+                _ -> Nothing
+          runMaybeT_ do
+            ks <- hoistMaybe $ nonEmpty skeys
+            stolen <- lift $ sampleN (if length ks >= 5 then 2 else 1) ks
+            culprits <- MaybeT $ nonEmpty <$> haven'tSeenTheLastOf
+            lift $ sample culprits >>= \e -> for_ stolen \(k, iid) -> setBearer k (keyStolenByEnemy iid e)
+
           flavor $ setTitle "title" >> p "zeta"
           campaignSpecific "unlock" Kabul
           campaignSpecific "unlock" Quito
@@ -225,7 +237,7 @@ instance RunMessage TheScarletKeys where
         Omega -> do
           flavor $ setTitle "title" >> p "gamma"
           addChaosToken Cultist
-          -- handle via Embark
+      -- handle via Embark
       pure c
     CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
       ok <- getHasRecord TuwileMasaiFledToBermuda

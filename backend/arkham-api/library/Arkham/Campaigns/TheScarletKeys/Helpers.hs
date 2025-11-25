@@ -37,7 +37,6 @@ import Arkham.Source
 import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
-import Control.Arrow ((>>>))
 
 pattern HollowedCard :: ExtendedCardMatcher
 pattern HollowedCard <- CardWithModifier (ScenarioModifier "hollowed")
@@ -176,29 +175,28 @@ swapTokens face1 face2 = do
               ]
         else addChaosToken face2
 
+haven'tSeenTheLastOf :: ReverseQueue m => m [CardDef]
+haven'tSeenTheLastOf = do
+  let
+    redCoterie =
+      [ (Enemies.alikiZoniUperetriaSpeaksInDeath, YouHaventSeenTheLastOfAlikiZoniUperetria)
+      , (Enemies.amaranthScarletScorn, YouHaventSeenTheLastOfAmaranth)
+      , (Enemies.desiderioDelgadoAlvarezRedInHisLedger, YouHaventSeenTheLastOfDesiderioDelgadoAlvarez)
+      , (Enemies.laChicaRojaHotOnYourTrail, YouHaventSeenTheLastOfLaChicaRoja)
+      , (Enemies.theClaretKnightHoldsYouInContempt, YouHaventSeenTheLastOfTheClaretKnight)
+      , (Enemies.theRedGlovedManPurposeUnknown, YouHaventSeenTheLastOfTheRedGlovedMan)
+      , (Enemies.theSanguineWatcherHeSeesWhatIsNotThere, YouHaventSeenTheLastOfTheSanguineWatcher)
+      , (Enemies.thorneOpenToNegotiation, YouHaventSeenTheLastOfThorne)
+      ,
+        ( Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
+        , YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
+        )
+      , (Enemies.tzuSanNiangAWhisperInYourEar, YouHaventSeenTheLastOfTzuSanNiang)
+      ]
+  map fst <$> (redCoterie & filterM (getHasRecord . snd))
+
 handleRedCoterie :: ReverseQueue m => ScenarioBuilderT m ()
 handleRedCoterie = do
   t <- getTime
   when (t >= 10) do
-    let
-      redCoterie =
-        [ (Enemies.alikiZoniUperetriaSpeaksInDeath, YouHaventSeenTheLastOfAlikiZoniUperetria)
-        , (Enemies.amaranthScarletScorn, YouHaventSeenTheLastOfAmaranth)
-        , (Enemies.desiderioDelgadoAlvarezRedInHisLedger, YouHaventSeenTheLastOfDesiderioDelgadoAlvarez)
-        , (Enemies.laChicaRojaHotOnYourTrail, YouHaventSeenTheLastOfLaChicaRoja)
-        , (Enemies.theClaretKnightHoldsYouInContempt, YouHaventSeenTheLastOfTheClaretKnight)
-        , (Enemies.theRedGlovedManPurposeUnknown, YouHaventSeenTheLastOfTheRedGlovedMan)
-        , (Enemies.theSanguineWatcherHeSeesWhatIsNotThere, YouHaventSeenTheLastOfTheSanguineWatcher)
-        , (Enemies.thorneOpenToNegotiation, YouHaventSeenTheLastOfThorne)
-        ,
-          ( Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
-          , YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
-          )
-        , (Enemies.tzuSanNiangAWhisperInYourEar, YouHaventSeenTheLastOfTzuSanNiang)
-        ]
-    redCoterie
-      & ( filterM (getHasRecord . snd)
-            >=> map fst
-            >>> nonEmpty
-            >>> traverse_ (sample >=> addToEncounterDeck . only)
-        )
+    lift haven'tSeenTheLastOf >>= traverse_ (sample >=> addToEncounterDeck . only) . nonEmpty

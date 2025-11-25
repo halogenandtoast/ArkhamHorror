@@ -117,12 +117,15 @@ worldMap =
 
 data KeyStatus
   = KeyWithInvestigator InvestigatorId
-  | KeyWithEnemy CardCode
+  | KeyWithEnemy CardCode (Maybe InvestigatorId)
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 keyWithEnemy :: HasCardCode enemy => enemy -> KeyStatus
-keyWithEnemy = KeyWithEnemy . toCardCode
+keyWithEnemy = (`KeyWithEnemy` Nothing) . toCardCode
+
+keyStolenByEnemy :: HasCardCode enemy => InvestigatorId -> enemy -> KeyStatus
+keyStolenByEnemy iid = (`KeyWithEnemy` Just iid) . toCardCode
 
 initMeta :: TheScarletKeysMeta
 initMeta = TheScarletKeysMeta [London] initUnlockedLocations mempty worldMap London [] Nothing Nothing

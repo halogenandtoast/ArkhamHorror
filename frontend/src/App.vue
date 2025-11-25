@@ -93,6 +93,11 @@ button {
 }
 
 @font-face {
+  font-family: "MapTypewriter";
+  src: url("/fonts/type.ttf");
+}
+
+@font-face {
   font-family: "Accountant";
   src: url("/fonts/accountant.ttf");
 }

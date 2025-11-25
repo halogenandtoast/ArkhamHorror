@@ -108,6 +108,7 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   EventMatcher (..),
   ExtendedCardMatcher (..),
+  ForPlay (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
   ScenarioMatcher (..),
@@ -118,6 +119,7 @@ import Arkham.Matcher (
   cardIs,
   colocatedWith,
   enemyEngagedWith,
+  inHandOf,
   locationWithInvestigator,
   mapOneOf,
   oneOf,
@@ -860,7 +862,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & discardF
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
-    when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull investigatorHand)) do
+    discardableHand <-
+      select $ inHandOf NotForPlay investigatorId <> CardWithoutModifier CannotLeaveYourHand
+    when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull discardableHand)) do
       wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
       pushAll [wouldDiscard, Do msg]
     pure a
@@ -887,7 +891,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               for_ handDiscard.target \target ->
                 push $ DiscardedCards investigatorId handDiscard.source target cs'
         DiscardAll -> do
-          let cards = filterCards handDiscard.filter cs
+          let cards' = filterCards handDiscard.filter cs
+          cards <- cards' & filterM (`matches` CardWithoutModifier CannotLeaveYourHand)
 
           when (notNull cards) do
             push
@@ -899,7 +904,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               push $ DiscardedCards investigatorId handDiscard.source target cards
         DiscardRandom -> do
           -- only cards actually in hand
-          let filtered = filterCards handDiscard.filter investigatorHand
+          let filtered' = filterCards handDiscard.filter investigatorHand
+          filtered <- filtered' & filterM (`matches` CardWithoutModifier CannotLeaveYourHand)
           for_ (nonEmpty filtered) \targets -> do
             cards <- sampleN handDiscard.amount targets
             pushAll $ map (DiscardCard investigatorId handDiscard.source . toCardId) cards

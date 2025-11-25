@@ -3,26 +3,75 @@ module Arkham.Campaigns.TheScarletKeys.Key where
 import Arkham.Prelude
 
 data TheScarletKeysKey
-  = AmaranthHasLeftTheCoterie
+  = AgentFlintIsDead
+  | AgentFlintIsMissing
+  | AgentQuinnHasYourBack
+  | AgentQuinnDoesNotTrustTheCell
+  | AgentQuinnVanishedFromExistence
+  | AlikiIsOnYourSide
+  | AmaranthHasLeftTheCoterie
+  | CellDeception
   | DesiIsInYourDebt
+  | DrIrawanJoinedTheCell
+  | DrIrawanTraveledToNewGuinea
+  | DrIrawanVanishedFromExistence
   | EceDoesNotTrustTheCell
   | EceTrustsTheCell
   | ErasedFromExistence
+  | FlintAbandonedHisSearch
+  | FlintIsWorkingSolo
+  | FlintRejoinedTheCell
+  | FlintTraveledToKualaLumpur
+  | FoundationTrust
   | LaChicaRojaIsOnYourSide
+  | TheCellAidedInFlintsInvestigation
+  | TheCellAidedTheKnight
+  | TheCellAppreciatedTheArchitecture
+  | TheCellBlewTheWhistle
   | TheCellDidntDiscoverTheTruthInHavana
+  | TheCellEscapedTheRedCoterie
+  | TheCellFailedToFendOfTheBeast
   | TheCellHasBeenAmbushed
+  | TheCellHidTheTruthFromTaylor
+  | TheCellIsAssistingAgentSirry
   | TheCellIsDecievingEce
+  | TheCellIsDeliveringFoundationIntel
+  | TheCellIsOffMission
   | TheCellIsWorkingWithEce
+  | TheCellJoinedTheRedCoterie
   | TheCellKnowsAmaranthsRealName
   | TheCellKnowsOfDesisPast
+  | TheCellKnowsTheTrueNatureOfTheCoterie
   | TheCellMadeADealWithDesi
+  | TheCellMadeADealWithTheClaretKnight
+  | TheCellMadeADealWithThorne
   | TheCellMeddledInAbarransAffairs
+  | TheCellMetDrIrawan
+  | TheCellOverthrewTheRedCoterie
+  | TheCellPossessesAMysteriousWhistle
+  | TheCellRefusedAlikisOffer
   | TheCellRefusedEcesOffer
+  | TheCellToldTheTruthToTaylor
+  | TheCellThrewAwayTheWhistle
+  | TheCellWasDismantled
+  | TheCellWasGivenAPermanentPosition
+  | TheCellWasHollowed
+  | TheDogsAreAtWar
+  | TheFoundationRemainsInTheDark
   | TheLoversAreReunited
+  | TheOutsidersWhereStopped
+  | TheRedCoterieAndTheCellAgreedToWorkTogether
+  | TheRedCoterieSparedTheCell
+  | TheRedCoterieWasDestroyedFromWithin
   | TheSanguineWatchersTormentContinues
+  | TheVoidChimeraEscaped
+  | ThereIsNothingOfNoteInAnchorage
+  | ThorneDisappeared
   | Time
   | TuwileMasaiFledToBermuda
   | TuwileMasaiIsOnYourSide
+  | TzuSanNiangHasYouUnderHerSway
+  | TzuSanNiangIsUnderYourSway
   | WrongLeads
   | YouHaventSeenTheLastOfAlikiZoniUperetria
   | YouHaventSeenTheLastOfAmaranth

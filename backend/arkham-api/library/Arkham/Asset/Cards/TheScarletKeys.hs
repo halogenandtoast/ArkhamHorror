@@ -5,6 +5,7 @@ import Arkham.Asset.Uses qualified as Uses
 import Arkham.Criteria qualified as Criteria
 import Arkham.Customization
 import Arkham.Keyword qualified as Keyword
+import Arkham.Trait qualified as Trait
 
 bonesaw :: CardDef
 bonesaw =
@@ -650,33 +651,60 @@ soulSanctification3 =
 laChicaRojaYourWatchfulShadow :: CardDef
 laChicaRojaYourWatchfulShadow =
   (storyAsset "09557b" ("La Chica Roja" <:> "Your Watchful Shadow") 0 SanguineShadows)
-      { cdCardTraits = setFromList [Ally, Conspirator]
-      , cdCost = Nothing
-      , cdUnique = True
-      , cdDoubleSided = True
-      , cdOtherSide = Just "09557"
-      , cdCardType = EncounterAssetType
-      }
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09557"
+    , cdCardType = EncounterAssetType
+    }
 
 eceSahinTheVermillionVeiledLady :: CardDef
 eceSahinTheVermillionVeiledLady =
   (storyAsset "09584" ("Ece Şahin" <:> "The Vermillion-Veiled Lady") 0 DealingsInTheDark)
-      { cdCardTraits = setFromList [Ally, Conspirator]
-      , cdCost = Nothing
-      , cdUnique = True
-      , cdCardType = EncounterAssetType
-      }
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    }
 
 desiderioDelgadoAlvarez :: CardDef
 desiderioDelgadoAlvarez =
   (storyAsset "09607b" ("Desiderio Delgado Álvarez" <:> "In Your Debt, Despite it All") 0 DancingMad)
-      { cdCardTraits = setFromList [Ally, Conspirator]
-      , cdCost = Nothing
-      , cdUnique = True
-      , cdCardType = EncounterAssetType
-      , cdDoubleSided = True
-      , cdOtherSide = Just "09607"
-      }
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09607"
+    }
+
+inspectorFlintWithPrideAndCare :: CardDef
+inspectorFlintWithPrideAndCare =
+  (storyAsset "09762" ("Inspector Flint" <:> "With Pride and Care") 2 Globetrotting)
+    { cdCardTraits = setFromList [Ally, Agency, Detective]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdSkills = [#wild]
+    }
+
+agentAriQuinnFoundationResearcher :: CardDef
+agentAriQuinnFoundationResearcher =
+  (storyAsset "09763" ("Agent Ari Quinn" <:> "Foundation Researcher") 3 Globetrotting)
+    { cdCardTraits = setFromList [Ally, Agency, Detective]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdSkills = [#intellect, #combat, #agility]
+    }
+
+drDewiIrawanCryptozoologist :: CardDef
+drDewiIrawanCryptozoologist =
+  (storyAsset "09764" ("Dr. Dewi Irawan" <:> "\"Cryptozoologist\"") 2 Globetrotting)
+    { cdCardTraits = setFromList [Ally, Scholar]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdSkills = [#willpower, #intellect]
+    }
 
 expeditedTicket :: CardDef
 expeditedTicket =
@@ -684,3 +712,13 @@ expeditedTicket =
     (storyAsset "09765" "Expedited Ticket" 0 Globetrotting)
       { cdCardTraits = setFromList [Item]
       }
+
+foundationIntel :: CardDef
+foundationIntel =
+  (storyAsset "09766" "FoundationIntel" 0 Globetrotting)
+    { cdCardTraits = setFromList [Item, Trait.Evidence]
+    , cdCost = Nothing
+    , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
+    , cdOutOfPlayEffects = [InHandEffect]
+    }

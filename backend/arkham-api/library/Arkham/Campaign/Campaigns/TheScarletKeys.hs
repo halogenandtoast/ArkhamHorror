@@ -14,7 +14,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (getLead, getLeadPlayer)
+import Arkham.Helpers.Query (allInvestigators, getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -86,6 +86,21 @@ travel attrs locId doTravel n = do
       Quito -> campaignStep_ (InterludeStep 14 Nothing)
       SanJuan -> campaignStep_ (InterludeStep 14 Nothing)
       Reykjavik -> campaignStep_ (InterludeStep 14 Nothing)
+      London -> campaignStep_ (InterludeStep 27 Nothing)
+      Shanghai -> campaignStep_ (InterludeStep 32 Nothing)
+      Bombay -> campaignStep_ (InterludeStep 36 Nothing)
+      Stockholm -> campaignStep_ (InterludeStep 36 Nothing)
+      Lagos -> campaignStep_ (InterludeStep 37 Nothing)
+      Tokyo -> campaignStep_ (InterludeStep 37 Nothing)
+      RioDeJaneiro -> campaignStep_ (InterludeStep 44 Nothing)
+      Manokwari -> campaignStep_ (InterludeStep 45 Nothing)
+      Sydney -> campaignStep_ (InterludeStep 49 Nothing)
+      HongKong -> campaignStep_ (InterludeStep 50 Nothing)
+      Rome -> campaignStep_ (InterludeStep 51 Nothing)
+      YborCity -> campaignStep_ (InterludeStep 52 Nothing)
+      Kathmandu -> campaignStep_ (InterludeStep 53 Nothing)
+      Nairobi -> campaignStep_ (InterludeStep 54 Nothing)
+      Perth -> campaignStep_ (InterludeStep 55 Nothing)
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'
@@ -134,11 +149,13 @@ instance RunMessage TheScarletKeys where
       pure c
     CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
       swapTokens ElderThing Tablet
+      record TheCellToldTheTruthToTaylor
       flavor $ setTitle "title" >> p "theFoundation2"
       interludeStepPart 1 Nothing 4
       pure c
     CampaignStep (InterludeStepPart 1 _ 3) -> scope "interlude1" do
       swapTokens Tablet ElderThing
+      record TheCellHidTheTruthFromTaylor
       flavor $ setTitle "title" >> p "theFoundation3"
       interludeStepPart 1 Nothing 4
       pure c
@@ -398,6 +415,529 @@ instance RunMessage TheScarletKeys where
     CampaignStep (InterludeStepPart 26 _ 4) -> scope "quidProQuo" do
       record TheCellKnowsOfDesisPast
       flavor $ setTitle "title" >> p "quidProQuo4"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 27 _) -> scope "deadAndGone" do
+      noTrust <- getHasRecord AgentQuinnDoesNotTrustTheCell
+      flavor do
+        setTitle "title"
+        p "deadAndGone1"
+        ul do
+          li.validate noTrust "noTrust"
+          li.validate (not noTrust) "trust"
+      doStep (if noTrust then 2 else 5) msg
+      pure c
+    DoStep 2 msg'@(CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      storyWithChooseOneM' (setTitle "title" >> p "deadAndGone2") do
+        labeled' "truth" $ doStep 3 msg'
+        labeled' "secrets" $ doStep 4 msg'
+      pure c
+    DoStep 3 msg'@(CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      crossOut AgentQuinnDoesNotTrustTheCell
+      swapTokens ElderThing Tablet
+      whistle <- getHasRecord TheCellPossessesAMysteriousWhistle
+      t <- getTime
+      let goOffMission = whistle && t <= 30
+      flavor do
+        setTitle "title"
+        p "deadAndGone3"
+        ul do
+          li "trust"
+          li "swap"
+          li.nested "check" do
+            li.validate goOffMission "goOffMission"
+            li.validate (not goOffMission) "stayOnMission"
+
+      doStep (if goOffMission then 6 else 7) msg'
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      record TheFoundationRemainsInTheDark
+      swapTokens Tablet ElderThing
+      flavor $ setTitle "title" >> p "deadAndGone4"
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 5 msg'@(CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      flavor $ setTitle "title" >> p "deadAndGone5"
+      whistle <- getHasRecord TheCellPossessesAMysteriousWhistle
+      t <- getTime
+      let goOffMission = whistle && t <= 30
+      flavor do
+        setTitle "title"
+        p "deadAndGone5"
+        ul do
+          li "trust"
+          li "swap"
+          li.nested "check" do
+            li.validate goOffMission "goOffMission"
+            li.validate (not goOffMission) "stayOnMission"
+      doStep (if goOffMission then 6 else 7) msg'
+      pure c
+    DoStep 6 (CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      record TheCellIsOffMission
+      interludeXpAll (toBonus "bonus" 1)
+      flavor $ setTitle "title" >> p "deadAndGone6"
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 7 (CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
+      interludeXpAll (toBonus "bonus" 2)
+      flavor $ setTitle "title" >> p "deadAndGone7"
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 32 _) -> scope "theCoiledSerpent" do
+      toldTheTruth <- getHasRecord TheCellToldTheTruthToTaylor
+      flavor do
+        setTitle "title"
+        p "theCoiledSerpent1"
+        ul do
+          li.validate toldTheTruth "toldTheTruth"
+          li.validate (not toldTheTruth) "hidTheTruth"
+
+      doStep (if toldTheTruth then 2 else 3) msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
+      record FlintIsWorkingSolo
+      t <- getTime
+      let psi = min 35 (t + 6)
+      flavor $ setTitle "title" >> p "theCoiledSerpent2"
+      campaignStep_ (embark attrs)
+      pure $ TheScarletKeys $ attrs & overMeta (psiL ?~ psi)
+    DoStep 3 msg'@(CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
+      storyWithChooseOneM' (setTitle "title" >> p "theCoiledSerpent3") do
+        labeled' "keepInquiring" $ doStep 4 msg'
+        labeled' "stickAround" $ doStep 5 msg'
+        labeled' "forgetHer" $ doStep 6 msg'
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
+      record FlintIsWorkingSolo
+      t <- getTime
+      let psi = min 35 (t + 6)
+      flavor $ setTitle "title" >> p "theCoiledSerpent4"
+      campaignStep_ (embark attrs)
+      pure $ TheScarletKeys $ attrs & overMeta (psiL ?~ psi)
+    DoStep 5 (CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
+      record TheCellAidedInFlintsInvestigation
+      interludeXpAll (toBonus "bonus" 1)
+      flavor $ setTitle "title" >> p "theCoiledSerpent5"
+      campaignSpecific "unlock" HongKong
+      markTime 3
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 6 (CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
+      record FlintAbandonedHisSearch
+      flavor $ setTitle "title" >> p "theCoiledSerpent6"
+      iids <- allInvestigators
+      addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.inspectorFlintWithPrideAndCare
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 36 _) -> scope "strangeArchitecture" do
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let inBombay = meta.currentLocation == Bombay
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate inBombay "inBombay"
+          li.validate (not inBombay) "inStockholm"
+      doStep (if inBombay then 1 else 4) msg
+      pure c
+    DoStep 1 msg'@(CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      appreciated <- getHasRecord TheCellAppreciatedTheArchitecture
+      flavor do
+        setTitle "title"
+        p "strangeArchitecture1"
+        ul do
+          li.validate appreciated "appreciated"
+          li.validate (not appreciated) "notAppreciated"
+      doStep (if appreciated then 2 else 3) msg'
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      crossOut TheCellAppreciatedTheArchitecture
+      interludeXpAll (toBonus "bonus" 2)
+      flavor $ setTitle "title" >> p "strangeArchitecture2"
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      record TheCellAppreciatedTheArchitecture
+      flavor $ setTitle "title" >> p "strangeArchitecture3"
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 4 msg'@(CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      appreciated <- getHasRecord TheCellAppreciatedTheArchitecture
+      flavor do
+        setTitle "title"
+        p "strangeArchitecture4"
+        ul do
+          li.validate appreciated "appreciated"
+          li.validate (not appreciated) "notAppreciated"
+      doStep (if appreciated then 5 else 6) msg'
+      pure c
+    DoStep 5 (CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      crossOut TheCellAppreciatedTheArchitecture
+      interludeXpAll (toBonus "bonus" 2)
+      flavor $ setTitle "title" >> p "strangeArchitecture5"
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 6 (CampaignStep (InterludeStep 36 _)) -> scope "strangeArchitecture" do
+      record TheCellAppreciatedTheArchitecture
+      flavor $ setTitle "title" >> p "strangeArchitecture6"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 37 _) -> scope "specialDelivery" do
+      deliveringIntel <- getHasRecord TheCellIsDeliveringFoundationIntel
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let inTokyo = meta.currentLocation == Tokyo
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.nested.validate deliveringIntel "deliveringIntel" do
+            li.validate inTokyo "deliveringIntelInTokyo"
+            li.validate (not inTokyo) "deliveringIntelInLagos"
+          li.nested.validate (not deliveringIntel) "notDeliveringIntel" do
+            li.validate inTokyo "notDeliveringIntelInTokyo"
+            li.validate (not inTokyo) "notDeliveringIntelInLagos"
+      if
+        | deliveringIntel && inTokyo -> doStep 2 msg
+        | deliveringIntel && not inTokyo -> doStep 4 msg
+        | not deliveringIntel && inTokyo -> doStep 1 msg
+        | otherwise -> doStep 3 msg
+      pure c
+    DoStep 1 (CampaignStep (InterludeStep 37 _)) -> scope "specialDelivery" do
+      record TheCellIsDeliveringFoundationIntel
+      flavor $ setTitle "title" >> p "specialDelivery1"
+      eachInvestigator \iid -> forceAddCampaignCardToDeckChoice [iid] DoNotShuffleIn Assets.foundationIntel
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 37 _)) -> scope "specialDelivery" do
+      crossOut TheCellIsDeliveringFoundationIntel
+      flavor $ setTitle "title" >> p "specialDelivery2"
+      let faces = filter isNumberChaosToken $ nub attrs.chaosBag
+      leadChooseOneM do
+        for_ faces \face ->
+          when (face /= PlusOne) do
+            labeled (toDisplay face) do
+              removeChaosToken face
+              case face of
+                Zero -> addChaosToken PlusOne
+                MinusOne -> addChaosToken Zero
+                MinusTwo -> addChaosToken MinusOne
+                MinusThree -> addChaosToken MinusTwo
+                MinusFour -> addChaosToken MinusThree
+                MinusFive -> addChaosToken MinusFour
+                MinusSix -> addChaosToken MinusFive
+                MinusSeven -> addChaosToken MinusSix
+                MinusEight -> addChaosToken MinusSeven
+                _ -> pure ()
+      eachInvestigator (`removeCampaignCardFromDeck` Assets.foundationIntel)
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 37 _)) -> scope "specialDelivery" do
+      record TheCellIsDeliveringFoundationIntel
+      flavor $ setTitle "title" >> p "specialDelivery3"
+      eachInvestigator \iid -> forceAddCampaignCardToDeckChoice [iid] DoNotShuffleIn Assets.foundationIntel
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 37 _)) -> scope "specialDelivery" do
+      crossOut TheCellIsDeliveringFoundationIntel
+      flavor $ setTitle "title" >> p "specialDelivery4"
+      let faces = filter isNumberChaosToken $ nub attrs.chaosBag
+      leadChooseOneM do
+        for_ faces \face ->
+          when (face /= PlusOne) do
+            labeled (toDisplay face) do
+              removeChaosToken face
+              case face of
+                Zero -> addChaosToken PlusOne
+                MinusOne -> addChaosToken Zero
+                MinusTwo -> addChaosToken MinusOne
+                MinusThree -> addChaosToken MinusTwo
+                MinusFour -> addChaosToken MinusThree
+                MinusFive -> addChaosToken MinusFour
+                MinusSix -> addChaosToken MinusFive
+                MinusSeven -> addChaosToken MinusSix
+                MinusEight -> addChaosToken MinusSeven
+                _ -> pure ()
+      eachInvestigator (`removeCampaignCardFromDeck` Assets.foundationIntel)
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 44 _) -> scope "theoryOfAnnihilation" do
+      t <- getTime
+      met <- getHasRecord TheCellMetDrIrawan
+      flavor do
+        setTitle "title"
+        p "paranaturalSelection1"
+        ul do
+          li.validate (met && t < 25) "traveled"
+          li.validate (met && t >= 25) "vanished"
+          li.validate (not met) "met"
+      if
+        | met && t < 25 -> doStep 2 msg
+        | met && t >= 25 -> doStep 3 msg
+        | otherwise -> doStep 4 msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 44 _)) -> scope "theoryOfAnnihilation" do
+      record DrIrawanTraveledToNewGuinea
+      interludeXpAll (toBonus "bonus" 1)
+      campaignSpecific "unlock" Manokwari
+      flavor $ setTitle "title" >> p "theoryOfAnnihilation2"
+      campaignStep_ (embark attrs)
+      t <- getTime
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta (deltaL ?~ t)
+    DoStep 3 (CampaignStep (InterludeStep 44 _)) -> scope "theoryOfAnnihilation" do
+      record DrIrawanVanishedFromExistence
+      flavor $ setTitle "title" >> p "theoryOfAnnihilation3"
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 44 _)) -> scope "theoryOfAnnihilation" do
+      record TheCellMetDrIrawan
+      interludeXpAll (toBonus "bonus" 1)
+      flavor $ setTitle "title" >> p "theoryOfAnnihilation4"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 45 _) -> scope "metamorphosis" do
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let delta = fromMaybe (error "Missing delta") meta.delta
+      t <- getTime
+      flavor do
+        setTitle "title"
+        p "metamorphosis1"
+        ul do
+          li.validate (t - delta <= 10) "tenOrLessTime"
+          li.validate (t - delta > 10) "moreThanTenTime"
+      doStep (if t - delta <= 10 then 2 else 3) msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 45 _)) -> scope "metamorphosis" do
+      flavor $ setTitle "title" >> p "metamorphosis2"
+      iids <- allInvestigators
+      addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.drDewiIrawanCryptozoologist
+      chooseBearer Keys.theRuinousChime
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 45 _)) -> scope "metamorphosis" do
+      record DrIrawanVanishedFromExistence
+      interludeXpAll (toBonus "bonus" 2)
+      flavor $ setTitle "title" >> p "metamorphosis3"
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 49 _) -> scope "ringingHollow" do
+      t <- getTime
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate (t < 20) "lessThanTwentyTime"
+          li.validate (t >= 20) "twentyOrMoreTime"
+      doStep (if t < 20 then 1 else 4) msg
+      pure c
+    DoStep 1 msg'@(CampaignStep (InterludeStep 49 _)) -> scope "ringingHollow" do
+      toldTheTruth <- getHasRecord TheCellToldTheTruthToTaylor
+      flavor do
+        setTitle "title"
+        p "ringingHollow1"
+        ul do
+          li.validate toldTheTruth "toldTheTruth"
+          li.validate (not toldTheTruth) "hidTheTruth"
+
+      doStep (if toldTheTruth then 2 else 3) msg'
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 49 _)) -> scope "ringingHollow" do
+      flavor $ setTitle "title" >> p "ringingHollow2"
+      campaignSpecific "unlock" London
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 49 _)) -> scope "ringingHollow" do
+      record AgentQuinnDoesNotTrustTheCell
+      flavor $ setTitle "title" >> p "ringingHollow3"
+      campaignSpecific "unlock" London
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 49 _)) -> scope "ringingHollow" do
+      record AgentQuinnVanishedFromExistence
+      flavor $ setTitle "title" >> p "ringingHollow4"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 50 _) -> scope "bloodSweatAndTea" do
+      t <- getTime
+      aided <- getHasRecord TheCellAidedInFlintsInvestigation
+      solo <- getHasRecord FlintIsWorkingSolo
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let psi = fromMaybe (error "Missing psi") meta.psi
+
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate aided "aided"
+          li.validate (solo && t - psi <= 10) "tenOrLessTime"
+          li.validate (solo && t - psi > 10) "moreThanTenTime"
+      if
+        | aided -> doStep 1 msg
+        | solo && t - psi <= 10 -> doStep 2 msg
+        | otherwise -> doStep 3 msg
+      pure c
+    DoStep 1 (CampaignStep (InterludeStep 50 _)) -> scope "bloodSweatAndTea" do
+      record FlintTraveledToKualaLumpur
+      flavor $ setTitle "title" >> p "bloodSweatAndTea1"
+      campaignSpecific "unlock" KualaLumpur
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 50 _)) -> scope "bloodSweatAndTea" do
+      record FlintTraveledToKualaLumpur
+      flavor $ setTitle "title" >> p "bloodSweatAndTea2"
+      campaignSpecific "unlock" KualaLumpur
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 50 _)) -> scope "bloodSweatAndTea" do
+      record AgentFlintIsMissing
+      flavor $ setTitle "title" >> p "bloodSweatAndTea3"
+      campaignSpecific "unlock" KualaLumpur
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 51 _) -> scope "romulusAndRemus" do
+      offMission <- getHasRecord TheCellIsOffMission
+
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate offMission "offMission"
+          li.validate (not offMission) "onMission"
+      doStep (if offMission then 1 else 2) msg
+      pure c
+    DoStep 1 (CampaignStep (InterludeStep 51 _)) -> scope "romulusAndRemus" do
+      flavor $ setTitle "title" >> p "romulusAndRemus1"
+      campaignSpecific "unlock" BermudaTriangle
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 51 _)) -> scope "romulusAndRemus" do
+      flavor $ setTitle "title" >> p "romulusAndRemus2"
+      eachInvestigator \iid -> setupModifier CampaignSource iid (StartingResources 1)
+      campaignStep_ (embark attrs)
+      pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (Rome :))
+    CampaignStep (InterludeStep 52 _) -> scope "theSafehouse" do
+      t <- getTime
+      knowThePassphrase <- getHasRecord YouKnowThePassphrase
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let atOrAfterTheta = maybe False (t >=) meta.theta
+      let safehouse = knowThePassphrase && atOrAfterTheta
+
+      flavor do
+        setTitle "title"
+        p "theSafehouse1"
+        ul do
+          li.validate safehouse "safehouse"
+          li.validate (not safehouse) "noSafehouse"
+      doStep (if safehouse then 2 else 3) msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 52 _)) -> scope "theSafehouse" do
+      interludeXpAll (toBonus "bonus" 2)
+      flavor $ setTitle "title" >> p "theSafehouse2"
+      chooseBearer Keys.theMirroringBlade
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 52 _)) -> scope "theSafehouse" do
+      flavor $ setTitle "title" >> p "theSafehouse3"
+      campaignStep_ (embark attrs)
+      pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (YborCity :))
+    CampaignStep (InterludeStep 53 _) -> scope "whistleOnTheWind" do
+      storyWithChooseOneM' (setTitle "title" >> p "whistleOnTheWind1") do
+        labeled' "accept" $ doStep 2 msg
+        labeled' "reject" $ doStep 2 msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 53 _)) -> scope "whistleOnTheWind" do
+      record TheCellPossessesAMysteriousWhistle
+      swapTokens ElderThing Tablet
+      flavor $ setTitle "title" >> p "whistleOnTheWind2"
+      eachInvestigator \iid -> chooseOneM iid $ unscoped do
+        questionLabeled' "chooseTrauma"
+        countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+        countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 53 _)) -> scope "whistleOnTheWind" do
+      record TheCellRefusedAlikisOffer
+      interludeXpAll (toBonus "bonus" 1)
+      swapTokens Tablet ElderThing
+      flavor $ setTitle "title" >> p "whistleOnTheWind3"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 54 _) -> scope "infernalMachinery" do
+      n <-
+        countHasRecords
+          [ LaChicaRojaIsOnYourSide
+          , TheCellAidedTheKnight
+          , AlikiIsOnYourSide
+          , DesiIsInYourDebt
+          , TheCellMadeADealWithThorne
+          , EceTrustsTheCell
+          ]
+      flavor do
+        setTitle "title"
+        p "infernalMachinery1"
+        ul do
+          li.validate (n >= 3) "reputation"
+          li.validate (n < 3) "noReputation"
+      doStep (if n >= 3 then 2 else 3) msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 54 _)) -> scope "infernalMachinery" do
+      record TuwileMasaiIsOnYourSide
+      interludeXpAll (toBonus "bonus" 1)
+      flavor $ setTitle "title" >> p "infernalMachinery2"
+      chooseBearer Keys.theBaleEngine
+      markTime 1
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 54 _)) -> scope "infernalMachinery" do
+      record TuwileMasaiFledToBermuda
+      flavor $ setTitle "title" >> p "infernalMachinery3"
+      campaignStep_ (embark attrs)
+      pure c
+    CampaignStep (InterludeStep 55 _) -> scope "paranaturalSelection" do
+      t <- getTime
+      met <- getHasRecord TheCellMetDrIrawan
+      flavor do
+        setTitle "title"
+        p "paranaturalSelection1"
+        ul do
+          li.validate (met && t < 25) "traveled"
+          li.validate (met && t >= 25) "vanished"
+          li.validate (not met) "met"
+      if
+        | met && t < 25 -> doStep 2 msg
+        | met && t >= 25 -> doStep 3 msg
+        | otherwise -> doStep 4 msg
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 55 _)) -> scope "paranaturalSelection" do
+      record DrIrawanTraveledToNewGuinea
+      interludeXpAll (toBonus "bonus" 1)
+      campaignSpecific "unlock" Manokwari
+      flavor $ setTitle "title" >> p "paranaturalSelection2"
+      campaignStep_ (embark attrs)
+      t <- getTime
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta (deltaL ?~ t)
+    DoStep 3 (CampaignStep (InterludeStep 55 _)) -> scope "paranaturalSelection" do
+      record DrIrawanVanishedFromExistence
+      flavor $ setTitle "title" >> p "paranaturalSelection3"
+      campaignStep_ (embark attrs)
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 55 _)) -> scope "paranaturalSelection" do
+      record TheCellMetDrIrawan
+      interludeXpAll (toBonus "bonus" 1)
+      flavor $ setTitle "title" >> p "paranaturalSelection4"
       campaignStep_ (embark attrs)
       pure c
     CampaignStep (ScenarioStep _) -> do

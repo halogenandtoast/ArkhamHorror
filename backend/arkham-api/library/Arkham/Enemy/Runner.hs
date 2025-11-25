@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -1325,25 +1325,16 @@ instance RunMessage EnemyAttrs where
         damageAmount = damageAssignmentAmount damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       when canDamage do
-        dealtDamageWhenMsg <-
-          checkWindows [mkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount]
-        dealtDamageAfterMsg <-
-          checkWindows [mkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount]
-        pushAll [dealtDamageWhenMsg, dealtDamageAfterMsg]
-        wouldDo
-          (EnemyDamaged eid damageAssignment)
-          (Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect)
-          (Window.TakeDamage source damageEffect (toTarget a) damageAmount)
-      pure $ a & assignedDamageL %~ Map.insert source damageAssignment
-    CancelEnemyDamage eid source n | eid == enemyId -> do
-      pure
-        $ a
-        & assignedDamageL
-        . at source
-        %~ fmap (\d -> d {damageAssignmentAmount = max 0 (damageAssignmentAmount d - n)})
+        Lifted.checkWhen $ Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect
+        Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+        Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+        Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+        push $ EnemyDamaged eid damageAssignment
+        Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+      pure a
     EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
       let source = damageAssignmentSource damageAssignment''
-      let damageAssignment = fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
+      let damageAssignment = traceShowId $ fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do

@@ -577,7 +577,6 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
   | CancelAssetHorror AssetId Source Int
-  | CancelEnemyDamage EnemyId Source Int
   | CheckAttackOfOpportunity InvestigatorId Bool (Maybe EnemyMatcher)
   | CheckDefeated Source Target
   | AssignDamage Target

@@ -715,7 +715,7 @@ expeditedTicket =
 
 foundationIntel :: CardDef
 foundationIntel =
-  (storyAsset "09766" "FoundationIntel" 0 Globetrotting)
+  (storyAsset "09766" "Foundation Intel" 0 Globetrotting)
     { cdCardTraits = setFromList [Item, Trait.Evidence]
     , cdCost = Nothing
     , cdCardSubType = Just Weakness

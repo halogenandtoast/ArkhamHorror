@@ -281,11 +281,57 @@ document.addEventListener('fullscreenchange', () => {
     </g>
 
     <g id="san_juan" class="marker" transform="translate(758,766)" @click="select('SanJuan')">
+      <g v-if="locationData.SanJuan.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          14-C
+        </text>
+      </g>
       <use :href="`#marker-${locationData.SanJuan.unlocked ? 'blue' : 'red'}`"/>
       <rect width="145" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="quito" class="marker" transform="translate(624,980)" @click="select('Quito')">
+    <g id="quito" class="marker" transform="translate(626,979)" @click="select('Quito')">
+      <g v-if="locationData.Quito.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          14-C
+        </text>
+      </g>
       <use :href="`#marker-${locationData.Quito.unlocked ? 'blue' : 'red'}`"/>
       <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
@@ -335,6 +381,29 @@ document.addEventListener('fullscreenchange', () => {
     </g>
 
     <g id="reykjavik" class="marker" transform="translate(1258,249)" @click="select('Reykjavik')">
+      <g v-if="locationData.Reykjavik.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          14-C
+        </text>
+      </g>
       <use :href="`#marker-${locationData.Reykjavik.unlocked ? 'blue' : 'red'}`"/>
       <rect width="161" y="-11" height="23" fill="#00000000" />
     </g>
@@ -400,16 +469,85 @@ document.addEventListener('fullscreenchange', () => {
     </g>
 
     <g id="tunguska" class="marker" transform="translate(2299,295)" @click="select('Tunguska')">
+      <g v-if="locationData.Tunguska.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          59-Z
+        </text>
+      </g>
       <use :href="`#marker-${locationData.Tunguska.unlocked ? 'blue' : 'red'}`"/>
       <rect width="153" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="kabul" class="marker" transform="translate(2064,568)" @click="select('Kabul')">
+      <g v-if="locationData.Kabul.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          14-C
+        </text>
+      </g>
       <use :href="`#marker-${locationData.Kabul.unlocked ? 'blue' : 'red'}`"/>
       <rect width="103" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="hong_kong" class="marker" transform="translate(2515,719)" @click="select('HongKong')">
+      <g v-if="locationData.HongKong.unlocked" class="location-code">
+        <rect
+          x="-56"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="-27"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          50-S
+        </text>
+      </g>
       <use :href="`#marker-${locationData.HongKong.unlocked ? 'blue' : 'red'}`"/>
       <rect width="160" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
@@ -1179,6 +1317,13 @@ p.locked {
   color: #888;
   background-color: darkred;
   font-style: italic;
+}
+
+.label {
+  font-family: 'MapTypewriter', serif;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
 
 .dossier {

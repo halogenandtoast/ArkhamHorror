@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-type KeyStatus = { tag: "KeyWithInvestigator", contents: string } | { tag: "KeyWithEnemy", contents: string }
+type KeyStatus = { tag: "KeyWithInvestigator", contents: string } | { tag: "KeyWithEnemy", contents: [string, string | null] }
 
 const props = defineProps<{
   keys: Record<string, KeyStatus>
@@ -25,7 +25,7 @@ const toBearer = (cardCode: string): string | null => {
   const status = props.keys[cardCode]
   if (!status) return null
   if (status.tag === "KeyWithInvestigator") return props.toTitle(status.contents)
-  if (status.tag === "KeyWithEnemy") return props.toTitle(status.contents)
+  if (status.tag === "KeyWithEnemy") return props.toTitle(status.contents[0])
   return "Unknown"
 }
 

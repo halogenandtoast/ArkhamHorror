@@ -43,7 +43,23 @@
       "embark": "Embark"
     },
     "interludes": {
-      "1": "Interlude"
+      "1": "Interlude",
+      "14": "File #14–C",
+      "20": "File #20–E",
+      "26": "File #26–G",
+      "27": "File #27–H",
+      "32": "File #32–J",
+      "36": "File #36–L",
+      "37": "File #37–M",
+      "44": "File #44–O",
+      "45": "File #45–P",
+      "49": "File #49–R",
+      "50": "File #50–S",
+      "51": "File #51–T",
+      "52": "File #52–U",
+      "53": "File #53–V",
+      "54": "File #54–W",
+      "55": "File #55–X"
     }
   },
   "locations": {
@@ -86,9 +102,22 @@
   },
   "interludes": {
     "1": "The Foundation",
-    "14": "File #14–C: Ruses and Reclamation",
-    "20": "File #20–E: The Great Work",
-    "26": "File #26–G: Quid Pro Quo"
+    "14": "Ruses and Reclamation",
+    "20": "The Great Work",
+    "26": "Quid Pro Quo",
+    "27": "Dead and Gone",
+    "32": "The Coiled Serpent",
+    "36": "Strange Architecture",
+    "37": "Special Delivery",
+    "44": "Theory of Annihilation",
+    "45": "Metamorphosis",
+    "49": "Ringing Hollow",
+    "50": "Blood, Sweat, and Tea",
+    "51": "Romulus and Remus",
+    "52": "The Safehouse",
+    "53": "Whistle On the Wind",
+    "54": "Infernal Machinery",
+    "55": "Paranatural Selection"
   },
   "statusReport": {
     "title": "Status Report",

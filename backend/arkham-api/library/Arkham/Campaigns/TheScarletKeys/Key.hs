@@ -23,6 +23,7 @@ data TheScarletKeysKey
   | Time
   | TuwileMasaiFledToBermuda
   | TuwileMasaiIsOnYourSide
+  | WrongLeads
   | YouHaventSeenTheLastOfAlikiZoniUperetria
   | YouHaventSeenTheLastOfAmaranth
   | YouHaventSeenTheLastOfDesiderioDelgadoAlvarez

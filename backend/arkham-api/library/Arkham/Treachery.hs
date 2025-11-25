@@ -614,6 +614,8 @@ allTreacheries =
       SomeTreacheryCard touchOfTheBeyond
     , SomeTreacheryCard compulsion
     , SomeTreacheryCard distortedReasoning
+    , --- Globetrotting [tsk]
+      SomeTreacheryCard paradimensionalUnderstanding
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeTreacheryCard hastyRepairs

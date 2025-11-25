@@ -16,25 +16,29 @@ import Arkham.Target as X
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Token
+import Arkham.Message.Lifted qualified as Lifted
+import Arkham.Window qualified as Window
 
 instance RunMessage ScarletKey where
   runMessage msg (ScarletKey a) = ScarletKey <$> runMessage msg a
 
 instance RunMessage ScarletKeyAttrs where
-  runMessage msg attrs | attrs.placement.outOfGame = case msg of
+  runMessage msg attrs | attrs.placement.outOfGame = runQueueT $ case msg of
     ReturnLocationToGame lid -> do
       case attrs.placement of
         OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = p}
         OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = p}
         _ -> pure attrs
     _ -> pure attrs
-  runMessage msg attrs = case msg of
+  runMessage msg attrs = runQueueT $ case msg of
     PlaceScarletKey skid p | skid == attrs.id -> do
       case p of
         AttachedToEnemy _ | attrs.stability == Stable -> do
           pure $ attrs & placementL .~ p & stabilityL .~ Unstable
         _ -> pure $ attrs & placementL .~ p
-    Flip _ _ (isTarget attrs -> True) -> do
+    Flip iid _ (isTarget attrs -> True) -> do
+      when (attrs.stability == Unstable) do
+        Lifted.checkAfter $ Window.CampaignEvent "stabilizedKey" (Just iid) (toJSON attrs.id)
       pure $ attrs & stabilityL .~ if attrs.stability == Stable then Unstable else Stable
     UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg

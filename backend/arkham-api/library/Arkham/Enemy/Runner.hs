@@ -100,6 +100,7 @@ import Data.Function (on)
 import Data.List (nubBy)
 import Data.List qualified as List
 import Data.List.Extra (firstJust)
+import Data.Map.Strict qualified as Map
 import Data.Monoid (Any (..), First (..))
 
 {- | Handle when enemy no longer exists
@@ -1328,20 +1329,21 @@ instance RunMessage EnemyAttrs where
           checkWindows [mkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount]
         dealtDamageAfterMsg <-
           checkWindows [mkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount]
-        takeDamageWhenMsg <-
-          checkWindows [mkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount]
-        takeDamageAfterMsg <-
-          checkWindows [mkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount]
-        pushAll
-          [ dealtDamageWhenMsg
-          , dealtDamageAfterMsg
-          , takeDamageWhenMsg
-          , EnemyDamaged eid damageAssignment
-          , takeDamageAfterMsg
-          ]
-      pure a
-    EnemyDamaged eid damageAssignment | eid == enemyId -> do
-      let source = damageAssignmentSource damageAssignment
+        pushAll [dealtDamageWhenMsg, dealtDamageAfterMsg]
+        wouldDo
+          (EnemyDamaged eid damageAssignment)
+          (Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect)
+          (Window.TakeDamage source damageEffect (toTarget a) damageAmount)
+      pure $ a & assignedDamageL %~ Map.insert source damageAssignment
+    CancelEnemyDamage eid source n | eid == enemyId -> do
+      pure
+        $ a
+        & assignedDamageL
+        . at source
+        %~ fmap (\d -> d {damageAssignmentAmount = max 0 (damageAssignmentAmount d - n)})
+    EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
+      let source = damageAssignmentSource damageAssignment''
+      let damageAssignment = fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do

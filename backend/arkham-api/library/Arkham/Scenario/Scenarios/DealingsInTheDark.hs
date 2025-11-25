@@ -120,6 +120,7 @@ instance RunMessage DealingsInTheDark where
       gather Set.DarkCult
       gather Set.LockedDoors
       gatherJust Set.TheMidnightMasks [Treacheries.falseLead, Treacheries.huntingShadow]
+      handleRedCoterie
 
       setAgendaDeck [Agendas.agentsOfTheDark]
       setActDeck [Acts.searchForTheManuscript, Acts.searchForTheTalisman]
@@ -192,7 +193,7 @@ instance RunMessage DealingsInTheDark where
           if n == 1 || n == 2
             then do
               markTime 1
-              setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+              setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
               resolutionWithXp "noResolution" $ allGainXp' attrs
               endOfScenario
             else do
@@ -237,7 +238,7 @@ instance RunMessage DealingsInTheDark where
           endOfScenario
         Resolution 6 -> do
           markTime 2
-          setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution6" $ allGainXp' attrs
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"

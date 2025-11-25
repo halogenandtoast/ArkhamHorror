@@ -126,6 +126,7 @@ allPlayerTreacheryCards =
       , outOfBodyExperience
       , overzealous
       , panic
+      , paradimensionalUnderstanding
       , paranoia
       , poisoned
       , possessed
@@ -3050,6 +3051,14 @@ distortedReasoning :: CardDef
 distortedReasoning =
   (treachery "09746" "Compulsion" SpreadingCorruption 2)
     { cdCardTraits = setFromList [Curse, Terror]
+    }
+
+paradimensionalUnderstanding :: CardDef
+paradimensionalUnderstanding =
+  (weakness "09767" "Paradimensional Understanding")
+    { cdCardTraits = setFromList [Madness, Paradox]
+    , cdEncounterSet = Just Globetrotting
+    , cdEncounterSetQuantity = Just 4
     }
 
 hastyRepairs :: CardDef

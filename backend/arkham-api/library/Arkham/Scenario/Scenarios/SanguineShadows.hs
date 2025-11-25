@@ -122,6 +122,7 @@ instance RunMessage SanguineShadows where
       gather Set.StrangeHappenings
       gather Set.LockedDoors
       gather Set.Nightgaunts
+      handleRedCoterie
 
       setAgendaDeck [Agendas.whereIsShe]
       setActDeck [Acts.theScarletShadow, Acts.inTheSearchlight]
@@ -182,7 +183,7 @@ instance RunMessage SanguineShadows where
             3 -> do
               record TheSanguineWatchersTormentContinues
               record LaChicaRojaIsOnYourSide
-              setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.theSanguineWatcherWithTheRubySpectacles
+              setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.theSanguineWatcherHeSeesWhatIsNotThere
               markTime 2
               resolutionWithXp "noResolutionSeeingRed" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
             _ -> do
@@ -208,7 +209,7 @@ instance RunMessage SanguineShadows where
         Resolution 3 -> do
           n <- countScenarioTokens Token.Target
           record YouHaventSeenTheLastOfLaChicaRoja
-          setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.laChicaRojaTheGirlInTheCarmineCoat
+          setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.laChicaRojaHotOnYourTrail
           markTime 1
           resolutionWithXp "resolution3"
             $ if n > 0

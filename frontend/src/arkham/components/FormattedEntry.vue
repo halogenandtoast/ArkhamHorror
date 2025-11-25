@@ -470,17 +470,42 @@ ul, :deep(ul) {
 }
 
 .red, :deep(.red) {
-  position: relative;
-  margin: 20px;
-  isolation: isolate;
-  mix-blend-mode: multiply;
-  &::before {
-    z-index: -1;
-    content: '';
-    position: absolute;
-    inset: -10px;
-    background: #F4DFD1;
-    filter: blur(5px);
+  --color: #F4DFD1;
+  &:not(.bordered) {
+    position: relative;
+    margin: 20px;
+    isolation: isolate;
+    mix-blend-mode: multiply;
+    &::before {
+      z-index: -1;
+      content: '';
+      position: absolute;
+      inset: -10px;
+      background: var(--color);
+      filter: blur(5px);
+    }
+  }
+  &.bordered {
+    position: relative;
+    mix-blend-mode: multiply;
+    background: var(--color);
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 55px;
+    overflow: hidden;
+    p:first-of-type {
+      text-indent: 1.5em;
+    }
+
+    &.bordered::before {
+      border-radius: 55px;
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border: 3px solid black;
+      filter: blur(5px);
+    }
   }
 }
 

@@ -101,6 +101,7 @@ instance RunMessage DancingMad where
         else do
           gather Set.CleanupCrew
           gather Set.CrimsonConspiracy
+      handleRedCoterie
 
       setAgendaDeck [Agendas.silenceSpeaks, Agendas.easyPrey, Agendas.aBetrayalOfEyes]
       let act1 = if n == 1 then Acts.falseStepV1 else Acts.falseStepV2
@@ -187,7 +188,7 @@ instance RunMessage DancingMad where
           markTime 1
           record TheCellDidntDiscoverTheTruthInHavana
           record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
-          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarez106
+          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarezRedInHisLedger
           resolutionWithXp "noResolution" $ allGainXp' attrs
         Resolution 1 -> do
           markTime 2
@@ -200,7 +201,7 @@ instance RunMessage DancingMad where
           markTime 1
           record TheCellDidntDiscoverTheTruthInHavana
           record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
-          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarez106
+          setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarezRedInHisLedger
           resolutionWithXp "resolution1" $ allGainXp' attrs
         _ -> error "Unknown resolution for Dancing Mad"
       endOfScenario

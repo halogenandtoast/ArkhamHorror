@@ -529,6 +529,16 @@ allEnemies =
       SomeEnemyCard paradigmEfficer
     , --- Agents of Yuggoth [tsk]
       SomeEnemyCard emissaryFromYuggoth
+    , --- Red Coteria [tsk]
+      SomeEnemyCard theRedGlovedManPurposeUnknown
+    , SomeEnemyCard laChicaRojaHotOnYourTrail
+    , SomeEnemyCard theSanguineWatcherHeSeesWhatIsNotThere
+    , SomeEnemyCard theBeastInACowlOfCrimsonLeavingATrailOfDestruction
+    , SomeEnemyCard theClaretKnightHoldsYouInContempt
+    , SomeEnemyCard thorneOpenToNegotiation
+    , SomeEnemyCard desiderioDelgadoAlvarezRedInHisLedger
+    , SomeEnemyCard amaranthScarletScorn
+    , SomeEnemyCard alikiZoniUperetriaSpeaksInDeath
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona

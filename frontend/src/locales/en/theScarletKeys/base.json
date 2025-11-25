@@ -89,6 +89,11 @@
     "20": "File #20–E: The Great Work",
     "26": "File #26–G: Quid Pro Quo"
   },
+  "statusReport": {
+    "title": "Status Report",
+    "alpha": "<div class='red bordered'><p class='basic'>_Status Report Alpha (α):_</p><p>As your travels continue, the Foundation receives more and more reports of strange disappearances. With each new dossier you read, you worry that it is only a matter of time before there is nothing left.</p><p class='basic right'>Add 1 {'{'}cultist{'}'} token to the chaos bag.</p></div>",
+    "epsilon": "<div class='red bordered'><p class='basic'>_Status Report Epsilon (ε):_</p><p>As you traverse the streets, you flinch at every shifting shadow and every passerby wearing red. You’re definitely being followed, and you have no lack of enemies who might fit the bill…</p><p class='basic'>For the remainder of the campaign, whenever you are setting up a scenario, perform the following: gather each of the enemies in the Red Coterie encounter set whose name matches those who you *“haven’t seen the last of”* in your Campaign Log, choose one at random, and shuffle it into the encounter deck for this scenario. The *Red Coterie* encounter set is indicated by the following encounter set icon.<section class='encounter-sets'><img src='{setImgPath}/red-coterie.png'></section></p></div>"
+  },
   "key": {
     "amaranthHasLeftTheCoterie": "Amaranth has left the Coterie",
     "desiIsInYourDebt": "Desi is in your debt",
@@ -114,10 +119,12 @@
     "youHaventSeenTheLastOfAmaranth": "You haven't seen the last of Amaranth",
     "youHaventSeenTheLastOfDesiderioDelgadoAlvarez": "You haven't seen the last of Desi",
     "youHaventSeenTheLastOfLaChicaRoja": "You haven't seen the last of La Chica Roja",
+    "youHaventSeenTheLastOfTheBeastInACowlOfCrimson": "You haven't seen the last of the Beast in a Cowl of Crimson",
     "youHaventSeenTheLastOfTheClaretKnight": "You haven't seen the last of the Claret Knight",
     "youHaventSeenTheLastOfTheRedGlovedMan": "You haven't seen the last of the Red-Gloved Man",
     "youHaventSeenTheLastOfTheSanguineWatcher": "You haven't seen the last of the Sanguine Watcher",
     "youHaventSeenTheLastOfThorn": "You haven't seen the last of Thorn",
+    "youHaventSeenTheLastOfTzuSanNiang": "You haven't seen the last of Tzu San Niang",
     "youKnowThePassphrase": "You know the passphrase"
   },
   "label": {

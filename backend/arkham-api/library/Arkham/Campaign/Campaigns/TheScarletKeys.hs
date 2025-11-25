@@ -275,7 +275,7 @@ instance RunMessage TheScarletKeys where
           | e == Enemies.theSanguineWatcherHeSeesWhatIsNotThere.cardCode ->
               flavor $ setTitle "title" >> p "theSanguineWatcher"
           | e == Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction.cardCode ->
-              flavor $ setTitle "title" >> p "theBeastInACowl"
+              flavor $ setTitle "title" >> p "theBeastInACowlOfCrimson"
           | e == Enemies.theClaretKnightHoldsYouInContempt.cardCode ->
               flavor $ setTitle "title" >> p "theClaretKnight"
           | e == Enemies.thorneOpenToNegotiation.cardCode ->

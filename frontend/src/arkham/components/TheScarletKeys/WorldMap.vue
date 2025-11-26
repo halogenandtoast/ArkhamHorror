@@ -375,7 +375,30 @@ document.addEventListener('fullscreenchange', () => {
       <use href="#marker-blue"/>
     </g>
 
-    <g id="london" class="marker" transform="translate(1419,384)" @click="select('London')">
+    <g id="london" class="marker" transform="translate(1420.5,384)" @click="select('London')">
+      <g v-if="locationData.London.unlocked" class="location-code">
+        <rect
+          x="0"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="29"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          27-H
+        </text>
+      </g>
       <use :href="`#marker-${locationData.London.unlocked ? 'blue' : 'red'}`"/>
       <rect width="120" y="-11" height="23" fill="#00000000" />
     </g>
@@ -552,7 +575,30 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="160" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="kuala_lumpur" class="marker" transform="translate(2412,944)" @click="select('KualaLumpur')">
+    <g id="kuala_lumpur" class="marker" transform="translate(2413,943)" @click="select('KualaLumpur')">
+      <g v-if="locationData.KualaLumpur.unlocked" class="location-code">
+        <rect
+          x="-56"
+          y="13"
+          width="56"
+          height="24"
+          rx="3"
+          fill="#323035"
+        />
+        <text
+          x="-27"
+          y="27"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          fill="#CCCCCC"
+          class="label"
+          font-family="MapTypewriter, Typewriter, sans-serif"
+          font-size="40"
+          font-weight="bold"
+        >
+          46-Q
+        </text>
+      </g>
       <use :href="`#marker-${locationData.KualaLumpur.unlocked ? 'blue' : 'red'}`"/>
       <rect width="210" x="-210" y="-11" height="23" fill="#00000000" />
     </g>

@@ -94,6 +94,9 @@ import Arkham.Asset.Assets (
   yaotl1Effect,
  )
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
+import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune (
+  theWellspringOfFortuneEffect,
+ )
 import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
   corruptedOrderlyEffect,
@@ -592,6 +595,7 @@ allEffects =
     , ("84042", SomeEffect chillingPresenceEffect)
     , ("88043", SomeEffect deckOfPossibilitiesTychokineticImplementEffect)
     , ("88044", SomeEffect isamaraOrdonezTheTorchSingerEffect)
+    , ("88045", SomeEffect theWellspringOfFortuneEffect)
     , ("89004", SomeEffect realityAcid5U21Effect)
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)
     , ("90009", SomeEffect onTheLamAdvancedEffect)

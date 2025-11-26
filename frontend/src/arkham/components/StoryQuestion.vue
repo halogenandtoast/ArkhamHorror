@@ -4,8 +4,9 @@ import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
-import { Done, CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
+import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import PickDestiny from '@/arkham/components/PickDestiny.vue';
@@ -74,8 +75,8 @@ const labelChoices = computed(() => {
       return []
     }
 
-    return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
-      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
+    return question.value.question.choices.flatMap<[Label | TooltipLabel | ChaosTokenLabel | CardLabel | Done, number]>((c, idx) => {
+      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE, MessageType.CHAOS_TOKEN_LABEL].includes(c.tag)) {
         return [[c, idx]]
       } else {
         return []
@@ -84,8 +85,8 @@ const labelChoices = computed(() => {
   }
 
   if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
-    return question.value.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
-      if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
+    return question.value.choices.flatMap<[Label | TooltipLabel | CardLabel | ChaosTokenLabel | Done, number]>((c, idx) => {
+      if ([MessageType.LABEL, MessageType.TOOLTIP_LABEL, MessageType.CHAOS_TOKEN_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
         return [[c, idx]]
       } else {
         return []
@@ -163,6 +164,13 @@ const flippableCard = (cardCode: string) => {
             </template>
           </template>
         </div>
+        <div class="token-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CHAOS_TOKEN_LABEL)">
+          <template v-for="[choice, index] in labelChoices" :key="index">
+            <div v-if="choice.tag === MessageType.CHAOS_TOKEN_LABEL">
+              <img class="token front" :src="chaosTokenImage(choice.face)" @click="choose(index)">
+            </div>
+          </template>
+        </div>
         <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
           <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
             <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
@@ -201,6 +209,13 @@ const flippableCard = (cardCode: string) => {
               <img v-else class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
             </a>
           </template>
+        </template>
+      </div>
+      <div class="token-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CHAOS_TOKEN_LABEL)">
+        <template v-for="[choice, index] in labelChoices" :key="index">
+          <div v-if="choice.tag === MessageType.CHAOS_TOKEN_LABEL">
+            <img class="token front" :src="chaosTokenImage(choice.face)" @click="choose(index)">
+          </div>
         </template>
       </div>
       <template v-for="(choice, index) in choices" :key="index">
@@ -286,6 +301,24 @@ button {
   flex-wrap: wrap;
   flex-direction: row;
   gap: 10px;
+}
+
+.token-labels {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 10px;
+  place-content: center;
+  width: 100%;
+  container-type: inline-size;
+
+  img {
+    width: 20cqw;
+    min-width: 50px;
+    border-radius: 100vw;
+    border: 2px solid var(--select);
+    cursor: pointer;
+  }
 }
 
 .other-labels {

@@ -8,6 +8,7 @@ import Arkham.Ability.Types
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBagStepState
+import Arkham.ChaosToken.Types
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
@@ -67,6 +68,7 @@ data UI msg
   | InvalidLabel {label :: Text}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}
   | CardLabel {cardCode :: CardCode, flippable :: Bool, messages :: [msg]}
+  | ChaosTokenLabel {face :: ChaosTokenFace, messages :: [msg]}
   | KeyLabel {key :: ArkhamKey, messages :: [msg]}
   | PortraitLabel {investigatorId :: InvestigatorId, messages :: [msg]}
   | TargetLabel {target :: Target, messages :: [msg]}

@@ -5,6 +5,7 @@ import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
+import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
@@ -16,6 +17,7 @@ export enum MessageType {
   SKILL_LABEL = 'SkillLabel',
   SKILL_LABEL_WITH_LABEL = 'SkillLabelWithLabel',
   CARD_LABEL = 'CardLabel',
+  CHAOS_TOKEN_LABEL = 'ChaosTokenLabel',
   KEY_LABEL = 'KeyLabel',
   PORTRAIT_LABEL = 'PortraitLabel',
   COMPONENT_LABEL = 'ComponentLabel',
@@ -233,6 +235,22 @@ export const cardLabelDecoder = JsonDecoder.object<CardLabel>(
     cardCode: JsonDecoder.string(),
   }, 'CardLabel')
 
+export type ChaosTokenLabel = {
+  tag: MessageType.CHAOS_TOKEN_LABEL
+  face: TokenFace
+}
+
+export const chaosTokenLabelDecoder = JsonDecoder.object<ChaosTokenLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.CHAOS_TOKEN_LABEL),
+    face: tokenFaceDecoder,
+  }, 'ChaosTokenLabel')
+
+export type KeyLabel = {
+  tag: MessageType.KEY_LABEL
+  key: ArkhamKey
+}
+
 export const keyLabelDecoder = JsonDecoder.object<KeyLabel>(
   {
     tag: JsonDecoder.literal(MessageType.KEY_LABEL),
@@ -292,6 +310,7 @@ export type Message =
   | SkillLabel 
   | SkillLabelWithLabel 
   | CardLabel 
+  | ChaosTokenLabel
   | KeyLabel 
   | PortraitLabel 
   | ComponentLabel 
@@ -427,6 +446,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     skillLabelWithLabelDecoder,
     targetLabelDecoder,
     cardLabelDecoder,
+    chaosTokenLabelDecoder,
     keyLabelDecoder,
     portraitLabelDecoder,
     componentLabelDecoder,

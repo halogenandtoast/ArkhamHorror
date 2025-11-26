@@ -618,9 +618,10 @@ instance RunMessage TheScarletKeys where
       flavor $ setTitle "title" >> p "specialDelivery2"
       let faces = filter isNumberChaosToken $ nub attrs.chaosBag
       leadChooseOneM do
+        questionLabeled' "chooseToken"
         for_ faces \face ->
           when (face /= PlusOne) do
-            labeled (toDisplay face) do
+            chaosTokenLabeled face do
               removeChaosToken face
               case face of
                 Zero -> addChaosToken PlusOne
@@ -648,9 +649,10 @@ instance RunMessage TheScarletKeys where
       flavor $ setTitle "title" >> p "specialDelivery4"
       let faces = filter isNumberChaosToken $ nub attrs.chaosBag
       leadChooseOneM do
+        questionLabeled' "chooseToken"
         for_ faces \face ->
           when (face /= PlusOne) do
-            labeled (toDisplay face) do
+            chaosTokenLabeled face do
               removeChaosToken face
               case face of
                 Zero -> addChaosToken PlusOne

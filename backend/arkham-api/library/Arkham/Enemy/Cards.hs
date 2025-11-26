@@ -394,6 +394,7 @@ allEncounterEnemyCards =
       , rampagingShoggoth
       , ravagerFromTheDeep
       , ravenousGhoul
+      , ravenousGrizzly
       , razinFarhiReanimatedArtificer
       , reawakenedElderThing
       , relentlessDarkYoung
@@ -485,6 +486,7 @@ allEncounterEnemyCards =
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
       , thorneOpenToNegotiation  
+      , thorneTheOneWithTheRedCravat
       , thrall
       , thrallDeadHeat
       , tidalTerror
@@ -500,6 +502,11 @@ allEncounterEnemyCards =
       , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
+      , voidChimeraEarsplitter
+      , voidChimeraFellbeak
+      , voidChimeraFellhound
+      , voidChimeraGorefeaster
+      , voidChimeraTrueForm
       , webSpinner
       , werewolf
       , whippoorwill
@@ -2984,6 +2991,68 @@ desiderioDelgadoAlvarez107 =
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "09607b"
+    }
+
+thorneTheOneWithTheRedCravat :: CardDef
+thorneTheOneWithTheRedCravat =
+  (enemy "09625" ("Thorne" <:> "The One With the Red Cravat") OnThinIce 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Hunter
+          , Keyword.Retaliate
+          ]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09625b"
+    }
+
+voidChimeraTrueForm :: CardDef
+voidChimeraTrueForm =
+  (enemy "09626" ("Void Chimera" <:> "True Form") OnThinIce 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = singleton $ Keyword.Concealed VoidChimeraTrueForm (Static 4)
+    , cdVictoryPoints = Just 1
+    }
+
+voidChimeraFellbeak :: CardDef
+voidChimeraFellbeak =
+  (enemy "09627" ("Void Chimera" <:> "Fellbeak") OnThinIce 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = setFromList [Keyword.Patrol (LocationWithMostInvestigators $ LocationWithTrait Wilderness), Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
+    }
+
+voidChimeraEarsplitter :: CardDef
+voidChimeraEarsplitter =
+  (enemy "09628" ("Void Chimera" <:> "Earsplitter") OnThinIce 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    }
+
+voidChimeraGorefeaster :: CardDef
+voidChimeraGorefeaster =
+  (enemy "09629" ("Void Chimera" <:> "Gorefeaster") OnThinIce 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    }
+
+voidChimeraFellhound :: CardDef
+voidChimeraFellhound =
+  (enemy "09629" ("Void Chimera" <:> "Fellhound") OnThinIce 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    }
+
+ravenousGrizzly :: CardDef
+ravenousGrizzly =
+  (enemy "09630" "Ravenous Grizzly" OnThinIce 2)
+    { cdCardTraits = singleton Creature
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 coterieAgentA :: CardDef

@@ -116,6 +116,7 @@ allLocationCards =
       , alienConservatory
       , alchemyLabs
       , altarToDagon
+      , anchorage
       , ancientHall
       , ancientHallRearrangedByTime
       , ancientPlanetarium
@@ -266,6 +267,7 @@ allLocationCards =
       , coldSpringGlen_244
       , coldSpringGlen_245
       , coldWastes
+      , condemnedGoldMine
       , congregationalChurch_208
       , congregationalChurch_209
       , cosmicGate
@@ -372,6 +374,7 @@ allLocationCards =
       , eztliExhibit
       , facultyOfficesTheHourIsLate
       , facultyOfficesTheNightIsStillYoung
+      , fairbanks
       , falconPointApproach
       , falconPointCliffside
       , falconPointGatehouse
@@ -388,6 +391,7 @@ allLocationCards =
       , forbiddenLands
       , forbiddingShore
       , forgottenMarsh
+      , forgottenOutpost
       , forkedPath
       , forkInTheRoad_a
       , forkInTheRoad_b
@@ -408,6 +412,7 @@ allLocationCards =
       , frenchHill_291
       , frigidCave
       , frontPorchEntryway
+      , frozenLake
       , frozenShores
       , frozenSpring
       , galata
@@ -495,6 +500,7 @@ allLocationCards =
       , houseInTheReeds_210
       , houseInTheReeds_211
       , humanitiesBuilding
+      , huntersLodge
       , icebreakerLanding
       , ichorLadenTunnels
       , icyWastes
@@ -517,6 +523,7 @@ allLocationCards =
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
+      , isolatedRoad
       , istanbulUniversity
       , jardinesDeLaTropical
       , jemaaElFnaaSquare
@@ -603,6 +610,7 @@ allLocationCards =
       , morgue
       , mosaicChamber
       , moundOfBones
+      , mountainStream
       , mouthOfKnYanTheCavernsMaw
       , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
@@ -8630,6 +8638,112 @@ plazaHotel =
       Hourglass
       [Equals, Square]
       DancingMad
+
+anchorage :: CardDef
+anchorage =
+  location
+    "09617"
+    "Anchorage"
+    []
+    Squiggle
+    [Diamond]
+    OnThinIce
+
+fairbanks :: CardDef
+fairbanks =
+  location
+    "09618"
+    "Fairbanks"
+    []
+    Diamond
+    [Squiggle, Triangle, Square, Circle, Moon]
+    OnThinIce
+
+mountainStream :: CardDef
+mountainStream =
+  locationWithUnrevealed
+    "09619"
+    "Alaskan Wilderness"
+    [Wilderness]
+    Triangle
+    [Diamond]
+    "Mountain Stream"
+    [Wilderness]
+    Diamond
+    [Diamond, T, Spade, Heart, Hourglass]
+    OnThinIce
+
+frozenLake :: CardDef
+frozenLake =
+  locationWithUnrevealed
+    "09620"
+    "Alaskan Wilderness"
+    [Wilderness]
+    Triangle
+    [Diamond]
+    "Frozen Lake"
+    [Wilderness]
+    Circle
+    [Diamond]
+    OnThinIce
+
+isolatedRoad :: CardDef
+isolatedRoad =
+  victory 1
+    $ locationWithUnrevealed
+      "09621"
+      "Alaskan Wilderness"
+      [Wilderness]
+      Triangle
+      [Diamond]
+      "Isolated Road"
+      [Wilderness]
+      Moon
+      [Diamond, Spade]
+      OnThinIce
+
+forgottenOutpost :: CardDef
+forgottenOutpost =
+  locationWithUnrevealed
+    "09622"
+    "Outer Wilderness"
+    [Wilderness]
+    T
+    [Square]
+    "Forgotten Outpost"
+    [Wilderness]
+    Spade
+    [Square, Moon]
+    OnThinIce
+
+huntersLodge :: CardDef
+huntersLodge =
+  victory 1
+    $ locationWithUnrevealed
+      "09623"
+      "Outer Wilderness"
+      [Wilderness]
+      T
+      [Square]
+      "Hunter's Lodge"
+      [Wilderness]
+      Heart
+      [Square]
+      OnThinIce
+
+condemnedGoldMine :: CardDef
+condemnedGoldMine =
+  locationWithUnrevealed
+    "09624"
+    "Outer Wilderness"
+    [Wilderness]
+    T
+    [Square]
+    "Condemned Gold Mine"
+    []
+    Hourglass
+    [Square]
+    OnThinIce
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

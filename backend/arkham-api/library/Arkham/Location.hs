@@ -841,6 +841,15 @@ allLocations =
     , SomeLocationCard granTeatroDeLaHabana
     , SomeLocationCard miramarYachtClub
     , SomeLocationCard plazaHotel
+    , --- On Thin Ice [tsk]
+      SomeLocationCard anchorage
+    , SomeLocationCard fairbanks
+    , SomeLocationCard mountainStream
+    , SomeLocationCard frozenLake
+    , SomeLocationCard isolatedRoad
+    , SomeLocationCard forgottenOutpost
+    , SomeLocationCard huntersLodge
+    , SomeLocationCard condemnedGoldMine
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -509,6 +509,14 @@ allEnemies =
     , --- Dancing Mad [tsk]
       SomeEnemyCard desiderioDelgadoAlvarez106
     , SomeEnemyCard desiderioDelgadoAlvarez107
+    , --- On Thin Ice [tsk]
+      SomeEnemyCard thorneTheOneWithTheRedCravat
+    , SomeEnemyCard voidChimeraTrueForm
+    , SomeEnemyCard voidChimeraFellbeak
+    , SomeEnemyCard voidChimeraEarsplitter
+    , SomeEnemyCard voidChimeraGorefeaster
+    , SomeEnemyCard voidChimeraFellhound
+    , SomeEnemyCard ravenousGrizzly
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

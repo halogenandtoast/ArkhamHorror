@@ -991,6 +991,8 @@ allAssets =
       SomeAssetCard eceSahinTheVermillionVeiledLady
     , --- Dancing Mad [tsk]
       SomeAssetCard desiderioDelgadoAlvarez
+    , --- On Thin Ice [tsk]
+      SomeAssetCard thorneConsummateProfessional
     , --- Globetrotting [tsk]
       SomeAssetCard inspectorFlintWithPrideAndCare
     , SomeAssetCard agentAriQuinnFoundationResearcher

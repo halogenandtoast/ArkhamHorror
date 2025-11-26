@@ -84,6 +84,7 @@ travel attrs locId doTravel n = do
       Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       Constantinople -> campaignStep_ DealingsInTheDark
+      Anchorage -> campaignStep_ OnThinIce
       Havana -> campaignStep_ DancingMad
       Kabul -> campaignStep_ (InterludeStep 14 Nothing)
       Quito -> campaignStep_ (InterludeStep 14 Nothing)

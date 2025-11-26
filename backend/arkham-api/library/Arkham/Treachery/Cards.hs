@@ -260,6 +260,7 @@ allEncounterTreacheryCards =
       , conspiracyOfDeepOnes
       , cornered
       , corrosion
+      , crackingIce
       , crashingFloods
       , creatureFeature
       , creepingDarkness
@@ -519,6 +520,7 @@ allEncounterTreacheryCards =
       , snakeBite
       , snakescourge
       , snowfall
+      , snowslide
       , somethingInTheDrinks
       , somniphobia
       , songOfTheMagahBird
@@ -2935,6 +2937,18 @@ bodySnatched :: CardDef
 bodySnatched =
   (treachery "09608" "Body Snatched" DancingMad 2)
     { cdCardTraits = setFromList [Scheme, Power]
+    }
+
+crackingIce :: CardDef
+crackingIce =
+  (treachery "09632" "Cracking Ice" OnThinIce 4)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+snowslide :: CardDef
+snowslide =
+  (treachery "09633" "Snowslide" OnThinIce 2)
+    { cdCardTraits = setFromList [Hazard]
     }
 
 conspiracyInRed :: CardDef

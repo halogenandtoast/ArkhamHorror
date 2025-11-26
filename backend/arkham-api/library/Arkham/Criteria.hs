@@ -22,6 +22,7 @@ import Arkham.Direction (GridDirection)
 import Arkham.Duration
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
+import Arkham.Id
 import Arkham.Key
 import Arkham.Matcher.Ability
 import Arkham.Matcher.Act
@@ -284,6 +285,7 @@ data Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]
   | NoRestriction
+  | NotScenario ScenarioId
   | Never
   | Negate Criterion
   | DuringAction

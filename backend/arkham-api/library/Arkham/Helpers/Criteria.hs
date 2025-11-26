@@ -566,6 +566,10 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           <$> concatMapM (field InvestigatorDiscard) investigatorIds
       anyM (getIsPlayable iid source (UnpaidCost NoAction) windows'' . PlayerCard) discards
     Criteria.FirstAction -> fieldP InvestigatorActionsTaken null iid
+    Criteria.NotScenario sid -> do
+      selectOne Matcher.TheScenario >>= \case
+        Nothing -> pure True
+        Just scenario -> pure $ scenario /= sid
     Criteria.NoRestriction -> pure True
     Criteria.OnLocation locationMatcher -> do
       ignored <- hasModifier iid IgnoreOnSameLocation

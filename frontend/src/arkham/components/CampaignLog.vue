@@ -52,6 +52,8 @@ const time = computed(() => selectedLog.value.recordedCounts.find((r) => {
 }))
 
 const theta = computed(() => props.game.campaign?.meta?.theta)
+const delta = computed(() => props.game.campaign?.meta?.delta)
+const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
 
 const setClass = (key: string): string => key.split('.').pop() || ''
@@ -298,7 +300,7 @@ const mapData = computed(() => {
         <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
       </div>
       <div class="scarlet-keys">
-        <Calendar v-if="time" :time="time" :theta="theta" />
+        <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
         <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
       </div>
     </div>

@@ -16,12 +16,15 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
+import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Question
 import Arkham.SideStory
 import Arkham.Source
+import Arkham.Trait (Trait (Drifter))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
@@ -442,8 +445,8 @@ instance RunMessage TheScarletKeys where
         setTitle "title"
         p "deadAndGone3"
         ul do
-          li "trust"
-          li "swap"
+          li "gainTrust"
+          li "swapElderThingForTablet"
           li.nested "check" do
             li.validate goOffMission "goOffMission"
             li.validate (not goOffMission) "stayOnMission"
@@ -465,11 +468,8 @@ instance RunMessage TheScarletKeys where
         setTitle "title"
         p "deadAndGone5"
         ul do
-          li "trust"
-          li "swap"
-          li.nested "check" do
-            li.validate goOffMission "goOffMission"
-            li.validate (not goOffMission) "stayOnMission"
+          li.validate goOffMission "goOffMission"
+          li.validate (not goOffMission) "stayOnMission"
       doStep (if goOffMission then 6 else 7) msg'
       pure c
     DoStep 6 (CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
@@ -547,7 +547,7 @@ instance RunMessage TheScarletKeys where
       flavor do
         setTitle "title"
         p "strangeArchitecture1"
-        ul do
+        ul $ scope "bombay" do
           li.validate appreciated "appreciated"
           li.validate (not appreciated) "notAppreciated"
       doStep (if appreciated then 2 else 3) msg'
@@ -569,7 +569,7 @@ instance RunMessage TheScarletKeys where
       flavor do
         setTitle "title"
         p "strangeArchitecture4"
-        ul do
+        ul $ scope "stockholm" do
           li.validate appreciated "appreciated"
           li.validate (not appreciated) "notAppreciated"
       doStep (if appreciated then 5 else 6) msg'
@@ -673,7 +673,7 @@ instance RunMessage TheScarletKeys where
       met <- getHasRecord TheCellMetDrIrawan
       flavor do
         setTitle "title"
-        p "paranaturalSelection1"
+        p "theoryOfAnnihilation1"
         ul do
           li.validate (met && t < 25) "traveled"
           li.validate (met && t >= 25) "vanished"
@@ -853,9 +853,19 @@ instance RunMessage TheScarletKeys where
       campaignStep_ (embark attrs)
       pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (YborCity :))
     CampaignStep (InterludeStep 53 _) -> scope "whistleOnTheWind" do
-      storyWithChooseOneM' (setTitle "title" >> p "whistleOnTheWind1") do
-        labeled' "accept" $ doStep 2 msg
-        labeled' "reject" $ doStep 2 msg
+      drifter <-
+        selectAny
+          $ InvestigatorWithTrait Drifter
+          <> not_ (mapOneOf investigatorIs [Investigators.wendyAdams, Investigators.wendyAdamsParallel])
+      storyWithChooseOneM'
+        ( setTitle "title"
+            >> p "whistleOnTheWind1Part1"
+            >> p.validate drifter "drifter"
+            >> p "whistleOnTheWind1Part2"
+        )
+        do
+          labeled' "accept" $ doStep 2 msg
+          labeled' "reject" $ doStep 3 msg
       pure c
     DoStep 2 (CampaignStep (InterludeStep 53 _)) -> scope "whistleOnTheWind" do
       record TheCellPossessesAMysteriousWhistle

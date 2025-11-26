@@ -313,8 +313,7 @@ button {
   container-type: inline-size;
 
   img {
-    width: 20cqw;
-    min-width: 50px;
+    width: clamp(50px, 20cqw, 175px);
     border-radius: 100vw;
     border: 2px solid var(--select);
     cursor: pointer;

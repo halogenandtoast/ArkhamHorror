@@ -3,6 +3,7 @@
 module Arkham.Campaigns.TheScarletKeys.Concealed.Matcher where
 
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Placement
@@ -19,6 +20,7 @@ data ConcealedCardMatcher
   | ConcealedCardMatchAll [ConcealedCardMatcher]
   | ConcealedCardAt LocationMatcher
   | ConcealedCardIs ConcealedCardKind
+  | ConcealedCardWithId ConcealedCardId
   deriving stock (Show, Eq, Ord, Data)
 
 pattern IsDecoy :: ConcealedCardMatcher

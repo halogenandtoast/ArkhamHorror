@@ -58,6 +58,7 @@ instance Entity ConcealedCard where
 data instance Field ConcealedCard :: Type -> Type where
   ConcealedCardKind :: Field ConcealedCard ConcealedCardKind
   ConcealedCardPlacement :: Field ConcealedCard Placement
+  ConcealedCardLocation :: Field ConcealedCard (Maybe LocationId)
 
 instance HasCardCode ConcealedCard where
   toCardCode = const "xconcealed"

@@ -178,6 +178,9 @@
     "doNotExposeConcealed": "Do not expose Concealed Card",
     "doNotRevealConcealed": "Do not reveal Concealed Card"
   },
+  "xp": {
+    "chaosTokens": "Already at 4 chaos tokens"
+  },
   "prologue": {
     "title": "The Secret War",
     "body": "<p>“…by May or June I realised that there was, all over the world, a surprising and unwonted burst of activity on the part of bizarre, furtive, and esoteric mystical organisations ordinarily quiescent and seldom heard from.”</p><p class='basic right'>– H. P. Lovecraft for Hazel Heald, “Out of the Aeons”</p><h3>Around the World</h3><p class='basic'>The Scarlet Keys expansion differs from its predecessors in that it features an open-ended, non-linear campaign. Following the “Riddles and Rain” prologue, investigators are provided with a map of the world, and from there they may choose to embark to various locations. The order in which the locations are chosen determines the order in which these scenarios are played, and may also alter the story and gameplay of each scenario before culminating in an epic finale. Choose wisely, and good luck!</p>"
@@ -238,6 +241,9 @@
     "specialDelivery4": "<p>_Special Delivery 4_: After putting into port, you find a warehouse marked with 39-0 and a logo of a red lion, per the instructions given to you by the Foundation. Once inside, you deliver Commissioner Taylor’s documents to a steely-eyed operative, who thanks you before melting into the shadows.</p><ul><li>In your Campaign Log, cross off *the cell is delivering intel*. Each investigator removes one copy of Foundation Intel from their deck. Choose any number token in the chaos bag. Replace it with a number token of a value 1 higher (*i.e. You may replace a 0 token with a +1 token, or a –3 token with a –2 token*).</li><li>You may _embark_.</li></ul>"
   },
   "theCoiledSerpent": {
+    "xp": {
+      "bonus": "Gained insight into the inner workings of the Red Coterie."
+    },
     "title": "The Coiled Serpent",
     "label": {
       "keepInquiring": "“Keep inquiring, and let us know when you have something.”",
@@ -262,6 +268,9 @@
     "romulusAndRemus2": "<p>_Romulus and Remus 2_: Several fruitless days of searching for leads in Rome brings you to the Palazzo dei Conservatori on the Capitol Hill. Nestled among dozens of ancient statues is a bronze sculpture of the Lupa Capitolina depicting two twin babies suckling from a mother wolf. Your guide explains the twins are Romulus and Remus, the two alleged founders of Rome. “According to legend, the king, afraid for his claim to the throne, ordered them to be drowned in the Tiber. The twins were protected by the gods and taken in by a she-wolf who raised and fed them as her own. They lived in a cave until they were found and brought to safety.”</p><p>The guide leads the tour past another gallery filled with empty pedestals. You ask your guide what was on display before. “Nothing,” he chuckles. You comment on the number of empty rooms and displays, and the guide laughs dismissively. “Much has been lost over the years,” he says. Looking out over the city skyline, filled with odd dips and empty gaps, you wonder if Rome itself is disappearing.</p><ul><li>Each investigator may begin the next scenario they play with 1 additional resource in their resource pool.</li><li>You may return to Rome again during this campaign, but only after playing another scenario.</li><li>You may _embark_.</li></ul>"
   },
   "theSafehouse": {
+    "xp": {
+      "bonus": "Gained insight into the inner workings of the Red Coterie."
+    },
     "title": "The Safehouse",
     "theSafehouse1": "<p>_The Safehouse 1_: It’s a good thing the locals here are fairly welcoming and don’t seem to mind you asking directions, because “abandoned cigar factory” doesn’t exactly narrow things down. The bustling Ybor City district near Tampa is home to many such factories built and run by thousands of immigrants from all over. If you had to check each and every factory, you’d be here all week. Luckily, you have a lead just north of the bay: a quiet, run-down building with an adjoining boarded-up warehouse. If you didn’t know the truth, you’d think it was nothing more than an out- of-date factory from the ’80s, probably filled with nothing more than dust and rats. But if you’ve learned anything in your travels, it’s to never trust the evidence of your eyes.</p><p>You cautiously approach the main entrance and attempt to open it. As you suspected, it does not budge. If this is truly a Coterie sanctum, it’ll be harder than that to get inside. There’s no easy way in through the third- story windows, so you circle around the side of the warehouse, spotting a large metal door likely used for loading goods or unloading supplies. As there is no handle or lever, you decide to knock. A moment later, a gruff voice responds from the other side: “Passphrase.”</p><p class='basic'>Check the Campaign Log.</p>",
     "safehouse": "*If you know the passphrase* and the current time is at or after _Θ_ (theta), proceed to _The Safehouse 2_.",
@@ -270,6 +279,9 @@
     "theSafehouse3": "<p>_The Safehouse 3_: No matter what you say, the voice on the other side of the door remains silent. Then, muffled yet distinct, you hear the telltale sound of a revolver being slowly chambered. With that, you decide to take your leave. You’ll have to return later, when you know how to get in…</p><p class='basic right'>You may return to this location again later. For now, you may _embark_.</p>"
   },
   "whistleOnTheWind": {
+    "xp": {
+      "bonus": "Gained insight into the inner workings of the Red Coterie."
+    },
     "title": "Whistle on the Wind",
     "label": {
       "accept": "Accept what she is offering you.",
@@ -282,6 +294,9 @@
     "whistleOnTheWind3": "<p>_Whistle on the Wind 3_: You back away with caution. If a member of the Coterie—especially one as cryptic and potentially dangerous as Aliki—is offering you something, it can’t mean anything good. Besides, your mission is to ensure they cannot collect any more Keys, not to cooperate with them…right? Aliki’s hand lowers, along with the temperature in the room. She seems to sense your mistrust and return it tenfold, though she no longer attempts to speak. Moments later, the cold wind returns, and to your surprise, she is gone.</p><ul><li>In your Campaign Log, record *the cell refused Aliki’s offer*.</li><li>Each investigator earns 1 experience, as they gain insight into the inner workings of the Red Coterie.</li><li>Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}elderThing{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>You may _embark_.</li></ul>"
   },
   "infernalMachinery": {
+    "xp": {
+      "bonus": "Gained insight into the inner workings of the Red Coterie."
+    },
     "title": "Infernal Machinery",
     "infernalMachinery1": "<p>_Infernal Machinery 1_: A heavy grey mist hangs in the air above Lake Victoria as your biplane touches down on a dusty runway. All leads in Nairobi about a Tuwile Masai point to the shoreline of Lake Victoria, where the Coterie member is said to have transported several tons of survey equipment. A faint but sharp scent of alkaline carries on the breeze as you walk to the lake, where several large boats are laden with heavy machinery at the shoreline. Sunlight catches on a pair of thick-rimmed spectacles down at the pier.</p><p>“Professor Masai?” you greet the wiry man as he steps ashore. Masai looks nervously past you as he wipes his glasses.</p><p class='basic'>Check the Campaign Log.</p>",
     "reputation": "If at least three of the following are recorded (*La Chica Roja is on your side*, *the cell aided the knight*, *Aliki is on your side*, *Desi is on your side*, *the cell made a deal with Thorne*, or *Ece trusts the cell*), proceed to _Infernal Machinery 2_.",
@@ -311,6 +326,9 @@
     "ringingHollow3": "<p>_Ringing Hollow 3_: “This is off-book, but I’ve been looking into some pretty strange events. Take a look.” She hands you a file from her table and leans back as you examine it. It’s a host of information regarding missing buildings, sites, in some cases even entire villages, all of which vanished mysteriously and without explanation. You do your best not to let your familiarity with such events show on your face. “Any of this mean anything to you?”</p><p>You don’t like lying, but telling the truth now would reveal your earlier deception to Taylor. You shake your head, telling Quinn this is new to you. “That checks out. See, that is what’s so hinky about all this. You are holding the only surviving records of any of these places. It is as though all of them were completely eradicated from history. And if that is true, who is to say the same could not happen to us?” She shudders. “The thought of being forgotten like that…even by those closest to me…it is my worst fear.”</p><p>You tell Quinn that you feel similarly, and that you wish you had more intel to give her. Her gaze, narrow with suspicion, sees right through you.</p><p>“I do not buy that for a second. Taylor might trust you, or maybe she just does not want to get her hands dirty. But I can tell when someone is lying to my face.” A grim silence hangs in the air. Finally, she exhales. “Fine. Do as you will. But if you decide to spill, you can find me in Amesbury, due west of London,” she says, packing some of her files and personal belongings in a small canvas duffel bag. You repeat her destination, curious as to why.</p><p>“Something there I want to look into,” is all she gives you. You suppose it is only fair, considering your hesitance to give her the full story. She gives you no more than a cold glance as she leaves, and you wonder if perhaps you should have warned her. But what she doesn’t know can’t hurt her…right?</p><ul><li>In your Campaign Log, record *Agent Quinn does not trust the cell*.</li><li>In the North Atlantic section of the Campaign Log, find London. In its spot, write “27–H.” You are now allowed to travel back to London whenever you embark.</li><li>You may _embark_.</li></ul>"
   },
   "deadAndGone": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "title": "Dead and Gone",
     "label": {
       "truth": "“Tell Agent Quinn the truth.”",
@@ -332,6 +350,9 @@
     "deadAndGone7": "<p>_Dead and Gone 7_: You and Agent Quinn explore the ruins for some time, jockeying theories and ideas back and forth, but find no further evidence.</p><ul><li>Each investigator earns 2 experience, as they gain insight into the strange happenings around the world.</li><li>Mark 1 _time_ in your Campaign Log. You may _embark_.</li></ul>"
   },
   "strangeArchitecture": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "title": "Strange Architecture",
     "body": "Check where you are on the map.",
     "inBombay": "If you are at Bombay, proceed to _Strange Architecture 1_.",
@@ -352,6 +373,9 @@
     "strangeArchitecture6": "<p>_Strange Architecture 6_: As you walk down Shoemaker’s street, one façade in particular stands out to you. A narrow building with handsome cornice molding and intricate stonework is wedged between two older local buildings. The number 13 is carved next to a pair of austere wooden doors. Over the door is a slate frieze that depicts a cast of mythological figures: some recognizable, some not. The building itself looks out of place amidst the worn stone and crumbling history of the surrounding alleyway. The look of the building makes you feel vaguely uneasy the longer you study it. There is a coldness, a sharpness to the building’s design, accentuated by jagged quoins and harsh angles. Something about the wide, black windows, the dark interior, denotes the emptiness of a hollow skull. The alley around you, too, is strangely quiet: passers-by do not seem to linger here.</p><ul><li>In your Campaign Log, record *the cell appreciated the architecture*.</li><li>You may _embark_.</li></ul>"
   },
   "theoryOfAnnihilation": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "title": "Theory of Annihilation",
     "theoryOfAnnihilation1": "<p>_Theory of Annihilation 1_: As your ship puts into port at Rio De Janeiro, you see a massive hollow statue under construction on Corcovado mountain overlooking the city. The statue is vaguely humanoid, its arms spread wide in welcome . . . or is it a warning?</p><p class='basic'>Check the Campaign Log.</p>",
     "traveled": "*If the cell met Dr. Irawan* and less than 25 _time_ has passed, proceed to _Theory of Annihilation 2_.",
@@ -362,6 +386,9 @@
     "theoryOfAnnihilation4": "<p>_Theory of Annihilation 4_: After some searching, you find Dr. Irawan in the Belmond Copacabana seated at a table covered in sketches and academic clutter. After introducing yourself, you ask about her research.</p><p>“Oh, I see. You are here to mock me,” she says, closing a worn survey journal. You tell her you aren’t, and after some coaxing, she opens up to you. “I am actually glad you missed my lecture,” she says. “It was an utter disaster. I was laughed out of the auditorium when I tried to present. Someone called me a ‘cryptozoologist’.”</p><p>You tell her that there are worse insults. “That may be,” Dr. Irawan adjusts her large round spectacles. “But for my career, it is a death knell.” She turns to a beautifully detailed sketch of a bird roosting in a palm tree. “I presented what I am calling the Theory of Annihilation. The world devouring itself. Not just itself, but the memory of itself. The fact of its very existence.”</p><p>She takes a sip of strong, dark coffee. “Several years ago, I surveyed the Amazon with a half dozen other well-known academics. We observed dozens of distinct species of macaw, and named each after a stone: turquoise, amethyst, obsidian, the like. But now,” she turns to several empty pages. “There is no trace or record of any of them. My colleagues tell me I made up the Turquoise Macaw and the others. There is no trace of them in their habitat, either. And the sketches have disappeared as well.”</p><p>You assure Dr. Irawan that she is not mad, and share what little you can about the disappearances.</p><p>“Thank you,” says Dr. Irawan. “I am glad we met. I was beginning to think this was all in my head.” She gives you her business card with the address of a university in Australia written on the back. “I will be in Perth to continue my survey and my next lecture. Perhaps I will see you there.”</p><ul><li>In your Campaign Log, record *the cell met Dr. Irawan*.</li><li>Each investigator earns 1 experience, as they gain insight into the strange happenings around the world.</li><li>You may _embark_.</li></ul>"
   },
   "paranaturalSelection": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "title": "Paranatural Selection",
     "paranaturalSelection1": "<p>_Paranatural Selection 1_: A cool breeze greets you as you arrive in Perth. The capital of Western Australia is nestled in the crook of the Swan River, and despite—or perhaps because of—the nearby gold rush, it has the rugged feel of a frontier town. You catch a scent of something too sweet, possibly rotten, on the breeze.</p><p class='basic'>Check the Campaign Log.</p>",
     "traveled": "*If the cell met Dr. Irawan* and less than 25 _time_ has passed, proceed to _Paranatural Selection 2_.",
@@ -372,6 +399,9 @@
     "paranaturalSelection4": "<p>_Paranatural Selection 4_: You catch Dr. Irawan walking out of a lecture at the local university and invite her to a nearby cafe to chat about her research. On a sunlit veranda, she lays several life-like sketches out on the table between you. “Have you ever heard of the red-tailed quokka?” she asks. You shake your head. “They were first introduced to the West by Dutch explorers in the 17th century, and have been listed in standard taxonomy since then. I learned about them at Cambridge.”</p><p>Dr. Irawan leafs through a sketchbook to a blank page. “On a survey five years ago, I took several sketches in the wild. But recently, I opened my books and the sketches were blank, as if they had never been drawn. Moreover, every footnote and reference to them in academia has vanished. I asked my professor at Cambridge—the man who taught me what red-tailed quokkas were—and he looked at me as though I had gone mad.” The zoologist adjusts her large spectacles.</p><p>You assure Dr. Irawan that she is not mad, and share what little you can about the disappearances.</p><p>“I do not know how much you have studied natural selection, but what we are experiencing feels very much like the introduction of a new apex predator into an ecosystem that has not evolved to withstand it,” says the zoologist. “Except that this predator feeds not only on the body, but on the actual existence of its prey. Although, of course, that would be unthinkable,” she laughs. “But I cannot help feeling that we are its prey.”</p><p>Thinking on the terms the Foundation used, you suggest she name the phenomena “Paranatural Selection.” She looks troubled at the suggestion, then smiles.</p><p>“Perhaps I will use that, with your permission,” says Dr. Irawan. “I am glad we met. I was beginning to think this was all in my head.” She gives you her business card with the name of a hotel in Brazil written on the back. “I will be in Rio de Janeiro to continue my survey, and my next lecture. Perhaps I will see you there.”</p><ul><li>In your Campaign Log, record *the cell met Dr. Irawan*.</li><li>Each investigator earns 1 experience, as they gain insight into the strange happenings around the world.</li><li>You may _embark_.</li></ul>"
   },
   "metamorphosis": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "title": "Metamorphosis",
     "metamorphosis1": "<p>_Metamorphosis 1_: It is early evening as your boat pulls into port in Manokwari. Towering mountains covered in rich greenery roll down to meet the brilliant blue water. As night falls, coruscating lights dance beneath the surface of the water: are they bioluminescent plants, or something else?</p><p class='basic'>Check how much time has passed since _δ_ (delta).</p>",
     "tenOrLessTime": "If 10 or fewer time has passed since _δ_ (delta), proceed to _Metamorphosis 2_.",
@@ -380,6 +410,9 @@
     "metamorphosis3": "<p>_Metamorphosis 3_: Asking around town, each mention of Dr. Irawan is met with a curious stare. You go so far as to mime the zoologist’s distinct large eyeglasses, but nobody recognizes the name or the likeness. After several days, you abandon your fruitless search. As you check out from the local guest house, you find a blank sketchbook sitting on a wicker table. Picking it up, your skin pricks, and you have the feeling of being watched. But when you turn around, you are completely alone.</p><ul><li>In your Campaign Log, record *Dr. Irawan vanished from existence*.</li><li>Each investigator earns 2 experience, as they gain insight into the strange happenings around the world.</li><li>Mark 1 _time_ in your Campaign Log. You may _embark_.</li></ul>"
   },
   "rusesAndReclamation": {
+    "xp": {
+      "bonus": "Searching Leads"
+    },
     "title": "Ruses and Reclamation",
     "rusesAndReclamation1": "<p>_Ruses and Reclamation 1_: You search every known Coterie sanctum and safehouse in this region, looking high and low for the villain who stole your precious cargo, but find nothing. Either they’re not here, or they’re so well hidden that searching any more thoroughly would be a waste of time. Resigned, you plan your next move.</p><ul><li>In your Campaign Log, record *wrong leads*, and next to this, record 1 tally mark. (If *wrong leads* is already recorded in your Campaign Log, add 1 tally mark to it.)</li><li>You may _embark_.</li></ul>",
     "rusesAndReclamation2": "<p>_Ruses and Reclamation 2_: You finally narrow down your quarry and find their safehouse. Before rushing in, you lay low and wait for the right time to strike. With the element of surprise on your side, you tailor your approach to your foe…</p><p class='basic'>Mark 1 _time_ in your Campaign Log. Read only the following section that pertains to your situation. Then, you may _embark_.</p>",

@@ -165,7 +165,7 @@ swapTokens face1 face2 = do
       tknCount <- fieldMap CampaignChaosBag (count (== face2)) c
       if tknCount >= 4
         then do
-          let xp = toBonus "chaosTokens" 1
+          let xp = unscoped $ scope "theScarletKeys" $ toBonus "chaosTokens" 1
           eachInvestigator \iid ->
             pushAll
               [ Msg.ReportXp

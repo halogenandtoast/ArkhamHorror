@@ -679,6 +679,17 @@ desiderioDelgadoAlvarez =
     , cdOtherSide = Just "09607"
     }
 
+thorneConsummateProfessional :: CardDef
+thorneConsummateProfessional =
+  (storyAsset "09625b" ("Thorne" <:> "Consummate Professional") 0 OnThinIce)
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09625"
+    }
+
 inspectorFlintWithPrideAndCare :: CardDef
 inspectorFlintWithPrideAndCare =
   (storyAsset "09762" ("Inspector Flint" <:> "With Pride and Care") 2 Globetrotting)

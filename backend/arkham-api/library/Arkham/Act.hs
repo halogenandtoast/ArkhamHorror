@@ -337,6 +337,11 @@ allActs =
     , SomeActCard falseStepV2
     , SomeActCard falseColorsV2
     , SomeActCard falseLight
+    , --- On Thin Ice [tsk]
+      SomeActCard questForTheSableGlass
+    , SomeActCard ifItBleeds
+    , SomeActCard prowlingNightmare
+    , SomeActCard lastStand
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

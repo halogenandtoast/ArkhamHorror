@@ -982,6 +982,7 @@ allEncounterAssetCards =
       , laChicaRojaYourWatchfulShadow
       , eceSahinTheVermillionVeiledLady
       , desiderioDelgadoAlvarez
+      , thorneConsummateProfessional
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

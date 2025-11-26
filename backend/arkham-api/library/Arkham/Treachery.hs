@@ -583,6 +583,9 @@ allTreacheries =
     , SomeTreacheryCard lightOutOfVoid
     , --- Dancing Mad [tsk]
       SomeTreacheryCard bodySnatched
+    , --- On Thin Ice [tsk]
+      SomeTreacheryCard crackingIce
+    , SomeTreacheryCard snowslide
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]

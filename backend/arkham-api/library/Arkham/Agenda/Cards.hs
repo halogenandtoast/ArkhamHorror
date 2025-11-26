@@ -31,6 +31,7 @@ allAgendaCards =
       , aKillerParty
       , allBetsDown
       , allIsOne
+      , annihilation
       , aSinisterRealm
       , aTearInReality
       , aTearInRealityV2
@@ -72,6 +73,7 @@ allAgendaCards =
       , etherealTangleV3
       , expeditionIntoTheWild
       , eyesInTheDark
+      , eyesOfTheVoid
       , fashionablyLate
       , feedTheBeast
       , figuresInTheFog
@@ -102,6 +104,7 @@ allAgendaCards =
       , letTheStormRageTheFloodBelow
       , letTheStormRageTheVortexAbove
       , lockedInside
+      , lostAndForgotten
       , lostMemories
       , lurkingHorrors
       , madnessAndDeath
@@ -811,6 +814,15 @@ easyPrey = agenda "09593" "Easy Prey" 2 DancingMad
 
 aBetrayalOfEyes :: CardDef
 aBetrayalOfEyes = agenda "09594" "A Betrayal of Eyes" 3 DancingMad
+
+lostAndForgotten :: CardDef
+lostAndForgotten = agenda "09610" "Lost and Forgotten" 1 OnThinIce
+
+eyesOfTheVoid :: CardDef
+eyesOfTheVoid = agenda "09611" "Eyes of the Void" 2 OnThinIce
+
+annihilation :: CardDef
+annihilation = agenda "09612" "Annihilation" 3 OnThinIce
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

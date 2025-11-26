@@ -285,6 +285,10 @@ p.accountant, :deep(p.accountant) {
   text-indent: 50px;
 }
 
+p.indented, :deep(p.indented) {
+  margin-inline: 50px;
+}
+
 p.billenia, :deep(p.billenia) {
   font-family: "Billenia";
   font-weight: 500;

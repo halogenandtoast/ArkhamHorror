@@ -299,6 +299,10 @@ allAgendas =
       SomeAgendaCard silenceSpeaks
     , SomeAgendaCard easyPrey
     , SomeAgendaCard aBetrayalOfEyes
+    , --- On Thin Ice [tsk]
+      SomeAgendaCard lostAndForgotten
+    , SomeAgendaCard eyesOfTheVoid
+    , SomeAgendaCard annihilation
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

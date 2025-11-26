@@ -109,6 +109,7 @@ allActCards =
       , hiddenAgendas
       , huntingTheRougarou
       , huntressOfTheEztli
+      , ifItBleeds
       , impossiblePursuit
       , inAzathothsDomain
       , infiltratingTheLodge
@@ -130,6 +131,7 @@ allActCards =
       , journeyThroughTheColdWastes
       , journeyToTheNexus
       , kingdomOfTheSkai
+      , lastStand
       , leadingTheWay
       , lookingForAnswers
       , lostInTheWoods
@@ -153,11 +155,13 @@ allActCards =
       , pathsIntoTwilight
       , pedalToTheMetal
       , planningTheEscape
+      , prowlingNightmare
       , pursuingShadows
       , pursuitOfTheUnknownV1
       , pursuitOfTheUnknownV2
       , pursuitOfTheUnknownV3
       , queenOfNothingAtAll
+      , questForTheSableGlass
       , raceForAnswers
       , recoverTheRelic
       , reefOfMysteries
@@ -987,6 +991,18 @@ falseColorsV2 = act "09598" "False Colors (v. II)" 2 DancingMad
 
 falseLight :: CardDef
 falseLight = act "09599" "False Light" 3 DancingMad
+
+questForTheSableGlass :: CardDef
+questForTheSableGlass = act "09613" "Quest of the Sable Glass" 1 OnThinIce
+
+ifItBleeds :: CardDef
+ifItBleeds = act "09614" "If It Bleeds..." 2 OnThinIce
+
+prowlingNightmare :: CardDef
+prowlingNightmare = act "09615" "Prowling Nightmare" 3 OnThinIce
+
+lastStand :: CardDef
+lastStand = act "09616" "Last Stand" 4 OnThinIce
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

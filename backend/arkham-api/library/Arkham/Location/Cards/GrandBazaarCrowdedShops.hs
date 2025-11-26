@@ -24,7 +24,7 @@ instance HasAbilities GrandBazaarCrowdedShops where
     extendRevealed1 a
       $ restricted a 1 (Here <> thisExists a LocationWithAnyClues <> exists (enemy_ #cultist))
       $ forced
-      $ CampaignEvent #after (Just You) "exposed[enemy]"
+      $ CampaignEvent #after (Just You) "exposed[decoy]"
 
 instance RunMessage GrandBazaarCrowdedShops where
   runMessage msg l@(GrandBazaarCrowdedShops attrs) = runQueueT $ case msg of

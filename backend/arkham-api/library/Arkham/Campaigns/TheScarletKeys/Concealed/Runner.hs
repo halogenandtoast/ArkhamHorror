@@ -90,14 +90,12 @@ instance RunMessage ConcealedCard where
         _ -> push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do
-      chooseTargetM iid [c] \_ -> doStep 1 msg
-      pure $ c {concealedCardFlipped = True, concealedCardKnown = True}
+      unless c.concealedCardFlipped $ chooseTargetM iid [c] \_ -> doStep 1 msg
+      pure $ c {concealedCardFlipped = not c.concealedCardFlipped, concealedCardKnown = True}
     DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
         Nothing -> case c.kind of
-          Decoy -> do
-            exposedDecoy iid
-            removeFromGame (toTarget c)
+          Decoy -> exposedDecoy iid c
           _ -> pure ()
         Just def -> do
           enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title

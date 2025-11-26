@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -1912,6 +1912,10 @@ getLocationsMatching lmatcher = do
       ls & filterM \l -> do
         concealedCards <- field LocationConcealedCards (toId l)
         pure $ notNull concealedCards
+    LocationWithThisConcealedCard cid ->
+      ls & filterM \l -> do
+        concealedCards <- field LocationConcealedCards (toId l)
+        pure $ cid `elem` concealedCards
     LocationWithExposableConcealedCard source -> do
       ls & filterM \l -> do
         concealedCards <- getConcealedAt (ForExpose source) l.id
@@ -3082,6 +3086,7 @@ getConcealedCardsMatching matcher = do
   filterMatcher cs matcher
  where
   filterMatcher as = \case
+    ConcealedCardWithId cid -> pure $ filter ((== cid) . toId) as
     ConcealedCardMatchAll ms -> foldM filterMatcher as ms
     ConcealedCardWithPlacement placement -> pure $ filter ((== placement) . attr concealedCardPlacement) as
     ConcealedCardAny -> pure as
@@ -5460,9 +5465,10 @@ instance Projection ConcealedCard where
   project = maybeConcealedCard
   field fld cid = do
     c <- getConcealedCard cid
-    pure $ case fld of
-      ConcealedCardKind -> c.kind
-      ConcealedCardPlacement -> c.placement
+    case fld of
+      ConcealedCardKind -> pure c.kind
+      ConcealedCardPlacement -> pure c.placement
+      ConcealedCardLocation -> selectOne $ LocationWithThisConcealedCard cid
 
 instance Projection ScarletKey where
   getAttrs sid = toAttrs <$> getScarletKey sid

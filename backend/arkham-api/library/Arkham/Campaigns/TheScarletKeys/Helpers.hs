@@ -34,6 +34,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup (ScenarioBuilderT, addToEncounterDeck)
 import Arkham.Source
+import Arkham.Target
 import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -89,12 +90,14 @@ exposed iid enemy c body = do
   checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
-exposedDecoy :: ReverseQueue m => InvestigatorId -> m ()
-exposedDecoy iid = do
+exposedDecoy :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> m ()
+exposedDecoy iid (toTarget -> c) = do
   whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
     let ekey = "exposed[decoy]"
-    checkWhen $ Window.CampaignEvent ekey (Just iid) Null
-    checkAfter $ Window.CampaignEvent ekey (Just iid) Null
+    batched \_ -> do
+      checkWhen $ Window.CampaignEvent ekey (Just iid) (toJSON c)
+      checkAfter $ Window.CampaignEvent ekey (Just iid) (toJSON c)
+      removeFromGame c
 
 whenExposed :: HasCardCode c => c -> WindowMatcher
 whenExposed c = CampaignEvent #when Nothing ekey

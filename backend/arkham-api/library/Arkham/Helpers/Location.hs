@@ -1,6 +1,7 @@
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -101,6 +102,9 @@ class Locateable a where
 
 withLocationOf :: (Locateable a, HasGame m, Tracing m) => a -> (LocationId -> m ()) -> m ()
 withLocationOf a f = getLocationOf a >>= traverse_ f
+
+instance Locateable ConcealedCardId where
+  getLocationOf = field ConcealedCardLocation
 
 instance Locateable InvestigatorId where
   getLocationOf = field InvestigatorLocation

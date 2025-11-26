@@ -12,7 +12,7 @@ theLightOfPharos = key TheLightOfPharos Cards.theLightOfPharos
 
 instance HasAbilities TheLightOfPharos where
   getAbilities (TheLightOfPharos a) = case a.bearer of
-    InvestigatorTarget _iid -> []
+    InvestigatorTarget _iid | not a.shifted -> []
     _ -> []
 
 instance RunMessage TheLightOfPharos where

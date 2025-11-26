@@ -16,7 +16,7 @@ theEyeOfRavens = key TheEyeOfRavens Cards.theEyeOfRavens
 
 instance HasAbilities TheEyeOfRavens where
   getAbilities (TheEyeOfRavens a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       case a.stability of
         Stable ->
           [ restricted

@@ -13,10 +13,10 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Token
-import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Window qualified as Window
 
 instance RunMessage ScarletKey where
@@ -39,7 +39,11 @@ instance RunMessage ScarletKeyAttrs where
     Flip iid _ (isTarget attrs -> True) -> do
       when (attrs.stability == Unstable) do
         Lifted.checkAfter $ Window.CampaignEvent "stabilizedKey" (Just iid) (toJSON attrs.id)
-      pure $ attrs & stabilityL .~ if attrs.stability == Stable then Unstable else Stable
+      pure
+        $ attrs
+        & (stabilityL .~ if attrs.stability == Stable then Unstable else Stable)
+        & (shiftedL .~ True)
+    EndRound -> pure $ attrs & shiftedL .~ False
     UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg
       pure attrs

@@ -17,7 +17,7 @@ theWeepingLady = key TheWeepingLady Cards.theWeepingLady
 
 instance HasAbilities TheWeepingLady where
   getAbilities (TheWeepingLady a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       if a.stable
         then
           [ restricted

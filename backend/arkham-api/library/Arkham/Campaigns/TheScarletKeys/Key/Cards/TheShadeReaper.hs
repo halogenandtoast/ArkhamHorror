@@ -12,7 +12,7 @@ theShadeReaper = key TheShadeReaper Cards.theShadeReaper
 
 instance HasAbilities TheShadeReaper where
   getAbilities (TheShadeReaper a) = case a.bearer of
-    InvestigatorTarget _iid -> []
+    InvestigatorTarget _iid | not a.shifted -> []
     _ -> []
 
 instance RunMessage TheShadeReaper where

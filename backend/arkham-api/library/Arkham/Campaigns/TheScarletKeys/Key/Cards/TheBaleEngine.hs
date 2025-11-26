@@ -17,7 +17,7 @@ theBaleEngine = key TheBaleEngine Cards.theBaleEngine
 
 instance HasAbilities TheBaleEngine where
   getAbilities (TheBaleEngine a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       if a.stable
         then
           [ restricted

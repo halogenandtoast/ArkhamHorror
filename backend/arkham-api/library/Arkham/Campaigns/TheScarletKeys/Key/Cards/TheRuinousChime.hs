@@ -15,7 +15,7 @@ theRuinousChime = key TheRuinousChime Cards.theRuinousChime
 
 instance HasAbilities TheRuinousChime where
   getAbilities (TheRuinousChime a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       case a.stability of
         Stable ->
           [ restricted

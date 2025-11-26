@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useDbCardStore } from '@/stores/dbCards'
+import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composeable/debouncedRef';
 import { handleI18n } from '@/arkham/i18n';
-import { choiceRequiresModal, MessageType, CardLabel } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { AmountChoice, QuestionType } from '@/arkham/types/Question';
@@ -417,6 +418,12 @@ const cardLabels = computed<{ choice: CardLabel, index: number}[]>(() =>
       return choice.tag === "CardLabel" ? [{choice, index}] : []
     }))
 
+const chaosTokenLabels = computed<{ choice: ChaosTokenLabel, index: number}[]>(() =>
+  choices.value.
+    flatMap((choice, index) => {
+      return choice.tag === "ChaosTokenLabel" ? [{choice, index}] : []
+    }))
+
 const chaosBagChoice = computed(() => {
   if (props.game.skillTest) {
     //if we are in a skill test, it will handle this display
@@ -481,6 +488,16 @@ const filteredCards = computed<{ choice: CardLabel, index: number }[]>(() => {
       <template v-for="{choice, index} in filteredCards" :key="index">
         <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
         <img v-else class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
+      </template>
+    </div>
+
+    <div v-if="chaosTokenLabels.length > 0" class="cardLabels">
+      <template v-for="{choice, index} in chaosTokenLabels" :key="index">
+        <img
+          class="token front"
+          :src="chaosTokenImage(choice.face)"
+          @click="choose(index)"
+        />
       </template>
     </div>
 

@@ -4,6 +4,7 @@ import Arkham.Ability.Types
 import Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Concealed.Query (ForExpose (..), getConcealedChoicesAt)
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -325,6 +326,11 @@ clueLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> Choose
 clueLabeled iid action = unterminated do
   msgs <- lift $ capture action
   tell [ClueLabel iid msgs]
+
+chaosTokenLabeled :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> ChooseT m ()
+chaosTokenLabeled face action = unterminated do
+  msgs <- lift $ capture action
+  tell [ChaosTokenLabel face msgs]
 
 cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
 cardLabeled a action = unterminated do

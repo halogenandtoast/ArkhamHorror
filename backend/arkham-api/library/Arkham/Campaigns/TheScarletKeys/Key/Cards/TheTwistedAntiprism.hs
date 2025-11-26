@@ -19,7 +19,7 @@ theTwistedAntiprism = key TheTwistedAntiprism Cards.theTwistedAntiprism
 
 instance HasAbilities TheTwistedAntiprism where
   getAbilities (TheTwistedAntiprism a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       case a.stability of
         Stable ->
           [ restricted a 1 (exists (colocatedWith iid <> can.manipulate.deck)) $ FastAbility Free

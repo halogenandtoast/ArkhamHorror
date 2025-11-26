@@ -16,7 +16,7 @@ theLastBlossom = key TheLastBlossom Cards.theLastBlossom
 
 instance HasAbilities TheLastBlossom where
   getAbilities (TheLastBlossom a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       if a.stable
         then
           [ restricted

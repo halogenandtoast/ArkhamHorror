@@ -12,7 +12,7 @@ theSableGlass = key TheSableGlass Cards.theSableGlass
 
 instance HasAbilities TheSableGlass where
   getAbilities (TheSableGlass a) = case a.bearer of
-    InvestigatorTarget _iid -> []
+    InvestigatorTarget _iid | not a.shifted -> []
     _ -> []
 
 instance RunMessage TheSableGlass where

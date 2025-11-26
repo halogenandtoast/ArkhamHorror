@@ -16,7 +16,7 @@ theMirroringBlade = key TheMirroringBlade Cards.theMirroringBlade
 
 instance HasAbilities TheMirroringBlade where
   getAbilities (TheMirroringBlade a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       case a.stability of
         Stable ->
           [ restricted

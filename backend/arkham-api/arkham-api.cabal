@@ -3895,6 +3895,7 @@ library
       Arkham.Scenario.Scenarios.IntoTheMaelstrom
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
+      Arkham.Scenario.Scenarios.OnThinIce
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
       Arkham.Scenario.Scenarios.ReturnToAtDeathsDoorstep
@@ -4012,6 +4013,7 @@ library
       Arkham.Scenarios.IntoTheMaelstrom.Helpers
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
+      Arkham.Scenarios.OnThinIce.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
       Arkham.Scenarios.SanguineShadows.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers

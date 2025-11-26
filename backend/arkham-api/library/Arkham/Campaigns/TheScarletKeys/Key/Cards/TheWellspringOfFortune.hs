@@ -19,7 +19,7 @@ theWellspringOfFortune = key TheWellspringOfFortune Cards.theWellspringOfFortune
 
 instance HasAbilities TheWellspringOfFortune where
   getAbilities (TheWellspringOfFortune a) = case a.bearer of
-    InvestigatorTarget iid ->
+    InvestigatorTarget iid | not a.shifted ->
       [restricted a 1 (NotScenario "88001" <> youExist (InvestigatorWithId iid)) $ FastAbility Free]
     _ -> []
 

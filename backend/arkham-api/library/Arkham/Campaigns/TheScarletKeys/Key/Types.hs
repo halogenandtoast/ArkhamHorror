@@ -62,6 +62,7 @@ data ScarletKeyAttrs = ScarletKeyAttrs
   , keyStability :: Stability
   , keyBearer :: Target
   , keyTokens :: Tokens
+  , keyShifted :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -81,6 +82,9 @@ instance HasField "cardId" ScarletKeyAttrs CardId where
 
 instance HasField "id" ScarletKeyAttrs ScarletKeyId where
   getField = keyId
+
+instance HasField "shifted" ScarletKeyAttrs Bool where
+  getField = keyShifted
 
 instance HasField "ability" ScarletKeyAttrs (Int -> Source) where
   getField = toAbilitySource
@@ -116,6 +120,7 @@ key f cardDef =
                 _ -> Unstable
             , keyBearer = bearer
             , keyTokens = mempty
+            , keyShifted = False
             }
     }
 
@@ -226,4 +231,5 @@ instance FromJSON ScarletKeyAttrs where
     keyStability <- o .: "stability"
     keyBearer <- o .: "bearer"
     keyTokens <- o .:? "tokens" .!= mempty
+    keyShifted <- o .:? "shifted" .!= False
     pure ScarletKeyAttrs {..}

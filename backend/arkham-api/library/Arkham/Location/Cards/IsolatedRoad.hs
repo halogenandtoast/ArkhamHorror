@@ -8,7 +8,7 @@ newtype IsolatedRoad = IsolatedRoad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 isolatedRoad :: LocationCard IsolatedRoad
-isolatedRoad = location IsolatedRoad Cards.isolatedRoad 0 (Static 0)
+isolatedRoad = location IsolatedRoad Cards.isolatedRoad 3 (PerPlayer 2)
 
 instance HasAbilities IsolatedRoad where
   getAbilities (IsolatedRoad attrs) =

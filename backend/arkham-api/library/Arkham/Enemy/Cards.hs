@@ -485,7 +485,7 @@ allEncounterEnemyCards =
       , theUnnamable
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
-      , thorneOpenToNegotiation  
+      , thorneOpenToNegotiation
       , thorneTheOneWithTheRedCravat
       , thrall
       , thrallDeadHeat
@@ -3012,16 +3012,20 @@ voidChimeraTrueForm :: CardDef
 voidChimeraTrueForm =
   (enemy "09626" ("Void Chimera" <:> "True Form") OnThinIce 1)
     { cdCardTraits = setFromList [Monster, Outsider, Elite]
-    , cdKeywords = singleton $ Keyword.Concealed VoidChimeraTrueForm (Static 4)
+    , cdKeywords = setFromList [Keyword.Concealed VoidChimeraTrueForm (Static 4), Keyword.Massive]
     , cdVictoryPoints = Just 1
+    , cdUnique = True
     }
 
 voidChimeraFellbeak :: CardDef
 voidChimeraFellbeak =
   (enemy "09627" ("Void Chimera" <:> "Fellbeak") OnThinIce 1)
     { cdCardTraits = setFromList [Monster, Outsider, Elite]
-    , cdKeywords = setFromList [Keyword.Patrol (LocationWithMostInvestigators $ LocationWithTrait Wilderness), Keyword.Retaliate]
+    , cdKeywords =
+        setFromList
+          [Keyword.Patrol (LocationWithMostInvestigators $ LocationWithTrait Wilderness), Keyword.Retaliate]
     , cdVictoryPoints = Just 0
+    , cdUnique = True
     }
 
 voidChimeraEarsplitter :: CardDef
@@ -3030,6 +3034,7 @@ voidChimeraEarsplitter =
     { cdCardTraits = setFromList [Monster, Outsider, Elite]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     , cdVictoryPoints = Just 0
+    , cdUnique = True
     }
 
 voidChimeraGorefeaster :: CardDef
@@ -3038,14 +3043,16 @@ voidChimeraGorefeaster =
     { cdCardTraits = setFromList [Monster, Outsider, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 0
+    , cdUnique = True
     }
 
 voidChimeraFellhound :: CardDef
 voidChimeraFellhound =
-  (enemy "09629" ("Void Chimera" <:> "Fellhound") OnThinIce 1)
+  (enemy "09630" ("Void Chimera" <:> "Fellhound") OnThinIce 1)
     { cdCardTraits = setFromList [Monster, Outsider, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 0
+    , cdUnique = True
     }
 
 ravenousGrizzly :: CardDef
@@ -3209,7 +3216,8 @@ desiderioDelgadoAlvarezRedInHisLedger :: CardDef
 desiderioDelgadoAlvarezRedInHisLedger =
   (enemy "09758" ("Desiderio Delgado Alvarez" <:> "Red in His Ledger") RedCoterie 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Patrol (LocationWithEnemy (EnemyWithTrait Coterie <> not_ (EnemyIs "09758")))]
+    , cdKeywords =
+        setFromList [Keyword.Patrol (LocationWithEnemy (EnemyWithTrait Coterie <> not_ (EnemyIs "09758")))]
     , cdVictoryPoints = Just 0
     , cdUnique = True
     }

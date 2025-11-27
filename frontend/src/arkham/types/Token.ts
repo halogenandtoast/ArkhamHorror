@@ -28,6 +28,7 @@ export type Token
   | 'Pillar'
   | 'Portent'
   | 'Resource'
+  | 'ScoutingReport'
   | 'Seal'
   | 'Secret'
   | 'Shard'
@@ -72,6 +73,7 @@ export const TokenType = {
   Offering: 'Offering',
   Pillar: 'Pillar',
   Resource: 'Resource',
+  ScoutingReport: 'ScoutingReport',
   Seal: 'Seal',
   Secret: 'Secret',
   Shard: 'Shard',
@@ -117,6 +119,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Pillar'),
   JsonDecoder.literal('Portent'),
   JsonDecoder.literal('Resource'),
+  JsonDecoder.literal('ScoutingReport'),
   JsonDecoder.literal('Seal'),
   JsonDecoder.literal('Secret'),
   JsonDecoder.literal('Shard'),

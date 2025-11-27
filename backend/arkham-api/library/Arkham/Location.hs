@@ -842,7 +842,8 @@ allLocations =
     , SomeLocationCard miramarYachtClub
     , SomeLocationCard plazaHotel
     , --- On Thin Ice [tsk]
-      SomeLocationCard anchorage
+      SomeLocationCard outsidersLair
+    , SomeLocationCard anchorage
     , SomeLocationCard fairbanks
     , SomeLocationCard mountainStream
     , SomeLocationCard frozenLake

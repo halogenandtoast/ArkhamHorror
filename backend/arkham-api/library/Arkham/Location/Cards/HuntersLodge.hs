@@ -8,7 +8,7 @@ newtype HuntersLodge = HuntersLodge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntersLodge :: LocationCard HuntersLodge
-huntersLodge = location HuntersLodge Cards.huntersLodge 0 (Static 0)
+huntersLodge = location HuntersLodge Cards.huntersLodge 4 (PerPlayer 1)
 
 instance HasAbilities HuntersLodge where
   getAbilities (HuntersLodge attrs) =

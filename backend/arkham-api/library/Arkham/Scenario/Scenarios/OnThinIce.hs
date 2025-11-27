@@ -8,16 +8,17 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.OnThinIce.Helpers
 import Arkham.Strategy
-import Arkham.Trait (Trait (Hazard, Wayfarer))
+import Arkham.Trait (Trait (Hazard, Wayfarer, Wilderness))
 
 newtype OnThinIce = OnThinIce ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onThinIce :: Difficulty -> OnThinIce
@@ -27,9 +28,10 @@ onThinIce difficulty =
     "09609"
     "On Thin Ice"
     difficulty
-    [ ".         .         alaskanWilderness1 outerWilderness1"
-    , "anchorage fairbanks alaskanWilderness2 outerWilderness2"
-    , ".         .         alaskanWilderness3 outerWilderness3"
+    [ ".         .         alaskanWilderness1 .             outerWilderness1"
+    , "anchorage fairbanks alaskanWilderness2 .             outerWilderness2"
+    , ".         .         alaskanWilderness3 .             outerWilderness3"
+    , ".         .         .                  outsidersLair ."
     ]
 
 instance HasChaosTokenValue OnThinIce where
@@ -43,6 +45,13 @@ instance HasChaosTokenValue OnThinIce where
       pure $ toChaosTokenValue attrs Tablet (if chimera then 5 else 2) 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance HasModifiersFor OnThinIce where
+  getModifiersFor (OnThinIce attrs) = do
+    modifySelect
+      attrs
+      (not_ $ LocationWithTrait Wilderness)
+      [ScenarioModifier "noConcealed[VoidChimeraTrueForm]"]
 
 instance RunMessage OnThinIce where
   runMessage msg s@(OnThinIce attrs) = runQueueT $ scenarioI18n $ case msg of

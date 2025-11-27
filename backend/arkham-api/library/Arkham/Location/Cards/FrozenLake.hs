@@ -8,7 +8,7 @@ newtype FrozenLake = FrozenLake LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenLake :: LocationCard FrozenLake
-frozenLake = location FrozenLake Cards.frozenLake 0 (Static 0)
+frozenLake = location FrozenLake Cards.frozenLake 3 (PerPlayer 2)
 
 instance HasAbilities FrozenLake where
   getAbilities (FrozenLake attrs) =

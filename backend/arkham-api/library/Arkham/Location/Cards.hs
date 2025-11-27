@@ -650,6 +650,7 @@ allLocationCards =
       , ottomanFront
       , outerWall_285
       , outerWall_286
+      , outsidersLair
       , overgrownCairns
       , overgrownRuins
       , ownersOffice
@@ -8639,6 +8640,18 @@ plazaHotel =
       [Equals, Square]
       DancingMad
 
+outsidersLair :: CardDef
+outsidersLair =
+  otherSideIs "09615"
+    $ victory 1
+    $ location
+      "09615b"
+      "Outsiders' Lair"
+      [Otherworld]
+      NoSymbol
+      []
+      OnThinIce
+
 anchorage :: CardDef
 anchorage =
   location
@@ -8669,7 +8682,7 @@ mountainStream =
     [Diamond]
     "Mountain Stream"
     [Wilderness]
-    Diamond
+    Square
     [Diamond, T, Spade, Heart, Hourglass]
     OnThinIce
 

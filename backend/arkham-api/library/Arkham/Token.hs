@@ -34,6 +34,7 @@ data Token
   | Pillar
   | Portent
   | Resource
+  | ScoutingReport
   | Seal
   | Secret
   | Shard

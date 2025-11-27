@@ -8,7 +8,7 @@ newtype ForgottenOutpost = ForgottenOutpost LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forgottenOutpost :: LocationCard ForgottenOutpost
-forgottenOutpost = location ForgottenOutpost Cards.forgottenOutpost 0 (Static 0)
+forgottenOutpost = location ForgottenOutpost Cards.forgottenOutpost 4 (PerPlayer 1)
 
 instance HasAbilities ForgottenOutpost where
   getAbilities (ForgottenOutpost attrs) =

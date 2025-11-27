@@ -8,7 +8,7 @@ newtype CondemnedGoldMine = CondemnedGoldMine LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 condemnedGoldMine :: LocationCard CondemnedGoldMine
-condemnedGoldMine = location CondemnedGoldMine Cards.condemnedGoldMine 0 (Static 0)
+condemnedGoldMine = location CondemnedGoldMine Cards.condemnedGoldMine 6 (Static 0)
 
 instance HasAbilities CondemnedGoldMine where
   getAbilities (CondemnedGoldMine attrs) =

@@ -206,7 +206,7 @@ placeLocationIfNotInPlay def =
 
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
-placeRandomLocationGroupCards groupName = genCards >=> placeRandomLocationGroup groupName
+placeRandomLocationGroupCards groupName = traverse fetchCard >=> placeRandomLocationGroup groupName
 
 placeRandomLocationGroupCardsCapture
   :: ReverseQueue m => Text -> [CardDef] -> m [LocationId]
@@ -678,9 +678,10 @@ createEnemyAtLocationMatching_ c matcher = do
   Msg.pushM $ Msg.createEnemyAtLocationMatching_ card matcher
 
 createEnemyAtLocationMatching
-  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m EnemyId
+  :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m EnemyId
 createEnemyAtLocationMatching c matcher = do
-  (eid, msg) <- Msg.createEnemyAtLocationMatching (toCard c) matcher
+  card <- fetchCard c
+  (eid, msg) <- Msg.createEnemyAtLocationMatching card matcher
   Msg.push msg
   pure eid
 

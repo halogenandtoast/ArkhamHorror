@@ -442,6 +442,7 @@ withAssetMetadata a = do
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
   amEnemies <- select (EnemyAttachedToAsset $ AssetWithId $ toId a)
   amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
+  amScarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToAsset (toId a) Nothing
   let amPermanent = cdPermanent $ toCardDef a
   pure $ a `with` AssetMetadata {..}
 

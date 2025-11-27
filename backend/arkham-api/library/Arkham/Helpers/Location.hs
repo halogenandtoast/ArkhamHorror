@@ -301,8 +301,13 @@ getCanLeaveCurrentLocation iid source = do
 connectBothWays
   :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId) => l1 -> l2 -> m ()
 connectBothWays l1 l2 = do
+  addDirectConnection l1 l2
+  addDirectConnection l2 l1
+
+addDirectConnection
+  :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId) => l1 -> l2 -> m ()
+addDirectConnection l1 l2 = do
   push $ Msg.AddDirectConnection (asId l1) (asId l2)
-  push $ Msg.AddDirectConnection (asId l2) (asId l1)
 
 placedLocationDirection
   :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId)

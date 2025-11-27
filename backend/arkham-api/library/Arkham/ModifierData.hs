@@ -81,6 +81,7 @@ data AssetMetadata = AssetMetadata
   , amEnemies :: [EnemyId]
   , amModifiers :: [Modifier]
   , amPermanent :: Bool
+  , amScarletKeys :: [ScarletKeyId]
   }
   deriving stock (Show, Eq, Generic)
 

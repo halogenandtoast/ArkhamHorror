@@ -675,6 +675,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
+  CreateScarletKeyAt card _ -> do
+    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   AttachStoryTreacheryTo _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   CreateEnemy creation@(enemyCreationCard -> card) | not creation.leaveEnemyWhereItIs -> do

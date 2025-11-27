@@ -9,6 +9,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import type { AbilityType } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import DebugAsset from '@/arkham/components/debug/Asset.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
@@ -300,6 +301,15 @@ const assetStory = computed(() => {
         :playerId="playerId"
         :key="treacheryId"
         @choose="$emit('choose', $event)"
+      />
+      <ScarletKey
+        v-for="skId in asset.scarletKeys"
+        :scarletKey="game.scarletKeys[skId]"
+        :game="game"
+        :playerId="playerId"
+        :key="skId"
+        @choose="choose"
+        :attached="true"
       />
       <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">

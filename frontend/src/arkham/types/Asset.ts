@@ -23,6 +23,7 @@ export type Asset = {
   permanent: boolean;
   flipped: boolean;
   events: string[];
+  scarletKeys: string[];
   treacheries: string[];
   enemies: string[];
   assets: string[];
@@ -49,6 +50,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   permanent: JsonDecoder.boolean(),
   flipped: JsonDecoder.boolean(),
   events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
+  scarletKeys: JsonDecoder.array<string>(JsonDecoder.string(), 'ScarletKeyId[]'),
   enemies: JsonDecoder.array<string>(JsonDecoder.string(), 'EnemyId[]'),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),

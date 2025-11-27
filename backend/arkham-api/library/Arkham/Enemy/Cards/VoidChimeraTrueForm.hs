@@ -8,7 +8,7 @@ newtype VoidChimeraTrueForm = VoidChimeraTrueForm EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 voidChimeraTrueForm :: EnemyCard VoidChimeraTrueForm
-voidChimeraTrueForm = enemy VoidChimeraTrueForm Cards.voidChimeraTrueForm (0, Static 1, 0) (0, 0)
+voidChimeraTrueForm = enemy VoidChimeraTrueForm Cards.voidChimeraTrueForm (4, PerPlayer 4, 4) (1, 1)
 
 instance RunMessage VoidChimeraTrueForm where
   runMessage msg (VoidChimeraTrueForm attrs) = runQueueT $ case msg of

@@ -87,7 +87,18 @@ gatherConcealedCards a = do
       _ -> First Nothing
   for (getFirst mconcealed) \(card, gv) -> do
     n <- getGameValue gv
-    (card,) <$> (shuffle (card : replicate n Decoy) >>= traverse mkConcealedCard)
+    let
+      cards =
+        card
+          : if card == VoidChimeraTrueForm
+            then
+              [ DecoyVoidChimeraFellbeak
+              , DecoyVoidChimeraFellhound
+              , DecoyVoidChimeraGorefeaster
+              , DecoyVoidChimeraFellhound
+              ]
+            else replicate n Decoy
+    (card,) <$> (shuffle cards >>= traverse mkConcealedCard)
 
 makeDecoyAt :: ReverseQueue m => InvestigatorId -> LocationId -> m ()
 makeDecoyAt iid loc = mkConcealedCard Decoy >>= \decoy -> makeDecoyAt' decoy iid loc
@@ -151,6 +162,7 @@ concealedKindToCardDef = \case
   CoterieEnforcerB -> Just Cards.coterieEnforcerB
   CoterieAssassinA -> Just Cards.coterieAssassinA
   CoterieAssassinB -> Just Cards.coterieAssassinB
+  VoidChimeraTrueForm -> Just Cards.voidChimeraTrueForm
   _ -> Nothing
 
 allConcealedCardDefs :: [CardDef]

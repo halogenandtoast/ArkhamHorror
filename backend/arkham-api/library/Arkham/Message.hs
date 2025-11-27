@@ -756,7 +756,9 @@ data Message
   | LoseAdditionalAction InvestigatorId AdditionalAction
   | UseEffectAction InvestigatorId EffectId [Window]
   | GainClues InvestigatorId Source Int
+  | IgnoreGainXP CampaignStep
   | GainXP InvestigatorId Source Int
+  | SetXP InvestigatorId Int
   | SpendXP InvestigatorId Int
   | GameOver
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
@@ -1092,6 +1094,7 @@ data Message
     Successful (Action, Target) InvestigatorId Source Target Int
   | Failed (Action, Target) InvestigatorId Source Target Int
   | SufferTrauma InvestigatorId Int Int
+  | SetTrauma InvestigatorId Int Int
   | CheckTrauma InvestigatorId
   | HealTrauma InvestigatorId Int Int
   | GainSurge Source Target

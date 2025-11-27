@@ -4281,6 +4281,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   SufferTrauma iid physical mental | iid == investigatorId -> do
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
+  SetTrauma iid physical mental | iid == investigatorId -> do
+    pure $ a & physicalTraumaL .~ physical & mentalTraumaL .~ mental
   CheckTrauma iid | iid == investigatorId -> do
     pushWhen (investigatorMentalTrauma >= investigatorSanity) $ DrivenInsane iid
     pushWhen (investigatorPhysicalTrauma >= investigatorHealth) $ InvestigatorKilled (toSource a) iid
@@ -4294,6 +4296,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (physicalTraumaL %~ max 0 . subtract physical)
       & (mentalTraumaL %~ max 0 . subtract mental)
   GainXP iid _ amount | iid == investigatorId -> pure $ a & xpL +~ amount
+  SetXP iid amount | iid == investigatorId -> pure $ a & xpL .~ amount
   SpendXP iid amount | iid == investigatorId -> do
     pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do

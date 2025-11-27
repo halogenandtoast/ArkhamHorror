@@ -80,7 +80,7 @@ defaultCampaignRunner msg a = case msg of
     players <- traverse getPlayer investigators
     pushAll $ ResetGame : chooseUpgradeDecks players : [FinishedUpgradingDecks]
     pure a
-  CampaignStep (ChooseDecksStep _ ) -> do
+  CampaignStep (ChooseDecksStep _) -> do
     players <- allPlayers
     pushAll $ chooseDecks players : [FinishedUpgradingDecks]
     pure a
@@ -387,6 +387,7 @@ defaultCampaignRunner msg a = case msg of
           | step == normalizedCampaignStep (campaignStep attrs) ->
               attrs & xpBreakdownL .~ (step, report' <> report) : rest
         _ -> attrs & xpBreakdownL %~ ((normalizedCampaignStep (campaignStep attrs), report) :)
+  IgnoreGainXP step -> pure $ updateAttrs a \attrs -> attrs & xpBreakdownL %~ filter ((/= step) . fst)
   UseAbility _ ab _ | ab.source == CampaignSource -> do
     push $ Do msg
     pure a

@@ -129,6 +129,7 @@ hollow iid card = do
     ScenarioSource
     card
     [ScenarioModifier "hollowed"]
+  checkAfter $ Window.CampaignEvent "hollowed" (Just iid) (toJSON card)
 
 removeHollow :: (FetchCard c, ReverseQueue m) => c -> m ()
 removeHollow c = do

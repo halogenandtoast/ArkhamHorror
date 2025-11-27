@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype PocketTelescope = PocketTelescope AssetAttrs
@@ -22,27 +23,22 @@ instance HasAbilities PocketTelescope where
         a
         2
         (exists (RevealedLocation <> ConnectedLocation NotForMovement <> InvestigatableLocation))
-        $ ActionAbility [#investigate]
-        $ ActionCost 1
+        investigateAction_
     ]
 
 instance RunMessage PocketTelescope where
   runMessage msg a@(PocketTelescope attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select UnrevealedLocation
-      chooseOne
-        iid
-        [ targetLabel location [LookAtRevealed iid (attrs.ability 1) (toTarget location)]
-        | location <- locations
-        ]
+      locations <- select $ UnrevealedLocation <> connectedFrom (locationWithInvestigator iid)
+      chooseTargetM iid locations $ lookAtRevealed iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      locations <- select (RevealedLocation <> ConnectedLocation NotForMovement <> InvestigatableLocation)
-      chooseOne
-        iid
-        [ targetLabel location [HandleTargetChoice iid (attrs.ability 2) (toTarget location)]
-        | location <- locations
-        ]
+      locations <-
+        select
+          $ RevealedLocation
+          <> connectedFrom (locationWithInvestigator iid)
+          <> InvestigatableLocation
+      chooseTargetM iid locations $ handleTarget iid (attrs.ability 2)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget lid) -> do
       abilityModifier (AbilityRef (toSource attrs) 2) (attrs.ability 2) iid (AsIfAt lid)

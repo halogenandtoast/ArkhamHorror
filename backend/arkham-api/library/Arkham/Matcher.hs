@@ -430,6 +430,9 @@ inPlayAreaOf = InPlayAreaOf . InvestigatorWithId
 inHandOf :: ForPlay -> InvestigatorId -> ExtendedCardMatcher
 inHandOf forPlay = InHandOf forPlay . InvestigatorWithId
 
+cardControlledBy :: InvestigatorId -> ExtendedCardMatcher
+cardControlledBy = ControlledBy . InvestigatorWithId
+
 inDiscardOf
   :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> ExtendedCardMatcher
 inDiscardOf = InDiscardOf . InvestigatorWithId . asId

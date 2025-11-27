@@ -15,6 +15,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
@@ -90,13 +91,17 @@ exposed iid enemy c body = do
   checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
-exposedDecoy :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> m ()
-exposedDecoy iid (toTarget -> c) = do
+exposedDecoy :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> Maybe Text -> m ()
+exposedDecoy iid (toTarget -> c) mtext = do
   whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
     let ekey = "exposed[decoy]"
     batched \_ -> do
       checkWhen $ Window.CampaignEvent ekey (Just iid) (toJSON c)
+      for_ mtext \txt ->
+        checkWhen $ Window.CampaignEvent ("exposed[" <> txt <> "]") (Just iid) (toJSON c)
       checkAfter $ Window.CampaignEvent ekey (Just iid) (toJSON c)
+      for_ mtext \txt ->
+        checkAfter $ Window.CampaignEvent ("exposed[" <> txt <> "]") (Just iid) (toJSON c)
       removeFromGame c
 
 whenExposed :: HasCardCode c => c -> WindowMatcher
@@ -203,3 +208,9 @@ handleRedCoterie = do
   t <- getTime
   when (t >= 10) do
     lift haven'tSeenTheLastOf >>= traverse_ (sample >=> addToEncounterDeck . only) . nonEmpty
+
+scarletKeyWithEnemy :: ToId enemy EnemyId => enemy -> ScarletKeyMatcher
+scarletKeyWithEnemy = ScarletKeyWithEnemy . EnemyWithId . asId
+
+enemyWithScarletKey :: ToId enemy EnemyId => enemy -> Criterion
+enemyWithScarletKey = exists . scarletKeyWithEnemy

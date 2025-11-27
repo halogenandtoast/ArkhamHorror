@@ -95,7 +95,11 @@ instance RunMessage ConcealedCard where
     DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
         Nothing -> case c.kind of
-          Decoy -> exposedDecoy iid c
+          Decoy -> exposedDecoy iid c Nothing
+          DecoyVoidChimeraFellbeak -> exposedDecoy iid c (Just "decoyVoidChimeraFellbeak")
+          DecoyVoidChimeraEarsplitter -> exposedDecoy iid c (Just "decoyVoidChimeraEarsplitter")
+          DecoyVoidChimeraGorefeaster -> exposedDecoy iid c (Just "decoyVoidChimeraGorefeaster")
+          DecoyVoidChimeraFellhound -> exposedDecoy iid c (Just "decoyVoidChimeraFellhound")
           _ -> pure ()
         Just def -> do
           enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title

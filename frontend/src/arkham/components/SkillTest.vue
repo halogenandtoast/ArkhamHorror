@@ -405,7 +405,13 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
-        <h2>Committed Skills</h2>
+        <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">
+          <h2>{{t('toBeCommitted')}}</h2>
+          <p class='note'>{{t('toBeCommittedNote')}}</p>
+        </template>
+        <template v-else>
+          <h2>{{t('committedCards')}}</h2>
+        </template>
         <div class="skills-container">
           <CommittedSkills
             :game="game"
@@ -1022,6 +1028,12 @@ i.iconSkillAgility {
 .test-source {
   width: 100%;
   align-items: flex-start;
+}
+
+.note {
+  background: #222;
+  color: #888;
+  padding: 5px;
 }
 
 </style>

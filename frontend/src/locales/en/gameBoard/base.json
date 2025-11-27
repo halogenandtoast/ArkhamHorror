@@ -1,5 +1,8 @@
 {
     "skillTestTitle": "Skill Test",
+    "toBeCommitted": "To be committed",
+    "committedCards": "Committed cards",
+    "toBeCommittedNote": "Cards are not committed until you click the token above and your skill value may not show the bonuses added until then.",
 
     "waitingForMorePlayers": "Waiting for more players",
     "showInviteLink": "Invite them with this url:",

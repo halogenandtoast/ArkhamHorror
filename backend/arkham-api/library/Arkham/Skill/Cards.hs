@@ -515,6 +515,7 @@ ableBodied :: CardDef
 ableBodied =
   (skill "05038" "Able Bodied" [#combat, #agility] Survivor)
     { cdCardTraits = singleton Innate
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 daring :: CardDef

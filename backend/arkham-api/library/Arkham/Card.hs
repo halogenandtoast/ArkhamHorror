@@ -369,6 +369,9 @@ instance HasTraits Card where
     EncounterCard ec -> toTraits ec
     VengeanceCard c -> toTraits c
 
+instance HasField "printedTraits" Card (Set Trait) where
+  getField = (.printedTraits) . toCardDef
+
 instance HasField "victoryPoints" Card (Maybe Int) where
   getField = (.victoryPoints) . toCardDef
 

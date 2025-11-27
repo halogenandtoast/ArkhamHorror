@@ -218,6 +218,7 @@ allEncounterTreacheryCards =
       , beneathTheLodge
       , bestLaidPlans
       , betweenWorlds
+      , beyondThePale
       , beyondTheVeil
       , blackStarsRise
       , blasphemousVisions
@@ -529,6 +530,7 @@ allEncounterTreacheryCards =
       , spectralMist
       , spiresOfCarcosa
       , spiritsTorment
+      , splinteredSpace
       , stalkedInTheDark
       , stoneBarrier
       , stowaway
@@ -601,6 +603,7 @@ allEncounterTreacheryCards =
       , violentCommands
       , violentCommandsTheMidwinterGala
       , wardOfPreservation
+      , warpedReality
       , violentOutburst
       , visionsInYourMindDeath
       , visionsInYourMindFailure
@@ -3047,6 +3050,24 @@ tenebrousEclipse :: CardDef
 tenebrousEclipse =
   (treachery "09740" "Tenebrous Eclipse" AgentsOfYuggoth 3)
     { cdCardTraits = setFromList [Omen]
+    }
+
+splinteredSpace :: CardDef
+splinteredSpace =
+  (treachery "09741" "Splintered Space" SpatialAnomaly 3)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+beyondThePale :: CardDef
+beyondThePale =
+  (treachery "09742" "Beyond the Pale" SpatialAnomaly 3)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+warpedReality :: CardDef
+warpedReality =
+  (treachery "09743" "Warped Reality" SpatialAnomaly 2)
+    { cdCardTraits = setFromList [Hex]
     }
 
 touchOfTheBeyond :: CardDef

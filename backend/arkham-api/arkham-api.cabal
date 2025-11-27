@@ -4433,6 +4433,7 @@ library
       Arkham.Treachery.Cards.BeneathTheLodge
       Arkham.Treachery.Cards.BestLaidPlans
       Arkham.Treachery.Cards.BetweenWorlds
+      Arkham.Treachery.Cards.BeyondThePale
       Arkham.Treachery.Cards.BeyondTheVeil
       Arkham.Treachery.Cards.BlackStarsRise
       Arkham.Treachery.Cards.BlasphemousVisions
@@ -4823,6 +4824,7 @@ library
       Arkham.Treachery.Cards.SpectralMist
       Arkham.Treachery.Cards.SpiresOfCarcosa
       Arkham.Treachery.Cards.SpiritsTorment
+      Arkham.Treachery.Cards.SplinteredSpace
       Arkham.Treachery.Cards.StalkedInTheDark
       Arkham.Treachery.Cards.StarsOfHyades
       Arkham.Treachery.Cards.StoneBarrier
@@ -4927,6 +4929,7 @@ library
       Arkham.Treachery.Cards.VortexOfTime
       Arkham.Treachery.Cards.WallsClosingIn
       Arkham.Treachery.Cards.WardOfPreservation
+      Arkham.Treachery.Cards.WarpedReality
       Arkham.Treachery.Cards.WatchersGaze
       Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion
       Arkham.Treachery.Cards.WatchersGrasp

@@ -613,6 +613,10 @@ allTreacheries =
       SomeTreacheryCard matterInversion
     , --- Agents of Yuggoth [tsk]
       SomeTreacheryCard tenebrousEclipse
+    , --- Spatial Anomaly [tsk]
+      SomeTreacheryCard splinteredSpace
+    , SomeTreacheryCard beyondThePale
+    , SomeTreacheryCard warpedReality
     , --- Spreading Corruption [tsk]
       SomeTreacheryCard touchOfTheBeyond
     , SomeTreacheryCard compulsion

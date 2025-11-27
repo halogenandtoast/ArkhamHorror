@@ -24,15 +24,11 @@ cragOfTheGhouls = location CragOfTheGhouls Cards.cragOfTheGhouls 3 (PerPlayer 2)
 instance HasModifiersFor CragOfTheGhouls where
   getModifiersFor (CragOfTheGhouls a) = do
     phase <- getPhase
-    if phase == MythosPhase
-      then do
-        history <- fmap fold . traverse (getHistory PhaseHistory) =<< select (investigatorAt a)
-        if length (historyTreacheriesDrawn history) == 1
-          then do
-            cards <- findAllCards (`cardMatch` CardWithType TreacheryType)
-            modifyEach a (map (CardIdTarget . toCardId) cards) [AddKeyword Keyword.Surge]
-          else pure mempty
-      else pure mempty
+    when (phase == MythosPhase) do
+      history <- fmap fold . traverse (getHistory PhaseHistory) =<< select (investigatorAt a)
+      when (length (historyTreacheriesDrawn history) == 1) do
+        cards <- findAllCards (`cardMatch` CardWithType TreacheryType)
+        modifyEach a (map (CardIdTarget . toCardId) cards) [AddKeyword Keyword.Surge]
 
 instance HasAbilities CragOfTheGhouls where
   getAbilities (CragOfTheGhouls attrs) = veiled attrs []

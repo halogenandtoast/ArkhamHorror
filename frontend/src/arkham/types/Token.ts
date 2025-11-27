@@ -11,6 +11,7 @@ export type Token
   | 'Clue'
   | 'Corruption'
   | 'Damage'
+  | 'Depletion'
   | 'Depth'
   | 'Doom'
   | 'Durability'
@@ -58,6 +59,7 @@ export const TokenType = {
   Corruption: 'Corruption',
   Damage: 'Damage',
   Depth: 'Depth',
+  Depletion: 'Depletion',
   Doom: 'Doom',
   Durability: 'Durability',
   Eclipse: 'Eclipse',
@@ -102,6 +104,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Clue'),
   JsonDecoder.literal('Corruption'),
   JsonDecoder.literal('Damage'),
+  JsonDecoder.literal('Depletion'),
   JsonDecoder.literal('Depth'),
   JsonDecoder.literal('Doom'),
   JsonDecoder.literal('Durability'),

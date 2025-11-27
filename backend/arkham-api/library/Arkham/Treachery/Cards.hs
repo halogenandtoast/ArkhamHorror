@@ -3084,7 +3084,7 @@ compulsion =
 
 distortedReasoning :: CardDef
 distortedReasoning =
-  (treachery "09746" "Compulsion" SpreadingCorruption 2)
+  (treachery "09746" "Distorted Reasoning" SpreadingCorruption 2)
     { cdCardTraits = setFromList [Curse, Terror]
     }
 

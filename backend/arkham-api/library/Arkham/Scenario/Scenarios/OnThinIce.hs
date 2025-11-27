@@ -2,20 +2,42 @@ module Arkham.Scenario.Scenarios.OnThinIce (onThinIce) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Campaigns.TheScarletKeys.CampaignSteps qualified as CS
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.OnThinIce.Helpers
 import Arkham.Strategy
 import Arkham.Trait (Trait (Hazard, Wayfarer, Wilderness))
+import Data.Map.Strict qualified as Map
+
+data InvestigatorData = InvestigatorData
+  { physicalTrauma :: Int
+  , mentalTrauma :: Int
+  , xp :: Int
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+newtype OnThinIceMeta = OnThinIceMeta (Map InvestigatorId InvestigatorData)
+  deriving newtype (FromJSON, ToJSON)
 
 newtype OnThinIce = OnThinIce ScenarioAttrs
   deriving anyclass IsScenario
@@ -63,7 +85,13 @@ instance RunMessage OnThinIce where
         p.validate wayfarer "wayfarer"
         p "introPart2"
       setupKeys
-      pure s
+      investigators <- allInvestigators
+      investigatorData <- for investigators \iid -> do
+        physicalTrauma <- field InvestigatorPhysicalTrauma iid
+        mentalTrauma <- field InvestigatorMentalTrauma iid
+        xp <- field InvestigatorXp iid
+        pure (iid, InvestigatorData {..})
+      pure $ OnThinIce $ attrs & metaL .~ toJSON (OnThinIceMeta (Map.fromList investigatorData))
     Setup -> runScenarioSetup OnThinIce attrs do
       setup $ ul do
         li "gatherSets"
@@ -137,5 +165,51 @@ instance RunMessage OnThinIce where
       focusCards cards do
         for_ cards \card -> do
           when (cardMatch card NonWeakness) $ hollow iid card
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          record TheVoidChimeraEscaped
+          madeADeal <- getHasRecord TheCellMadeADealWithThorne
+          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          case mcontroller of
+            Just controller | not madeADeal -> do
+              setBearer Keys.theSableGlass $ KeyWithInvestigator controller
+              record YouHaventSeenTheLastOfThorne
+            _ -> setBearer Keys.theSableGlass $ keyWithEnemy Enemies.thorneOpenToNegotiation
+          markTime 1
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+          endOfScenario
+        Resolution 1 -> do
+          setBearer Keys.theSableGlass $ keyWithEnemy Enemies.thorneOpenToNegotiation
+          markTime 3
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          endOfScenario
+        Resolution 2 -> do
+          record YouHaventSeenTheLastOfThorne
+          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          for_ mcontroller $ setBearer Keys.theSableGlass . KeyWithInvestigator
+          markTime 3
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          endOfScenario
+        Resolution 3 -> do
+          record ThorneDisappeared
+          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          setBearer Keys.theSableGlass $ case mcontroller of
+            Just controller -> KeyWithInvestigator controller
+            _ -> keyWithEnemy Enemies.thorneOpenToNegotiation
+          markTime 3
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          endOfScenario
+        Resolution 4 -> do
+          push $ IgnoreGainXP CS.OnThinIce
+          record ThereIsNothingOfNoteInAnchorage
+          resolution "resolution4"
+          let OnThinIceMeta metaMap = toResultDefault @OnThinIceMeta (OnThinIceMeta mempty) attrs.meta
+          for_ (Map.assocs metaMap) \(iid, InvestigatorData {..}) -> do
+            push $ SetTrauma iid physicalTrauma mentalTrauma
+            push $ SetXP iid xp
+          endOfScenario
+        _ -> error "Unexpected resolution"
       pure s
     _ -> OnThinIce <$> liftRunMessage msg attrs

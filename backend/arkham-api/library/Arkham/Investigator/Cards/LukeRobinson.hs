@@ -19,7 +19,7 @@ import Arkham.Helpers.Playable (getIsPlayable, getPlayableCards)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Runner (runWindow)
+import Arkham.Investigator.Runner (metaL, runWindow)
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Queue (QueueT)
@@ -123,13 +123,16 @@ instance RunMessage LukeRobinson where
         playCard = unless shouldSkip $ push $ PlayCard iid card mtarget payment windows' asAction
 
       lukePlayable <- getLukePlayable attrs windows'
+      let mCardId = maybeResult attrs.meta
 
-      if card `elem` concatMap snd lukePlayable
+      if card `elem` concatMap snd lukePlayable && Just card.id /= mCardId
         then do
           let lids = map fst $ filter (elem card . snd) lukePlayable
           chooseOrRunOneM iid do
             when playable do
-              labeled "Play at current location" playCard
+              labeled "Play at current location" do
+                doStep 1 msg
+                playCard
             when (notNull lids) do
               labeled "Play at connecting location" $ do
                 handleTarget iid attrs attrs
@@ -139,7 +142,11 @@ instance RunMessage LukeRobinson where
                     cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies
                     playCard
         else runQueueT playCard
-      pure i
+      -- we unset the tracked card here, it will have entered play and should be available again
+      pure $ LukeRobinson . (`with` Meta False) $ attrs & metaL .~ Null
+    DoStep 1 (InitiatePlayCard iid card _ _ _ _) | iid == toId attrs -> do
+      -- we've decided on the card so we need to track that
+      pure $ LukeRobinson . (`with` Meta False) $ attrs & metaL .~ toJSON card.id
     HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) -> do
       pure $ LukeRobinson (attrs `with` Meta False)
     EndTurn _ -> do

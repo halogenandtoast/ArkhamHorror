@@ -56,6 +56,8 @@ const questionLabel = computed(() => {
     question = Object.values(props.game.question)[0]
   }
 
+  if (!question) return null
+
   return question.tag === 'QuestionLabel' ? question.label : null
 })
 

@@ -54,7 +54,7 @@ instance RunMessage JudgementXX where
           n <- getDoomCount
           let
             key =
-              if n >= 5 && isSource attrs source
+              if n >= 7 && isSource attrs source
                 then DisappearedIntoTheMist
                 else WasPulledIntoTheSpectralRealm
           recordSetInsert key [cardCode]

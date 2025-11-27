@@ -234,6 +234,14 @@ instance ToGameLoggerFormat CampaignLogKey where
     EdgeOfTheEarthKey Camp_RemnantsOfLakesCamp -> "Camp – Remnants of Lake's Camp"
     EdgeOfTheEarthKey Camp_CrystallineCavern -> "Camp – Crystalling Cavern"
     NightOfTheZealotKey k -> pack . go $ show k
+    TheDunwichLegacyKey k -> pack . go $ show k
+    ThePathToCarcosaKey k -> pack . go $ show k
+    TheForgottenAgeKey k -> pack . go $ show k
+    TheCircleUndoneKey k -> pack . go $ show k
+    TheDreamEatersKey k -> pack . go $ show k
+    TheInnsmouthConspiracyKey k -> pack . go $ show k
+    EdgeOfTheEarthKey k -> pack . go $ show k
+    TheScarletKeysKey k -> pack . go $ show k
     s -> pack . go $ show s
    where
     go :: String -> String

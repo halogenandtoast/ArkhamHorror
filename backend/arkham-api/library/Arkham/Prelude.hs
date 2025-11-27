@@ -143,6 +143,9 @@ traverseToSndM f a = (a,) <$$> f a
 forToSnd :: (Traversable t, Applicative m) => t a -> (a -> m b) -> m (t (a, b))
 forToSnd xs f = traverse (traverseToSnd f) xs
 
+maxesBy :: (a -> Int) -> [a] -> [a]
+maxesBy f xs = maxes [(x, f x) | x <- xs]
+
 maxes :: [(a, Int)] -> [a]
 maxes ps = case sortedPairs of
   [] -> []

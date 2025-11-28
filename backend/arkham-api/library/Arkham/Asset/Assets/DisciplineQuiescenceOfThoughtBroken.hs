@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.DisciplineQuiescenceOfThoughtBroken (
-  disciplineQuiescenceOfThoughtBroken,
-  DisciplineQuiescenceOfThoughtBroken (..),
-)
-where
+module Arkham.Asset.Assets.DisciplineQuiescenceOfThoughtBroken (disciplineQuiescenceOfThoughtBroken) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.Modifiers (hasModifier)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -20,7 +17,7 @@ disciplineQuiescenceOfThoughtBroken = asset DisciplineQuiescenceOfThoughtBroken 
 
 instance HasAbilities DisciplineQuiescenceOfThoughtBroken where
   getAbilities (DisciplineQuiescenceOfThoughtBroken x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         (youExist (InvestigatorWithMetaKey "quiescent") <> not_ (SelfHasModifier CannotBeFlipped))
@@ -33,6 +30,7 @@ instance RunMessage DisciplineQuiescenceOfThoughtBroken where
       flipOverBy iid (attrs.ability 1) attrs
       pure a
     Flip iid _ (isTarget attrs -> True) -> do
-      push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
+      whenM (not <$> hasModifier attrs CannotBeFlipped) do
+        push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
     _ -> DisciplineQuiescenceOfThoughtBroken <$> liftRunMessage msg attrs

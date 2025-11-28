@@ -73,6 +73,7 @@ instance RunMessage AmandaSharpe where
           when committable do
             -- because we force it to be committed, we do not pay additional costs
             skillTestModifiers sid attrs cardId [MustBeCommitted, NoAdditionalCosts, LeaveCardWhereItIs]
+            skillTestModifiers sid attrs iid [AsIfInHandFor NotForPlay cardId]
             commitCard iid card
       pure i
     ElderSignEffect iid | attrs `is` iid -> do

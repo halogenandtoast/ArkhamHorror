@@ -200,8 +200,7 @@ instance RunMessage BloodOnTheAltar where
               case lookup PotentialSacrifices attrs.decks of
                 Just xs -> xs
                 _ -> error "missing deck"
-          agendaId <- selectJust AnyAgenda
-          placeUnderneath agendaId potentialSacrifices
+          placeUnderneath AgendaDeckTarget potentialSacrifices
         _ -> pure ()
       do_ msg
       pure s

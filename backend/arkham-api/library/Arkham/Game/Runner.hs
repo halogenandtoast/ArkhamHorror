@@ -3176,6 +3176,7 @@ preloadEntities g = do
       | otherwise = a
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCardsFor NotForPlay (toId investigator')
+
       let
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)

@@ -43,7 +43,7 @@ agathaRunner f msg attrs = runQueueT $ case msg of
     focusCards cards $ chooseTargetM iid cards \card -> do
       unfocusCards
       cardResolutionModifier card (attrs.ability 1) card RemoveFromGameInsteadOfDiscard
-      cardResolutionModifier card (attrs.ability 1) iid (AsIfInHandForPlay card.id)
+      cardResolutionModifier card (attrs.ability 1) iid (AsIfInHandFor ForPlay card.id)
       playCardPayingCost iid card
     pure $ f attrs
   ResolveChaosToken token ElderSign iid | iid == attrs.id -> do

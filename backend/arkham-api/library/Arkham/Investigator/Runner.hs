@@ -2175,8 +2175,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       shouldSkip = flip any modifiers' $ \case
         AsIfInHand card' -> card == card'
         _ -> False
+      shouldAddToHand = flip any modifiers' $ \case
+        AsIfInHandFor ForPlay cardId -> card.id == cardId
+        _ -> False
     unless shouldSkip $ do
       afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
+      when shouldAddToHand do
+        Lifted.cardResolutionModifier card GameSource iid (AsIfInHandFor NotForPlay card.id)
       if cdSkipPlayWindows (toCardDef card)
         then push $ PlayCard iid card mtarget payment windows' asAction
         else

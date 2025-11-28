@@ -711,7 +711,7 @@ getAsIfInHandCardsFor forPlay iid = do
       _ -> False
   cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
-    AsIfInHandForPlay c | forPlay == ForPlay -> Just <$> getCard c
+    AsIfInHandFor forPlay' c | forPlay == forPlay' -> Just <$> getCard c
     CanCommitToSkillTestsAsIfInHand c | forPlay == NotForPlay && isSkillTest -> pure $ Just c
     _ -> pure Nothing
   discard <- field InvestigatorDiscard iid

@@ -1275,7 +1275,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- case placement of
       AsSwarm _ c -> pure c
       _ -> field EnemyCard eid
-    push $ RemoveEnemy eid
+    push $ RemoveFromPlay (toSource eid)
 
     case card of
       EncounterCard card' -> do

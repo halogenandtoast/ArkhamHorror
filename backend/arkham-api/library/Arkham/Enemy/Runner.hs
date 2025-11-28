@@ -1612,6 +1612,8 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
         <> [RemoveEnemy a.id]
       pure a
+    ShuffleBackIntoEncounterDeck (isTarget a -> True) -> do
+      pure $ a & placementL .~ OutOfPlay RemovedZone
     PlaceEnemyOutOfPlay _oZone eid | a.id == eid -> do
       let
         isDiscardEnemy = \case

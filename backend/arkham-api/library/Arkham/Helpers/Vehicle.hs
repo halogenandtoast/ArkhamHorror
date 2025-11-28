@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Card.CardCode
 import Arkham.Classes.Entity
+import Arkham.Classes.Query
 import Arkham.Constants as X (pattern VehicleEnterExitAbility)
 import Arkham.Helpers.Location
 import Arkham.Id
@@ -14,6 +15,7 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Window qualified as Window
 
 vehicleEnterOrExitAbility :: (Sourceable a, HasCardCode a) => a -> Ability
 vehicleEnterOrExitAbility x =
@@ -32,3 +34,10 @@ enterOrExitVehicle iid a = do
         Just lid -> place iid (AtLocation lid)
     _ -> error "Invalid placement"
   pure a
+
+moveVehicle :: (ToId asset AssetId, ReverseQueue m) => asset -> LocationId -> LocationId -> m ()
+moveVehicle (asId -> asset) fromLid toLid = do
+  iids <- select $ InVehicleMatching (AssetWithId asset)
+  checkWindows $ map (\iid' -> Window.mkWhen $ Window.Leaving iid' fromLid) iids
+  place asset toLid
+  checkWindows $ map (\iid' -> Window.mkAfter $ Window.Entering iid' toLid) iids

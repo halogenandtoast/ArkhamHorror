@@ -7,9 +7,11 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (canDiscoverCluesAtYourLocation)
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Tracing
 
 newtype CallForBackup2 = CallForBackup2 EventAttrs
@@ -19,10 +21,14 @@ newtype CallForBackup2 = CallForBackup2 EventAttrs
 callForBackup2 :: EventCard CallForBackup2
 callForBackup2 = event CallForBackup2 Cards.callForBackup2
 
-control :: (HasGame m, Tracing m) => [ClassSymbol] -> ClassSymbol -> m Bool
-control ks k =
+control :: (HasGame m, Tracing m) => InvestigatorId -> [ClassSymbol] -> ClassSymbol -> m Bool
+control iid ks k =
   if k `notElem` ks
-    then selectAny (ControlledBy You <> basic (CardWithClass k))
+    then
+      orM
+        [ fieldMap InvestigatorClass (== k) iid
+        , selectAny (cardControlledBy iid <> basic (CardWithClass k))
+        ]
     else pure False
 
 healableAsset :: Sourceable source => source -> DamageType -> AssetMatcher
@@ -38,13 +44,13 @@ instance RunMessage CallForBackup2 where
 
       hasRogue <-
         andM
-          [ control chosen Rogue
+          [ control iid chosen Rogue
           , notNull <$> getAccessibleLocations iid attrs
           ]
 
       hasGuardian <-
         andM
-          [ control chosen Guardian
+          [ control iid chosen Guardian
           , iid <=~> InvestigatorWithoutModifier CannotDealDamage
           , orM
               [ selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
@@ -54,13 +60,13 @@ instance RunMessage CallForBackup2 where
 
       hasSeeker <-
         andM
-          [ control chosen Seeker
+          [ control iid chosen Seeker
           , canDiscoverCluesAtYourLocation NotInvestigate iid
           ]
 
       hasMystic <-
         andM
-          [ control chosen Mystic
+          [ control iid chosen Mystic
           , orM
               [ selectAny (HealableInvestigator (toSource attrs) #horror $ affectsOthers Anyone)
               , selectAny (healableAsset attrs #horror)
@@ -69,7 +75,7 @@ instance RunMessage CallForBackup2 where
 
       hasSurvivor <-
         andM
-          [ control chosen Survivor
+          [ control iid chosen Survivor
           , orM
               [ selectAny (HealableInvestigator (toSource attrs) #damage $ affectsOthers Anyone)
               , selectAny (healableAsset attrs #damage)

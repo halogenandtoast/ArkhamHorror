@@ -106,13 +106,13 @@ hereticRunner storyCard msg heretic = runQueueT $ case msg of
     pure heretic
   Flip iid _ (isTarget attrs -> True) -> do
     let card = lookupCard storyCard (toCardId attrs)
-    mWindow <- lift $ cancelEnemyDefeatCapture attrs
+    defeatWindows <- lift $ cancelEnemyDefeatCapture attrs
     pushAll
       [ PlaceEnemy (toId attrs) (OutOfPlay RemovedZone)
       , ReplaceCard (toCardId attrs) card
       , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
-    for_ mWindow (checkWindows . pure)
+    checkWindows defeatWindows
     push $ RemoveEnemy (toId attrs)
     pure heretic
   _ -> overAttrsM (liftRunMessage msg) heretic

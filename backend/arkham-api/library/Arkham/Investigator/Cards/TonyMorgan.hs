@@ -37,9 +37,10 @@ tonyMorgan =
 
 instance HasModifiersFor TonyMorgan where
   getModifiersFor (TonyMorgan (a `With` meta)) =
-    modifySelf a
-      $ GiveAdditionalAction (AdditionalAction "Tony Morgan" (toSource a) BountyAction)
-      : [BountiesOnly | active meta]
+    modifySelf a $ GiveAdditionalAction (AdditionalAction "Tony Morgan" (toSource a) BountyAction)
+      : ( guard (active meta)
+            *> [CannotFight (not_ $ EnemyWithToken Bounty), CannotBeEngagedBy (not_ $ EnemyWithToken Bounty)]
+        )
 
 instance HasAbilities TonyMorgan where
   getAbilities (TonyMorgan (a `With` _)) =
@@ -85,13 +86,13 @@ instance RunMessage TonyMorgan where
         $ attrs
         & (usedAdditionalActionsL %~ (AdditionalAction "Tony Morgan" (toSource attrs) BountyAction :))
     ChooseFightEnemy c | c.investigator == toId attrs -> do
-      bountiesOnly <- hasModifier attrs BountiesOnly
+      let bountiesOnly = active meta
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
         liftRunMessage (ChooseFightEnemy $ c {chooseFightEnemyMatcher = matcherF c.matcher}) attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
     ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == toId attrs -> do
-      bountiesOnly <- hasModifier iid BountiesOnly
+      let bountiesOnly = active meta
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
         liftRunMessage

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -1334,7 +1334,7 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
       let source = damageAssignmentSource damageAssignment''
-      let damageAssignment = traceShowId $ fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
+      let damageAssignment = fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do

@@ -2044,7 +2044,8 @@ focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
 focusCard card = focusCards [card]
 
 checkWindows :: ReverseQueue m => [Window] -> m ()
-checkWindows = Msg.pushM . Msg.checkWindows
+checkWindows [] = pure ()
+checkWindows ws = Msg.pushM $ Msg.checkWindows ws
 
 checkAfter :: ReverseQueue m => WindowType -> m ()
 checkAfter = Msg.pushM . Msg.checkAfter

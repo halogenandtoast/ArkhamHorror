@@ -176,6 +176,9 @@ calculateScore attrs = do
 instance RunMessage TheMidwinterGala where
   runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
+      scope "score" $ flavor $ h "title" >> p "body"
+      scope "guestStoryAssets" $ flavor $ h "title" >> p "body"
+      scope "spellbound" $ flavor $ h "title" >> p "body"
       flavor $ h "title" >> p "flavor"
       flavor $ h "title" >> p "body"
       storyWithChooseOneM' (h "title" >> p "guestChoice") do
@@ -186,6 +189,19 @@ instance RunMessage TheMidwinterGala where
             push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival, score = mempty}
       pure s
     Setup -> runScenarioSetup TheMidwinterGala attrs do
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "startAt"
+        li "allied"
+        li "rival"
+        li "otherFactions"
+        li "guestDeck"
+        li "placeGuests"
+        li "theBloodlessMan"
+        li "setAside"
+        li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
       gather Set.TheMidwinterGala
       setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
       setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]

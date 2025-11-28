@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.BurdenOfDestiny (burdenOfDestiny, BurdenOfDestiny (..)) where
+module Arkham.Treachery.Cards.BurdenOfDestiny (burdenOfDestiny) where
 
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

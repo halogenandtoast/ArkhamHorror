@@ -5414,7 +5414,9 @@ instance Projection Scenario where
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioInResolution -> pure scenarioInResolution
-      ScenarioSetAsideCards -> pure scenarioSetAsideCards
+      ScenarioSetAsideCards -> do
+        enemyCards <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay SetAsideZone)
+        pure $ nubOrdOn (.id) (scenarioSetAsideCards <> enemyCards)
       ScenarioSetAsideKeys -> pure scenarioSetAsideKeys
       ScenarioKeys -> pure scenarioKeys
       ScenarioName -> pure scenarioName

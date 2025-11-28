@@ -1817,7 +1817,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 [ Msg.AssignAssetDamageWithCheck aid source (if applyAll then health else 1) 0 False
                 , assignRestOfHealthDamage
                     (if applyAll then 0 else health - 1)
-                    (AssetTarget aid : damageTargets)
+                    ((if applyAll then replicate health else pure) (AssetTarget aid) <> damageTargets)
                     horrorTargets
                 ]
             damageInvestigator iid' applyAll =
@@ -1826,7 +1826,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 [ Msg.InvestigatorDamage iid' source (if applyAll then health else 1) 0
                 , assignRestOfHealthDamage
                     (if applyAll then 0 else health - 1)
-                    (toTarget iid' : damageTargets)
+                    ((if applyAll then replicate health else pure) (toTarget iid') <> damageTargets)
                     horrorTargets
                 ]
           let
@@ -1926,7 +1926,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 , assignRestOfSanityDamage
                     (if applyAll then 0 else sanity - 1)
                     damageTargets
-                    (toTarget iid' : horrorTargets)
+                    ((if applyAll then replicate sanity else pure) (toTarget iid') <> horrorTargets)
                 ]
             damageAsset aid applyAll =
               AssetHorrorLabel
@@ -1935,7 +1935,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 , assignRestOfSanityDamage
                     (if applyAll then 0 else sanity - 1)
                     damageTargets
-                    (toTarget aid : horrorTargets)
+                    ((if applyAll then replicate sanity else pure) (toTarget aid) <> horrorTargets)
                 ]
           let
             go = \case

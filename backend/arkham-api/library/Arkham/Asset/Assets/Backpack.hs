@@ -17,7 +17,7 @@ backpack :: AssetCard Backpack
 backpack = asset Backpack Cards.backpack
 
 instance HasModifiersFor Backpack where
-  getModifiersFor (Backpack a) = controllerGets a (AsIfInHandForPlay . toCardId <$> a.cardsUnderneath)
+  getModifiersFor (Backpack a) = controllerGets a (AsIfInHandFor ForPlay . toCardId <$> a.cardsUnderneath)
 
 instance HasAbilities Backpack where
   getAbilities (Backpack a) = [controlled_ a 1 $ freeReaction $ AssetEntersPlay #after (be a)]

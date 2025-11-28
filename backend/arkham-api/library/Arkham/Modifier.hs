@@ -89,7 +89,7 @@ data ModifierType
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
-  | AsIfInHandForPlay CardId
+  | AsIfInHandFor ForPlay CardId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId
   | EnemyAttacksOverride InvestigatorMatcher
@@ -516,6 +516,7 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "AsIfInHandForPlay" -> AsIfInHandFor ForPlay <$> v .: "contents"
             "SetSkillValue" -> do
               contents <-
                 (Left <$> v .: "contents") <|> (Right <$> (SetSkillValue <$> v .: "skillType" <*> v .: "value"))

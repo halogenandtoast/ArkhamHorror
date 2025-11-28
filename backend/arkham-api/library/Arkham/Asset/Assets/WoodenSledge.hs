@@ -21,7 +21,7 @@ woodenSledge = asset WoodenSledge Cards.woodenSledge
 instance HasModifiersFor WoodenSledge where
   getModifiersFor (WoodenSledge a) =
     modifySelectWhen a a.controlled (InvestigatorAt a.location)
-      $ map (AsIfInHandForPlay . toCardId) a.cardsUnderneath
+      $ map (AsIfInHandFor ForPlay . toCardId) a.cardsUnderneath
 
 instance HasAbilities WoodenSledge where
   getAbilities (WoodenSledge a) =

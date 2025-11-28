@@ -43,7 +43,7 @@ hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 instance HasModifiersFor JoeDiamond where
   getModifiersFor (JoeDiamond (a `With` Metadata mcid)) =
     for_ mcid \cid -> case hunchDeck a of
-      x : _ | x.id == cid -> modifySelf a [ReduceCostOf (CardWithId x.id) 2, AsIfInHandForPlay x.id]
+      x : _ | x.id == cid -> modifySelf a [ReduceCostOf (CardWithId x.id) 2, AsIfInHandFor ForPlay x.id]
       _ -> pure mempty
 
 instance HasAbilities JoeDiamond where

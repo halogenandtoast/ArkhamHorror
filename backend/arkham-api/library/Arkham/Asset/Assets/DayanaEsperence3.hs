@@ -18,7 +18,7 @@ dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)
 
 instance HasModifiersFor DayanaEsperence3 where
   getModifiersFor (DayanaEsperence3 a) = do
-    controllerGets a $ map (AsIfInHandForPlay . toCardId) $ assetCardsUnderneath a
+    controllerGets a $ map (AsIfInHandFor ForPlay . toCardId) $ assetCardsUnderneath a
 
     modifyEach
       a

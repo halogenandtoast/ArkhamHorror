@@ -20,11 +20,11 @@ instance HasAbilities IntelReport where
   getAbilities (IntelReport a) =
     [ withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"Discover 1 clue\" to \"Discover 2 clues.\""
-        $ restricted a 1 InYourHand
+        $ mkAbility a 1
         $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     , withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restricted a 2 InYourHand
+        $ mkAbility a 2
         $ ForcedWhen (exists $ LocationWithoutClues <> YourLocation)
         $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     ]

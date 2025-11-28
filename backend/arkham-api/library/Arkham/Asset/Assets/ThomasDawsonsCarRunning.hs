@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
+import Arkham.Helpers.Vehicle
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -39,7 +40,7 @@ instance RunMessage ThomasDawsonsCarRunning where
       whenM (withoutModifier attrs VehicleCannotMove) do
         getLocationOf attrs.id >>= traverse_ \lid -> do
           roads <- select $ withTrait Road <> ConnectedTo ForMovement (LocationWithId lid)
-          chooseTargetM iid roads $ place attrs
+          chooseTargetM iid roads $ moveVehicle attrs lid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       flipOver iid attrs

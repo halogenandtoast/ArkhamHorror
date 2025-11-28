@@ -6,10 +6,10 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Types (Field (AssetDriver))
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (AddKeyword, VehicleCannotMove), modifySelect)
+import Arkham.Helpers.Vehicle (moveVehicle)
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Trait (Trait (Road, Vehicle))
 
@@ -56,6 +56,6 @@ instance RunMessage PedalToTheMetal where
       getLocationOf aid >>= traverse_ \lid -> do
         driver <- fieldJust AssetDriver aid
         roads <- select $ withTrait Road <> connectedTo (LocationWithId lid)
-        chooseTargetM driver roads $ place aid
+        chooseTargetM driver roads $ moveVehicle aid lid
       pure a
     _ -> PedalToTheMetal <$> liftRunMessage msg attrs

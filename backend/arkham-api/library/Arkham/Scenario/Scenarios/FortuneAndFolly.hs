@@ -534,6 +534,26 @@ instance RunMessage FortuneAndFolly where
 instance RunMessage FortuneAndFollyPart2 where
   runMessage msg s@(FortuneAndFollyPart2 fortuneAndFolly'@(FortuneAndFolly attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (FortuneAndFollyPart2 . FortuneAndFolly) attrs do
+      scope "part2" do
+        setup $ ul do
+          li "stash"
+          li "gatherSets"
+          li.nested "agendaAndActDecks" do
+            li "neededTimeToRest"
+          li "setAsideEncounterSets"
+          li.nested "roles" do
+            li "skippedPart1"
+            li "extraRoles"
+          li.nested "placeLocations" do
+            li "theHeist"
+            li "theWellspringOfFortune"
+            li "startAt"
+          li "isamara"
+          li "setAside"
+          li "cleanedOutTheHouse"
+          li "spawnEnemies"
+          li "alarmLevel"
+          unscoped $ li "readyToBegin"
       let stash = getMetaKeyDefault @[Card] "stash" [] attrs
       for_ stash \card -> do
         for_ card.owner \owner -> do

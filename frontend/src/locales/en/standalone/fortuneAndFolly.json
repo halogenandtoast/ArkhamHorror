@@ -165,6 +165,25 @@
     }
   },
   "part2": {
+    "setup": {
+      "stash": "Before drawing their opening hand for this scenario, each investigator may search their deck for all of their cards that were recorded as “Stashed” and set them aside (1 copy for each copy recorded). Each investigator adds each of their set-aside stashed cards to their opening hand after mulligans are taken.",
+      "gatherSets": "Gather all cards from the *Fortune and Folly* encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{setImgPath}/fortune-and-folly.png'></section>",
+      "agendaAndActDecks": "Build the agenda deck using agendas 2–4 and the act deck using acts 2–3. Set the remaining agenda and act cards aside, out of play.",
+      "neededTimeToRest": "*If the investigators need time to rest*, place 1 doom on agenda 2a.",
+      "setAsideEncounterSets": "Set the following encounter sets aside, out of play: *Fortune’s Chosen* and *Plan in Shambles*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/fortunes-chosen.png'><img src='{setImgPath}/plan-in-shambles.png'></section>",
+      "roles": "Each investigator takes control of the _Role_ story assets recorded for that investigator in the Campaign Log, _Unpracticed_ side faceup. If the chosen _Role_ has been recorded in your Campaign Log as _Practiced_, then it enters play _Practiced_ side faceup instead.",
+      "skippedPart1": "If you skipped Part I, each investigator chooses any 1 of the _Role_ story assets and takes control of it, _Unpracticed_ side faceup. If there is exactly 1 investigator in the game, that investigator chooses and takes control of an additional _Role_ story asset, _Unpracticed_ side faceup.",
+      "extraRoles": "Remove each _Role_ story asset not chosen from the game.",
+      "placeLocations": "Put Casino Floor, Casino Lounge, and High Roller’s Table into play, (*Busy Night*) sides faceup. Put all other locations into play.",
+      "theHeist": "Place The Heist story card next to Vault Door. (*The Heist is on the reverse side of The Stakeout story card.*)",
+      "theWellspringOfFortune": "Attach The Wellspring of Fortune to Relic Room, Stable side faceup. If you played Part I, place the recorded number of clues on it. (Otherwise, place 7 {'{'}perPlayer{'}'} clues on it.)",
+      "startAt": "Each investigator begins play in Casino Floor.",
+      "isamara": "*If you convinced Isamara to participate in the heist*, put Isamara Ordoñez (*Lounge Singer*), _Crew_ side faceup, into play at Casino Lounge. Otherwise, set her aside.",
+      "setAside": "Set the following cards aside, out of play: the three Fortune’s Disfavor story cards, the Package Delivery story card, the Deck of Possibilities story asset, the Isamara Ordoñez (*The Torch Singer*) story asset, and Abarran Arrigorriagakoa, (*Abarran Unleashed*) side faceup. (*Package Delivery is on the reverse side of the If the Uniform Fits... story card.*)",
+      "cleanedOutTheHouse": "*If you cleaned out the house*, put the Cash Cart into play at High Roller’s Table. Otherwise, set it aside, out of play.",
+      "spawnEnemies": "Search the encounter deck for 1 copy of Casino Guard. Spawn it at High Roller’s Table. Then, search the encounter deck for 1 copy of Security Patrol. Spawn it at Casino Lounge.",
+      "alarmLevel": "If you played Part I, set each investigator’s alarm level equal to what was recorded in the Checkpoint. Otherwise, set each investigator’s alarm level to 1."
+    },
     "additionalRewards": {
       "title": "Additional Rewards",
       "body": "<ul><li>Check the number of tasks on The Heist story card that were completed during this scenario. If you skipped part I, treat the number of tasks completed as 2 more than what was completed during the scenario.<ul><li>Each investigator earns 1 bonus experience for each additional task beyond the minimum of 4 completed on The Heist story card.</li><li>If only 4 or fewer tasks were completed, no additional rewards are granted.</li><li>If 5 or more tasks were completed and Isamara Ordoñez was in play at the end of the scenario, the investigators have earned Isamara Ordoñez. Any one investigator may choose to add Isamara Ordoñez (The Torch Singer) to their deck. This card does not count toward that investigator’s deck size.</li><li> If 6 or more tasks were completed, the investigators have earned the Deck of Possibilities. Any one investigator may choose to add the Deck of Possibilities to their deck. This card does not count toward that investigator’s deck size. During the setup of each scenario, that investigator gathers the encounter cards from Fortune and Folly with the following game icons: J ♠, J ♥, J ♦, J ♣, Q ♦, Q ♠, K ♣, K ♥, A ♠. These cards are shuffled into a separate “possibilities deck.” (Alternatively, you may use standard playing cards instead of encounter cards from Fortune and Folly.)</li></ul></li></ul>"

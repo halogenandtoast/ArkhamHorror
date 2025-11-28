@@ -38,7 +38,7 @@ instance RunMessage Enemy where
 
 lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
-  Nothing -> error $ "Unknown enemy: " <> show cardCode
+  Nothing -> error $ "Unknown enemy (lookupEnemy): " <> show cardCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
 
 instance FromJSON Enemy where
@@ -50,7 +50,7 @@ instance FromJSON Enemy where
 withEnemyCardCode
   :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
 withEnemyCardCode cCode f = case lookup cCode allEnemies of
-  Nothing -> error $ "Unknown enemy: " <> show cCode
+  Nothing -> error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> f a
 
 allEnemies :: Map CardCode SomeEnemyCard

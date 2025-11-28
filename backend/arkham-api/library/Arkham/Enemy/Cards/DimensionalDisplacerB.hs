@@ -13,7 +13,7 @@ newtype DimensionalDisplacerB = DimensionalDisplacerB EnemyAttrs
 
 dimensionalDisplacerB :: EnemyCard DimensionalDisplacerB
 dimensionalDisplacerB =
-  enemyWith DimensionalDisplacerB Cards.dimensionalDisplacerA (5, Static 2, 3) (0, 2)
+  enemyWith DimensionalDisplacerB Cards.dimensionalDisplacerB (5, Static 2, 3) (0, 2)
     $ ( spawnAtL
           ?~ SpawnAt
             ( NearestLocationToYou $ LocationWithEnemy

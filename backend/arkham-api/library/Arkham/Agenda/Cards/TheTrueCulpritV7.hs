@@ -42,13 +42,7 @@ instance HasAbilities TheTrueCulpritV7 where
                , Cards.tomeOfRituals
                ]
            ]
-             <> [ restrictedAbility
-                    attrs
-                    2
-                    (Negate $ exists (InPlayEnemy $ EnemyWithTrait Cultist))
-                    $ Objective
-                    $ ForcedAbility AnyWindow
-                ]
+             <> [restricted attrs 2 (notExists (InPlayEnemy #cultist)) $ Objective $ forced AnyWindow]
          )
 
 instance RunMessage TheTrueCulpritV7 where

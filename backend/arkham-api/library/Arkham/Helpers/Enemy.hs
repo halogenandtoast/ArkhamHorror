@@ -336,16 +336,22 @@ insteadOfDiscarding e body = do
   let
     go = \case
       ((Window.windowType -> Window.EnemyDefeated miid dBy eid) : _) | eid == asId e -> Just (miid, dBy)
+      ((Window.windowType -> Window.IfEnemyDefeated miid dBy eid) : _) | eid == asId e -> Just (miid, dBy)
       (_ : rest) -> go rest
       [] -> Nothing
 
-  mWindow <- lift $ cancelEnemyDefeatCapture e
+  defeatWindows <- lift $ cancelEnemyDefeatCapture e
   body
-  case mWindow of
-    Just w -> pushM $ checkWindows (pure w)
-    Nothing -> case go ws of
-      Just (miid, dBy) -> pushM $ checkAfter $ Window.EnemyDefeated miid dBy (asId e)
+  if null defeatWindows
+    then case go ws of
+      Just (miid, dBy) ->
+        pushM
+          $ checkWindows
+          $ map
+            Window.mkAfter
+            [Window.EnemyDefeated miid dBy (asId e), Window.IfEnemyDefeated miid dBy (asId e)]
       Nothing -> pure ()
+    else pushM $ checkWindows defeatWindows
 
 createEngagedWith
   :: ToId investigator InvestigatorId => investigator -> EnemyCreation Message -> EnemyCreation Message

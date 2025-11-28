@@ -157,15 +157,12 @@ getActionsWith
   -> (Ability -> Ability)
   -> m [Ability]
 getActionsWith iid ws f = withSpan_ "getActions" do
-  modifiersForFilter <- getModifiers iid
+  investigatorModifiers <- getModifiers iid
   let
     abilityFilters =
-      mapMaybe
-        ( \case
-            CannotTriggerAbilityMatching m -> Just (TriggeredAbility <> m)
-            _ -> Nothing
-        )
-        modifiersForFilter
+      investigatorModifiers & mapMaybe \case
+        CannotTriggerAbilityMatching m -> Just (TriggeredAbility <> m)
+        _ -> Nothing
 
   unfilteredActions <- map f <$> getAllAbilities
   actions' <-
@@ -179,41 +176,25 @@ getActionsWith iid ws f = withSpan_ "getActions" do
       case abilitySource action of
         ProxySource (AgendaMatcherSource m) base -> do
           sources <- selectMap AgendaSource m
-          pure
-            $ map
-              (\source -> action {abilitySource = ProxySource source base})
-              sources
+          pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         ProxySource (ActMatcherSource m) base -> do
           sources <- selectMap ActSource m
-          pure
-            $ map
-              (\source -> action {abilitySource = ProxySource source base})
-              sources
+          pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         ProxySource (AssetMatcherSource m) base -> do
           sources <- selectMap AssetSource m
-          pure
-            $ map
-              (\source -> action {abilitySource = ProxySource source base})
-              sources
+          pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         ProxySource (LocationMatcherSource m) base -> do
           sources <- selectMap LocationSource m
-          pure
-            $ map
-              (\source -> action {abilitySource = ProxySource source base})
-              sources
+          pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         ProxySource (EnemyMatcherSource m) base -> do
           sources <- selectMap EnemySource m
-          pure
-            $ map
-              (\source -> action {abilitySource = ProxySource source base})
-              sources
+          pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         _ -> pure [action]
 
+  let bountiesOnly = BountiesOnly `elem` investigatorModifiers
   actions'' <-
     catMaybes <$> for actionsWithSources \ability -> do
       modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
-      investigatorModifiers <- getModifiers (InvestigatorTarget iid)
-      let bountiesOnly = BountiesOnly `elem` investigatorModifiers
       cardClasses <- case abilitySource ability of
         AssetSource aid -> field Field.AssetClasses aid
         _ -> pure $ singleton Neutral
@@ -240,17 +221,9 @@ getActionsWith iid ws f = withSpan_ "getActions" do
         -- If the window is fast we only permit fast abilities, but forced
         -- abilities need to be everpresent so we include them
         needsToBeFast =
-          all
-            ( \window ->
-                windowType window
-                  == Window.FastPlayerWindow
-                  && not
-                    ( isFastAbility ability
-                        || isForced
-                        || isReactionAbility ability
-                    )
-            )
-            ws
+          ws & all \window ->
+            (windowType window == Window.FastPlayerWindow)
+              && not (isFastAbility ability || isForced || isReactionAbility ability)
 
       pure
         $ if any prevents investigatorModifiers
@@ -265,7 +238,7 @@ getActionsWith iid ws f = withSpan_ "getActions" do
       liftGuardM $ getCanPerformAbility iid ws action
       liftGuardM $ getCanAffordAbility iid action ws
   forcedActions <- filterM (isForcedAbility iid) actions'''
-  pure $ nub $ if null forcedActions then actions''' else forcedActions
+  pure $ nub $ if bountiesOnly || null forcedActions then actions''' else forcedActions
 
 hasFightActions
   :: (Sourceable source, Tracing m, HasGame m)

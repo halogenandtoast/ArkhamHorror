@@ -24,6 +24,7 @@ import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
+import Arkham.Keyword qualified as Keyword
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationCardsUnderneath, LocationPrintedSymbol))
@@ -44,7 +45,7 @@ import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (StoryClues))
 import Arkham.Token
-import Arkham.Trait (Trait (Role, Unpracticed))
+import Arkham.Trait (Trait (Casino, Role, Unpracticed))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -136,6 +137,10 @@ data PatrolDirection = Clockwise | CounterClockwise
 
 instance HasModifiersFor FortuneAndFolly where
   getModifiersFor (FortuneAndFolly attrs) = do
+    modifySelect
+      attrs
+      (EnemyWithTrait Casino <> EnemyAt (LocationWithInvestigator $ HasTokens AlarmLevel $ atLeast 6))
+      [RemoveKeyword Keyword.Aloof]
     for_
       [ (Enemies.abarranArrigorriagakoaTheManWithTheRubyRing, "abarranNext", Clockwise)
       , (Enemies.casinoGuardA, "casinoGuardANext", CounterClockwise)
@@ -179,6 +184,12 @@ instance RunMessage FortuneAndFolly where
       doStep 1 PreScenarioSetup
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
+      scope "alarmLevel" $ flavor $ h "title" >> p "body"
+      scope "patrol" $ flavor $ h "title" >> p "body"
+      scope "gameIcons" $ flavor $ h "title" >> p "body"
+      scope "mulligans" $ flavor $ h "title" >> p "body"
+      scope "theWellspringOfFortune" $ flavor $ h "title" >> p "body"
+
       c <- selectOne TheCampaign
       flavor do
         setTitle "title"
@@ -228,6 +239,26 @@ instance RunMessage FortuneAndFolly where
         $ Continuation (ScenarioStep "88001b") False False Nothing
       pure $ FortuneAndFolly $ attrs & setMetaKey "skipped" True
     Setup -> runScenarioSetup FortuneAndFolly attrs do
+      scope "part1" do
+        setup $ ul do
+          li "gatherSets"
+          li "agendaAndActDecks"
+          li "setAsideEncounterSets"
+          li.nested "placeLocations" do
+            li "theStakeout"
+            li "startAt"
+            li "restricted"
+          li "isamara"
+          li "abarran"
+          li "ifTheUniformFits"
+          li.nested "role" do
+            li "extraRoles"
+          li "theWellspringOfFortune"
+          li "setAside"
+          li "alarmLevel"
+          unscoped $ li "shuffleRemainder"
+          unscoped $ li "readyToBegin"
+
       gather Set.FortuneAndFolly
       gatherAndSetAside Set.FortunesChosen
       gatherAndSetAside Set.PlanInShambles

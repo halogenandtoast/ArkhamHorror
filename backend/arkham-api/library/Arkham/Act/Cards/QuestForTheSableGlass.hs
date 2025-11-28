@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Act.Cards.QuestForTheSableGlass (questForTheSableGlass) where
 
 import Arkham.Act.Cards qualified as Cards

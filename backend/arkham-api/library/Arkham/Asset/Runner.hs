@@ -254,6 +254,8 @@ instance RunMessage AssetAttrs where
               push $ PlaceTokens source (toTarget iid) tType n
               pure a
             _ -> pure $ a & tokensL %~ addTokens tType n
+    InvestigatorDiscardAllClues s iid | a `ownedBy` iid -> do
+      runMessage (RemoveAllClues s (toTarget a)) a
     RemoveAllClues s (isTarget a -> True) -> do
       runMessage (RemoveTokens s (toTarget a) #clue (assetClues a)) a
     MoveTokens s source _ tType n | isSource a source -> do

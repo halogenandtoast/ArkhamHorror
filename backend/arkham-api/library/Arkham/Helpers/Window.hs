@@ -662,6 +662,9 @@ enemyMatches :: (HasGame m, Tracing m) => EnemyId -> EnemyMatcher -> m Bool
 enemyMatches _eid Matcher.AnyEnemy = pure True
 enemyMatches eid matcher = orM [matches eid matcher, matches eid (Matcher.OutOfPlayEnemy RemovedZone matcher)]
 
+inFastWindow :: HasGame m => m Bool
+inFastWindow = any (any (\w -> windowType w == Window.FastPlayerWindow)) <$> getWindowStack
+
 windowMatches
   :: (Tracing m, HasGame m, HasCallStack)
   => InvestigatorId

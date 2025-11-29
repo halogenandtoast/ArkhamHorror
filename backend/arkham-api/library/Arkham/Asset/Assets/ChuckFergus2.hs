@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.Helpers.Card
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Modifiers hiding (eventModifier)
-import Arkham.Helpers.Window (cardPlayed)
+import Arkham.Helpers.Window (cardPlayed, inFastWindow)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -33,9 +33,7 @@ instance HasModifiersFor ChuckFergus2 where
 
 instance HasAbilities ChuckFergus2 where
   getAbilities (ChuckFergus2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (Matcher.PlayCard #when You $ basic cardMatcher) (exhaust a)
-    ]
+    [controlled_ a 1 $ triggered (Matcher.PlayCard #when You $ basic cardMatcher) (exhaust a)]
 
 instance RunMessage ChuckFergus2 where
   runMessage msg a@(ChuckFergus2 attrs) = runQueueT $ case msg of
@@ -44,11 +42,15 @@ instance RunMessage ChuckFergus2 where
       canAffordCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ResourceCost cost)
       canAffordActionCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ActionCost 1)
 
-      unless canAffordActionCost $ eventModifier attrs card $ BecomesFast FastPlayerWindow
+      requiresFast <- andM [inFastWindow, not <$> cardIsFast card]
+
+      unless (canAffordActionCost && not requiresFast)
+        $ eventModifier attrs card
+        $ BecomesFast FastPlayerWindow
       unless canAffordCost $ eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
 
       -- can something else reduce the cost enough?
-      when (canAffordCost && canAffordActionCost) $ do
+      when (canAffordCost && canAffordActionCost && not requiresFast) do
         chooseOneM iid do
           labeled "That event gains fast" $ eventModifier attrs card $ BecomesFast FastPlayerWindow
           labeled "That event costs 2 fewer resources to play." do

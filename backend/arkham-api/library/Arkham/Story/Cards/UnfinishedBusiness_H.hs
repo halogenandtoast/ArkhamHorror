@@ -1,5 +1,4 @@
 {- HLINT ignore "Use camelCase" -}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Story.Cards.UnfinishedBusiness_H (unfinishedBusiness_H) where
 
 import Arkham.Ability
@@ -25,7 +24,7 @@ unfinishedBusiness_H :: StoryCard UnfinishedBusiness_H
 unfinishedBusiness_H = story UnfinishedBusiness_H Cards.unfinishedBusiness_H
 
 instance HasAbilities UnfinishedBusiness_H where
-  getAbilities (UnfinishedBusiness_H x) = case traceShowId x.placement of
+  getAbilities (UnfinishedBusiness_H x) = case x.placement of
     InThreatArea _ ->
       [ restricted x 1 (InThreatAreaOf You) $ forced $ RoundEnds #when
       , skillTestAbility

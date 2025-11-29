@@ -1,8 +1,9 @@
-module Arkham.Act.Cards.TheSecondOath (TheSecondOath (..), theSecondOath) where
+module Arkham.Act.Cards.TheSecondOath (theSecondOath) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
@@ -11,6 +12,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Obstacle, Suspect))
@@ -25,9 +27,8 @@ theSecondOath = act (2, A) TheSecondOath Cards.theSecondOath Nothing
 instance HasModifiersFor TheSecondOath where
   getModifiersFor (TheSecondOath a) = do
     n <- perPlayer 1
-    enemies <- modifySelect a (EnemyWithTrait Suspect) [HealthModifier n, RemoveKeyword Aloof]
-    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
-    pure $ enemies <> investigators
+    modifySelect a (EnemyWithTrait Suspect) [HealthModifier n, RemoveKeyword Aloof]
+    modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
 
 instance HasAbilities TheSecondOath where
   getAbilities (TheSecondOath x) =
@@ -46,6 +47,7 @@ instance RunMessage TheSecondOath where
   runMessage msg a@(TheSecondOath attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lair <- placeSetAsideLocation Locations.lairOfDagon
+      setThisFloodLevel lair FullyFlooded
       dagon <- getSetAsideCard Enemies.dagonDeepInSlumber
       createEnemyAt_ dagon lair
       n <- getCurrentAgendaStep

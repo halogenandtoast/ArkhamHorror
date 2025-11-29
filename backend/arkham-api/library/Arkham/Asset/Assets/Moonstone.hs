@@ -20,7 +20,7 @@ instance HasAbilities Moonstone where
   getAbilities (Moonstone x) =
     [ restricted x 1 InYourDiscard
         $ freeReaction
-        $ Discarded #after (Just You) AnySource
+        $ DiscardedFromHand #after You AnySource
         $ PlayableCardWithCriteria NoAction (CriteriaOverride NoRestriction)
         $ basic
         $ CardWithId x.cardId

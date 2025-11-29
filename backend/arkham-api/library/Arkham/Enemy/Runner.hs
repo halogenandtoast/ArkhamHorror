@@ -1333,17 +1333,24 @@ instance RunMessage EnemyAttrs where
         Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
       pure a
     EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
-      let source = damageAssignmentSource damageAssignment''
-      let damageAssignment = fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
+      let source = damageAssignment''.source
+      let
+        damageAssignment =
+          if damageAssignment''.delayed
+            then damageAssignment''
+            else fromMaybe damageAssignment'' (Map.lookup source enemyAssignedDamage)
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do
-          amount' <- getModifiedDamageAmount a damageAssignment
+          amount' <-
+            if damageAssignment.delayed
+              then pure damageAssignment.amount
+              else getModifiedDamageAmount a damageAssignment
           let
             damageAssignment' = damageAssignment {damageAssignmentAmount = amount'}
             combine l r =
-              if damageAssignmentDamageEffect l == damageAssignmentDamageEffect r
-                then l {damageAssignmentAmount = damageAssignmentAmount l + damageAssignmentAmount r}
+              if l.effect == r.effect
+                then l {damageAssignmentAmount = l.amount + r.amount}
                 else
                   error
                     $ "mismatched damage assignments\n\nassignment: "
@@ -1351,13 +1358,9 @@ instance RunMessage EnemyAttrs where
                     <> "\nnew assignment: "
                     <> show r
           push $ AssignedDamage (toTarget a) amount' 0
-          unless (damageAssignmentDelayed damageAssignment')
-            $ push
-            $ checkDefeated source eid
-          pure
-            $ a
-            & assignedDamageL
-            %~ insertWith combine source damageAssignment'
+          unless damageAssignment'.delayed do
+            push $ checkDefeated source eid
+          pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source (isTarget a -> True) -> do
       let mDamageAssignment = lookup source enemyAssignedDamage

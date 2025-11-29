@@ -11,6 +11,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -20,9 +21,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (chooseOne, story)
-import Arkham.Scenario.Setup
-import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
+import Arkham.Scenario.Import.Lifted hiding (chooseOne, story)
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing)
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -60,11 +59,17 @@ instance HasChaosTokenValue CurseOfTheRougarou where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurseOfTheRougarou where
-  runMessage msg s@(CurseOfTheRougarou attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
+  runMessage msg s@(CurseOfTheRougarou attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup CurseOfTheRougarou attrs $ do
+      setup $ ul do
+        li "gatherSets"
+        li "setAsideEncounterSets"
+        li "placeLocations"
+        li "setAside"
+        unscoped $ li "shuffleRemainder"
       gather EncounterSet.TheBayou
 
       result <- shuffleM $ keys locationsByTrait
@@ -180,29 +185,27 @@ instance RunMessage CurseOfTheRougarou where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == Tablet) (roundModifier TabletEffect iid CannotMove)
       pure s
-    ScenarioResolution NoResolution ->
+    ScenarioResolution NoResolution -> scope "resolutions" do
+      resolution "noResolution"
       liftRunMessage (ScenarioResolution $ Resolution 1) s
-    ScenarioResolution (Resolution 1) -> do
-      story resolution1
+    ScenarioResolution (Resolution 1) -> scope "resolutions" do
       record TheRougarouContinuesToHauntTheBayou
-      allGainXp attrs
+      resolutionWithXp "resolution1" $ allGainXp' attrs
       endOfScenario
       pure s
-    ScenarioResolution (Resolution 2) -> do
+    ScenarioResolution (Resolution 2) -> scope "resolutions" do
       lead <- getLead
-      story resolution2
       record TheRougarouIsDestroyed
+      resolutionWithXp "resolution2" $ allGainXp' attrs
       removeCampaignCard Treacheries.curseOfTheRougarou
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.ladyEsprit
-      allGainXp attrs
       endOfScenario
       pure s
-    ScenarioResolution (Resolution 3) -> do
+    ScenarioResolution (Resolution 3) -> scope "resolutions" do
       lead <- getLead
-      story resolution3
       record TheRougarouEscapedAndYouEmbracedTheCurse
+      resolutionWithXp "resolution3" $ allGainXp' attrs
       addCampaignCardToDeck lead DoNotShuffleIn Assets.monstrousTransformation
-      allGainXp attrs
       endOfScenario
       pure s
     _ -> CurseOfTheRougarou <$> liftRunMessage msg attrs

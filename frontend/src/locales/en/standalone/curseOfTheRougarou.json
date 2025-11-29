@@ -16,5 +16,33 @@
   "remembered": {
     "foundAnAncientBindingStone": "Found an ancient binding stone",
     "foundAStrangeDoll": "Found a strange doll"
+  },
+  "intro": {
+    "title": "Terror Grips New Orleans!",
+    "body": "<p>Minnie Klein, your contact at the Arkham Advertiser, has slipped you a draft of the article over a cup of coffee at Velma's Diner. It would have gone to print had Doyle Jeffries, the lead editor, not scoffed at the concept. \"I believe his exact words were, 'I ain't printing the ravings of some Voodoo lunatic and passing it off as news,'\" she explained. From the sly grin spreading across her face, you could tell she smelled a story.</p><p>The headline was sensationalist. Three killings, in nine days was enough to spook a town, sure. But you doubt all of New Orleans is gripped by terror, or even knows about the killings. Still, something piqued your interest. \"Lady Esprit,\" the Voodoo priestess from the article, claimed that a malign curse had taken root in the bayou.</p><p>\"There's something to this, isn't there? I know that look,\" Minnie said. You weren't sure. If Lady Esprit was right, this \"roux-ga-roux\" wouldn't stop killing at three, that's for sure. But curses? Wolf-people? How could such things be real? Only one way to find out. You put on your coat and head for the Northside Station...</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Curse of the Rougarou* and *The Bayou*. These sets are indicated by the following icons, respectively: <section class='encounter-sets'><img src='{setImgPath}/curse-of-the-rougarou.png' /><img src='{setImgPath}/the-bayou.png' /></section>",
+    "setAsideEncounterSets": "Set the *Curse of the Rougarou* encounter set aside, out of play.",
+    "placeLocations": "Sort each of the locations into 4 piles, by trait (_New Orleans_, _Riverside_, _Wilderness_, and _Unhallowed_). Randomly choose 1 of these piles and remove those locations from the game. Randomly choose another 1 of these piles and put those locations into play. Set each location in the other 2 piles aside, out of play. Each investigator begins play at a _Bayou_ location in play.",
+    "setAside": "Set the following cards aside, out of play: Lady Esprit, Bear Trap, and Fishing Net."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 1_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Somehow, you manage to make it back to safety before daybreak, resting until late in the afternoon. It isn't until you seek out Lady Esprit the next day that you realize who last night's victim was. With a heavy heart and an unshakable dread, you choose to bury her body instead of contacting the authorities-the less people who delve this deep into the bayou, the better.</p><ul><li>In your Campaign Log, record that *the Rougarou continues to haunt the bayou*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The creature gives a pitiful wail as dark miry blood oozes from its wounds. By the time its body collapses into the mud, it has transformed back into its original form-the form of a young, dark-skinned man, his expression twisted in agony. You bring his body back to Lady Esprit and she works her strange magic, removing the stain of the curse from the land. \"Call on me should you ever need my help,\" the mysterious woman tells you.</p><ul><li>In your Campaign Log, record that *the Rougarou is destroyed*, and the curse is lifted. Remove the Curse of the Rougarou weakness from its bearer's deck. Any one investigator may choose to add Lady Esprit to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Somehow, you have managed to quell the rage and bloodlust of the curse within the creature, and in moments the shape of a young, dark-skinned man stands before you, panting and sweating. He seems to only just now understand everything he's done, and agrees to flee to a secluded corner of the earth where he can harm no one. However, the curse lives on. He sees it in your eyes and grips your arm tightly. \"Don't let it take control,\" he warns. \"I was weak, but you-I can tell you are strong. Control the curse as I could not.\"</p><ul><li>In your Campaign Log, record that *the Rougarou escaped, and you embraced the curse*. The bearer of the Curse of the Rougarou weakness must add Monstrous Transformation to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    }
   }
 }

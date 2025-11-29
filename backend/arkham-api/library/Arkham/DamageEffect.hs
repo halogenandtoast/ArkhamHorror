@@ -20,6 +20,12 @@ data DamageAssignment = DamageAssignment
 instance HasField "source" DamageAssignment Source where
   getField = damageAssignmentSource
 
+instance HasField "effect" DamageAssignment DamageEffect where
+  getField = damageAssignmentDamageEffect
+
+instance HasField "delayed" DamageAssignment Bool where
+  getField = damageAssignmentDelayed
+
 instance HasField "amount" DamageAssignment Int where
   getField = damageAssignmentAmount
 
@@ -33,7 +39,7 @@ attack a n =
     , damageAssignmentDelayed = False
     }
 
-nonAttack :: (Sourceable a) => Maybe InvestigatorId -> a -> Int -> DamageAssignment
+nonAttack :: Sourceable a => Maybe InvestigatorId -> a -> Int -> DamageAssignment
 nonAttack mInvestigator a n =
   DamageAssignment
     { damageAssignmentSource = maybe (toSource a) (`wrapAbilityUse` toSource a) mInvestigator
@@ -42,10 +48,10 @@ nonAttack mInvestigator a n =
     , damageAssignmentDirect = False
     , damageAssignmentDelayed = False
     }
-  where
-    wrapAbilityUse iid = \case
-      AbilitySource source idx -> UseAbilitySource iid source idx
-      other -> other
+ where
+  wrapAbilityUse iid = \case
+    AbilitySource source idx -> UseAbilitySource iid source idx
+    other -> other
 
 storyDamage :: Sourceable a => a -> Int -> DamageAssignment
 storyDamage a n =
@@ -71,4 +77,3 @@ data DamageEffect
 
 $(deriveJSON defaultOptions ''DamageEffect)
 $(deriveJSON defaultOptions ''DamageAssignment)
-

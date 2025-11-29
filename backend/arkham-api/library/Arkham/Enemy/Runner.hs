@@ -1559,7 +1559,7 @@ instance RunMessage EnemyAttrs where
           }
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory _miid (isTarget a -> True) -> do
-      push $ RemovedFromPlay (toSource a)
+      push $ RemoveFromPlay (toSource a)
       push $ Do msg
       pure a
     Do (AddToVictory miid (isTarget a -> True)) -> do

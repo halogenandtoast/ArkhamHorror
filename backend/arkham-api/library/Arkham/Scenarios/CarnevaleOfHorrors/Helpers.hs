@@ -4,10 +4,15 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.ForMovement
+import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Tracing
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = withI18n $ standaloneI18n "carnevaleOfHorrors" a
 
 getCnidathqua :: (HasGame m, Tracing m) => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua

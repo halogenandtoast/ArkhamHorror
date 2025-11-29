@@ -9,6 +9,7 @@ import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
@@ -19,7 +20,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (cardsUnderActDeckL, cardsUnderAgendaDeckL)
-import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Strategy
 import Arkham.Trait hiding (Cultist, ElderThing)
@@ -63,24 +63,35 @@ instance HasChaosTokenValue CarnevaleOfHorrors where
 masks :: [CardDef]
 masks = [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
-additionalRewards :: ReverseQueue m => ScenarioAttrs -> m ()
+additionalRewards :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> m ()
 additionalRewards s = do
+  resolution "additionalRewards"
   investigators <- allInvestigators
   push $ ChooseOneRewardByEachPlayer masks investigators
 
   when (null s.cardsUnderActDeck && notNull s.cardsUnderAgendaDeck) do
-    story Flavor.sacrificesMade
+    resolution "sacrificesMade"
     for_ investigators \iid -> searchCollectionForRandomBasicWeakness iid s [Madness, Injury, Monster]
   when (null s.cardsUnderAgendaDeck && length s.cardsUnderActDeck == 3) do
-    story Flavor.abbessSatisfied
+    resolution "abbessSatisfied"
     addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.abbessAllegriaDiBiase
 
 instance RunMessage CarnevaleOfHorrors where
-  runMessage msg s@(CarnevaleOfHorrors attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story Flavor.intro
+  runMessage msg s@(CarnevaleOfHorrors attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup CarnevaleOfHorrors attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "removeLocation"
+        li.nested "placeLocations" do
+          li "abbess"
+          li "startAt"
+        li "carnevaleGoers"
+        li "setAside"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
       gather Set.CarnevaleOfHorrors
 
       sanMarcoBasilica <- place Locations.sanMarcoBasilica
@@ -219,28 +230,25 @@ instance RunMessage CarnevaleOfHorrors where
                 }
         _ -> pure ()
       pure s
-    ScenarioResolution NoResolution -> do
-      story Flavor.noResolution
+    ScenarioResolution NoResolution -> scope "resolutions" do
       record ManyWereSacrificedToCnidathquaDuringTheCarnivale
+      resolutionWithXp "noResolution" $ allGainXp' attrs
       additionalRewards
         $ attrs
         & (cardsUnderActDeckL %~ drop 1)
         & (cardsUnderAgendaDeckL <>~ take 1 attrs.cardsUnderActDeck)
-      allGainXp attrs
       endOfScenario
       pure s
-    ScenarioResolution (Resolution 1) -> do
-      story Flavor.resolution1
+    ScenarioResolution (Resolution 1) -> scope "resolutions" do
       record TheSunBanishedCnidathquaIntoTheDepths
+      resolutionWithXp "resolution1" $ allGainXp' attrs
       additionalRewards attrs
-      allGainXp attrs
       endOfScenario
       pure s
-    ScenarioResolution (Resolution 2) -> do
-      story Flavor.resolution2
+    ScenarioResolution (Resolution 2) -> scope "resolutions" do
       record CnidathquaRetreatedToNurseItsWounds
+      resolutionWithXp "resolution2" $ allGainXp' attrs
       additionalRewards attrs
-      allGainXp attrs
       endOfScenario
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) -> do

@@ -64,6 +64,7 @@
   "placeAgendaDoomCanAdvance": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance. | Place {count} doom on the current agenda. This effect can cause the current agenda to advance.",
   "placeCluesOnYourLocation": "Place 1 of your clues on your location | Place {count} of your clues on your location",
   "placeDamageOn": "Place 1 damage on {name} | Place {count} damage on {name}",
+  "placeDoom": "Place 1 doom | Place {count} doom",
   "placeDoomOn": "Place 1 doom on {name} | Place {count} doom on {name}",
   "play": "Play",
   "playIt": "Play it",

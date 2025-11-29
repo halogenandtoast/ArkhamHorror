@@ -4,6 +4,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Cards qualified as Locations
@@ -11,6 +13,9 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Tracing
 import Arkham.Trait
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = withI18n $ standaloneI18n "curseOfTheRougarou" a
 
 bayouLocations :: (Tracing m, HasGame m) => m [LocationId]
 bayouLocations = select $ LocationWithTrait Bayou

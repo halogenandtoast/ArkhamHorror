@@ -262,6 +262,17 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       n <- count (elem t) . map toTraits <$> getAllCardUses
       pure $ m > n
 
+cardIsFast :: HasGame m => Card -> m Bool
+cardIsFast = cardIsFast' getModifiers
+
+cardIsFast' :: HasGame m => (Card -> m [ModifierType]) -> Card -> m Bool
+cardIsFast' fetchModifiers card = do
+  if isJust $ cdFastWindow (toCardDef card)
+    then pure True
+    else do
+      allModifiers <- fetchModifiers card
+      pure $ isJust $ listToMaybe [w | BecomesFast w <- allModifiers]
+
 cardInFastWindows
   :: (Tracing m, HasGame m, HasCallStack)
   => InvestigatorId

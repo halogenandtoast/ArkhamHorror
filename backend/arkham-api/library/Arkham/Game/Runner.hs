@@ -1460,9 +1460,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             [ CardEnteredPlay iid card
             , whenPlayEvent
             , InvestigatorPlayEvent iid eid mtarget windows' zone
-            , FinishedEvent eid
-            , afterPlayEvent
-            , ResolvedCard iid card
+            , MoveWithSkillTest $ Run [FinishedEvent eid, afterPlayEvent, ResolvedCard iid card]
             ]
           pure $ g & entitiesL . eventsL %~ insertMap eid event'
         _ -> pure g

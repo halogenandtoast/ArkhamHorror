@@ -63,7 +63,13 @@ import Arkham.Helpers.Action (
   getAdditionalActions,
   getCanAfford,
  )
-import Arkham.Helpers.Card (drawThisCardFrom, extendedCardMatch, getModifiedCardCost, passesLimits)
+import Arkham.Helpers.Card (
+  cardIsFast',
+  drawThisCardFrom,
+  extendedCardMatch,
+  getModifiedCardCost,
+  passesLimits,
+ )
 import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
@@ -262,14 +268,16 @@ getWindowSkippable
     ) | iid == toId attrs = do
     allModifiers <- getModifiers card
     cost <- getModifiedCardCost iid card
-    let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
-    andM
-      [ withAlteredGame withoutCanModifiers
-          $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
-      , if isFast || not asAction
-          then pure True
-          else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
-      ]
+    isFast <- cardIsFast' (\_ -> pure allModifiers) card
+    needsFast <- Helpers.inFastWindow
+
+    runValidT do
+      when needsFast $ guard isFast
+      liftGuardM
+        $ withAlteredGame withoutCanModifiers
+        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+      when (not isFast && asAction) do
+        liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []

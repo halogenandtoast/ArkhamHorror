@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DivingSuit (divingSuit, DivingSuit (..)) where
+module Arkham.Asset.Assets.DivingSuit (divingSuit) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,12 +18,8 @@ instance HasModifiersFor DivingSuit where
 
 instance HasAbilities DivingSuit where
   getAbilities (DivingSuit a) =
-    [ restricted a 1 ControlsThis
-        $ forced
-        $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
-    , restricted a 2 ControlsThis
-        $ forced
-        $ AssetLeavesPlay #when (be a)
+    [ controlled_ a 1 $ forced $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
+    , controlled_ a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 
 instance RunMessage DivingSuit where
@@ -31,7 +27,8 @@ instance RunMessage DivingSuit where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       -- handled by modifier
       pure a
-    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+    UseCardAbility _iid (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> DivingSuit <$> liftRunMessage msg attrs

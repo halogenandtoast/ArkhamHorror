@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AquaticAbomination (aquaticAbomination, AquaticAbomination (..)) where
+module Arkham.Enemy.Cards.AquaticAbomination (aquaticAbomination) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -22,8 +22,8 @@ instance RunMessage AquaticAbomination where
     HunterMove eid | eid == attrs.id -> do
       let previouslyMoved = enemyMovedFromHunterKeyword attrs
       attrs' <- liftRunMessage msg attrs
-      let newMoved = enemyMovedFromHunterKeyword attrs
+      let newMoved = enemyMovedFromHunterKeyword attrs'
       when (not previouslyMoved && newMoved) do
-        phaseModifier attrs attrs CannotAttack
+        priority $ phaseModifier attrs attrs CannotAttack
       pure $ AquaticAbomination attrs'
     _ -> AquaticAbomination <$> liftRunMessage msg attrs

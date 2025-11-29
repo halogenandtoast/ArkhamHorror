@@ -78,24 +78,25 @@ travel attrs locId doTravel n = do
           )
   if doTravel
     then case locId of
-      Moscow -> campaignStep_ (InterludeStep 26 Nothing)
       Marrakesh -> campaignStep_ DeadHeat
-      BuenosAires -> campaignStep_ SanguineShadows
-      Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
-      SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
-      Constantinople -> campaignStep_ DealingsInTheDark
-      Anchorage -> campaignStep_ OnThinIce
-      Havana -> campaignStep_ DancingMad
       Kabul -> campaignStep_ (InterludeStep 14 Nothing)
       Quito -> campaignStep_ (InterludeStep 14 Nothing)
       SanJuan -> campaignStep_ (InterludeStep 14 Nothing)
       Reykjavik -> campaignStep_ (InterludeStep 14 Nothing)
+      BuenosAires -> campaignStep_ SanguineShadows
+      Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
+      Constantinople -> campaignStep_ DealingsInTheDark
+      Moscow -> campaignStep_ (InterludeStep 26 Nothing)
+      SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       London -> campaignStep_ (InterludeStep 27 Nothing)
+      Havana -> campaignStep_ DancingMad
       Shanghai -> campaignStep_ (InterludeStep 32 Nothing)
+      Anchorage -> campaignStep_ OnThinIce
       Bombay -> campaignStep_ (InterludeStep 36 Nothing)
       Stockholm -> campaignStep_ (InterludeStep 36 Nothing)
       Lagos -> campaignStep_ (InterludeStep 37 Nothing)
       Tokyo -> campaignStep_ (InterludeStep 37 Nothing)
+      Alexandria -> campaignStep_ DogsOfWar
       RioDeJaneiro -> campaignStep_ (InterludeStep 44 Nothing)
       Manokwari -> campaignStep_ (InterludeStep 45 Nothing)
       Sydney -> campaignStep_ (InterludeStep 49 Nothing)
@@ -131,6 +132,7 @@ instance IsCampaign TheScarletKeys where
     SanguineShadows -> continue (embark a)
     DealingsInTheDark -> continue (embark a)
     DancingMad -> continue (embark a)
+    OnThinIce -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

@@ -45,6 +45,9 @@ allAgendaCards =
       , bidingItsTime
       , breakingThrough
       , breakingThroughV2
+      , brewingCatastropheV1
+      , brewingCatastropheV2
+      , brewingCatastropheV3
       , callingForthTheOldOnes
       , callOfMadness
       , celestialAlignment
@@ -823,6 +826,15 @@ eyesOfTheVoid = agenda "09611" "Eyes of the Void" 2 OnThinIce
 
 annihilation :: CardDef
 annihilation = agenda "09612" "Annihilation" 3 OnThinIce
+
+brewingCatastropheV1 :: CardDef
+brewingCatastropheV1 = agenda "09636" "Brewing Catastrophe (v. I)" 1 DogsOfWar
+
+brewingCatastropheV2 :: CardDef
+brewingCatastropheV2 = agenda "09637" "Brewing Catastrophe (v. II)" 1 DogsOfWar
+
+brewingCatastropheV3 :: CardDef
+brewingCatastropheV3 = agenda "09638" "Brewing Catastrophe (v. III)" 1 DogsOfWar
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

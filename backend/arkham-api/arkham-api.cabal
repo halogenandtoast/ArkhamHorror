@@ -354,6 +354,9 @@ library
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
       Arkham.Agenda.Cards.BreakingThroughV2
+      Arkham.Agenda.Cards.BrewingCatastropheV1
+      Arkham.Agenda.Cards.BrewingCatastropheV2
+      Arkham.Agenda.Cards.BrewingCatastropheV3
       Arkham.Agenda.Cards.CallingForthTheOldOnes
       Arkham.Agenda.Cards.CallOfMadness
       Arkham.Agenda.Cards.CelestialAlignment
@@ -3903,6 +3906,7 @@ library
       Arkham.Scenario.Scenarios.DevilReef
       Arkham.Scenario.Scenarios.DimCarcosa
       Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
+      Arkham.Scenario.Scenarios.DogsOfWar
       Arkham.Scenario.Scenarios.EchoesOfThePast
       Arkham.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Scenario.Scenarios.FatalMirage
@@ -4020,6 +4024,7 @@ library
       Arkham.Scenarios.DevilReef.Helpers
       Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
+      Arkham.Scenarios.DogsOfWar.Helpers
       Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.ExtracurricularActivity.Helpers
       Arkham.Scenarios.FatalMirage.Helpers

@@ -303,6 +303,10 @@ allAgendas =
       SomeAgendaCard lostAndForgotten
     , SomeAgendaCard eyesOfTheVoid
     , SomeAgendaCard annihilation
+    , --- Dogs of War [tsk]
+      SomeAgendaCard brewingCatastropheV1
+    , SomeAgendaCard brewingCatastropheV2
+    , SomeAgendaCard brewingCatastropheV3
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

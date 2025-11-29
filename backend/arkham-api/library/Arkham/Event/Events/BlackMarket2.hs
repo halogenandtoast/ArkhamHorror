@@ -6,7 +6,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_, modified_)
 import Arkham.Helpers.Query (allInvestigators, getLead)
@@ -72,28 +72,26 @@ instance HasModifiersFor BlackMarket2Effect where
 
 instance RunMessage BlackMarket2Effect where
   runMessage msg e@(BlackMarket2Effect attrs) = runQueueT $ case msg of
-    EndPhase -> do
-      phase <- getPhase
-      when (phase == #investigation) do
-        case attrs.target of
-          CardIdTarget cardId -> do
-            card <- getCard cardId
-            case card.owner of
-              Nothing -> do
-                investigators <- select Anyone
-                lead <- getLead
-                focusCard card do
-                  chooseOrRunOneM lead do
-                    questionLabeled "A set aside card was missing its owner. Please select the correct owner"
-                    targets investigators \iid -> do
-                      push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) EndPhase))
-              Just owner -> do
-                obtainCard card
-                push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
-          _ -> error "incorrect target"
-        disable attrs
+    Begin phase | phase == #investigation -> do
+      priority $ case attrs.target of
+        CardIdTarget cardId -> do
+          card <- getCard cardId
+          case card.owner of
+            Nothing -> do
+              investigators <- select Anyone
+              lead <- getLead
+              focusCard card do
+                chooseOrRunOneM lead do
+                  questionLabeled "A set aside card was missing its owner. Please select the correct owner"
+                  targets investigators \iid -> do
+                    push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) (Begin phase)))
+            Just owner -> do
+              obtainCard card
+              push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
+        _ -> error "incorrect target"
+      disable attrs
       pure e
-    ForTarget (isTarget attrs -> True) (ForInvestigator iid (ForTarget (CardIdTarget cardId) EndPhase)) -> do
+    ForTarget (isTarget attrs -> True) (ForInvestigator iid (ForTarget (CardIdTarget cardId) (Begin _))) -> do
       card <- getCard cardId
       eliminated <- iid <!=~> UneliminatedInvestigator
       if eliminated

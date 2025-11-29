@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.DogsOfWar (dogsOfWar) where
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.EncounterSet qualified as Set
@@ -104,6 +105,7 @@ instance RunMessage DogsOfWar where
       gather Set.SpreadingCorruption
       gather Set.DarkCult
       setAgendaDeck [Agendas.brewingCatastropheV1]
+      setActDeck [Acts.rabbitsWhoRunV1]
     -- startAt =<< place Locations.qaitbayCitadel
     -- placeAll
     --   [ Locations.windsorPalaceHotel
@@ -133,6 +135,7 @@ instance RunMessage DogsOfWar where
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
       setAgendaDeck [Agendas.brewingCatastropheV2]
+      setActDeck [Acts.rabbitsWhoRunV2]
     DoStep 3 Setup -> runScenarioSetup DogsOfWar attrs do
       scope "version3" do
         setup $ ul do
@@ -155,4 +158,5 @@ instance RunMessage DogsOfWar where
       gather Set.SpreadingCorruption
       gather Set.DarkCult
       setAgendaDeck [Agendas.brewingCatastropheV3]
+      setActDeck [Acts.rabbitsWhoRunV3]
     _ -> DogsOfWar <$> liftRunMessage msg attrs

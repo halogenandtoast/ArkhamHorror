@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.TheWagesOfSin (setupTheWagesOfSin, theWagesOfSin, TheWagesOfSin (..)) where
 
+import Arkham.Ability qualified as Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
@@ -170,7 +171,7 @@ instance RunMessage TheWagesOfSin where
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
           unless (null abilities) $ do
-            chooseOne iid [AbilityLabel iid ability [] [] [] | ability <- abilities]
+            chooseOne iid [AbilityLabel iid (Ability.noLimit ability) [] [] [] | ability <- abilities]
         ElderThing | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           when (maybe False (`elem` [#fight, #evade]) mAction) $ runHauntedAbilities iid

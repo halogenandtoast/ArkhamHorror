@@ -31,8 +31,8 @@ instance RunMessage WatchersGrasp where
       isReturnTo <- getIsReturnTo
       if isReturnTo
         then temporaryModifier theSpectralWatcher ScenarioSource DoNotExhaust do
-          sendMessage theSpectralWatcher EnemiesAttack
-        else sendMessage theSpectralWatcher EnemiesAttack
+          sendMessage theSpectralWatcher (Do EnemiesAttack)
+        else sendMessage theSpectralWatcher (Do EnemiesAttack)
       checkAfter Window.EnemiesAttackStep
       pure t
     _ -> WatchersGrasp <$> liftRunMessage msg attrs

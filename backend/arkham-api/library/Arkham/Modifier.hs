@@ -344,7 +344,7 @@ data ModifierType
   | ForcePatrol LocationMatcher
   | LoseVictory
   | MaxCluesDiscovered Int
-  | MaxDamageTaken Int
+  | MaxDamageTaken DamageEffectMatcher Int
   | MayChooseNotToTakeUpkeepResources
   | MayChooseToRemoveChaosToken InvestigatorId
   | MayIgnoreAttacksOfOpportunity
@@ -516,6 +516,11 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "MaxDamageTaken" -> do
+              contents <- (Right <$> v .: "contents") <|> (Left <$> v .: "contents")
+              case contents of
+                Left n -> pure $ MaxDamageTaken AnyDamageEffect n
+                Right (matcher, n) -> pure $ MaxDamageTaken matcher n
             "AsIfInHandForPlay" -> AsIfInHandFor ForPlay <$> v .: "contents"
             "SetSkillValue" -> do
               contents <-

@@ -130,7 +130,7 @@ getModifiedDamageAmount target damageAssignment = do
   modifiers' <- getModifiers target
   updatedAmount <- foldrM applyModifier amount modifiers'
   updatedAmount' <- foldrM applyAfterModifier updatedAmount modifiers'
-  pure $ foldr applyModifierCaps updatedAmount' modifiers'
+  foldrM applyModifierCaps updatedAmount' modifiers'
  where
   direct = damageAssignmentDirect damageAssignment
   amount = damageAssignmentAmount damageAssignment
@@ -142,8 +142,10 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifier _ n = pure n
   applyAfterModifier (Modifier.DamageTaken m) n | not direct && m < 0 = pure $ max 0 (n + m)
   applyAfterModifier _ n = pure n
-  applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
-  applyModifierCaps _ n = n
+  applyModifierCaps (Modifier.MaxDamageTaken effect m) n = do
+    match <- damageEffectMatches damageEffect effect
+    pure $ if match then min m n else n
+  applyModifierCaps _ n = pure n
 
 getModifiedKeywords
   :: (HasCallStack, HasGame m, Tracing m, ToId enemy EnemyId) => enemy -> m (Set Keyword)

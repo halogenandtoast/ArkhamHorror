@@ -49,7 +49,7 @@ tommyMalloyEffect = cardEffect TommyMalloyEffect Cards.tommyMalloy
 
 instance HasModifiersFor TommyMalloyEffect where
   getModifiersFor (TommyMalloyEffect attrs) =
-    modified_ attrs attrs.target [MaxDamageTaken 1]
+    modified_ attrs attrs.target [MaxDamageTaken AnyDamageEffect 1]
 
 isTakeDamage :: EffectAttrs -> Window -> Bool
 isTakeDamage attrs window = case attrs.target of

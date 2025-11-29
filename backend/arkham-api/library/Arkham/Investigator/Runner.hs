@@ -2088,7 +2088,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         locationClues <- field LocationClues lid
         let lastClue = locationClues - d.count <= 0 && locationClues /= 0
         let clueCount = min locationClues d.count
-        locationWindowsBefore <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source clueCount)]
+        locationWindowsBefore <-
+          checkWindows $ mkWhen (Window.DiscoverClues iid lid d.source clueCount)
+            : [mkWhen (Window.DiscoveringLastClue iid lid) | lastClue]
         locationWindowsAfter <-
           checkWindows $ mkAfter (Window.DiscoverClues iid lid d.source clueCount)
             : mkAfter (Window.GainsClues iid d.source clueCount)

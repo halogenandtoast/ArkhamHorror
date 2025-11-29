@@ -16,7 +16,7 @@ arkhamWoodsCorpseRiddenClearing =
 
 instance HasModifiersFor ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor (ArkhamWoodsCorpseRiddenClearing a) =
-    whenRevealed a $ modifySelect a (enemyAt a) [MaxDamageTaken 1]
+    whenRevealed a $ modifySelect a (enemyAt a) [MaxDamageTaken AttackDamageEffect 1]
 
 instance RunMessage ArkhamWoodsCorpseRiddenClearing where
   runMessage msg (ArkhamWoodsCorpseRiddenClearing attrs) =

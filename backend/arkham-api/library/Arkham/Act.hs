@@ -342,6 +342,10 @@ allActs =
     , SomeActCard ifItBleeds
     , SomeActCard prowlingNightmare
     , SomeActCard lastStand
+    , --- Dogs of War [tsk]
+      SomeActCard rabbitsWhoRunV1
+    , SomeActCard rabbitsWhoRunV2
+    , SomeActCard rabbitsWhoRunV3
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

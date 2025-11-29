@@ -162,6 +162,9 @@ allActCards =
       , pursuitOfTheUnknownV3
       , queenOfNothingAtAll
       , questForTheSableGlass
+      , rabbitsWhoRunV1
+      , rabbitsWhoRunV2
+      , rabbitsWhoRunV3
       , raceForAnswers
       , recoverTheRelic
       , reefOfMysteries
@@ -1003,6 +1006,15 @@ prowlingNightmare = act "09615" "Prowling Nightmare" 3 OnThinIce
 
 lastStand :: CardDef
 lastStand = act "09616" "Last Stand" 4 OnThinIce
+
+rabbitsWhoRunV1 :: CardDef
+rabbitsWhoRunV1 = act "09639" "Rabbits who Run (v. I)" 1 DogsOfWar
+
+rabbitsWhoRunV2 :: CardDef
+rabbitsWhoRunV2 = act "09640" "Rabbits who Run (v. II)" 1 DogsOfWar
+
+rabbitsWhoRunV3 :: CardDef
+rabbitsWhoRunV3 = act "09641" "Rabbits who Run (v. III)" 1 DogsOfWar
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

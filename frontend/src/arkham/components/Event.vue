@@ -68,7 +68,6 @@ function isAbility(v: Message): v is AbilityLabel {
     return source.contents === id.value
   }
 
-  console.log(source.tag)
   if (source.tag === 'CardIdSource') {
     return source.contents === props.event.cardId
   }

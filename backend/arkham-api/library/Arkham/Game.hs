@@ -2719,6 +2719,9 @@ getAssetsMatching matcher = do
     AssetOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       filterM (fieldP AssetOwner (maybe False (`elem` iids)) . toId) as
+    InPlayAsset assetMatcher -> do
+      as' <- filterMatcher as assetMatcher
+      as' & filterM (fieldMap AssetPlacement isInPlayPlacement . toId)
     AssetInPlayAreaOf investigatorMatcher -> do
       iids <- select investigatorMatcher
       let

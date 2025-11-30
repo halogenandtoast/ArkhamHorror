@@ -7,18 +7,23 @@ import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy (patrol)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelect)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isFightWith)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DogsOfWar.Helpers
-import Arkham.Trait (Trait (Miskatonic, Scholar))
+import Arkham.Trait (Trait (LocusSite, Miskatonic, Scholar))
 
 newtype DogsOfWar = DogsOfWar ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dogsOfWar :: Difficulty -> DogsOfWar
@@ -38,12 +43,29 @@ data Version = Version1 | Version2 | Version3
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+instance HasModifiersFor DogsOfWar where
+  getModifiersFor (DogsOfWar a) = do
+    locationWithKeyLocus <-
+      select
+        $ LocationWithAsset
+        $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
+    if null locationWithKeyLocus
+      then
+        flip (modifySelect a) [ScenarioModifier "keyLocus"]
+          $ oneOf
+            [ LocationWithAsset $ assetIs Assets.theClaretKnightHerSwornChampion
+            , LocationWithEnemy $ enemyIs Enemies.theClaretKnightCoterieKingpin
+            ]
+      else modifyEach a locationWithKeyLocus [ScenarioModifier "keyLocus"]
+
 instance HasChaosTokenValue DogsOfWar where
   getChaosTokenValue iid tokenFace (DogsOfWar attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      atLocus <- runValidT $ MaybeT (getLocationOf iid) >>= liftGuardM . (`matches` LocationWithKeyLocus)
+      pure $ toChaosTokenValue attrs Skull (if atLocus then 3 else 1) (if atLocus then 4 else 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 3 5
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
+    ElderThing -> pure $ toChaosTokenValue attrs Cultist 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DogsOfWar where
@@ -231,4 +253,31 @@ instance RunMessage DogsOfWar where
         ]
       theBeast <- createEnemyAt Enemies.theBeastInACowlOfCrimsonWolfInSheepsClothing catacombs
       createScarletKeyAt_ Keys.theLightOfPharos $ AttachedToEnemy theBeast
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist -> do
+          ls <- select $ NearestLocationTo iid $ oneOf [LocationWithTrait LocusSite, LocationWithKeyLocus]
+          ts <-
+            keyLocusTargets
+              >>= filterM (`matches` TargetAtLocation (mapOneOf LocationWithId ls))
+          chooseOneM iid $ withI18n do
+            numberVar "damage" 1
+              $ numberVar "horror" 1
+              $ labeled' "takeDamageAndHorror"
+              $ assignDamageAndHorror iid Cultist 1 1
+            targets ls $ placeDoomOn Cultist 1
+            targets ts $ placeDoomOn Cultist 1
+        ElderThing -> do
+          let x = if isEasyStandard attrs then min 3 n else n
+          loseResources iid ElderThing x
+        _ -> pure ()
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      whenM (isFightWith PatrolEnemy) do
+        whenJustM getSkillTestTargetedEnemy \enemy -> do
+          afterSkillTestQuiet do
+            when (isHardExpert attrs) $ initiateEnemyAttack enemy Cultist iid
+            disengageFromAll enemy
+            patrol enemy
+      pure s
     _ -> DogsOfWar <$> liftRunMessage msg attrs

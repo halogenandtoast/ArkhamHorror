@@ -43,6 +43,7 @@ import Arkham.Tracing
 import Arkham.Window (mkAfter, mkWhen, windowType)
 import Arkham.Window qualified as Window
 import Arkham.Zone
+import Control.Lens (folded)
 import Control.Monad.Trans.Class
 import Data.Foldable (foldrM)
 import Data.List qualified as List
@@ -420,3 +421,9 @@ insteadOfDamage (asId -> eid) body = do
         ws' -> pure [CheckWindows ws']
       EnemyDamaged eid' dmg | eid == eid' -> evalQueueT (body dmg)
       other -> pure [other]
+
+patrol :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> m ()
+patrol (asId -> eid) = whenJustM (getPatrolMatcher eid) $ push . PatrolMove eid
+
+getPatrolMatcher :: (HasGame m, Tracing m) => EnemyId -> m (Maybe LocationMatcher)
+getPatrolMatcher eid = preview (folded . _Patrol) <$> getModifiedKeywords eid

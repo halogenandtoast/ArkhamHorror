@@ -57,6 +57,11 @@ _Swarming = prism' Swarming $ \case
   Swarming n -> Just n
   _ -> Nothing
 
+_Patrol :: Prism' Keyword LocationMatcher
+_Patrol = prism' Patrol $ \case
+  Patrol n -> Just n
+  _ -> Nothing
+
 instance IsLabel "aloof" Keyword where
   fromLabel = Aloof
 

@@ -690,6 +690,37 @@ thorneConsummateProfessional =
     , cdOtherSide = Just "09625"
     }
 
+keyLocusDefensiveBarrier :: CardDef
+keyLocusDefensiveBarrier =
+  (storyAsset "09653" ("Key Locus" <:> "Defensive Barrier") 0 DogsOfWar)
+    { cdCardTraits = setFromList [Ritual]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09653b"
+    }
+
+keyLocusLastBastion :: CardDef
+keyLocusLastBastion =
+  (storyAsset "09653b" ("Key Locus" <:> "Last Bastion") 0 DogsOfWar)
+    { cdCardTraits = setFromList [Ritual]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09653"
+    }
+
+theClaretKnightHerSwornChampion :: CardDef
+theClaretKnightHerSwornChampion =
+  (storyAsset "09654b" ("The Claret Knight" <:> "Her Sworn Champion") 0 DogsOfWar)
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09654"
+    }
+
 inspectorFlintWithPrideAndCare :: CardDef
 inspectorFlintWithPrideAndCare =
   (storyAsset "09762" ("Inspector Flint" <:> "With Pride and Care") 2 Globetrotting)

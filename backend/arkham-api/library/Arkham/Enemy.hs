@@ -517,6 +517,12 @@ allEnemies =
     , SomeEnemyCard voidChimeraGorefeaster
     , SomeEnemyCard voidChimeraFellhound
     , SomeEnemyCard ravenousGrizzly
+    , --- Dogs of War [tsk]
+      SomeEnemyCard theClaretKnightCoterieKingpin
+    , SomeEnemyCard theBeastInACowlOfCrimsonRavagerInRed
+    , SomeEnemyCard theBeastInACowlOfCrimsonWolfInSheepsClothing
+    , SomeEnemyCard scarletBeast
+    , SomeEnemyCard coterieProvocateur
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

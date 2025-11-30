@@ -403,6 +403,7 @@ allEncounterTreacheryCards =
       , lightOutOfVoid
       , litByDeathFire
       , lockedDoor
+      , locusPulse
       , lostHumanity
       , lostInTheWilds
       , lostInTheWoods
@@ -2952,6 +2953,12 @@ snowslide :: CardDef
 snowslide =
   (treachery "09633" "Snowslide" OnThinIce 2)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+locusPulse :: CardDef
+locusPulse =
+  (treachery "09658" "Locus Pulse" DogsOfWar 2)
+    { cdCardTraits = setFromList [Hex]
     }
 
 conspiracyInRed :: CardDef

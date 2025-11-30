@@ -1061,6 +1061,8 @@ library
       Arkham.Asset.Assets.KeeperOfTheKeyCelestialWard
       Arkham.Asset.Assets.KenslersLog
       Arkham.Asset.Assets.Kerosene1
+      Arkham.Asset.Assets.KeyLocusDefensiveBarrier
+      Arkham.Asset.Assets.KeyLocusLastBastion
       Arkham.Asset.Assets.KeyOfYs
       Arkham.Asset.Assets.KeyToTheChamber
       Arkham.Asset.Assets.Kleptomania
@@ -1414,6 +1416,7 @@ library
       Arkham.Asset.Assets.TheCaptain
       Arkham.Asset.Assets.TheChthonianStone
       Arkham.Asset.Assets.TheChthonianStone3
+      Arkham.Asset.Assets.TheClaretKnightHerSwornChampion
       Arkham.Asset.Assets.TheCodexOfAges
       Arkham.Asset.Assets.TheCodexOfAgesAdvanced
       Arkham.Asset.Assets.TheCouncilsCoffer2
@@ -1831,6 +1834,7 @@ library
       Arkham.Enemy.Cards.CoterieEnforcerA
       Arkham.Enemy.Cards.CoterieEnforcerB
       Arkham.Enemy.Cards.CoterieEnvoy
+      Arkham.Enemy.Cards.CoterieProvocateur
       Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedGuest
       Arkham.Enemy.Cards.CrazedShoggoth
@@ -2079,6 +2083,7 @@ library
       Arkham.Enemy.Cards.SaturniteMonarchInAnAlienLand
       Arkham.Enemy.Cards.SavageShantak
       Arkham.Enemy.Cards.SavioCorvi
+      Arkham.Enemy.Cards.ScarletBeast
       Arkham.Enemy.Cards.ScholarFromYith
       Arkham.Enemy.Cards.ScientistOfYith
       Arkham.Enemy.Cards.ScreechingBanshee
@@ -2132,8 +2137,11 @@ library
       Arkham.Enemy.Cards.TerrorOfTheStarsGuardianOfForbiddenPeaks
       Arkham.Enemy.Cards.TheAmalgam
       Arkham.Enemy.Cards.TheBeastInACowlOfCrimsonLeavingATrailOfDestruction
+      Arkham.Enemy.Cards.TheBeastInACowlOfCrimsonRavagerInRed
+      Arkham.Enemy.Cards.TheBeastInACowlOfCrimsonWolfInSheepsClothing
       Arkham.Enemy.Cards.TheBloodlessMan
       Arkham.Enemy.Cards.TheBloodlessManUnleashed
+      Arkham.Enemy.Cards.TheClaretKnightCoterieKingpin
       Arkham.Enemy.Cards.TheClaretKnightHoldsYouInContempt
       Arkham.Enemy.Cards.TheConductorBeastFromBeyondTheGate
       Arkham.Enemy.Cards.TheContessaEnraged
@@ -3014,6 +3022,9 @@ library
       Arkham.Location.Cards.CasinoLoungeBusyNight
       Arkham.Location.Cards.CasinoLoungeCalmNight
       Arkham.Location.Cards.CastleHallwaysSeeminglyEndless
+      Arkham.Location.Cards.CatacombsOfKomElShoqafaAncientTomb
+      Arkham.Location.Cards.CatacombsOfKomElShoqafaBloodyNexus
+      Arkham.Location.Cards.CatacombsOfKomElShoqafaDenOfTheBeast
       Arkham.Location.Cards.CatacombsStinksOfDeath
       Arkham.Location.Cards.CatedralMetropolitana
       Arkham.Location.Cards.CavernsBeneathTheMoonDarkSide
@@ -3486,6 +3497,7 @@ library
       Arkham.Location.Cards.PropShop
       Arkham.Location.Cards.ProtoplasmicPool
       Arkham.Location.Cards.PumpRoom
+      Arkham.Location.Cards.QaitbayCitadel
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
       Arkham.Location.Cards.RailroadStation
@@ -3677,8 +3689,12 @@ library
       Arkham.Location.Cards.TheBlackCore
       Arkham.Location.Cards.TheBlackStone
       Arkham.Location.Cards.TheBlackThrone
+      Arkham.Location.Cards.TheBourseCommercialCenter
+      Arkham.Location.Cards.TheBourseCoteriePost
+      Arkham.Location.Cards.TheBourseLocusSafeguard
       Arkham.Location.Cards.TheCabildo
       Arkham.Location.Cards.TheCavernOfFlame
+      Arkham.Location.Cards.TheCorniche
       Arkham.Location.Cards.TheDarkCrater
       Arkham.Location.Cards.TheEdgeOfTheUniverse
       Arkham.Location.Cards.TheEnchantedPath
@@ -3773,6 +3789,7 @@ library
       Arkham.Location.Cards.VaultsOfZin
       Arkham.Location.Cards.VelmasDiner
       Arkham.Location.Cards.VenetianGarden
+      Arkham.Location.Cards.VictoriaCollege
       Arkham.Location.Cards.VictorianHalls
       Arkham.Location.Cards.VictorianHallsSpectral
       Arkham.Location.Cards.VillageCommons
@@ -3790,6 +3807,7 @@ library
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.WhiteBluff
       Arkham.Location.Cards.WindingGulf
+      Arkham.Location.Cards.WindsorPalaceHotel
       Arkham.Location.Cards.WindsweptPath
       Arkham.Location.Cards.WineCellar
       Arkham.Location.Cards.WineCellarSpectral
@@ -3809,6 +3827,7 @@ library
       Arkham.Location.Cards.YithianOrrery
       Arkham.Location.Cards.YourHouse
       Arkham.Location.Cards.Yuggoth
+      Arkham.Location.Cards.ZanEtElSettat
       Arkham.Location.Cards.Zocalo
       Arkham.Location.Cards.ZulanThek
       Arkham.Location.FloodLevel
@@ -4672,6 +4691,7 @@ library
       Arkham.Treachery.Cards.LightOutOfVoid
       Arkham.Treachery.Cards.LitByDeathFire
       Arkham.Treachery.Cards.LockedDoor
+      Arkham.Treachery.Cards.LocusPulse
       Arkham.Treachery.Cards.LostHumanity
       Arkham.Treachery.Cards.LostInTheWilds
       Arkham.Treachery.Cards.LostInTheWoods

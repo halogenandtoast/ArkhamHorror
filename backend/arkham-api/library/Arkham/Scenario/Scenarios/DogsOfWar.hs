@@ -2,11 +2,16 @@ module Arkham.Scenario.Scenarios.DogsOfWar (dogsOfWar) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Matcher
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DogsOfWar.Helpers
 import Arkham.Trait (Trait (Miskatonic, Scholar))
@@ -106,13 +111,28 @@ instance RunMessage DogsOfWar where
       gather Set.DarkCult
       setAgendaDeck [Agendas.brewingCatastropheV1]
       setActDeck [Acts.rabbitsWhoRunV1]
-    -- startAt =<< place Locations.qaitbayCitadel
-    -- placeAll
-    --   [ Locations.windsorPalaceHotel
-    --   , Locations.victoriaCollege
-    --   , Locations.theCorniche
-    --   , Locations.zanEtElSettat
-    --   ]
+      startAt =<< place Locations.qaitbayCitadel
+      locusSites <-
+        placeAllCapture
+          [ Locations.windsorPalaceHotel
+          , Locations.victoriaCollege
+          , Locations.theCorniche
+          , Locations.zanEtElSettat
+          ]
+      for_ locusSites \locusSite -> do
+        assetAt_ Assets.keyLocusLastBastion locusSite
+        placeDoom attrs locusSite 1
+      theBourse <- place Locations.theBourseLocusSafeguard
+      catacombs <- place Locations.catacombsOfKomElShoqafaBloodyNexus
+      removeEvery
+        [ Locations.theBourseCommercialCenter
+        , Locations.theBourseCommercialCenter
+        , Locations.catacombsOfKomElShoqafaAncientTomb
+        , Locations.catacombsOfKomElShoqafaDenOfTheBeast
+        ]
+      theClaretKnight <- assetAt Assets.theClaretKnightHerSwornChampion theBourse
+      createScarletKeyAt_ Keys.theLightOfPharos $ AttachedToAsset theClaretKnight Nothing
+      enemyAt_ Enemies.theBeastInACowlOfCrimsonRavagerInRed catacombs
     DoStep 2 Setup -> runScenarioSetup DogsOfWar attrs do
       scope "version2" do
         setup $ ul do

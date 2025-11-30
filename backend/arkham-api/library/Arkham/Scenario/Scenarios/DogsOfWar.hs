@@ -10,7 +10,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (patrol)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelect)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isFightWith)
 import Arkham.I18n
@@ -23,7 +22,7 @@ import Arkham.Scenarios.DogsOfWar.Helpers
 import Arkham.Trait (Trait (LocusSite, Miskatonic, Scholar))
 
 newtype DogsOfWar = DogsOfWar ScenarioAttrs
-  deriving anyclass IsScenario
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dogsOfWar :: Difficulty -> DogsOfWar
@@ -42,21 +41,6 @@ dogsOfWar difficulty =
 data Version = Version1 | Version2 | Version3
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
-
-instance HasModifiersFor DogsOfWar where
-  getModifiersFor (DogsOfWar a) = do
-    locationWithKeyLocus <-
-      select
-        $ LocationWithAsset
-        $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
-    if null locationWithKeyLocus
-      then
-        flip (modifySelect a) [ScenarioModifier "keyLocus"]
-          $ oneOf
-            [ LocationWithAsset $ assetIs Assets.theClaretKnightHerSwornChampion
-            , LocationWithEnemy $ enemyIs Enemies.theClaretKnightCoterieKingpin
-            ]
-      else modifyEach a locationWithKeyLocus [ScenarioModifier "keyLocus"]
 
 instance HasChaosTokenValue DogsOfWar where
   getChaosTokenValue iid tokenFace (DogsOfWar attrs) = case tokenFace of

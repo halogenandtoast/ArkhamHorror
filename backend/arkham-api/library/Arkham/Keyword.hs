@@ -68,4 +68,7 @@ instance IsLabel "aloof" Keyword where
 instance IsLabel "massive" Keyword where
   fromLabel = Massive
 
+instance IsLabel "hunter" Keyword where
+  fromLabel = Hunter
+
 $(deriveJSON defaultOptions ''Keyword)

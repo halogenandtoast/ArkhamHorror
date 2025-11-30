@@ -39,7 +39,7 @@ instance RunMessage JardinesDeLaTropical where
       focusCards (concatMap snd hollowed) do
         chooseOneM iid do
           for_ hollowed \(iid', cards) -> do
-            for_ cards \card -> targeting card $ addToHand iid' [card]
+            targets cards $ drawCard iid'
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]

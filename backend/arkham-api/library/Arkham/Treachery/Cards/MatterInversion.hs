@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.MatterInversion (matterInversion) where
 
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, getModifiers)
+import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modified_)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Ability
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Trait (Trait (Outsider))
@@ -45,7 +45,6 @@ instance RunMessage MatterInversion where
       toDiscardBy iid (attrs.ability 1) attrs
       mods <- getModifiers iid
       hollows <- traverse fetchCard [cardId | Hollow cardId <- mods]
-      focusCards hollows do
-        chooseTargetM iid hollows \card -> addToHand iid [card]
+      focusCards hollows $ chooseTargetM iid hollows $ drawCard iid
       pure t
     _ -> MatterInversion <$> liftRunMessage msg attrs

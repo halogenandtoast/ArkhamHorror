@@ -32,7 +32,7 @@ instance RunMessage SilverTwilightLodgeAllied where
     DiscardedTopOfEncounterDeck iid [card] _ (isTarget attrs -> True) -> do
       focusCards [card] do
         chooseOneM iid $ withI18n do
-          labeled' "drawTheCard" $ addToHand iid (only card)
+          labeled' "drawTheCard" $ drawCard iid card
           labeled' "doNotDraw" nothing
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do

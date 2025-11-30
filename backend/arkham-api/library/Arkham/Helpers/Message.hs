@@ -369,7 +369,7 @@ removeMessageType msgType = withQueue_ $ \queue ->
     before <> remaining
 
 addToHand :: IsCard a => InvestigatorId -> a -> Message
-addToHand i (toCard -> c) = AddToHand i [c]
+addToHand i (toCard -> c) = AddToHandQuiet i [c]
 
 addToDiscard :: IsCard a => InvestigatorId -> a -> Message
 addToDiscard i (toCard -> c) = go c

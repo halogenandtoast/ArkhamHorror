@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
@@ -27,7 +28,11 @@ dogsOfWar difficulty =
     "09635"
     "Dogs of War"
     difficulty
-    []
+    [ ".      triangle .    equals ."
+    , "square triangle star equals squiggle"
+    , "square circle   star moon   squiggle"
+    , ".      circle   .    moon   ."
+    ]
 
 data Version = Version1 | Version2 | Version3
   deriving stock (Show, Eq, Generic)
@@ -109,6 +114,8 @@ instance RunMessage DogsOfWar where
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
       gather Set.DarkCult
+      handleRedCoterie
+
       setAgendaDeck [Agendas.brewingCatastropheV1]
       setActDeck [Acts.rabbitsWhoRunV1]
       startAt =<< place Locations.qaitbayCitadel
@@ -125,7 +132,7 @@ instance RunMessage DogsOfWar where
       theBourse <- place Locations.theBourseLocusSafeguard
       catacombs <- place Locations.catacombsOfKomElShoqafaBloodyNexus
       removeEvery
-        [ Locations.theBourseCommercialCenter
+        [ Locations.theBourseCoteriePost
         , Locations.theBourseCommercialCenter
         , Locations.catacombsOfKomElShoqafaAncientTomb
         , Locations.catacombsOfKomElShoqafaDenOfTheBeast
@@ -154,8 +161,32 @@ instance RunMessage DogsOfWar where
       gather Set.ScarletSorcery
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
+      handleRedCoterie
+
       setAgendaDeck [Agendas.brewingCatastropheV2]
       setActDeck [Acts.rabbitsWhoRunV2]
+      startAt =<< place Locations.qaitbayCitadel
+      locusSites <-
+        placeAllCapture
+          [ Locations.windsorPalaceHotel
+          , Locations.victoriaCollege
+          , Locations.theCorniche
+          , Locations.zanEtElSettat
+          ]
+      for_ locusSites $ assetAt_ Assets.keyLocusDefensiveBarrier
+      theBourse <- place Locations.theBourseCoteriePost
+      place_ Locations.catacombsOfKomElShoqafaAncientTomb
+      removeEvery
+        [ Locations.theBourseLocusSafeguard
+        , Locations.theBourseCommercialCenter
+        , Locations.catacombsOfKomElShoqafaBloodyNexus
+        , Locations.catacombsOfKomElShoqafaDenOfTheBeast
+        , Enemies.theBeastInACowlOfCrimsonRavagerInRed
+        ]
+      theClaretKnight <- createEnemyAt Enemies.theClaretKnightCoterieKingpin theBourse
+      createScarletKeyAt_ Keys.theLightOfPharos $ AttachedToEnemy theClaretKnight
+      lead <- getLead
+      drawCard lead =<< fetchCard Enemies.coterieAssassinA
     DoStep 3 Setup -> runScenarioSetup DogsOfWar attrs do
       scope "version3" do
         setup $ ul do
@@ -179,4 +210,25 @@ instance RunMessage DogsOfWar where
       gather Set.DarkCult
       setAgendaDeck [Agendas.brewingCatastropheV3]
       setActDeck [Acts.rabbitsWhoRunV3]
+
+      startAt =<< place Locations.qaitbayCitadel
+      locusSites <-
+        placeAllCapture
+          [ Locations.windsorPalaceHotel
+          , Locations.victoriaCollege
+          , Locations.theCorniche
+          , Locations.zanEtElSettat
+          ]
+      for_ locusSites $ assetAt_ Assets.keyLocusDefensiveBarrier
+      place_ Locations.theBourseCommercialCenter
+      catacombs <- place Locations.catacombsOfKomElShoqafaDenOfTheBeast
+      removeEvery
+        [ Locations.theBourseLocusSafeguard
+        , Locations.theBourseCoteriePost
+        , Locations.catacombsOfKomElShoqafaBloodyNexus
+        , Locations.catacombsOfKomElShoqafaAncientTomb
+        , Enemies.theClaretKnightCoterieKingpin
+        ]
+      theBeast <- createEnemyAt Enemies.theBeastInACowlOfCrimsonWolfInSheepsClothing catacombs
+      createScarletKeyAt_ Keys.theLightOfPharos $ AttachedToEnemy theBeast
     _ -> DogsOfWar <$> liftRunMessage msg attrs

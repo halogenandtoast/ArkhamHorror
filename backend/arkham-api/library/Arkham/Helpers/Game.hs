@@ -7,13 +7,10 @@ import Arkham.Prelude
 import Control.Monad.Reader (local)
 
 withDepthGuard :: HasGame m => Int -> a -> ReaderT Game m a -> m a
-withDepthGuard maxDepth defaultValue body = do
-  game <- getGame
-  flip runReaderT game $ do
+withDepthGuard maxDepth defaultValue body =
+  getGame >>= runReaderT do
     depth <- getDepthLock
     if depth > maxDepth then pure defaultValue else local delve body
 
 withAlteredGame :: HasGame m => (Game -> Game) -> ReaderT Game m a -> m a
-withAlteredGame f body = do
-  game <- getGame
-  runReaderT body (f game)
+withAlteredGame f body = getGame >>= runReaderT body . f

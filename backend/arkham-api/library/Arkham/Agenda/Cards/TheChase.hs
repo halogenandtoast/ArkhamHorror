@@ -17,7 +17,7 @@ newtype TheChase = TheChase AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theChase :: AgendaCard TheChase
-theChase = agenda (1, A) TheChase Cards.theChase (Static 3)
+theChase = agenda (2, A) TheChase Cards.theChase (Static 3)
 
 instance HasAbilities TheChase where
   getAbilities (TheChase a) =

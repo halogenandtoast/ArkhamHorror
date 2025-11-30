@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.LightOutOfVoid (lightOutOfVoid) where
 
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.Act
+import Arkham.Helpers.Agenda
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.DealingsInTheDark.Helpers
@@ -33,9 +33,9 @@ instance RunMessage LightOutOfVoid where
           $ labeled' "takeDamageAndHorror"
           $ assignDamageAndHorror iid (attrs.ability 1) 1 1
       when (n == 1) do
-        act <- getCurrentActStep
+        act <- getCurrentAgendaStep
         cultistClues <- getCluesPossesedByTheCult
         playerClues <- selectSum InvestigatorClues Anyone
-        when (act == 3 || playerClues > cultistClues) $ doStep 2 msg'
+        when (act == 2 || playerClues > cultistClues) $ doStep 2 msg'
       pure t
     _ -> LightOutOfVoid <$> liftRunMessage msg attrs

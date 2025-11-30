@@ -41,7 +41,7 @@ instance RunMessage MollyMaxwell where
           case mcard of
             Nothing -> labeled "No cards found" $ shuffleCardsIntoDeck iid rest
             Just c -> targeting c do
-              addToHand iid [c]
+              drawCard iid c
               shuffleCardsIntoDeck iid rest
       pure a
     _ -> MollyMaxwell <$> liftRunMessage msg attrs

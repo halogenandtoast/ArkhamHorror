@@ -32,7 +32,7 @@ instance RunMessage TemploMayor_175 where
       discardUntilFirst iid (attrs.ability 1) (Deck.InvestigatorDeck iid) (basic WeaknessCard)
       pure l
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
-      for_ mcard $ addToHand iid . only
+      for_ mcard $ drawCard iid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discoverAt NotInvestigate iid (attrs.ability 2) 2 attrs

@@ -36,6 +36,6 @@ instance RunMessage Daredevil where
       when (attrs.tabooed TabooList21 && notNull weaknesses) do
         afterSkillTest iid "Daredevil" do
           ifCardExists (inDiscardOf iid <> basic (mapOneOf (CardWithId . toCardId) weaknesses)) do
-            chooseOneAtATimeM iid $ targets weaknesses $ addToHand iid . only
+            chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
       pure s
     _ -> Daredevil <$> liftRunMessage msg attrs

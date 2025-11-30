@@ -52,7 +52,7 @@ instance RunMessage UncageTheSoul3 where
                 ]
             )
       chooseTargetM iid cards \c -> do
-        addToHandQuiet iid (only c)
+        addToHand iid (only c)
         reduceCostOf attrs c 3
         playCardPayingCost iid c
       pure e

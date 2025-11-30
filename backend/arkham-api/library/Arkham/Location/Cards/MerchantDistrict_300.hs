@@ -7,6 +7,7 @@ import Arkham.Location.BreachStatus hiding (removeBreaches)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype MerchantDistrict_300 = MerchantDistrict_300 LocationAttrs
@@ -30,6 +31,6 @@ instance RunMessage MerchantDistrict_300 where
       act <- selectJust AnyAct
       removeBreaches attrs n
       placeBreaches act n
-      addToHand iid weaknesses
+      chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
       pure l
     _ -> MerchantDistrict_300 <$> liftRunMessage msg attrs

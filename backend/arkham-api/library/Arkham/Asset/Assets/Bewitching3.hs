@@ -53,7 +53,7 @@ instance RunMessage Bewitching3 where
       canSearch <- can.search.deck iid
       chooseOrRunOneM iid do
         labeled "Draw 1 attached card" do
-          focusCards attrs.cardsUnderneath $ chooseTargetM iid attrs.cardsUnderneath $ addToHand iid . only
+          focusCards attrs.cardsUnderneath $ chooseTargetM iid attrs.cardsUnderneath $ drawCard iid
         when canSearch do
           labeled
             "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck"

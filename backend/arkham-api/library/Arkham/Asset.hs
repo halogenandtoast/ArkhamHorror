@@ -993,6 +993,10 @@ allAssets =
       SomeAssetCard desiderioDelgadoAlvarez
     , --- On Thin Ice [tsk]
       SomeAssetCard thorneConsummateProfessional
+    , --- Dogs of War [tsk]
+      SomeAssetCard keyLocusDefensiveBarrier
+    , SomeAssetCard keyLocusLastBastion
+    , SomeAssetCard theClaretKnightHerSwornChampion
     , --- Globetrotting [tsk]
       SomeAssetCard inspectorFlintWithPrideAndCare
     , SomeAssetCard agentAriQuinnFoundationResearcher

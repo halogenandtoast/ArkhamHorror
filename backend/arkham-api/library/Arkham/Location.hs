@@ -851,6 +851,18 @@ allLocations =
     , SomeLocationCard forgottenOutpost
     , SomeLocationCard huntersLodge
     , SomeLocationCard condemnedGoldMine
+    , --- Dogs of War [tsk]
+      SomeLocationCard theBourseLocusSafeguard
+    , SomeLocationCard theBourseCoteriePost
+    , SomeLocationCard theBourseCommercialCenter
+    , SomeLocationCard windsorPalaceHotel
+    , SomeLocationCard victoriaCollege
+    , SomeLocationCard qaitbayCitadel
+    , SomeLocationCard theCorniche
+    , SomeLocationCard zanEtElSettat
+    , SomeLocationCard catacombsOfKomElShoqafaDenOfTheBeast
+    , SomeLocationCard catacombsOfKomElShoqafaBloodyNexus
+    , SomeLocationCard catacombsOfKomElShoqafaAncientTomb
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

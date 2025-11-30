@@ -586,6 +586,8 @@ allTreacheries =
     , --- On Thin Ice [tsk]
       SomeTreacheryCard crackingIce
     , SomeTreacheryCard snowslide
+    , --- Dogs of War [tsk]
+      SomeTreacheryCard locusPulse
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]

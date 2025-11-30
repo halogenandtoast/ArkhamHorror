@@ -14,6 +14,7 @@ data Trait
   = Abandoned
   | Abomination
   | Agency
+  | Alexandria
   | Allied
   | Ally
   | Altered
@@ -156,6 +157,7 @@ data Trait
   | Lead
   | Leader
   | Leng
+  | LocusSite
   | Lodge
   | London
   | Lunatic

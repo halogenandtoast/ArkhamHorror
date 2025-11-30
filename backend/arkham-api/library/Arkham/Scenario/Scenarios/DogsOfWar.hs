@@ -81,7 +81,7 @@ instance RunMessage DogsOfWar where
     Setup -> do
       case getMetaKeyDefault "version" Version1 attrs of
         Version1 -> doStep 1 Setup
-        Version2 -> doStep 3 Setup
+        Version2 -> doStep 2 Setup
         Version3 -> doStep 3 Setup
       pure s
     DoStep 1 Setup -> runScenarioSetup DogsOfWar attrs do

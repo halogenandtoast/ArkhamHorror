@@ -983,6 +983,9 @@ allEncounterAssetCards =
       , eceSahinTheVermillionVeiledLady
       , desiderioDelgadoAlvarez
       , thorneConsummateProfessional
+      , keyLocusDefensiveBarrier
+      , keyLocusLastBastion
+      , theClaretKnightHerSwornChampion
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

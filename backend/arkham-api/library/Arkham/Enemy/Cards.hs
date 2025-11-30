@@ -174,6 +174,7 @@ allEncounterEnemyCards =
       , coterieEnforcerA
       , coterieEnforcerB
       , coterieEnvoy
+      , coterieProvocateur
       , covenInitiate
       , crazedGuest
       , crazedShoggoth
@@ -413,6 +414,7 @@ allEncounterEnemyCards =
       , saturniteMonarchInAnAlienLand
       , savageShantak
       , savioCorvi
+      , scarletBeast
       , scholarFromYith
       , scientistOfYith
       , screechingBanshee
@@ -461,8 +463,11 @@ allEncounterEnemyCards =
       , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
       , theBeastInACowlOfCrimsonLeavingATrailOfDestruction
+      , theBeastInACowlOfCrimsonRavagerInRed
+      , theBeastInACowlOfCrimsonWolfInSheepsClothing
       , theBloodlessMan
       , theBloodlessManUnleashed
+      , theClaretKnightCoterieKingpin
       , theClaretKnightHoldsYouInContempt
       , theContessaEnraged
       , theContessaNeedlesslySmug
@@ -3060,6 +3065,51 @@ ravenousGrizzly =
   (enemy "09630" "Ravenous Grizzly" OnThinIce 2)
     { cdCardTraits = singleton Creature
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+theClaretKnightCoterieKingpin :: CardDef
+theClaretKnightCoterieKingpin =
+  (enemy "09654" ("The Claret Knight" <:> "Coterie Kingping") DogsOfWar 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09654b"
+    }
+
+theBeastInACowlOfCrimsonRavagerInRed :: CardDef
+theBeastInACowlOfCrimsonRavagerInRed =
+  (enemy "09655" ("The Beast in a Cowl of Crimson" <:> "Ravager in Red") DogsOfWar 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus")), Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09655b"
+    }
+
+theBeastInACowlOfCrimsonWolfInSheepsClothing :: CardDef
+theBeastInACowlOfCrimsonWolfInSheepsClothing =
+  (enemy "09655b" ("The Beast in a Cowl of Crimson" <:> "Wolf in Sheep's Clothing") DogsOfWar 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09655b"
+    }
+
+scarletBeast :: CardDef
+scarletBeast =
+  (enemy "09656" "Scarlet Beast" DogsOfWar 2)
+    { cdCardTraits = setFromList [Monster, Coterie]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+    }
+
+coterieProvocateur :: CardDef
+coterieProvocateur =
+  (enemy "09657" "Coterie Provocateur" DogsOfWar 2)
+    { cdCardTraits = setFromList [Monster, Coterie]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus"))]
     }
 
 coterieAgentA :: CardDef

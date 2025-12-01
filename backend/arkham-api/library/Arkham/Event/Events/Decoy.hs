@@ -20,15 +20,15 @@ instance HasAbilities Decoy where
   getAbilities (Decoy a) =
     [ withTooltip
         "{reaction}  When you play Decoy, increase its cost by 2: Change \"a non-Elite enemy\" to \"up to 2 non-Elite enemies.\""
-        $ restricted a 1 InYourHand
-        $ ReactionAbility
-          (PlayCard #when You (basic $ CardWithId $ toCardId a))
+        $ mkAbility a 1
+        $ triggered
+          (PlayCard #when You (basic $ CardWithId a.cardId))
           (IncreaseCostOfThis (toCardId a) 2)
     , withTooltip
         "{reaction} When you play Decoy, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restricted a 2 InYourHand
-        $ ForcedWhen (Negate $ EnemyCriteria $ EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
-        $ ReactionAbility
+        $ mkAbility a 2
+        $ ForcedWhen (not_ $ exists $ at_ YourLocation <> NonEliteEnemy)
+        $ triggered
           (PlayCard #when You (basic $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     ]

@@ -20,16 +20,16 @@ instance HasAbilities SmallFavor where
   getAbilities (SmallFavor a) =
     [ withTooltip
         "{reaction} When you play Small Favor, increase its cost by 2: Change \"Deal 1 damage\" to \"Deal 2 damage.\""
-        $ restricted a 1 InYourHand
+        $ mkAbility a 1
         $ triggered
-          (PlayCard #when You (basic $ CardWithId $ toCardId a))
+          (PlayCard #when You (basic $ CardWithId a.cardId))
           (IncreaseCostOfThis (toCardId a) 2)
     , withTooltip
         "{reaction} When you play Small Favor, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restricted a 2 InYourHand
+        $ mkAbility a 2
         $ ForcedWhen (not_ $ exists $ EnemyAt YourLocation <> NonEliteEnemy)
         $ triggered
-          (PlayCard #when You (basic $ CardWithId $ toCardId a))
+          (PlayCard #when You (basic $ CardWithId a.cardId))
           (IncreaseCostOfThis (toCardId a) 2)
     ]
 

@@ -20,11 +20,11 @@ instance HasAbilities Counterespionage1 where
   getAbilities (Counterespionage1 a) =
     [ withTooltip
         "{reaction} When you play Counterespionage, increase its cost by 2. Change \"the encounter deck\" to \"your deck\"."
-        $ restrictedAbility a 1 InYourHand
+        $ mkAbility a 1
         $ ReactionAbility (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     , withTooltip
         "{reaction} When you play Counterespionage, increase its cost by 2: Change \"you\" to \"any investigator\"."
-        $ restrictedAbility a 2 (InYourHand <> can.affect.otherPlayers You)
+        $ restricted a 2 (can.affect.otherPlayers You)
         $ ForcedWhen (EventWindowInvestigatorIs (not_ You))
         $ ReactionAbility (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     ]

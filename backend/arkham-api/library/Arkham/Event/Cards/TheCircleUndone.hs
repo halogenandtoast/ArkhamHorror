@@ -237,7 +237,7 @@ telescopicSight3 =
   (event "05230" "Telescopic Sight" 3 Guardian)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Item, Upgrade]
-    , cdFastWindow = Just $ DuringTurn You
+    , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just $ exists (AssetControlledBy You <> AssetInTwoHandSlots)
     , cdLevel = Just 3
     }

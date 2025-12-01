@@ -15,7 +15,6 @@ returnToTempleRuins = symbolLabel $ location ReturnToTempleRuins Cards.returnToT
 instance HasAbilities ReturnToTempleRuins where
   getAbilities (ReturnToTempleRuins a) =
     extendRevealed1 a
-      $ playerLimit PerRound
       $ mkAbility a 1 (freeReaction $ SkillTestResult #after You (whileInvestigating a) #success)
 
 instance RunMessage ReturnToTempleRuins where

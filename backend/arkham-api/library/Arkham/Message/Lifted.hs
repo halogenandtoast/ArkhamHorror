@@ -1424,7 +1424,7 @@ withInvestigatorAmounts choices f = do
   named <- selectWithField InvestigatorName UneliminatedInvestigator
   let
     iidsWithAmounts =
-      flip mapMaybe named \(iid', name) ->
+      named & mapMaybe \(iid', name) ->
         let amount = getChoiceAmount (toTitle name) choices
          in guard (amount > 0) $> (iid', amount)
   for_ iidsWithAmounts (uncurry f)
@@ -1445,7 +1445,6 @@ addToHand
   -> cards
   -> m ()
 addToHand iid (toList -> cards) = do
-  for_ cards (obtainCard . toCard)
   push $ AddToHand iid (map toCard cards)
 
 drawToHand
@@ -1465,15 +1464,6 @@ addToDiscard
 addToDiscard iid (toList -> cards) = do
   for_ cards (obtainCard . toCard)
   for_ cards $ push . Msg.addToDiscard iid
-
-addToHandQuiet
-  :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
-  => InvestigatorId
-  -> cards
-  -> m ()
-addToHandQuiet iid (toList -> cards) = do
-  for_ cards (obtainCard . toCard)
-  push $ AddToHandQuiet iid (map toCard cards)
 
 returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
 returnToHand iid = push . ReturnToHand iid . toTarget

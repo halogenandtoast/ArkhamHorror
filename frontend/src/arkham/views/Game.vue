@@ -490,10 +490,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === 'e' && debug.active) {
+  if (event.key === 'e') {
     if(!game.value || !playerId.value) return
     const elementUnderMouse = document.elementFromPoint(mouseX, mouseY);
-    if (elementUnderMouse) {
+    if (debug.active && elementUnderMouse) {
       const dataId = elementUnderMouse.getAttribute('data-id')
       if (dataId && game.value.assets[dataId]) {
         const exhausted = elementUnderMouse.classList.contains('exhausted')

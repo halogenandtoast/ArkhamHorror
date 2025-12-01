@@ -51,7 +51,7 @@ huntersMark1 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Spell]
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> not_ (EnemyWithAttachedEvent $ EventIs "11026")
-    , cdFastWindow = Just $ DuringTurn You
+    , cdFastWindow = Just FastPlayerWindow
     , cdLevel = Just 1
     }
 

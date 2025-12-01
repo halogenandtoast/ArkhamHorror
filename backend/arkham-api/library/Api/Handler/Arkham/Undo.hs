@@ -16,7 +16,7 @@ import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.), (>.))
+import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
 import OpenTelemetry.Eventlog (withSpan_)
@@ -108,12 +108,13 @@ putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
   Entity userId' user <- getRequestUser
   isDebug <- isJust <$> lookupGetParam "debug"
-  mPlayer <- runDB $ Import.exists (UniquePlayer userId' gameId)
-  userId <- case mPlayer of
-    Just _ -> pure userId'
-    Nothing | user.admin -> do
-      player <- runDB $ get404 $ coerce $ gameActivePlayerId $ arkhamGameCurrentData game
-      pure $ coerce $ arkhamPlayerUserId player
+  userId <- runDB do
+    getBy (UniquePlayer userId' gameId) >>= \case
+      Nothing | user.admin -> do
+        game <- get404 gameId
+        player <- get404 $ coerce $ gameActivePlayerId $ arkhamGameCurrentData game
+        pure $ coerce $ arkhamPlayerUserId player
+      _ -> pure userId'
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
       Left err -> sendStatusJSON Status.status400 err

@@ -2479,8 +2479,15 @@ afterSkillTest investigator lbl body = do
           ResolvedAbility ab -> ab.source == s && ab.index == n
           _ -> False
       insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] isEndOfAbility
-    Just (EventSource e) ->
-      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== FinishedEvent e)
+    Just (EventSource e) -> do
+      let
+        isEndOfEvent = \case
+          MovedWithSkillTest _ msg -> isEndOfEvent msg
+          MoveWithSkillTest msg -> isEndOfEvent msg
+          Run msgs' -> any isEndOfEvent msgs'
+          FinishedEvent e' -> e == e'
+          _ -> False
+      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] isEndOfEvent
     _ -> insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
 
 afterSkillTestQuiet

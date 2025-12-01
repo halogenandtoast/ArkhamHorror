@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.BootleggersHideaway_174a (
-  bootleggersHideaway_174a,
-  BootleggersHideaway_174a (..),
-)
-where
+module Arkham.Location.Cards.BootleggersHideaway_174a (bootleggersHideaway_174a) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
@@ -32,7 +28,7 @@ instance HasAbilities BootleggersHideaway_174a where
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
       , groupLimit PerGame
-          $ restricted a 2 (youExist $ InvestigatorWithKey WhiteKey <> can.draw.cards) actionAbility
+          $ restricted a 2 (Here <> youExist (InvestigatorWithKey WhiteKey <> can.draw.cards)) actionAbility
       ]
 
 instance RunMessage BootleggersHideaway_174a where
@@ -41,6 +37,6 @@ instance RunMessage BootleggersHideaway_174a where
       placeUnrevealedKeyOn attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      drawCardsIfCan iid (attrs.ability 2) 3
+      drawCards iid (attrs.ability 2) 3
       pure l
     _ -> BootleggersHideaway_174a <$> liftRunMessage msg attrs

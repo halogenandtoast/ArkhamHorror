@@ -1714,7 +1714,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
           _ -> pure False
       filterM (sourceMatch . abilitySource) as
     AbilityOnLocation locationMatcher ->
-      as & filter (not . abilityBasic) & filterM \a -> case a.source of
+      as & filterM \a -> case a.source of
         LocationSource lid' -> elem lid' <$> select locationMatcher
         ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
         IndexedSource _ (LocationSource lid') -> elem lid' <$> select locationMatcher

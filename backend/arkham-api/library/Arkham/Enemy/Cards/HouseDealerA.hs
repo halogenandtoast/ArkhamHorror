@@ -15,7 +15,7 @@ houseDealerA = enemy HouseDealerA Cards.houseDealerA (2, Static 1, 2) (0, 1)
 instance HasModifiersFor HouseDealerA where
   getModifiersFor (HouseDealerA a) = do
     when a.ready do
-      abilities <- select $ AbilityOnLocation (locationWithEnemy a)
+      abilities <- select $ AbilityOnLocation (locationWithEnemy a) <> not_ BasicAbility
       eachInvestigator \iid -> do
         for_ abilities \ab ->
           modified_ a (AbilityTarget iid ab.ref) [ActionCostModifier 1]

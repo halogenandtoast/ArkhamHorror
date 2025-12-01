@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators)
@@ -50,10 +51,10 @@ dealingsInTheDark difficulty =
 instance HasChaosTokenValue DealingsInTheDark where
   getChaosTokenValue iid tokenFace (DealingsInTheDark attrs) = case tokenFace of
     Skull -> do
-      n <- getCurrentActStep
+      n <- getCurrentAgendaStep
       let maxValue = if isEasyStandard attrs then 3 else 4
       x <-
-        if n == 3
+        if n == 2
           then pure maxValue
           else min maxValue <$> fieldMax EnemyClues (enemy_ #cultist)
       pure $ ChaosTokenValue ElderThing (NegativeModifier x)

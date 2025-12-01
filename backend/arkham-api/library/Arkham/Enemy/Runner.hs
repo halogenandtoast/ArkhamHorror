@@ -1528,7 +1528,7 @@ instance RunMessage EnemyAttrs where
       let
         placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm && LoseVictory `notElem` mods
         victoryMsgs =
-          guard (not a.placement.isInVictory) *> [DefeatedAddToVictory miid $ toTarget a | placeInVictory]
+          guard (not a.placement.isInVictory) *> [AddToVictory miid $ toTarget a | placeInVictory]
         defeatMsgs =
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
@@ -1547,12 +1547,6 @@ instance RunMessage EnemyAttrs where
       pure a
     After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
-    DefeatedAddToVictory _miid (isTarget a -> True) -> do
-      push $ Do msg
-      pure a
-    Do (DefeatedAddToVictory miid (isTarget a -> True)) -> do
-      push $ AddToVictory miid $ toTarget a
-      pure a
     EnemySpawnFromOutOfPlay _ miid lid eid | eid == a.id -> do
       pushAll
         $ resolve
@@ -1578,6 +1572,7 @@ instance RunMessage EnemyAttrs where
         & (placementL .~ OutOfPlay VictoryDisplayZone)
         & (keysL .~ mempty)
         & (lastKnownLocationL %~ (mloc <|>))
+        & (tokensL .~ mempty)
     Discard miid source target | a `isTarget` target -> do
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
       afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]

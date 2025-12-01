@@ -34,7 +34,7 @@ instance HasAbilities LolaHayes where
         $ DrawingStartingHand #after You
     , playerLimit PerRound $ restricted attrs 2 Self (FastAbility Free)
     ]
-      <> [noAOO $ restricted attrs 2 Self actionAbility | tabooed TabooList20 attrs]
+      <> [noAOO $ restricted attrs 3 Self actionAbility | tabooed TabooList20 attrs]
 
 switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do

@@ -106,8 +106,14 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
-  userId <- getRequestUserId
+  Entity userId' user <- getRequestUser
   isDebug <- isJust <$> lookupGetParam "debug"
+  mPlayer <- runDB $ Import.exists (UniquePlayer userId gameId)
+  userId <- case mPlayer of
+    Just _ -> pure userId'
+    Nothing | user.admin -> do
+      player <- runDB $ get404 $ coerce $ gameActivePlayerId $ arkhamGameCurrentData game
+      pure $ coerce $ arkhamPlayerUserId player
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
       Left err -> sendStatusJSON Status.status400 err

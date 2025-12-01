@@ -210,6 +210,8 @@ instance IsCard TreacheryAttrs where
   toCard = defaultToCard
   toCardId = treacheryCardId
   toCardOwner = treacheryOwner
+  toTabooList = treacheryTaboo
+  toMutated = treacheryMutated
 
 treacheryOn :: Targetable target => TreacheryAttrs -> target -> Bool
 treacheryOn attrs t = toTarget t `elem` treacheryAttachedTarget attrs
@@ -364,6 +366,8 @@ instance IsCard Treachery where
   toCard = toCard . toAttrs
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
+  toTabooList = toTabooList . toAttrs
+  toMutated = toMutated . toAttrs
 
 data SomeTreacheryCard
   = forall a.

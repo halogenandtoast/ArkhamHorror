@@ -5537,7 +5537,7 @@ instance Projection Treachery where
         pure $ cdKeywords cdef <> setFromList additionalKeywords
       TreacheryAbilities -> pure $ getAbilities t
       TreacheryCardDef -> pure cdef
-      TreacheryCard -> pure $ lookupCard treacheryCardCode treacheryCardId
+      TreacheryCard -> pure $ toCard t
 
 instance HasDistance Game where
   getDistance' _ start fin | start == fin = pure $ Just 0

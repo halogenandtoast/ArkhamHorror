@@ -323,7 +323,7 @@ instance RunMessage AssetAttrs where
     CancelAssetHorror aid _ n | aid == assetId -> do
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a) Nothing
       pure $ a & tokensL %~ decrementTokensBy Token.Horror n
-    When (DefeatedAddToVictory miid target) | target `elem` placementToAttached a.placement -> do
+    AddToVictory miid target | target `elem` placementToAttached a.placement -> do
       push $ Priority $ case miid of
         Nothing -> toDiscard GameSource a
         Just iid -> toDiscardBy iid GameSource a

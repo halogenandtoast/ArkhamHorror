@@ -2296,7 +2296,7 @@ don'tMatching f = lift $ popMessageMatching_ f
 
 don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
 don'tAddToVictory eid = matchingDon't \case
-  DefeatedAddToVictory _ target -> isTarget eid target
+  AddToVictory _ target -> isTarget eid target
   _ -> False
 
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r

@@ -515,7 +515,6 @@ data Message
   | SwapPlaces (Target, LocationId) (Target, LocationId) -- we include the placement so it is up to date
   | -- Victory
     AddToVictory (Maybe InvestigatorId) Target
-  | DefeatedAddToVictory (Maybe InvestigatorId) Target
   | -- Tokens
     AddChaosToken ChaosTokenFace
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
@@ -1254,8 +1253,8 @@ instance FromJSON Message where
       "DefeatedAddToVictory" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
-          Right (a, b) -> pure $ DefeatedAddToVictory a b
-          Left a -> pure $ DefeatedAddToVictory Nothing a
+          Right (a, b) -> pure $ AddToVictory a b
+          Left a -> pure $ AddToVictory Nothing a
       "StartScenrio" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

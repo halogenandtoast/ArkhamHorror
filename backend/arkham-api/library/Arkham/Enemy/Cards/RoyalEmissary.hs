@@ -25,10 +25,7 @@ instance HasModifiersFor RoyalEmissary where
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
 investigatorMatcher a =
-  oneOf
-    [ at_ $ locationWithEnemy (toId a)
-    , at_ $ AccessibleFrom NotForMovement $ locationWithEnemy (toId a)
-    ]
+  at_ $ oneOf [locationWithEnemy a, AccessibleFrom NotForMovement $ locationWithEnemy a]
 
 instance HasAbilities RoyalEmissary where
   getAbilities (RoyalEmissary a) =
@@ -46,7 +43,7 @@ instance RunMessage RoyalEmissary where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       placeTokens (attrs.ability 2) attrs #warning 1
       pure e
-    Do (DefeatedAddToVictory _ (isTarget attrs -> True)) -> do
+    Do (AddToVictory _ (isTarget attrs -> True)) -> do
       let warnings = attrs.token #warning
       attrs' <- liftRunMessage msg attrs
       pure $ RoyalEmissary $ attrs' & tokensL %~ insertMap #warning warnings

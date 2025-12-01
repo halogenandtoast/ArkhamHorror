@@ -109,11 +109,6 @@ instance RunMessage TreacheryAttrs where
       pure a
     Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do
       pure $ a & discardedByL .~ miid
-    DefeatedAddToVictory miid target | target `elem` treacheryAttachedTarget a -> do
-      case miid of
-        Nothing -> toDiscard GameSource a
-        Just iid -> toDiscardBy iid GameSource a
-      pure a
     After (RemoveTreachery tid) | tid == treacheryId -> do
       pure $ a & placementL .~ Unplaced
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do

@@ -3272,7 +3272,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                       [ UnfocusCards
                       , CancelNext GameSource RevelationMessage
                       , ObtainCard card.id
-                      , AddToHandQuiet iid [toCard card]
+                      , AddToHand iid [toCard card]
                       , DiscardCard iid GameSource card.id
                       ]
                   | canCancel
@@ -3796,23 +3796,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     VengeanceCard _ -> pure a
   DebugAddToHand iid cardId | iid == investigatorId -> do
     card <- getCard cardId
-    liftRunMessage (AddToHandQuiet iid [card]) a
-  AddToHand iid cards | iid == investigatorId -> do
-    for_ cards obtainCard
-    for_ (reverse cards) \case
-      PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
-      EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
-      VengeanceCard {} -> error "Can not add vengeance card to hand"
-    assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
-    pure
-      $ a
-      & (cardsUnderneathL %~ filter (`notElem` cards))
-      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
-      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
-      & (foundCardsL . each %~ filter (`notElem` cards))
-      & (bondedCardsL %~ filter (`notElem` cards))
-      & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
-      & (decksL . each %~ filter (`notElem` cards))
+    liftRunMessage (AddToHand iid [card]) a
   DrawToHandFrom iid deck cards | iid == investigatorId -> do
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
@@ -3849,11 +3833,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
       & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
-  AddToHandQuiet iid cards | iid == investigatorId -> do
+  AddToHand iid cards | iid == investigatorId -> do
     for_ cards obtainCard
     push $ Do msg
     pure a
-  Do (AddToHandQuiet iid cards) | iid == investigatorId -> do
+  Do (AddToHand iid cards) | iid == investigatorId -> do
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a

@@ -485,7 +485,6 @@ data Message
   | DrawFocusedToHand InvestigatorId Target Zone CardId
   | DrawToHand InvestigatorId [Card]
   | DrawToHandFrom InvestigatorId DeckSignifier [Card]
-  | AddToHandQuiet InvestigatorId [Card] -- used for playing cards
   | ReturnToHand InvestigatorId Target
   | -- Adding Cards to Deck
     AddFocusedToTopOfDeck InvestigatorId Target CardId
@@ -1244,6 +1243,9 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AddToHandQuiet" -> do
+        contents <- o .: "contents"
+        pure $ uncurry AddToHand contents
       "AddToVictory" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

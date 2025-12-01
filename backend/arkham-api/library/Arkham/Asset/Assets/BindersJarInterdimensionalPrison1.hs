@@ -26,12 +26,13 @@ bindersJarInterdimensionalPrison1 =
 
 instance HasAbilities BindersJarInterdimensionalPrison1 where
   getAbilities (BindersJarInterdimensionalPrison1 (With a _)) =
-    [ controlledAbility a 1 criteria1
+    [ controlled a 1 criteria1
         $ freeReaction
         $ EnemyDefeated #after Anyone ByAny
-        $ NonEliteEnemy <> EnemyAt YourLocation
-    , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+        $ NonEliteEnemy
+        <> EnemyAt YourLocation
+    , restricted a 2 ControlsThis
+        $ triggered
           (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) $ mapOneOf EnemyWithTrait traits)
           (DiscardUnderneathCardCost a.id CardWithSharedTraitToAttackingEnemy)
     ]
@@ -43,6 +44,7 @@ instance RunMessage BindersJarInterdimensionalPrison1 where
   runMessage msg a@(BindersJarInterdimensionalPrison1 (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       don'tAddToVictory eid
+      push $ RemovedFromPlay (toSource eid)
       card <- field EnemyCard eid
       push $ ObtainCard card.id
       push $ PlaceUnderneath (toTarget attrs) [card]

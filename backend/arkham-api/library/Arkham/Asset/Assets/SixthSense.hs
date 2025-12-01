@@ -47,8 +47,7 @@ sixthSenseEffect = cardEffect SixthSenseEffect Cards.sixthSense
 instance RunMessage SixthSenseEffect where
   runMessage msg e@(SixthSenseEffect attrs) = runQueueT $ case msg of
     RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> do
-      push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
-      disable attrs
+      priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
       pure e
     DoStep 1 (RevealChaosToken (SkillTestSource sid) iid token) | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
@@ -79,6 +78,7 @@ instance RunMessage SixthSenseEffect where
 
                       labeled "Use original locations shroud" do
                         skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
+            disable attrs
         _ -> error "Invalid target"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e

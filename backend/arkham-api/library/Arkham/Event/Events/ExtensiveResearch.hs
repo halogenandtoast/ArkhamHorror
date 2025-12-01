@@ -1,19 +1,11 @@
-module Arkham.Event.Events.ExtensiveResearch (
-  extensiveResearch,
-  ExtensiveResearch (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.ExtensiveResearch (extensiveResearch) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype ExtensiveResearch = ExtensiveResearch EventAttrs
@@ -25,12 +17,12 @@ extensiveResearch = event ExtensiveResearch Cards.extensiveResearch
 
 instance HasModifiersFor ExtensiveResearch where
   getModifiersFor (ExtensiveResearch a) = do
-    n <- fieldMap InvestigatorHand length (eventOwner a)
+    n <- fieldMap InvestigatorHand length a.owner
     modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
 
 instance RunMessage ExtensiveResearch where
-  runMessage msg e@(ExtensiveResearch attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2
+  runMessage msg e@(ExtensiveResearch attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      discoverAtYourLocation NotInvestigate iid attrs 2
       pure e
-    _ -> ExtensiveResearch <$> runMessage msg attrs
+    _ -> ExtensiveResearch <$> liftRunMessage msg attrs

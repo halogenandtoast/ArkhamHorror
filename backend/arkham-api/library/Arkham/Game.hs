@@ -1622,6 +1622,7 @@ abilityMatches a@Ability {..} = \case
         IndexedSource _ s -> sourceMatch s
         _ -> pure False
     sourceMatch abilitySource
+  AbilityOnLocation _locationMatcher | abilityBasic -> pure False
   AbilityOnLocation locationMatcher -> case abilitySource of
     LocationSource lid' -> elem lid' <$> select locationMatcher
     ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
@@ -1712,11 +1713,12 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
           IndexedSource _ s -> sourceMatch s
           _ -> pure False
       filterM (sourceMatch . abilitySource) as
-    AbilityOnLocation locationMatcher -> flip filterM as \a -> case a.source of
-      LocationSource lid' -> elem lid' <$> select locationMatcher
-      ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
-      IndexedSource _ (LocationSource lid') -> elem lid' <$> select locationMatcher
-      _ -> pure False
+    AbilityOnLocation locationMatcher ->
+      as & filter (not . abilityBasic) & filterM \a -> case a.source of
+        LocationSource lid' -> elem lid' <$> select locationMatcher
+        ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
+        IndexedSource _ (LocationSource lid') -> elem lid' <$> select locationMatcher
+        _ -> pure False
     AbilityWithIndex n -> pure $ filter ((== n) . abilityIndex) as
     AbilityOnStory storyMatcher -> flip filterM as \a -> case a.source of
       StorySource sid' -> elem sid' <$> select storyMatcher

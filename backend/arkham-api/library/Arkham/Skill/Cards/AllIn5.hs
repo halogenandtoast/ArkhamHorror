@@ -21,8 +21,8 @@ instance RunMessage AllIn5 where
         $ AllIn5
         $ attrs'
         & if tabooed TabooList18 attrs' then afterPlayL .~ RemoveThisFromGame else id
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTestBy iid (isTarget attrs -> True) n -> do
       skillTestResultOption "All In" do
-        drawCardsEdit iid attrs 5 shuffleBackInEachWeakness
+        drawCardsEdit iid attrs (min 5 n) shuffleBackInEachWeakness
       pure s
     _ -> AllIn5 <$> liftRunMessage msg attrs

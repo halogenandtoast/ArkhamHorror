@@ -108,7 +108,7 @@ putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
   Entity userId' user <- getRequestUser
   isDebug <- isJust <$> lookupGetParam "debug"
-  mPlayer <- runDB $ Import.exists (UniquePlayer userId gameId)
+  mPlayer <- runDB $ Import.exists (UniquePlayer userId' gameId)
   userId <- case mPlayer of
     Just _ -> pure userId'
     Nothing | user.admin -> do

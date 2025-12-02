@@ -11,7 +11,7 @@ newtype VictoriaCollege = VictoriaCollege LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 victoriaCollege :: LocationCard VictoriaCollege
-victoriaCollege = symbolLabel $ location VictoriaCollege Cards.victoriaCollege 0 (Static 0)
+victoriaCollege = symbolLabel $ location VictoriaCollege Cards.victoriaCollege 4 (PerPlayer 1)
 
 -- TODO: Needs to be exactly 1 card
 instance HasAbilities VictoriaCollege where

@@ -698,6 +698,7 @@ keyLocusDefensiveBarrier =
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
     , cdOtherSide = Just "09653b"
+    , cdVictoryPoints = Just 1
     }
 
 keyLocusLastBastion :: CardDef
@@ -708,6 +709,7 @@ keyLocusLastBastion =
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
     , cdOtherSide = Just "09653"
+    , cdVictoryPoints = Just 1
     }
 
 theClaretKnightHerSwornChampion :: CardDef

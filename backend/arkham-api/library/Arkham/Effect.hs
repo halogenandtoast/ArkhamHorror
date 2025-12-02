@@ -160,6 +160,7 @@ import Arkham.Location.Locations (
   enchantedWoodsLostWoodsEffect,
   longWayAroundEffect,
   restaurantEffect,
+  theCornicheEffect,
   unvisitedIsleMossCoveredStepsEffect,
   unvisitedIsleStandingStonesEffect,
  )
@@ -544,6 +545,7 @@ allEffects =
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect $ noop "09113")
     , ("09557b", SomeEffect laChicaRojaYourWatchfulShadowEffect)
+    , ("09648", SomeEffect theCornicheEffect)
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)

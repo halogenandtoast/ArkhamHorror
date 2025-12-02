@@ -78,6 +78,7 @@
   "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
   "skip": "Skip",
+  "spendActions": "Spend 1 action | Spend {count} actions",
   "spendClues": "Spend a clue | Spend {count} clues",
   "spendResources": "Spend a resource | Spend {count} resources",
   "startAsSlot": "Start as @:{slot} slot",

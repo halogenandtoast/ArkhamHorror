@@ -3465,6 +3465,9 @@ chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n
 
+spendActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+spendActions = loseActions
+
 requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 requestChaosTokens iid source n = do
   push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside

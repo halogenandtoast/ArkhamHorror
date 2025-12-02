@@ -1,10 +1,11 @@
 module Arkham.Enemy.Cards.VoidChimeraTrueForm (voidChimeraTrueForm) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Modifiers (pattern CannotExpose)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Matcher
 import Arkham.Window qualified as Window
 
@@ -27,7 +28,7 @@ instance HasModifiersFor VoidChimeraTrueForm where
           , Cards.voidChimeraGorefeaster
           , Cards.voidChimeraFellhound
           ]
-    when anyOtherForm $ modifySelect a Anyone [CampaignModifier "cannotExpose"]
+    when anyOtherForm $ modifySelect a Anyone [CannotExpose]
 
 instance HasAbilities VoidChimeraTrueForm where
   getAbilities (VoidChimeraTrueForm a) =

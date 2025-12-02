@@ -2151,6 +2151,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
             ]
         _ -> noMatch
+    Matcher.WouldDrawExactlyOneCard timing whoMatcher deckMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDrawExactlyOneCard who _ deck ->
+          andM
+            [ matchWho iid who whoMatcher
+            , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
+            ]
+        _ -> noMatch
     Matcher.ResolvingRevelation timing whoMatcher treacheryMatcher -> guardTiming timing \case
       Window.ResolvingRevelation who treachery ->
         andM

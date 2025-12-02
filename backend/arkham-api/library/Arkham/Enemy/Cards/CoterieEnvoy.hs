@@ -2,10 +2,11 @@ module Arkham.Enemy.Cards.CoterieEnvoy (coterieEnvoy) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
+import Arkham.Campaigns.TheScarletKeys.Modifiers (pattern NoExposeAt)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Matcher
 
 newtype CoterieEnvoy = CoterieEnvoy EnemyAttrs
@@ -17,9 +18,7 @@ coterieEnvoy = enemy CoterieEnvoy Cards.coterieEnvoy (2, Static 3, 2) (1, 0)
 
 instance HasModifiersFor CoterieEnvoy where
   getModifiersFor (CoterieEnvoy a) = do
-    when a.ready do
-      withLocationOf a \lid -> do
-        modified_ a lid [CampaignModifier "noExposeAt"]
+    when a.ready $ withLocationOf a \lid -> modified_ a lid [NoExposeAt]
 
 instance HasAbilities CoterieEnvoy where
   getAbilities (CoterieEnvoy a) =

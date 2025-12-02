@@ -1664,6 +1664,7 @@ library
       Arkham.Campaigns.TheScarletKeys.Key.Types
       Arkham.Campaigns.TheScarletKeys.Keys
       Arkham.Campaigns.TheScarletKeys.Meta
+      Arkham.Campaigns.TheScarletKeys.Modifiers
       Arkham.CampaignStep
       Arkham.Capability
       Arkham.Card

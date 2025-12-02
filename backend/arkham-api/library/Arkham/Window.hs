@@ -184,6 +184,7 @@ data WindowType
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId
   | WouldDrawCard InvestigatorId CardDrawId DeckSignifier
+  | WouldDrawExactlyOneCard InvestigatorId CardDrawId DeckSignifier
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
   | DrawChaosToken InvestigatorId ChaosToken

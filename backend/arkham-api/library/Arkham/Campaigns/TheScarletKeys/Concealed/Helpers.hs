@@ -6,6 +6,7 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Query
 import Arkham.Campaigns.TheScarletKeys.I18n
+import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -111,7 +112,7 @@ makeDecoyAt' decoy iid loc = do
 placeConcealed :: ReverseQueue m => InvestigatorId -> ConcealedCardKind -> [ConcealedCard] -> m ()
 placeConcealed iid kind cards = do
   locations <-
-    select $ LocationWithoutModifier $ ScenarioModifier ("noConcealed[" <> tshow kind <> "]")
+    select $ LocationWithoutModifier $ CampaignModifier ("noConcealed[" <> tshow kind <> "]")
   for_ cards $ push . Msg.CreateConcealedCard
   push $ Msg.PlaceConcealedCards iid (map toId cards) locations
 
@@ -135,9 +136,9 @@ distributeEvenlyBetween concealed locations = do
   do1 $ forTargets locations (Msg.PlaceConcealedCards lead (map asId concealed) locations)
 
 pattern InvestigatorCanExpose :: InvestigatorMatcher
-pattern InvestigatorCanExpose <- InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+pattern InvestigatorCanExpose <- InvestigatorWithoutModifier CannotExpose
   where
-    InvestigatorCanExpose = InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+    InvestigatorCanExpose = InvestigatorWithoutModifier CannotExpose
 
 concealedToCardDef :: ConcealedCard -> Maybe CardDef
 concealedToCardDef c = concealedKindToCardDef c.kind

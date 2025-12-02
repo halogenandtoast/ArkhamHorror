@@ -31,6 +31,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers (pattern HollowedCard)
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types hiding (key)
+import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -1907,9 +1908,10 @@ getLocationsMatching lmatcher = do
             , InvestigatorCanDiscoverCluesAt
                 ( LocationWithId l.id
                     <> LocationWithConcealedCard
-                    <> LocationWithoutModifier (CampaignModifier "noExposeAt")
+                    <> LocationWithoutModifier NoExposeAt
                 )
-                <> InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
+                <> InvestigatorWithoutModifier CannotExpose
+                <> InvestigatorWithoutModifier (noExposeAt l.id)
             ]
     LocationWithConcealedCard ->
       ls & filterM \l -> do

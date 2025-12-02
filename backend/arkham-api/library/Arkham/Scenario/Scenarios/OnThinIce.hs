@@ -73,7 +73,7 @@ instance HasModifiersFor OnThinIce where
     modifySelect
       attrs
       (not_ $ LocationWithTrait Wilderness)
-      [ScenarioModifier "noConcealed[VoidChimeraTrueForm]"]
+      [CampaignModifier "noConcealed[VoidChimeraTrueForm]"]
 
 instance RunMessage OnThinIce where
   runMessage msg s@(OnThinIce attrs) = runQueueT $ scenarioI18n $ case msg of

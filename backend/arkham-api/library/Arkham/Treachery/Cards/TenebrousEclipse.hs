@@ -1,7 +1,8 @@
 module Arkham.Treachery.Cards.TenebrousEclipse (tenebrousEclipse) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Campaigns.TheScarletKeys.Modifiers
+import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Matcher
@@ -19,7 +20,7 @@ tenebrousEclipse = treachery TenebrousEclipse Cards.tenebrousEclipse
 instance HasModifiersFor TenebrousEclipse where
   getModifiersFor (TenebrousEclipse a) = do
     let meta = toResultDefault @[InvestigatorId] [] a.meta
-    for_ meta \iid -> modified_ a iid [CampaignModifier "cannotExpose"]
+    for_ meta \iid -> modified_ a iid [CannotExpose]
 
 instance HasAbilities TenebrousEclipse where
   getAbilities (TenebrousEclipse a) =

@@ -41,12 +41,12 @@ instance HasModifiersFor SanguineShadows where
       attrs
       (not_ $ LocationWithToken Token.Target)
       setActiveDuringSetup
-      [ScenarioModifier "noConcealed[LaChicaRoja]"]
+      [CampaignModifier "noConcealed[LaChicaRoja]"]
     modifySelectWith
       attrs
       (oneOf [LocationWithToken Token.Target, LocationWithTrait Central])
       setActiveDuringSetup
-      [ScenarioModifier "noConcealed[ApportionedKa]"]
+      [CampaignModifier "noConcealed[ApportionedKa]"]
 
 sanguineShadows :: Difficulty -> SanguineShadows
 sanguineShadows difficulty =

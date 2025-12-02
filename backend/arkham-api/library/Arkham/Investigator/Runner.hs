@@ -3087,7 +3087,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   DrawCards iid cardDraw | iid == toId a -> do
     cid <- getRandom
     phase <- getPhase
-    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cid cardDraw.deck)]
+    wouldDrawCard <-
+      checkWindows $ mkWhen (Window.WouldDrawCard iid cid cardDraw.deck)
+        : [mkWhen (Window.WouldDrawExactlyOneCard iid cid cardDraw.deck) | cardDraw.amount == 1]
     drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard a.id cid phase]
     if cardDrawAction cardDraw
       then do

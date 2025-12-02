@@ -59,12 +59,8 @@ instance RunMessage ConcealedCard where
         _ -> pure ()
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
-      case c.placement of
-        AtLocation location -> do
-          whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
-            whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
-              push $ Flip iid (c.ability AbilityAttack) (toTarget c)
-        _ -> push $ Flip iid (c.ability AbilityAttack) (toTarget c)
+      whenM (getCanExpose iid c) do
+        push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
       case c.placement of
@@ -82,12 +78,8 @@ instance RunMessage ConcealedCard where
         _ -> pure ()
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
-      case c.placement of
-        AtLocation location -> do
-          whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
-            whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
-              push $ Flip iid (c.ability AbilityEvade) (toTarget c)
-        _ -> push $ Flip iid (c.ability AbilityEvade) (toTarget c)
+      whenM (getCanExpose iid c) do
+        push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do
       unless c.concealedCardFlipped $ chooseTargetM iid [c] \_ -> doStep 1 msg

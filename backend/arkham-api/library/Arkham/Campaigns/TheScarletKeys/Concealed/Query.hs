@@ -2,6 +2,7 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Query where
 
 import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -10,7 +11,6 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Matcher.Location
 import Arkham.Matcher.Source
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Tracing
@@ -35,6 +35,6 @@ getConcealedAtAll fe location = do
   wrap <- case fe of
     ForExpose source -> do
       isPlayerSource <- sourceMatches source SourceIsPlayerCard
-      pure $ if isPlayerSource then (<> LocationWithoutModifier (CampaignModifier "noExposeAt")) else id
+      pure $ if isPlayerSource then (<> LocationWithoutModifier NoExposeAt) else id
     NotForExpose -> pure id
   select $ ConcealedCardAt (wrap $ LocationWithId $ asId location)

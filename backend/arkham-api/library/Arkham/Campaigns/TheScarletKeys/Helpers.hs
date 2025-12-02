@@ -5,11 +5,13 @@ module Arkham.Campaigns.TheScarletKeys.Helpers (
 where
 
 import Arkham.Campaign.Types (Field (..))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (..), ScarletKeyId)
 import Arkham.Campaigns.TheScarletKeys.Meta
+import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
@@ -19,6 +21,7 @@ import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Xp
 import Arkham.I18n
@@ -41,9 +44,9 @@ import Arkham.Window qualified as Window
 import Arkham.Xp
 
 pattern HollowedCard :: ExtendedCardMatcher
-pattern HollowedCard <- CardWithModifier (ScenarioModifier "hollowed")
+pattern HollowedCard <- CardWithModifier (CampaignModifier "hollowed")
   where
-    HollowedCard = CardWithModifier (ScenarioModifier "hollowed")
+    HollowedCard = CardWithModifier (CampaignModifier "hollowed")
 
 pattern EnemyWithAnyScarletKey :: EnemyMatcher
 pattern EnemyWithAnyScarletKey <- EnemyWithScarletKey ScarletKeyAny
@@ -91,9 +94,19 @@ exposed iid enemy c body = do
   checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
-exposedDecoy :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> Maybe Text -> m ()
-exposedDecoy iid (toTarget -> c) mtext = do
-  whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
+getCanExpose :: (Tracing m, HasGame m) => InvestigatorId -> ConcealedCard -> m Bool
+getCanExpose iid card = runValidT do
+  imods <- lift $ getModifiers iid
+  guard $ CannotExpose `notElem` imods
+  case card.placement of
+    AtLocation location -> do
+      guard $ noExposeAt location `notElem` imods
+      liftGuardM $ matches location $ LocationWithoutModifier NoExposeAt
+    _ -> pure ()
+
+exposedDecoy :: ReverseQueue m => InvestigatorId -> ConcealedCard -> Maybe Text -> m ()
+exposedDecoy iid card@(toTarget -> c) mtext = do
+  whenM (getCanExpose iid card) do
     let ekey = "exposed[decoy]"
     batched \_ -> do
       checkWhen $ Window.CampaignEvent ekey (Just iid) (toJSON c)
@@ -128,7 +141,7 @@ hollow iid card = do
     (EffectHollowWindow card.id)
     ScenarioSource
     card
-    [ScenarioModifier "hollowed"]
+    [CampaignModifier "hollowed"]
   checkAfter $ Window.CampaignEvent "hollowed" (Just iid) (toJSON card)
 
 removeHollow :: (FetchCard c, ReverseQueue m) => c -> m ()

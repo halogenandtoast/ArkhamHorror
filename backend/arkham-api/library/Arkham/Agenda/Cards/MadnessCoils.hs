@@ -22,13 +22,13 @@ madnessCoils :: AgendaCard MadnessCoils
 madnessCoils = agenda (1, A) (MadnessCoils . (`with` Metadata mempty)) Cards.madnessCoils (Static 7)
 
 instance HasAbilities MadnessCoils where
-  getAbilities (MadnessCoils (a `With` _))
-    | onSide A a =
-        [ restricted a 1 (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 3))
-            $ Objective
-            $ forced AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities (MadnessCoils (a `With` _)) =
+    guard (onSide A a)
+      $> restricted
+        a
+        1
+        (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 3))
+        (Objective $ forced AnyWindow)
 
 instance RunMessage MadnessCoils where
   runMessage msg a@(MadnessCoils (attrs `With` metadata)) = runQueueT $ case msg of
@@ -54,7 +54,7 @@ instance RunMessage MadnessCoils where
             placeDoomOnAgenda 1
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do
-      afterSkillTestQuiet $ push $ AdvanceAgenda (toId attrs)
+      afterSkillTestQuiet $ advanceAgenda attrs
       pure $ MadnessCoils $ attrs `with` Metadata (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       afterSkillTestQuiet $ advanceAgendaDeck attrs

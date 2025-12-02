@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.UnchangingAsTheSea (UnchangingAsTheSea (..), unchangingAsTheSea) where
+module Arkham.Agenda.Cards.UnchangingAsTheSea (unchangingAsTheSea) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -38,7 +38,7 @@ instance HasAbilities UnchangingAsTheSea where
 instance RunMessage UnchangingAsTheSea where
   runMessage msg a@(UnchangingAsTheSea attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAgenda attrs.id
+      advanceAgenda attrs
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do

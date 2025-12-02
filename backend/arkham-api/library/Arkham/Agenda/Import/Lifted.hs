@@ -19,6 +19,7 @@ import Arkham.Agenda.Runner as X (
   removeDoomMatchersL,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
+  pattern PassedThisSkillTestBy,
   pattern R1,
   pattern R2,
   pattern R3,
@@ -53,7 +54,7 @@ import Arkham.Matcher
 import Arkham.Resolution
 
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
-advanceAgenda attrs = push $ AdvanceAgenda attrs.id
+advanceAgenda attrs = push $ AdvanceAgendaBy attrs.id AgendaAdvancedWithOther
 
 noResolution :: ReverseQueue m => m ()
 noResolution = push $ ScenarioResolution NoResolution

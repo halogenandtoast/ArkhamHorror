@@ -82,6 +82,6 @@ instance RunMessage ThatWhichHasNoName where
       chooseTargetM iid ls $ createSetAsideEnemy_ Enemies.theNamelessMadness
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      push $ AdvanceAgenda attrs.id
+      advanceAgenda attrs
       pure a
     _ -> ThatWhichHasNoName <$> liftRunMessage msg attrs

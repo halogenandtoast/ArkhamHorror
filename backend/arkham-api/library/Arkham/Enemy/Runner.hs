@@ -81,7 +81,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (capture, do_, placeKey, removeEnemy, selectEach)
+import Arkham.Message.Lifted (capture, do_, placeKey, removeEnemy, scenarioSpecific, selectEach)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
@@ -863,7 +863,7 @@ instance RunMessage EnemyAttrs where
                   ]
       pure a
     ForInvestigator iid EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
-      mods <- getModifiers (EnemyTarget enemyId)
+      mods <- getModifiers enemyId
       unless (CannotAttack `elem` mods) do
         let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
         iids <-
@@ -876,10 +876,9 @@ instance RunMessage EnemyAttrs where
         when (iid `elem` iids) do
           case iids of
             [] -> do
-              whenM
-                (selectAny $ locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
-                do
-                  push $ ScenarioSpecific "enemyAttackedAtLocation" (toJSON enemyId)
+              whenAny (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
+                scenarioSpecific "enemyAttackedAtLocation" enemyId
+                scenarioSpecific "enemyAttacked" enemyId
               pure ()
             [x] ->
               push
@@ -911,10 +910,9 @@ instance RunMessage EnemyAttrs where
               _ -> pure True
         case iids of
           [] -> do
-            whenM
-              (selectAny $ locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
-              do
-                push $ ScenarioSpecific "enemyAttackedAtLocation" (toJSON enemyId)
+            whenAny (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
+              scenarioSpecific "enemyAttackedAtLocation" enemyId
+              scenarioSpecific "enemyAttacked" enemyId
             pure ()
           [x] ->
             push
@@ -1269,6 +1267,7 @@ instance RunMessage EnemyAttrs where
 
           pushAll
             $ [attackMessage | allowAttack && not details.cancelled]
+            <> [ScenarioSpecific "enemyAttacked" (toJSON enemyId)]
             <> [ Exhaust (toTarget a)
                | allowAttack
                , swarmExhaust
@@ -1289,6 +1288,7 @@ instance RunMessage EnemyAttrs where
                   ]
               | allowAttack && not details.cancelled
               ]
+            <> [ScenarioSpecific "enemyAttacked" (toJSON enemyId)]
             <> [ Exhaust (toTarget a)
                | allowAttack
                , swarmExhaust
@@ -1304,7 +1304,7 @@ instance RunMessage EnemyAttrs where
     After (EnemyAttack details) | details.enemy == a.id -> do
       for_ enemyAttacking \updatedDetails -> do
         afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
-        when (attackType details == AttackOfOpportunity) do
+        when (details.kind == AttackOfOpportunity) do
           for_ details.investigator \iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
         pushAll $ afterAttacksWindow : attackAfter updatedDetails
       pure a

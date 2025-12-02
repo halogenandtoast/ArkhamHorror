@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheTrueCulpritV10 (TheTrueCulpritV10 (..), theTrueCulpritV10) where
+module Arkham.Agenda.Cards.TheTrueCulpritV10 (theTrueCulpritV10) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -25,8 +25,8 @@ instance HasAbilities TheTrueCulpritV10 where
     guard (onSide A attrs)
       *> [ skillTestAbility $ restricted (proxied (locationIs Cards.basement) attrs) 1 Here actionAbility
          , restricted attrs 2 (exists $ AgendaWithDoom (EqualTo $ Static 0) <> AgendaWithId attrs.id)
-            $ Objective
-            $ forced AnyWindow
+             $ Objective
+             $ forced AnyWindow
          ]
 
 instance RunMessage TheTrueCulpritV10 where
@@ -51,12 +51,9 @@ instance RunMessage TheTrueCulpritV10 where
       removeDoom p attrs 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther
+      advanceAgenda attrs
       pure a
-    AdvanceAgendaBy aid AgendaAdvancedWithDoom | aid == toId attrs && onSide B attrs -> do
-      push R2
-      pure a
-    AdvanceAgendaBy aid AgendaAdvancedWithOther | aid == toId attrs && onSide B attrs -> do
-      push R1
+    AdvanceAgendaBy aid means | aid == toId attrs && onSide B attrs -> do
+      push $ if means == AgendaAdvancedWithDoom then R2 else R1
       pure a
     _ -> TheTrueCulpritV10 <$> liftRunMessage msg attrs

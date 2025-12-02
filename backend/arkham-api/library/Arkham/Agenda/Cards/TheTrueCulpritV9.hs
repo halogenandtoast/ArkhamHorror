@@ -64,12 +64,9 @@ instance RunMessage TheTrueCulpritV9 where
       moveTokens (attrs.ability 1) tomeOfRituals harvestedBrain #clue n
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ AdvanceAgendaBy attrs.id #other
+      advanceAgenda attrs
       pure a
-    AdvanceAgendaBy (isSide B attrs -> True) AgendaAdvancedWithDoom -> do
-      push R2
-      pure a
-    AdvanceAgendaBy (isSide B attrs -> True) AgendaAdvancedWithOther -> do
-      push R1
+    AdvanceAgendaBy (isSide B attrs -> True) means -> do
+      push $ if means == AgendaAdvancedWithDoom then R2 else R1
       pure a
     _ -> TheTrueCulpritV9 <$> liftRunMessage msg attrs

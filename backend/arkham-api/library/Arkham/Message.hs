@@ -226,9 +226,7 @@ pattern MoveUses source source' target useType' n <- MoveTokens source source' t
     MoveUses source source' target useType' n = MoveTokens source source' target useType' n
 
 pattern AdvanceAgenda :: AgendaId -> Message
-pattern AdvanceAgenda aid <- AdvanceAgendaBy aid AgendaAdvancedWithDoom
-  where
-    AdvanceAgenda aid = AdvanceAgendaBy aid AgendaAdvancedWithDoom
+pattern AdvanceAgenda aid <- AdvanceAgendaBy aid _
 
 pattern UseThisAbility :: InvestigatorId -> Source -> Int -> Message
 pattern UseThisAbility iid source n <- UseCardAbility iid source n _ _

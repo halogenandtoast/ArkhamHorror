@@ -101,7 +101,7 @@ instance RunMessage AgendaAttrs where
             pushAll
               [ whenWindow
               , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = removeDoomAgenda'}
-              , AdvanceAgenda agendaId
+              , AdvanceAgendaBy agendaId AgendaAdvancedWithDoom
               , afterWindow
               ]
           pure a

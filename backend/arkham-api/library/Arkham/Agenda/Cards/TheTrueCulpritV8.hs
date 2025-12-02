@@ -1,16 +1,9 @@
-module Arkham.Agenda.Cards.TheTrueCulpritV8 (
-  TheTrueCulpritV8 (..),
-  theTrueCulpritV8,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTrueCulpritV8 (theTrueCulpritV8) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Trait (Trait (Staff))
@@ -26,11 +19,8 @@ theTrueCulpritV8 = agenda (3, A) TheTrueCulpritV8 Cards.theTrueCulpritV8 (Static
 instance HasAbilities TheTrueCulpritV8 where
   getAbilities (TheTrueCulpritV8 attrs) =
     guard (onSide A attrs)
-      *> ( [ restrictedAbility
-               (proxied (assetIs asset) attrs)
-               1
-               ControlsThis
-               (actionAbilityWithCost $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
+      *> ( [ controlled_ (proxied (assetIs asset) attrs) 1
+               $ actionAbilityWithCost (AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
            | asset <-
                [ Cards.alienDevice
                , Cards.managersKey
@@ -43,7 +33,7 @@ instance HasAbilities TheTrueCulpritV8 where
                     $ groupLimit PerTestOrAbility
                     $ mkAbility attrs 2
                     $ freeReaction (EnemyDefeated #after Anyone ByAny $ EnemyWithTrait Staff)
-                , restrictedAbility
+                , restricted
                     attrs
                     3
                     ( exists
@@ -51,27 +41,23 @@ instance HasAbilities TheTrueCulpritV8 where
                         <> TreacheryWithHorror (AtLeast $ StaticWithPerPlayer 2 1)
                     )
                     $ Objective
-                    $ ForcedAbility AnyWindow
+                    $ forced AnyWindow
                 ]
          )
 
 instance RunMessage TheTrueCulpritV8 where
-  runMessage msg a@(TheTrueCulpritV8 attrs) =
-    case msg of
-      UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
-        push $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Staff
-        pure a
-      UseThisAbility _ (isSource attrs -> True) 2 -> do
-        harvestedBrain <- selectJust $ treacheryIs Treacheries.harvestedBrain
-        push $ PlaceHorror (toAbilitySource attrs 2) (toTarget harvestedBrain) 1
-        pure a
-      UseThisAbility _ (isSource attrs -> True) 3 -> do
-        push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther
-        pure a
-      AdvanceAgendaBy aid AgendaAdvancedWithDoom | aid == toId attrs && onSide B attrs -> do
-        push R2
-        pure a
-      AdvanceAgendaBy aid AgendaAdvancedWithOther | aid == toId attrs && onSide B attrs -> do
-        push R1
-        pure a
-      _ -> TheTrueCulpritV8 <$> runMessage msg attrs
+  runMessage msg a@(TheTrueCulpritV8 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
+      findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Staff
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      harvestedBrain <- selectJust $ treacheryIs Treacheries.harvestedBrain
+      placeTokens (attrs.ability 2) harvestedBrain #horror 1
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      advanceAgenda attrs
+      pure a
+    AdvanceAgendaBy (isSide B attrs -> True) means -> do
+      push $ if means == AgendaAdvancedWithDoom then R2 else R1
+      pure a
+    _ -> TheTrueCulpritV8 <$> liftRunMessage msg attrs

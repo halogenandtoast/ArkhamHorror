@@ -9,7 +9,7 @@ spec = do
   describe "Dark Memory" $ do
     it "places 1 doom and can advance current agenda" . gameTest $ \self -> do
       _ <- testAgenda "01105" (Agenda.doomThresholdL ?~ Static 1)
-      didAdvanceAgenda <- createMessageMatcher (AdvanceAgenda "01105")
+      didAdvanceAgenda <- createMessageMatcher (AdvanceAgendaBy "01105" AgendaAdvancedWithDoom)
       self `putCardIntoPlay` Events.darkMemory
       click "Advance agenda"
       chooseOptionMatching "have to choose horror option to avoid discard" \case

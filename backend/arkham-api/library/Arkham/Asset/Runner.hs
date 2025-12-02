@@ -305,18 +305,8 @@ instance RunMessage AssetAttrs where
           _ -> error "Trying to use the wrong use type"
       pure $ a & tokensL %~ subtractTokens tType n
     CheckDefeated source (isTarget a -> True) -> do
-      mDefeated <- defeated a source
-      for_ mDefeated \defeatedBy -> do
-        let (before, _, after) = frame (Window.AssetDefeated (toId a) defeatedBy)
-        pushAll $ [before] <> resolve (AssetDefeated source assetId) <> [after]
-      -- TODO: Investigator uses AssignDamage target
-      pure
-        $ a
-        & ( tokensL
-              %~ (addTokens #damage assetAssignedHealthDamage . addTokens #horror assetAssignedSanityDamage)
-          )
-        & (assignedHealthDamageL .~ 0)
-        & (assignedSanityDamageL .~ 0)
+      whenJustM (defeated a source) \_ -> push $ AssetDefeated source assetId
+      pure a
     CancelAssetDamage aid _ n | aid == assetId -> do
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a) Nothing
       pure $ a & tokensL %~ decrementTokensBy Token.Damage n
@@ -329,6 +319,17 @@ instance RunMessage AssetAttrs where
         Just iid -> toDiscardBy iid GameSource a
       pure a
     AssetDefeated source aid | aid == assetId -> do
+      defeatedBy <- defeated a source <??> DefeatedByOther GameSource
+      let (before, _, after) = frame $ Window.AssetDefeated a.id defeatedBy
+      pushAll [before, When msg, Do msg, After msg, after]
+      pure
+        $ a
+        & ( tokensL
+              %~ (addTokens #damage assetAssignedHealthDamage . addTokens #horror assetAssignedSanityDamage)
+          )
+        & (assignedHealthDamageL .~ 0)
+        & (assignedSanityDamageL .~ 0)
+    Do (AssetDefeated source aid) | aid == assetId -> do
       mVictory <- getVictoryPoints (toCard a)
       mcontroller <- getSourceController source
       push

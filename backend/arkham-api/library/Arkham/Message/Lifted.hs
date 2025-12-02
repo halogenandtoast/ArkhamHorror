@@ -959,6 +959,7 @@ moveTokens
   -> Token
   -> Int
   -> m ()
+moveTokens _ _ _ _ 0 = pure ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
 
 moveTokensTo

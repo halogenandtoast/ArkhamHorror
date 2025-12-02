@@ -19,18 +19,18 @@ brewingCatastropheV1 = agenda (1, A) BrewingCatastropheV1 Cards.brewingCatastrop
 instance HasModifiersFor BrewingCatastropheV1 where
   getModifiersFor (BrewingCatastropheV1 a) = do
     modifySelf a [OtherDoomSubtracts]
-    modifySelect a AnyEnemy [RemoveKeyword #hunter, AddKeyword (Keyword.Patrol LocationWithKeyLocus)]
-    locationWithKeyLocus <-
+    modifySelect a AnyEnemy [RemoveKeyword #hunter, AddKeyword (Keyword.Patrol locationWithKeyLocus)]
+    ok <-
       select
         $ LocationWithAsset
         $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
-    if null locationWithKeyLocus
+    if null ok
       then do
-        flip (modifySelect a) [ScenarioModifier "keyLocus"]
+        flip (modifySelect a) [KeyLocusLocation]
           $ LocationWithAsset
           $ assetIs Assets.theClaretKnightHerSwornChampion
-        modifySelect a (assetIs Assets.theClaretKnightHerSwornChampion) [ScenarioModifier "keyLocus"]
-      else modifyEach a locationWithKeyLocus [ScenarioModifier "keyLocus"]
+        modifySelect a (assetIs Assets.theClaretKnightHerSwornChampion) [IsKeyLocus]
+      else modifyEach a ok [KeyLocusLocation]
 
 instance HasAbilities BrewingCatastropheV1 where
   getAbilities (BrewingCatastropheV1 a) =
@@ -45,11 +45,9 @@ instance RunMessage BrewingCatastropheV1 where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       advanceAgenda attrs
       pure a
-    AdvanceAgenda (isSide B attrs -> True) -> do
-      selectAny (InPlayAsset $ assetIs Assets.theClaretKnightHerSwornChampion)
-        >>= \case
-          True -> advanceCurrentAct attrs
-          False -> push R3
-      advanceAgendaDeck attrs
+    AdvanceAgendaBy (isSide B attrs -> True) means -> do
+      case means of
+        AgendaAdvancedWithOther -> push R3
+        _ -> advanceCurrentAct attrs
       pure a
     _ -> BrewingCatastropheV1 <$> liftRunMessage msg attrs

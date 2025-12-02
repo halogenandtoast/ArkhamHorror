@@ -45,7 +45,7 @@ data Version = Version1 | Version2 | Version3
 instance HasChaosTokenValue DogsOfWar where
   getChaosTokenValue iid tokenFace (DogsOfWar attrs) = case tokenFace of
     Skull -> do
-      atLocus <- runValidT $ MaybeT (getLocationOf iid) >>= liftGuardM . (`matches` LocationWithKeyLocus)
+      atLocus <- runValidT $ MaybeT (getLocationOf iid) >>= liftGuardM . (`matches` locationWithKeyLocus)
       pure $ toChaosTokenValue attrs Skull (if atLocus then 3 else 1) (if atLocus then 4 else 2)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 3 5
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
@@ -240,7 +240,7 @@ instance RunMessage DogsOfWar where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Cultist -> do
-          ls <- select $ NearestLocationTo iid $ oneOf [LocationWithTrait LocusSite, LocationWithKeyLocus]
+          ls <- select $ NearestLocationTo iid $ oneOf [LocationWithTrait LocusSite, locationWithKeyLocus]
           ts <-
             keyLocusTargets
               >>= filterM (`matches` TargetAtLocation (mapOneOf LocationWithId ls))

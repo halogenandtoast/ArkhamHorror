@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.BrewingCatastropheV3 (brewingCatastropheV3) where
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelect)
+import Arkham.Helpers.Modifiers (modifyEach, modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.DogsOfWar.Helpers
@@ -17,13 +17,13 @@ brewingCatastropheV3 = agenda (1, A) BrewingCatastropheV3 Cards.brewingCatastrop
 
 instance HasModifiersFor BrewingCatastropheV3 where
   getModifiersFor (BrewingCatastropheV3 a) = do
-    locationWithKeyLocus <-
+    locations <-
       select
         $ LocationWithAsset
         $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
-    if null locationWithKeyLocus
-      then modifySelect a (location_ "Catacombs of Kom el Shoqafa") [ScenarioModifier "keyLocus"]
-      else modifyEach a locationWithKeyLocus [ScenarioModifier "keyLocus"]
+    if null locations
+      then modifySelect a (location_ "Catacombs of Kom el Shoqafa") [KeyLocusLocation, IsKeyLocus]
+      else modifyEach a locations [KeyLocusLocation]
 
 instance RunMessage BrewingCatastropheV3 where
   runMessage msg a@(BrewingCatastropheV3 attrs) = runQueueT $ case msg of

@@ -2,16 +2,12 @@ module Arkham.Agenda.Cards.TheTrueCulpritV7 (theTrueCulpritV7) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Name
-import Arkham.Prelude
 import Arkham.Trait (Trait (Cultist, Guest, Innocent))
 
 newtype TheTrueCulpritV7 = TheTrueCulpritV7 AgendaAttrs
@@ -29,7 +25,7 @@ instance HasAbilities TheTrueCulpritV7 where
   getAbilities (TheTrueCulpritV7 attrs) =
     guard (onSide A attrs)
       *> ( [ notSkillTestAbility
-               $ controlledAbility
+               $ controlled
                  (proxied (assetIs asset) attrs)
                  1
                  (exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs)))
@@ -46,19 +42,15 @@ instance HasAbilities TheTrueCulpritV7 where
          )
 
 instance RunMessage TheTrueCulpritV7 where
-  runMessage msg a@(TheTrueCulpritV7 attrs) =
-    case msg of
-      UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
-        dimensionalShambler <- selectJust $ enemyIs Cards.dimensionalShambler
-        push $ Msg.EnemyEvaded iid dimensionalShambler
-        pure a
-      UseThisAbility _ (isSource attrs -> True) 2 -> do
-        push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther
-        pure a
-      AdvanceAgendaBy aid AgendaAdvancedWithDoom | aid == toId attrs && onSide B attrs -> do
-        push R2
-        pure a
-      AdvanceAgendaBy aid AgendaAdvancedWithOther | aid == toId attrs && onSide B attrs -> do
-        push R1
-        pure a
-      _ -> TheTrueCulpritV7 <$> runMessage msg attrs
+  runMessage msg a@(TheTrueCulpritV7 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
+      dimensionalShambler <- selectJust $ enemyIs Cards.dimensionalShambler
+      automaticallyEvadeEnemy iid dimensionalShambler
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advanceAgenda attrs
+      pure a
+    AdvanceAgendaBy (isSide B attrs -> True) means -> do
+      push $ if means == AgendaAdvancedWithDoom then R2 else R1
+      pure a
+    _ -> TheTrueCulpritV7 <$> liftRunMessage msg attrs

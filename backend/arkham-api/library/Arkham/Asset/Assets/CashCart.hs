@@ -48,7 +48,7 @@ instance RunMessage CashCart where
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       remember StayedOutOfSight
       pure a
-    Msg.AssetDefeated _ aid | aid == attrs.id -> do
+    Do (Msg.AssetDefeated _ aid) | aid == attrs.id -> do
       removeFromGame attrs
       pure a
     _ -> CashCart <$> liftRunMessage msg attrs

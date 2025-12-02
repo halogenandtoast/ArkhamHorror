@@ -25,7 +25,7 @@ instance RunMessage LookingForAnswers where
         =<< getSetAsideCardsMatching (CardWithTitle "Basement Door")
       agenda <- selectJust AnyAgenda
       case step of
-        1 -> push $ AdvanceAgendaBy agenda #doom
+        1 -> push $ AdvanceAgendaBy agenda #other
         _ -> makeInfestationTest
 
       advanceActDeck attrs

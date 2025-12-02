@@ -1026,7 +1026,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. entitiesL . agendasL
-    g <$ pushAll [AdvanceAgenda aid | aid <- aids]
+    pushAll [AdvanceAgendaBy aid AgendaAdvancedWithOther | aid <- aids]
+    pure g
   ReplaceAgenda aid1 card -> do
     agendaDeckId <- field AgendaDeckId aid1
     let

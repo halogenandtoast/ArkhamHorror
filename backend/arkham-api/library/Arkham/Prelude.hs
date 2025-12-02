@@ -442,6 +442,14 @@ whenNothing (Just x) _ = pure x
 whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
 whenJustM mma f = mma >>= traverse_ f
 
+(<??>) :: Monad m => m (Maybe a) -> a -> m a
+mma <??> def = do
+  ma <- mma
+  case ma of
+    Just a -> pure a
+    Nothing -> pure def
+infixl 3 <??>
+
 concatMapMaybe :: (a -> Maybe [b]) -> [a] -> [b]
 concatMapMaybe f = concat . mapMaybe f
 

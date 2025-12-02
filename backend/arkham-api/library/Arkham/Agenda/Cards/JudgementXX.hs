@@ -47,7 +47,7 @@ instance RunMessage JudgementXX where
           countVar damage $ labeled' "takeHorror" $ assignHorror iid attrs damage
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ -> do
-      push $ AdvanceAgenda attrs.id
+      advanceAgenda attrs
       cardCode <- field InvestigatorCardCode iid
       let
         handleOther = do
@@ -61,13 +61,13 @@ instance RunMessage JudgementXX where
       case source of
         (EnemyAttackSource eid) -> do
           isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-          when isTheSpectralWatcher do
-            recordSetInsert WasTakenByTheWatcher [cardCode]
+          when isTheSpectralWatcher $ recordSetInsert WasTakenByTheWatcher [cardCode]
+
           isMonster <- eid <=~> EnemyWithTrait Monster
-          when isMonster do
-            recordSetInsert WasClaimedBySpecters [cardCode]
+          when isMonster $ recordSetInsert WasClaimedBySpecters [cardCode]
+
           when (not isMonster && not isTheSpectralWatcher) handleOther
         _ -> handleOther
-      push $ RevertAgenda attrs.id
+      revertAgenda attrs
       pure a
     _ -> JudgementXX <$> liftRunMessage msg attrs

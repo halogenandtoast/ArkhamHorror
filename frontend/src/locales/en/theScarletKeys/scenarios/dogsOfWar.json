@@ -14,6 +14,11 @@
       "elderThing": "-3. For each point you fail by, lose 1 resource."
     }
   },
+  "label": {
+    "zanEtElSettat": {
+      "increaseFight": "Increase that enemy's fight by 2 for this attack."
+    }
+  },
   "intro": {
     "title": "File #38–N: Dogs of War",
     "label": {

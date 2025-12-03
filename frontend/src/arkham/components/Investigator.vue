@@ -132,6 +132,10 @@ const skipTriggersAction = computed(() => {
     .findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON && c.investigatorId === id.value);
 })
 
+const investigatorClass = computed(() => {
+  return ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ?? props.investigator.class) : props.investigator.class
+})
+
 const image = computed(() => {
   if (props.investigator.form.tag === 'YithianForm') {
     return imgsrc("cards/04244.avif");
@@ -146,7 +150,7 @@ const image = computed(() => {
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
-  const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? `_${props.investigator.meta}` : ''
+  const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ? `_${props.investigator.meta}` : '') : ''
   return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.avif`);
 })
 
@@ -340,10 +344,10 @@ const spadeInjury = computed(() => {
     <span v-if="isMobile"><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
     <span v-if="isMobile && investigator.additionalActions.length > 0">
       <template v-for="action in investigator.additionalActions" :key="action">
-        <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
+        <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
           <i class="action"></i>
         </button>
-        <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
+        <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
       </template>
     </span>
     <img
@@ -392,10 +396,10 @@ const spadeInjury = computed(() => {
           </span>
           <span v-if="investigator.additionalActions.length > 0">
             <template v-for="action in investigator.additionalActions" :key="action">
-            <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
+            <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
               <i class="action"></i>
             </button>
-            <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
+            <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
             </template>
           </span>
           <template v-if="debug.active">

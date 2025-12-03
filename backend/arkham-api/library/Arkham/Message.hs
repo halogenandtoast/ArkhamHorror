@@ -769,6 +769,7 @@ data Message
   | HealHorror Target Source Int
   | HealDamageDelayed Target Source Int
   | HealHorrorDelayed Target Source Int
+  | ReassignDamage Source Target Int
   | ReassignHorror Source Target Int
   | HealHorrorWithAdditional Target Source Int
   | AdditionalHealHorror Target Source Int

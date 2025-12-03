@@ -350,8 +350,23 @@ instance RunMessage AssetAttrs where
           \case
             msg'@(CheckDefeated s _) -> [msg', CheckDefeated s (toTarget a)]
             _ -> error "Invalid match"
+      push $ PlaceTokens source (toTarget a) #horror n
+      pure a
+    ReassignDamage source (isTarget a -> True) n -> do
+      alreadyChecked <- assertQueue \case
+        CheckDefeated _ target -> target == toTarget a
+        _ -> False
+      unless alreadyChecked do
+        replaceMessageMatching
+          \case
+            CheckDefeated _ target -> target == sourceToTarget source
+            _ -> False
+          \case
+            msg'@(CheckDefeated s _) -> [msg', CheckDefeated s (toTarget a)]
+            _ -> error "Invalid match"
 
-      pure $ a & assignedSanityDamageL +~ n
+      push $ PlaceTokens source (toTarget a) #damage n
+      pure a
     ResolvedCard _ (sameCard a -> True) -> pure $ a & resolvedL .~ True
     ApplyHealing source -> do
       let health = findWithDefault 0 source assetAssignedHealthHeal

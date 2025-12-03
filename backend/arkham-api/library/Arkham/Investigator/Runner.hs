@@ -2752,6 +2752,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   MoveTokens s _ (ResourceTarget iid) _ n | iid == investigatorId -> liftRunMessage (PlaceTokens s (toTarget a) #resource n) a
   ReassignHorror (isSource a -> True) _ n -> do
     pure $ a & assignedSanityDamageL %~ max 0 . subtract n
+  ReassignDamage (isSource a -> True) _ n -> do
+    pure $ a & assignedHealthDamageL %~ max 0 . subtract n
   HealHorrorDirectly (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
     a' <-

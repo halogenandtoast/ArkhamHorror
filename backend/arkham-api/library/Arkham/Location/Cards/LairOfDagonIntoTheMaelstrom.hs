@@ -38,9 +38,10 @@ instance HasAbilities LairOfDagonIntoTheMaelstrom where
           $ restricted
             a
             1
-            ( foldMap
-                (exists . LocationWithKey)
-                [BlueKey, RedKey, GreenKey, YellowKey, PurpleKey, WhiteKey, BlackKey]
+            ( Here
+                <> foldMap
+                  (exists . LocationWithKey)
+                  [BlueKey, RedKey, GreenKey, YellowKey, PurpleKey, WhiteKey, BlackKey]
                 <> hasRecordCriteria TheOrdersRitualWasDisrupted
             )
           $ FastAbility Free

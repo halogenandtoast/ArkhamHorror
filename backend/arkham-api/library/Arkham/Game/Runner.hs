@@ -1065,6 +1065,17 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         Window.PlacedToken s _ Token.Horror _ -> [Window.PlacedToken s target Token.Horror n]
         _ -> error "impossible"
     pure g
+  ReassignDamage source target n -> do
+    replaceWindowMany
+      \case
+        Window.PlacedToken _ t Token.Damage _ -> t == sourceToTarget source
+        _ -> False
+      \case
+        Window.PlacedToken s t Token.Damage m
+          | m > n -> [Window.PlacedToken s t Token.Damage (m - n), Window.PlacedToken s target Token.Damage n]
+        Window.PlacedToken s _ Token.Damage _ -> [Window.PlacedToken s target Token.Damage n]
+        _ -> error "impossible"
+    pure g
   CommitCard iid card -> do
     let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
     if alreadyCommitted

@@ -120,9 +120,9 @@ import Arkham.Matcher (
   ScenarioMatcher (..),
   SourceMatcher (..),
   TreacheryMatcher (..),
-  at_,
   assetControlledBy,
   assetIs,
+  at_,
   cardIs,
   colocatedWith,
   enemyEngagedWith,
@@ -1109,7 +1109,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       withAlteredGame withoutCanModifiers
         $ asIfTurn investigatorId
         $ select
-        $ AssetWithModifier CanBeAttackedAsIfEnemy <> at_ (locationWithInvestigator investigatorId)
+        $ AssetWithModifier CanBeAttackedAsIfEnemy
+        <> at_ (locationWithInvestigator investigatorId)
     player <- getPlayer investigatorId
     let choices = enemyIds <> map coerce locationIds <> map coerce concealed <> map coerce assetIds
     -- we might have killed the enemy via a reaction before getting here
@@ -3847,6 +3848,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   Do (AddToHand iid cards) | iid == investigatorId -> do
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
+    for_ cards \card -> do
+      inLimit <- passesLimits iid (toCard card)
+      if hasRevelation card && inLimit
+        then
+          if toCardType card == PlayerTreacheryType
+            then push $ DrewTreachery iid Nothing (toCard card)
+            else pushAll [Revelation iid (CardIdSource card.id), ResolvedCard iid $ toCard card]
+        else when (toCardType card == PlayerEnemyType) do
+          push $ DrewPlayerEnemy iid (toCard card)
     pure
       $ a
       & (cardsUnderneathL %~ filter (`notElem` cards))

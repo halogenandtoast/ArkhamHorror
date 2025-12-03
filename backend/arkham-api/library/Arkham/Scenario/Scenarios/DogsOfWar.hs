@@ -87,15 +87,22 @@ instance RunMessage DogsOfWar where
         labeled' "refuse" $ doStep 7 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
+      record TheCellMadeADealWithTheClaretKnight
+      swapTokens ElderThing Tablet
       flavor $ setTitle "title" >> p "intro4"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version1
     DoStep 5 PreScenarioSetup -> scope "intro" do
+      swapTokens Tablet ElderThing
+      record TheCellIsAssistingAgentSirry
       flavor $ setTitle "title" >> p "intro5"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version2
     DoStep 6 PreScenarioSetup -> scope "intro" do
+      record TheCellMadeADealWithTheClaretKnight
       flavor $ setTitle "title" >> p "intro6"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version3
     DoStep 7 PreScenarioSetup -> scope "intro" do
+      swapTokens Tablet ElderThing
+      record TheCellIsAssistingAgentSirry
       flavor $ setTitle "title" >> p "intro7"
       pure $ DogsOfWar $ attrs & setMetaKey "version" Version3
     Setup -> do

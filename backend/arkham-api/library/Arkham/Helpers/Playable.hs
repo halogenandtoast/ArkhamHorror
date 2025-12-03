@@ -21,6 +21,7 @@ import Arkham.Helpers.Cost (getCanAffordCost, getCanAffordCost_, getSpendableRes
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Game (withDepthGuard)
 import Arkham.Helpers.Investigator (getAsIfInHandCards)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (
   getModifiers,
   hasModifier,
@@ -404,7 +405,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
                 (defaultWindows iid <> windows')
 
     when (#investigate `elem` pcDef.actions) do
-      loc <- MaybeT $ field InvestigatorLocation iid
+      loc <- MaybeT $ getLocationOf iid
       liftGuardM $ loc <=~> InvestigatableLocation
       liftGuardM $ withoutModifier iid (CannotInvestigateLocation loc)
 
@@ -417,6 +418,15 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
           isMatch' <- c <=~> match
           pure $ guard isMatch' $> additionalCost
         _ -> pure Nothing
+
+    investigateCosts <- runDefaultMaybeT [] do
+      guard $ case costStatus of
+        UnpaidCost _ -> True
+        _ -> False
+      guard $ #investigate `elem` cdActions pcDef
+      lid <- MaybeT $ getLocationOf iid
+      mods <- lift $ getModifiers lid
+      pure [m | AdditionalCostToInvestigate m <- mods]
 
     let
       sealingToCost = \case
@@ -452,6 +462,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       $ fold
       $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
       <> additionalCosts
+      <> investigateCosts
       <> auxiliaryCosts
       <> resignCosts
       <> sealedChaosTokenCost

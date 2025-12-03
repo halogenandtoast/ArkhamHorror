@@ -20,7 +20,7 @@ crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
 instance RunMessage CrisisOfIdentity where
   runMessage msg t@(CrisisOfIdentity attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      role <- field InvestigatorClass iid
+      role <- fieldMap InvestigatorMeta (toResultDefault Neutral) iid
       assets <- selectTargets $ assetControlledBy iid <> AssetWithClass role <> DiscardableAsset
       events <- selectTargets $ eventControlledBy iid <> EventWithClass role
       skills <- selectTargets $ skillControlledBy iid <> SkillWithClass role

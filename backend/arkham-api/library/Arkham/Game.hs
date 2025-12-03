@@ -3014,7 +3014,10 @@ getEventsMatching matcher = case matcher of
       pure $ filter ((`elem` iids) . attr eventController) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      pure $ filter ((`elem` iids) . attr eventController) as
+      pure
+        $ as
+        & filter
+          (and . sequence [(`elem` iids) . attr eventController, isInPlayPlacement . attr eventPlacement])
     EventOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
@@ -3068,7 +3071,9 @@ getSkillsMatching matcher = do
     SkillWithTrait t -> filterM (fmap (member t) . field SkillTraits . toId) as
     SkillControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      pure $ filter ((`elem` iids) . attr skillOwner) as
+      pure
+        $ as
+        & filter (and . sequence [(`elem` iids) . attr skillOwner, isInPlayPlacement . attr skillPlacement])
     SkillOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . attr skillOwner) as

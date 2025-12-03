@@ -15,7 +15,9 @@ newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving stock Data
 
 instance HasModifiersFor LolaHayes where
-  getModifiersFor (LolaHayes attrs) = modifySelf attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
+  getModifiersFor (LolaHayes attrs) = do
+    let role = toResultDefault Neutral attrs.meta
+    modifySelf attrs [CanOnlyUseCardsInRole role]
 
 lolaHayes :: InvestigatorCard LolaHayes
 lolaHayes =
@@ -49,4 +51,6 @@ instance RunMessage LolaHayes where
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       switchRole attrs
       pure i
+    SetRole iid role | iid == attrs.id -> do
+      pure $ overAttrs (setMeta role) i
     _ -> LolaHayes <$> liftRunMessage msg attrs

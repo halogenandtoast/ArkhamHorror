@@ -622,8 +622,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let cards = map toCard . take n $ unDeck investigatorDeck
     for_ cards $ push . PlacedSwarmCard eid
     pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
-  SetRole iid role | iid == investigatorId -> do
-    pure $ a {investigatorClass = role}
   AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do
     push $ toMessage $ randomDiscardMatching investigatorId source matcher
     pure a

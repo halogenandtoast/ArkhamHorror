@@ -37,14 +37,14 @@ improvisationEffect = cardEffect ImprovisationEffect Cards.improvisation
 instance HasModifiersFor ImprovisationEffect where
   getModifiersFor (ImprovisationEffect attrs) = case attrs.target of
     InvestigatorTarget iid -> do
-      role <- field InvestigatorClass iid
+      role <- fieldMap InvestigatorMeta (toResultDefault Neutral) iid
       modified_ attrs iid [ReduceCostOf (CardWithClass role) 3]
     _ -> pure mempty
 
 instance RunMessage ImprovisationEffect where
   runMessage msg e@(ImprovisationEffect attrs) = runQueueT $ case msg of
     CardEnteredPlay iid card | isTarget iid attrs.target -> do
-      role <- field InvestigatorClass iid
+      role <- fieldMap InvestigatorMeta (toResultDefault Neutral) iid
       when ((== Just role) . headMay . toList $ cdClassSymbols (toCardDef card)) (disable attrs)
       pure e
     EndTurn iid | attrs.target == InvestigatorTarget iid -> do

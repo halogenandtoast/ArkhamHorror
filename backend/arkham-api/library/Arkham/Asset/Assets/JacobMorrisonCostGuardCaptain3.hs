@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.JacobMorrisonCostGuardCaptain3 (
-  jacobMorrisonCostGuardCaptain3,
-  JacobMorrisonCostGuardCaptain3 (..),
-)
-where
+module Arkham.Asset.Assets.JacobMorrisonCostGuardCaptain3 (jacobMorrisonCostGuardCaptain3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -23,10 +19,10 @@ instance HasModifiersFor JacobMorrisonCostGuardCaptain3 where
 
 instance HasAbilities JacobMorrisonCostGuardCaptain3 where
   getAbilities (JacobMorrisonCostGuardCaptain3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (WouldHaveSkillTestResult #when You #any #failure) (exhaust a)
-    , controlledAbility a 1 (DuringSkillTest (YourSkillTest #any) <> exists (be a <> AssetExhausted))
-        $ ReactionAbility (RevealChaosToken #when Anyone #bless) (exhaust a)
+    [ controlled_ a 1
+        $ triggered (WouldHaveSkillTestResult #when You #any #failure) (exhaust a)
+    , controlled a 1 (DuringSkillTest (YourSkillTest #any) <> exists (be a <> AssetExhausted))
+        $ triggered (RevealChaosToken #when Anyone #bless) (exhaust a)
     ]
 
 instance RunMessage JacobMorrisonCostGuardCaptain3 where

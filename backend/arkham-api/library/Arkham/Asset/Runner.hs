@@ -22,6 +22,7 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Customization
@@ -216,7 +217,8 @@ instance RunMessage AssetAttrs where
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> do
       mods <- getModifiers a
-      unless (CannotReady `elem` mods) do
+      phase <- getPhase
+      unless (CannotReady `elem` mods || (phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods)) do
         case a.controller of
           Just iid -> do
             modifiers <- getModifiers iid

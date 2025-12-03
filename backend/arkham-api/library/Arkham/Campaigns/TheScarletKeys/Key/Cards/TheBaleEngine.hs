@@ -17,21 +17,23 @@ theBaleEngine = key TheBaleEngine Cards.theBaleEngine
 
 instance HasAbilities TheBaleEngine where
   getAbilities (TheBaleEngine a) = case a.bearer of
-    InvestigatorTarget iid | not a.shifted ->
-      if a.stable
-        then
-          [ restricted
-              a
-              1
-              ( exists
-                  ( AssetControlledBy (affectsColocated iid)
-                      <> mapOneOf AssetCanHaveUses [Ammo, Charge, Secret, Supply, Evidence]
+    InvestigatorTarget iid
+      | not a.shifted ->
+          if a.stable
+            then
+              [ restricted
+                  a
+                  1
+                  ( youExist (InvestigatorWithId iid)
+                      <> exists
+                        ( AssetControlledBy (affectsColocated iid)
+                            <> mapOneOf AssetCanHaveUses [Ammo, Charge, Secret, Supply, Evidence]
+                        )
                   )
-              )
-              $ FastAbility Free
-          ]
-        else
-          [restricted a 1 (exists InvestigatorWithAnyResources) $ FastAbility Free]
+                  $ FastAbility Free
+              ]
+            else
+              [restricted a 1 (youExist (InvestigatorWithId iid) <> exists InvestigatorWithAnyResources) $ FastAbility Free]
     _ -> []
 
 instance RunMessage TheBaleEngine where

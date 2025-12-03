@@ -39,6 +39,7 @@ withInvestigatorBearer
   :: Applicative m => ScarletKeyAttrs -> (InvestigatorId -> m ()) -> m ()
 withInvestigatorBearer attrs f = case attrs.bearer of
   InvestigatorTarget iid -> f iid
+  ScenarioTarget -> traverse_ f (maybeResult @InvestigatorId attrs.meta)
   _ -> pure ()
 
 withEnemyBearer :: Applicative m => ScarletKeyAttrs -> (EnemyId -> m ()) -> m ()

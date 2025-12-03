@@ -1,5 +1,7 @@
 module Arkham.Treachery.Cards.LocusPulse (locusPulse) where
 
+import Arkham.Matcher
+import Arkham.Scenarios.DogsOfWar.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -12,5 +14,12 @@ locusPulse = treachery LocusPulse Cards.locusPulse
 
 instance RunMessage LocusPulse where
   runMessage msg t@(LocusPulse attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      ls <- select $ NearestLocationTo iid locationWithKeyLocus
+      chooseOneToHandle iid attrs ls
+      pure t
+    HandleTargetChoice _iid (isSource attrs -> True) (LocationTarget lid) -> do
+      attachTreachery attrs lid
+      selectEach (investigatorAt lid) \iid' -> assignDamageAndHorror iid' attrs 1 1
+      pure t
     _ -> LocusPulse <$> liftRunMessage msg attrs

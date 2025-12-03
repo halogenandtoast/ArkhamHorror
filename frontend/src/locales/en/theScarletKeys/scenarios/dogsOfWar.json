@@ -15,6 +15,12 @@
     }
   },
   "tooltips": {
+    "catacombsOfKomElShoqafa": {
+      "investigate": "{'{'}action{'}'}: Investigate. If you succeed, instead of discovering clues, draw 3 cards. You may reduce the difficulty of this test by 2. If you do, draw 1 fewer card if you succeed. (Group limit once per round.)"
+    },
+    "theBourse": {
+      "investigate": "{'{'}action{'}'}: Investigate. If you succeed, instead of discovering clues, gain 4 resources. You may reduce the difficulty of this test by 2. If you do, gain 2 fewer resources if you succeed. (Group limit once per round.)"
+    },
     "theClaretKnight": {
       "to": "{'{'}fast{'}'} Exhaust The Claret Knight: Move up to 3 resources from your resource pool to The Claret Knight.",
       "from": "{'{'}fast{'}'} Exhaust The Claret Knight: Move up to 3 resources from The Claret Knight to your resource pool, or to an asset you control as charges, ammo, supplies, or secrets."
@@ -26,6 +32,18 @@
     },
     "zanEtElSettat": {
       "increaseFight": "Increase that enemy's fight by 2 for this attack."
+    },
+    "catacombsOfKomElShoqafa": {
+      "reduceDifficulty": "Reduce difficulty by 2 and draw 1 fewer card",
+      "doNotReduce": "Do not reduce",
+      "pay": "Pay 1{'{'}perPlayer{'}'} clues",
+      "doNotPay": "Do not pay"
+    },
+    "theBourse": {
+      "reduceDifficulty": "Reduce difficulty by 2 and gain 2 fewer resources",
+      "doNotReduce": "Do not reduce",
+      "pay": "Pay 1{'{'}perPlayer{'}'} clues",
+      "doNotPay": "Do not pay"
     }
   },
   "intro": {
@@ -87,6 +105,46 @@
       "theBeast": "Spawn The Beast in a Cowl of Crimson enemy at Catacombs of Kom el Shoqafa, (*Wolf in Sheep’s Clothing*) side faceup. Attach The Light of Pharos key to The Beast in a Cowl of Crimson, under its control.",
       "theClaretKnight": "Remove the double-sided The Claret Knight enemy/asset from the game.",
       "miniCards": "Gather each decoy mini-card and each of the following mini-cards: Coterie Assassins (A and B) and Coterie Enforcers (A and B). Set them aside, out of play."
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "version1": "_If no resolution was reached (each investigator was defeated) and the version you played was (v. I)_: Skip to _Resolution 3_.",
+      "version2": "_If no resolution was reached (each investigator resigned or was defeated) and the version you played was (v. II)_: Skip to _Resolution 4_.",
+      "version3": "_If no resolution was reached (each investigator resigned or was defeated) and the version you played was (v. III)_: Skip to _Resolution 7_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The Claret Knight clears his throat and regains his composure. If you didn’t know any better, you would think he had never been worried at all. But you remember the look of tension and fear upon his face when he—like you—suspected all was lost. “Once again, forces have conspired to oust us from our rightful place, but once again we stand victorious,” he declares. Any semblance of fear has vanished, replaced with the very same calm resolve you found in him when you’d first arrived. With the Key still safely secure in his vault, he turns his attention to you, shaking your hand and gesturing to his desk. “Come, sit. You have done your part, now allow me to do mine. I promised answers, and answers you shall receive.”</p><ul><li>Skip to _Resolution 8_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You lay low for a few days in one of Agent Sirry’s safehouses outside the city, then meet with him later that week, your prize still safely in your possession. He has cleaned up a bit since you last met him, and there is a brightness in his eyes and his smile that was not present before. He joyfully sums up what has occurred since you went dark. “The knight and his entourage seem to have left Alexandria,” he declares, wearing a satisfied grin. “It seems, for all their posturing about ‘guiding humanity’ and ‘rightful rule,’ the moment their relic left their hands, their stake in the city vanished with it. That other creature seems to have fled as well. Still…” His eyes dance to the vessel containing the Key, its light trapped within. “I doubt you’ve seen the last of them. In fact, I’d wager a guess that one or both are hot on your tail. Be careful.”</p><p>You ask what Hossam will do now that his personal objective in Alexandria is complete. “I have a new assignment, actually,” he answers. “Commissioner Taylor sent the dossier to me just yesterday. I will be leaving my beloved city behind for the first time since joining the Foundation.” He sighs wistfully. “Well, perhaps we can meet up again some time.” He stands and shakes your hand. “It has been a pleasure working alongside you.”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *you haven’t seen the last of the Claret Knight*.</li><li>Choose an investigator to be the bearer of The Light of Pharos and update the Campaign Log accordingly.</li><li>Mark 2 _time_ in your Campaign Log. You may _embark_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Fearing the worst, you retreat to the office as a last line of defense, but you are too late. The chamber is the site of a massacre. Fresh blood drips from the walls, sprayed about in absolute chaos, a whirlwind of death. The grisly sight of partially- devoured dead is one you will never forget.</p><p>With no other leads to go on and the thought of meeting that same fate terrifying you, you decide to cut your losses and flee the city. Still, you cannot help but note that the elderly knight was not among the dead. Perhaps he escaped, as well. If so, this probably isn’t the last you’ll see of either of them…</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Each investigator who was not defeated suffers 1 mental trauma.</li><li>In your Campaign Log, record the following:<ul><li>*The cell failed to fend off the Beast*.</li><li>*You haven’t seen the last of the Beast in a Cowl of Crimson.</li></ul></li><li>The Beast in a Cowl of Crimson is the bearer of The Light of Pharos. Update the Campaign Log accordingly.</li><li>Mark 1 _time_ in your Campaign Log. You may _embark_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You lay low for a few days in one of Agent Sirry’s safehouses outside the city, then meet with him later that week. Heavy bags hang under his eyes, and his beard looks messy and unkempt. His gaze darts warily to you as you enter. He gloomily sums up what transpired after you went dark. “The knight and his entourage are still entrenched in Alexandria. He and that hideous creature are in all-out war now, and of course, my people are the ones who suffer.” He slams his fist on the table in anger. “That’s how it always is with these bastards. They’ll do whatever they can to stay in power, innocents be damned. Frankly, I can’t even tell which of them is worse.”</p><p>You apologize that you weren’t able to help more, and he shakes his head. “No, don’t apologize. You did everything you could. What will you do now?” Your window of opportunity in Alexandria has passed, so you tell Agent Sirry you’ll be taking the next train out to search for more Keys elsewhere. You wonder aloud if he might come with you. “I have a new assignment as well, but…” he scratches his beard thoughtfully. “I fear what may come to pass in my beloved city with this feud going on. I might end up staying. Orders or no orders.” He stands and shakes your hand, and you fear it may be the last time. “I hope to see you again some time. Until then…I have work to do.”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *you haven’t seen the last of the Claret Knight*.</li><li>The Claret Knight is the bearer of The Light of Pharos. Update the Campaign Log accordingly.</li><li>Mark 1 _time_ in your Campaign Log. You may _embark_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: You are escorted by agents in red back to your patron’s office safehouse within the Bourse. The place has been cleaned up significantly since you were last there, and a brand new vault sits next to the grand painting of the familiar scarlet-clad knight. You hand over the Key as agreed, and it is placed back inside the vault and sealed shut. There is a rush of air, and a sensation of building pressure throughout the room as the door shuts tight. Your ears pop with a painful change of pressure—no doubt the work of their so-called “locuses.”</p><p>The Claret Knight looks on with pride as his agents handle the ancient relic. “Once again, forces have conspired to oust us from our rightful place, but once again we stand victorious,” he declares. If there was any semblance of fear or worry on his face before, it has vanished, replaced with the calm resolve of one who has faced many such foes before. With the Key now safely secure in his vault, he turns his attention to you, shaking your hand and gesturing to his desk. “Come, sit. You have done your part, now allow me to do mine. I promised answers, and answers you shall receive.”</p><ul><li>Skip to _Resolution 8_.</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>_Resolution 6_: You lay low for a few days in one of Agent Sirry’s safehouses outside the city, then meet with him later that week, your prize still safely in your possession. He has cleaned up a bit since you last met him, and there is a brightness in his eyes and his smile that was not present before. He joyfully sums up what has occurred since you went dark. “The Beast and its devotees are in hiding, and it seems the rest of the Coterie have vanished, as well,” he declares, wearing a satisfied grin. “It seems, for all their posturing about ‘guiding humanity’ and ‘rightful rule,’ the moment their relic left their hands, their stake in the city vanished with it. Still…” His eyes dance to the vessel containing the Key, its light trapped within. “I doubt you’ve seen the last of them. In fact, I’d wager a guess that one or both are hot on your tail. Be careful.”</p><p>You ask what Hossam will do now that his personal objective in Alexandria is complete. “I have a new assignment, actually,” he answers. “Commissioner Taylor sent the dossier to me just yesterday. I will be leaving my beloved city behind for the first time since joining the Foundation.” He sighs wistfully. “Well, perhaps we can meet up again some time.” He stands and shakes your hand. “It has been a pleasure working alongside you.”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *you haven’t seen the last of the Beast in a Cowl of Crimson*.</li><li>Choose an investigator to be the bearer of The Light of Pharos and update the Campaign Log accordingly.</li><li>Mark 2 _time_ in your Campaign Log. You may _embark_.</li></ul>"
+    },
+    "resolution7": {
+      "title": "Resolution 7",
+      "body": "<p>_Resolution 7_: With terrifying creatures and agents in red embroiled in all-out war, it has become far too dangerous for you to continue operating in Alexandria. You hate to leave such a volatile situation behind, but you don’t seem to have a choice. You find it ironic that the Coterie, who claim to only want to protect humanity, would put the people of Alexandria in such danger. It seems there is a wide range of personalities within the organization. Perhaps some may even be swayed to your side. But for now, those in Alexandria seem to be a lost cause. You leave the city in a dour mood, hoping your next assignment goes more smoothly.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *the dogs are at war*.</li><li>Mark 1 _time_ in your Campaign Log. You may _embark_.</li></ul>"
+    },
+    "resolution8": {
+      "title": "Resolution 8",
+      "body": "<p>_Resolution 8_: You ask the knight what the Red Coterie is truly about. So far, you have seen its members be both brutal and reasonable. And why all the secrecy? “I have not lied to you. We seek only to protect humanity.” He points to the vault wherein the Light of Pharos is still safely sealed away. “These objects, they are too powerful to be wielded by just anyone, and too precious to be kept unaccounted. I’m sure by now you have noticed the influence of other entities upon our world. Outsiders, we call them. These relics are the only line of defense against such entities. The Coterie keeps them safe, to be used only to do battle with the Outsiders. That is why I could not suffer this artifact to fall into the hands of that beast. Aliki is the one who does most of our research regarding the Outsiders—if you wish to know more, perhaps find her. Last anyone heard from her was around Kathmandu, I believe. But you will need to find a translator if you wish to speak with her. She is cryptic and difficult to understand.” He glances at the portrait of the knight clad in crimson armor that looms behind him. “As for all the red… handling relics of an otherworldly nature is both dangerous and conspicuous. So, we have bound them to one or more articles of clothing, to better blend in with society. The process, for whatever reason, turns them red. Of course, there are other benefits too. Think of it as a…secret handshake, if you will.” He raises an eyebrow as he appraises you. “We have, in the past, inducted new members into our ranks, should they prove themselves both trustworthy and capable, as you have. Perhaps one day you shall bear red upon your person, as well. Now, I believe I have fulfilled my end of this bargain. I once again thank you for your aid. My people will compensate your travel expenses.” With that, the conversation comes to a friendly, if abrupt end.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record the following:<ul><li>The cell aided the knight.</li><li>You haven’t seen the last of the Beast in a Cowl of Crimson.</li></ul></li><li>The Claret Knight is the bearer of The Light of Pharos. Update the Campaign Log accordingly.</li><li>Mark 3 _time_ in your Campaign Log. You may _embark_.</li></ul>"
     }
   }
 }

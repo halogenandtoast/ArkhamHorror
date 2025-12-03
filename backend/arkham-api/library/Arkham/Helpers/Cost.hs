@@ -1,5 +1,6 @@
 module Arkham.Helpers.Cost where
 
+import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
@@ -8,8 +9,8 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
-import Arkham.Cost
 import Arkham.Cost.FieldCost
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (..))
@@ -21,7 +22,6 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
-import Arkham.Helpers.Shuffle
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
 import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (
   getSpendableClueCount,
@@ -30,6 +30,7 @@ import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Shuffle
 import {-# SOURCE #-} Arkham.Helpers.SkillTest
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Helpers.Target
@@ -39,6 +40,8 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -573,3 +576,8 @@ applyActionCostModifier _ performedActions actions (AdditionalActionCostOf (Firs
       n + m
 applyActionCostModifier _ _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ _ n = n
+
+payEffectCost
+  :: (Sourceable source, HasCardCode source, ReverseQueue m)
+  => InvestigatorId -> source -> Cost -> m ()
+payEffectCost _iid source cost = push $ Msg.PayForAbility (abilityEffect source [] cost) []

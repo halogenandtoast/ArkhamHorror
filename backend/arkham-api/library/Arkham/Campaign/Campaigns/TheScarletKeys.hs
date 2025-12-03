@@ -133,6 +133,7 @@ instance IsCampaign TheScarletKeys where
     DealingsInTheDark -> continue (embark a)
     DancingMad -> continue (embark a)
     OnThinIce -> continue (embark a)
+    DogsOfWar -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

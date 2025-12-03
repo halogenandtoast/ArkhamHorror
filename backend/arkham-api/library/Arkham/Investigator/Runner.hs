@@ -120,6 +120,7 @@ import Arkham.Matcher (
   ScenarioMatcher (..),
   SourceMatcher (..),
   TreacheryMatcher (..),
+  at_,
   assetControlledBy,
   assetIs,
   cardIs,
@@ -1106,8 +1107,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           then orConnected ForMovement (locationWithInvestigator investigatorId)
           else locationWithInvestigator investigatorId
     concealed <- getConcealedIds NotForExpose investigatorId
+    assetIds <-
+      withAlteredGame withoutCanModifiers
+        $ asIfTurn investigatorId
+        $ select
+        $ AssetWithModifier CanBeAttackedAsIfEnemy <> at_ (locationWithInvestigator investigatorId)
     player <- getPlayer investigatorId
-    let choices = enemyIds <> map coerce locationIds <> map coerce concealed
+    let choices = enemyIds <> map coerce locationIds <> map coerce concealed <> map coerce assetIds
     -- we might have killed the enemy via a reaction before getting here
     unless (null choices) do
       push

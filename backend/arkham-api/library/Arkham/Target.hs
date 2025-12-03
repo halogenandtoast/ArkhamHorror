@@ -78,6 +78,7 @@ data Target
   | ThisTarget -- Used with withModifiers
   | ScarletKeyTarget ScarletKeyId
   | ConcealedCardTarget ConcealedCardId
+  | IndexedTarget Int Target
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "asset" (Maybe Target) (Maybe AssetId) where
@@ -92,6 +93,7 @@ instance HasField "location" (Maybe Target) (Maybe LocationId) where
 instance HasField "asset" Target (Maybe AssetId) where
   getField = \case
     AssetTarget aid -> Just aid
+    IndexedTarget _ t -> t.asset
     ProxyTarget (CardIdTarget _) t -> t.asset
     ProxyTarget t _ -> t.asset
     _ -> Nothing
@@ -99,6 +101,7 @@ instance HasField "asset" Target (Maybe AssetId) where
 instance HasField "enemy" Target (Maybe EnemyId) where
   getField = \case
     EnemyTarget aid -> Just aid
+    IndexedTarget _ t -> t.enemy
     ProxyTarget (CardIdTarget _) t -> t.enemy
     ProxyTarget t _ -> t.enemy
     _ -> Nothing
@@ -106,12 +109,14 @@ instance HasField "enemy" Target (Maybe EnemyId) where
 instance HasField "location" Target (Maybe LocationId) where
   getField = \case
     LocationTarget aid -> Just aid
+    IndexedTarget _ t -> t.location
     ProxyTarget (CardIdTarget _) t -> t.location
     ProxyTarget t _ -> t.location
     _ -> Nothing
 
 instance HasField "investigator" Target (Maybe InvestigatorId) where
   getField = \case
+    IndexedTarget _ t -> t.investigator
     InvestigatorTarget aid -> Just aid
     InvestigatorDiscardTarget aid -> Just aid
     ResourceTarget aid -> Just aid
@@ -136,6 +141,7 @@ actualTarget :: Target -> Target
 actualTarget = \case
   LabeledTarget _ t -> actualTarget t
   ProxyTarget t _ -> actualTarget t
+  IndexedTarget _ t -> actualTarget t
   SkillTestInitiatorTarget t -> actualTarget t
   BothTarget t1 t2 -> BothTarget (actualTarget t1) (actualTarget t2)
   other -> other

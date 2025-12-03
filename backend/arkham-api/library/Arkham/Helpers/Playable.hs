@@ -27,6 +27,7 @@ import Arkham.Helpers.Modifiers (
   toModifiers,
   withGrantedActions,
   withModifiers,
+  withModifiersOf,
   withoutModifier,
  )
 import Arkham.Helpers.Query (getInvestigators)
@@ -141,6 +142,15 @@ getIsPlayable (asId -> iid) source costStatus windows' c =
   withSpan_ ("getIsPlayable[ " <> unCardCode c.cardCode <> "]") do
     availableResources <- getSpendableResources iid
     getIsPlayableWithResources iid source availableResources costStatus windows' c
+
+withReducedCost
+  :: ( Tracing m
+     , HasGame m
+     , Sourceable source
+     , ToId investigator InvestigatorId
+     )
+  => investigator -> source -> Int -> ReaderT Game m a -> m a
+withReducedCost (asId -> iid) source n = withModifiersOf iid source [ReduceCostOf AnyCard n]
 
 getIsPlayableWithResources
   :: forall m source investigator

@@ -41,6 +41,7 @@ targetTraits = \case
   CardCostTarget _ -> pure mempty
   EffectTarget _ -> pure mempty
   KeyTarget _ -> pure mempty
+  IndexedTarget _ t -> targetTraits t
   ScarletKeyTarget _ -> pure mempty
   ConcealedCardTarget _ -> pure mempty
   EnemyTarget eid -> do

@@ -110,6 +110,7 @@ sourceToMaybeTarget = \case
 
 targetToSource :: Target -> Source
 targetToSource = \case
+  IndexedTarget _ t -> targetToSource t
   GameTarget -> GameSource
   ThisTarget -> error "not converted"
   InvestigatorTarget iid -> InvestigatorSource iid

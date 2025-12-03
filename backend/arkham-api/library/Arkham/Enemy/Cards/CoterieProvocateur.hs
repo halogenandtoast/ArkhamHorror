@@ -2,14 +2,23 @@ module Arkham.Enemy.Cards.CoterieProvocateur (coterieProvocateur) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher
+import Arkham.Scenarios.DogsOfWar.Helpers
 
 newtype CoterieProvocateur = CoterieProvocateur EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass (IsEnemy, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 coterieProvocateur :: EnemyCard CoterieProvocateur
-coterieProvocateur = enemy CoterieProvocateur Cards.coterieProvocateur (0, Static 1, 0) (0, 0)
+coterieProvocateur =
+  enemy CoterieProvocateur Cards.coterieProvocateur (0, Static 1, 0) (0, 0)
+    & setSpawnAt (NearestLocationToYou locationWithKeyLocus)
 
-instance RunMessage CoterieProvocateur where
-  runMessage msg (CoterieProvocateur attrs) = runQueueT $ case msg of
-    _ -> CoterieProvocateur <$> liftRunMessage msg attrs
+instance HasModifiersFor CoterieProvocateur where
+  getModifiersFor (CoterieProvocateur a) = do
+    when a.ready do
+      modifySelect
+        a
+        (InvestigatorAt $ locationWithEnemy a)
+        [CannotFight (not_ $ EnemyWithTitle "Coterie Provocateur")]

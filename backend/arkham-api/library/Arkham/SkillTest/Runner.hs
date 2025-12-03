@@ -198,14 +198,15 @@ instance RunMessage SkillTest where
               tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
                 TreatRevealedChaosTokenAs t -> Just t
                 _ -> Nothing
+            hasRun <- fromQueue (elem (RunSkillTest iid))
             if null tokensTreatedAsRevealed
-              then push (RunSkillTest iid)
+              then unless hasRun $ push (RunSkillTest iid)
               else do
                 pushAll
-                  [ When (RevealSkillTestChaosTokens iid)
-                  , RevealSkillTestChaosTokens iid
-                  , RunSkillTest iid
-                  ]
+                  $ [ When (RevealSkillTestChaosTokens iid)
+                    , RevealSkillTestChaosTokens iid
+                    ]
+                  <> [RunSkillTest iid | not hasRun]
                 for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                   t <- getRandom
                   pushAll
@@ -226,10 +227,11 @@ instance RunMessage SkillTest where
               applyRevealStategyModifier n _ = n
               revealStrategy =
                 foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
+            hasRun <- fromQueue (elem (RunSkillTest iid))
             pushAll
-              [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
-              , RunSkillTest iid
-              ]
+              $ [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
+                ]
+              <> [RunSkillTest iid | not hasRun]
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator
@@ -247,10 +249,11 @@ instance RunMessage SkillTest where
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
         _ -> True
+      hasRun <- fromQueue (elem (RunSkillTest iid))
       pushAll
-        [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
-        , RunSkillTest iid
-        ]
+        $ [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
+          ]
+        <> [RunSkillTest iid | not hasRun]
       pure s
     RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokens -> do
       skillTestModifiers' <- getModifiers (SkillTestTarget sid)
@@ -780,7 +783,8 @@ instance RunMessage SkillTest where
           Ask player' (ChooseOne [SkillTestApplyResultsButton])
             | player == player' -> False
           _ -> True
-        push $ RunSkillTest skillTestInvestigator
+        hasRun <- fromQueue (elem (RunSkillTest skillTestInvestigator))
+        unless hasRun $ push $ RunSkillTest skillTestInvestigator
         pure s
     RecalculateSkillTestResults -> runMessage (RecalculateSkillTestResultsCanChangeAutomatic False) s
     RecalculateSkillTestResultsCanChangeAutomatic canChange -> do

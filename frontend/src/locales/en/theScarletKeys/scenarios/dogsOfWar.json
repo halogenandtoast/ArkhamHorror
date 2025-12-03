@@ -14,7 +14,16 @@
       "elderThing": "-3. For each point you fail by, lose 1 resource."
     }
   },
+  "tooltips": {
+    "theClaretKnight": {
+      "to": "{'{'}fast{'}'} Exhaust The Claret Knight: Move up to 3 resources from your resource pool to The Claret Knight.",
+      "from": "{'{'}fast{'}'} Exhaust The Claret Knight: Move up to 3 resources from The Claret Knight to your resource pool, or to an asset you control as charges, ammo, supplies, or secrets."
+    }
+  },
   "label": {
+    "theClaretKnight": {
+      "resources": "Move up to 3 resources"
+    },
     "zanEtElSettat": {
       "increaseFight": "Increase that enemy's fight by 2 for this attack."
     }

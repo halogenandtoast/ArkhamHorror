@@ -4,6 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -12,17 +14,26 @@ import Arkham.Projection
 import Arkham.Scenarios.DogsOfWar.Helpers
 
 newtype TheClaretKnightHerSwornChampion = TheClaretKnightHerSwornChampion AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theClaretKnightHerSwornChampion :: AssetCard TheClaretKnightHerSwornChampion
 theClaretKnightHerSwornChampion = allyWith TheClaretKnightHerSwornChampion Cards.theClaretKnightHerSwornChampion (4, 2) noSlots
 
+instance HasModifiersFor TheClaretKnightHerSwornChampion where
+  getModifiersFor (TheClaretKnightHerSwornChampion a) = do
+    modifySelf a . map AsIfUnderControlOf =<< getInvestigators
+
 instance HasAbilities TheClaretKnightHerSwornChampion where
   getAbilities (TheClaretKnightHerSwornChampion a) =
-    [ controlled a 1 (youExist InvestigatorWithAnyResources) $ FastAbility (exhaust a)
-    , controlled a 2 (thisExists a (AssetWithTokens (atLeast 1) #resource)) $ FastAbility (exhaust a)
-    ]
+    scenarioI18n
+      [ withI18nTooltip "theClaretKnight.to"
+          $ controlled a 1 (youExist InvestigatorWithAnyResources)
+          $ FastAbility (exhaust a)
+      , withI18nTooltip "theClaretKnight.from"
+          $ controlled a 2 (thisExists a (AssetWithTokens (atLeast 1) #resource))
+          $ FastAbility (exhaust a)
+      ]
 
 instance RunMessage TheClaretKnightHerSwornChampion where
   runMessage msg a@(TheClaretKnightHerSwornChampion attrs) = runQueueT $ case msg of
@@ -40,7 +51,7 @@ instance RunMessage TheClaretKnightHerSwornChampion where
     ResolveAmounts iid (getChoiceAmount "$resources" -> n) (IndexedTarget 1 (isTarget attrs -> True)) -> do
       moveTokens (attrs.ability 1) iid attrs #resource n
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       scenarioI18n
         $ chooseAmount'
           iid

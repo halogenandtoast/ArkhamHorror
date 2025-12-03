@@ -43,6 +43,9 @@ const store = useDbCardStore()
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
+
+  const investigatorClass = 
+    ['c03006', 'c90087'].includes(investigator.cardCode) && investigator.meta !== 'Neutral' ? (investigator.meta ?? investigator.class) : investigator.class
   return [
     {
       'tab--selected': pid === selectedTab.value,
@@ -51,7 +54,7 @@ function tabClass(investigator: Investigator) {
       'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
       'glow-effect': investigator.id === 'c89001',
     },
-    `tab--${investigator.class}`,
+    `tab--${investigatorClass}`,
   ]
 }
 

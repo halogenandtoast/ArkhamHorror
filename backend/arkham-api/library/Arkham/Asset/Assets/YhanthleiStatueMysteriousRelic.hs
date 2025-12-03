@@ -38,6 +38,7 @@ instance RunMessage YhanthleiStatueMysteriousRelic where
       chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      readyThis attrs
       flipOverBy iid (attrs.ability 2) attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do

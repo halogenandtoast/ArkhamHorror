@@ -146,7 +146,7 @@ const image = computed(() => {
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
-  const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.class !== 'Neutral' ? `_${props.investigator.class}` : ''
+  const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? `_${props.investigator.meta}` : ''
   return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.avif`);
 })
 

@@ -22,16 +22,17 @@ lolaHayesParallel =
 instance HasModifiersFor LolaHayesParallel where
   getModifiersFor (LolaHayesParallel attrs) = do
     mLeadingLady <- getMeta attrs "leadingLady"
+    let role = toResultDefault Neutral attrs.meta
     modifySelf attrs $ case mLeadingLady of
       Nothing ->
-        [ CannotPlay $ not_ $ mapOneOf CardWithClass $ nub [Neutral, investigatorClass attrs]
-        , CannotCommitCards $ not_ $ mapOneOf CardWithClass $ nub [Neutral, investigatorClass attrs]
+        [ CannotPlay $ not_ $ mapOneOf CardWithClass $ nub [Neutral, role]
+        , CannotCommitCards $ not_ $ mapOneOf CardWithClass $ nub [Neutral, role]
         ]
       Just cid ->
         [ CannotPlay $ not_ $ oneOf $ CardWithId cid
-            : map CardWithClass (nub [Neutral, investigatorClass attrs])
+            : map CardWithClass (nub [Neutral, role])
         , CannotCommitCards $ not_ $ oneOf $ CardWithId cid
-            : map CardWithClass (nub [Neutral, investigatorClass attrs])
+            : map CardWithClass (nub [Neutral, role])
         ]
     msamuel <-
       selectOne $ inHandOf NotForPlay attrs.id <> basic (cardIs Assets.samuelBlakeObsessiveProducer)
@@ -39,7 +40,7 @@ instance HasModifiersFor LolaHayesParallel where
       modified_
         samuel.id
         attrs
-        [CannotPlay $ not_ $ mapOneOf CardWithClass $ nub [Neutral, investigatorClass attrs]]
+        [CannotPlay $ not_ $ mapOneOf CardWithClass $ nub [Neutral, role]]
 
 instance HasAbilities LolaHayesParallel where
   getAbilities (LolaHayesParallel a) =
@@ -60,18 +61,18 @@ switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do
   let roles = filter (/= Mythos) [minBound .. maxBound]
   msamuel <- select $ assetIs Assets.samuelBlakeObsessiveProducer
+  let currentRole = toResultDefault Neutral attrs.meta
   chooseOneM attrs.id $ for_ roles \role ->
     labeled (tshow role) do
       push $ SetRole attrs.id role
       for_ msamuel \samuel ->
-        when (role /= investigatorClass attrs) do
-          assignHorror attrs.id samuel 1
+        when (role /= currentRole) $ assignHorror attrs.id samuel 1
 
 instance RunMessage LolaHayesParallel where
   runMessage msg i@(LolaHayesParallel attrs) = runQueueT $ case msg of
     ForInvestigator iid BeginGame | iid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
-      pure $ LolaHayesParallel $ attrs' {investigatorClass = Neutral}
+      pure $ LolaHayesParallel $ attrs' & setMeta Neutral
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       switchRole attrs
       pure i
@@ -79,4 +80,6 @@ instance RunMessage LolaHayesParallel where
       ok <- selectNone $ inHandOf NotForPlay iid <> basic (cardIs Assets.samuelBlakeObsessiveProducer)
       when ok $ switchRole attrs
       pure i
+    SetRole iid role | iid == attrs.id -> do
+      pure $ overAttrs (setMeta role) i
     _ -> LolaHayesParallel <$> liftRunMessage msg attrs

@@ -2718,7 +2718,13 @@ getAssetsMatching matcher = do
     AssetWithPlacement placement -> pure $ filter ((== placement) . attr assetPlacement) as
     AssetControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
+      as & filterM \a -> do
+        mods <- getModifiers a.id
+        let asIfControllers = [iid | AsIfUnderControlOf iid <- mods]
+        orM
+          [ pure $ any (`elem` iids) asIfControllers
+          , fieldP AssetController (maybe False (`elem` iids)) a.id
+          ]
     UnownedAsset -> filterM (fieldP AssetOwner isNothing . toId) as
     AssetOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher

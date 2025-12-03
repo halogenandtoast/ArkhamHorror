@@ -27,8 +27,10 @@ pattern KeyLocusLocation = ScenarioModifier "keyLocusLocation"
 keyLocusTargets :: (Tracing m, HasGame m) => m [Target]
 keyLocusTargets = do
   keyLocuses <-
-    selectTargets $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
-  assets <- selectTargets $ AssetWithModifier IsKeyLocus
+    selectTargets
+      $ InPlayAsset
+      $ mapOneOf assetIs [Assets.keyLocusLastBastion, Assets.keyLocusDefensiveBarrier]
+  assets <- selectTargets $ InPlayAsset $ AssetWithModifier IsKeyLocus
   locations <- selectTargets $ LocationWithModifier IsKeyLocus
   pure $ keyLocuses <> assets <> locations
 

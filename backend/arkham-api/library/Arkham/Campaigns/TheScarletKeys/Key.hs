@@ -30,7 +30,7 @@ data TheScarletKeysKey
   | TheCellBlewTheWhistle
   | TheCellDidntDiscoverTheTruthInHavana
   | TheCellEscapedTheRedCoterie
-  | TheCellFailedToFendOfTheBeast
+  | TheCellFailedToFendOffTheBeast
   | TheCellHasBeenAmbushed
   | TheCellHidTheTruthFromTaylor
   | TheCellIsAssistingAgentSirry

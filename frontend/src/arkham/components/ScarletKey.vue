@@ -78,6 +78,7 @@ const abilities = computed(() => {
 })
 
 const clues = computed(() => props.scarletKey.tokens[TokenType.Clue])
+const resources = computed(() => props.scarletKey.tokens[TokenType.Resource])
 </script>
 
 <template>
@@ -92,6 +93,7 @@ const clues = computed(() => props.scarletKey.tokens[TokenType.Clue])
         />
         <div class="pool">
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
         </div>
       </div>
       <AbilityButton

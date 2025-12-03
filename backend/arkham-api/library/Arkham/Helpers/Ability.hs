@@ -169,7 +169,11 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
         selectAny
           $ Matcher.locationWithInvestigator iid
           <> Matcher.LocationWithExposableConcealedCard ab.source
-      pure $ enemies || locations || concealed
+      assets <-
+        selectAny
+          $ Matcher.AssetWithModifier CanBeAttackedAsIfEnemy
+          <> Matcher.at_ (Matcher.locationWithInvestigator iid)
+      pure $ enemies || locations || concealed || assets
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
     ConcealedCardSource _ -> pure True

@@ -4,7 +4,9 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (patrol)
@@ -16,7 +18,9 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DogsOfWar.Helpers
 import Arkham.Trait (Trait (LocusSite, Miskatonic, Scholar))
@@ -263,5 +267,66 @@ instance RunMessage DogsOfWar where
             when (isHardExpert attrs) $ initiateEnemyAttack enemy Cultist iid
             disengageFromAll enemy
             patrol enemy
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          let version = getMetaKeyDefault "version" Version1 attrs
+          resolutionFlavor do
+            setTitle "noResolution.title"
+            p.validate (version == Version1) "noResolution.version1"
+            p.validate (version == Version2) "noResolution.version2"
+            p.validate (version == Version3) "noResolution.version3"
+          push $ case version of
+            Version1 -> R3
+            Version2 -> R4
+            Version3 -> R7
+        Resolution 1 -> do
+          resolution "resolution1"
+          push R8
+        Resolution 2 -> do
+          record YouHaventSeenTheLastOfTheClaretKnight
+          markTime 2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          chooseBearer Keys.theLightOfPharos
+          endOfScenario
+        Resolution 3 -> do
+          record TheCellFailedToFendOffTheBeast
+          record YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
+          setBearer Keys.theLightOfPharos
+            $ keyWithEnemy Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
+          markTime 1
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          selectEach (not_ DefeatedInvestigator) (`sufferMentalTrauma` 1)
+          endOfScenario
+        Resolution 4 -> do
+          record YouHaventSeenTheLastOfTheClaretKnight
+          setBearer Keys.theLightOfPharos
+            $ keyWithEnemy Enemies.theClaretKnightHoldsYouInContempt
+          markTime 1
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          endOfScenario
+        Resolution 5 -> do
+          resolution "resolution5"
+          push R8
+        Resolution 6 -> do
+          record YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
+          markTime 2
+          resolutionWithXp "resolution6" $ allGainXp' attrs
+          chooseBearer Keys.theLightOfPharos
+          endOfScenario
+        Resolution 7 -> do
+          record TheDogsAreAtWar
+          markTime 1
+          resolutionWithXp "resolution7" $ allGainXp' attrs
+          endOfScenario
+        Resolution 8 -> do
+          record TheCellAidedTheKnight
+          record YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
+          setBearer Keys.theLightOfPharos
+            $ keyWithEnemy Enemies.theClaretKnightHoldsYouInContempt
+          resolutionWithXp "resolution8" $ allGainXp' attrs
+          endOfScenario
+        _ -> error "Unknown resolution for Dancing Mad"
       pure s
     _ -> DogsOfWar <$> liftRunMessage msg attrs

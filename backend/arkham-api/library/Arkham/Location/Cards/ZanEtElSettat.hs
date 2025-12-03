@@ -17,7 +17,7 @@ newtype ZanEtElSettat = ZanEtElSettat LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zanEtElSettat :: LocationCard ZanEtElSettat
-zanEtElSettat = symbolLabel $ location ZanEtElSettat Cards.zanEtElSettat 0 (Static 0)
+zanEtElSettat = symbolLabel $ location ZanEtElSettat Cards.zanEtElSettat 3 (PerPlayer 1)
 
 instance HasAbilities ZanEtElSettat where
   getAbilities (ZanEtElSettat a) =

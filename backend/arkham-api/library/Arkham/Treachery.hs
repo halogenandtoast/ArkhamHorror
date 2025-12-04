@@ -588,6 +588,9 @@ allTreacheries =
     , SomeTreacheryCard snowslide
     , --- Dogs of War [tsk]
       SomeTreacheryCard locusPulse
+    , --- Shades of Suffering [tsk]
+      SomeTreacheryCard excruciate
+    , SomeTreacheryCard spiritHarvest
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]

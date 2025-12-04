@@ -1,1 +1,9 @@
-{}
+{
+  "intro": {
+    "title": "File #46–Q: Shades of Suffering",
+    "body": "Check your Campaign Log.",
+    "flintTraveledToKualaLumpur": "*If Flint traveled to Kuala Lumpur*, proceed to _Intro 1_.",
+    "agentFlintIsMissing": "*If Agent Flint is missing*, skip to _Intro 2_.",
+    "intro1": "<p>_Intro 1_: You and Flint meet at the Royal Selangor Club: a sharp-angled complex situated on the edge of a meticulously groomed lawn. A cricket match unfolds for the club members on the turf below as you and Flint discuss the Coterie’s interests and Tzu San Niang’s possible aims. “Hold on a moment,” Flint stops mid-sip and stares into the throng of wealthy expatriates. You turn your head and watch the crowd. A woman with a pale complexion and jet-black hair turns away from you, twirling a bright red parasol.</p><p>“Well, that was easy,” laughs Flint. You can hear a steely edge in his voice as he stands, gingerly, and leaves a generous tip for the staff. “Let’s see what she’s up to, shall we?”</p><ul><li>In your Campaign Log, record *Flint rejoined the cell*. Any one investigator may choose to add the Inspector Flint story asset to their deck. It does not count toward their deck size. This card can be found in the Globetrotting encounter set, indicated by the following encounter set icon:<section class='encounter-sets'><img src='{setImgPath}/globetrotting.png'></section></li><li>Proceed to _Setup_.</li></ul>"
+  }
+}

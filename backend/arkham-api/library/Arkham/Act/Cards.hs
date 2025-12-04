@@ -103,9 +103,11 @@ allActCards =
       , fromWhenceTheyCame
       , getTheEngineRunning
       , getToTheBoats
+      , ghostLight
       , harlanIsInDanger
       , harlansCurseHarlanEarnstone
       , harlansCurseSafekeeping
+      , harvesterOfWoe
       , hiddenAgendas
       , huntingTheRougarou
       , huntressOfTheEztli
@@ -237,6 +239,7 @@ allActCards =
       , theGuardedRuins
       , theGuardiansInquiry
       , theIsleOfOriab
+      , theLadyWithTheRedParasol
       , theLighthouse
       , theLostExpedition
       , theKingInTatters
@@ -1015,6 +1018,15 @@ rabbitsWhoRunV2 = act "09640" "Rabbits who Run (v. II)" 1 DogsOfWar
 
 rabbitsWhoRunV3 :: CardDef
 rabbitsWhoRunV3 = act "09641" "Rabbits who Run (v. III)" 1 DogsOfWar
+
+theLadyWithTheRedParasol :: CardDef
+theLadyWithTheRedParasol = act "09664" "The Lady with the Red Parasol" 1 ShadesOfSuffering
+
+ghostLight :: CardDef
+ghostLight = act "09665" "Ghost Light" 2 ShadesOfSuffering
+
+harvesterOfWoe :: CardDef
+harvesterOfWoe = act "09666" "Harvester of Woe" 3 ShadesOfSuffering
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

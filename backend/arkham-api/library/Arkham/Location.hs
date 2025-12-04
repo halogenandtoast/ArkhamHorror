@@ -863,6 +863,14 @@ allLocations =
     , SomeLocationCard catacombsOfKomElShoqafaDenOfTheBeast
     , SomeLocationCard catacombsOfKomElShoqafaBloodyNexus
     , SomeLocationCard catacombsOfKomElShoqafaAncientTomb
+    , --- Shades of Suffering [tsk]
+      SomeLocationCard kualaLumpurStationEastWing
+    , SomeLocationCard kualaLumpurStationWestWing
+    , SomeLocationCard selangorClub
+    , SomeLocationCard selangorClubPadang
+    , SomeLocationCard melatisShop
+    , SomeLocationCard wayangKulitTheater
+    , SomeLocationCard tinMine
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -307,6 +307,10 @@ allAgendas =
       SomeAgendaCard brewingCatastropheV1
     , SomeAgendaCard brewingCatastropheV2
     , SomeAgendaCard brewingCatastropheV3
+    , --- Shades of Suffering [tsk]
+      SomeAgendaCard painfulHistory
+    , SomeAgendaCard restlessDead
+    , SomeAgendaCard fearTheReaper
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

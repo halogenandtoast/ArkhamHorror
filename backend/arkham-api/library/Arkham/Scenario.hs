@@ -376,7 +376,7 @@ instance RunMessage Scenario where
                 $ chooseOne player
                 $ Label "Skip" []
                 : [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
-                <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
+                  <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
             Reversed -> do
               push
                 $ chooseOne
@@ -641,6 +641,7 @@ allScenarios =
     , ("09591", SomeScenario dancingMad)
     , ("09609", SomeScenario onThinIce)
     , ("09635", SomeScenario dogsOfWar)
+    , ("09660", SomeScenario shadesOfSuffering)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
@@ -762,6 +763,7 @@ scenarioEncounterSets =
     , ("09591", EncounterSet.DancingMad)
     , ("09609", EncounterSet.OnThinIce)
     , ("09635", EncounterSet.DogsOfWar)
+    , ("09660", EncounterSet.ShadesOfSuffering)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)

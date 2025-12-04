@@ -99,6 +99,7 @@ travel attrs locId doTravel n = do
       Alexandria -> campaignStep_ DogsOfWar
       RioDeJaneiro -> campaignStep_ (InterludeStep 44 Nothing)
       Manokwari -> campaignStep_ (InterludeStep 45 Nothing)
+      KualaLumpur -> campaignStep_ ShadesOfSuffering
       Sydney -> campaignStep_ (InterludeStep 49 Nothing)
       HongKong -> campaignStep_ (InterludeStep 50 Nothing)
       Rome -> campaignStep_ (InterludeStep 51 Nothing)
@@ -134,6 +135,7 @@ instance IsCampaign TheScarletKeys where
     DancingMad -> continue (embark a)
     OnThinIce -> continue (embark a)
     DogsOfWar -> continue (embark a)
+    ShadesOfSuffering -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

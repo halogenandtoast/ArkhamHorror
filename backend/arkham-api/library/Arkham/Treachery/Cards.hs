@@ -314,6 +314,7 @@ allEncounterTreacheryCards =
       , esotericRitual
       , evanescentMist
       , evilPast
+      , excruciate
       , expulsion
       , extradimensionalVisions
       , eyesInTheTrees
@@ -530,6 +531,7 @@ allEncounterTreacheryCards =
       , spacesBetween
       , spectralMist
       , spiresOfCarcosa
+      , spiritHarvest
       , spiritsTorment
       , splinteredSpace
       , stalkedInTheDark
@@ -2958,6 +2960,18 @@ snowslide =
 locusPulse :: CardDef
 locusPulse =
   (treachery "09658" "Locus Pulse" DogsOfWar 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+excruciate :: CardDef
+excruciate =
+  (treachery "09677" "Excruciate" ShadesOfSuffering 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+spiritHarvest :: CardDef
+spiritHarvest = peril $
+  (treachery "09678" "Spirit Harvest" ShadesOfSuffering 2)
     { cdCardTraits = setFromList [Hex]
     }
 

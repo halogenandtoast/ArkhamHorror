@@ -1,20 +1,48 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2 (-4 instead if you are at a _Bayou_ location).",
-      "cultist": "-2. If the Rougarou is in your location, reveal another token.",
-      "tablet": "Reveal another token. If you fail, until the end of the round, you cannot move.",
-      "elderThing": "-4. If the Rougarou is at your location, it attacks you."
+      "skull": "–2 (–4 à la place si vous êtes dans un lieu _Bayou_).",
+      "cultist": "–2. Si Le Rougarou est dans votre lieu, révélez un autre pion.",
+      "tablet": "Révélez un autre pion. En cas d'échec, vous ne pouvez pas vous déplacer jusqu'à la fin du round.",
+      "elderThing": "–4. Si Le Rougarou est dans votre lieu, il vous attaque."
     },
     "hardExpert": {
-      "skull": "-3 (-6 instead if you are at a _Bayou_ location).",
-      "cultist": "-3. If the Rougarou is in your location, reveal another token.",
-      "tablet": "Reveal another token. If you fail, until the end of the round, you cannot move.",
-      "elderThing": "-4. If the Rougarou is at your location or a connecting location, it attacks you."
+      "skull": "–3 (–6 à la place si vous êtes dans un lieu _Bayou_).",
+      "cultist": "–3. Si Le Rougarou est dans votre lieu, révélez un autre pion.",
+      "tablet": "Révélez un autre pion. En cas d'échec, vous ne pouvez pas vous déplacer jusqu'à la fin du round.",
+      "elderThing": "–4. Si Le Rougarou est dans votre lieu ou dans un lieu connexe, il vous attaque."
     }
   },
   "remembered": {
-    "foundAnAncientBindingStone": "Found an ancient binding stone",
-    "foundAStrangeDoll": "Found a strange doll"
+    "foundAnAncientBindingStone": "Trouvé une ancienne pierre d'entrave",
+    "foundAStrangeDoll": "Trouvé une drôle de poupée"
+  },
+  "intro": {
+    "title": "La Peur Règne à la Nouvelle-Orléans!",
+    "body": "<p>MMinnie Klein, votre contact à l'Annonceur d'Arkham, vous a remis le premier jet de son article autour d'une tasse de café de Chez Velma. L'article aurait déjà été envoyé sous presse si Doyle Jeffries, son responsable éditorial, ne lui avait pas ri au nez. « Je crois que ses mots exacts étaient \"J'vais tout de même pas publier les divagations de je ne sais quelle tarée vaudou et faire passer ça pour de l'info\" », vous relata-t’elle. Vous pouviez deviner à son air narquois qu'elle avait flairé une bonne histoire.</p><p>La Une était digne d'un journal à sensation. Trois meurtres en neuf jours suffisaient certes à effrayer une ville, mais vous doutiez sincèrement que toute La Nouvelle-Orléans tremble de peut ni même qu'elle ait connaissance de ces morts. Quelque chose retint cependant votre attention. « Lady Esprit », la prêtresse vaudou de l'article, expliquait qu'une terrible malédiction avait pris racine dans le bayou.</p><p>« Il y a quelque chose là-dessous, n'est-ce pas ? Je connais ce regard », ajouta Minnie. Vous ne saviez que penser. Si Lady Esprit disait vrai, ce « roux-garoux » ne s'arrêterait certainement pas à trois victimes. Mais de malédictions ? Des hommes-loups ? Comment de telles choses pourraient-elles exister ? Il n'y avait qu'un seul moyen de le savoir. Enfilant votre veste, vous vous dirigeâtes vers la gare du quartier Nord…</p>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *La Malédiction du Rougarou* et *Le Bayou*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/curse-of-the-rougarou.png' /><img src='{setImgPath}/the-bayou.png' /></section>",
+    "setAsideEncounterSets": "Mettez de côté le set de rencontre *La Malédiction du Rougarou*, hors jeu.",
+    "placeLocations": "Classez tous les lieux en 4 piles selon leur trait (_La Nouvelle-Orléans_, _Berges_, _Contrée Sauvage_ et _Non Consacré_). Prenez une de ces piles au hasard et retirez-la de la partie. Prenez 1 autre de ces piles au hasard et mettez ces lieux en jeu. Mettez de côté chaque lieu des 2 autres piles, hors jeu. Chaque investigateur débute la partie dans un lieu _Bayou_ en jeu.",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Lady Esprit, Piège à Ours et Filet de Pêche."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<p class='basic'>_Si aucune conclusion n'est atteinte (tous les investigateurs ont abandonné ou été vaincus)_: lisez la _Conclusion 1_.</p>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Vous parvenez tout juste à vous mettre à l'abri avant l'aube et vous vous reposez jusque tard dans l'après-midi. Ce n'est qu'en partant à la recherche de Lady Esprit le lendemain que vous réalisez l'identité de la dernière victime de la nuit. Le cœur lourd et empli de remords, vous décidez d'enterrer son corps plutôt que de contacter les autorités - moins nombreux seront les gens à s'aventurer dans ce bayou mieux ce sera.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le Rougarou continue de hanter le bayou*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : La créature émet un gémissement pitoyable tandis qu'un sang sombre et bourbeux s'échappe de ses blessures. Le temps qu'il s'effondre dans la boue, son corps a repris sa forme originelle - celle d'un jeune homme à la peau sombre et au visage déformé par la douleur. Vous rapporte sa dépouille à Lady Esprit, qui utilise son étrange magie pour chasser la malédiction de ces terres. « N'hésitez pas à faire appel à moi si vous avez encore besoin de mon aide », ajoute la mystérieuse femme.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le Rougarou a été abattu et la malédiction levée*. Retirez la faiblesse _La Malédiction du Rougarou_ du deck de son détenteur. N'importe quel investigateur a le droit d'ajouter _Lady Esprit_ à son deck. Cette carte ne compte pas dans la Taille du Deck de cet investigateur.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<p>_Conclusion 3_: Vous êtes parvenu à dissiper la rage et la soif de sang de la créature. Un instant plus tard, un jeune homme à la peau sombre se tient devant vous, suant et haletant. Il semble à peine réaliser ce qu'il a fait et accepte d'aller s'exiler dans un coin isolé de la Terre où il ne pourrait blesser personne. Toutefois, la malédiction subsiste. Il le voit dans vos yeux et vous agrippe fermement le bras. « Ne la laissez pas prendre le contrôle », vous prévient-il. « J'étais faible, mais vous - je peux voir votre force. Contrôlez cette malédiction, comme je n'ai pas su le faire. »</p><ul><li>Dans votre Carnet de Campagne, indiquez que le Rougarou s'est enfui et que vous avez été maudit. Le détenteur de la faiblesse _La Malédiction du Rougarou_ doit ajouter _Transformation Monstrueuse_ à son deck. Cette carte ne compte pas dans la Taille du Deck de cet investigateur.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li></ul>"
+    }
   }
 }

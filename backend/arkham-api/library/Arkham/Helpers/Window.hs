@@ -59,6 +59,7 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window
 import Arkham.Window qualified as Window
 import Arkham.Zone
+import Control.Monad.Trans.Class
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 
@@ -526,6 +527,7 @@ getEnemy = \case
   ((windowType -> Window.EnemyMovesTo _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyWouldMove eid _ _ _) : _) -> eid
   ((windowType -> Window.WouldPatrol eid) : _) -> eid
+  ((windowType -> Window.EnemyEngaged _ eid) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -2245,3 +2247,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case
       Window.AttemptExplore who -> matchWho iid who whoMatcher
       _ -> noMatch
+
+ignoreMatchingWindows :: (MonadTrans t, HasQueue Message m) => (Window -> Bool) -> t m ()
+ignoreMatchingWindows f = lift $ Arkham.Classes.HasQueue.withQueue_ \msgs ->
+  let
+    go = \case
+      Do inner@(CheckWindows _) -> Do <$> go inner
+      msg@(CheckWindows ws) -> case ws of
+        [] -> Nothing
+        [x] -> guard (not (f x)) $> msg
+        xs -> case filter (not . f) xs of
+          [] -> Nothing
+          ys -> Just $ CheckWindows ys
+      other -> Just other
+   in
+    msgs & mapMaybe go

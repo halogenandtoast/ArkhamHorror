@@ -195,7 +195,7 @@ import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
-import Arkham.Trait hiding (Game)
+import Arkham.Trait hiding (Game, Haunted)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (
   Field (..),

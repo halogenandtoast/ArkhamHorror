@@ -145,6 +145,9 @@ instance IsLabel "relic" AssetMatcher where
 instance IsLabel "charm" AssetMatcher where
   fromLabel = AssetWithTrait Charm
 
+instance IsLabel "discardable" AssetMatcher where
+  fromLabel = DiscardableAsset
+
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 

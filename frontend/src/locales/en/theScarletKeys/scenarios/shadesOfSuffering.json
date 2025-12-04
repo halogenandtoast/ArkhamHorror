@@ -5,5 +5,20 @@
     "flintTraveledToKualaLumpur": "*If Flint traveled to Kuala Lumpur*, proceed to _Intro 1_.",
     "agentFlintIsMissing": "*If Agent Flint is missing*, skip to _Intro 2_.",
     "intro1": "<p>_Intro 1_: You and Flint meet at the Royal Selangor Club: a sharp-angled complex situated on the edge of a meticulously groomed lawn. A cricket match unfolds for the club members on the turf below as you and Flint discuss the Coterie’s interests and Tzu San Niang’s possible aims. “Hold on a moment,” Flint stops mid-sip and stares into the throng of wealthy expatriates. You turn your head and watch the crowd. A woman with a pale complexion and jet-black hair turns away from you, twirling a bright red parasol.</p><p>“Well, that was easy,” laughs Flint. You can hear a steely edge in his voice as he stands, gingerly, and leaves a generous tip for the staff. “Let’s see what she’s up to, shall we?”</p><ul><li>In your Campaign Log, record *Flint rejoined the cell*. Any one investigator may choose to add the Inspector Flint story asset to their deck. It does not count toward their deck size. This card can be found in the Globetrotting encounter set, indicated by the following encounter set icon:<section class='encounter-sets'><img src='{setImgPath}/globetrotting.png'></section></li><li>Proceed to _Setup_.</li></ul>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Shades of Suffering*, *Dark Veiling*, *Mysteries Abound*, *Scarlet Sorcery*, *Spreading Corruption*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/shades-of-suffering.png'><img src='{setImgPath}/dark-veiling.png'><img src='{setImgPath}/mysteries-abound.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/striking-fear.png'></section>",
+    "placeLocations": "Put the Kuala Lumpur Station (*East Wing*), Kuala Lumpur Station (*West Wing*), Selangor Club, and Selangor Club Padang locations into play.",
+    "setAsideOtherLocations": "Set each other location (Melati’s Shop, Tin Mine, and Wayang Kulit Theater) aside, out of play.",
+    "checkCampaignLog": "Check the Campaign Log.",
+    "flintRejoinedTheCell": "*If Flint rejoined the cell*, each investigator begins play at Selangor Club. If an investigator added the Inspector Flint story asset to their deck, they may search their deck for Inspector Flint, put him into play under their control, then shuffle their deck. For the remainder of this scenario, he does not take up an ally slot.",
+    "agentFlintIsMissing": "*If Agent Flint is missing*, each investigator begins play at Kuala Lumpur Station (*West Wing*).",
+    "geists": "Choose one of each _Geist_ enemy (Uncanny Shadow, Buried Miner, and Slain Foreman) at random and set them aside, out of play. Remove the other copies of those _Geist_ enemies from the game. These cards are double-sided and have story cards on their reverse side. For the best experience, do not look at the story cards on their other side until you are instructed to do so.",
+    "tzuSanNiang": "Spawn the Tzu San Niang enemy (*The Lady with the Red Parasol*) side faceup in the shadows and attach The Shade Reaper to her, _Unstable_ side faceup. Resolve her concealed keyword, placing her concealed mini-cards at each location other than the starting location.",
+    "time": "Check how much _time_ has passed in the Campaign Log.",
+    "elevenOrFewerTime": "If 11 or fewer _time_ has passed, no change is made.",
+    "betweenTwelveAndEighteenTime": "If 12-18 _time_ has passed, place three resources on The Shade Reaper, as charges.",
+    "betweenNineteenAndTwentySixTime": "If 19-26 _time_ has passed, place six resources on The Shade Reaper, as charges.",
+    "twentySevenOrMoreTime": "If 27 or more _time_ has passed, place nine resources on The Shade Reaper, as charges. Place 1 doom on the agenda."
   }
 }

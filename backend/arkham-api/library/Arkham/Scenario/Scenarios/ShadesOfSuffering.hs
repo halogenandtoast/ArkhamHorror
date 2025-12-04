@@ -75,6 +75,23 @@ instance RunMessage ShadesOfSuffering where
       flavor $ setTitle "title" >> p "intro1"
       pure s
     Setup -> runScenarioSetup ShadesOfSuffering attrs do
+      t <- getTime
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "setAsideOtherLocations"
+        li.nested "checkCampaignLog" do
+          li "flintRejoinedTheCell"
+          li "agentFlintIsMissing"
+        li "geists"
+        li "tzuSanNiang"
+        li.nested "time" do
+          li.validate (t <= 11) "elevenOrFewerTime"
+          li.validate (t >= 12 && t <= 18) "betweenTwelveAndEighteenTime"
+          li.validate (t >= 19 && t <= 26) "betweenNineteenAndTwentySixTime"
+          li.validate (t >= 27) "twentySevenOrMoreTime"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
       gather Set.ShadesOfSuffering
       gather Set.DarkVeiling
       gather Set.MysteriesAbound

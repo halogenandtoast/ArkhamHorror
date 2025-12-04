@@ -1,16 +1,59 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the agenda deck.",
-      "cultist": "Reveal another token. If you fail this test, draw the top card of the encounter deck.",
-      "tablet": "-3. If you fail, deal 1 damage or 1 horror to the nearest Innocent Reveler in play.",
-      "elderThing": "-4. If you fail and Cnidathqua is in play, it attacks you."
+      "skull": "–2. Ce pion a un –1 supplémentaire pour chaque Participant Innocent sous le deck Intrigue.",
+      "cultist": "Révélez un autre pion. En cas d'échec, piochez la carte du dessus du deck Rencontre.",
+      "tablet": "–3. En cas d'échec, infligez 1 dégât ou 1 horreur au Participant Innocent le plus proche en jeu.",
+      "elderThing": "–4. En cas d'échec, si Cnidathqua est en jeu, il vous attaque."
     },
     "hardExpert": {
-      "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the act or agenda decks.",
-      "cultist": "Reveal another token. If you fail this test, draw the top card of the encounter deck.",
-      "tablet": "-4. Deal 1 damage or 1 horror to the nearest Innocent Reveler in play.",
-      "elderThing": "-6. If you fail and Cnidathqua is in play, it attacks you."
+      "skull": "–2. Ce pion a un –1 supplémentaire pour chaque Participant Innocent sous les decks Intrigue ou Acte.",
+      "cultist": "Révélez un autre pion. En cas d'échec, piochez la carte du dessus du deck Rencontre.",
+      "tablet": "–4. Infligez 1 dégât ou 1 horreur au Participant Innocent le plus proche en jeu.",
+      "elderThing": "–6. En cas d'échec, si Cnidathqua est en jeu, il vous attaque."
+    }
+  },
+  "intro": {
+    "title": "Le Carnaval Approche…",
+    "body": "<p>« Écoutez », insiste le shérif Engel, « Je sais que cela paraît fou, mais on ne sait rien de plus. » Il soupire et se rassoit en servant une tasse de café à chacun. « Une femme du centre-ville a aperçu et cinglé portant ce masque et armé d'un couteau de boucher maculé de sang », explique-t-il en vous montrant du doigt le masque de cuir noir posé sur un bureau. Celui-ci possède un nez drôlement long, et un étrange symbole jaune est dessiné sur son front. « Du coup, elle nous a appelés. Mes gars et moi, on a cueilli l'homme au croisement de Saltonstall et Garrison. » La mâchoire du shérif se crispe et ses sourcils se froncent à mesure qu'il se remémore les évènements. « Le type n'a rien fait d'autre que de rire pendant qu'on lui passait les menottes. Il se fait appeler Zanni. Il n'a rien dit à part \"le Carnaval approche\", quoi que cela veuille dire. On n'a retrouvé le corps de la victime que le lendemain. La défense voulait le faire interner. On n'était trop heureux de leur rendre ce service. »</p><p>Il n'y a plus de temps à perdre. Si vos recherches sont exactes, cette affaire cache plus de choses qu'il n'y paraît. Ce « Zanni » ne parlait pas du Carnaval de Darke mais plutôt du Carnaval de Venise, qui débute avant la prochaine pleine lune…"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes du set de rencontre *Le Carnaval des Horreurs*. Ce set est reconnaissable à cette icône :<section class='encounter-sets'><img src='{setImgPath}/venice1.png' /></section>",
+    "removeLocation": "Prenez 1 lieu au hasard et retirez-le de la partie. S'il s'agit de _La Basilique Saint-Marc_ ou du _Bord du Canal_, prenez 1 autre lieu au hasard à la place.",
+    "placeLocations": "Mettez en jeu les 8 autres lieux aléatoirement en formant un cercle.",
+    "abbess": "Mettez en jeu l'_Abbesse Allegria Di Biase_ dans _La Basilique Saint-Marc_.",
+    "startAt": "Chaque investigateur débute la partie dans _La Basilique Saint-Marc_.",
+    "carnevaleGoers": "Mélangez les 7 exemplaires du _Carnavalier Masqué_ et mettez-en 1 en jeu dans chaque lieu, excepté _La Basilique Saint-Marc_. La face _Carnavalier Masqué_ doit être visible : ne regardez pas l'autre face de ces cartes.",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : _Cnidathqua_, _Pantalone_, _Medico Della Peste_, _Bauta_, _Volto Doré_."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<p>_Si aucune conclusion n'est atteinte (tous les investigateurs ont été vaincus)_ : Vous vous réveillez en crachotant quand une rame vous tapote doucement l'épaule. « Tutto bene ? », vous demande le gondolier qui tient la rame d'un air inquiet. Vous acquiescez et vous vous hissez sur les quais depuis sa gondole, trempé et perclus de douleur. La ville est en ruines. La plupart des bateaux sont des épaves, et les rues ne sont plus couvertes de confettis mais de sang…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *de nombreuses personnes ont été sacrifiées à Cnidathqua lors du Carnaval*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Déplacez 1 _Participant Innocent_ situé sous le deck Acte vers le dessous du deck Intrigue, si possible.</li><li>Lisez les _Récompenses Supplémentaires_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : La ville se remet doucement des événements qui ont eu lieu pendant l'éclipse. Toutes les preuves de la présence de créatures ayant été consumées par le soleil, beaucoup accusent un baron du crime local, Cascio Di Boerio, d'être à l'origine des violences survenues au cours du carnaval. Ceux qui connaissent la vérité savent qu'il vaut mieux ne plus parler de l'ancienne créature qui vit dans la Laguna Veneta. Avec un peu de chance, son nom ne sera plus jamais prononcé.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le soleil a banni Cnidathqua dans les profondeurs*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Lisez les _Récompenses Supplémentaires_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : La ville se remet doucement des événements qui ont eu lieu pendant l'éclipse. Toutes les preuves de la présence de créatures ayant été consumées par le soleil, beaucoup accusent un baron du crime local, Cascio Di Boerio, d'être à l'origine des violences survenues au cours du carnaval. Ceux qui connaissent la vérité savent qu'il vaut mieux ne plus parler de l'ancienne créature qui vit dans la Laguna Veneta. Avec un peu de chance, son nom ne sera plus jamais prononcé.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le soleil a banni Cnidathqua dans les profondeurs*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Lisez les _Récompenses Supplémentaires_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<p>_Conclusion 3_ : La créature recule tandis que des masses de sa chair gélatineuse se détachent de son corps et tombent dans la lagune. Elle n'émet aucun son lorsque son corps ravagé sombre dans les profondeurs. La mélopée provenant de la ville se change en un morne silence. Vous retournez vers les rues qui bordent les canaux et des plumes noires se mettent à tomber du ciel, là où voltigeaient naguère les confettis. Vous ne pouvez vous empêcher de vous demander combien de temps il faudra à la créature pour se remettre de ses blessures.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *Cnidathqua s'est retiré pour soigner ses blessures*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Lisez les _Récompenses Supplémentaires_.</li></ul>"
+    },
+    "additionalRewards": {
+      "title": "Récompenses Supplémentaires",
+      "body": "<p class='basic'>_Récompenses Supplémentaires_ :</p><ul><li>Dans l'ordre des joueurs, chaque investigateur a le droit de choisir l'une des cartes Masque suivante et de l'ajouter à son deck : Pantalone, Medico Della Peste, Bauta, Volto Doré. La carte choisie ne compte pas dans la Taille du Deck de cet investigateur.</li><li>S'il n'y a aucun Participant Innocent sous le deck Acte et au moins 1 sous le deck Intrigue, lisez _Sacrifice Effectué_.</li><li>S'il n'y a aucun Participant Innocent sous le deck Intrigue et 3 sous le deck Acte, lisez _Abbesse Satisfaite_.</li></ul>"
+    },
+    "sacrificeMade": {
+      "title": "Sacrifice Made",
+      "body": "<p>_Sacrifice Effectué_ : Trop de vies ont été perdues durant l'éclipse pour pouvoir stopper les machinations des serviteurs de Cnidathqua. La bête a été nourrie et ses servants ont gagné en puissance. Vous ne pouvez qu'espérer que vous ne vivrez pas assez longtemps pour être témoin des conséquences de votre échec.</p><ul><li>Chaque investigateur prend au hasard une faiblesse de base _Folie_, _Blessure_ ou _Monstre_ dans la collection et l'ajoute à son deck pour le reste de la campagne.</li></ul>"
+    },
+    "abbessSatisfied": {
+      "title": "Abbesse Satisfaite",
+      "body": "<p>_Abbesse Satisfaite_ : « Grazie Mille - merci infiniment pour votre aide », déclare Allegria lorsque vous revenez à la Basilique. « Grâce à vous, il n'y a eu que peu de victimes. Je tremble à l'idée de ce qui se serait passé si vous n'aviez pas été là. Si vous avez besoin de quoi que ce soit, n'hésitez pas à solliciter mon assistance. »</p><ul><li>N'importe quel investigateur a le droit d'ajouter l'_Abbesse Allegria Di Biase_ à son deck. Cette carte ne compte pas dans la Taille du Deck de cet investigateur.</li></ul>"
     }
   }
 }

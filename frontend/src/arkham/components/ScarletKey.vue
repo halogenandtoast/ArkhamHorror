@@ -14,9 +14,10 @@ export interface Props {
   scarletKey: Arkham.ScarletKey
   playerId: string
   atLocation?: boolean
+  attached?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), { atLocation: false })
+const props = withDefaults(defineProps<Props>(), { atLocation: false, attached: false })
 const emit = defineEmits<{
   choose: [value: number]
 }>()
@@ -79,10 +80,11 @@ const abilities = computed(() => {
 
 const clues = computed(() => props.scarletKey.tokens[TokenType.Clue])
 const resources = computed(() => props.scarletKey.tokens[TokenType.Resource])
+const charges = computed(() => props.scarletKey.tokens[TokenType.Charge])
 </script>
 
 <template>
-  <div class="scarletKey">
+  <div class="scarletKey" :class="{attached}">
     <div class="scarletKey-card">
       <div class="image-container">
         <img :src="image"
@@ -94,6 +96,7 @@ const resources = computed(() => props.scarletKey.tokens[TokenType.Resource])
         <div class="pool">
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="charges && charges > 0" type="resource" :amount="charges" />
         </div>
       </div>
       <AbilityButton
@@ -186,5 +189,10 @@ const resources = computed(() => props.scarletKey.tokens[TokenType.Resource])
   &:not(:has(.key--can-interact)) {
     pointer-events: none;
   }
+}
+
+.attached .pool {
+  top: auto;
+  bottom: 5%;
 }
 </style>

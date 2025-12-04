@@ -125,6 +125,7 @@ data Trait
   | Gug
   | Hall
   | Hardship
+  | Haunted
   | Havana
   | Hazard
   | Hex

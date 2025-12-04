@@ -218,6 +218,13 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
   afterMsg <- checkWindow $ mkAfter $ Window.EnemyWouldBeDefeated enemyId
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]
 
+cancelEnemyEngagement :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> EnemyId -> t m ()
+cancelEnemyEngagement iid eid = do
+  lift $ popMessageMatching_ (== PlaceEnemy eid (InThreatArea iid))
+  ignoreMatchingWindows \w -> case w.kind of
+    Window.EnemyEngaged _ eid' | eid == eid' -> True
+    _ -> False
+
 enemyEngagedInvestigators :: (HasGame m, Tracing m) => EnemyId -> m [InvestigatorId]
 enemyEngagedInvestigators eid = do
   asIfEngaged <- select $ InvestigatorWithModifier (AsIfEngagedWith eid)

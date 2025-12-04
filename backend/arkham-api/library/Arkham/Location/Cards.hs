@@ -8906,7 +8906,7 @@ kualaLumpurStationWestWing =
     $ location
       "09668"
       ("Kuala Lumpur Station" <:> "West Wing")
-      [KualaLumpur]
+      [KualaLumpur, Haunted]
       Triangle
       [Diamond, Circle, Square]
       ShadesOfSuffering

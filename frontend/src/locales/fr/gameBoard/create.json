@@ -7,14 +7,14 @@
 
     "campaign": "Campagne",
     "standalone": "Scénario",
-    "sideStory": "Histoire parallèle",
+    "sideStory": "Aventure annexe",
 
     "alphaWarning": "Cette campagne est en cours de conception. Elle ne fonctionne probablement pas et vous ne devez pas signaler de bug.",
     "betaWarning": "Cette campagne est prête à être testée, mais attendez-vous à des problèmes fréquents.",
     "betaWarningScenario": "Ce scénario est prêt à être testé, mais attendez-vous à des problèmes fréquents.",
 
     "normal": "Normal",
-    "returnTo": "Renouveau…",
+    "returnTo": "Renouveau",
     
     "fullCampaign": "Campagne complète",
     "partialCampaign": "Campagne partielle",
@@ -32,9 +32,9 @@
 
     "chooseYourDeck": "Choisissez votre deck{s}",
     "tabooList": "Liste des tabous : {tabooList}",
-    "useExistingDeck": "Utiliser deck existant",
-    "loadNewDeck": "Charger nouveau deck",
+    "useExistingDeck": "Utiliser un deck existant",
+    "loadNewDeck": "Charger un nouveau deck",
     "selectADeck": "-- Choisissez un Deck --",
-    "deckUrlPlaceholder": "URL deck ArkhamDB ou arkham.build",
+    "deckUrlPlaceholder": "URL de deck ArkhamDB ou arkham.build",
     "choose": "Valider"
 }

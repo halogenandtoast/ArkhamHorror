@@ -5,7 +5,7 @@
     "view": "Affichage",
     "shortcuts": "Raccourcis",
     "shortcutsTitle": "Raccourcis clavier",
-    "shortcutSkipTriggers": "(espace) Ignorer déclenchements",
+    "shortcutSkipTriggers": "(espace) Ignorer déclencheurs",
     "shortcutUndo": "Annuler",
     "shortcutToggleDebug": "Passer en Debug",
     "shortcutShowOrHideShortcuts": "Cacher/Afficher raccourcis",
@@ -15,7 +15,7 @@
 
     "viewSettings": "Paramètres",
     "viewSettingTitle": "Paramètres de {investigator}",
-    "viewSettingSkipTriggers": "Ignorer les déclenchements sans effet",
+    "viewSettingSkipTriggers": "Ignorer les déclenchements sans effet sur l'action en cours",
 
     "viewChaosBag": "Voir la Réserve du Chaos",
     "chaosBag": "Réserve du Chaos",
@@ -33,9 +33,11 @@
     "debug": "Debug",
     "toggleDebug": "Activer Debug",
     "debugExport": "Export de Debug",
+    "debugExportScenario": "Export de Debug (Scenario)",
+    "debugExportFull": "Export de Debug (Complet)",
 
     "undo": "Annuler",
-    "restartScenario": "Redémarrer le Scénario",
+    "restartScenario": "Recommencer le Scénario",
 
     "fileABug": "Signaler un Bug",
     "fileBugPart1": "Un export du jeu sera réalisé, et placé dans un rapport de bug Github. Il vous faut un compte Github pour poursuivre.",
@@ -47,5 +49,7 @@
     "bugSubmittingContent": "Quand le signalement sera terminé, une fenêtre github s'ouvrira et vous pourrez reprendre votre partie.",
     "bugSubmittingFail": "Impossible de signaler un bug",
 
-    "toggleSidebar": "Activer la barre latérale"
+    "toggleSidebar": "Activer la barre latérale",
+
+    "rotateLayout": "Pivoter les lieux"
 }

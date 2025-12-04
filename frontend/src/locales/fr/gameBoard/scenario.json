@@ -1,6 +1,7 @@
 {
+    "hollowed": "Creusé",
     "discardCard": "Carte",
-    "removedFromPlay": "Retiré du jeu",
+    "removedFromPlay": "Hors jeu",
     "discards": "Défausse",
     "cardsUnderScenarioReference": "Cartes sous la carte de référence du scénario",
     "victoryDisplay": "Pile de Victoire"

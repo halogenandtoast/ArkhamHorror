@@ -151,6 +151,13 @@ allStories =
     , --- Dealings in the Dark [tsk]
       SomeStoryCard theUnveiling
     , SomeStoryCard theUnsealing
+    , --- Shades of Suffering [tsk]
+      SomeStoryCard playfulShadows
+    , SomeStoryCard timorousShadows
+    , SomeStoryCard aLostMemento
+    , SomeStoryCard exhumeTheBones
+    , SomeStoryCard sympathyPain
+    , SomeStoryCard familialPain
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

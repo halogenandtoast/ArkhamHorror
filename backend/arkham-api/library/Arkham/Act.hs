@@ -346,6 +346,10 @@ allActs =
       SomeActCard rabbitsWhoRunV1
     , SomeActCard rabbitsWhoRunV2
     , SomeActCard rabbitsWhoRunV3
+    , --- Shades of Suffering [tsk]
+      SomeActCard theLadyWithTheRedParasol
+    , SomeActCard ghostLight
+    , SomeActCard harvesterOfWoe
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

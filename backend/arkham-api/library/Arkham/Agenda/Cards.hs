@@ -78,6 +78,7 @@ allAgendaCards =
       , eyesInTheDark
       , eyesOfTheVoid
       , fashionablyLate
+      , fearTheReaper
       , feedTheBeast
       , figuresInTheFog
       , floodedStreets
@@ -120,6 +121,7 @@ allAgendaCards =
       , openingHand
       , outOfTime
       , overTheThreshold
+      , painfulHistory
       , pastPresentAndFuture
       , pendulousThreads
       , plotsAndPanic
@@ -130,6 +132,7 @@ allAgendaCards =
       , ransackingTheManor
       , realitiesInterwoven
       , relentlessTide
+      , restlessDead
       , restrictedAccess
       , returnToPredatorOrPrey
       , riseOfTheGhouls
@@ -835,6 +838,15 @@ brewingCatastropheV2 = agenda "09637" "Brewing Catastrophe (v. II)" 1 DogsOfWar
 
 brewingCatastropheV3 :: CardDef
 brewingCatastropheV3 = agenda "09638" "Brewing Catastrophe (v. III)" 1 DogsOfWar
+
+painfulHistory :: CardDef
+painfulHistory = agenda "09661" "Painful History" 1 ShadesOfSuffering
+
+restlessDead :: CardDef
+restlessDead = agenda "09662" "Restless Dead" 2 ShadesOfSuffering
+
+fearTheReaper :: CardDef
+fearTheReaper = agenda "09663" "Fear the Reaper" 3 ShadesOfSuffering
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

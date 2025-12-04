@@ -164,6 +164,7 @@ concealedKindToCardDef = \case
   CoterieAssassinA -> Just Cards.coterieAssassinA
   CoterieAssassinB -> Just Cards.coterieAssassinB
   VoidChimeraTrueForm -> Just Cards.voidChimeraTrueForm
+  TzuSanNiang -> Just Cards.tzuSanNiangTheLadyWithTheRedParasol
   _ -> Nothing
 
 allConcealedCardDefs :: [CardDef]

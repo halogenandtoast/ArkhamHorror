@@ -153,14 +153,20 @@ allStoryCards =
       , memoryOfATerribleDiscovery
       , memoryOfAnAlienTranslation
       , memoryOfAnUnrequitedLove
+      , saveTheCivilians
+      , theUnveiling
+      , theUnsealing
+      , playfulShadows
+      , timorousShadows
+      , aLostMemento
+      , exhumeTheBones
+      , sympathyPain
+      , familialPain
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , returnToUnfinishedBusiness_38
       , returnToUnfinishedBusiness_39
       , realityAcid
-      , saveTheCivilians
-      , theUnveiling
-      , theUnsealing
       , theFoundationAllied
       , theFoundationRival
       , theSyndicateAllied
@@ -518,6 +524,24 @@ theUnveiling = story "09571a" "The Unveiling" DealingsInTheDark & otherSideIs "0
 
 theUnsealing :: CardDef
 theUnsealing = story "09571b" "The Unsealing" DealingsInTheDark & otherSideIs "09571a"
+
+playfulShadows :: CardDef
+playfulShadows = story "09674b" "Playful Shadows" ShadesOfSuffering & otherSideIs "09674a"
+
+timorousShadows :: CardDef
+timorousShadows = story "09674d" "Timorous Shadows" ShadesOfSuffering & otherSideIs "09674c"
+
+aLostMemento :: CardDef
+aLostMemento = story "09675b" "A Lost Memento" ShadesOfSuffering & otherSideIs "09675a"
+
+exhumeTheBones :: CardDef
+exhumeTheBones = story "09675d" "Exhume the Bones" ShadesOfSuffering & otherSideIs "09675c"
+
+sympathyPain :: CardDef
+sympathyPain = story "09676b" "Sympathy Pain" ShadesOfSuffering & otherSideIs "09676a"
+
+familialPain :: CardDef
+familialPain = story "09676d" "Familial Pain" ShadesOfSuffering & otherSideIs "09676c"
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

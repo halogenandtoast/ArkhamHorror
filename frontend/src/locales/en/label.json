@@ -67,6 +67,7 @@
   "placeDoom": "Place 1 doom | Place {count} doom",
   "placeDoomOn": "Place 1 doom on {name} | Place {count} doom on {name}",
   "play": "Play",
+  "putIntoPlay": "Put {name} into play",
   "playIt": "Play it",
   "placeUnderneath": "Place underneath {name}",
   "playNoCards": "Play no cards",

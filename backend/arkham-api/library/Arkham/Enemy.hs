@@ -523,6 +523,15 @@ allEnemies =
     , SomeEnemyCard theBeastInACowlOfCrimsonWolfInSheepsClothing
     , SomeEnemyCard scarletBeast
     , SomeEnemyCard coterieProvocateur
+    , --- Shades of Suffering [tsk]
+      SomeEnemyCard uncannyShadowPlayfulShadows
+    , SomeEnemyCard uncannyShadowTimorousShadows
+    , SomeEnemyCard buriedMinerALostMemento
+    , SomeEnemyCard buriedMinerExhumeTheBones
+    , SomeEnemyCard slainForemanSympathyPain
+    , SomeEnemyCard slainForemanFamilialPain
+    , SomeEnemyCard tzuSanNiangTheLadyWithTheRedParasol
+    , SomeEnemyCard tzuSanNiangOutForBlood
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB
@@ -543,7 +552,7 @@ allEnemies =
       SomeEnemyCard paradigmEfficer
     , --- Agents of Yuggoth [tsk]
       SomeEnemyCard emissaryFromYuggoth
-    , --- Red Coteria [tsk]
+    , --- Red Coterie [tsk]
       SomeEnemyCard theRedGlovedManPurposeUnknown
     , SomeEnemyCard laChicaRojaHotOnYourTrail
     , SomeEnemyCard theSanguineWatcherHeSeesWhatIsNotThere
@@ -684,7 +693,7 @@ allEnemies =
     , SomeEnemyCard fortunesShieldB
     , SomeEnemyCard fortunesDaggerA
     , SomeEnemyCard fortunesDaggerB
-    , --- Plan in Shamblers
+    , --- Plan in Shambles
       SomeEnemyCard dimensionalShamblerHunterFromBeyond
     , SomeEnemyCard dimensionalDuplicatorA
     , SomeEnemyCard dimensionalDuplicatorB

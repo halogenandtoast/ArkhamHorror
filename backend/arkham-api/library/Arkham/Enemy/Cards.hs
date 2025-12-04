@@ -144,6 +144,8 @@ allEncounterEnemyCards =
       , brotherhoodAcolyte
       , brotherhoodCultist
       , brownJenkin
+      , buriedMinerALostMemento
+      , buriedMinerExhumeTheBones
       , captiveSubjects
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
@@ -439,6 +441,8 @@ allEncounterEnemyCards =
       , sinisterAspirantB
       , sinisterAspirantC
       , skitteringNonsense
+      , slainForemanFamilialPain
+      , slainForemanSympathyPain
       , slimeCoveredDhole
       , slitheringDhole
       , spawnOfHali
@@ -497,8 +501,12 @@ allEncounterEnemyCards =
       , tidalTerror
       , tindalosAlpha
       , tzuSanNiangAWhisperInYourEar
+      , tzuSanNiangOutForBlood
+      , tzuSanNiangTheLadyWithTheRedParasol
       , umbralHarbinger
       , umordhoth
+      , uncannyShadowPlayfulShadows
+      , uncannyShadowTimorousShadows
       , unsealedPhantasm
       , valentinoRivas
       , vampireThrall
@@ -3110,6 +3118,81 @@ coterieProvocateur =
   (enemy "09657" "Coterie Provocateur" DogsOfWar 2)
     { cdCardTraits = setFromList [Monster, Coterie]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus"))]
+    }
+
+uncannyShadowPlayfulShadows :: CardDef
+uncannyShadowPlayfulShadows =
+  (enemy "09674a" "Uncanny Shadow" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09674b"
+    }
+
+uncannyShadowTimorousShadows :: CardDef
+uncannyShadowTimorousShadows =
+  (enemy "09674c" "Uncanny Shadow" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09674d"
+    }
+
+buriedMinerALostMemento :: CardDef
+buriedMinerALostMemento =
+  (enemy "09675a" "Buried Miner" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09675b"
+    }
+
+buriedMinerExhumeTheBones :: CardDef
+buriedMinerExhumeTheBones =
+  (enemy "09675c" "Buried Miner" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09675d"
+    }
+
+slainForemanSympathyPain :: CardDef
+slainForemanSympathyPain =
+  (enemy "09676a" "Slain Foreman" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09676b"
+    }
+
+slainForemanFamilialPain :: CardDef
+slainForemanFamilialPain =
+  (enemy "09676c" "Slain Foreman" ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09676d"
+    }
+
+tzuSanNiangTheLadyWithTheRedParasol :: CardDef
+tzuSanNiangTheLadyWithTheRedParasol =
+  (enemy "09679" ("Tzu San Niang" <:> "The Lady with the Red Parasol") ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Concealed TzuSanNiang (Static 2)]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09679b"
+    }
+
+tzuSanNiangOutForBlood :: CardDef
+tzuSanNiangOutForBlood =
+  (enemy "09679b" ("Tzu San Niang" <:> "Out for Blood") ShadesOfSuffering 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09679"
+    , cdVictoryPoints = Just 1
     }
 
 coterieAgentA :: CardDef

@@ -152,6 +152,7 @@ data Trait
   | Kadath
   | Key
   | Kingsport
+  | KualaLumpur
   | Lair
   | LanternClub
   | Lead

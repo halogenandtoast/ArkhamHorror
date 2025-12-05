@@ -187,7 +187,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
-    null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
+    null $ intersect (cdClassSymbols pcDef) (setFromList [Mythos, Neutral, role])
   prevents (CannotPlay matcher) = cardMatch c matcher
   prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False

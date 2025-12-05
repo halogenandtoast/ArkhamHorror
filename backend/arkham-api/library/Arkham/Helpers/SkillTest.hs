@@ -618,7 +618,7 @@ getIsCommittable a c = runValidT do
             pure $ x >= n
         prevented = flip any modifiers' $ \case
           CanOnlyUseCardsInRole role ->
-            null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+            null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Mythos, Neutral, role])
           CannotCommitCards matcher -> cardMatch card matcher
           _ -> False
 

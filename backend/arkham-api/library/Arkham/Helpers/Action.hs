@@ -208,7 +208,7 @@ getActionsWith iid ws f = withSpan_ "getActions" do
       let
         -- Lola Hayes: Forced abilities will always trigger
         prevents (CanOnlyUseCardsInRole role) =
-          null (setFromList [role, Neutral] `intersect` cardClasses)
+          null (setFromList [role, Neutral, Mythos] `intersect` cardClasses)
             && not isForced
         prevents CannotTriggerFastAbilities = isFastAbility ability
         prevents _ = False

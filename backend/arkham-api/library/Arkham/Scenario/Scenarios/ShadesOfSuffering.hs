@@ -6,6 +6,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (withOwner)
@@ -19,8 +21,11 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Token (countTokens)
+import Arkham.Trait (Trait (Geist))
 
 newtype ShadesOfSuffering = ShadesOfSuffering ScenarioAttrs
   deriving anyclass IsScenario
@@ -40,10 +45,14 @@ shadesOfSuffering difficulty =
 
 instance HasChaosTokenValue ShadesOfSuffering where
   getChaosTokenValue iid tokenFace (ShadesOfSuffering attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
+      chargeCount <- fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
+      let n = (chargeCount + 1) `div` 2
+      pure $ toChaosTokenValue attrs Skull (min n 6) n
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 4 5
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 1 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance HasModifiersFor ShadesOfSuffering where
@@ -139,5 +148,29 @@ instance RunMessage ShadesOfSuffering where
         | otherwise -> do
             placeTokens attrs theShadeReaper #charge 9
             placeDoomOnAgenda 1
+      pure s
+    ResolveChaosToken _ Cultist _iid -> do
+      when (isHardExpert attrs) do
+        theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
+        placeTokens Cultist theShadeReaper #charge 1
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      whenM (matches iid (InvestigatorAt $ LocationWithEnemy $ EnemyWithTrait Geist)) do
+        drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken drawnToken ElderThing iid -> do
+      chooseOneM iid do
+        when (isEasyStandard attrs) $ labeled' "elderThing.easyStandard" do
+          chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [Zero]
+        when (isHardExpert attrs) $ labeled' "elderThing.hardExpert" do
+          chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusThree]
+        unscoped skip_
+      pure s
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist | isEasyStandard attrs && n >= 2 -> do
+          theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
+          placeTokens Cultist theShadeReaper #charge 1
+        _ -> pure ()
       pure s
     _ -> ShadesOfSuffering <$> liftRunMessage msg attrs

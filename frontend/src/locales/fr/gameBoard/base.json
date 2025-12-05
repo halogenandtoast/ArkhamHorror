@@ -1,5 +1,8 @@
 {
     "skillTestTitle": "Test de Compétence",
+    "toBeCommitted": "À attribuer",
+    "committedCards": "Cartes attribuées",
+    "toBeCommittedNote": "Cards are not committed until you click the token above and your skill value may not show the bonuses added until then.",
 
     "waitingForMorePlayers": "En attente d'autres joueurs",
     "showInviteLink": "Invitez en communiquant cette URL :",

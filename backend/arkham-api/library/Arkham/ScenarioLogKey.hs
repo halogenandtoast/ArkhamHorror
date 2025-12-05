@@ -83,6 +83,13 @@ data ScenarioLogKey
   | -- | Sanguine Shadows
     MatiasBolivarTrustsYou
   | MatiasBolivarDoesntTrustYou
+  | -- | Shades of Suffering
+    TradedForAKitten
+  | FoundACheapMemento
+  | EmbarrassedTheConsulate
+  | PeeredBeyond
+  | SharedADeepPain
+  | FoundHiddenBones
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

@@ -79,6 +79,9 @@
     "unstableVortex": {
       "chooseTearThroughSpace": "Choose tear through space to discard",
       "shuffle": "Shuffle Unstable Vortex into the encounter deck"
+    },
+    "dimensionalDoorway": {
+      "shuffle": "Shuffle Dimensional Doorway into the encounter deck"
     }
   }
 }

@@ -165,6 +165,7 @@ import Arkham.Location.Locations (
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
+  grimResolveEffect,
   copycat3Effect,
   defiance2Effect,
   defianceEffect,
@@ -554,6 +555,7 @@ allEffects =
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("10129", SomeEffect bideYourTimeEffect)
     , ("10131", SomeEffect dawnStar1Effect)
+    , ("11018", SomeEffect grimResolveEffect)
     , ("11079", SomeEffect deliverance3Effect)
     , ("11124", SomeEffect dimensionalVortex5Effect)
     , ("50044", SomeEffect $ noop "50044")

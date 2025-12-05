@@ -272,7 +272,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           elem aid <$> select Matcher.AssetReady
         EventTarget eid ->
           elem eid <$> select Matcher.EventReady
-        _ -> error $ "Not handled" <> show target
+        _ -> error $ "Not handled " <> show target
       ExhaustAssetCost matcher ->
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
       ExhaustXAssetCost matcher ->
@@ -357,8 +357,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       ClueCostX -> do
         spendableClues <- getSpendableClueCount [iid]
         pure $ spendableClues >= 1
-      GroupClueCostX -> do
-        spendableClues <- getSpendableClueCount =<< select Matcher.UneliminatedInvestigator
+      GroupClueCostX lm -> do
+        let wrapper = if lm == Matcher.Anywhere then id else (Matcher.InvestigatorAt lm <>)
+        spendableClues <- getSpendableClueCount =<< select (wrapper Matcher.UneliminatedInvestigator)
         n <- perPlayer 1
         pure $ spendableClues >= n
       DiscoveredCluesCost -> pure True

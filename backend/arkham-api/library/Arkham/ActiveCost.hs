@@ -1072,8 +1072,9 @@ payCost msg c iid skipAdditionalCosts cost = do
       let n = discoveredClues c.windows
       push $ pay (ClueCost $ Static n)
       pure c
-    GroupClueCostX -> do
-      mVal <- getSpendableClueCount =<< select UneliminatedInvestigator
+    GroupClueCostX lm -> do
+      let wrapper = if lm == Anywhere then id else (InvestigatorAt lm <>)
+      mVal <- getSpendableClueCount =<< select (wrapper UneliminatedInvestigator)
       x <- perPlayer 1
       if mVal == x
         then push $ pay (GroupClueCost (PerPlayer 1) Anywhere)

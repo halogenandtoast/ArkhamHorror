@@ -114,7 +114,7 @@ data Cost
   | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
-  | GroupClueCostX
+  | GroupClueCostX LocationMatcher
   | DiscoveredCluesCost
   | GroupResourceCost GameValue LocationMatcher
   | GroupDiscardCost GameValue ExtendedCardMatcher LocationMatcher
@@ -265,7 +265,7 @@ displayCostType = \case
   PlaceKeyCost _ k -> "Place " <> keyName k <> " Key"
   GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
-  GroupClueCostX -> "X {perPlayer} clues as a group"
+  GroupClueCostX _ -> "X {perPlayer} clues as a group"
   DiscoveredCluesCost -> "Spend discovered clues"
   ChooseEnemyCost _ -> "Choose an enemy"
   ChooseEnemyCostAndMaybeFieldClueCost _ _ -> "Choose an enemy and spend X clues"
@@ -661,11 +661,20 @@ instance Semigroup CostZone where
 mconcat
   [ deriveJSON defaultOptions ''CostZone
   , deriveJSON defaultOptions ''DynamicUseCostValue
-  , deriveJSON defaultOptions ''Cost
+  , deriveToJSON defaultOptions ''Cost
   , deriveJSON defaultOptions ''Payment
   , makePrisms ''Payment
   , makePrisms ''Cost
   ]
+
+instance FromJSON Cost where
+  parseJSON = withObject "Cost" \o -> do
+    costType <- o .: "tag"
+    case (costType :: Text) of
+      "GroupClueCostX" -> do
+        mcontents <- o .:? "contents"
+        pure $ GroupClueCostX $ fromMaybe Anywhere mcontents
+      _ -> $(mkParseJSON defaultOptions ''Cost) (Object o)
 
 totalActionCost :: Cost -> Int
 totalActionCost = sumOf (cosmos . _ActionCost)

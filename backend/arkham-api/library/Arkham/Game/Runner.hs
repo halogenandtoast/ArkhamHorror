@@ -869,6 +869,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 , enemyKeys = enemyKeys oldAttrs
                 , enemySpawnedBy = enemySpawnedBy oldAttrs
                 , enemyDiscardedBy = enemyDiscardedBy oldAttrs
+                , enemyCardsUnderneath = enemyCardsUnderneath oldAttrs
                 }
 
     pushWhen (replaceStrategy == DefaultReplace) $ EnemyCheckEngagement eid
@@ -2550,7 +2551,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     let details = mkSpawnDetails enemyId $ Arkham.Spawn.SpawnAtLocation lid
     windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
     pushAll
-      [ windows'
+      [ ObtainCard card.id
+      , windows'
       , Will (EnemySpawn details)
       , When (EnemySpawn details)
       , EnemySpawn details
@@ -2567,7 +2569,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           { spawnDetailsInvestigator = Just iid
           }
     pushAll
-      [ Will (EnemySpawn details)
+      [ ObtainCard card.id
+      , Will (EnemySpawn details)
       , When (EnemySpawn details)
       , EnemySpawn details
       , After (EnemySpawn details)

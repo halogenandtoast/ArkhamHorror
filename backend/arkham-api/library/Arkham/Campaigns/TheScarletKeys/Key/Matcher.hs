@@ -7,8 +7,10 @@ import Arkham.Card.CardCode
 import Arkham.Matcher.Base
 import {-# SOURCE #-} Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
+import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
+import Arkham.Token
 import Data.Aeson.TH
 
 data ScarletKeyMatcher
@@ -18,6 +20,7 @@ data ScarletKeyMatcher
   | ScarletKeyWithBearer InvestigatorMatcher
   | ScarletKeyWithInvestigator InvestigatorMatcher
   | ScarletKeyWithEnemy EnemyMatcher
+  | ScarletKeyWithTokens ValueMatcher Token
   | ScarletKeyWithEnemyBearer EnemyMatcher
   | ScarletKeyWithStability Stability
   | ScarletKeyOneOf [ScarletKeyMatcher]

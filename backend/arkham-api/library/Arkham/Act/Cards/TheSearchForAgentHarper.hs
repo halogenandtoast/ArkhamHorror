@@ -32,7 +32,7 @@ instance HasAbilities TheSearchForAgentHarper where
   getAbilities (TheSearchForAgentHarper a) =
     extend
       a
-      [ groupLimit PerRound $ mkAbility a 1 $ FastAbility' GroupClueCostX [#parley]
+      [ groupLimit PerRound $ mkAbility a 1 $ FastAbility' (GroupClueCostX Anywhere) [#parley]
       , mkAbility a 2 $ Objective $ freeReaction $ RoundEnds #when
       ]
 

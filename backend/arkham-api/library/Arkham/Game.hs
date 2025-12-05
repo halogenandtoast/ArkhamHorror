@@ -3127,6 +3127,8 @@ getScarletKeysMatching matcher = do
   filterMatcher as = \case
     ScarletKeyMatchAll ms -> foldM filterMatcher as ms
     ScarletKeyWithPlacement placement -> pure $ filter ((== placement) . attr keyPlacement) as
+    ScarletKeyWithTokens valueMatcher tokenType ->
+      filterM ((`gameValueMatches` valueMatcher) . Token.countTokens tokenType . attr keyTokens) as
     ScarletKeyIs cCode -> pure $ filter ((== cCode) . toCardCode) as
     ScarletKeyAny -> pure as
     ScarletKeyWithBearer im -> do

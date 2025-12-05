@@ -945,11 +945,11 @@ removeAllOfTokenOn source token = removeTokensOn source token 1000
 
 removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
-removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n
+removeTokens source lid token n = when (n > 0) $ push $ RemoveTokens (toSource source) (toTarget lid) token n
 
 removeTokensOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
-removeTokensOn source token n lid = push $ RemoveTokens (toSource source) (toTarget lid) token n
+removeTokensOn source token n lid = when (n > 0) $ push $ RemoveTokens (toSource source) (toTarget lid) token n
 
 moveTokens
   :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
@@ -3712,3 +3712,9 @@ handleGroupTarget
 handleGroupTarget groupTarget target body = do
   msgs <- capture body
   push $ HandleGroupTarget groupTarget (toTarget target) msgs
+
+cancelInvestigatorDamage :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
+cancelInvestigatorDamage investigator n = when (n > 0) $ push $ CancelDamage (asId investigator) n
+
+cancelInvestigatorHorror :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
+cancelInvestigatorHorror investigator n = when (n > 0) $ push $ CancelHorror (asId investigator) n

@@ -11,6 +11,9 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Tracing
 
+currentAgendaSequenceIs :: (Tracing m, HasGame m) => (AS.AgendaSequence -> Bool) -> m Bool
+currentAgendaSequenceIs f = getCurrentAgenda >>= fieldMap AgendaSequence f
+
 currentAgendaStepIs :: (Tracing m, HasGame m) => (Int -> Bool) -> m Bool
 currentAgendaStepIs f = f <$> getCurrentAgendaStep
 

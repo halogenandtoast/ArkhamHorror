@@ -177,20 +177,20 @@ instance RunMessage OnThinIce where
               setBearer Keys.theSableGlass $ KeyWithInvestigator controller
               record YouHaventSeenTheLastOfThorne
             _ -> setBearer Keys.theSableGlass $ keyWithEnemy Enemies.thorneOpenToNegotiation
-          markTime 1
           resolutionWithXp "noResolution" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 1 -> do
           setBearer Keys.theSableGlass $ keyWithEnemy Enemies.thorneOpenToNegotiation
-          markTime 3
           resolutionWithXp "resolution1" $ allGainXp' attrs
+          markTime 3
           endOfScenario
         Resolution 2 -> do
           record YouHaventSeenTheLastOfThorne
           mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
           for_ mcontroller $ setBearer Keys.theSableGlass . KeyWithInvestigator
-          markTime 3
           resolutionWithXp "resolution2" $ allGainXp' attrs
+          markTime 3
           endOfScenario
         Resolution 3 -> do
           record ThorneDisappeared
@@ -198,8 +198,8 @@ instance RunMessage OnThinIce where
           setBearer Keys.theSableGlass $ case mcontroller of
             Just controller -> KeyWithInvestigator controller
             _ -> keyWithEnemy Enemies.thorneOpenToNegotiation
-          markTime 3
           resolutionWithXp "resolution3" $ allGainXp' attrs
+          markTime 3
           endOfScenario
         Resolution 4 -> do
           push $ IgnoreGainXP CS.OnThinIce

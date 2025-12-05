@@ -243,12 +243,13 @@ davidRenfield =
 
 grounded1 :: CardDef
 grounded1 =
-  (asset "03113" "Grounded" 1 Mystic)
-    { cdSkills = [#willpower]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 1
-    }
+  fast
+    $ (asset "03113" "Grounded" 1 Mystic)
+      { cdSkills = [#willpower]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 1
+      }
 
 cherishedKeepsake :: CardDef
 cherishedKeepsake =

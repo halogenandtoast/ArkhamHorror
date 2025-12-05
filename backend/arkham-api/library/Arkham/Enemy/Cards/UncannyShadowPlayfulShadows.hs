@@ -31,7 +31,7 @@ instance HasAbilities UncannyShadowPlayfulShadows where
       a
       [ skillTestAbility
           $ restricted a 1 OnSameLocation
-          $ parleyAction (UpTo (Fixed 3) (HandDiscardCost 1 #any))
+          $ parleyAction (AtLeastOne (Fixed 3) (HandDiscardCost 1 #any))
       , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when (be a)
       ]
 
@@ -41,9 +41,12 @@ instance RunMessage UncannyShadowPlayfulShadows where
       let playfulShadows = lookupCard Stories.playfulShadows (toCardId attrs)
       focusCards [playfulShadows] $ continue_ iid
       pure e
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalDiscardCardPayments -> n) -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 1) attrs #willpower (Fixed 6)
+      parley sid iid (attrs.ability 1) attrs #willpower (Fixed $ max 0 $ 6 - n)
+      pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      flipOverBy iid (attrs.ability 2) attrs
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       flipOverBy iid (attrs.ability 2) attrs

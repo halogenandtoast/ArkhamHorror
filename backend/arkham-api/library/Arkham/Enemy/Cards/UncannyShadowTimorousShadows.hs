@@ -31,7 +31,7 @@ instance HasAbilities UncannyShadowTimorousShadows where
       a
       [ skillTestAbility
           $ restricted a 1 OnSameLocation
-          $ parleyAction (UpTo (Fixed 3) (HandDiscardCost 1 #any))
+          $ parleyAction (AtLeastOne (Fixed 3) (HandDiscardCost 1 #any))
       , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when (be a)
       ]
 

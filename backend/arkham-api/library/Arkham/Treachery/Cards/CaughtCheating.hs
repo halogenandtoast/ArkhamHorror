@@ -17,6 +17,6 @@ instance RunMessage CaughtCheating where
       cheaters <- cheated
       for_ cheaters \cheater -> do
         loseResources cheater attrs 2
-        assignDamage cheater attrs 2
+        assignDamage cheater attrs 1
       pure t
     _ -> CaughtCheating <$> liftRunMessage msg attrs

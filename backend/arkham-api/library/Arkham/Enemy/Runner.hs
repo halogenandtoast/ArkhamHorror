@@ -81,7 +81,15 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (capture, do_, placeKey, removeEnemy, scenarioSpecific, selectEach)
+import Arkham.Message.Lifted (
+  capture,
+  do_,
+  obtainCard,
+  placeKey,
+  removeEnemy,
+  scenarioSpecific,
+  selectEach,
+ )
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
@@ -1933,6 +1941,9 @@ instance RunMessage EnemyAttrs where
             Nothing -> do
               Lifted.toDiscard GameSource a
               pure a
+        HiddenInHand _ -> do
+          obtainCard (toCardId a)
+          handlePlacement placement
         _ -> handlePlacement placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

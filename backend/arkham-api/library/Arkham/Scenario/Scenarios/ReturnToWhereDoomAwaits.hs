@@ -10,7 +10,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.WhereDoomAwaits
@@ -107,14 +106,13 @@ instance RunMessage ReturnToWhereDoomAwaits where
 
       when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
 
-      setAside $ Assets.naomiOBannionRuthlessTactician
-        : Enemies.sethBishop
-        : divergingPaths <> alteredPaths
+      hasTheInvestigatorsBack <- getHasRecord NaomiHasTheInvestigatorsBacks
+      setAside
+        $ Enemies.sethBishop
+        : divergingPaths
+          <> alteredPaths
+          <> [Assets.naomiOBannionRuthlessTactician | not hasTheInvestigatorsBack]
       setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-
-      whenHasRecord NaomiHasTheInvestigatorsBacks do
-        investigators <- allInvestigators
-        addCampaignCardToDeckChoice investigators ShuffleIn Assets.naomiOBannionRuthlessTactician
 
       let
         ascendingTheHill = case (useV1, useV2) of

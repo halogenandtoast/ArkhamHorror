@@ -1,5 +1,23 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of charges on The Shade Reaper, rounded up (X cannot be greater than 6).",
+      "cultist": "-4. If you fail by 2 or more, place 1 charge on The Shade Reaper.",
+      "tablet": "-1. If you are at a location with a _Geist_ enemy, reveal an additional chaos token.",
+      "elderThing": "-4. You may place 1 charge on The Shade Reaper to treat this token's modifier as 0 instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of charges on The Shade Reaper.",
+      "cultist": "-5. Place 1 charge on The Shade Reaper.",
+      "tablet": "-3. If you are at a location with a _Geist_ enemy, you automatically fail.",
+      "elderThing": "-6. You may place 1 charge on The Shade Reaper to treat this token's modifier as -3 instead."
+    }
+  },
   "label": {
+    "elderThing": {
+      "easyStandard": "Place 1 charge on The Shade Reaper to treat this token's modifier as 0 instead",
+      "hardExpert": "Place 1 charge on The Shade Reaper to treat this token's modifier as -3 instead"
+    },
     "painfulHistory": {
       "ally": "<p>Discard the _Ally_ asset in play with the highest printed cost. Test {'{'}willpower{'}'} (X), where X is that asset's printed cost. If you fail, place charges on The Shade Reaper equal to the discarded asset's printed cost.</p>",
       "doom": "Place 1 doom on Tzu San Niang."

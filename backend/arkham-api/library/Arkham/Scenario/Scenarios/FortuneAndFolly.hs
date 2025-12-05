@@ -423,7 +423,7 @@ instance RunMessage FortuneAndFolly where
           push R1
         Resolution 1 -> do
           selectEach (not_ ResignedInvestigator) \iid -> do
-            twice $ raiseAlarmLevel attrs [iid]
+            placeTokens attrs iid AlarmLevel 2
           resolution "resolution1"
           -- what if we just set our id
           push

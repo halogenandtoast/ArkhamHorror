@@ -118,5 +118,15 @@
     "TheSunXIX": "Le Soleil • XIX",
     "JudgementXX": "Le Jugement • XX",
     "TheWorldXXI": "Le Monde • XXI"
-  }
+  },
+  "headings": {
+    "prologue": "Prologue",
+    "epilogue": "Épilogue",
+    "scenario": "Scénario",
+    "interlude": "Interlude {number}",
+    "deckCreation": "Creation de deck"
+  },
+  "upgradeDecks": "Amélioration des decks",
+  "addSideScenario": "Jouer aventure annexe",
+  "lead": "Investigateur principal"
 }

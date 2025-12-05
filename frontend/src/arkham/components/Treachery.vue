@@ -190,6 +190,11 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
   pointer-events: none;
 }
 
+.attached .pool {
+  top: auto;
+  bottom: 5%;
+}
+
 .exhausted {
   :deep(img) {
     transition: transform 0.2s linear;

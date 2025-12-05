@@ -3,14 +3,12 @@ module Arkham.Enemy.Cards.UncannyShadowPlayfulShadows (uncannyShadowPlayfulShado
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Helpers (cancelEnemyDefeatCapture)
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
-import Arkham.Message.Story
 import Arkham.Story.Cards qualified as Stories
 
 newtype UncannyShadowPlayfulShadows = UncannyShadowPlayfulShadows EnemyAttrs
@@ -31,7 +29,7 @@ instance HasAbilities UncannyShadowPlayfulShadows where
       a
       [ skillTestAbility
           $ restricted a 1 OnSameLocation
-          $ parleyAction (AtLeastOne (Fixed 3) (HandDiscardCost 1 #any))
+          $ parleyAction (AtLeastOne (Fixed 3) DiscardRandomCardCost)
       , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when (be a)
       ]
 
@@ -52,12 +50,6 @@ instance RunMessage UncannyShadowPlayfulShadows where
       flipOverBy iid (attrs.ability 2) attrs
       pure e
     Flip iid _source (isTarget attrs -> True) -> do
-      let card = lookupCard Stories.playfulShadows (toCardId attrs)
-      defeatWindows <- lift $ cancelEnemyDefeatCapture attrs
-      place attrs (OutOfPlay RemovedZone)
-      push $ ReplaceCard (toCardId attrs) card
-      push $ StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
-      checkWindows defeatWindows
-      push $ RemoveEnemy attrs.id
+      readStoryWithPlacement iid attrs Stories.timorousShadows (enemyPlacement attrs)
       pure e
     _ -> UncannyShadowPlayfulShadows <$> liftRunMessage msg attrs

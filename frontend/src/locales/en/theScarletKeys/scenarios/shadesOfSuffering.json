@@ -25,7 +25,19 @@
     "harvesterOfWoe": {
       "useTheParasol": "Use the parasol against her.",
       "letHerGo": "Let her go."
+    },
+    "spiritHarvest": {
+      "damage": "Each investigator takes 1 damage and 1 horror.",
+      "tzuSanNiang": "Tzu San Niang shifts The Shade Reaper and then places 2 charges on it."
     }
+  },
+  "remembered": {
+    "tradedForAKitten": "Traded for a kitten",
+    "foundACheapMemento": "Found a cheap memento",
+    "embarrassedTheConsulate": "Embarrassed the consulate",
+    "peeredBeyond": "Peered beyond",
+    "sharedADeepPain": "Shared a deep pain",
+    "foundHiddenBones": "Found hidden bones"
   },
   "intro": {
     "title": "File #46–Q: Shades of Suffering",

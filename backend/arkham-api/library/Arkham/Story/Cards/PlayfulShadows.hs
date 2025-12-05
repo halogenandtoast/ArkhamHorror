@@ -1,9 +1,10 @@
 module Arkham.Story.Cards.PlayfulShadows (playfulShadows) where
 
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Helpers
 import Arkham.Helpers.Log
+import Arkham.Matcher
 import Arkham.ScenarioLogKey
-import Arkham.Card
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
@@ -18,11 +19,17 @@ instance RunMessage PlayfulShadows where
   runMessage msg s@(PlayfulShadows attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       embarassedTheConsulate <- remembered EmbarrassedTheConsulate
+      uncannyShadow <- selectJust $ enemyIs Enemies.uncannyShadowPlayfulShadows
       if embarassedTheConsulate
-        then addToVictory iid attrs
+        then do
+          removeEnemy uncannyShadow
+          addToVictory iid attrs
         else do
-          let enemy = lookupCard Enemies.uncannyShadowPlayfulShadows (toCardId attrs)
           removeStory attrs
-          createEnemy_ enemy attrs.placement
+          defeatWindows <- lift $ cancelEnemyDefeatCapture uncannyShadow
+          checkWindows defeatWindows
+          healAllDamage attrs uncannyShadow
+          disengageFromAll uncannyShadow
+          exhaustThis uncannyShadow
       pure s
     _ -> PlayfulShadows <$> liftRunMessage msg attrs

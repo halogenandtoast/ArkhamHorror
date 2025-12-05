@@ -4,17 +4,19 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
-import Arkham.Exception
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
@@ -101,6 +103,9 @@ instance RunMessage WhereDoomAwaits where
         p.right.validate (not hasTheInvestigatorsBack) "otherwise"
       when hasTheInvestigatorsBack do
         flavor $ h "title" >> p "part1.body"
+        whenM Scenario.getIsReturnTo do
+          investigators <- allInvestigators
+          addCampaignCardToDeckChoice investigators ShuffleIn Assets.naomiOBannionRuthlessTactician
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

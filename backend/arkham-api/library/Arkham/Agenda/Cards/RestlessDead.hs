@@ -78,18 +78,18 @@ instance RunMessage RestlessDead where
       revertAgenda attrs
       pure a
     DoStep 1 msg'@(AdvanceAgenda (isSide B attrs -> True)) -> do
-      noGeists <- selectNone $ NonWeaknessEnemy <> EnemyWithTrait Geist
+      noGeists <- selectNone $ InPlayEnemy $ NonWeaknessEnemy <> EnemyWithTrait Geist
       if noGeists
         then advanceCurrentAct attrs
         else selectForMaybeM (enemyIs Enemies.tzuSanNiangTheLadyWithTheRedParasol) (`forTarget` msg')
       pure a
     ForTarget (EnemyTarget tzuSanNiang) (AdvanceAgenda (isSide B attrs -> True)) -> do
-      lead <- getLead
       place tzuSanNiang InTheShadows
-      mods <-
-        map (,[CampaignModifier "noConcealed[TzuSanNiang]"])
-          <$> select (not_ $ LocationWithEnemy $ EnemyWithTrait Geist)
-      temporaryModifiersMany attrs mods do
-        resolveConcealed lead tzuSanNiang
+      locations <- select $ LocationWithEnemy $ EnemyWithTrait Geist <> NonWeaknessEnemy
+      gatherConcealedCards tzuSanNiang >>= \case
+        Just (TzuSanNiang, cards) -> do
+          for_ cards $ push . CreateConcealedCard
+          distributeEvenlyBetween cards locations
+        _ -> error "failed to gather tzu san niang's concealed cards"
       pure a
     _ -> RestlessDead <$> liftRunMessage msg attrs

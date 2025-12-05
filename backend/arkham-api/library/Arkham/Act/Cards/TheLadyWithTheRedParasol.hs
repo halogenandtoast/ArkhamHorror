@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
@@ -11,7 +12,7 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Agenda (getCurrentAgendaStep)
+import Arkham.Helpers.Agenda (currentAgendaSequenceIs)
 import Arkham.Helpers.Cost (getCanAffordCost, payEffectCost)
 import Arkham.Helpers.Enemy (cancelEnemyEngagement)
 import Arkham.Helpers.FlavorText
@@ -42,7 +43,11 @@ instance RunMessage TheLadyWithTheRedParasol where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let cost = GroupClueCost (PerPlayer 1) Anywhere
       canAfford <- getCanAffordCost iid (attrs.ability 1) [] [] cost
-      if canAfford then payEffectCost iid attrs cost else doStep 1 msg
+      if canAfford
+        then do
+          payEffectCost iid attrs cost
+          afterMaybeSkillTest $ advancedWithClues attrs
+        else doStep 1 msg
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       selectEach ConcealedCardAny removeFromGame
@@ -100,8 +105,8 @@ instance RunMessage TheLadyWithTheRedParasol where
 
       selectEach ConcealedCardAny removeFromGame
       doStep 1 msg
-      n <- getCurrentAgendaStep
-      when (n == 1) $ do_ $ AdvanceToAgenda 1 Agendas.restlessDead Agenda.A (toSource attrs)
+      whenM (currentAgendaSequenceIs (== AS.Sequence 1 AS.A)) do
+        do_ $ AdvanceToAgenda 1 Agendas.restlessDead Agenda.A (toSource attrs)
       advanceActDeck attrs
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do

@@ -39,7 +39,10 @@ instance RunMessage Tinker where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       push $ PlaceEvent attrs.id $ AttachedToAsset aid Nothing
-      slots <- field AssetSlots aid
+      slots' <- field AssetSlots aid
+      slots <- if any (`elem` [#hand, #accessory]) slots'
+        then pure slots'
+        else field AssetPrintedSlots aid
       case (#hand `elem` slots, #accessory `elem` slots) of
         (True, False) -> doStep 1 msg
         (False, True) -> doStep 2 msg

@@ -185,6 +185,7 @@ data instance Field Asset :: Type -> Type where
   AssetCardCode :: Field Asset CardCode
   AssetCardId :: Field Asset CardId
   AssetSlots :: Field Asset [SlotType]
+  AssetPrintedSlots :: Field Asset [SlotType]
   AssetSealedChaosTokens :: Field Asset [ChaosToken]
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
@@ -237,6 +238,7 @@ instance FromJSON (SomeField Asset) where
     "AssetCardCode" -> pure $ SomeField AssetCardCode
     "AssetCardId" -> pure $ SomeField AssetCardId
     "AssetSlots" -> pure $ SomeField AssetSlots
+    "AssetPrintedSlots" -> pure $ SomeField AssetPrintedSlots
     "AssetSealedChaosTokens" -> pure $ SomeField AssetSealedChaosTokens
     "AssetPlacement" -> pure $ SomeField AssetPlacement
     "AssetClasses" -> pure $ SomeField AssetClasses

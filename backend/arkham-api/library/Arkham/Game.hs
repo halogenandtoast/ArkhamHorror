@@ -4094,6 +4094,10 @@ instance Projection Asset where
               $ filter ((`notElem` mods) . DoNotTakeUpSlot)
               $ assetSlots
               <> [s | AdditionalSlot s <- mods]
+      AssetPrintedSlots -> do
+        mods <- getModifiers aid
+        let isSpirit = notNull [() | IsSpirit _ <- mods]
+        pure $ guard (not isSpirit) *> (assetSlots <> [s | AdditionalSlot s <- mods])
       AssetSealedChaosTokens -> pure assetSealedChaosTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual

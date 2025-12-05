@@ -1,3 +1,4 @@
+import base from '@/locales/fr/base.json'
 import log from '@/locales/fr/log.json'
 import cards from '@/locales/fr/cards.json'
 import label from '@/locales/fr/label.json'

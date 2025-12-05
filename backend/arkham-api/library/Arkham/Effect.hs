@@ -97,6 +97,10 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune (
   theWellspringOfFortuneEffect,
  )
+
+import Arkham.Campaigns.TheScarletKeys.Key.Cards.TheShadeReaper (
+  theShadeReaperEffect,
+ )
 import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
   corruptedOrderlyEffect,
@@ -165,11 +169,11 @@ import Arkham.Location.Locations (
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
-  grimResolveEffect,
   copycat3Effect,
   defiance2Effect,
   defianceEffect,
   fey1Effect,
+  grimResolveEffect,
   hatchetManEffect,
   momentum1Effect,
   nimbleEffect,
@@ -547,6 +551,7 @@ allEffects =
     , ("09113", SomeEffect $ noop "09113")
     , ("09557b", SomeEffect laChicaRojaYourWatchfulShadowEffect)
     , ("09648", SomeEffect theCornicheEffect)
+    , ("09680", SomeEffect theShadeReaperEffect)
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)

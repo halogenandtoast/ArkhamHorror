@@ -8,6 +8,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Message.Lifted
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Window qualified as Window
@@ -45,3 +46,15 @@ readStory investigator a storyDef = do
   flipThis (asId investigator) a
   storyCard <- genCard storyDef
   push $ ReadStory (asId investigator) storyCard ResolveIt (Just $ toTarget a)
+
+readStoryWithPlacement
+  :: (ReverseQueue m, Flippable a, Targetable a, ToId investigator InvestigatorId)
+  => investigator
+  -> a
+  -> CardDef
+  -> Placement
+  -> m ()
+readStoryWithPlacement investigator a storyDef placement = do
+  flipThis (asId investigator) a
+  storyCard <- genCard storyDef
+  push $ ReadStoryWithPlacement (asId investigator) storyCard ResolveIt (Just $ toTarget a) placement

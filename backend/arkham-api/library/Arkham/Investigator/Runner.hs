@@ -4778,7 +4778,7 @@ takeUpkeepResources a = do
           , not cannotGainResourcesFromPlayerCardEffects || sourceToFromSource s /= FromPlayerCardEffect
           ]
   let amount = 1 + additionalAmount
-  if CannotGainResources `elem` mods
+  if any (`elem` mods) [CannotGainResources, DoNotCollectResourcesDuringUpkeep]
     then pure a
     else
       if MayChooseNotToTakeUpkeepResources `elem` mods

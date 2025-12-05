@@ -248,6 +248,7 @@ data ModifierType
   | Difficulty Int
   | DiscoveredClues Int
   | DiscoveredCluesAt LocationId Int
+  | DoNotCollectResourcesDuringUpkeep
   | DoNotDisengageEvaded
   | DoNotDrawChaosTokensForSkillChecks
   | DoNotDrawConnection (SortedPair LocationId)

@@ -82,6 +82,7 @@ instance RunMessage TreacheryAttrs where
       for_ placement.attachedTo $ checkWhen . Window.AttachCard Nothing (toCard a)
       let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
       case placement of
+        HiddenInHand _ -> obtainCard a
         InThreatArea iid -> do
           checkWindows $ Window.mkAfter (Window.EntersThreatArea iid $ toCard a)
             : [Window.mkAfter $ Window.TreacheryEntersPlay tid | entersPlay]

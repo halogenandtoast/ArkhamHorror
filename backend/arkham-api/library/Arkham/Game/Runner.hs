@@ -2797,6 +2797,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           EncounterCard ec -> runMessage (Do (InvestigatorDrewEncounterCardFrom iid ec Nothing)) g
           PlayerCard _ -> error "Currently not handling Revelations from type TreacheryType when PlayerCard"
           VengeanceCard _ -> error "Currently not handling Revelations from type TreacheryType when VengeanceCard"
+      EnemyType -> do
+        enemyId <- getRandom
+        let enemy = createEnemy card enemyId
+        pushAll
+          $ InvestigatorDrawEnemy iid enemyId
+          : resolve (Revelation iid (EnemySource enemyId))
+        pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
       other ->
         error $ "Currently not handling Revelations from type " <> show other
   ResolvedCard iid card -> do

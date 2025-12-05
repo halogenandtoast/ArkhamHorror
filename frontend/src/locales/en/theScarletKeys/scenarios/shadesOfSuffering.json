@@ -21,6 +21,10 @@
     "painfulHistory": {
       "ally": "<p>Discard the _Ally_ asset in play with the highest printed cost. Test {'{'}willpower{'}'} (X), where X is that asset's printed cost. If you fail, place charges on The Shade Reaper equal to the discarded asset's printed cost.</p>",
       "doom": "Place 1 doom on Tzu San Niang."
+    },
+    "harvesterOfWoe": {
+      "useTheParasol": "Use the parasol against her.",
+      "letHerGo": "Let her go."
     }
   },
   "intro": {

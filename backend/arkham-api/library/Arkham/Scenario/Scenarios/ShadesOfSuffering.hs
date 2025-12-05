@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (withOwner)
@@ -15,6 +16,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -22,6 +24,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ShadesOfSuffering.Helpers
 import Arkham.Token (countTokens)
@@ -172,5 +175,28 @@ instance RunMessage ShadesOfSuffering where
           theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
           placeTokens Cultist theShadeReaper #charge 1
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          record YouHaventSeenTheLastOfTzuSanNiang
+          setBearer Keys.theShadeReaper $ keyWithEnemy Enemies.tzuSanNiangAWhisperInYourEar
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+        Resolution 1 -> do
+          record TzuSanNiangIsUnderYourSway
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
+          eachInvestigator (`sufferPhysicalTrauma` 1)
+          chooseBearer Keys.theShadeReaper
+        Resolution 2 -> do
+          record YouHaventSeenTheLastOfTzuSanNiang
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          chooseBearer Keys.theShadeReaper
+        Resolution 3 -> do
+          record TzuSanNiangHasYouUnderHerSway
+          setBearer Keys.theShadeReaper $ keyWithEnemy Enemies.tzuSanNiangAWhisperInYourEar
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+        _ -> error "Unknown resolution for Shades of Suffering"
+      markTime 1
+      endOfScenario
       pure s
     _ -> ShadesOfSuffering <$> liftRunMessage msg attrs

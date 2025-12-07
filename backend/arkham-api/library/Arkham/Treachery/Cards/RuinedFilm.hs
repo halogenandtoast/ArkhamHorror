@@ -23,7 +23,7 @@ instance RunMessage RuinedFilm where
           <$> sequence
             [ selectTargets $ assetControlledBy iid <> AssetWithTokens (atLeast 1) Evidence
             , selectTargets $ eventControlledBy iid <> EventWithToken Evidence
-            , selectTargets $ skillControlledBy iid <> SkillWithToken Evidence
+            , selectTargets $ skillOwnedBy iid <> SkillWithToken Evidence
             , selectTargets $ InvestigatorWithId iid <> InvestigatorWithToken Evidence
             ]
 

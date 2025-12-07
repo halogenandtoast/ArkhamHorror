@@ -18,7 +18,7 @@ instance RunMessage ThreeAces1 where
   runMessage msg (ThreeAces1 attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == attrs.id -> do
       withSkillTest \stId -> do
-        n <- select $ skillIs Cards.threeAces1 <> skillControlledBy iid
+        n <- select $ skillIs Cards.threeAces1 <> skillOwnedBy iid
         mods <- getModifiers (SkillTestTarget stId)
         when (length n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
           for_ n \copy -> skillTestModifier stId attrs copy (SetAfterPlay RemoveThisFromGame)

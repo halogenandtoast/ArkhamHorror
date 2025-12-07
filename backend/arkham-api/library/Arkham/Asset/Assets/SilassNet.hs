@@ -28,7 +28,7 @@ instance RunMessage SilassNet where
     SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator
       when (Just iid == miid) do
-        skills <- select $ skillControlledBy iid
+        skills <- select $ skillOwnedBy iid
         chooseOneM iid do
           labeled
             "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them"

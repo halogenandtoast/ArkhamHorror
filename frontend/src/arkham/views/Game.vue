@@ -158,6 +158,7 @@ const websocketUrl = computed(() => {
 
 await fetchGame(props.gameId, props.spectate).then(async ({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
   try { await loadAllImages(newGame) } catch (e) { console.error(e) }
+  window.g = newGame
   game.value = newGame
   solo.value = multiplayerMode === "Solo"
   gameLog.value = Object.freeze(newGame.log)

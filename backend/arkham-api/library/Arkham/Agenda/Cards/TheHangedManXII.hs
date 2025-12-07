@@ -2,13 +2,11 @@ module Arkham.Agenda.Cards.TheHangedManXII (theHangedManXII) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -31,8 +29,8 @@ instance RunMessage TheHangedManXII where
       createEnemyAt_ spectralWatcher hangmansBrook
 
       watchersGrasps <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
-      spectralDiscards <- getSpectralDiscards
-      shuffleCardsIntoDeck SpectralEncounterDeck (watchersGrasps <> map EncounterCard spectralDiscards)
+      push $ ShuffleEncounterDiscardBackInByKey SpectralEncounterDeck
+      shuffleCardsIntoDeck SpectralEncounterDeck watchersGrasps
       advanceAgendaDeck attrs
       pure a
     _ -> TheHangedManXII <$> liftRunMessage msg attrs

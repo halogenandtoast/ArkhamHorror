@@ -29,7 +29,7 @@ instance RunMessage SeaChangeHarpoon where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     SkillTestEnds sid iid (isAbilitySource attrs 1 -> True) -> do
-      skills <- select $ skillControlledBy iid
+      skills <- select $ skillOwnedBy iid
       chooseOneM iid do
         labeled
           "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"

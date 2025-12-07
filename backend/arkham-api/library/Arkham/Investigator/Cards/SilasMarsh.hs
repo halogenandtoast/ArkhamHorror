@@ -39,7 +39,7 @@ instance HasChaosTokenValue SilasMarsh where
 instance RunMessage SilasMarsh where
   runMessage msg i@(SilasMarsh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skills <- select $ skillControlledBy iid
+      skills <- select $ skillOwnedBy iid
       chooseOrRunOneM iid $ targets skills $ returnToHand iid
       pure i
     ElderSignEffect (is attrs -> True) -> do

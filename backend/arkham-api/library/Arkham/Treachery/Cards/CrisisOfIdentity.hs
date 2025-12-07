@@ -23,7 +23,7 @@ instance RunMessage CrisisOfIdentity where
       role <- fieldMap InvestigatorMeta (toResultDefault Neutral) iid
       assets <- selectTargets $ assetControlledBy iid <> AssetWithClass role <> DiscardableAsset
       events <- selectTargets $ eventControlledBy iid <> EventWithClass role
-      skills <- selectTargets $ skillControlledBy iid <> SkillWithClass role
+      skills <- selectTargets $ skillOwnedBy iid <> SkillWithClass role
 
       if tabooed TabooList20 attrs
         then do

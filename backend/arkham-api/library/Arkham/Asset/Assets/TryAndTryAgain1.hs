@@ -27,7 +27,7 @@ instance HasAbilities TryAndTryAgain1 where
 instance RunMessage TryAndTryAgain1 where
   runMessage msg a@(TryAndTryAgain1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      committedSkillCards <- selectMapM (field SkillCard) $ skillControlledBy iid
+      committedSkillCards <- selectMapM (field SkillCard) $ skillOwnedBy iid
       focusCards committedSkillCards $ chooseTargetM iid committedSkillCards (returnToHand iid)
       pure a
     _ -> TryAndTryAgain1 <$> liftRunMessage msg attrs

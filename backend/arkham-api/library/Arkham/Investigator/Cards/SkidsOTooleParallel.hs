@@ -22,7 +22,7 @@ skidsOTooleParallel =
 
 instance HasAbilities SkidsOTooleParallel where
   getAbilities (SkidsOTooleParallel a) =
-    [playerLimit PerRound $ restricted a 1 Self $ FastAbility $ UpTo (Fixed 3) (ResourceCost 1)]
+    [playerLimit PerRound $ restricted a 1 Self $ FastAbility $ AtLeastOne (Fixed 3) (ResourceCost 1)]
 
 instance HasChaosTokenValue SkidsOTooleParallel where
   getChaosTokenValue iid ElderSign (SkidsOTooleParallel attrs) | iid == toId attrs = do

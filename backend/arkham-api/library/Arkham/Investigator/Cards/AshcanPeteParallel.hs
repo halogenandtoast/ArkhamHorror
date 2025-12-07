@@ -45,7 +45,8 @@ getWindowTarget (_ : rest) = getWindowTarget rest
 
 instance RunMessage AshcanPeteParallel where
   runMessage msg i@(AshcanPeteParallel attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getWindowTarget -> target) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 ws@(getWindowTarget -> target) _ -> do
+      cancelWindowBatch ws
       returnToHand iid target
       pure i
     ElderSignEffect (is attrs -> True) -> do

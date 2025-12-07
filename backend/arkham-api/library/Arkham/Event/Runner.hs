@@ -90,8 +90,10 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
         push $ RemoveFromGame (toTarget a)
         pure a
   Discard _ source (isTarget a -> True) -> do
-    pushAll
-      $ windows [Window.WouldBeDiscarded (toTarget a)]
+    (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)
+    push
+      $ Would batchId
+      $ windowMessages
       <> [Discarded (toTarget a) source (toCard a), RemoveFromPlay $ toSource a]
     pure a
   RemoveFromPlay source | isSource a source -> do

@@ -9498,7 +9498,7 @@ historicalSocietyBoilerRoom =
     NoSymbol
     [Droplet]
     ("Historical Society" <:> "Boiler Room")
-    [Basement, Passageway]
+    [Basement]
     Trefoil
     [Droplet]
     ReturnToEchoesOfThePast

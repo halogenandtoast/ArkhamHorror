@@ -86,6 +86,7 @@ const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
+const forcedShowDiscard = ref(false)
 const locationMap = ref<Element | null>(null)
 const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
@@ -513,6 +514,24 @@ watchEffect(() => {
     return isOutOfPlaySource(c.ability.source)
   }
   forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
+
+  const isDiscardChoice = (c: Message) => {
+    if (c.tag !== "TargetLabel") return false
+    if (c.tag === "TargetLabel" && c.target.tag === "EnemyTarget") {
+      let enemyCardId = props.game.enemies[c.target.contents as string].cardId
+      return discards.value.some(card => cardId(card) === enemyCardId)
+    }
+    if (c.target.tag !== "CardIdTarget") return false
+    return discards.value.some(card => cardId(card) === c.target.contents)
+  }
+  const showDiscard = choices.value.some(isDiscardChoice)
+  if (showDiscard) {
+    showDiscards();
+    forcedShowDiscard.value = true
+  } else {
+    hideCards()
+    forcedShowDiscard.value = false
+  }
 })
 
 
@@ -860,7 +879,6 @@ async function addChaosToken(face: any){
         />
         <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" @choose="choose" :playerId="playerId" />
         <div class="scenario-encounter-decks">
-
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
             <div class="discard-card">
               <img

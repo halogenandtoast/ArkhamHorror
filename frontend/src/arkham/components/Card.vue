@@ -66,6 +66,11 @@ function canInteract(c: Message): boolean {
         return true
       }
     }
+    if (c.target.tag === 'EnemyTarget') {
+      if (typeof c.target.contents === 'string' && props.game.enemies[c.target.contents].cardId == id.value) {
+        return true
+      }
+    }
     return c.target.contents === id.value
   }
 

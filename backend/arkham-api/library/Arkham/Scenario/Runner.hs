@@ -741,10 +741,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
-      filterOutCards = filter (`notElem` cards)
+      filterOutCards :: IsCard c => [c] -> [c]
+      filterOutCards = filter ((`elem` cards) . toCard)
     deck' <-
       withDeckM
-        (shuffleM . (<> encounterCards) . filter (`notElem` encounterCards))
+        (shuffleM . (<> encounterCards))
         (a ^. encounterDeckLensFromKey deckKey)
     pure
       $ a
@@ -755,24 +756,27 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (cardsUnderScenarioReferenceL %~ filterOutCards)
       & (setAsideCardsL %~ filterOutCards)
       & (victoryDisplayL %~ filterOutCards)
-      & (encounterDeckLensFromKey deckKey .~ deck')
+      & (encounterDecksL . each . _2 %~ filterOutCards)
+      & (encounterDecksL . each . _1 %~ withDeck filterOutCards)
+      & (encounterDecksL . at deckKey . non (Deck [], []) . _1 .~ deck')
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
-    let filterOutCards = filter (`notElem` cards)
-    let encounterCards = mapMaybe (preview _EncounterCard) cards
+    let
+      filterOutCards :: IsCard c => [c] -> [c]
+      filterOutCards = filter ((`elem` cards) . toCard)
     deck' <- shuffleM $ cards <> maybe [] filterOutCards (view (decksL . at deckKey) a)
     pure
       $ a
-      & (encounterDeckL %~ filter (`notElem` encounterCards))
-      & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
-      & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
+      & (encounterDeckL %~ withDeck filterOutCards)
+      & (encounterDecksL . each . _2 %~ filterOutCards)
+      & (encounterDecksL . each . _1 %~ withDeck filterOutCards)
       & (decksL . at deckKey ?~ deck')
-      & (discardL %~ filter ((`notElem` cards) . EncounterCard))
+      & (discardL %~ filterOutCards)
       & (victoryDisplayL %~ filterOutCards)
       & (setAsideCardsL %~ filterOutCards)
   ShuffleCardsIntoDeck _ cards -> do
     let
-      encounterCards = mapMaybe (preview _EncounterCard) cards
-      filterOutCards = filter (`notElem` cards)
+      filterOutCards :: IsCard c => [c] -> [c]
+      filterOutCards = filter ((`elem` cards) . toCard)
     pure
       $ a
       & (cardsUnderAgendaDeckL %~ filterOutCards)
@@ -782,9 +786,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (cardsUnderScenarioReferenceL %~ filterOutCards)
       & (setAsideCardsL %~ filterOutCards)
       & (victoryDisplayL %~ filterOutCards)
-      & (encounterDeckL %~ filter (`notElem` encounterCards))
-      & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
-      & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
+      & (encounterDeckL %~ withDeck filterOutCards)
+      & (encounterDecksL . each . _2 %~ filterOutCards)
+      & (encounterDecksL . each . _1 %~ withDeck filterOutCards)
       & (decksL . each %~ filterOutCards)
   TakeControlOfSetAsideAsset _ card -> do
     let
@@ -1428,12 +1432,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
     pure a
   FindAndDrawEncounterCard iid matcher includeDiscard -> do
-    handler <- getEncounterDeckHandler iid
-    deckKey <-
-      getEncounterDeckKey iid <&> \case
+    deckKey <- getEncounterDeckKey iid
+    liftRunMessage (FindAndDrawEncounterCardWithDeckKey iid matcher includeDiscard deckKey) a
+  FindAndDrawEncounterCardWithDeckKey iid matcher includeDiscard deckKey' -> do
+    let
+      deckKey = case deckKey' of
         RegularEncounterDeck -> FromEncounterDeck
         other -> FromKeyedEncounterDeck other
-    let
+      handler = specificEncounterDeckHandler deckKey'
       matchingDiscards = filter (`cardMatch` matcher) (a ^. discardLens handler)
       matchingDeckCards =
         filter (`cardMatch` matcher) (unDeck $ a ^. deckLens handler)

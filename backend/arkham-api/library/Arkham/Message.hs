@@ -739,6 +739,7 @@ data Message
   | ChoseEnemy SkillTestId InvestigatorId Source EnemyId
   | FightEnemy EnemyId ChooseFight
   | FindAndDrawEncounterCard InvestigatorId CardMatcher IncludeDiscard
+  | FindAndDrawEncounterCardWithDeckKey InvestigatorId CardMatcher IncludeDiscard ScenarioEncounterDeckKey
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]

@@ -13,6 +13,10 @@ export interface Props {
 }
 
 const isSpectral = computed(() => props.spectral !== undefined && props.spectral !== null)
+const deckKey = computed(() => {
+  if (isSpectral.value) return "SpectralEncounterDeck"
+  return "RegularEncounterDeck"
+})
 
 const props = defineProps<Props>()
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -131,7 +135,7 @@ const debug = useDebug()
         @click.exact="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 1, {tag: 'GameSource'}, null]})"
         @click.shift="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 5, {tag: 'GameSource'}, null]})"
       >Discard</button>
-      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard']})">Select Draw</button>
+      <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCardWithDeckKey', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard', deckKey]})">Select Draw</button>
       <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {'tag': 'EncounterDeck'}})">Shuffle</button>
     </template>
   </div>

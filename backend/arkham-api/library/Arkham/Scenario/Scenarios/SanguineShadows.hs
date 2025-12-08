@@ -186,6 +186,7 @@ instance RunMessage SanguineShadows where
               setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.theSanguineWatcherHeSeesWhatIsNotThere
               markTime 2
               resolutionWithXp "noResolutionSeeingRed" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
+              endOfScenario
             _ -> do
               resolution "noResolution"
               push R3

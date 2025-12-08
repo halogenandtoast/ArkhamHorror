@@ -742,7 +742,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
       filterOutCards :: IsCard c => [c] -> [c]
-      filterOutCards = filter ((`elem` cards) . toCard)
+      filterOutCards = filter ((`notElem` cards) . toCard)
     deck' <-
       withDeckM
         (shuffleM . (<> encounterCards))

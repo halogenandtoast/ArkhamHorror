@@ -5,7 +5,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
@@ -21,7 +20,7 @@ instance HasModifiersFor HereticsGraves_171 where
   getModifiersFor (HereticsGraves_171 a) =
     getSkillTestInvestigator >>= traverse_ \iid -> maybeModified_ a iid do
       liftGuardM $ isInvestigating iid a.id
-      pure [AnySkillValueCalculated $ InvestigatorFieldCalculation iid InvestigatorWillpower]
+      pure [AnySkillValueCalculated $ InvestigatorFieldCalculation iid #willpower]
 
 instance RunMessage HereticsGraves_171 where
   runMessage msg l@(HereticsGraves_171 attrs) = runQueueT $ case msg of

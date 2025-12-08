@@ -37,7 +37,7 @@ instance RunMessage HereticsGravesSpectral_171 where
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       effectWithSource (attrs.ability 1) iid do
-        removeOn $ EffectNextTurnWindow iid
+        removeOn $ EffectEndOfNextTurnWindow iid
         apply $ BaseSkillOf #willpower 1
       pure l
     _ -> HereticsGravesSpectral_171 <$> liftRunMessage msg attrs

@@ -66,6 +66,8 @@ instance RunMessage EffectAttrs where
         )
         $ (DisableEffect effectId)
       pure a
+    BeginTurn iid | isEndOfWindow a (EffectEndOfNextTurnWindow iid) -> do
+      pure $ a {effectWindow = Just $ EffectTurnWindow iid}
     BeginTurn iid | isEndOfWindow a (EffectNextTurnWindow iid) -> do
       a <$ push (DisableEffect effectId)
     EndTurn iid | isEndOfWindow a (EffectTurnWindow iid) -> do

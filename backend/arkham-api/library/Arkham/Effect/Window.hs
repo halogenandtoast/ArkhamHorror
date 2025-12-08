@@ -25,6 +25,7 @@ data EffectWindow
   | EffectSetupWindow
   | EffectScenarioSetupWindow ScenarioId
   | EffectTurnWindow InvestigatorId
+  | EffectEndOfNextTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId
   | EffectCardResolutionWindow CardId
   | EffectGameWindow

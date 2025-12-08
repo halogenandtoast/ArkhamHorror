@@ -978,7 +978,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     HasMatchingEvent eventMatcher -> flip runMatchesM as $ \i ->
       selectAny (eventMatcher <> EventControlledBy (InvestigatorWithId $ toId i))
     HasMatchingSkill skillMatcher -> flip runMatchesM as $ \i ->
-      selectAny (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
+      selectAny (skillMatcher <> SkillOwnedBy (InvestigatorWithId $ toId i))
     MostToken tkn -> flip runMatchesM as $ \i -> do
       mostCount <- fieldMaxBy InvestigatorTokens (Token.countTokens tkn) UneliminatedInvestigator
       pure $ mostCount == Token.countTokens tkn (attr investigatorTokens i)

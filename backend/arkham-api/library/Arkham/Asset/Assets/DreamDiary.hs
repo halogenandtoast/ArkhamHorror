@@ -33,7 +33,7 @@ instance HasAbilities DreamDiary where
           ( SkillTestResult
               #after
               You
-              (SkillTestWithSkill $ SkillControlledBy You <> skillIs Skills.essenceOfTheDream)
+              (SkillTestWithSkill $ SkillOwnedBy You <> skillIs Skills.essenceOfTheDream)
               $ SuccessResult (atLeast 3)
           )
     ]

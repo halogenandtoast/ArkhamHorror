@@ -157,6 +157,11 @@ initUnlockedLocations =
   ]
     <> greenLocations
 
+greenLocationsFirst :: [MapLocationId] -> [MapLocationId]
+greenLocationsFirst locs =
+  let (greens, others) = partition (`elem` greenLocations) locs
+   in greens <> others
+
 mapDistance :: TheScarletKeysMeta -> MapLocationId -> Maybe Int
 mapDistance meta = mapDistance' meta.campaignMap meta.currentLocation
 
@@ -177,7 +182,7 @@ mapDistance' world start goal
     | loc == goal = Just dist
     | Set.member loc visited = bfs visited rest
     | otherwise =
-        let neighbors = maybe [] mapLocationConnections (Map.lookup loc world)
+        let neighbors = greenLocationsFirst $ maybe [] mapLocationConnections (Map.lookup loc world)
             newQueue =
               rest
                 ++ [(n, dist + if n `elem` greenLocations then 0 else 1) | n <- neighbors, Set.notMember n visited]

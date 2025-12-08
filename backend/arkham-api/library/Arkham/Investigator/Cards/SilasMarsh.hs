@@ -26,7 +26,7 @@ instance HasAbilities SilasMarsh where
         $ restricted
           attrs
           1
-          (Self <> DuringSkillTest (YourSkillTest AnySkillTest) <> exists (SkillControlledBy You))
+          (Self <> DuringSkillTest (YourSkillTest AnySkillTest) <> exists (SkillOwnedBy You))
         $ freeReaction
         $ RevealChaosToken #after You AnyChaosToken
     ]

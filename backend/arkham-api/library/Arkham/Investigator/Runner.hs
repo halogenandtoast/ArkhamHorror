@@ -3280,8 +3280,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                       "Cancel card effects and discard it"
                       [ UnfocusCards
                       , CancelNext GameSource RevelationMessage
-                      , ObtainCard card.id
-                      , AddToHand iid [toCard card]
                       , DiscardCard iid GameSource card.id
                       ]
                   | canCancel

@@ -12,6 +12,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier (ModifierType (DamageDealt, NoStandardDamage, SkillModifier))
+import Data.List.Extra (nubOrd)
 
 newtype GatlingGun5 = GatlingGun5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -49,7 +50,7 @@ instance RunMessage GatlingGun5 where
     DoStep n msg'@(Successful (Action.Fight, EnemyTarget _) iid _ (isTarget attrs -> True) _) -> do
       if n == 0
         then do
-          let enemies :: [EnemyId] = getMetaKeyDefault "gatlingGun5_damaged" [] attrs
+          let enemies :: [EnemyId] = nubOrd $ getMetaKeyDefault "gatlingGun5_damaged" [] attrs
           for_ enemies $ checkDefeated (attrs.ability 1)
         else do
           enemies <- select $ enemy_ $ at_ $ locationWithInvestigator iid

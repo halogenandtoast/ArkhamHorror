@@ -1370,7 +1370,7 @@ instance RunMessage EnemyAttrs where
             push $ checkDefeated source eid
           pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
         else pure a
-    CheckDefeated source (isTarget a -> True) -> do
+    CheckDefeated source (isTarget a -> True) | not enemyDefeated -> do
       let mDamageAssignment = lookup source enemyAssignedDamage
       case mDamageAssignment of
         Nothing -> do

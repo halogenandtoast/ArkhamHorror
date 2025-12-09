@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.EncounterSet (EncounterSet)
+import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
@@ -17,6 +18,7 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Skill.Types (Field (..))
 import Arkham.Tracing
 
 -- TODO: IncludeEliminated is bit of a hack, if all investigators are defeated
@@ -75,10 +77,10 @@ selectAssetController aid =
     <*> (join <$> fieldMay DiscardedAssetController aid)
 
 selectEventController :: (HasGame m, Tracing m) => EventId -> m (Maybe InvestigatorId)
-selectEventController = selectOne . HasMatchingEvent . EventWithId
+selectEventController = fieldMay EventController
 
 selectSkillController :: (HasGame m, Tracing m) => SkillId -> m (Maybe InvestigatorId)
-selectSkillController = selectOne . HasMatchingSkill . SkillWithId
+selectSkillController = fieldMay SkillController
 
 getPlayerCount :: (HasGame m, Tracing m) => m Int
 getPlayerCount = selectCount Anyone

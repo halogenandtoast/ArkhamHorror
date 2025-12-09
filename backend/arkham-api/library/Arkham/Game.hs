@@ -5466,6 +5466,7 @@ instance Projection Skill where
       SkillTraits -> pure $ cdCardTraits cdef
       SkillCard -> pure $ toCard s
       SkillOwner -> pure skillOwner
+      SkillController -> pure skillOwner -- for now controller and owner are the same
       SkillPlacement -> pure skillPlacement
 
 instance Projection (InDiscardEntity Skill) where

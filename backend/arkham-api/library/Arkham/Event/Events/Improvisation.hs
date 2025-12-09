@@ -20,8 +20,7 @@ improvisation = event Improvisation Cards.improvisation
 instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      let roles = filter (/= Mythos) [minBound .. maxBound]
-      chooseOneM iid $ for_ roles \role -> labeled (tshow role) $ push $ SetRole iid role
+      investigatorSpecific_ iid "switchRole"
       createCardEffect Cards.improvisation Nothing attrs iid
       drawCards iid attrs 1
       pure e

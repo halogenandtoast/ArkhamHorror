@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.ClassSymbol
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -59,12 +60,12 @@ instance HasChaosTokenValue LolaHayesParallel where
 
 switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do
-  let roles = filter (/= Mythos) [minBound .. maxBound]
-  msamuel <- select $ assetIs Assets.samuelBlakeObsessiveProducer
   let currentRole = toResultDefault Neutral attrs.meta
+  let roles = filter (`notElem` [Mythos, currentRole]) [minBound .. maxBound]
+  msamuel <- select $ assetIs Assets.samuelBlakeObsessiveProducer
   chooseOneM attrs.id $ for_ roles \role ->
     labeled (tshow role) do
-      push $ SetRole attrs.id role
+      investigatorSpecific attrs.id "setRole" role
       for_ msamuel \samuel ->
         when (role /= currentRole) $ assignHorror attrs.id samuel 1
 
@@ -78,8 +79,14 @@ instance RunMessage LolaHayesParallel where
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       ok <- selectNone $ inHandOf NotForPlay iid <> basic (cardIs Assets.samuelBlakeObsessiveProducer)
-      when ok $ switchRole attrs
+      when ok do
+        chooseOneM iid do
+          labeled "Switch Role" $ switchRole attrs
+          withI18n skip_
       pure i
-    SetRole iid role | iid == attrs.id -> do
+    InvestigatorSpecific iid "switchRole" _ | iid == attrs.id -> do
+      switchRole attrs
+      pure i
+    InvestigatorSpecific iid "setRole" role | iid == attrs.id -> do
       pure $ overAttrs (setMeta role) i
     _ -> LolaHayesParallel <$> liftRunMessage msg attrs

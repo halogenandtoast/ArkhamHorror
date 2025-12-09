@@ -35,6 +35,6 @@ instance RunMessage CrisisOfIdentity where
           discardTopOfDeckAndHandle iid attrs 1 attrs
       pure t
     DiscardedTopOfDeck iid [card] _ (isTarget attrs -> True) -> do
-      push $ SetRole iid $ fromMaybe Neutral . headMay . toList $ cdClassSymbols $ toCardDef card
+      investigatorSpecific iid "setRole" $ fromMaybe Neutral . headMay . toList $ cdClassSymbols $ toCardDef card
       pure t
     _ -> CrisisOfIdentity <$> liftRunMessage msg attrs

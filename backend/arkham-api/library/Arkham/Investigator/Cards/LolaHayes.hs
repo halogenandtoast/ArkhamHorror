@@ -41,7 +41,7 @@ instance HasAbilities LolaHayes where
 switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do
   let roles = filter (/= Mythos) [minBound .. maxBound]
-  chooseOneM attrs.id $ for_ roles \role -> labeled (tshow role) $ push $ SetRole attrs.id role
+  chooseOneM attrs.id $ for_ roles \role -> labeled (tshow role) $ investigatorSpecific attrs.id "setRole" role
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = runQueueT $ case msg of
@@ -51,6 +51,9 @@ instance RunMessage LolaHayes where
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       switchRole attrs
       pure i
-    SetRole iid role | iid == attrs.id -> do
+    InvestigatorSpecific iid "switchRole" _ | iid == attrs.id -> do
+      switchRole attrs
+      pure i
+    InvestigatorSpecific iid "setRole" role | iid == attrs.id -> do
       pure $ overAttrs (setMeta role) i
     _ -> LolaHayes <$> liftRunMessage msg attrs

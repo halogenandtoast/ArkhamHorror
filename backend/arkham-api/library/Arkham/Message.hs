@@ -1041,7 +1041,6 @@ data Message
   | SetLayout [GridTemplateRow]
   | SetDecksLayout [GridTemplateRow]
   | SetLocationLabel LocationId Text
-  | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace
   | ForceChaosTokenDrawToken ChaosToken
   | SetActiveInvestigator InvestigatorId
@@ -1162,6 +1161,7 @@ data Message
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
   | CampaignSpecific Text Value
+  | InvestigatorSpecific InvestigatorId Text Value
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
@@ -1242,6 +1242,9 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "SetRole" -> do
+        (iid, role :: ClassSymbol) <- o .: "contents"
+        pure $ InvestigatorSpecific iid "setRole" (toJSON role)
       "AddToHandQuiet" -> do
         contents <- o .: "contents"
         pure $ uncurry AddToHand contents

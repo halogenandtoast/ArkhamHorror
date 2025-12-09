@@ -903,6 +903,7 @@ gainClues investigator source n = push $ GainClues (asId investigator) (toSource
 
 placeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+placeDoom _ _ 0 = pure ()
 placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n
 
 placeDoomOn

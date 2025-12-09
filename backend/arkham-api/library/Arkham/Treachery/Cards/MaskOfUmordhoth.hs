@@ -29,13 +29,13 @@ instance RunMessage MaskOfUmordhoth where
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
       when (null enemies) $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
-      do_ msg
+      doStep (if null enemies then 0 else 1) msg
       pure t
-    Do (Revelation iid (isSource attrs -> True)) -> do
+    DoStep n (Revelation iid (isSource attrs -> True)) -> do
       enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
       chooseOrRunOneM iid $ targets enemies \enemy -> do
         attachTreachery attrs enemy
-        placeDoom attrs enemy 1
+        placeDoom attrs enemy n
       pure t
     RemoveTreachery tid | tid == attrs.id -> do
       for_ attrs.attached $ push . CheckDefeated (attrs.ability 1)

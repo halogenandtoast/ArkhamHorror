@@ -53,6 +53,7 @@ data instance Field Skill :: Type -> Type where
   SkillTraits :: Field Skill (Set Trait)
   SkillCard :: Field Skill Card
   SkillOwner :: Field Skill InvestigatorId
+  SkillController :: Field Skill InvestigatorId
   SkillPlacement :: Field Skill Placement
 
 data instance Field (InHandEntity Skill) :: Type -> Type where

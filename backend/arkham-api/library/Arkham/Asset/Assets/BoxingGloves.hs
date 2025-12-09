@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.BoxingGloves (boxingGloves) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Strategy
 import Arkham.Trait
 
 newtype BoxingGloves = BoxingGloves AssetAttrs
@@ -20,16 +20,12 @@ instance HasModifiersFor BoxingGloves where
 
 instance HasAbilities BoxingGloves where
   getAbilities (BoxingGloves a) =
-    [ restricted a 1 ControlsThis
-        $ ReactionAbility (EnemyDefeated #after You ByAny AnyEnemy)
-        $ exhaust a
-    ]
+    [controlled_ a 1 $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust a)]
 
 instance RunMessage BoxingGloves where
-  runMessage msg a@(BoxingGloves attrs) = case msg of
+  runMessage msg a@(BoxingGloves attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push
-        $ search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic $ #event <> withTrait Spirit)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic $ #event <> withTrait Spirit)
         $ AddFoundToHand iid 1
       pure a
-    _ -> BoxingGloves <$> runMessage msg attrs
+    _ -> BoxingGloves <$> liftRunMessage msg attrs

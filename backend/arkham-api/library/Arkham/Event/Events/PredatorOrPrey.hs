@@ -18,7 +18,7 @@ predatorOrPrey = event PredatorOrPrey Cards.predatorOrPrey
 instance RunMessage PredatorOrPrey where
   runMessage msg e@(PredatorOrPrey attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select AnyInPlayEnemy
+      enemies <- select $ InPlayEnemy NonEliteEnemy
       if null enemies
         then drawCardsIfCan iid attrs 1
         else do

@@ -30,7 +30,7 @@ instance RunMessage SwiftReflexes where
 
       pushAll
         $ [SetActiveInvestigator iid | iid /= iid']
-        <> [enabled, PlayerWindow iid [] False]
+        <> [enabled, PlayerWindow iid [] False True]
         <> [SetActiveInvestigator iid' | iid /= iid']
       pure e
     _ -> SwiftReflexes <$> runMessage msg attrs

@@ -2557,7 +2557,7 @@ takeActionAsIfTurn iid (toSource -> source) = do
   mactive <- selectOne ActiveInvestigator
   temporaryModifier iid source (AsIfTurn iid) do
     push $ SetActiveInvestigator iid
-    push $ PlayerWindow iid [] False
+    push $ PlayerWindow iid [] False True
     for_ mactive $ push . SetActiveInvestigator
 
 ifCardExists :: ReverseQueue m => ExtendedCardMatcher -> QueueT Message m () -> m ()

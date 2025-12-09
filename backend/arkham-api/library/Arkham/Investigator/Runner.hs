@@ -4421,7 +4421,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         _ -> []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
-  PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
+  PlayerWindow iid additionalActions isAdditional immediate | iid == investigatorId -> do
     modifiers <- lift $ withSpan_ "getModifiers" $ getModifiers iid
     mTurnInvestigator <-
       if AsIfTurn iid `elem` modifiers
@@ -4430,7 +4430,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let
       windows =
         map (mkWhen . Window.DuringTurn) mTurnInvestigator
-          <> [mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
+          <> [mkWhen Window.FastPlayerWindow | not immediate]
+          <> [mkWhen Window.NonFast]
 
     actions <- asIfTurn iid (getActions iid windows)
     anyForced <- anyM (isForcedAbility iid) actions
@@ -4445,7 +4446,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         pushAll
           $ toForcedAbilities isSilent
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
-          <> [PlayerWindow iid additionalActions isAdditional]
+          <> [PlayerWindow iid additionalActions isAdditional immediate]
       else do
         let mustTakeAbilities = [aref | MustPerformAbilityIfCan aref <- modifiers]
         let mustTakeActions = if null mustTakeAbilities then [] else filter ((`elem` mustTakeAbilities) . (.ref)) actions
@@ -4499,7 +4500,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           <> map ((\f -> f windows [] []) . AbilityLabel iid) actions'
           <> effectActions
     pure a
-  PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do
+  PlayerWindow iid additionalActions isAdditional False | iid /= investigatorId && a.inGame -> do
     let windows = [mkWhen Window.FastPlayerWindow]
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
@@ -4515,12 +4516,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [ targetLabel
                    c
                    [ InitiatePlayCardWithWindows investigatorId c Nothing NoPayment windows usesAction
-                   , PlayerWindow iid additionalActions isAdditional
+                   , PlayerWindow iid additionalActions isAdditional False
                    ]
                | c <- playableCards
                ]
             <> map
-              ((\f -> f windows [] [PlayerWindow iid additionalActions isAdditional]) . AbilityLabel investigatorId)
+              ((\f -> f windows [] [PlayerWindow iid additionalActions isAdditional False]) . AbilityLabel investigatorId)
               (filter (or . sequence [isFastAbility, not . isActionAbility]) actions)
       player <- getPlayer investigatorId
       unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices

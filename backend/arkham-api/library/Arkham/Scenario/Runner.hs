@@ -674,23 +674,25 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     getEnemyField EnemyPlacement eid >>= \case
       Just (AsSwarm {}) -> pure a
       _ -> do
-        card <- convertToCard eid
-        case card of
+        convertToCard eid >>= \case
           PlayerCard _ -> pure a
-          EncounterCard ec -> do
-            handler <- getEncounterDeckHandler $ toCardId card
-            pure $ a & discardLens handler %~ (ec :)
+          card@(EncounterCard ec) -> do
+            if card.singleSided
+              then do
+                handler <- getEncounterDeckHandler card.id
+                pure $ a & discardLens handler %~ (ec :)
+              else pure a
           VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
-    card <- convertToCard lid
-    handler <- getEncounterDeckHandler $ toCardId card
-    -- only single sided encounter cards should end up in discard
-    case card of
+    convertToCard lid >>= \case
       PlayerCard _ -> pure a
-      EncounterCard ec ->
-        if cdDoubleSided (toCardDef card)
-          then pure a
-          else pure $ a & discardLens handler %~ (ec :)
+      card@(EncounterCard ec) ->
+        if card.singleSided
+          then do
+            -- only single sided encounter cards should end up in discard
+            handler <- getEncounterDeckHandler card.id
+            pure $ a & discardLens handler %~ (ec :)
+          else pure a
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)

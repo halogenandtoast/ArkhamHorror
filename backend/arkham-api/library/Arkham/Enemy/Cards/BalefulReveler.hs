@@ -1,19 +1,14 @@
 module Arkham.Enemy.Cards.BalefulReveler (balefulReveler) where
 
 import Arkham.Ability
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.ChaosToken
-import Arkham.Helpers.Query
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Timing qualified as Timing
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
@@ -22,55 +17,31 @@ newtype BalefulReveler = BalefulReveler EnemyAttrs
 
 -- TODO: spawn at is complicated here
 balefulReveler :: EnemyCard BalefulReveler
-balefulReveler =
-  enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
+balefulReveler = enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
 
 instance HasAbilities BalefulReveler where
-  getAbilities (BalefulReveler attrs) =
-    withBaseAbilities
-      attrs
-      [ limitedAbility (GroupLimit PerRound 1)
-          $ mkAbility
-            attrs
-            1
-          $ ForcedAbility
-          $ MovedFromHunter Timing.After
-          $ EnemyWithId
-          $ toId attrs
-      ]
+  getAbilities (BalefulReveler a) =
+    extend1 a $ groupLimit PerRound $ mkAbility a 1 $ forced $ MovedFromHunter #after (be a)
 
 instance RunMessage BalefulReveler where
-  runMessage msg e@(BalefulReveler attrs) = case msg of
+  runMessage msg e@(BalefulReveler attrs) = runQueueT $ case msg of
     InvestigatorDrawEnemy _ eid | eid == toId attrs -> do
       leadInvestigatorId <- getLead
       start <- getJustLocation leadInvestigatorId
       locations <- getCounterClockwiseLocations start
+      spawnLocation <-
+        maybe Nowhere LocationWithId
+          <$> findM (selectNone . InvestigatorAt . LocationWithId) locations
 
-      mSpawnLocation <-
-        findM
-          (selectNone . InvestigatorAt . LocationWithId)
-          locations
-
-      case mSpawnLocation of
-        Just spawnLocation ->
-          BalefulReveler
-            <$> runMessage
-              msg
-              (attrs & spawnAtL ?~ SpawnAt (LocationWithId spawnLocation))
-        Nothing -> error "could not find location for baleful reveler"
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      e <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
-    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
-      push $ ResetChaosTokens (toSource attrs)
-      chaosTokenFaces <- getModifiedChaosTokenFaces tokens
-      let
-        moveMsg =
-          [ HunterMove (toId attrs)
-          | any
-              (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-              chaosTokenFaces
-          ]
-      player <- getPlayer iid
-      pushAll $ chooseOne player [Label "Continue" []] : moveMsg
+      BalefulReveler <$> liftRunMessage msg (attrs & spawnAtL ?~ SpawnAt spawnLocation)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      requestChaosTokens iid (attrs.ability 1) 1
       pure e
-    _ -> BalefulReveler <$> runMessage msg attrs
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
+      resetChaosTokens (attrs.ability 1)
+      chaosTokenFaces <- getModifiedChaosTokenFaces tokens
+      continue_ iid
+      when (any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) chaosTokenFaces) do
+        push $ HunterMove attrs.id
+      pure e
+    _ -> BalefulReveler <$> liftRunMessage msg attrs

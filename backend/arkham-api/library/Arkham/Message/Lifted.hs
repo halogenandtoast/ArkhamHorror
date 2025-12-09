@@ -3704,8 +3704,20 @@ doFlip iid (toSource -> source) (toTarget -> target) = push $ Flip iid source ta
 campaignSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
 campaignSpecific key value = push $ CampaignSpecific key (toJSON value)
 
+campaignSpecific_ :: ReverseQueue m => Text -> m ()
+campaignSpecific_ key = push $ CampaignSpecific key Null
+
+investigatorSpecific :: (ToJSON a, ReverseQueue m) => InvestigatorId -> Text -> a -> m ()
+investigatorSpecific iid key value = push $ InvestigatorSpecific iid key (toJSON value)
+
+investigatorSpecific_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
+investigatorSpecific_ iid key = push $ InvestigatorSpecific iid key Null
+
 scenarioSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
 scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
+
+scenarioSpecific_ :: ReverseQueue m => Text -> m ()
+scenarioSpecific_ key = push $ ScenarioSpecific key Null
 
 handleGroupTarget
   :: (ReverseQueue m, Targetable target) => GroupKey -> target -> QueueT Message m () -> m ()
@@ -3713,8 +3725,10 @@ handleGroupTarget groupTarget target body = do
   msgs <- capture body
   push $ HandleGroupTarget groupTarget (toTarget target) msgs
 
-cancelInvestigatorDamage :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
+cancelInvestigatorDamage
+  :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
 cancelInvestigatorDamage investigator n = when (n > 0) $ push $ CancelDamage (asId investigator) n
 
-cancelInvestigatorHorror :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
+cancelInvestigatorHorror
+  :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
 cancelInvestigatorHorror investigator n = when (n > 0) $ push $ CancelHorror (asId investigator) n

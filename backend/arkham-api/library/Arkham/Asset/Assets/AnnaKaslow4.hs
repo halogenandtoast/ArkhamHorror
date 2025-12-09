@@ -33,7 +33,7 @@ instance RunMessage AnnaKaslow4 where
       pure a
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid TarotSlot (slot attrs))
-      pure a
+      AnnaKaslow4 <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       search iid (attrs.ability 2) iid [fromDeck] (basic $ #tarot <> #asset) $ PlayFoundNoCost iid 1
       pure a

@@ -70,7 +70,7 @@ additionalRewards s = do
   push $ ChooseOneRewardByEachPlayer masks investigators
 
   when (null s.cardsUnderActDeck && notNull s.cardsUnderAgendaDeck) do
-    resolution "sacrificesMade"
+    resolution "sacrificeMade"
     for_ investigators \iid -> searchCollectionForRandomBasicWeakness iid s [Madness, Injury, Monster]
   when (null s.cardsUnderAgendaDeck && length s.cardsUnderActDeck == 3) do
     resolution "abbessSatisfied"

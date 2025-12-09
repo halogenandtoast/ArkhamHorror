@@ -79,7 +79,7 @@ instance RunMessage LukeRobinson where
       mGateBox <- selectOne $ assetIs Assets.gateBox
       for_ mGateBox $ \gateBox -> push $ AddUses #elderSign gateBox Charge 1
       pure i
-    PlayerWindow iid additionalActions isAdditional | active meta -> do
+    PlayerWindow iid additionalActions isAdditional immediate | active meta -> do
       -- N.B. we are not checking if iid is us so we must be careful not to use it incorrectly
       let usesAction = not isAdditional
       canPlay <- canDo (toId attrs) #play
@@ -96,7 +96,7 @@ instance RunMessage LukeRobinson where
               ]
           LukeRobinson
             . (`with` meta)
-            <$> liftRunMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
+            <$> liftRunMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional immediate) attrs
         else LukeRobinson . (`with` meta) <$> liftRunMessage msg attrs
     Do (CheckWindows windows')
       | active meta

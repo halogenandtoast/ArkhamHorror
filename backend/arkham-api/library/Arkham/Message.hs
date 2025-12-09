@@ -924,7 +924,7 @@ data Message
   | CardIsEnteringPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | ResolvedPlayCard InvestigatorId Card
-  | PlayerWindow InvestigatorId [UI Message] Bool
+  | PlayerWindow InvestigatorId [UI Message] Bool Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
   | PutCardIntoPlayById InvestigatorId CardId (Maybe Target) Payment [Window]
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]
@@ -1248,6 +1248,11 @@ instance FromJSON Message where
       "AddToHandQuiet" -> do
         contents <- o .: "contents"
         pure $ uncurry AddToHand contents
+      "PlayerWindow" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case contents of
+          Right (a, b, c, d) -> pure $ PlayerWindow a b c d
+          Left (a, b, c) -> pure $ PlayerWindow a b c True
       "AddToVictory" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

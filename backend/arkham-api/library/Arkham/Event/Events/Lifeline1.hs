@@ -24,6 +24,6 @@ instance RunMessage Lifeline1 where
         let failed = count (isFailedResult . snd) x
         cancelEndTurn iid
         push $ GainActions iid (toSource attrs) failed
-        push $ PlayerWindow iid [] False
+        push $ PlayerWindow iid [] False False
       pure e
     _ -> Lifeline1 <$> liftRunMessage msg attrs

@@ -5677,7 +5677,7 @@ runMessages gameId mLogger = do
               pushAllEnd
                 [ Msg.PhaseStep
                     (InvestigationPhaseStep InvestigatorTakesActionStep)
-                    [PlayerWindow (toId turnPlayer) [] False]
+                    [PlayerWindow (toId turnPlayer) [] False False]
                 ]
                 >> runMessages gameId mLogger
       Just msg -> do

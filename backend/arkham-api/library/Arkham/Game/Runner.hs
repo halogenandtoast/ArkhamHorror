@@ -2019,7 +2019,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     card <- field LocationCard lid
     pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
     pure g
-  PlayerWindow iid _ _ -> do
+  PlayerWindow iid _ _ _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
   Begin InvestigationPhase -> do

@@ -12,7 +12,6 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Window (cardsDiscarded)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -45,7 +44,8 @@ instance RunMessage RicesWhereabouts where
       whenCurrentAgendaStepIs (<= 2) do
         createEnemyAtLocationMatching_ Enemies.theExperiment (LocationWithId alchemyLabs)
       whenM (any (`elem` ["02062", "51015"]) <$> getCompletedScenarios) do
-        createAssetAt_ Assets.alchemicalConcoction (AtLocation alchemyLabs)
+        alchemicalConcoction <- fetchCard Assets.alchemicalConcoction
+        placeUnderneath alchemyLabs [alchemicalConcoction]
       advanceActDeck attrs
       pure a
     _ -> RicesWhereabouts <$> liftRunMessage msg attrs

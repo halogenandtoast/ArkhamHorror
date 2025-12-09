@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.TalismanOfProtection (
-  talismanOfProtection,
-  TalismanOfProtection (..),
-)
-where
+module Arkham.Asset.Assets.TalismanOfProtection (talismanOfProtection) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +8,7 @@ import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Helpers.Message (checkDefeated)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype TalismanOfProtection = TalismanOfProtection AssetAttrs
@@ -38,12 +35,16 @@ instance HasAbilities TalismanOfProtection where
 
 instance RunMessage TalismanOfProtection where
   runMessage msg a@(TalismanOfProtection attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       owner <- field AssetOwner (toId attrs)
       when (Just iid == owner) $ do
         iids <- select $ affectsOthers $ colocatedWith iid
-        chooseOrRunOne iid $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
+        chooseOrRunOneM iid $ targets iids \iid' -> do
+          if Just iid' == owner then nothing else handleTarget iid attrs iid'
       TalismanOfProtection <$> liftRunMessage msg attrs
+    HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
+      insteadOf (InvestigatorPlayAsset iid attrs.id) $ push $ InvestigatorPlayAsset iid' attrs.id
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lift $ replaceMessageMatching
         \case

@@ -3738,3 +3738,9 @@ cancelInvestigatorDamage investigator n = when (n > 0) $ push $ CancelDamage (as
 cancelInvestigatorHorror
   :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> Int -> m ()
 cancelInvestigatorHorror investigator n = when (n > 0) $ push $ CancelHorror (asId investigator) n
+
+ifEnemy
+  :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> EnemyMatcher -> QueueT Message m () -> m ()
+ifEnemy enemy matcher body = do
+  msgs <- capture body
+  push $ IfEnemyExists (EnemyWithId (asId enemy) <> matcher) msgs

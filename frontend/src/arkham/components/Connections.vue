@@ -9,7 +9,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const locations = computed(() =>
-  Object.values(props.game.locations).filter(a => a.inFrontOf === null && a.label !== 'cosmos')
+  Object.values(props.game.locations).filter(a => a.placement === null && a.label !== 'cosmos')
 )
 const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
   const aId = a.dataset.id, bId = b.dataset.id

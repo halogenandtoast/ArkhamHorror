@@ -268,9 +268,9 @@ instance RunMessage LocationAttrs where
     LocationMoved lid | lid /= locationId -> do
       pure $ a & (directionsL %~ filterMap (/= []) . Map.map (filter (/= lid)))
     PutLocationInFrontOf iid lid | lid == locationId -> do
-      pure $ a & inFrontOfL ?~ iid
+      pure $ a & placementL ?~ InPlayArea iid
     PutLocationInCenter lid | lid == locationId -> do
-      pure $ a & inFrontOfL .~ Nothing
+      pure $ a & placementL .~ Nothing
     When (RemoveLocation lid) | lid == locationId -> do
       pure $ a & beingRemovedL .~ True
     RemoveLocation lid | lid == locationId -> do
@@ -315,7 +315,7 @@ instance RunMessage LocationAttrs where
           <> [afterVehicleEnters]
       pure a
     PlaceGrid (GridLocation pos lid) | lid == locationId -> do
-      pure $ a & positionL ?~ pos
+      pure $ a & positionL ?~ pos & placementL .~ Nothing
     SetFlippable lid flippable | lid == locationId -> do
       pure $ a & canBeFlippedL .~ flippable
     RemovePlayerCardFromGame _ card -> do

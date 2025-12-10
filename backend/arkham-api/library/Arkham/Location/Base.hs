@@ -17,6 +17,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Token
@@ -44,7 +45,7 @@ data LocationAttrs = LocationAttrs
   , locationCostToEnterUnrevealed :: Cost
   , locationCanBeFlipped :: Bool
   , locationInvestigateSkill :: SkillType
-  , locationInFrontOf :: Maybe InvestigatorId
+  , locationPlacement :: Maybe Placement
   , locationKeys :: Set ArkhamKey
   , locationSeals :: Set Seal
   , locationSealedChaosTokens :: [ChaosToken]
@@ -173,6 +174,9 @@ instance FromJSON LocationAttrs where
     locationCanBeFlipped <- o .: "canBeFlipped"
     locationInvestigateSkill <- o .: "investigateSkill"
     locationInFrontOf <- o .:? "inFrontOf"
+    locationPlacement <- case locationInFrontOf of
+      Just iid -> pure $ Just $ InPlayArea iid
+      Nothing -> o .:? "placement"
     locationKeys <- o .: "keys"
     locationSeals <- o .:? "seals" .!= mempty
     locationSealedChaosTokens <- o .:? "sealedChaosTokens" .!= mempty

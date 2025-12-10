@@ -3946,7 +3946,10 @@ instance Projection Location where
         blank <- hasModifier attrs Blank
         pure $ if blank then Free else locationCostToEnterUnrevealed
       LocationPosition -> pure locationPosition
-      LocationInFrontOf -> pure locationInFrontOf
+      LocationInFrontOf -> pure $ case locationPlacement of
+        Just (InPlayArea iid) -> Just iid
+        _ -> Nothing
+      LocationPlacement -> pure locationPlacement
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationLabel -> pure locationLabel
       LocationTokens -> pure locationTokens

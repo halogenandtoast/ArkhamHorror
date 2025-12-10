@@ -29,6 +29,7 @@ import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Location (LocationMatcher (..))
 import Arkham.Message
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
@@ -80,6 +81,7 @@ data instance Field Location :: Type -> Type where
   LocationFloodLevel :: Field Location (Maybe FloodLevel)
   LocationHorror :: Field Location Int
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
+  LocationPlacement :: Field Location (Maybe Placement)
   LocationInvestigateSkill :: Field Location SkillType
   LocationKeywords :: Field Location (Set Keyword)
   LocationLabel :: Field Location Text
@@ -131,7 +133,8 @@ fieldLens = \case
   LocationPosition -> positionL
   LocationCostToEnterUnrevealed -> costToEnterUnrevealedL
   LocationInvestigateSkill -> investigateSkillL
-  LocationInFrontOf -> inFrontOfL
+  LocationInFrontOf -> virtual
+  LocationPlacement -> placementL
   LocationCardId -> cardIdL
   LocationBrazier -> brazierL
   LocationFloodLevel -> floodLevelL
@@ -193,6 +196,7 @@ instance FromJSON (SomeField Location) where
     "LocationFloodLevel" -> pure $ SomeField LocationFloodLevel
     "LocationHorror" -> pure $ SomeField LocationHorror
     "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
+    "LocationPlacement" -> pure $ SomeField LocationPlacement
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationJustShroud" -> pure $ SomeField LocationJustShroud
     "LocationKeywords" -> pure $ SomeField LocationKeywords
@@ -314,7 +318,7 @@ locationWith f def shroud' revealClues g =
             , locationCostToEnterUnrevealed = Free
             , locationInvestigateSkill = SkillIntellect
             , locationCanBeFlipped = Veiled `member` def.keywords
-            , locationInFrontOf = Nothing
+            , locationPlacement = Nothing
             , locationWithoutClues = False
             , locationMeta = Null
             , locationGlobalMeta = mempty

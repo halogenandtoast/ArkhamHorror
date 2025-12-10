@@ -100,6 +100,14 @@ const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 const isSpirit = computed(() => (props.asset.modifiers ?? []).some((m) => m.type.contents === 'IsSpirit'))
 
 function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
+  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }

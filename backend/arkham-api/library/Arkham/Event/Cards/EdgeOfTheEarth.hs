@@ -12,6 +12,7 @@ toeToToe =
     , cdCardTraits = setFromList [Spirit, Tactic]
     , cdActions = [#fight]
     , cdBeforeEffect = True
+    , cdCriteria = Just (exists $ CanFightEnemy ThisCard <> EnemyCanAttack You)
     }
 
 getBehindMe :: CardDef

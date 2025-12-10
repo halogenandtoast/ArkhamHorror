@@ -132,7 +132,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
-import Arkham.Location.Grid (positionColumn, positionRow)
+import Arkham.Location.Grid (adjacentPositions, positionColumn, positionRow)
 import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
@@ -4018,9 +4018,10 @@ instance Projection Location where
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)
       LocationConcealedCards -> do
-        g <- getGame
-        let concealedCards = g ^. entitiesL . concealedL . to Map.elems
-        pure $ concealedCards & filter ((== AtLocation lid) . (.placement)) & map toId
+        other <- case locationPosition of
+          Nothing -> pure []
+          Just pos -> select $ mapOneOf (ConcealedCardWithPlacement . InPosition) $ adjacentPositions pos
+        pure $ locationConcealedCards <> map toId other
       LocationGlobalMeta -> pure locationGlobalMeta
 
 instance Projection Asset where

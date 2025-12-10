@@ -107,6 +107,7 @@ travel attrs locId doTravel n = do
       Kathmandu -> campaignStep_ (InterludeStep 53 Nothing)
       Nairobi -> campaignStep_ (InterludeStep 54 Nothing)
       Perth -> campaignStep_ (InterludeStep 55 Nothing)
+      BermudaTriangle -> campaignStep_ WithoutATrace
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'

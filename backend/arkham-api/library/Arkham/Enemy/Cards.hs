@@ -347,6 +347,7 @@ allEncounterEnemyCards =
       , memoryOfAnAlienTranslation
       , memoryOfAnUnrequitedLove
       , memoryOfAnUnspeakableEvil
+      , mimeticNemesisOtherworldlySubjugator
       , mindlessDancer
       , mrTrombly
       , mobster
@@ -393,6 +394,7 @@ allEncounterEnemyCards =
       , primordialEvil
       , professorWilliamDyerProfessorOfGeology
       , protoplasmicMass
+      , protoplasmicReassembler
       , pursuingMotorcar
       , rampagingShoggoth
       , ravagerFromTheDeep
@@ -3192,6 +3194,22 @@ tzuSanNiangOutForBlood =
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "09679"
+    , cdVictoryPoints = Just 1
+    }
+
+mimeticNemesisOtherworldlySubjugator :: CardDef
+mimeticNemesisOtherworldlySubjugator =
+  (enemy "09690" ("Mimetic Nemesis" <:> "Otherworldly Subjugator") WithoutATrace 1)
+    { cdCardTraits = setFromList [Monster, Outsider, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdUnique = True
+    }
+
+protoplasmicReassembler :: CardDef
+protoplasmicReassembler =
+  (enemy "09691" "Protoplastmic Reassembler" WithoutATrace 1)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
     }
 

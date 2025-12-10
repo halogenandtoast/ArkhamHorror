@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { choiceRequiresModal } from '@/arkham/types/Message';
 import { formatContent, replaceIcons } from '@/arkham/helpers';
+import { handleI18n } from '@/arkham/i18n';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
@@ -91,10 +92,7 @@ const amountsLabel = computed(() => {
 })
 
 const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return formatContent(t(body.slice(1).split(' ')[0]))
-  }
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+  return formatContent(body.startsWith("$") ? handleI18n(body.slice(1), t) : body)
 }
 
 const skillTestResults = computed(() => props.game.skillTestResults)
@@ -102,7 +100,7 @@ const skillTestResults = computed(() => props.game.skillTestResults)
 const body = computed(() => {
   if (question.value && question.value.tag === 'QuestionLabel') {
     if (question.value.label !== "@none") {
-      return replaceIcons(question.value.label)
+      return question.value.label
     }
   }
 

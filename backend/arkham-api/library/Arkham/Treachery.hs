@@ -626,6 +626,8 @@ allTreacheries =
       SomeTreacheryCard touchOfTheBeyond
     , SomeTreacheryCard compulsion
     , SomeTreacheryCard distortedReasoning
+    , --- Beyond the Beyond [tsk]
+      SomeTreacheryCard paradimensionalTerror
     , --- Globetrotting [tsk]
       SomeTreacheryCard paradimensionalUnderstanding
     , -- The Feast of Hemloch Vale

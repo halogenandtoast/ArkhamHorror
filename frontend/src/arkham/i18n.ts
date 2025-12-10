@@ -2,7 +2,6 @@ import { useDbCardStore } from '@/stores/dbCards'
 
 export const handleI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const {key, params} = parseInput(body)
-
   const { __name, name } = params
 
   if(__name && name) {

@@ -1,3 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Campaigns.TheScarletKeys.Helpers (
   module Arkham.Campaigns.TheScarletKeys.Helpers,
   module Arkham.Campaigns.TheScarletKeys.I18n,
@@ -26,6 +29,7 @@ import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Location.Grid
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -57,6 +61,21 @@ pattern InvestigatorWithAnyScarletKey :: InvestigatorMatcher
 pattern InvestigatorWithAnyScarletKey <- InvestigatorWithScarletKey ScarletKeyAny
   where
     InvestigatorWithAnyScarletKey = InvestigatorWithScarletKey ScarletKeyAny
+
+data LocationsInShadowsMetadata = LocationsInShadowsMetadata
+  { locationsInShadows :: LocationsInShadows
+  , concealedCards :: Map Pos [ConcealedCardId]
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data LocationsInShadows = LocationsInShadows
+  { left :: Maybe Card
+  , middle :: Maybe Card
+  , right :: Maybe Card
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data StatusReport = Alpha | Beta | Epsilon | Zeta | Gamma | Theta | Psi | Omega
   deriving stock (Show, Eq, Generic)

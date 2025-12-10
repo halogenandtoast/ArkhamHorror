@@ -871,6 +871,18 @@ allLocations =
     , SomeLocationCard melatisShop
     , SomeLocationCard wayangKulitTheater
     , SomeLocationCard tinMine
+    , --- Without a Trace [tsk]
+      SomeLocationCard courtOfTheOutsiders
+    , SomeLocationCard outsidersLairWithoutATrace
+    , --- Beyond the Beyong [tsk]
+      SomeLocationCard ramblingRouteA
+    , SomeLocationCard ramblingRouteB
+    , SomeLocationCard ramblingRouteC
+    , SomeLocationCard alienFrontierA
+    , SomeLocationCard alienFrontierB
+    , SomeLocationCard wealdOfEffigiesA
+    , SomeLocationCard wealdOfEffigiesB
+    , SomeLocationCard cliffsOfInsanity
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

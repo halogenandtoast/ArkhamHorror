@@ -16,6 +16,8 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Constants
+import Arkham.Location.Grid
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
 
@@ -32,10 +34,25 @@ mkConcealedCard kind = do
       }
 
 instance HasAbilities ConcealedCard where
-  getAbilities a =
-    [ basicAbility $ restricted a AbilityAttack OnSameLocation fightAction_
-    , basicAbility $ restricted a AbilityEvade OnSameLocation evadeAction_
-    ]
+  getAbilities a = case a.placement of
+    InPosition pos ->
+      [ basicAbility
+          $ restricted
+            a
+            AbilityAttack
+            (youExist $ at_ $ mapOneOf LocationInPosition $ adjacentPositions pos)
+            fightAction_
+      , basicAbility
+          $ restricted
+            a
+            AbilityEvade
+            (youExist $ at_ $ mapOneOf LocationInPosition $ adjacentPositions pos)
+            evadeAction_
+      ]
+    _ ->
+      [ basicAbility $ restricted a AbilityAttack OnSameLocation fightAction_
+      , basicAbility $ restricted a AbilityEvade OnSameLocation evadeAction_
+      ]
 
 instance HasModifiersFor ConcealedCard where
   getModifiersFor _ = pure ()

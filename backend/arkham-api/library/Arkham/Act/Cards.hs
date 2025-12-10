@@ -79,6 +79,7 @@ allActCards =
       , enteringTheUnderworldV2
       , escapeTheCage
       , escapeTheRuins
+      , escapingTheOtherworld
       , exploringPnakotus
       , exploringTheMoon
       , exploringTheRainforest
@@ -169,6 +170,7 @@ allActCards =
       , rabbitsWhoRunV3
       , raceForAnswers
       , recoverTheRelic
+      , redRuin
       , reefOfMysteries
       , repossession
       , restrictedAccess
@@ -285,6 +287,7 @@ allActCards =
       , throughTheLabyrinth
       , timelock
       , trapped
+      , traversingTheOutside
       , trialOfTheHuntress
       , truthAndLies
       , uncoveringTheConspiracy
@@ -1027,6 +1030,15 @@ ghostLight = act "09665" "Ghost Light" 2 ShadesOfSuffering
 
 harvesterOfWoe :: CardDef
 harvesterOfWoe = act "09666" "Harvester of Woe" 3 ShadesOfSuffering
+
+traversingTheOutside :: CardDef
+traversingTheOutside = act "09685" "Traversing the Outside" 1 WithoutATrace
+
+redRuin :: CardDef
+redRuin = act "09686" "Red Ruin" 2 WithoutATrace
+
+escapingTheOtherworld :: CardDef
+escapingTheOtherworld = act "09687" "Escaping the Otherworld" 3 WithoutATrace
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

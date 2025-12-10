@@ -9,6 +9,7 @@ data ConcealedCardKind
   = Decoy
   | AcolyteAny
   | ApportionedKa
+  | CityOfRemnants -- Placeholder for all three parts
   | CityOfRemnantsL
   | CityOfRemnantsM
   | CityOfRemnantsR

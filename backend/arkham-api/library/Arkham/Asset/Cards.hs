@@ -986,6 +986,8 @@ allEncounterAssetCards =
       , keyLocusDefensiveBarrier
       , keyLocusLastBastion
       , theClaretKnightHerSwornChampion
+      , theRedGlovedManHeWasAlwaysThere
+      , alikiZoniUperetriaTheMaidWithTheScarletSash
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

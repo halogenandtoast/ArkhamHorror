@@ -16,6 +16,7 @@ module Arkham.Placement (
 
 import Arkham.Card
 import Arkham.Id
+import Arkham.Location.Grid
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Zone
@@ -49,6 +50,7 @@ data Placement
   | Near Target
   | InTheShadows
   | OutOfGame Placement
+  | InPosition Pos
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
@@ -108,6 +110,7 @@ placementToAttached = \case
   OnTopOfDeck _ -> Nothing
   InTheShadows -> Nothing
   OutOfGame _ -> Nothing
+  InPosition _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
@@ -140,6 +143,7 @@ isInPlayPlacement = \case
   Near _ -> True
   InTheShadows -> True
   OutOfGame _ -> False
+  InPosition _ -> True
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case

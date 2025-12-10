@@ -494,7 +494,7 @@ const keys = computed(() => props.scenario.setAsideKeys)
 const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
 const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
+  filter((a) => a.placement === null && a.label !== "cosmos"))
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
@@ -889,9 +889,33 @@ async function addChaosToken(face: any){
       <div class="scenario-cards">
         <div v-if="inTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
           <template v-if="inTheShadowLocations">
-            <img class="card" v-if="inTheShadowLocations.left" :src="imgsrc(cardImage(inTheShadowLocations.left))" />
-            <img class="card" v-if="inTheShadowLocations.middle" :src="imgsrc(cardImage(inTheShadowLocations.middle))" />
-            <img class="card" v-if="inTheShadowLocations.right" :src="imgsrc(cardImage(inTheShadowLocations.right))" />
+            <Location
+              v-if="inTheShadowLocations.left && game.locations[inTheShadowLocations.left]"
+              class="location"
+              :game="game"
+              :playerId="playerId"
+              :location="game.locations[inTheShadowLocations.left]"
+              @choose="choose"
+              @show="doShowCards"
+            />
+            <Location
+              v-if="inTheShadowLocations.middle && game.locations[inTheShadowLocations.middle]"
+              class="location"
+              :game="game"
+              :playerId="playerId"
+              :location="game.locations[inTheShadowLocations.middle]"
+              @choose="choose"
+              @show="doShowCards"
+            />
+            <Location
+              v-if="inTheShadowLocations.right && game.locations[inTheShadowLocations.right]"
+              class="location"
+              :game="game"
+              :playerId="playerId"
+              :location="game.locations[inTheShadowLocations.right]"
+              @choose="choose"
+              @show="doShowCards"
+            />
           </template>
           <EnemyView
             v-for="enemy in inTheShadows"
@@ -2044,6 +2068,14 @@ async function addChaosToken(face: any){
   display: flex;
   flex-direction: row;
   gap: 10px;
+  &:deep(.location) {
+    min-width: unset;
+  }
+  &:deep(.location-container) {
+    grid-template-columns: 0 1fr 0;
+    min-height: unset;
+    grid-column-gap: 0;
+  }
 }
 
 .concealed-card {

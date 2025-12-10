@@ -261,7 +261,6 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       const prefix = scenarioIdToI18n(scenarioId)
       const part = step.contents.slice(-1) === 'b' ? 'part2' : 'part1'
       const key = `${prefix}.names.${part}`
-      console.log(key)
       if (te(key)) return t(key)
     }
 
@@ -283,7 +282,6 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       const prefix = scenarioIdToI18n(scenarioId)
       const part = step.contents[1].contents.slice(-1) === 'b' ? 'part2' : 'part1'
       const key = `${prefix}.names.${part}`
-      console.log(key)
       if (te(key)) return t(key)
     }
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))

@@ -6,6 +6,7 @@ import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 
 export type Brazier = 'Lit' | 'Unlit';
 
@@ -39,7 +40,7 @@ export type Location = {
   cardsUnderneath: Card[];
   modifiers: Modifier[];
   connectedLocations: string[];
-  inFrontOf: string | null;
+  placement: Placement | null;
   brazier: Brazier | null;
   breaches: BreachStatus | null;
   floodLevel: FloodLevel | null;
@@ -74,7 +75,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),
-    inFrontOf: JsonDecoder.nullable(JsonDecoder.string()),
+    placement: JsonDecoder.nullable(placementDecoder),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),
     floodLevel: JsonDecoder.nullable(floodLevelDecoder),

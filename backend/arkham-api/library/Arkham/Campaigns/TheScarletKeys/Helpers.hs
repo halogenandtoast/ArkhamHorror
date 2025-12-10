@@ -70,9 +70,9 @@ data LocationsInShadowsMetadata = LocationsInShadowsMetadata
   deriving anyclass (ToJSON, FromJSON)
 
 data LocationsInShadows = LocationsInShadows
-  { left :: Maybe Card
-  , middle :: Maybe Card
-  , right :: Maybe Card
+  { left :: Maybe LocationId
+  , middle :: Maybe LocationId
+  , right :: Maybe LocationId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

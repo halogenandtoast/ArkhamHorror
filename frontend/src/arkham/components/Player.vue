@@ -212,7 +212,7 @@ const playerHand = computed(() =>
 )
 
 const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === props.investigator.id))
+  filter((a) => a.placement && a.placement.tag === "InPlayArea" && a.placement.contents === props.investigator.id))
 
 const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))

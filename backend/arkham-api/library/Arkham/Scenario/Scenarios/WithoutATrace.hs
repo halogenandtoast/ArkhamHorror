@@ -4,9 +4,9 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
-import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Field
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
@@ -14,7 +14,9 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher.Card
+import Arkham.Matcher.Location
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -39,7 +41,9 @@ withoutATrace difficulty =
 
 instance HasChaosTokenValue WithoutATrace where
   getChaosTokenValue iid tokenFace (WithoutATrace attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      x <- selectCount Anywhere
+      pure $ toChaosTokenValue attrs Skull (x `div` 2) x
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ ChaosTokenValue Tablet NoModifier
     ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
@@ -47,15 +51,15 @@ instance HasChaosTokenValue WithoutATrace where
 
 handleCityOfRemnants
   :: ReverseQueue m
-  => InvestigatorId -> ConcealedCard -> LocationsInShadows -> (LocationsInShadows -> Maybe Card) -> m ()
-handleCityOfRemnants iid c locationsInShadows getCard =
+  => InvestigatorId -> ConcealedCard -> LocationsInShadows -> (LocationsInShadows -> Maybe LocationId) -> m ()
+handleCityOfRemnants iid c locationsInShadows getLocation =
   runMaybeT_ do
     pos <- hoistMaybe $ case c.placement of
       InPosition x -> Just x
       _ -> Nothing
-    card <- hoistMaybe $ getCard locationsInShadows
+    lid <- hoistMaybe $ getLocation locationsInShadows
     lift do
-      placeLocationInGrid_ pos card
+      push $ PlaceGrid (GridLocation pos lid)
       newDecoy <- mkConcealedCard Decoy
       push $ Msg.CreateConcealedCard newDecoy
       newCards <- shuffle [c, newDecoy]
@@ -159,10 +163,15 @@ instance RunMessage WithoutATrace where
       addExtraDeck OtherworldDeck $ top <> bottom
 
       case inPlay of
-        [x, y, z] ->
+        [x, y, z] -> do
+          ll <- placeLocation x
+          ml <- placeLocation y
+          rl <- placeLocation z
+          for_ [ll, ml, rl] \location -> do
+            push $ UpdateLocation location (Update LocationPlacement (Just InTheShadows))
           setMeta
             $ LocationsInShadowsMetadata
-              { locationsInShadows = LocationsInShadows (Just x) (Just y) (Just z)
+              { locationsInShadows = LocationsInShadows (Just ll) (Just ml) (Just rl)
               , concealedCards = mempty
               }
         _ -> error "expected exactly three locations in play"
@@ -182,12 +191,20 @@ instance RunMessage WithoutATrace where
 
       let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
       let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      pure $ WithoutATrace $ case otherworldDeck of
-        [] -> attrs
-        (x : xs) ->
-          attrs
+      case otherworldDeck of
+        [] ->
+          pure
+            $ WithoutATrace
+            $ attrs
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {left = Nothing}}))
+        (x : xs) -> do
+          l <- placeLocation x
+          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
+          pure
+            $ WithoutATrace
+            $ attrs
             & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {left = Just x}}))
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {left = Just l}}))
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
@@ -196,12 +213,20 @@ instance RunMessage WithoutATrace where
 
       let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
       let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      pure $ WithoutATrace $ case otherworldDeck of
-        [] -> attrs
-        (x : xs) ->
-          attrs
+      case otherworldDeck of
+        [] ->
+          pure
+            $ WithoutATrace
+            $ attrs
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {middle = Nothing}}))
+        (x : xs) -> do
+          l <- placeLocation x
+          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
+          pure
+            $ WithoutATrace
+            $ attrs
             & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {middle = Just x}}))
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {middle = Just l}}))
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
@@ -210,12 +235,20 @@ instance RunMessage WithoutATrace where
 
       let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
       let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      pure $ WithoutATrace $ case otherworldDeck of
-        [] -> attrs
-        (x : xs) ->
-          attrs
+      case otherworldDeck of
+        [] ->
+          pure
+            $ WithoutATrace
+            $ attrs
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {right = Nothing}}))
+        (x : xs) -> do
+          l <- placeLocation x
+          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
+          pure
+            $ WithoutATrace
+            $ attrs
             & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {right = Just x}}))
+            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {right = Just l}}))
     PlaceConcealedCard _ card (InPosition pos) -> do
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let current = Map.findWithDefault [] pos meta.concealedCards

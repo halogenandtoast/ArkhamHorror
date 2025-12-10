@@ -1,14 +1,15 @@
 module Arkham.Location.Cards where
 
-import Arkham.Prelude
-
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
+import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Trait hiding (Circle)
 import Arkham.Trait qualified as Trait
 import Data.Set qualified as Set
@@ -114,6 +115,8 @@ allLocationCards =
       , airfield
       , alaskanWilds
       , alienConservatory
+      , alienFrontierA
+      , alienFrontierB
       , alchemyLabs
       , altarToDagon
       , anchorage
@@ -256,6 +259,7 @@ allLocationCards =
       , cityOfTheSerpents
       , cityOfTheUnseen
       , cityWhichAppearsOnNoMap
+      , cliffsOfInsanity
       , cliffsideRoad_a
       , cliffsideRoad_b
       , clockTowerIncessantlyTicking
@@ -278,6 +282,7 @@ allLocationCards =
       , countingRoom
       , courtOfTheGreatOldOnes
       , courtOfTheGreatOldOnesANotTooDistantFuture
+      , courtOfTheOutsiders
       , courtyard
       , coyoacan
       , cragOfTheGhouls
@@ -657,6 +662,7 @@ allLocationCards =
       , outerWall_285
       , outerWall_286
       , outsidersLair
+      , outsidersLairWithoutATrace
       , overgrownCairns
       , overgrownRuins
       , ownersOffice
@@ -699,6 +705,9 @@ allLocationCards =
       , quietHalls_135
       , railroadStation
       , rainyLondonStreets
+      , ramblingRouteA
+      , ramblingRouteB
+      , ramblingRouteC
       , realmsBeyondAllInOne
       , recessesOfYourOwnMind
       , recordsOffice
@@ -1001,6 +1010,8 @@ allLocationCards =
       , waterfall
       , wavewornIsland
       , wayangKulitTheater
+      , wealdOfEffigiesA
+      , wealdOfEffigiesB
       , wellOfSouls
       , westernRidge
       , westminsterAbbey
@@ -8963,6 +8974,136 @@ tinMine =
       Star
       [Diamond]
       ShadesOfSuffering
+
+courtOfTheOutsiders :: CardDef
+courtOfTheOutsiders =
+  location_
+    "09688"
+    "Court of the Outsiders"
+    [Otherworld]
+    WithoutATrace
+
+outsidersLairWithoutATrace :: CardDef
+outsidersLairWithoutATrace =
+  victory 1
+    $ ( locationWithUnrevealed_
+          "09689"
+          "City of Remnants"
+          [Otherworld]
+          "Outsiders' Lair"
+          [Otherworld]
+          WithoutATrace
+      )
+      { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+      }
+
+ramblingRouteA :: CardDef
+ramblingRouteA =
+  ( locationWithUnrevealed_
+      "09747a"
+      "City of Remnants"
+      [Otherworld]
+      "Rambling Route"
+      [Otherworld]
+      WithoutATrace
+  )
+    { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+    }
+
+ramblingRouteB :: CardDef
+ramblingRouteB =
+  ( locationWithUnrevealed_
+      "09747b"
+      "City of Remnants"
+      [Otherworld]
+      "Rambling Route"
+      [Otherworld]
+      WithoutATrace
+  )
+    { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+    }
+
+ramblingRouteC :: CardDef
+ramblingRouteC =
+  ( locationWithUnrevealed_
+      "09747c"
+      "City of Remnants"
+      [Otherworld]
+      "Rambling Route"
+      [Otherworld]
+      WithoutATrace
+  )
+    { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+    }
+
+alienFrontierA :: CardDef
+alienFrontierA =
+  ( locationWithUnrevealed_
+      "09748a"
+      "City of Remnants"
+      [Otherworld]
+      "Alien Frontier"
+      [Otherworld]
+      WithoutATrace
+  )
+    { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+    }
+
+alienFrontierB :: CardDef
+alienFrontierB =
+  ( locationWithUnrevealed_
+      "09748b"
+      "City of Remnants"
+      [Otherworld]
+      "Alien Frontier"
+      [Otherworld]
+      WithoutATrace
+  )
+    { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+    }
+
+wealdOfEffigiesA :: CardDef
+wealdOfEffigiesA =
+  victory 1
+    $ ( locationWithUnrevealed_
+          "09749a"
+          "City of Remnants"
+          [Otherworld]
+          "Weald of Effigies"
+          [Otherworld]
+          WithoutATrace
+      )
+      { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+      }
+
+wealdOfEffigiesB :: CardDef
+wealdOfEffigiesB =
+  victory 1
+    $ ( locationWithUnrevealed_
+          "09749b"
+          "City of Remnants"
+          [Otherworld]
+          "Weald of Effigies"
+          [Otherworld]
+          WithoutATrace
+      )
+      { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+      }
+
+cliffsOfInsanity :: CardDef
+cliffsOfInsanity =
+  victory 1
+    $ ( locationWithUnrevealed_
+          "09750"
+          "City of Remnants"
+          [Otherworld]
+          "Cliffs of Insanity"
+          [Otherworld]
+          WithoutATrace
+      )
+      { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
+      , cdEncounterSetQuantity = Just 2
+      }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

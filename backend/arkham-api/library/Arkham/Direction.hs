@@ -21,6 +21,13 @@ toGridDirection = \case
   LeftOf -> GridLeft
   RightOf -> GridRight
 
+fromGridDirection :: GridDirection -> Direction
+fromGridDirection = \case
+  GridUp -> Above
+  GridDown -> Below
+  GridLeft -> LeftOf
+  GridRight -> RightOf
+
 pattern North :: GridDirection
 pattern North <- GridUp
   where

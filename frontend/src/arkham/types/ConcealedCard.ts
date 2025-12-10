@@ -1,10 +1,12 @@
 import * as JsonDecoder from 'ts.data.json';
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 
 export interface ConcealedCard {
   id: string;
   kind: ConcealedCardKind;
   flipped: boolean;
   known: boolean;
+  placement: Placement;
 }
 
 export type ConcealedCardKind
@@ -74,6 +76,7 @@ export const concealedCardDecoder: JsonDecoder.Decoder<ConcealedCard> = JsonDeco
     kind: concealedKindCardDecoder,
     flipped: JsonDecoder.boolean(),
     known: JsonDecoder.boolean(),
+    placement: placementDecoder,
   },
   'ConcealedCard',
 );

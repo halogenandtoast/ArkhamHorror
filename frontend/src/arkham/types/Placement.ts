@@ -1,6 +1,11 @@
 import * as JsonDecoder from 'ts.data.json';
 import { cardDecoder, Card } from '@/arkham/types/Card';
 
+export type Position = {
+  x: number;
+  y: number;
+}
+
 export type Placement
   = { tag: "InThreatArea", contents: string }
   | { tag: "StillInHand", contents: string }
@@ -9,6 +14,7 @@ export type Placement
   | { tag: "OutOfPlay", contents: string }
   | { tag: "AtLocation", contents: string }
   | { tag: "InVehicle", contents: string }
+  | { tag: "InPosition", contents: Position }
   | { tag: "AttachedToLocation", contents: string }
   | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
@@ -17,6 +23,9 @@ export type Placement
   | { tag: "AttachedToAgenda" }
   | { tag: "InTheShadows" }
   | { tag: "OtherPlacement", contents: string }
+
+// pos will be a tuple of two numbers [x, y] and we need to convert it to an object { x: number, y: number }
+export const positionDecoder = JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.number()], 'PositionTuple').map(([x, y]) => ({ x, y }));
 
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AsSwarm"), swarmHost: JsonDecoder.string(), swarmCard: cardDecoder }, 'AsSwarm'),
@@ -33,5 +42,6 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("OnTopOfDeck"), contents: JsonDecoder.string() }, 'OnTopOfDeck'),
   JsonDecoder.object({ tag: JsonDecoder.literal("OutOfPlay"), contents: JsonDecoder.string()}, 'OutOfPlay'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InTheShadows")}, 'InTheShadows'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPosition"), contents: positionDecoder }, 'InPosition'),
   JsonDecoder.object({ tag: JsonDecoder.string() }, 'OtherPlacement').map(({tag}) => ({ tag: "OtherPlacement", contents: tag }))
 ], 'Placement')

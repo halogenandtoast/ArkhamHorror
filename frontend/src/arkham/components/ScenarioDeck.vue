@@ -2,6 +2,7 @@
 import { computed, ComputedRef } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
+import { cardImage } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -46,6 +47,11 @@ const deckImage = computed(() => {
       return imgsrc("player_back.jpg");
     case 'GuestDeck':
       return imgsrc("player_back.jpg");
+    case 'OtherworldDeck':
+      let topCard = props.deck[1][0];
+      if (topCard) {
+        return imgsrc(cardImage(topCard));
+      }
     default:
       return imgsrc("back.png");
   }

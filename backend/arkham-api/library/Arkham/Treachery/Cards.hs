@@ -126,6 +126,7 @@ allPlayerTreacheryCards =
       , outOfBodyExperience
       , overzealous
       , panic
+      , paradimensionalTerror
       , paradimensionalUnderstanding
       , paranoia
       , poisoned
@@ -2970,10 +2971,11 @@ excruciate =
     }
 
 spiritHarvest :: CardDef
-spiritHarvest = peril $
-  (treachery "09678" "Spirit Harvest" ShadesOfSuffering 2)
-    { cdCardTraits = setFromList [Hex]
-    }
+spiritHarvest =
+  peril
+    $ (treachery "09678" "Spirit Harvest" ShadesOfSuffering 2)
+      { cdCardTraits = setFromList [Hex]
+      }
 
 conspiracyInRed :: CardDef
 conspiracyInRed =
@@ -3108,6 +3110,13 @@ distortedReasoning =
   (treachery "09746" "Distorted Reasoning" SpreadingCorruption 2)
     { cdCardTraits = setFromList [Curse, Terror]
     }
+
+paradimensionalTerror :: CardDef
+paradimensionalTerror =
+  peril
+    $ (treachery "09651" "Paradimensional Terror" BeyondTheBeyond 2)
+      { cdCardTraits = setFromList [Terror]
+      }
 
 paradimensionalUnderstanding :: CardDef
 paradimensionalUnderstanding =

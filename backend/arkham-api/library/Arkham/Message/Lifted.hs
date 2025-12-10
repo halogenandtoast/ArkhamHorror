@@ -3527,6 +3527,11 @@ cancelMovement source investigator = do
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg
 
+sendMessage' :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> m ()
+sendMessage' target body = do
+  msgs <- capture body
+  traverse_ (sendMessage target) msgs
+
 setLocationLabel :: (ToId location LocationId, ReverseQueue m) => location -> Text -> m ()
 setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl
 

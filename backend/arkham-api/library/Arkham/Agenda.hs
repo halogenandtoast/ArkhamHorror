@@ -311,6 +311,10 @@ allAgendas =
       SomeAgendaCard painfulHistory
     , SomeAgendaCard restlessDead
     , SomeAgendaCard fearTheReaper
+    , --- Without a Trace [tsk]
+      SomeAgendaCard otherworldlyHorror
+    , SomeAgendaCard otherworldlyLambs
+    , SomeAgendaCard otherworldlySlaughter
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

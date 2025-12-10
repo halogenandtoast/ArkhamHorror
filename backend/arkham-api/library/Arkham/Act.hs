@@ -350,6 +350,10 @@ allActs =
       SomeActCard theLadyWithTheRedParasol
     , SomeActCard ghostLight
     , SomeActCard harvesterOfWoe
+    , --- Without a Trace [tsk]
+      SomeActCard traversingTheOutside
+    , SomeActCard redRuin
+    , SomeActCard escapingTheOtherworld
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

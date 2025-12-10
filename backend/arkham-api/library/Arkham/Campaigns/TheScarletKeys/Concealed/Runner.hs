@@ -13,6 +13,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Constants
 import Arkham.Fight.Types
 import Arkham.Helpers.Modifiers (getModifiers)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, evade, fight)
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
@@ -44,38 +45,42 @@ instance RunMessage ConcealedCard where
           , concealedCardFlipped = False
           }
     UseThisAbility iid (isSource c -> True) AbilityAttack -> do
-      case c.placement of
-        AtLocation location -> do
-          sid <- getRandom
-          mods <- getModifiers (toTarget c)
-          let
-            x = sum [n | EnemyFight n <- mods]
-            difficulty =
-              if x > 0
-                then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
-                else LocationMaybeFieldCalculation location LocationShroud
-          beginSkillTestEdit sid iid (c.ability AbilityAttack) c #combat difficulty \st ->
-            st {skillTestAction = Just #fight}
-        _ -> pure ()
+      mlocation <- case c.placement of
+        InPosition _ -> getLocationOf iid
+        AtLocation location -> pure $ Just location
+        _ -> pure Nothing
+      for_ mlocation \location -> do
+        sid <- getRandom
+        mods <- getModifiers (toTarget c)
+        let
+          x = sum [n | EnemyFight n <- mods]
+          difficulty =
+            if x > 0
+              then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
+              else LocationMaybeFieldCalculation location LocationShroud
+        beginSkillTestEdit sid iid (c.ability AbilityAttack) c #combat difficulty \st ->
+          st {skillTestAction = Just #fight}
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
       whenM (getCanExpose iid c) do
         push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
-      case c.placement of
-        AtLocation location -> do
-          sid <- getRandom
-          mods <- getModifiers (toTarget c)
-          let
-            x = sum [n | EnemyEvade n <- mods]
-            difficulty =
-              if x > 0
-                then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
-                else LocationMaybeFieldCalculation location LocationShroud
-          beginSkillTestEdit sid iid (c.ability AbilityEvade) c #agility difficulty \st ->
-            st {skillTestAction = Just #evade}
-        _ -> pure ()
+      mlocation <- case c.placement of
+        InPosition _ -> getLocationOf iid
+        AtLocation location -> pure $ Just location
+        _ -> pure Nothing
+      for_ mlocation \location -> do
+        sid <- getRandom
+        mods <- getModifiers (toTarget c)
+        let
+          x = sum [n | EnemyEvade n <- mods]
+          difficulty =
+            if x > 0
+              then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
+              else LocationMaybeFieldCalculation location LocationShroud
+        beginSkillTestEdit sid iid (c.ability AbilityEvade) c #agility difficulty \st ->
+          st {skillTestAction = Just #evade}
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
       whenM (getCanExpose iid c) do
@@ -92,6 +97,9 @@ instance RunMessage ConcealedCard where
           DecoyVoidChimeraEarsplitter -> exposedDecoy iid c (Just "decoyVoidChimeraEarsplitter")
           DecoyVoidChimeraGorefeaster -> exposedDecoy iid c (Just "decoyVoidChimeraGorefeaster")
           DecoyVoidChimeraFellhound -> exposedDecoy iid c (Just "decoyVoidChimeraFellhound")
+          CityOfRemnantsL -> scenarioSpecific "exposed[CityOfRemnantsL]" (iid, c)
+          CityOfRemnantsM -> scenarioSpecific "exposed[CityOfRemnantsM]" (iid, c)
+          CityOfRemnantsR -> scenarioSpecific "exposed[CityOfRemnantsR]" (iid, c)
           _ -> pure ()
         Just def -> do
           enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title

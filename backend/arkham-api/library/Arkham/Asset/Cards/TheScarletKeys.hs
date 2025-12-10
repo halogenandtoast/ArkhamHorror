@@ -723,6 +723,24 @@ theClaretKnightHerSwornChampion =
     , cdOtherSide = Just "09654"
     }
 
+theRedGlovedManHeWasAlwaysThere :: CardDef
+theRedGlovedManHeWasAlwaysThere =
+  (storyAsset "09692" ("The Red-Gloved Man" <:> "He Was Always There") 0 WithoutATrace)
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    }
+
+alikiZoniUperetriaTheMaidWithTheScarletSash :: CardDef
+alikiZoniUperetriaTheMaidWithTheScarletSash =
+  (storyAsset "09693" ("Aliki Zoni Uperetria" <:> "The Maid with the Scarlet Sash") 0 WithoutATrace)
+    { cdCardTraits = setFromList [Ally, Conspirator]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    }
+
 inspectorFlintWithPrideAndCare :: CardDef
 inspectorFlintWithPrideAndCare =
   (storyAsset "09762" ("Inspector Flint" <:> "With Pride and Care") 2 Globetrotting)

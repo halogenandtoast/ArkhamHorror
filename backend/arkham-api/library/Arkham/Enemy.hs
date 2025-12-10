@@ -532,6 +532,9 @@ allEnemies =
     , SomeEnemyCard slainForemanFamilialPain
     , SomeEnemyCard tzuSanNiangTheLadyWithTheRedParasol
     , SomeEnemyCard tzuSanNiangOutForBlood
+    , --- Without a Trace [tsk]
+      SomeEnemyCard mimeticNemesisOtherworldlySubjugator
+    , SomeEnemyCard protoplasmicReassembler
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

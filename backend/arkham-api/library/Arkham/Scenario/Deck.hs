@@ -20,6 +20,7 @@ data ScenarioDeckKey
   | GuestDeck -- The Midwinter Gala
   | RoadDeck -- Horror in High Gear
   | TekeliliDeck -- Edge of the Earth
+  | OtherworldDeck -- Without a Trace
   | ReelDeck -- FilmFatale
   deriving stock (Show, Ord, Eq, Data)
 
@@ -39,6 +40,7 @@ instance ToDisplay ScenarioDeckKey where
     GuestDeck -> "Guest"
     RoadDeck -> "Road"
     TekeliliDeck -> "Tekeli-li"
+    OtherworldDeck -> "Otherworld"
     ReelDeck -> "Reel"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

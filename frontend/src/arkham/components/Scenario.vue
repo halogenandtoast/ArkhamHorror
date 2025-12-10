@@ -15,8 +15,10 @@ import {
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 import { type Enemy } from '@/arkham/types/Enemy';
-import { type Scenario } from '@/arkham/types/Scenario';
-import { type Card, cardId } from '@/arkham/types/Card';
+import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
+import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
+import { type Position } from '@/arkham/types/Placement';
+import { type Card, cardId, cardImage } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { ModifierType, Hollow } from '@/arkham/types/Modifier';
@@ -390,9 +392,64 @@ const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
 const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
+const inTheShadowLocations = computed(() => {
+  if(!props.scenario.meta) return null
+  return props.scenario.meta.locationsInShadows
+})
 const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
 const enemiesAsLocations = computed(() => enemyGroups.value.asLoc)
 const topEnemyInVoid = computed(() => enemyGroups.value.firstVoid)
+
+type ConcealedGroup = {
+  position: Position;
+  known: ConcealedCard[];
+  unknown: ConcealedCard[];
+};
+
+const positionToGridArea = function(pos: Position): string {
+  // convert to posxxyy, negative number gets prefixed with an n so pos (-1, 0) is posn0100, (0, -1) is pos00n01, and (-1, -1) would be posn01n01
+  const fmt = (n: number): string => {
+    const sign = n < 0 ? 'n' : '';
+    const abs = Math.abs(n);
+    const padded = abs.toString().padStart(2, '0'); // 0 -> "00", 5 -> "05", 12 -> "12"
+    return sign + padded;
+  };
+
+  return `pos${fmt(pos.x)}${fmt(pos.y)}`;  
+}
+
+
+const gridConcealed = computed<ConcealedGroup[]>(() => {
+  if (!props.scenario.meta) return
+  const { concealedCards } = props.scenario.meta
+  if (!concealedCards) return
+
+  const groups = new Map<
+    string,
+    { position: Position; known: ConcealedCard[]; unknown: ConcealedCard[] }
+  >();
+
+  for (const details of concealedCards) {
+    const [pos, cards] = details
+    const position = { x: pos[0], y: pos[1] }
+    
+    const key = `${position.x}:${position.y}`;
+
+    let group = groups.get(key);
+    if (!group) {
+      group = { position, known: [], unknown: [] };
+      groups.set(key, group);
+    }
+
+    for (const cardId of cards) {
+      const card = props.game.concealed[cardId]
+      if (!card) continue
+      (card.known ? group.known : group.unknown).push(card);
+    }
+  }
+
+  return [...groups.values()];
+});
 
 function isHollow(m: ModifierType): m is Hollow {
   return m.tag === "Hollow"
@@ -830,7 +887,12 @@ async function addChaosToken(face: any){
         @close="hideCards"
       />
       <div class="scenario-cards">
-        <div v-if="inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
+        <div v-if="inTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
+          <template v-if="inTheShadowLocations">
+            <img class="card" v-if="inTheShadowLocations.left" :src="imgsrc(cardImage(inTheShadowLocations.left))" />
+            <img class="card" v-if="inTheShadowLocations.middle" :src="imgsrc(cardImage(inTheShadowLocations.middle))" />
+            <img class="card" v-if="inTheShadowLocations.right" :src="imgsrc(cardImage(inTheShadowLocations.right))" />
+          </template>
           <EnemyView
             v-for="enemy in inTheShadows"
             :key="enemy.id"
@@ -1108,6 +1170,18 @@ async function addChaosToken(face: any){
             :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
             @choose="choose"
           />
+          <div
+            v-for="group in gridConcealed"
+            :key="`${group.position.x}-${group.position.y}`"
+            class='concealed-card-group'
+            :style="{'grid-area': positionToGridArea(group.position)}"
+          >
+            <div v-if="group.unknown.length > 0" class='concealed-card-stack'>
+              <ConcealedCardView :card="group.unknown[0]" :game="game" :playerId="playerId" @choose="choose" />
+              <span class='count'>{{group.unknown.length}}</span>
+            </div>
+            <ConcealedCardView v-for="card in group.known" :key="card.id" :card="card" :game="game" :playerId="playerId" @choose="choose" />
+          </div>
 
           <template v-if="barriers">
             <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
@@ -1970,5 +2044,41 @@ async function addChaosToken(face: any){
   display: flex;
   flex-direction: row;
   gap: 10px;
+}
+
+.concealed-card {
+  width: calc(var(--card-width) * 0.55);
+  border-radius: 3px;
+}
+
+.concealed-card-stack {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  justify-items: center;
+  > * {
+    grid-area: stack;
+    justify-self: center;
+  }
+  .count {
+    align-self: start;
+    margin-top: 5%;
+    font-weight: bold;
+    border-radius: 100vw;
+    background-color: rgba(255, 255, 255, 0.6);
+    width: auto;
+    height: 1.2em;
+    display: grid;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+}
+
+.concealed-card-group {
+  place-content: center;
 }
 </style>

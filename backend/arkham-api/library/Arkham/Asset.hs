@@ -997,6 +997,9 @@ allAssets =
       SomeAssetCard keyLocusDefensiveBarrier
     , SomeAssetCard keyLocusLastBastion
     , SomeAssetCard theClaretKnightHerSwornChampion
+    , --- Without a Trace [tsk]
+      SomeAssetCard theRedGlovedManHeWasAlwaysThere
+    , SomeAssetCard alikiZoniUperetriaTheMaidWithTheScarletSash
     , --- Globetrotting [tsk]
       SomeAssetCard inspectorFlintWithPrideAndCare
     , SomeAssetCard agentAriQuinnFoundationResearcher

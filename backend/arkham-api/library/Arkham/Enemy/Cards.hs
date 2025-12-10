@@ -2957,7 +2957,6 @@ sinisterAspirantA =
   (enemy "09586a" "Sinister Aspirant (A)" DealingsInTheDark 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Alert]
-    , cdVictoryPoints = Just 1
     }
 
 sinisterAspirantB :: CardDef
@@ -2965,7 +2964,6 @@ sinisterAspirantB =
   (enemy "09586b" "Sinister Aspirant (B)" DealingsInTheDark 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Alert]
-    , cdVictoryPoints = Just 1
     }
 
 sinisterAspirantC :: CardDef
@@ -2973,7 +2971,6 @@ sinisterAspirantC =
   (enemy "09586c" "Sinister Aspirant (C)" DealingsInTheDark 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Alert]
-    , cdVictoryPoints = Just 1
     }
 
 desiderioDelgadoAlvarez106 :: CardDef

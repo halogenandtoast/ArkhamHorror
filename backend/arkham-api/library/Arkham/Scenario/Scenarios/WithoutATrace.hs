@@ -8,22 +8,25 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher.Card
-import Arkham.Matcher.Location
+import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WithoutATrace.Helpers
+import Arkham.Trait (Trait (Outsider))
 import Data.Map.Strict qualified as Map
 
 newtype WithoutATrace = WithoutATrace ScenarioAttrs
@@ -44,15 +47,25 @@ instance HasChaosTokenValue WithoutATrace where
     Skull -> do
       x <- selectCount Anywhere
       pure $ toChaosTokenValue attrs Skull (x `div` 2) x
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 4 6
+    Tablet -> do
+      mods <- getModifiers iid
+      let n = length [() | Hollow _ <- mods]
+      pure $ toChaosTokenValue attrs Tablet (min n 5) n
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 handleCityOfRemnants
   :: ReverseQueue m
-  => InvestigatorId -> ConcealedCard -> LocationsInShadows -> (LocationsInShadows -> Maybe LocationId) -> m ()
-handleCityOfRemnants iid c locationsInShadows getLocation =
+  => ScenarioAttrs
+  -> Value
+  -> (LocationsInShadows -> Maybe LocationId)
+  -> (LocationsInShadows -> Maybe LocationId -> LocationsInShadows)
+  -> m WithoutATrace
+handleCityOfRemnants attrs v getLocation setLocation = do
+  let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
+  let meta = toResult @LocationsInShadowsMetadata attrs.meta
+  let locationsInShadows = meta.locationsInShadows
   runMaybeT_ do
     pos <- hoistMaybe $ case c.placement of
       InPosition x -> Just x
@@ -80,6 +93,25 @@ handleCityOfRemnants iid c locationsInShadows getLocation =
                     gridLabeled (gridLabel pos'') do
                       push $ Msg.PlaceConcealedCard iid (toId b) (InPosition pos'')
           _ -> error "expected exactly two cards"
+
+  let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
+  let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+  case otherworldDeck of
+    [] ->
+      pure
+        $ WithoutATrace
+        $ attrs
+        & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows Nothing}))
+    (x : xs) -> do
+      l <- placeLocation x
+      push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
+      pure
+        $ WithoutATrace
+        $ attrs
+        & (decksL . at OtherworldDeck ?~ xs)
+        & ( metaL
+              .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows (Just l)})
+          )
 
 instance RunMessage WithoutATrace where
   runMessage msg s@(WithoutATrace attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -184,71 +216,11 @@ instance RunMessage WithoutATrace where
         push $ Msg.CreateConcealedCard card
         push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
     ScenarioSpecific "exposed[CityOfRemnantsL]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      let meta = toResult @LocationsInShadowsMetadata attrs.meta
-      let locationsInShadows = meta.locationsInShadows
-      handleCityOfRemnants iid c locationsInShadows (.left)
-
-      let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
-      let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      case otherworldDeck of
-        [] ->
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {left = Nothing}}))
-        (x : xs) -> do
-          l <- placeLocation x
-          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {left = Just l}}))
+      handleCityOfRemnants attrs v (.left) \locations ml -> locations {left = ml}
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      let meta = toResult @LocationsInShadowsMetadata attrs.meta
-      let locationsInShadows = meta.locationsInShadows
-      handleCityOfRemnants iid c meta.locationsInShadows (.middle)
-
-      let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
-      let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      case otherworldDeck of
-        [] ->
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {middle = Nothing}}))
-        (x : xs) -> do
-          l <- placeLocation x
-          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {middle = Just l}}))
+      handleCityOfRemnants attrs v (.middle) \locations ml -> locations {middle = ml}
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      let meta = toResult @LocationsInShadowsMetadata attrs.meta
-      let locationsInShadows = meta.locationsInShadows
-      handleCityOfRemnants iid c locationsInShadows (.right)
-
-      let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
-      let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-      case otherworldDeck of
-        [] ->
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {right = Nothing}}))
-        (x : xs) -> do
-          l <- placeLocation x
-          push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
-          pure
-            $ WithoutATrace
-            $ attrs
-            & (decksL . at OtherworldDeck ?~ xs)
-            & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = locationsInShadows {right = Just l}}))
+      handleCityOfRemnants attrs v (.right) \locations ml -> locations {right = ml}
     PlaceConcealedCard _ card (InPosition pos) -> do
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let current = Map.findWithDefault [] pos meta.concealedCards
@@ -259,4 +231,20 @@ instance RunMessage WithoutATrace where
         $ attrs
         & metaL
         .~ toJSON (meta {concealedCards = Map.insert pos cards concealedCards})
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> do
+          outsiders <- select $ NearestEnemyTo iid $ EnemyWithTrait Outsider
+          withLocationOf iid \lid -> do
+            chooseOrRunOneM iid do
+              targets outsiders \outsider -> do
+                readyThis outsider
+                moveTowards Cultist outsider lid
+                ifEnemy outsider (enemyAtLocationWith iid) do
+                  initiateEnemyAttack outsider Cultist iid
+        ElderThing -> do
+          cards <- select $ inHandOf NotForPlay iid <> basic NonWeakness
+          chooseTargetM iid cards $ hollow iid
+        _ -> pure ()
+      pure s
     _ -> WithoutATrace <$> liftRunMessage msg attrs

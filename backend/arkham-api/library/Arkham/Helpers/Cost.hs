@@ -12,6 +12,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Cost.FieldCost
+import Arkham.Distance
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
@@ -26,6 +27,7 @@ import {-# SOURCE #-} Arkham.Helpers.Investigator ()
 import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (
   getSpendableClueCount,
  )
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
@@ -56,6 +58,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.List qualified as List
+import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
 
 getCanAffordCost
@@ -92,6 +95,16 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             [] -> pure False
         go windows'
       XCost c -> getCanAffordCost_ iid source actions windows' canModify c -- just need to afford once
+      OneOfDistanceCost lmatcher c -> do
+        getLocationOf iid >>= \case
+          Nothing -> pure False
+          Just loc -> do
+            locs <- select lmatcher
+            distances <- locs & mapMaybeM \l -> if l == loc then pure (Just 0) else getDistance loc l
+            nubOrd distances & anyM \(Distance dist) ->
+              if dist == 0
+                then pure True
+                else getCanAffordCost_ iid source actions windows' canModify $ fold @[Cost] (replicate dist c)
       LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
       ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> do
         cs <- take n <$> getScenarioDeck deckKey

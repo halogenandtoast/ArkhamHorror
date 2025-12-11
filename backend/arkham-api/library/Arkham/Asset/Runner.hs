@@ -612,6 +612,13 @@ instance RunMessage AssetAttrs where
       runMessage (PlaceAsset aid placement) a
     TakeControlOfAsset iid aid | aid == assetId -> do
       pushM $ checkWindows $ (`mkWindow` Window.TookControlOfAsset iid aid) <$> [#when, #after]
+      when (isOutOfPlayPlacement a.placement) do
+        whenEnterMsg <- checkWindows [mkWhen (Window.EnterPlay $ toTarget a)]
+        afterEnterMsg <- checkWindows [mkAfter (Window.EnterPlay $ toTarget a)]
+
+        pushAll
+          $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
+          <> [whenEnterMsg, CardEnteredPlay iid (toCard a), afterEnterMsg]
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     LoseControlOfAsset aid | aid == assetId -> do
       pure $ a & controllerL .~ Nothing

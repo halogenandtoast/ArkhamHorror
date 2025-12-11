@@ -137,6 +137,8 @@ instance RunMessage EffectAttrs where
       pure a
     AddToHand _ cards | any (\c -> isEndOfWindow a (EffectHollowWindow c.id)) cards -> do
       a <$ push (DisableEffect effectId)
+    CreateAssetAt _ card _ | isEndOfWindow a (EffectHollowWindow card.id) -> do
+      a <$ push (DisableEffect effectId)
     ObtainCard cid | isEndOfWindow a (EffectHollowWindow cid) -> do
       a <$ push (DisableEffect effectId)
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do

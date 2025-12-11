@@ -1,10 +1,13 @@
 module Arkham.Location.Cards.OutsidersLairWithoutATrace (outsidersLairWithoutATrace) where
 
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype OutsidersLairWithoutATrace = OutsidersLairWithoutATrace LocationAttrs
@@ -23,7 +26,15 @@ outsidersLairWithoutATrace =
 
 instance HasAbilities OutsidersLairWithoutATrace where
   getAbilities (OutsidersLairWithoutATrace a) =
-    extendRevealed a []
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( Here
+            <> ExtendedCardCount (EqualTo $ Static 1) HollowedCard
+            <> exists (HollowedCard <> basic (cardIs Assets.theRedGlovedManHeWasAlwaysThere))
+        )
+      $ FastAbility Free
 
 instance RunMessage OutsidersLairWithoutATrace where
   runMessage msg l@(OutsidersLairWithoutATrace attrs) = runQueueT $ case msg of
@@ -37,5 +48,10 @@ instance RunMessage OutsidersLairWithoutATrace where
             unless (null cards) do
               exposedInShadows iid attrs $ chooseTargetM iid cards $ hollow iid
           RightPosition -> exposedInShadows iid attrs $ assignHorror iid (attrs.ability (-1)) 1
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      iids <- select $ investigatorAt attrs
+      theRedGlovedMan <- createAssetAt Assets.theRedGlovedManHeWasAlwaysThere Unplaced
+      chooseOrRunOneM iid $ targets iids (`takeControlOfAsset` theRedGlovedMan)
       pure l
     _ -> OutsidersLairWithoutATrace <$> liftRunMessage msg attrs

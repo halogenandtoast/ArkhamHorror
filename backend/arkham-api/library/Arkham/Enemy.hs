@@ -535,6 +535,7 @@ allEnemies =
     , --- Without a Trace [tsk]
       SomeEnemyCard mimeticNemesisOtherworldlySubjugator
     , SomeEnemyCard protoplasmicReassembler
+    , SomeEnemyCard golem
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

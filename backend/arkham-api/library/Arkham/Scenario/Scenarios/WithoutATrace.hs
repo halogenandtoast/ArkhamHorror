@@ -256,6 +256,8 @@ instance RunMessage WithoutATrace where
         whenMatch loc (ConnectedTo ForMovement $ LocationWithId current) do
           whenM (getCanMoveTo iid attrs loc) do
             checkAfter $ Window.ScenarioEvent "exposedAdjacentLocation" (Just iid) (toJSON loc)
+
+      checkAfter $ Window.CampaignEvent "exposed[location]" (Just iid) Null
       pure s
     Do (ScenarioSpecific "exposed[CityOfRemnantsL]" v) -> do
       handleCityOfRemnants attrs v (.left) \locations ml -> locations {left = ml}

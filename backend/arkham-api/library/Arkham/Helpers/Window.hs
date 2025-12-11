@@ -551,6 +551,12 @@ damagedEnemy = \case
   ((windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _) : _) -> eid
   _ -> error "Expected DealtDamage window"
 
+damagedEnemyAmount :: [Window] -> Int
+damagedEnemyAmount = \case
+  ((windowType -> Window.WouldTakeDamage _ (EnemyTarget _) n _) : _) -> n
+  ((windowType -> Window.DealtDamage _ _ (EnemyTarget _) n) : _) -> n
+  _ -> error "Expected DealtDamage window"
+
 damagedEnemyWithSource :: [Window] -> (EnemyId, Source)
 damagedEnemyWithSource = \case
   ((windowType -> Window.WouldTakeDamage s (EnemyTarget eid) _ _) : _) -> (eid, s)

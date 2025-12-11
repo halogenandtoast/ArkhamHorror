@@ -1,7 +1,9 @@
 module Arkham.Location.Cards.RamblingRouteA (ramblingRouteA) where
 
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype RamblingRouteA = RamblingRouteA LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,5 +17,13 @@ instance HasAbilities RamblingRouteA where
     extendRevealed a []
 
 instance RunMessage RamblingRouteA where
-  runMessage msg (RamblingRouteA attrs) = runQueueT $ case msg of
+  runMessage msg l@(RamblingRouteA attrs) = runQueueT $ case msg of
+    ScenarioSpecific "exposed[CityOfRemnants]" v -> do
+      let (iid, dir, lid) = toResult v
+      when (lid == attrs.id) do
+        case dir of
+          LeftPosition -> exposedInShadows iid attrs $ assignDamage iid (attrs.ability (-1)) 1
+          MiddlePosition -> pure ()
+          RightPosition -> exposedInShadows iid attrs $ assignHorror iid (attrs.ability (-1)) 1
+      pure l
     _ -> RamblingRouteA <$> liftRunMessage msg attrs

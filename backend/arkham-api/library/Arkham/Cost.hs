@@ -418,7 +418,7 @@ displayCostType = \case
   OrCost cs -> T.intercalate " or " $ map displayCostType cs
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
-  DirectHorrorCost _ _ n -> tshow n <> " Direct Damage"
+  DirectHorrorCost _ _ n -> tshow n <> " Direct Horror"
   DirectDamageAndHorrorCost _ _ m n -> tshow m <> " Direct Damage and " <> tshow n <> " Direct Horror"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
   DiscardCost zone _ -> "Discard from " <> zoneLabel zone

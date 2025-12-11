@@ -1,4 +1,16 @@
 {
+  "label": {
+    "otherworldlyHorror": {
+      "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",
+      "hollows": "Each investigator chooses a non-weakness card they control in their hand or play area and sets it aside, out of play, as a hollow.",
+      "shuffleAllConcealed": "Shuffle all concealed mini-cards facedown, then place them at random in the positions they were in."
+    },
+    "otherworldlyLambs": {
+      "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",
+      "hollows": "Each investigator chooses a non-weakness card they control in their hand or play area and sets it aside, out of play, as a hollow.",
+      "shuffleAllConcealed": "Shuffle all concealed mini-cards facedown, then place them at random in the positions they were in."
+    }
+  },
   "intro": {
     "label": {
       "blowTheWhistle": "Blow the Whistle",

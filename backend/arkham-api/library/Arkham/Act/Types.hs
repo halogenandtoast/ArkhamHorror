@@ -13,6 +13,7 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Matcher.Investigator
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -231,7 +232,7 @@ isSide side attrs aid = aid == attrs.id && onSide side attrs
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> [mkAbility attrs 999 (Objective $ FastAbility cost)]
+    Just cost -> [restricted attrs 999 (DuringTurn Anyone) (Objective $ FastAbility cost)]
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a

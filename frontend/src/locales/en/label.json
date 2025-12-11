@@ -26,6 +26,7 @@
   "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck",
   "discardTopOfEncounterDeck": "Discard the top card of the encounter deck | Discard the top {count} cards of the encounter deck",
   "discoverAdditionalClues": "Discover 1 additional clue | Discover {count} additional clues",
+  "discoverAtYourLocation": "Discover 1 clue at your location | Discover {count} clues at your location",
   "disengageAll": "Disengage all",
   "doNotDraw": "Do not draw",
   "doNotMove": "Do not move",

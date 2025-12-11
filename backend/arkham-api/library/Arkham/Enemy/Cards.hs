@@ -547,7 +547,7 @@ allEncounterEnemyCards =
 allSpecialEnemyCards :: Map CardCode CardDef
 allSpecialEnemyCards =
   mapFromList
-    $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead, nyarlathotepTrueShape, extradimensionalEnemy]
+    $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead, nyarlathotepTrueShape, golem, extradimensionalEnemy]
 
 mobEnforcer :: CardDef
 mobEnforcer =
@@ -4437,6 +4437,13 @@ nyarlathotepTrueShape =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }
+
+golem :: CardDef
+golem =
+  (enemy "xgolem" "Golem" WithoutATrace 0)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdKeywords = singleton Keyword.Hunter
+    }
 
 extradimensionalEnemy :: CardDef
 extradimensionalEnemy =

@@ -219,6 +219,7 @@ data Cost
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | ConcealedXCost
   | XCost Cost
+  | OneOfDistanceCost LocationMatcher Cost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
@@ -257,6 +258,7 @@ displayCostType :: Cost -> Text
 displayCostType = \case
   ConcealedXCost -> "Concealed X"
   XCost c -> "X " <> displayCostType c
+  OneOfDistanceCost _ c -> "X " <> displayCostType c
   LabeledCost lbl _ -> lbl
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"

@@ -28,6 +28,7 @@ import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
+import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
@@ -45,6 +46,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Game
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers
@@ -80,6 +82,7 @@ import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over, transform)
 import Data.Data.Lens (biplate)
+import Data.List.Extra (nubOrd)
 import Data.List.NonEmpty.Extra (minimum1)
 import GHC.Records
 
@@ -202,6 +205,19 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    OneOfDistanceCost lmatcher inner -> do
+      getLocationOf iid >>= \case
+        Nothing -> pure c
+        Just loc -> do
+          locs <- select lmatcher
+          distances <- locs & mapMaybeM \l -> if l == loc then pure (Just 0) else getDistance loc l
+          case nubOrd (sort distances) of
+            [] -> pure c
+            [Distance dist] -> payCost msg c iid skipAdditionalCosts $ fold @[Cost] (replicate dist inner)
+            xs ->
+              payCost msg c iid skipAdditionalCosts
+                $ OrCost
+                $ map (\(Distance dist) -> fold @[Cost] $ replicate dist inner) xs
     ConcealedXCost -> do
       let
         go = \case

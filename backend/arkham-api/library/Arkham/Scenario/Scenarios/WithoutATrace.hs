@@ -1,5 +1,7 @@
 module Arkham.Scenario.Scenarios.WithoutATrace (withoutATrace) where
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers
@@ -7,8 +9,9 @@ import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
+import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
@@ -23,10 +26,12 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WithoutATrace.Helpers
 import Arkham.Trait (Trait (Outsider))
+import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
 newtype WithoutATrace = WithoutATrace ScenarioAttrs
@@ -159,6 +164,9 @@ instance RunMessage WithoutATrace where
       gather Set.SpreadingCorruption
       handleRedCoterie
 
+      setAgendaDeck [Agendas.otherworldlyHorror, Agendas.otherworldlyLambs, Agendas.otherworldlySlaughter]
+      setActDeck [Acts.traversingTheOutside, Acts.redRuin, Acts.escapingTheOtherworld]
+
       courtOfTheOutsiders <- placeInGrid (Pos 0 0) Locations.courtOfTheOutsiders
       startAt courtOfTheOutsiders
 
@@ -187,8 +195,8 @@ instance RunMessage WithoutATrace where
           2 -> 1
           _ -> 0
       cliffs <- fromGathered (cardIs Locations.cliffsOfInsanity)
-      outsidersLair <- fetchCard Locations.outsidersLairWithoutATrace
-      bottom <- shuffle $ outsidersLair : cliffs
+      outsidersLair <- fromGathered (cardIs Locations.outsidersLairWithoutATrace)
+      bottom <- shuffle $ outsidersLair <> cliffs
       (inPlay, top) <-
         fmap (splitAt 3 . drop n) . shuffle =<< fromGathered (CardWithTitle "City of Remnants")
 
@@ -216,10 +224,44 @@ instance RunMessage WithoutATrace where
         push $ Msg.CreateConcealedCard card
         push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
     ScenarioSpecific "exposed[CityOfRemnantsL]" v -> do
-      handleCityOfRemnants attrs v (.left) \locations ml -> locations {left = ml}
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.left \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, LeftPosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
-      handleCityOfRemnants attrs v (.middle) \locations ml -> locations {middle = ml}
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.middle \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, MiddlePosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.right \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, RightPosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
+    ForTarget (LocationTarget loc) (ScenarioSpecific x v) | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      withLocationOf iid \current -> do
+        whenMatch loc (ConnectedTo ForMovement $ LocationWithId current) do
+          whenM (getCanMoveTo iid attrs loc) do
+            checkAfter $ Window.ScenarioEvent "exposedAdjacentLocation" (Just iid) (toJSON loc)
+      pure s
+    Do (ScenarioSpecific "exposed[CityOfRemnantsL]" v) -> do
+      handleCityOfRemnants attrs v (.left) \locations ml -> locations {left = ml}
+    Do (ScenarioSpecific "exposed[CityOfRemnantsM]" v) -> do
+      handleCityOfRemnants attrs v (.middle) \locations ml -> locations {middle = ml}
+    Do (ScenarioSpecific "exposed[CityOfRemnantsR]" v) -> do
       handleCityOfRemnants attrs v (.right) \locations ml -> locations {right = ml}
     PlaceConcealedCard _ card (InPosition pos) -> do
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
@@ -246,5 +288,16 @@ instance RunMessage WithoutATrace where
           cards <- select $ inHandOf NotForPlay iid <> basic NonWeakness
           chooseTargetM iid cards $ hollow iid
         _ -> pure ()
+      pure s
+    ScenarioSpecific "shuffleAllConcealed" _ -> do
+      concealedCards <-
+        select ConcealedCardAny >>= mapMaybeM \c -> runMaybeT do
+          InPosition pos <- lift $ field ConcealedCardPlacement c.id
+          pure (c, pos)
+      let (cards, positions) = unzip concealedCards
+      shuffled <- shuffle cards
+      lead <- getLead
+      for_ (zip shuffled positions) \(card, pos) -> do
+        push $ PlaceConcealedCard lead (toId card) (InPosition pos)
       pure s
     _ -> WithoutATrace <$> liftRunMessage msg attrs

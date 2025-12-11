@@ -77,6 +77,10 @@ data LocationsInShadows = LocationsInShadows
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data LocationInShadowPosition = LeftPosition | MiddlePosition | RightPosition
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data StatusReport = Alpha | Beta | Epsilon | Zeta | Gamma | Theta | Psi | Omega
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

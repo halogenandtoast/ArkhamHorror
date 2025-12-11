@@ -2111,6 +2111,7 @@ async function addChaosToken(face: any){
 }
 
 .concealed-card-group {
+  display: grid;
   place-content: center;
 }
 </style>

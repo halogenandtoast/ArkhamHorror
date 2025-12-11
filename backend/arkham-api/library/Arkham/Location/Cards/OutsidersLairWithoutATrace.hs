@@ -3,15 +3,18 @@ module Arkham.Location.Cards.OutsidersLairWithoutATrace (outsidersLairWithoutATr
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenarios.WithoutATrace.Helpers
+import Arkham.Trait (Trait (Outsider))
 
 newtype OutsidersLairWithoutATrace = OutsidersLairWithoutATrace LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outsidersLairWithoutATrace :: LocationCard OutsidersLairWithoutATrace
@@ -23,6 +26,13 @@ outsidersLairWithoutATrace =
       5
       (PerPlayer 2)
       connectsToAdjacent
+
+instance HasModifiersFor OutsidersLairWithoutATrace where
+  getModifiersFor (OutsidersLairWithoutATrace a) = do
+    modifySelect
+      a
+      (enemyAt a <> EnemyWithTrait Outsider)
+      [EnemyFight 1, EnemyEvade 1, RemoveKeyword Keyword.Aloof]
 
 instance HasAbilities OutsidersLairWithoutATrace where
   getAbilities (OutsidersLairWithoutATrace a) =

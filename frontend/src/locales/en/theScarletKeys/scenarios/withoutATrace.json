@@ -9,6 +9,15 @@
       "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",
       "hollows": "Each investigator chooses a non-weakness card they control in their hand or play area and sets it aside, out of play, as a hollow.",
       "shuffleAllConcealed": "Shuffle all concealed mini-cards facedown, then place them at random in the positions they were in."
+    },
+    "mimeticNemesis": {
+      "hollow": "Choose a non-weakness card in your hand and set it aside, as a hollow",
+      "attack": "This enemy attacks you"
+    }
+  },
+  "tooltips": {
+    "courtOfTheOutsiders": {
+      "resign": ""
     }
   },
   "intro": {

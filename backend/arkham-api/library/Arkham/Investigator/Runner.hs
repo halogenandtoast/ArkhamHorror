@@ -1315,7 +1315,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       , FinishAction
       , TakenActions iid [#move]
       ]
-    pure a
+    movement <- move iid iid lid
+    pure $ a & movementL ?~ movement
   MoveAction iid lid _cost False | iid == investigatorId -> do
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]

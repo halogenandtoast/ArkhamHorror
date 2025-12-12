@@ -623,7 +623,13 @@ instance RunMessage EnemyAttrs where
           else push (EnemyCheckEngagement eid)
         pure a
     Do (EnemyMove eid lid) | eid == enemyId -> do
-      pure $ a & placementL .~ AtLocation lid
+      -- Want to make sure if the enemy is already at the location we don't
+      -- adjust the placement as it will affect engagement (such as Knight of
+      -- the Inner Circle)
+      current <- getLocationOf enemyId
+      if current == Just lid
+        then pure a
+        else pure $ a & placementL .~ AtLocation lid
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     BeginRoundWindow | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) && not enemyDelayEngagement -> do

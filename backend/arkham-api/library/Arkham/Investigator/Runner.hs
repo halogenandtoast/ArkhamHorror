@@ -2512,12 +2512,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     cannotHealDamage <- hasModifier a CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
+    let totalSanity = sanity + investigatorHorrorHealed
 
     when (health > 0 || sanity > 0) do
       pushM
         $ checkWindows
         $ [mkWhen (Window.Healed DamageType (toTarget a) source health) | health > 0]
-        <> [mkWhen (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
+        <> [mkWhen (Window.Healed HorrorType (toTarget a) source totalSanity) | totalSanity > 0]
       push $ Do msg
     pure a
   Do (ApplyHealing source) -> do
@@ -2525,14 +2526,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     cannotHealDamage <- hasModifier a CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
+    let totalSanity = sanity + investigatorHorrorHealed
 
     let overHealDamage = max 0 (health - a.healthDamage - a.assignedHealthDamage)
-    let overHealSanity = max 0 (sanity - a.sanityDamage - a.assignedSanityDamage)
+    let overHealSanity = max 0 (totalSanity - a.sanityDamage - a.assignedSanityDamage)
 
     pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id source overHealDamage
     pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id source overHealSanity
 
-    when (health > 0 || sanity > 0) do
+    when (health > 0 || totalSanity > 0) do
       pushM
         $ checkWindows
         $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
@@ -2540,6 +2542,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       push $ AssignedHealing (toTarget a)
 
     let trueHealth = min health (a.healthDamage + a.assignedHealthDamage)
+    -- horror healed was already applied so we ignore it here
     let trueSanity = min sanity (a.sanityDamage + a.assignedSanityDamage)
 
     a' <-
@@ -2556,6 +2559,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (unhealedHorrorThisRoundL %~ min 0 . subtract sanity)
       & (assignedHealthHealL %~ deleteMap source)
       & (assignedSanityHealL %~ deleteMap source)
+      & (horrorHealedL .~ 0)
   HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
     cannotHealDamage <- hasModifier a CannotHealDamage
@@ -2593,27 +2597,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     cannotHealDamage <- hasModifier a CannotHealDamage
     unless cannotHealDamage do
       pushAll [HealDamageDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
-    -- if cannotHealDamage
-    --   then pure a
-    --   else do
-    --     push $ AssignedHealing (toTarget a)
-    --     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
-    --     push afterWindow
-    --     liftRunMessage (RemoveTokens source (toTarget a) #damage amount) a
     pure a
   HealDamageDelayed (isTarget a -> True) source n -> do
     cannotHealDamage <- hasModifier a CannotHealDamage
     if cannotHealDamage
       then pure a
       else pure $ a & assignedHealthHealL %~ insertWith (+) source n
-  HealHorrorWithAdditional (InvestigatorTarget iid) _source amount | iid == investigatorId -> do
+  HealHorrorWithAdditional (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
       then pure a
       else do
-        let totalHealed = min amount (investigatorSanityDamage a)
-        pure $ a & (horrorHealedL .~ totalHealed)
+        let totalHealed = min amount (a.sanityDamage + a.assignedSanityDamage)
+        let a' = a & (horrorHealedL .~ amount)
+        if totalHealed > 0
+          then liftRunMessage (RemoveTokens source (toTarget a) #horror totalHealed) a'
+          else pure a'
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     -- TODO: HERE  MAYBE
@@ -2621,8 +2621,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
       else do
-        push $ HealHorror (toTarget iid) source (view horrorHealedL a + additional)
-        pure $ a & (horrorHealedL .~ 0)
+        push $ HealHorror (toTarget iid) source additional
+        pure a
   HealHorror (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
     let n = sum [x | HealingTaken x <- mods]

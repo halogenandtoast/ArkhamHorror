@@ -540,7 +540,8 @@ instance RunMessage AssetAttrs where
         _ -> error "Cannot attach asset to that type"
       pure a
     RemoveFromGame target | a `isTarget` target -> do
-      a <$ push (RemoveFromPlay $ toSource a)
+      pushAll [RemoveFromPlay $ toSource a, ObtainCard a.cardId]
+      pure a
     Discard mInvestigator source target | a `isTarget` target -> do
       removeFromGame <- a `hasModifier` RemoveFromGameInsteadOfDiscard
       afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)

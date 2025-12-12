@@ -31,7 +31,8 @@ instance RunMessage DanielChesterfield where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignDamage iid (attrs.ability 2) 1
       pure a
-    UseThisAbility _ (isSource attrs -> True) 3 -> do
+    UseCardAbility _ (isSource attrs -> True) 3 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> DanielChesterfield <$> liftRunMessage msg attrs

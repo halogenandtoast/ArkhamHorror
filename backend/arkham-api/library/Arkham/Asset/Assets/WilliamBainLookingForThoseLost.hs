@@ -23,12 +23,13 @@ williamBainLookingForThoseLost =
   allyWith WilliamBainLookingForThoseLost Cards.williamBainLookingForThoseLost (4, 4) noSlots
 
 instance HasModifiersFor WilliamBainLookingForThoseLost where
-  getModifiersFor (WilliamBainLookingForThoseLost a) = for_ a.controller \iid -> do
-    getSkillTest >>= traverse_ \st ->
-      when (st.investigator == iid) do
-        committed <- field InvestigatorCommittedCards iid
-        when (notNull committed) do
-          modified_ a iid [SkillModifier s 1 | s <- [#willpower, #intellect, #combat, #agility]]
+  getModifiersFor (WilliamBainLookingForThoseLost a) = do
+    for_ a.controller \iid -> do
+      getSkillTest >>= traverse_ \st ->
+        when (st.investigator == iid) do
+          committed <- field InvestigatorCommittedCards iid
+          when (notNull committed) do
+            modified_ a iid [SkillModifier s 1 | s <- [#willpower, #intellect, #combat, #agility]]
 
 instance HasAbilities WilliamBainLookingForThoseLost where
   getAbilities (WilliamBainLookingForThoseLost a) =
@@ -51,7 +52,8 @@ instance RunMessage WilliamBainLookingForThoseLost where
         createAssetAt_ card (AtLocation lobby)
       shuffleGuestDeck
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> WilliamBainLookingForThoseLost <$> liftRunMessage msg attrs

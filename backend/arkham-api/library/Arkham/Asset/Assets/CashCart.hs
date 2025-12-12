@@ -3,24 +3,20 @@ module Arkham.Asset.Assets.CashCart (cashCart) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
-import Arkham.Message qualified as Msg
 import Arkham.Helpers.Location (getConnectedLocations, withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement
+import Arkham.Modifier
 import Arkham.ScenarioLogKey
 
 newtype CashCart = CashCart AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cashCart :: AssetCard CashCart
 cashCart = assetWith CashCart Cards.cashCart (healthL ?~ 3)
-
-instance HasModifiersFor CashCart where
-  getModifiersFor (CashCart a) = modifySelf a [RemoveFromGameInsteadOfDiscard]
 
 instance HasAbilities CashCart where
   getAbilities (CashCart a) =
@@ -45,10 +41,9 @@ instance RunMessage CashCart where
         selectEach (enemyAt loc) \enemy -> do
           roundModifier (attrs.ability 2) enemy (CannotEngage iid)
       pure a
-    UseThisAbility _ (isSource attrs -> True) 3 -> do
+    UseCardAbility _ (isSource attrs -> True) 3 ws _ -> do
+      cancelWindowBatch ws
       remember StayedOutOfSight
-      pure a
-    Do (Msg.AssetDefeated _ aid) | aid == attrs.id -> do
       removeFromGame attrs
       pure a
     _ -> CashCart <$> liftRunMessage msg attrs

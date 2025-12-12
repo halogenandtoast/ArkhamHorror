@@ -17,7 +17,8 @@ caldwellPhilipsEnthralledByLegends =
   allyWith CaldwellPhilipsEnthralledByLegends Cards.caldwellPhilipsEnthralledByLegends (2, 3) noSlots
 
 instance HasModifiersFor CaldwellPhilipsEnthralledByLegends where
-  getModifiersFor (CaldwellPhilipsEnthralledByLegends a) = controllerGets a [SkillModifier #intellect 1]
+  getModifiersFor (CaldwellPhilipsEnthralledByLegends a) = do
+    controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities CaldwellPhilipsEnthralledByLegends where
   getAbilities (CaldwellPhilipsEnthralledByLegends a) =
@@ -35,7 +36,8 @@ instance RunMessage CaldwellPhilipsEnthralledByLegends where
     UseCardAbility iid (isSource attrs -> True) 1 (discoveredClues -> n) _ -> do
       drawCards iid (attrs.ability 1) (min 3 n)
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> CaldwellPhilipsEnthralledByLegends <$> liftRunMessage msg attrs

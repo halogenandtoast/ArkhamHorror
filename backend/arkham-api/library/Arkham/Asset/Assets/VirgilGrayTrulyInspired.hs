@@ -39,7 +39,8 @@ instance RunMessage VirgilGrayTrulyInspired where
           labeled "Heal 1 horror from Virgil Gray" $ healHorror attrs (attrs.ability 1) 1
       when (notNull others) $ chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> VirgilGrayTrulyInspired <$> liftRunMessage msg attrs

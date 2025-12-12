@@ -35,7 +35,8 @@ instance HasAbilities JoeSargentRattletrapBusDriver where
 
 instance RunMessage JoeSargentRattletrapBusDriver where
   runMessage msg a@(JoeSargentRattletrapBusDriver attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -18,13 +18,15 @@ instance HasAbilities AdamLynch where
   getAbilities (AdamLynch x) = [forcedAbility x 1 $ AssetLeavesPlay #when (be x)]
 
 instance HasModifiersFor AdamLynch where
-  getModifiersFor (AdamLynch a) = for_ a.controller \iid -> do
-    selectForMaybeM (AbilityOnLocation (LocationWithTitle "Security Office") <> AbilityWithIndex 1) \ab ->
-      modified_ a (AbilityTarget iid ab.ref) [ActionCostSetToModifier 1]
+  getModifiersFor (AdamLynch a) = do
+    for_ a.controller \iid -> do
+      selectForMaybeM (AbilityOnLocation (LocationWithTitle "Security Office") <> AbilityWithIndex 1) \ab ->
+        modified_ a (AbilityTarget iid ab.ref) [ActionCostSetToModifier 1]
 
 instance RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
+      cancelWindowBatch ws
       addChaosToken Tablet
       removeFromGame attrs
       pure a

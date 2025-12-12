@@ -224,6 +224,14 @@
     "secretsLost": {
       "hollowed": "Take 1 horror to choose a set-aside hollow and add it to its owner's hand"
     },
+    "wealdOfEffigies": {
+      "miniCards": "Swap the positions of 2 concealed mini-cards adjacent to locations",
+      "locations": "Swap the positions of 2 locations in the shadows"
+    },
+    "paradimensionalTerror": {
+      "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",
+      "shuffleAllConcealed": "Shuffle all concealed mini-cards facedown, then place them at random in the positions they were in."
+    },
     "doNotExposeConcealed": "Do not expose Concealed Card",
     "doNotRevealConcealed": "Do not reveal Concealed Card"
   },

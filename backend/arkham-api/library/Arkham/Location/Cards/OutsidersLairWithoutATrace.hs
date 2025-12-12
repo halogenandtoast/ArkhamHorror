@@ -2,6 +2,7 @@ module Arkham.Location.Cards.OutsidersLairWithoutATrace (outsidersLairWithoutATr
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
@@ -10,7 +11,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.WithoutATrace.Helpers
 import Arkham.Trait (Trait (Outsider))
 
 newtype OutsidersLairWithoutATrace = OutsidersLairWithoutATrace LocationAttrs

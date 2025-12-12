@@ -1,10 +1,15 @@
 module Arkham.Location.Cards.CliffsOfInsanity (cliffsOfInsanity) where
 
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype CliffsOfInsanity = CliffsOfInsanity LocationAttrs
@@ -18,7 +23,12 @@ cliffsOfInsanity =
 
 instance HasAbilities CliffsOfInsanity where
   getAbilities (CliffsOfInsanity a) =
-    extendRevealed a []
+    extendRevealed1 a
+      $ restricted a 1 (exists $ mapOneOf (ConcealedCardWithPlacement . InPosition) positions)
+      $ forced
+      $ RevealLocation #after You (be a)
+   where
+    positions = maybe [] adjacentPositions a.position
 
 instance RunMessage CliffsOfInsanity where
   runMessage msg l@(CliffsOfInsanity attrs) = runQueueT $ case msg of
@@ -32,5 +42,16 @@ instance RunMessage CliffsOfInsanity where
             unless (null cards) do
               exposedInShadows iid attrs $ chooseTargetM iid cards $ hollow iid
           RightPosition -> exposedInShadows iid attrs $ assignHorror iid (attrs.ability (-1)) 1
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ attrs.position \pos -> do
+        cs <- select $ mapOneOf (ConcealedCardWithPlacement . InPosition) (adjacentPositions pos)
+        cliffPositions <- catMaybes <$> selectField LocationPosition (locationIs Cards.cliffsOfInsanity)
+        otherPositions <-
+          catMaybes <$> selectField LocationPosition (not_ $ locationIs Cards.cliffsOfInsanity)
+        let adjacentToCliffs = concatMap adjacentPositions cliffPositions
+        let adjacentToOthers = concatMap adjacentPositions otherPositions
+        let targetPositions :: [Pos] = adjacentToOthers \\ (adjacentToCliffs <> cliffPositions <> otherPositions)
+        scenarioSpecific "distributeConcealedLocations" (iid, cs, targetPositions, targetPositions)
       pure l
     _ -> CliffsOfInsanity <$> liftRunMessage msg attrs

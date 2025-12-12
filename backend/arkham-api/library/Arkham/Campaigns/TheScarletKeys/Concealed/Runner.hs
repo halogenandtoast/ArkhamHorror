@@ -44,6 +44,8 @@ instance RunMessage ConcealedCard where
           , concealedCardKnown = False
           , concealedCardFlipped = False
           }
+    Do (PlaceConcealedCard _iid cardId placement) | c.id == cardId -> do
+      pure $ c { concealedCardPlacement = placement }
     UseThisAbility iid (isSource c -> True) AbilityAttack -> do
       mlocation <- case c.placement of
         InPosition _ -> getLocationOf iid

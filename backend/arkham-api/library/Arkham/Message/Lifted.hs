@@ -3364,6 +3364,10 @@ lookAtRevealed
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 lookAtRevealed iid source target = push $ LookAtRevealed iid (toSource source) (toTarget target)
 
+lookAtTopOfDeck
+  :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> m ()
+lookAtTopOfDeck iid target = push $ LookAtTopOfDeck iid (toTarget target) 1
+
 temporaryModifier
   :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, Tracing m)
   => target

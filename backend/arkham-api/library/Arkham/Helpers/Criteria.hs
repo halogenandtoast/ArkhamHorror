@@ -647,6 +647,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
         ]
     Criteria.ChaosTokenExists matcher -> selectAny matcher
     Criteria.ConcealedCardExists matcher -> selectAny matcher
+    Criteria.ConcealedCardCount n matcher -> (>= n) <$> selectCount matcher
     Criteria.AssetExists matcher -> do
       -- N.B. Old Shotgun (2) needs to have a different uses when playing an
       -- event We add the event card to the "game" when asking for a matching

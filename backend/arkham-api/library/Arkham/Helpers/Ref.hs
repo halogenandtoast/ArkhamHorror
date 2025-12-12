@@ -56,7 +56,7 @@ sourceToMaybeCard (toSource -> source) = case source of
 
 sourceToTarget :: HasCallStack => Source -> Target
 sourceToTarget s =
-  fromJustNote ("trying to convert source " <> show s <> " but can't")
+  fromJustNote ("trying to convert source " <> show s <> " but can't\n" <> prettyCallStack callStack)
     $ sourceToMaybeTarget s
 
 sourceToMaybeTarget :: Source -> Maybe Target
@@ -69,7 +69,7 @@ sourceToMaybeTarget = \case
   InvestigatorSource iid -> Just $ InvestigatorTarget iid
   CardCodeSource cid -> Just $ CardCodeTarget cid
   ChaosTokenSource t -> Just $ ChaosTokenTarget t
-  ChaosTokenEffectSource _ -> Nothing
+  ChaosTokenEffectSource f -> Just $ ChaosTokenFaceTarget f
   ElderSignEffectSource _ -> Nothing
   AgendaSource aid -> Just $ AgendaTarget aid
   LocationSource lid -> Just $ LocationTarget lid

@@ -3114,7 +3114,7 @@ distortedReasoning =
 paradimensionalTerror :: CardDef
 paradimensionalTerror =
   peril
-    $ (treachery "09651" "Paradimensional Terror" BeyondTheBeyond 2)
+    $ (treachery "09751" "Paradimensional Terror" BeyondTheBeyond 2)
       { cdCardTraits = setFromList [Terror]
       }
 

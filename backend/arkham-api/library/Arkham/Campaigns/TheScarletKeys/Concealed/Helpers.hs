@@ -3,10 +3,12 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (
   module Arkham.Campaigns.TheScarletKeys.Concealed.Query,
 ) where
 
+import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Query
 import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Campaigns.TheScarletKeys.Modifiers
+import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -21,12 +23,14 @@ import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
+import Arkham.Matcher.Window
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Queue
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
@@ -41,6 +45,10 @@ getConcealed fe iid = getLocationOf iid >>= maybe (pure []) (getConcealedAt fe)
 exposeConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
 exposeConcealed iid source cid = doFlip iid source cid
+
+exposedInShadows
+  :: (Sourceable a, HasCardCode a, ReverseQueue m) => InvestigatorId -> a -> QueueT Msg.Message m () -> m ()
+exposedInShadows iid source = chooseOneM iid . abilityLabeled iid (mkAbility source (-1) $ forced AnyWindow)
 
 moveFromShadows
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()

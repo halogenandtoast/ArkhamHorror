@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.AlienFrontierB (alienFrontierB) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
@@ -9,7 +10,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype AlienFrontierB = AlienFrontierB LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

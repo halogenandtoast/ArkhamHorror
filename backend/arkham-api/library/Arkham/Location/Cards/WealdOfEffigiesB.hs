@@ -2,6 +2,7 @@ module Arkham.Location.Cards.WealdOfEffigiesB (wealdOfEffigiesB) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Card
 import Arkham.Location.Cards qualified as Cards
@@ -9,7 +10,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.WithoutATrace.Helpers
 import Arkham.Strategy
 
 newtype WealdOfEffigiesB = WealdOfEffigiesB LocationAttrs
@@ -66,7 +66,7 @@ instance RunMessage WealdOfEffigiesB where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       miniCards <- select ConcealedCardAny
       locations <- select $ LocationWithPlacement InTheShadows
-      chooseOneM iid $ scenarioI18n do
+      chooseOneM iid $ campaignI18n do
         labeledValidate' (notNull miniCards) "wealdOfEffigies.miniCards" do
           chooseOneM iid do
             for_ (eachWithRest miniCards) \(card, rest) -> do

@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype RamblingRouteB = RamblingRouteB LocationAttrs
   deriving anyclass IsLocation

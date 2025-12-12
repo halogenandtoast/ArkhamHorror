@@ -14,7 +14,6 @@ import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype RamblingRouteC = RamblingRouteC LocationAttrs
   deriving anyclass IsLocation

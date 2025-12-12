@@ -2,6 +2,7 @@ module Arkham.Location.Cards.CliffsOfInsanity (cliffsOfInsanity) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
@@ -10,7 +11,6 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.WithoutATrace.Helpers
 
 newtype CliffsOfInsanity = CliffsOfInsanity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

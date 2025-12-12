@@ -4,16 +4,20 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
 
 newtype VirgilGray = VirgilGray AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 virgilGray :: AssetCard VirgilGray
 virgilGray = allyWith VirgilGray Cards.virgilGray (1, 3) (slotsL .~ mempty)
+
+instance HasModifiersFor VirgilGray where
+  getModifiersFor (VirgilGray a) = modifySelf a [RemoveFromGameInsteadOfDiscard]
 
 instance HasAbilities VirgilGray where
   getAbilities (VirgilGray x) =
@@ -44,7 +48,8 @@ instance RunMessage VirgilGray where
       when (notNull others) do
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> VirgilGray <$> liftRunMessage msg attrs

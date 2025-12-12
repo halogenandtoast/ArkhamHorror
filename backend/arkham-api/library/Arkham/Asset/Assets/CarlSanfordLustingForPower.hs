@@ -20,7 +20,7 @@ slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) []
 
 instance HasModifiersFor CarlSanfordLustingForPower where
-  getModifiersFor (CarlSanfordLustingForPower a) =
+  getModifiersFor (CarlSanfordLustingForPower a) = do
     controllerGets a [SkillModifier #willpower 1, AdditionalSlot #arcane]
 
 instance HasAbilities CarlSanfordLustingForPower where
@@ -41,7 +41,8 @@ instance RunMessage CarlSanfordLustingForPower where
       addToVictory iid cardId
       drawCards iid (attrs.ability 1) 1
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> CarlSanfordLustingForPower <$> liftRunMessage msg attrs

@@ -17,7 +17,8 @@ valeriyaAntonovaWantsOutOfHere =
   allyWith ValeriyaAntonovaWantsOutOfHere Cards.valeriyaAntonovaWantsOutOfHere (2, 3) noSlots
 
 instance HasModifiersFor ValeriyaAntonovaWantsOutOfHere where
-  getModifiersFor (ValeriyaAntonovaWantsOutOfHere a) = controllerGets a [SkillModifier #combat 1]
+  getModifiersFor (ValeriyaAntonovaWantsOutOfHere a) = do
+    controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities ValeriyaAntonovaWantsOutOfHere where
   getAbilities (ValeriyaAntonovaWantsOutOfHere a) =
@@ -38,7 +39,8 @@ instance RunMessage ValeriyaAntonovaWantsOutOfHere where
       guestCount <- selectCount $ AssetWithTrait Guest <> at_ (locationWithInvestigator iid)
       when (guestCount > 0) $ nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue guestCount)
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> ValeriyaAntonovaWantsOutOfHere <$> liftRunMessage msg attrs

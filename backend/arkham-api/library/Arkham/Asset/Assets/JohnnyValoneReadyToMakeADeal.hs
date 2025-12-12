@@ -15,7 +15,8 @@ johnnyValoneReadyToMakeADeal =
   allyWith JohnnyValoneReadyToMakeADeal Cards.johnnyValoneReadyToMakeADeal (3, 2) noSlots
 
 instance HasModifiersFor JohnnyValoneReadyToMakeADeal where
-  getModifiersFor (JohnnyValoneReadyToMakeADeal a) = controllerGets a [SkillModifier #agility 1]
+  getModifiersFor (JohnnyValoneReadyToMakeADeal a) = do
+    controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities JohnnyValoneReadyToMakeADeal where
   getAbilities (JohnnyValoneReadyToMakeADeal a) =
@@ -30,7 +31,8 @@ instance RunMessage JohnnyValoneReadyToMakeADeal where
       drawCards iid (attrs.ability 1) 1
       gainResourcesIfCan iid (attrs.ability 1) 1
       pure a
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      cancelWindowBatch ws
       removeFromGame attrs
       pure a
     _ -> JohnnyValoneReadyToMakeADeal <$> liftRunMessage msg attrs

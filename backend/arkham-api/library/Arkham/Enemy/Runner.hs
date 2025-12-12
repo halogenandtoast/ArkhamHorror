@@ -373,8 +373,8 @@ instance RunMessage EnemyAttrs where
               case getModifiedSpawnAt mods of
                 Just m -> push $ EnemySpawn details {spawnDetailsSpawnAt = m}
                 Nothing -> withLocationOf iid \lid -> do
-                  canEnter <- canEnterLocation enemyId lid
-                  if canEnter
+                  canSpawn <- canSpawnInLocation enemyId lid
+                  if canSpawn
                     then do
                       afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
                       pushAll $ EnemyEntered enemyId lid
@@ -413,9 +413,9 @@ instance RunMessage EnemyAttrs where
                   ]
         SpawnAtLocation lid -> do
           locations' <- select $ IncludeEmptySpace Anywhere
-          canEnter <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
+          canSpawn <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
           afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-          if lid `notElem` locations' || not canEnter
+          if lid `notElem` locations' || not canSpawn
             then push (toDiscard GameSource eid)
             else do
               case swarms of

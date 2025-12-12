@@ -167,6 +167,13 @@ canEnterLocation eid lid = do
     Modifier.CannotMove -> fieldMap EnemyPlacement isInPlayPlacement eid
     _ -> pure False
 
+canSpawnInLocation :: (HasGame m, Tracing m) => EnemyId -> LocationId -> m Bool
+canSpawnInLocation eid lid = do
+  modifiers' <- (<>) <$> getModifiers lid <*> getModifiers eid
+  not <$> flip anyM modifiers' \case
+    Modifier.CannotSpawnIn matcher -> lid <=~> matcher
+    _ -> pure False
+
 getFightableEnemyIds
   :: (HasGame m, Tracing m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do

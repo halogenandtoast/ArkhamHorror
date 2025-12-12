@@ -43,8 +43,6 @@ instance RunMessage HuntingHorror where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ PlaceEnemyOutOfPlay VoidZone attrs.id
       pure e
-    EnemySpawnFromOutOfPlay VoidZone _miid _lid eid | eid == attrs.id -> do
-      pure . HuntingHorror $ attrs & (defeatedL .~ False) & (exhaustedL .~ False)
     PlaceEnemyOutOfPlay VoidZone eid | eid == attrs.id -> do
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure

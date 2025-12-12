@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -16,6 +17,7 @@ import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -28,6 +30,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WithoutATrace.Helpers
@@ -322,10 +325,10 @@ instance RunMessage WithoutATrace where
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let
         swapLocation loc =
-            if
-              | loc == l1 -> l2
-              | loc == l2 -> l1
-              | otherwise -> loc
+          if
+            | loc == l1 -> l2
+            | loc == l2 -> l1
+            | otherwise -> loc
       let left = swapLocation <$> meta.locationsInShadows.left
       let middle = swapLocation <$> meta.locationsInShadows.middle
       let right = swapLocation <$> meta.locationsInShadows.right
@@ -339,10 +342,10 @@ instance RunMessage WithoutATrace where
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let
         swapMiniCard c =
-            if
-              | c == c1 -> c2
-              | c == c2 -> c1
-              | otherwise -> c
+          if
+            | c == c1 -> c2
+            | c == c2 -> c1
+            | otherwise -> c
       let concealedCards = Map.map (map swapMiniCard) meta.concealedCards
       pure
         $ WithoutATrace
@@ -360,5 +363,51 @@ instance RunMessage WithoutATrace where
                 gridLabeled (gridLabel pos) do
                   push $ PlaceConcealedCard iid (toId x) (InPosition pos)
                   scenarioSpecific "distributeConcealedLocations" (iid, xs, rest, original)
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          record TheCellWasHollowed
+          resolution "noResolution"
+          gameOver
+        Resolution 1 -> do
+          record TheCellKnowsTheTrueNatureOfTheCoterie
+          record AlikiIsOnYourSide
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
+          markTime 3
+          leadChooseOneM do
+            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          endOfScenario
+        Resolution 2 -> do
+          record TheCellKnowsTheTrueNatureOfTheCoterie
+          record YouHaventSeenTheLastOfAlikiZoniUperetria
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
+          markTime 2
+          leadChooseOneM do
+            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          endOfScenario
+        Resolution 3 -> do
+          record AlikiIsOnYourSide
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          markTime 2
+          leadChooseOneM do
+            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          endOfScenario
+        Resolution 4 -> do
+          record YouHaventSeenTheLastOfAlikiZoniUperetria
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          leadChooseOneM do
+            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          markTime 1
+          endOfScenario
+        _ -> error "Unknown resolution for Dead Heat"
       pure s
     _ -> WithoutATrace <$> liftRunMessage msg attrs

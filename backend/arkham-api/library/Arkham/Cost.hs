@@ -35,6 +35,7 @@ import Arkham.Target
 import Control.Lens (Plated (..), cosmos, sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import GHC.Records
 
@@ -687,8 +688,8 @@ totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 totalCluePayment :: Payment -> Int
 totalCluePayment = sumOf (cosmos . _CluePayment . _2)
 
-totalCluePaymentPerInvestigator :: Payment -> [(InvestigatorId, Int)]
-totalCluePaymentPerInvestigator = toListOf (cosmos . _CluePayment)
+totalCluePaymentPerInvestigator :: Payment -> Map InvestigatorId Int
+totalCluePaymentPerInvestigator = Map.fromListWith (+) . toListOf (cosmos . _CluePayment)
 
 totalUsesPayment :: Payment -> Int
 totalUsesPayment = sumOf (cosmos . _UsesPayment)

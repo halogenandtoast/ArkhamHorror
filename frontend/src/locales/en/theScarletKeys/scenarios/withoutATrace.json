@@ -13,6 +13,10 @@
     "mimeticNemesis": {
       "hollow": "Choose a non-weakness card in your hand and set it aside, as a hollow",
       "attack": "This enemy attacks you"
+    },
+    "wealdOfEffigies": {
+      "miniCards": "Swap the positions of 2 concealed mini-cards adjacent to locations",
+      "locations": "Swap the positions of 2 locations in the shadows"
     }
   },
   "tooltips": {

@@ -1856,6 +1856,8 @@ getLocationsMatching lmatcher = do
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM (fmap (maybe False (`elem` investigators)) . field LocationInFrontOf . toId) ls
+    LocationWithPlacement placement -> do
+      filterM (fieldMap LocationPlacement (== Just placement) . toId) ls
     ConnectedToSetAsideLocation -> do
       setAsideLocations <- getSetAsideCardsMatching #location
       let symbols = concatMap (cdLocationConnections . toCardDef) setAsideLocations

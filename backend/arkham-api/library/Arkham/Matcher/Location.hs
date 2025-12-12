@@ -26,6 +26,7 @@ import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
+import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Token
@@ -95,7 +96,7 @@ data LocationMatcher
   | LocationWithMostEnemies LocationMatcher EnemyMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
-  | LocationWithAsset AssetMatcher 
+  | LocationWithAsset AssetMatcher
   | LocationWithAttachedEvent EventMatcher
   | LocationWithAttachedAsset AssetMatcher
   | LocationWithAttachment
@@ -171,6 +172,7 @@ data LocationMatcher
   | LocationInPosition Pos
   | LocationWhenCriteria Criterion
   | OutOfGameLocation
+  | LocationWithPlacement Placement
   | -- | Must be replaced
     ThatLocation
   deriving stock (Show, Eq, Ord, Data)

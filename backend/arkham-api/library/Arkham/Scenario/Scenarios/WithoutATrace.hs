@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
@@ -275,6 +276,16 @@ instance RunMessage WithoutATrace where
         $ attrs
         & metaL
         .~ toJSON (meta {concealedCards = Map.insert pos cards concealedCards})
+    Do (PlaceConcealedCard _ card (InPosition pos)) -> do
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let current = Map.findWithDefault [] pos meta.concealedCards
+      cards <- shuffleM $ nub $ card : current
+      let concealedCards = Map.map (filter (/= card)) meta.concealedCards
+      pure
+        $ WithoutATrace
+        $ attrs
+        & metaL
+        .~ toJSON (meta {concealedCards = Map.insert pos cards concealedCards})
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Cultist -> do
@@ -301,5 +312,53 @@ instance RunMessage WithoutATrace where
       lead <- getLead
       for_ (zip shuffled positions) \(card, pos) -> do
         push $ PlaceConcealedCard lead (toId card) (InPosition pos)
+      pure s
+    LookAtTopOfDeck iid (ScenarioDeckTarget OtherworldDeck) n -> do
+      case fromJustNote "must be set" (lookup OtherworldDeck attrs.decks) of
+        cards -> focusCards (map flipCard $ take n cards) $ continue_ iid
+      pure s
+    ScenarioSpecific "swapLocations" v -> do
+      let (l1, l2) :: (LocationId, LocationId) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let
+        swapLocation loc =
+            if
+              | loc == l1 -> l2
+              | loc == l2 -> l1
+              | otherwise -> loc
+      let left = swapLocation <$> meta.locationsInShadows.left
+      let middle = swapLocation <$> meta.locationsInShadows.middle
+      let right = swapLocation <$> meta.locationsInShadows.right
+      let locationsInShadows = LocationsInShadows left middle right
+      pure
+        $ WithoutATrace
+        $ attrs
+        & (metaL .~ toJSON (meta {locationsInShadows}))
+    ScenarioSpecific "swapMiniCards" v -> do
+      let (c1, c2) :: (ConcealedCardId, ConcealedCardId) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let
+        swapMiniCard c =
+            if
+              | c == c1 -> c2
+              | c == c2 -> c1
+              | otherwise -> c
+      let concealedCards = Map.map (map swapMiniCard) meta.concealedCards
+      pure
+        $ WithoutATrace
+        $ attrs
+        & (metaL .~ toJSON (meta {concealedCards}))
+    ScenarioSpecific "distributeConcealedLocations" v -> do
+      let (iid, cs, current, original) :: (InvestigatorId, [ConcealedCard], [Pos], [Pos]) = toResult v
+      case cs of
+        [] -> pure ()
+        (x : xs) ->
+          if null current
+            then scenarioSpecific "distributeConcealedLocations" (iid, cs, original, original)
+            else chooseOneM iid do
+              for_ (eachWithRest current) \(pos, rest) -> do
+                gridLabeled (gridLabel pos) do
+                  push $ PlaceConcealedCard iid (toId x) (InPosition pos)
+                  scenarioSpecific "distributeConcealedLocations" (iid, xs, rest, original)
       pure s
     _ -> WithoutATrace <$> liftRunMessage msg attrs

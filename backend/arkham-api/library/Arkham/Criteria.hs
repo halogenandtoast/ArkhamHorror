@@ -257,6 +257,7 @@ data Criterion
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | ChaosTokenExists ChaosTokenMatcher
   | ConcealedCardExists ConcealedCardMatcher
+  | ConcealedCardCount Int ConcealedCardMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
   | TabooCriteria TabooList Criterion Criterion

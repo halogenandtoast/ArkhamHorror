@@ -126,7 +126,6 @@ allPlayerTreacheryCards =
       , outOfBodyExperience
       , overzealous
       , panic
-      , paradimensionalTerror
       , paradimensionalUnderstanding
       , paranoia
       , poisoned
@@ -460,6 +459,7 @@ allEncounterTreacheryCards =
       , outsmarted
       , overgrowth
       , painfulReflection
+      , paradimensionalTerror
       , passageIntoTheVeil
       , perilsOfYoth
       , phantasmagoria

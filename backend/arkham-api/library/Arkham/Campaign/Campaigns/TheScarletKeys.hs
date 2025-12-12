@@ -137,6 +137,7 @@ instance IsCampaign TheScarletKeys where
     OnThinIce -> continue (embark a)
     DogsOfWar -> continue (embark a)
     ShadesOfSuffering -> continue (embark a)
+    WithoutATrace -> continue (embark a)
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 
@@ -199,6 +200,9 @@ instance RunMessage TheScarletKeys where
           , "hasTicket" .= hasTicket
           ]
       pure c
+    CampaignSpecific "setCurrent" v -> do
+      let locId = toResult v
+      pure $ TheScarletKeys $ attrs & overMeta (currentLocationL .~ locId)
     CampaignSpecific "travel" v -> do
       let locId = toResult v
       let meta = toResult attrs.meta

@@ -112,6 +112,16 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    ResolvedMovement iid movementId -> do
+      for_ a.target.investigator \iid' -> do
+        when (iid == iid') do
+          let ws = toEffectWindowList (effectDisableWindow <|> effectWindow)
+          let isMovement = \case
+                EffectMoveWindow -> True
+                EffectThisMoveWindow m | m == movementId -> True
+                _ -> False
+          when (any isMovement ws) $ push (DisableEffect effectId)
+      pure a
     MoveIgnored iid -> do
       for_ a.target.investigator \iid' -> do
         when (iid == iid') do

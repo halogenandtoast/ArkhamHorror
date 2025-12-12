@@ -12,6 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Data.Map.Strict qualified as Map
 
 newtype UniversityHalls = UniversityHalls LocationAttrs
   deriving anyclass IsLocation
@@ -39,7 +40,7 @@ instance RunMessage UniversityHalls where
     UseCardAbility _iid (isSource attrs -> True) MirageAbility _ (totalCluePaymentPerInvestigator -> p) -> do
       -- can't just use the mirage runner because we need to set the total clue payment
       attrs' <- mirageRunner Stories.universityHalls mirageCards 1 msg attrs
-      pure $ UniversityHalls $ attrs' & setMeta p
+      pure $ UniversityHalls $ attrs' & setMeta (Map.assocs p)
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       case getLocationMeta @[(InvestigatorId, Int)] attrs of
         Nothing -> error "Unexpected"

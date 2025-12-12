@@ -19,6 +19,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const disabled = ref(false)
 const amount = ref(0)
 const amount1 = computed(() => props.investigator1Amount - amount.value)
 const amount2 = computed(() => props.investigator2Amount + amount.value)
@@ -38,6 +39,7 @@ const portraitLabelImage = (investigatorId: string) => {
 }
 
 async function submit() {
+  disabled.value = true
   await exchangeTokens(props.game.id, props.source, props.investigator1, props.investigator2, props.token, amount.value)
 }
 
@@ -72,7 +74,7 @@ async function adjustAmount(delta: number) {
       </div>
     </section>
     <section class='actions'>
-      <button class="button close" @click="submit">{{ t('exchange') }}</button>
+      <button class="button close" :disabled="disabled" @click="submit">{{ t('exchange') }}</button>
     </section>
   </div>
 </template>

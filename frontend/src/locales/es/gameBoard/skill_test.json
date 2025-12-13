@@ -1,0 +1,12 @@
+{
+    "fastPlayerWindow": "{'{fast}'} OPORTUNIDAD DE JUGADOR",
+
+    "determineSkillOfTestStep": "Determina la habilidad de la prueba. Comienza la prueba de habilidad de ese tipo.",
+    "commitCardsFromHandToSkillTestStep": "Asigna cartas de tu mano a la prueba de habilidad.",
+    "revealChaosTokenStep": "Revela ficha de caos.",
+    "resolveChaosSymbolEffectsStep": "Resuelve efecto(s) de símbolo de caos.",
+    "determineInvestigatorsModifiedSkillValueStep": "Determina el valor de habilidad modificado del investigador.",
+    "determineSuccessOrFailureOfSkillTestStep": "Determina éxito/fracaso de la prueba de habilidad.",
+    "applySkillTestResultsStep": "Aplica los resultados de la prueba de habilidad.",
+    "skillTestEndsStep": "Termina la prueba de habilidad."
+}

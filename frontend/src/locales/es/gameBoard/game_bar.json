@@ -1,0 +1,55 @@
+{
+    "closeLog": "Cerrar Registro",
+    "viewLog": "Ver Registro",
+
+    "view": "Ver",
+    "shortcuts": "Atajos",
+    "shortcutsTitle": "Atajos de Teclado",
+    "shortcutSkipTriggers": "(espacio) Saltar Desencadenantes",
+    "shortcutUndo": "Deshacer",
+    "shortcutToggleDebug": "Alternar Depuración",
+    "shortcutShowOrHideShortcuts": "Mostrar/Ocultar Atajos",
+    "shortcutDraw": "Robar del mazo / mazo de Encuentro",
+    "shortcutTakeResources": "Tomar Recursos",
+    "shortcutEndTurn": "Terminar Turno",
+
+    "viewSettings": "Ver Configuración",
+    "viewSettingTitle": "Configuración para {investigator}",
+    "viewSettingSkipTriggers": "Saltar desencadenantes durante pruebas de habilidad que no afectan el resultado",
+
+    "viewChaosBag": "Ver Bolsa de Caos",
+    "chaosBag": "Bolsa de Caos",
+    "add": "Añadir",
+    
+    "splitView": "Vista Dividida",
+
+    "viewBonded": "Ver Enlazados",
+    "bonded": "Enlazados",
+
+    "showOutOfPlay": "Mostrar Fuera de Juego",
+    "outOfPlay": "Fuera de Juego",
+
+
+    "debug": "Depuración",
+    "toggleDebug": "Alternar Depuración",
+    "debugExport": "Exportar Depuración",
+    "debugExportScenario": "Exportar Depuración (Escenario)",
+    "debugExportFull": "Exportar Depuración (Completo)",
+
+    "undo": "Deshacer",
+    "restartScenario": "Reiniciar Escenario",
+
+    "fileABug": "Reportar un Error",
+    "fileBugPart1": "Esto almacenará el estado actual del juego y rellenará un issue de GitHub. Necesitarás una cuenta de GitHub para continuar.",
+    "fileBugPart2": "Solo debería tomar un momento crear el error y podrás reanudar el juego una vez hecho.",
+    "fileBugPart3": "El archivo de depuración subido solo incluirá los últimos 30 pasos, así que asegúrate de que tu problema esté dentro de ese alcance o proporciona información adicional para recrear el problema.",
+    "bugTitleholder": "Un título breve para el error",
+    "bugDescriptionholder": "Una descripción de lo que sucedió",
+    "bugSubmittingTitle": "Enviando error, esto puede tomar varios minutos, por favor espera...",
+    "bugSubmittingContent": "Cuando este proceso termine, abrirá GitHub en una nueva ventana y podrás reanudar tu juego.",
+    "bugSubmittingFail": "No se pudo reportar el error",
+
+    "toggleSidebar": "Alternar Barra Lateral",
+
+    "rotateLayout": "Rotar Disposición de Lugares"
+}

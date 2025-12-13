@@ -1,0 +1,32 @@
+{
+    "playerWindow": "PLAYER WINDOW",
+
+    "mythosPhase": "Mythos",
+    "mythosPhaseBeginsStep": "Round begins. Mythos phase begins.",
+    "placeDoomOnAgendaStep": "Place 1 doom on the current agenda.",
+    "checkDoomThresholdStep": "Check doom threshold.",
+    "eachInvestigatorDrawsEncounterCardStep": "Each investigator draws 1 encounter card.",
+    "mythosPhaseEndsStep": "Mythos phase ends.",
+
+    "investigationPhase": "Investigation",
+    "investigationPhaseBeginsStep": "Investigation phase begins.",
+    "nextInvestigatorsTurnBeginsStep": "Next investigator's turn begins.",
+    "investigatorTakesActionStep": "Active investigator may take an action, if able. If an action was taken, return to previous player window. If no action was taken, proceed to 2.2.2.",
+    "investigatorsTurnEndsStep": "Investigator's turn ends. If an investigator has not yet taken a turn this phase, return to 2.2. If each investigator has taken a turn this phase, proceed to 2.3.",
+    "investigationPhaseEndsStep": "Investigation phase ends.",
+
+    "enemyPhase": "Enemy",
+    "enemyPhaseBeginsStep": "Enemy phase begins.",
+    "hunterEnemiesMoveStep": "Hunter enemies move.",
+    "resolveAttacksStep": "Next investigator resolves engaged enemy attacks. If an investigator has not yet resolved enemy attacks this phase, return to previous player window. After final investigator resolves engaged enemy attacks, proceed to next player window.",
+    "enemyPhaseEndsStep": "Enemy phase ends.",
+
+    "upkeepPhase": "Upkeep",
+    "upkeepPhaseBeginsStep": "Upkeep phase begins.",
+    "resetActionsStep": "Reset actions.",
+    "readyExhaustedStep": "Ready each exhausted card.",
+    "drawCardAndGainResourceStep": "Each investigator draws 1 card and gains 1 resource.",
+    "checkHandSizeStep": "Each investigator checks hand size.",
+    "upkeepPhaseEndsStep": "Upkeep phase ends. Round ends."
+  }
+  

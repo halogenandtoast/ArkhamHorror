@@ -316,6 +316,15 @@ instance RunMessage AssetAttrs where
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a) Nothing
       pure $ a & tokensL %~ decrementTokensBy Token.Horror n
     AddToVictory miid target | target `elem` placementToAttached a.placement -> do
+      case target of
+        EnemyTarget _ -> pure () -- Enemies will use the do version
+        _ -> do
+          push $ Priority $ case miid of
+            Nothing -> toDiscard GameSource a
+            Just iid -> toDiscardBy iid GameSource a
+      pure a
+    Do (AddToVictory miid target) | target `elem` placementToAttached a.placement -> do
+      -- if we still exist at this point then remove no matter what
       push $ Priority $ case miid of
         Nothing -> toDiscard GameSource a
         Just iid -> toDiscardBy iid GameSource a

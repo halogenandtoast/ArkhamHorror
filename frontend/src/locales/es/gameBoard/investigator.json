@@ -1,0 +1,8 @@
+{
+    "discards": "Descartes",
+    "endTurn": "Finalizar Turno",
+    "skipTriggers": "Saltar Desencadenantes",
+    "devouredCards": "Devoradas ({count})",
+    "underneathCards": "Enterradas ({count})"
+
+}

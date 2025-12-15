@@ -1,0 +1,32 @@
+{
+    "playerWindow": "OPORTUNIDAD DE JUGADOR",
+
+    "mythosPhase": "Mitos",
+    "mythosPhaseBeginsStep": "Comienza la ronda. Comienza la fase de Mitos.",
+    "placeDoomOnAgendaStep": "Coloca 1 perdición en el plan actual.",
+    "checkDoomThresholdStep": "Comprueba el umbral de perdición.",
+    "eachInvestigatorDrawsEncounterCardStep": "Cada investigador roba 1 carta de Encuentro.",
+    "mythosPhaseEndsStep": "Termina la fase de Mitos.",
+
+    "investigationPhase": "Investigación",
+    "investigationPhaseBeginsStep": "Comienza la fase de Investigación.",
+    "nextInvestigatorsTurnBeginsStep": "Comienza el turno del siguiente investigador.",
+    "investigatorTakesActionStep": "El investigador activo puede realizar una acción, si es capaz. Si se realizó una acción, vuelve a la oportunidad de jugador anterior. Si no se realizó ninguna acción, procede a 2.2.2.",
+    "investigatorsTurnEndsStep": "Termina el turno del investigador. Si un investigador aún no ha realizado un turno esta fase, vuelve a 2.2. Si cada investigador ha realizado un turno esta fase, procede a 2.3.",
+    "investigationPhaseEndsStep": "Termina la fase de Investigación.",
+
+    "enemyPhase": "Enemigos",
+    "enemyPhaseBeginsStep": "Comienza la fase de Enemigos.",
+    "hunterEnemiesMoveStep": "Los enemigos cazadores se mueven.",
+    "resolveAttacksStep": "El siguiente investigador resuelve los ataques de enemigos enfrentados. Si un investigador aún no ha resuelto ataques de enemigos esta fase, vuelve a la oportunidad de jugador anterior. Después de que el investigador final resuelva ataques de enemigos enfrentados, procede a la siguiente oportunidad de jugador.",
+    "enemyPhaseEndsStep": "Termina la fase de Enemigos.",
+
+    "upkeepPhase": "Mantenimiento",
+    "upkeepPhaseBeginsStep": "Comienza la fase de Mantenimiento.",
+    "resetActionsStep": "Restablece acciones.",
+    "readyExhaustedStep": "Prepara cada carta agotada.",
+    "drawCardAndGainResourceStep": "Cada investigador roba 1 carta y gana 1 recurso.",
+    "checkHandSizeStep": "Cada investigador comprueba el tamaño de mano.",
+    "upkeepPhaseEndsStep": "Termina la fase de Mantenimiento. Termina la ronda."
+  }
+  

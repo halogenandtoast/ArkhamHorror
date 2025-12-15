@@ -1,0 +1,22 @@
+{
+    "skillTestTitle": "Prueba de habilidad",
+    "toBeCommitted": "Por asignar",
+    "committedCards": "Cartas asignadas",
+    "toBeCommittedNote": "Las cartas no se asignan hasta que hagas clic en la ficha de arriba y, hasta entonces, es posible que tu valor de habilidad no muestre las bonificaciones añadidas.",
+
+    "waitingForMorePlayers": "Esperando a más jugadores",
+    "showInviteLink": "Invítalos con esta URL:",
+
+    "gameOver": "Juego terminado",
+    "watchReplay": "Ver repetición",
+
+    "submit": "Enviar",
+    "sancel": "Cancelar",
+    "close": "Cerrar",
+
+    "outOfSyncHint": "Tu partida no está sincronizada, intentando reconectar...",
+
+    "error": "Error",
+    "errorContent": "Probablemente se trate de un error. Por favor, envía un informe de error.",
+    "fileBug": "Archivar error"
+}

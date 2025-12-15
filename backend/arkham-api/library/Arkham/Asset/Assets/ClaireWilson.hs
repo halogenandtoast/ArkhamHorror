@@ -13,7 +13,7 @@ newtype ClaireWilson = ClaireWilson AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 claireWilson :: AssetCard ClaireWilson
-claireWilson = allyWith ClaireWilson Cards.claireWilson (2, 2) noSlots
+claireWilson = ally ClaireWilson Cards.claireWilson (2, 2)
 
 instance HasModifiersFor ClaireWilson where
   getModifiersFor (ClaireWilson a) = handleSpellbound a

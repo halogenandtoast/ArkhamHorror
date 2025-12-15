@@ -13,7 +13,7 @@ newtype HoracioMartinez = HoracioMartinez AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horacioMartinez :: AssetCard HoracioMartinez
-horacioMartinez = allyWith HoracioMartinez Cards.horacioMartinez (4, 1) noSlots
+horacioMartinez = ally HoracioMartinez Cards.horacioMartinez (4, 1)
 
 instance HasModifiersFor HoracioMartinez where
   getModifiersFor (HoracioMartinez a) = do

@@ -14,7 +14,7 @@ newtype ElizabethConrad = ElizabethConrad AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elizabethConrad :: AssetCard ElizabethConrad
-elizabethConrad = allyWith ElizabethConrad Cards.elizabethConrad (1, 3) noSlots
+elizabethConrad = ally ElizabethConrad Cards.elizabethConrad (1, 3)
 
 instance HasModifiersFor ElizabethConrad where
   getModifiersFor (ElizabethConrad a) = handleSpellbound a

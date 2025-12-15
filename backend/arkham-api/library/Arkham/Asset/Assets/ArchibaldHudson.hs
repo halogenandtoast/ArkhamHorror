@@ -13,7 +13,7 @@ newtype ArchibaldHudson = ArchibaldHudson AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archibaldHudson :: AssetCard ArchibaldHudson
-archibaldHudson = allyWith ArchibaldHudson Cards.archibaldHudson (2, 2) noSlots
+archibaldHudson = ally ArchibaldHudson Cards.archibaldHudson (2, 2)
 
 instance HasModifiersFor ArchibaldHudson where
   getModifiersFor (ArchibaldHudson a) = handleSpellbound a

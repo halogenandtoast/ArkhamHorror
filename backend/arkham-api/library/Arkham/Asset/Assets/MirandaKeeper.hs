@@ -16,7 +16,7 @@ newtype MirandaKeeper = MirandaKeeper AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mirandaKeeper :: AssetCard MirandaKeeper
-mirandaKeeper = allyWith MirandaKeeper Cards.mirandaKeeper (2, 2) noSlots
+mirandaKeeper = ally MirandaKeeper Cards.mirandaKeeper (2, 2)
 
 instance HasModifiersFor MirandaKeeper where
   getModifiersFor (MirandaKeeper a) = handleSpellbound a

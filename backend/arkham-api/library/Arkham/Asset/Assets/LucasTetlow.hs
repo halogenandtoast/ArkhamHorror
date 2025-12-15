@@ -15,7 +15,7 @@ newtype LucasTetlow = LucasTetlow AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lucasTetlow :: AssetCard LucasTetlow
-lucasTetlow = allyWith LucasTetlow Cards.lucasTetlow (3, 1) noSlots
+lucasTetlow = ally LucasTetlow Cards.lucasTetlow (3, 1)
 
 instance HasModifiersFor LucasTetlow where
   getModifiersFor (LucasTetlow a) = handleSpellbound a

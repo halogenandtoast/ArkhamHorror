@@ -14,7 +14,7 @@ newtype SpecialAgentCallahan = SpecialAgentCallahan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 specialAgentCallahan :: AssetCard SpecialAgentCallahan
-specialAgentCallahan = allyWith SpecialAgentCallahan Cards.specialAgentCallahan (3, 1) noSlots
+specialAgentCallahan = ally SpecialAgentCallahan Cards.specialAgentCallahan (3, 1)
 
 instance HasModifiersFor SpecialAgentCallahan where
   getModifiersFor (SpecialAgentCallahan a) = handleSpellbound a

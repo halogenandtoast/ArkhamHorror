@@ -11,7 +11,7 @@ newtype SarahVanShaw = SarahVanShaw AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sarahVanShaw :: AssetCard SarahVanShaw
-sarahVanShaw = allyWith SarahVanShaw Cards.sarahVanShaw (3, 1) noSlots
+sarahVanShaw = ally SarahVanShaw Cards.sarahVanShaw (3, 1)
 
 resourcesPaid :: Payment -> Int
 resourcesPaid (ResourcePayment n) = n

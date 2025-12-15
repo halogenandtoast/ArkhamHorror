@@ -15,7 +15,7 @@ newtype ArseneRenard = ArseneRenard AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arseneRenard :: AssetCard ArseneRenard
-arseneRenard = allyWith ArseneRenard Cards.arseneRenard (1, 3) noSlots
+arseneRenard = ally ArseneRenard Cards.arseneRenard (1, 3)
 
 instance HasModifiersFor ArseneRenard where
   getModifiersFor (ArseneRenard a) = handleSpellbound a

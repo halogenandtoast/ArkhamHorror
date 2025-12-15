@@ -2889,18 +2889,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
   RefillSlots iid xs | iid == investigatorId && not investigatorEliminated -> do
     assetIds <- select $ mapOneOf AssetWithPlacement [InPlayArea iid, InThreatArea iid]
-
+    mods <- getModifiers a
     requirements <- concatForM assetIds \assetId -> do
       assetCard <- field AssetCard assetId
-      mods <- getCombinedModifiers [toTarget assetId, toTarget assetCard]
-      let slotFilter sType = DoNotTakeUpSlot sType `notElem` mods
+      amods <- getCombinedModifiers [toTarget assetId, toTarget assetCard]
+      let slotFilter sType = DoNotTakeUpSlot sType `notElem` amods
       slots <- field AssetSlots assetId
       pure $ (assetId,assetCard,) <$> filter slotFilter slots
 
-    let allSlots :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
+    let slotsToRemove = concat [List.replicate n s | FewerSlots s n <- mods]
+    let allSlots' :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
+    let allSlots = foldr (\s -> deleteFirstMatch ((== s) . fst)) allSlots' slotsToRemove
 
     canHoldMap :: Map SlotType [SlotType] <- do
-      mods <- getModifiers a
       let
         canHold = \case
           SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]

@@ -2296,6 +2296,23 @@ don't msg = don'tMatching (== msg)
 don'tMatching :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 don'tMatching f = lift $ popMessageMatching_ f
 
+doNow :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => (Message -> Bool) -> t m ()
+doNow f = do
+  msgs <- go
+  pushAll msgs
+ where
+  go = do
+    mmsg <- lift $ popMessageMatching f
+    case mmsg of
+      Nothing -> pure []
+      Just msg -> (msg :) <$> go
+
+addToVictoryIfNeeded
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), ToId enemy EnemyId) => enemy -> t m ()
+addToVictoryIfNeeded (asId -> enemy) = doNow \case
+  Do (AddToVictory _ (EnemyTarget eid)) | eid == enemy -> True
+  _ -> False
+
 don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
 don'tAddToVictory eid = matchingDon't \case
   AddToVictory _ target -> isTarget eid target

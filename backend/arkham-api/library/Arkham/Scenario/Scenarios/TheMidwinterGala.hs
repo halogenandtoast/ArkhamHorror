@@ -19,6 +19,7 @@ import Arkham.Helpers.Deck (getDeck)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
@@ -62,8 +63,14 @@ expertTokens =
 {- FOURMOLU_ENABLE -}
 
 newtype TheMidwinterGala = TheMidwinterGala ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+-- This is on the act cards, but it should pervade the entire scenario so we
+-- write it here instead
+instance HasModifiersFor TheMidwinterGala where
+  getModifiersFor (TheMidwinterGala a) = do
+    modifySelect a (AssetWithTrait Guest) [DoNotTakeUpSlot #ally]
 
 theMidwinterGala :: Difficulty -> TheMidwinterGala
 theMidwinterGala difficulty =

@@ -17,7 +17,7 @@ newtype PrudenceDouglas = PrudenceDouglas AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prudenceDouglas :: AssetCard PrudenceDouglas
-prudenceDouglas = allyWith PrudenceDouglas Cards.prudenceDouglas (2, 2) noSlots
+prudenceDouglas = ally PrudenceDouglas Cards.prudenceDouglas (2, 2)
 
 instance HasModifiersFor PrudenceDouglas where
   getModifiersFor (PrudenceDouglas a) = handleSpellbound a

@@ -13,7 +13,7 @@ newtype DeloresGadling = DeloresGadling AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deloresGadling :: AssetCard DeloresGadling
-deloresGadling = allyWith DeloresGadling Cards.deloresGadling (1, 3) noSlots
+deloresGadling = ally DeloresGadling Cards.deloresGadling (1, 3)
 
 instance HasModifiersFor DeloresGadling where
   getModifiersFor (DeloresGadling a) = do

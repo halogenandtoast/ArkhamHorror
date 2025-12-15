@@ -13,7 +13,7 @@ newtype DrMyaBadry = DrMyaBadry AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMyaBadry :: AssetCard DrMyaBadry
-drMyaBadry = allyWith DrMyaBadry Cards.drMyaBadry (2, 2) noSlots
+drMyaBadry = ally DrMyaBadry Cards.drMyaBadry (2, 2)
 
 instance HasModifiersFor DrMyaBadry where
   getModifiersFor (DrMyaBadry a) = do

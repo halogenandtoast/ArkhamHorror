@@ -13,7 +13,7 @@ newtype RaymondLoggins = RaymondLoggins AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 raymondLoggins :: AssetCard RaymondLoggins
-raymondLoggins = allyWith RaymondLoggins Cards.raymondLoggins (1, 2) noSlots
+raymondLoggins = ally RaymondLoggins Cards.raymondLoggins (1, 2)
 
 instance HasModifiersFor RaymondLoggins where
   getModifiersFor (RaymondLoggins a) = handleSpellbound a

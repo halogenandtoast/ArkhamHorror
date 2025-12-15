@@ -13,7 +13,7 @@ newtype NovaMalone = NovaMalone AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 novaMalone :: AssetCard NovaMalone
-novaMalone = allyWith NovaMalone Cards.novaMalone (3, 1) noSlots
+novaMalone = ally NovaMalone Cards.novaMalone (3, 1)
 
 instance HasModifiersFor NovaMalone where
   getModifiersFor (NovaMalone a) = handleSpellbound a

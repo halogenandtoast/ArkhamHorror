@@ -29,9 +29,7 @@ boneFilledCaverns =
 
 instance HasModifiersFor BoneFilledCaverns where
   getModifiersFor (BoneFilledCaverns (a `With` metadata)) = do
-    case affectedInvestigator metadata of
-      Nothing -> pure mempty
-      Just iid -> modified_ a iid [FewerSlots #hand 1]
+    for_ (affectedInvestigator metadata) \iid -> modified_ a iid [FewerSlots #hand 1]
 
 instance HasAbilities BoneFilledCaverns where
   getAbilities (BoneFilledCaverns (a `With` _)) =
@@ -41,9 +39,9 @@ instance HasAbilities BoneFilledCaverns where
 
 instance RunMessage BoneFilledCaverns where
   runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = runQueueT $ case msg of
-    Investigate investigation | investigation.location == toId attrs && not investigation.isAction -> do
-      result <- liftRunMessage msg attrs
+    Investigate investigation | investigation.location == toId attrs -> do
       push $ RefillSlots investigation.investigator []
+      result <- liftRunMessage msg attrs
       pure $ BoneFilledCaverns $ With result (Metadata $ Just investigation.investigator)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- countM (directionEmpty attrs) [Below, RightOf]

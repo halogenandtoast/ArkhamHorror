@@ -827,7 +827,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       PlayerCard _ -> pure a
       EncounterCard ec -> do
         handler <- getEncounterDeckHandler $ toCardId card
-        pure $ a & discardLens handler %~ (ec :)
+        pure $ a & discardLens handler %~ (ec :) . filter (/= ec)
       VengeanceCard _ -> error "vengeance card"
   DrewCards iid drew | isNothing drew.target -> do
     for_ (toList drew.rules) \case

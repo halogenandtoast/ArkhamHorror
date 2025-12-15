@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-// Vue core & ecosystem
-import { nextTick, computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
+
+import { computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti   from '@/effects/confetti'
-
-// VueUse utilities
 import { useClipboard, useWebSocket } from '@vueuse/core'
-
-// UI libraries
 import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
@@ -23,37 +19,23 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/vue/20/solid'
 import { LottieAnimation } from 'lottie-web-vue'
-
-// Third-party utils
 import * as JsonDecoder from 'ts.data.json'
-
-// Assets
 import processingJSON from '@/assets/processing.json'
-
-// API
 import api from '@/api'
 import { fetchGame, undoChoice, undoScenarioChoice } from '@/arkham/api'
 import * as Api from '@/arkham/api'
-
-// Stores
 import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user'
-
-// Composables & helpers
 import { useMenu } from '@/composeable/menu'
 import useEmitter from '@/composeable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { imgsrc } from '@/arkham/helpers'
-
-// Types & decoders
 import * as Arkham from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
 import * as Message from '@/arkham/types/Message'
 import { type Question } from '@/arkham/types/Question'
 import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
-
-// Components
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
@@ -67,7 +49,6 @@ import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
 
-// Types
 interface GameCard {
   title: string
   card: Card
@@ -91,16 +72,16 @@ type ServerResult =
   | { tag: "GameShowUnder"; contents: string }
   | { tag: "GameUI"; contents: string }
 
-// Setup
 export interface Props {
   gameId: string
   spectate?: boolean
 }
+
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
 const emitter = useEmitter()
-const source = ref(`${window.location.href}/join`) // fix-syntax`
+const source = ref(`${window.location.href}/join`)
 const store = useCardStore()
 const userStore = useUserStore()
 const { copy } = useClipboard({ source })
@@ -112,7 +93,6 @@ let mouseY = 0;
 
 store.fetchCards()
 
-// Refs
 const game = ref<Arkham.Game | null>(null)
 const gameCard = ref<GameCard | null>(null)
 const gameLog = shallowRef<readonly string[]>(Object.freeze([]))

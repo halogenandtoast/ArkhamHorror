@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.PerilsOfYoth (perilsOfYoth) where
 import Arkham.Card
 import Arkham.Helpers.Location
 import Arkham.I18n
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
@@ -35,7 +36,14 @@ instance RunMessage PerilsOfYoth where
             Just lid -> mapOneOf CardWithPrintedLocationSymbol <$> toConnections lid
             Nothing -> pure $ NotCard AnyCard
           source <- fromMaybe (toSource attrs) <$> getCurrentExploreSource
-          push $ Do (Explore iid source matcher)
+          case source of
+            LocationSource lid -> do
+              isForkedPath <- matches lid $ locationIs Locations.forkedPath
+              if isForkedPath
+                then do
+                  push $ DoStep 2 (Explore iid source matcher)
+                else push $ Do (Explore iid source matcher)
+            _ -> push $ Do (Explore iid source matcher)
       removeTreachery attrs
       setCardAside (toCard attrs)
       pure t

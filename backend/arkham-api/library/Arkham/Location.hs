@@ -18,9 +18,9 @@ import Arkham.Tracing
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
 
-lookupLocation :: CardCode -> LocationId -> CardId -> Location
+lookupLocation :: HasCallStack => CardCode -> LocationId -> CardId -> Location
 lookupLocation cCode = case lookup cCode allLocations of
-  Nothing -> error $ "Unknown location: " <> show cCode
+  Nothing -> error $ "Unknown location: " <> show cCode <> "\n" <> prettyCallStack callStack
   Just (SomeLocationCard a) -> \lid cid -> Location $ cbCardBuilder a cid lid
 
 instance RunMessage Location where

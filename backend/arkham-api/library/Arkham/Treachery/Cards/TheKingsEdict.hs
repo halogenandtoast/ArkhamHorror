@@ -3,7 +3,9 @@ module Arkham.Treachery.Cards.TheKingsEdict (theKingsEdict, theKingsEdictEffect)
 import Arkham.Effect.Import
 import Arkham.Enemy.Types (Field (EnemyClues, EnemyDoom))
 import Arkham.Helpers.Modifiers
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,11 +20,17 @@ theKingsEdict = treachery TheKingsEdict Cards.theKingsEdict
 
 instance RunMessage TheKingsEdict where
   runMessage msg t@(TheKingsEdict attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> do
-      select (EnemyWithTrait Cultist <> at_ LocationWithAnyClues) >>= \case
-        [] -> gainSurge attrs
-        xs -> for_ xs \cultist ->
-          selectForMaybeM (locationWithEnemy cultist) \lid -> moveTokens attrs lid cultist #clue 1
+    Revelation iid (isSource attrs -> True) -> do
+      ls <- select (LocationWithAnyClues <> LocationWithEnemy (EnemyWithTrait Cultist))
+      if null ls
+        then gainSurge attrs
+        else for_ ls \lid -> do
+          clueCount <- field LocationClues lid
+          enemies <- select $ EnemyWithTrait Cultist <> enemyAt lid
+          if clueCount >= length enemies
+            then for_ enemies \cultist -> moveTokens attrs lid cultist #clue 1
+            else chooseNM iid clueCount do
+              targets enemies \cultist -> moveTokens attrs lid cultist #clue 1
       selectEach (InPlayEnemy $ withTrait Cultist)
         $ createCardEffect Cards.theKingsEdict Nothing attrs
       pure t

@@ -36,7 +36,7 @@ instance RunMessage ThePaleLanternBeguilingAura where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      chooseBeginSkillTest sid iid (attrs.ability 3) iid [#combat, #agility] (Fixed 2)
+      chooseBeginSkillTest sid iid (attrs.ability 2) iid [#combat, #agility] (Fixed 2)
       pure a
     UseCardAbility iid (isSource attrs -> True) 3 ws _ -> do
       don'tRemove attrs ws
@@ -44,12 +44,11 @@ instance RunMessage ThePaleLanternBeguilingAura where
       flipOverBy iid (attrs.ability 1) attrs
       place attrs.id $ AttachedToLocation lid
       pure a
-    PassedThisSkillTest iid (isAbilitySource attrs 3 -> True) -> do
-      placeTokens (attrs.ability 3) attrs #damage 1
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      placeTokens (attrs.ability 2) attrs #damage 1
       when (attrs.damage >= 3) do
         addToVictory iid attrs
-        selectEach (SpellboundAsset $ at_ (locationWithInvestigator iid))
-          $ flipOverBy iid (attrs.ability 3)
+        selectEach (SpellboundAsset AnyAsset) $ flipOverBy iid (attrs.ability 2)
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       push $ ReplaceAsset attrs.id Cards.thePaleLanternHypnoticGlow

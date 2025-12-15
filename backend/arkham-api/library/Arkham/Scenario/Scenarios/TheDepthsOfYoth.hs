@@ -274,6 +274,9 @@ instance RunMessage TheDepthsOfYoth where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
+    DoStep n (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher PlaceExplored n
+      pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do

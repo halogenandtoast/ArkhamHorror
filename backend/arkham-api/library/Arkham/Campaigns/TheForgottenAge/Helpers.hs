@@ -177,83 +177,91 @@ explore iid source cardMatcher exploreRule matchCount = do
     splitAtMatch d = case break (`cardMatch` cardMatcher') d of
       (l, []) -> (l, [])
       (l, x : xs) -> (l <> [x], xs)
-    (drawn, rest) =
-      foldr
-        ( \_ (drawn', rest') ->
-            let (drawn'', rest'') = splitAtMatch rest'
-             in (drawn' <> drawn'', rest'')
-        )
-        ([], explorationDeck)
-        [1 .. matchCount]
-    (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
-  case matched of
-    [] -> do
-      deck' <- shuffle (drawn <> rest)
-      focusCards drawn do
-        chooseOneM iid do
-          labeled "No Matches Found" do
-            unfocusCards
-            setScenarioDeck ExplorationDeck deck'
-    [x] -> do
-      deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
-      focusCards (notMatched <> [x]) do
+    go 0 drawnCards deck = (drawnCards, deck, Nothing)
+    go n drawnCards deck =
+      case splitAtMatch deck of
+        (beforeMatch, []) -> (drawnCards <> beforeMatch, [], Nothing)
+        (beforeMatch, x : xs) ->
+          if cdCardType (toCardDef x) == LocationType
+            then go (n - 1) (drawnCards <> beforeMatch <> [x]) xs
+            else (drawnCards <> beforeMatch, xs, Just x)
+    (drawn, rest, mhazard) = go matchCount [] explorationDeck
+  case mhazard of
+    Just x -> do
+      focusCards (drawn <> [x]) do
         chooseTargetM iid [x] \_ -> do
           unfocusCards
-          setScenarioDeck ExplorationDeck deck'
-      if cdCardType (toCardDef x) == LocationType
+      -- Perils of Yoth will handle this case
+      if toCardDef x == Treacheries.perilsOfYoth
         then do
-          -- let historyItem = HistoryItem HistorySuccessfulExplore True
-
-          lid <- case exploreRule of
-            PlaceExplored -> placeLocation x
-            ReplaceExplored -> do
-              let lSymbol = fromJustNote "no location symbol" $ cdLocationRevealedSymbol (toCardDef x)
-              lid <- selectJust (LocationWithSymbol lSymbol)
-              push $ ReplaceLocation lid x DefaultReplace
-              pure lid
-
-          -- we want to have kept track of revealed and without clues
-          replacedIsRevealed <- field LocationRevealed lid
-          replacedIsWithoutClues <- lid <=~> LocationWithoutClues
-
-          updateHistory iid $ HistoryItem HistorySuccessfulExplore True
-          -- done before the move so trail of the dead handle binoculars check correctly
-          checkAfter $ Window.Explored iid mlid (Success lid)
-          when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
-          when (exploreRule == ReplaceExplored) do
-            setGlobal lid "replacedIsRevealed" replacedIsRevealed
-            setGlobal lid "replacedIsWithoutClues" replacedIsWithoutClues
+          setScenarioDeck ExplorationDeck (drawn <> rest) -- unshuffled in case we continue
+          checkAfter $ Window.Explored iid mlid (Failure x)
         else do
-          -- Perils of Yoth will handle this case
-          unless (toCardDef x == Treacheries.perilsOfYoth) do
-            checkAfter $ Window.Explored iid mlid (Failure x)
-          push
-            $ DrewCards iid
-            $ CardDrew
-              { cardDrewSource = source
-              , cardDrewDeck = ScenarioDeckByKey ExplorationDeck
-              , cardDrewCards = [x]
-              , cardDrewAction = False
-              , cardDrewRules = mempty
-              , cardDrewTarget = Nothing
-              }
-    xs -> do
-      deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
-      focusCards drawn do
-        chooseNM iid (min matchCount $ length xs) do
-          targets xs \_ -> do
-            unfocusCards
-            setScenarioDeck ExplorationDeck deck'
+          deck' <- shuffle (drawn <> rest)
+          setScenarioDeck ExplorationDeck deck'
+      push
+        $ DrewCards iid
+        $ CardDrew
+          { cardDrewSource = source
+          , cardDrewDeck = ScenarioDeckByKey ExplorationDeck
+          , cardDrewCards = [x]
+          , cardDrewAction = False
+          , cardDrewRules = mempty
+          , cardDrewTarget = Nothing
+          }
+    Nothing -> do
+      let (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
+      case matched of
+        [] -> do
+          deck' <- shuffle (drawn <> rest)
+          focusCards drawn do
+            chooseOneM iid do
+              labeled "No Matches Found" do
+                unfocusCards
+                setScenarioDeck ExplorationDeck deck'
+        [x] -> do
+          deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
+          focusCards (notMatched <> [x]) do
+            chooseTargetM iid [x] \_ -> do
+              unfocusCards
+              setScenarioDeck ExplorationDeck deck'
 
-      locations <- traverse placeLocation xs
-      when canMove do
-        chooseTargetM iid locations $ moveTo source iid
-        updateHistory iid $ HistoryItem HistorySuccessfulExplore True
+              lid <- case exploreRule of
+                PlaceExplored -> placeLocation x
+                ReplaceExplored -> do
+                  let lSymbol = fromJustNote "no location symbol" $ cdLocationRevealedSymbol (toCardDef x)
+                  lid <- selectJust (LocationWithSymbol lSymbol)
+                  push $ ReplaceLocation lid x DefaultReplace
+                  pure lid
 
-        checkWindows
-          [ mkAfter $ Window.Explored iid mlid (Success lid)
-          | lid <- locations
-          ]
+              -- we want to have kept track of revealed and without clues
+              replacedIsRevealed <- field LocationRevealed lid
+              replacedIsWithoutClues <- lid <=~> LocationWithoutClues
+
+              updateHistory iid $ HistoryItem HistorySuccessfulExplore True
+              -- done before the move so trail of the dead handle binoculars check correctly
+              checkAfter $ Window.Explored iid mlid (Success lid)
+              when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
+              when (exploreRule == ReplaceExplored) do
+                setGlobal lid "replacedIsRevealed" replacedIsRevealed
+                setGlobal lid "replacedIsWithoutClues" replacedIsWithoutClues
+        xs -> do
+          deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
+          focusCards drawn do
+            chooseNM iid (min matchCount $ length xs) do
+              targets xs \_ -> do
+                unfocusCards
+                setScenarioDeck ExplorationDeck deck'
+
+          locations <- traverse placeLocation xs
+          when canMove do
+            chooseTargetM iid locations $ moveTo source iid
+            updateHistory iid $ HistoryItem HistorySuccessfulExplore True
+
+            checkWindows
+              [ mkAfter $ Window.Explored iid mlid (Success lid)
+              | lid <- locations
+              ]
 
 getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
 getVengeancePoints c = do

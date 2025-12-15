@@ -46,7 +46,7 @@ instance RunMessage TheLadyWithTheRedParasol where
       if canAfford
         then do
           payEffectCost iid attrs cost
-          afterMaybeSkillTest $ advancedWithClues attrs
+          afterMaybeSkillTestQuiet $ advancedWithClues attrs
         else doStep 1 msg
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

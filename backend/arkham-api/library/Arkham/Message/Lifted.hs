@@ -2427,7 +2427,7 @@ resolveAbilityAndThen
   => Maybe AbilityRef -> QueueT Message (t m) () -> t m ()
 resolveAbilityAndThen mref body = do
   getSkillTest >>= \case
-    Just _ -> afterMaybeSkillTest body
+    Just _ -> afterMaybeSkillTestQuiet body
     Nothing -> do
       msgs <- capture body
       mmsg <- lift $ findFromQueue \case
@@ -2444,22 +2444,53 @@ afterMaybeSkillTest
      , HasQueue Message (t m)
      , HasGame (t m)
      )
+  => InvestigatorId -> Text -> QueueT Message (t m) a -> t m ()
+afterMaybeSkillTest iid lbl body = do
+  mst <- getSkillTest
+  case mst of
+    Nothing -> do
+      msgs <- capture body
+      msource <- Msg.getSkillTestSource
+      lift $ case msource of
+        Just (AbilitySource s n) -> do
+          let
+            isEndOfAbility = \case
+              MovedWithSkillTest _ msg -> isEndOfAbility msg
+              MoveWithSkillTest msg -> isEndOfAbility msg
+              ResolvedAbility ab -> ab.source == s && ab.index == n
+              _ -> False
+          insertAfterMatchingOrNow msgs isEndOfAbility
+        Just (EventSource e) ->
+          insertAfterMatchingOrNow msgs (== FinishedEvent e)
+        _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
+    Just _ -> afterSkillTest iid lbl body
+
+afterMaybeSkillTestQuiet
+  :: ( MonadTrans t
+     , HasQueue Message m
+     , HasQueue Message (t m)
+     , HasGame (t m)
+     )
   => QueueT Message (t m) a -> t m ()
-afterMaybeSkillTest body = do
-  msgs <- capture body
-  msource <- Msg.getSkillTestSource
-  lift $ case msource of
-    Just (AbilitySource s n) -> do
-      let
-        isEndOfAbility = \case
-          MovedWithSkillTest _ msg -> isEndOfAbility msg
-          MoveWithSkillTest msg -> isEndOfAbility msg
-          ResolvedAbility ab -> ab.source == s && ab.index == n
-          _ -> False
-      insertAfterMatchingOrNow msgs isEndOfAbility
-    Just (EventSource e) ->
-      insertAfterMatchingOrNow msgs (== FinishedEvent e)
-    _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
+afterMaybeSkillTestQuiet body = do
+  mst <- getSkillTest
+  case mst of
+    Nothing -> do
+      msgs <- capture body
+      msource <- Msg.getSkillTestSource
+      lift $ case msource of
+        Just (AbilitySource s n) -> do
+          let
+            isEndOfAbility = \case
+              MovedWithSkillTest _ msg -> isEndOfAbility msg
+              MoveWithSkillTest msg -> isEndOfAbility msg
+              ResolvedAbility ab -> ab.source == s && ab.index == n
+              _ -> False
+          insertAfterMatchingOrNow msgs isEndOfAbility
+        Just (EventSource e) ->
+          insertAfterMatchingOrNow msgs (== FinishedEvent e)
+        _ -> insertAfterMatchingOrNow msgs (== EndSkillTestWindow)
+    Just _ -> afterSkillTestQuiet body
 
 afterSkillTest
   :: ( MonadTrans t

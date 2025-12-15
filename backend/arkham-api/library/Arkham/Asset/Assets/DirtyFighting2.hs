@@ -38,7 +38,7 @@ instance RunMessage DirtyFighting2 where
       doStep 1 msg
       pure a
     DoStep _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      afterSkillTest iid "Dirty Fighting" do
+      afterMaybeSkillTest iid "Dirty Fighting" do
         performActionAction iid (attrs.ability 1) #fight
       pure a
     _ -> DirtyFighting2 <$> liftRunMessage msg attrs

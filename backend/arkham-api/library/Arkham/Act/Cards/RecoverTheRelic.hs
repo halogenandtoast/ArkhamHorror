@@ -24,13 +24,12 @@ instance HasModifiersFor RecoverTheRelic where
     modifySelect a (EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort) [HealthModifier 2]
 
 instance HasAbilities RecoverTheRelic where
-  getAbilities (RecoverTheRelic a) =
-    [ mkAbility a 1
-        $ Objective
-        $ forced
-        $ EnemyLeavesPlay #when
-        $ EnemyWithModifier (ScenarioModifier "withRelicOfAges")
-    ]
+  getAbilities = actAbilities1 \a ->
+    mkAbility a 1
+      $ Objective
+      $ forced
+      $ EnemyLeavesPlay #when
+      $ EnemyWithModifier (ScenarioModifier "withRelicOfAges")
 
 instance RunMessage RecoverTheRelic where
   runMessage msg a@(RecoverTheRelic attrs) = runQueueT $ case msg of
@@ -49,9 +48,10 @@ instance RunMessage RecoverTheRelic where
       iids <- select findInvestigators
       leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` relicOfAges)
       deckCount <- getActDecksInPlayCount
-      push
-        $ if deckCount <= 1
-          then R1
-          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
+      if deckCount <= 1
+        then do
+          selectEach (EnemyWithModifier (ScenarioModifier "withRelicOfAges")) addToVictoryIfNeeded
+          push R1
+        else push $ RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
     _ -> RecoverTheRelic <$> liftRunMessage msg attrs

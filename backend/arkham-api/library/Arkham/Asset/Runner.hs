@@ -753,7 +753,8 @@ instance RunMessage AssetAttrs where
       pure a
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
       pushAll
-        $ resolve (RemoveAsset $ toId a)
+        $ RemovedFromPlay (toSource a)
+        : resolve (RemoveAsset $ toId a)
         <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do

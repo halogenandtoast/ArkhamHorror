@@ -174,17 +174,16 @@ explore iid source cardMatcher exploreRule matchCount = do
   mlid <- getLocationOf iid
   let
     cardMatcher' = CardWithOneOf [CardWithType EnemyType, CardWithType TreacheryType, cardMatcher]
-    splitAtMatch d = case break (`cardMatch` cardMatcher') d of
-      (l, []) -> (l, [])
-      (l, x : xs) -> (l <> [x], xs)
     go 0 drawnCards deck = (drawnCards, deck, Nothing)
     go n drawnCards deck =
-      case splitAtMatch deck of
-        (beforeMatch, []) -> (drawnCards <> beforeMatch, [], Nothing)
-        (beforeMatch, x : xs) ->
-          if cdCardType (toCardDef x) == LocationType
-            then go (n - 1) (drawnCards <> beforeMatch <> [x]) xs
-            else (drawnCards <> beforeMatch, xs, Just x)
+      case deck of
+        [] -> (drawnCards, [], Nothing)
+        (x : xs)
+          | cardMatch x cardMatcher' ->
+              if cdCardType (toCardDef x) == LocationType
+                then go (n - 1) (drawnCards <> [x]) xs
+                else (drawnCards, xs, Just x)
+        (x : xs) -> go n (drawnCards <> [x]) xs
     (drawn, rest, mhazard) = go matchCount [] explorationDeck
   case mhazard of
     Just x -> do
@@ -197,8 +196,9 @@ explore iid source cardMatcher exploreRule matchCount = do
           setScenarioDeck ExplorationDeck (drawn <> rest) -- unshuffled in case we continue
           checkAfter $ Window.Explored iid mlid (Failure x)
         else do
-          deck' <- shuffle (drawn <> rest)
-          setScenarioDeck ExplorationDeck deck'
+          unless (null drawn) do
+            deck' <- shuffle (drawn <> rest)
+            setScenarioDeck ExplorationDeck deck'
       push
         $ DrewCards iid
         $ CardDrew
@@ -212,12 +212,12 @@ explore iid source cardMatcher exploreRule matchCount = do
     Nothing -> do
       let (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
       case matched of
-        [] -> do
-          deck' <- shuffle (drawn <> rest)
+        [] -> unless (null drawn) do
           focusCards drawn do
             chooseOneM iid do
               labeled "No Matches Found" do
                 unfocusCards
+                deck' <- shuffle (drawn <> rest)
                 setScenarioDeck ExplorationDeck deck'
         [x] -> do
           deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched

@@ -1,0 +1,40 @@
+{
+    "newGame": "Nueva Partida",
+
+    "numberOfPlayers" : "Número de Jugadores",
+    "withFriends": "Con Amigos",
+    "multihandedSolo": "Multijugador a Dos Manos",
+
+    "campaign": "Campaña",
+    "standalone": "Independiente",
+    "sideStory": "Historia Secundaria",
+
+    "alphaWarning": "Esta campaña está actualmente en desarrollo. Probablemente no funcione aún y no deberías reportar errores sobre ella.",
+    "betaWarning": "Esta campaña está lista para pruebas pero espera que tus partidas se rompan frecuentemente.",
+    "betaWarningScenario": "Este escenario está listo para pruebas pero espera que tus partidas se rompan frecuentemente.",
+
+    "normal": "Normal",
+    "returnTo": "Retorno a...",
+    
+    "fullCampaign": "Campaña Completa",
+    "partialCampaign": "Campaña Parcial",
+
+    "difficulty": "Dificultad",
+    "Easy": "Fácil",
+    "Standard": "Normal",
+    "Hard": "Difícil",
+    "Expert": "Experto",
+
+    "includeTarotReadings": "Incluir Lecturas de Tarot",
+
+    "gameName": "Nombre de la Partida",
+    "create": "Crear",
+
+    "chooseYourDeck": "Elige tu mazo{s}",
+    "tabooList": "Lista de Taboo: {tabooList}",
+    "useExistingDeck": "Usar Mazo Existente",
+    "loadNewDeck": "Cargar Nuevo Mazo",
+    "selectADeck": "-- Selecciona un Mazo --",
+    "deckUrlPlaceholder": "URL de mazo de ArkhamDB o arkham.build",
+    "choose": "Elegir"
+}

@@ -1,0 +1,20 @@
+{
+    "title": "Mejorar Mazo ({xp} XP TOTAL)",
+    "fetching": "Obteniendo mazo de {deckSource}...",
+    "newInvestigator": "Cargar Nuevo Investigador",
+    "killed": "Tu investigador fue asesinado o conducido a la locura. Elige un nuevo investigador.",
+    "directlyUpdateContent": "Mejora tu mazo directamente en {deckSource} y sincroniza aquí.",
+    "openDeck": "Abrir Mazo en {deckSource}",
+    "pullUpdate": "Extraer Mazo Mejorado de {deckSource}",
+    "OR": "O",
+    "deckUrlPlaceholder": "URL de mazo de ArkhamDB o arkham.build",
+    "Upgrade": "Mejorar",
+    "continueWithoutUpgrading": "Continuar sin mejorar",
+    "waitingOtherPlayer": "Esperando a que otros jugadores mejoren el mazo.",
+    "skippingPrompt": "¿Estás seguro de que quieres saltar la mejora de este mazo?",
+    
+    "unspendableXp": "XP No Gastable",
+    "xp": "{total} XP",
+    "victoryDisplay": "Zona de Victoria"
+
+}

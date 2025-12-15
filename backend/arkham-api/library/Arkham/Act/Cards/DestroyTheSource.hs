@@ -39,7 +39,13 @@ instance HasAbilities DestroyTheSource where
 instance RunMessage DestroyTheSource where
   runMessage msg a@(DestroyTheSource attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) EncounterDeckTarget [fromTopOfDeck 6] (basic #enemy) (DrawFound iid 1)
+      search
+        iid
+        (attrs.ability 1)
+        EncounterDeckTarget
+        [fromTopOfDeck 6]
+        (basic #enemy)
+        (defer attrs IsNotDraw)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

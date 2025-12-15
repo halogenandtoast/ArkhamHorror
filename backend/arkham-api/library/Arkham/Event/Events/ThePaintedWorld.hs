@@ -26,7 +26,7 @@ instance RunMessage ThePaintedWorld where
     InvestigatorPlayEvent iid (is attrs -> True) _ windows' _ -> do
       candidates <- fieldMap InvestigatorCardsUnderneath (filterCards (NonExceptional <> #event)) iid
       let playableWindows = nub $ mkWhen (DuringTurn iid) : windows'
-      playableCards <- filterM (getIsPlayable iid attrs (UnpaidCost NoAction) playableWindows) candidates
+      playableCards <- filterM (getIsPlayable iid attrs (UnpaidCost NeedsAction) playableWindows) candidates
       enabled <- Msg.createCardEffect Cards.thePaintedWorld Nothing (toCardId attrs) (toCardId attrs)
 
       push

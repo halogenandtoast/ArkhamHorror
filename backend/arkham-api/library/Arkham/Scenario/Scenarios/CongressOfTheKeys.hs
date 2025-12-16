@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.CongressOfTheKeys (congressOfTheKeys) where
 
+import Arkham.Message.Lifted.Log
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
@@ -9,6 +10,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
 
@@ -317,13 +319,147 @@ instance RunMessage CongressOfTheKeys where
         | theCellKnowsTheTrueNatureOfTheCoterie -> doStep 6 PreScenarioSetup
         | eerilySilent -> doStep 7 PreScenarioSetup
         | otherwise -> do
-            pure ()
+            youHaventSeenTheLastOfLaChicaRoja <- getHasRecord YouHaventSeenTheLastOfLaChicaRoja
+            youHaventSeenTheLastOfTheSanguineWatcher <- getHasRecord YouHaventSeenTheLastOfTheSanguineWatcher
+            theSanguineWatchersTormentContinues <- getHasRecord TheSanguineWatchersTormentContinues
+
+            unless
+              ( youHaventSeenTheLastOfLaChicaRoja
+                  || youHaventSeenTheLastOfTheSanguineWatcher
+                  || theSanguineWatchersTormentContinues
+              )
+              do
+                setBearer Keys.theWeepingLady (keyWithEnemy Enemies.theSanguineWatcherHeSeesWhatIsNotThere)
+
+            let
+              laChicaRojaVotedNay = youHaventSeenTheLastOfTheSanguineWatcher || theSanguineWatchersTormentContinues
+
+              nay8 = nay7 + if laChicaRojaVotedNay then 1 else 0
+              yay8 =
+                yay7 + case () of
+                  _
+                    | youHaventSeenTheLastOfLaChicaRoja -> 1
+                    | youHaventSeenTheLastOfTheSanguineWatcher -> 1
+                    | otherwise -> 0
+
+            flavor do
+              cols do
+                compose do
+                  p "nay.title"
+                  countVar nay8 $ p "nay.count"
+                compose do
+                  p "yay.title"
+                  countVar yay8 $ p "yay.count"
+
+              compose.red.bordered do
+                p.validate youHaventSeenTheLastOfLaChicaRoja "youHaventSeenTheLastOfLaChicaRoja"
+                hr
+                p.validate youHaventSeenTheLastOfTheSanguineWatcher "youHaventSeenTheLastOfTheSanguineWatcher"
+                hr
+                p.validate theSanguineWatchersTormentContinues "theSanguineWatchersTormentContinues"
+                hr
+                p.validate
+                  ( not
+                      $ youHaventSeenTheLastOfLaChicaRoja
+                      || youHaventSeenTheLastOfTheSanguineWatcher
+                      || theSanguineWatchersTormentContinues
+                  )
+                  "sanguineShadowsSkipped"
+
+            youHaventSeenTheLastOfTzuSanNiang <- getHasRecord YouHaventSeenTheLastOfTzuSanNiang
+            tzuSanNiangHasYouUnderHerSway <- getHasRecord TzuSanNiangHasYouUnderHerSway
+            tzuSanNiangIsUnderYourSway <- getHasRecord TzuSanNiangIsUnderYourSway
+
+            unless
+              (youHaventSeenTheLastOfTzuSanNiang || tzuSanNiangHasYouUnderHerSway || tzuSanNiangIsUnderYourSway)
+              do
+                setBearer Keys.theShadeReaper (keyWithEnemy Enemies.tzuSanNiangAWhisperInYourEar)
+
+            let
+              nay9 = nay8
+              yay9 = yay8 + if tzuSanNiangIsUnderYourSway then 0 else 1
+
+            flavor do
+              cols do
+                compose do
+                  p "nay.title"
+                  countVar nay9 $ p "nay.count"
+                compose do
+                  p "yay.title"
+                  countVar yay9 $ p "yay.count"
+
+              compose.red.bordered do
+                p.validate youHaventSeenTheLastOfTzuSanNiang "youHaventSeenTheLastOfTzuSanNiang"
+                hr
+                p.validate tzuSanNiangHasYouUnderHerSway "tzuSanNiangHasYouUnderHerSway"
+                hr
+                p.validate tzuSanNiangIsUnderYourSway "tzuSanNiangIsUnderYourSway"
+                hr
+                p.validate
+                  ( not
+                      $ youHaventSeenTheLastOfTzuSanNiang
+                      || tzuSanNiangHasYouUnderHerSway
+                      || tzuSanNiangIsUnderYourSway
+                  )
+                  "shadesOfSufferingSkipped"
+
+            tuwileMasaiIsOnYourSide <- getHasRecord TuwileMasaiIsOnYourSide
+
+            let
+              finalNay = nay9 + if tuwileMasaiIsOnYourSide then 1 else 0
+              finalYay = yay9 + if tuwileMasaiIsOnYourSide then 0 else 1
+
+            flavor do
+              cols do
+                compose do
+                  p "nay.title"
+                  countVar finalNay $ p "nay.count"
+                compose do
+                  p "yay.title"
+                  countVar finalYay $ p "yay.count"
+
+              compose.red.bordered do
+                p.validate tuwileMasaiIsOnYourSide "tuwileMasaiIsOnYourSide"
+                hr
+                p.validate (not tuwileMasaiIsOnYourSide) "tuwileMasaiIsNotOnYourSide"
+
+            storyWithChooseOneM' (setTitle "title" >> p "trialResult") do
+              if finalYay >= finalNay
+                then labeled' "deemedALiability" $ doStep 2 PreScenarioSetup
+                else do
+                  let canOverthrow = laChicaRojaVotedNay && eceTrustsTheCell && desiIsGood
+                  let canJoin = canOverthrow && tuwileMasaiIsOnYourSide && theCellMadeADealWithThorne && theCellAidedTheKnight
+                  labeledValidate' canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
+                  labeledValidate' canJoin "join" $ doStep 4 PreScenarioSetup
+                  labeled' "deemedAnAsset" $ doStep 5 PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      record TheCellEscapedTheRedCoterie
+      flavor $ setTitle "title" >> p "theTrial2"
+      pure s
+    DoStep 3 PreScenarioSetup -> scope "intro" do
+      record TheCellOverthrewTheRedCoterie
+      flavor $ setTitle "title" >> p "theTrial3"
+      doStep 8 PreScenarioSetup
+      pure s
+    DoStep 4 PreScenarioSetup -> scope "intro" do
+      record TheCellJoinedTheRedCoterie
+      flavor $ setTitle "title" >> p "theTrial4"
+      doStep 8 PreScenarioSetup
+      pure s
+    DoStep 5 PreScenarioSetup -> scope "intro" do
+      record TheRedCoterieSparedTheCell
+      flavor $ setTitle "title" >> p "theTrial5"
+      doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial6"
       pure s
     DoStep 7 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial7"
+      pure s
+    DoStep 8 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "theTrial8"
       pure s
     Setup -> runScenarioSetup CongressOfTheKeys attrs do
       gather Set.CongressOfTheKeys

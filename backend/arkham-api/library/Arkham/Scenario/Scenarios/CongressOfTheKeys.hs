@@ -131,6 +131,44 @@ instance RunMessage CongressOfTheKeys where
           hr
           p.validate (not $ eceTrustsTheCell || eceDoesNotTrustTheCell) "dealingsInTheDarkSkipped"
 
+      haventSeenTheLastOfAmaranth <- getHasRecord YouHaventSeenTheLastOfAmaranth
+      theLoversAreReunited <- getHasRecord TheLoversAreReunited
+      amaranthHasLeftTheCoterie <- getHasRecord TheRedCoterieWasDestroyedFromWithin
+
+      let
+        nay3 = nay2
+        yay3 = yay2 + case () of
+          _
+            | haventSeenTheLastOfAmaranth -> 1
+            | theLoversAreReunited -> 2
+            | amaranthHasLeftTheCoterie -> 0
+            | otherwise -> 1
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay3 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay3 $ p "yay.count"
+
+        compose.red.bordered do
+          p.validate haventSeenTheLastOfAmaranth "haventSeenTheLastOfAmaranth"
+          hr
+          p.validate theLoversAreReunited "theLoversAreReunited"
+          hr
+          p.validate amaranthHasLeftTheCoterie "amaranthHasLeftTheCoterie"
+          hr
+          p.validate
+            ( not
+                $ haventSeenTheLastOfAmaranth
+                || theLoversAreReunited
+                || amaranthHasLeftTheCoterie
+            )
+            "deadHeatSkipped"
+
+
       pure s
     Setup -> runScenarioSetup CongressOfTheKeys attrs do
       gather Set.CongressOfTheKeys

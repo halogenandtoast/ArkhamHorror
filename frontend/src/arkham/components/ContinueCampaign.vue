@@ -19,6 +19,7 @@ const props = defineProps<{
   scenario?: Scenario
   canUpgradeDecks: boolean
   chooseSideStory: boolean
+  canChooseSideStory: boolean
   step: CampaignStep
 }>();
 
@@ -150,7 +151,7 @@ const isScenario = computed(() =>  {
 
 const standalones = computed(() => {
   if (!props.campaign) return []
-  if (!props.chooseSideStory && props.step.tag !== "ScenarioStep") return []
+  if (!props.canChooseSideStory) return []
   const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {
       acc.push(step.contents[0].replace(/^c/, ''))
@@ -169,6 +170,7 @@ async function loadSideStory(sideStoryId: string) {
       tag: 'ContinueCampaignStep',
       contents: {
         canUpgradeDecks: true,
+        canChooseSideStory: false,
         nextStep: {
           tag: 'StandaloneScenarioStep',
           contents:
@@ -178,7 +180,8 @@ async function loadSideStory(sideStoryId: string) {
                 tag: 'ContinueCampaignStep',
                 contents: {
                   nextStep: props.step,
-                  canUpgradeDecks: props.canUpgradeDecks
+                  canUpgradeDecks: props.canUpgradeDecks,
+                  canChooseSideStory: false
                 }
               }
             ]
@@ -256,7 +259,7 @@ const expeditionLeader = computed(() => {
         <div class="actions">
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
-          <button v-if="canUpgrade && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
+          <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
         </div>
       </div>
       <div v-if="scenario" class="next-step-icon"><img :src="imgsrc(`sets/${scenario}.png`)" /></div>

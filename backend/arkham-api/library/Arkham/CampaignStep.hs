@@ -7,15 +7,16 @@ module Arkham.CampaignStep where
 
 import Arkham.Id
 import Arkham.Prelude
+import Arkham.Scenario.Options
 import Data.Aeson.TH
 import GHC.Records
-import Arkham.Scenario.Options
 
 data Continuation = Continuation
   { nextStep :: CampaignStep
   , canUpgradeDecks :: Bool
   , chooseSideStory :: Bool
   , lead :: Maybe InvestigatorId
+  , canChooseSideStory :: Bool
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
@@ -42,10 +43,25 @@ data CampaignStep
   deriving anyclass ToJSON
 
 continue :: CampaignStep -> Maybe CampaignStep
-continue ns = Just $ ContinueCampaignStep $ Continuation ns True False Nothing
+continue ns = Just $ ContinueCampaignStep $ Continuation ns True False Nothing True
+
+continueEdit :: CampaignStep -> (Continuation -> Continuation) -> Maybe CampaignStep
+continueEdit ns f =
+  continue ns <&> \case
+    ContinueCampaignStep cs -> ContinueCampaignStep $ f cs
+    other -> other
+
+noUpgrade :: Continuation -> Continuation
+noUpgrade cs = cs {canUpgradeDecks = False}
+
+noSideStory :: Continuation -> Continuation
+noSideStory cs = cs {canChooseSideStory = False}
 
 continueNoUpgrade :: CampaignStep -> Maybe CampaignStep
-continueNoUpgrade ns = Just $ ContinueCampaignStep $ Continuation ns False False Nothing
+continueNoUpgrade ns = continueEdit ns noUpgrade
+
+continueNoSideScenario :: CampaignStep -> Maybe CampaignStep
+continueNoSideScenario ns = continueEdit ns noSideStory
 
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
@@ -139,7 +155,7 @@ normalizedCampaignStep = \case
         Just "ContinueCampaignStep" -> do
           contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
           case contents of
-            Left nextStep -> pure $ ContinueCampaignStep $ Continuation nextStep True False Nothing
+            Left nextStep -> pure $ ContinueCampaignStep $ Continuation nextStep True False Nothing True
             Right inner -> do
               nextStep <- inner .:? "nextStep"
               case nextStep of
@@ -147,9 +163,10 @@ normalizedCampaignStep = \case
                   canUpgrade <- inner .: "canUpgradeDecks"
                   chooseSideStory <- inner .:? "chooseSideStory" .!= False
                   lead <- inner .:? "lead"
-                  pure $ ContinueCampaignStep $ Continuation ns canUpgrade chooseSideStory lead
+                  canChooseSideStory <- inner .:? "canChooseSideStory" .!= True
+                  pure $ ContinueCampaignStep $ Continuation ns canUpgrade chooseSideStory lead canChooseSideStory
                 Nothing -> do
                   nStep <- parseJSON (Object inner)
-                  pure $ ContinueCampaignStep $ Continuation nStep True False Nothing
+                  pure $ ContinueCampaignStep $ Continuation nStep True False Nothing True
         _ -> $(mkParseJSON defaultOptions ''CampaignStep) (Object o)
   |]

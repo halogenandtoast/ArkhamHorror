@@ -64,6 +64,9 @@ const props = defineProps<{
   embark: boolean
 }>()
 
+const isFinale = computed(() => {
+  return props.mapData.available.length === 1
+})
 const greenLocations = ['Arkham', 'Cairo', 'NewOrleans', 'Venice', 'MonteCarlo'] as MapLocationId[]
 const data = {
   'Alexandria': { x: 1691, y: 613, subtitle: t('theScarletKeys.locations.Alexandria.subtitle') },
@@ -678,7 +681,8 @@ document.addEventListener('fullscreenchange', () => {
 
             <div class="drawer-content" v-if="selectedLocation">
               <template v-if="selectedLocation === props.mapData.current">
-                <p>You are currently here.</p>
+                <p v-if="!isFinale">You are currently here.</p>
+                <button v-else class="action" @click="travelToSelected">Travel here</button>
               </template>
               <template v-else-if="embark === true">
                 <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
@@ -693,11 +697,11 @@ document.addEventListener('fullscreenchange', () => {
                     class="action"
                     @click="travelWithTicket"
                   >Travel with Expedited Ticket (1 time)</button>
-                  <button class="action secondary" @click="travelViaSelected">Travel here without stopping</button>
+                  <button v-if="!isFinale" class="action secondary" @click="travelViaSelected">Travel here without stopping</button>
                 </template>
                 <template v-else>
                   <p class="action locked">This location is currently locked.</p>
-                  <button class="action secondary" @click="travelViaSelected">Travel here without stopping</button>
+                  <button v-if="!isFinale" class="action secondary" @click="travelViaSelected">Travel here without stopping</button>
                 </template>
               </template>
               <div v-if="selectedLocation === 'Marrakesh'" class='dossier'>

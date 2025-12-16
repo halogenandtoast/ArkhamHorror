@@ -88,6 +88,7 @@ const inStep = computed(() => {
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
+      :canChooseSideStory="continueCampaign.canChooseSideStory"
       @choose="choose"
     />
     <Scenario

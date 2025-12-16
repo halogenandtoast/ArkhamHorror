@@ -180,7 +180,7 @@ instance RunMessage FortuneAndFolly where
         push
           $ ScenarioCampaignStep
           $ ContinueCampaignStep
-          $ Continuation (ScenarioStep "88001") False False Nothing
+          $ Continuation (ScenarioStep "88001") False False Nothing False
       doStep 1 PreScenarioSetup
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
@@ -236,7 +236,7 @@ instance RunMessage FortuneAndFolly where
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
-        $ Continuation (ScenarioStep "88001b") False False Nothing
+        $ Continuation (ScenarioStep "88001b") False False Nothing False
       pure $ FortuneAndFolly $ attrs & setMetaKey "skipped" True
     Setup -> runScenarioSetup FortuneAndFolly attrs do
       scope "part1" do
@@ -429,13 +429,13 @@ instance RunMessage FortuneAndFolly where
           push
             $ ScenarioCampaignStep
             $ ContinueCampaignStep
-            $ Continuation (CheckpointStep 1) False False Nothing
+            $ Continuation (CheckpointStep 1) False False Nothing False
         Resolution 2 -> do
           resolution "resolution2"
           push
             $ ScenarioCampaignStep
             $ ContinueCampaignStep
-            $ Continuation (CheckpointStep 1) False False Nothing
+            $ Continuation (CheckpointStep 1) False False Nothing False
         _ -> error "invalid resolution"
       pure s
     ScenarioCampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
@@ -449,7 +449,7 @@ instance RunMessage FortuneAndFolly where
       push
         $ ScenarioCampaignStep
         $ ContinueCampaignStep
-        $ Continuation (ScenarioStep "88001b") False False Nothing
+        $ Continuation (ScenarioStep "88001b") False False Nothing False
       pure s
     DoStep (-1) (ScenarioCampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       roles <- forMaybeM

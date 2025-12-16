@@ -8,7 +8,7 @@ newtype CoterieLibrarySanctum = CoterieLibrarySanctum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coterieLibrarySanctum :: LocationCard CoterieLibrarySanctum
-coterieLibrarySanctum = symbolLabel $ location CoterieLibrarySanctum Cards.coterieLibrarySanctum 0 (Static 0)
+coterieLibrarySanctum = location CoterieLibrarySanctum Cards.coterieLibrarySanctum 0 (Static 0)
 
 instance HasAbilities CoterieLibrarySanctum where
   getAbilities (CoterieLibrarySanctum a) =

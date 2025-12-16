@@ -1,18 +1,29 @@
 module Arkham.Scenario.Scenarios.CongressOfTheKeys (congressOfTheKeys) where
 
-import Arkham.Message.Lifted.Log
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher.Card
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Placement
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
+import Arkham.Treachery.Cards qualified as Treacheries
+import Data.Map.Strict qualified as Map
 
 newtype CongressOfTheKeys = CongressOfTheKeys ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -25,9 +36,30 @@ congressOfTheKeys difficulty =
     "09694"
     "Congress of the Keys"
     difficulty
-    []
+    [ "coterieSanctuary1 coterieSanctuary2 coterieSanctuary3"
+    , ".                 scarletHalls      ."
+    ]
 
 data Version = Version1 | Version2 | Version3
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data Coterie
+  = TheRedGlovedMan
+  | LaChicaRoja
+  | TheSanguineWatcher
+  | TheBeast
+  | TheClaretKnight
+  | Thorne
+  | Desiderio
+  | Amaranth
+  | TzuSanNiang
+  | Aliki
+  | Ece
+  deriving stock (Show, Eq, Ord, Generic)
+  deriving anyclass (FromJSON, FromJSONKey, ToJSONKey, ToJSON)
+
+data Vote = Yea | Nay | Abstained | EerilySilent
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
@@ -38,6 +70,34 @@ instance HasChaosTokenValue CongressOfTheKeys where
     Tablet -> pure $ ChaosTokenValue Tablet NoModifier
     ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+coterieEnemy :: Coterie -> Maybe CardDef
+coterieEnemy = \case
+  TheRedGlovedMan -> Just Enemies.theRedGlovedManPurposeUnknown
+  LaChicaRoja -> Just Enemies.laChicaRojaHotOnYourTrail
+  TheSanguineWatcher -> Just Enemies.theSanguineWatcherHeSeesWhatIsNotThere
+  TheBeast -> Just Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
+  TheClaretKnight -> Just Enemies.theClaretKnightHoldsYouInContempt
+  Thorne -> Just Enemies.thorneOpenToNegotiation
+  Desiderio -> Just Enemies.desiderioDelgadoAlvarezRedInHisLedger
+  Amaranth -> Just Enemies.amaranthScarletScorn
+  TzuSanNiang -> Just Enemies.tzuSanNiangAWhisperInYourEar
+  Aliki -> Just Enemies.alikiZoniUperetriaSpeaksInDeath
+  Ece -> Nothing
+
+conspiratorAsset :: Coterie -> Maybe CardDef
+conspiratorAsset = \case
+  TheRedGlovedMan -> Just Assets.theRedGlovedManHeWasAlwaysThere
+  LaChicaRoja -> Just Assets.laChicaRojaYourWatchfulShadow
+  TheSanguineWatcher -> Nothing
+  TheBeast -> Nothing
+  TheClaretKnight -> Just Assets.theClaretKnightHerSwornChampion
+  Thorne -> Just Assets.thorneConsummateProfessional
+  Desiderio -> Just Assets.desiderioDelgadoAlvarez
+  Amaranth -> Nothing
+  TzuSanNiang -> Nothing
+  Aliki -> Just Assets.alikiZoniUperetriaTheMaidWithTheScarletSash
+  Ece -> Just Assets.eceSahinTheVermillionVeiledLady
 
 instance RunMessage CongressOfTheKeys where
   runMessage msg s@(CongressOfTheKeys attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -51,6 +111,7 @@ instance RunMessage CongressOfTheKeys where
           li.validate (t < 35) "option2"
       flavor $ setTitle "title" >> p (if t >= 35 then "intro1" else "intro2")
       doStep 1 PreScenarioSetup
+      setupKeys
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial1"
@@ -319,14 +380,18 @@ instance RunMessage CongressOfTheKeys where
           p.right.validate eerilySilent "eerilySilent"
           p.right.validate continueTheTrial "continueTheTrial"
 
+      youHaventSeenTheLastOfLaChicaRoja <- getHasRecord YouHaventSeenTheLastOfLaChicaRoja
+      youHaventSeenTheLastOfTheSanguineWatcher <- getHasRecord YouHaventSeenTheLastOfTheSanguineWatcher
+      theSanguineWatchersTormentContinues <- getHasRecord TheSanguineWatchersTormentContinues
+
+      youHaventSeenTheLastOfTzuSanNiang <- getHasRecord YouHaventSeenTheLastOfTzuSanNiang
+      tzuSanNiangHasYouUnderHerSway <- getHasRecord TzuSanNiangHasYouUnderHerSway
+      tzuSanNiangIsUnderYourSway <- getHasRecord TzuSanNiangIsUnderYourSway
+
       if
         | theCellKnowsTheTrueNatureOfTheCoterie -> doStep 6 PreScenarioSetup
         | eerilySilent -> doStep 7 PreScenarioSetup
         | otherwise -> do
-            youHaventSeenTheLastOfLaChicaRoja <- getHasRecord YouHaventSeenTheLastOfLaChicaRoja
-            youHaventSeenTheLastOfTheSanguineWatcher <- getHasRecord YouHaventSeenTheLastOfTheSanguineWatcher
-            theSanguineWatchersTormentContinues <- getHasRecord TheSanguineWatchersTormentContinues
-
             unless
               ( youHaventSeenTheLastOfLaChicaRoja
                   || youHaventSeenTheLastOfTheSanguineWatcher
@@ -369,10 +434,6 @@ instance RunMessage CongressOfTheKeys where
                       || theSanguineWatchersTormentContinues
                   )
                   "sanguineShadowsSkipped"
-
-            youHaventSeenTheLastOfTzuSanNiang <- getHasRecord YouHaventSeenTheLastOfTzuSanNiang
-            tzuSanNiangHasYouUnderHerSway <- getHasRecord TzuSanNiangHasYouUnderHerSway
-            tzuSanNiangIsUnderYourSway <- getHasRecord TzuSanNiangIsUnderYourSway
 
             unless
               (youHaventSeenTheLastOfTzuSanNiang || tzuSanNiangHasYouUnderHerSway || tzuSanNiangIsUnderYourSway)
@@ -436,7 +497,81 @@ instance RunMessage CongressOfTheKeys where
                   labeledValidate' canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
                   labeledValidate' canJoin "join" $ doStep 4 PreScenarioSetup
                   labeled' "deemedAnAsset" $ doStep 5 PreScenarioSetup
-      pure s
+
+      let
+        finishedEarly = theCellKnowsTheTrueNatureOfTheCoterie || eerilySilent
+        votes =
+          Map.fromList
+            [ (TheRedGlovedMan, EerilySilent)
+            ,
+              ( LaChicaRoja
+              , if
+                  | finishedEarly -> Abstained
+                  | youHaventSeenTheLastOfLaChicaRoja -> Abstained
+                  | youHaventSeenTheLastOfTheSanguineWatcher -> Nay
+                  | theSanguineWatchersTormentContinues -> Nay
+                  | otherwise -> Abstained
+              )
+            ,
+              ( TheSanguineWatcher
+              , if
+                  | finishedEarly -> Abstained
+                  | youHaventSeenTheLastOfLaChicaRoja -> Yea
+                  | youHaventSeenTheLastOfTheSanguineWatcher -> Yea
+                  | theSanguineWatchersTormentContinues -> Abstained
+                  | otherwise -> Abstained
+              )
+            ,
+              ( TheBeast
+              , if
+                  | theCellAidedTheKnight -> Abstained
+                  | theCellFailedToFendOffTheBeast -> Yea
+                  | youHaventSeenTheLastOfTheClaretKnight -> Yea
+                  | theDogsAreAtWar -> Abstained
+                  | otherwise -> Yea
+              )
+            ,
+              ( TheClaretKnight
+              , if
+                  | theCellAidedTheKnight -> Nay
+                  | theCellFailedToFendOffTheBeast -> Abstained
+                  | youHaventSeenTheLastOfTheClaretKnight -> Yea
+                  | theDogsAreAtWar -> Abstained
+                  | otherwise -> Nay
+              )
+            ,
+              ( Thorne
+              , if
+                  | youHaventSeenTheLastOfThorne -> Yea
+                  | theCellMadeADealWithThorne -> Nay
+                  | thorneDisappeared -> EerilySilent
+                  | otherwise -> Abstained
+              )
+            ,
+              ( Desiderio
+              , if
+                  | desiIsGood -> Nay
+                  | desiIsBad -> EerilySilent
+                  | otherwise -> Yea
+              )
+            , (Amaranth, if amaranthHasLeftTheCoterie then Abstained else Yea)
+            ,
+              ( TzuSanNiang
+              , if
+                  | finishedEarly -> Abstained
+                  | tzuSanNiangIsUnderYourSway -> Abstained
+                  | otherwise -> Yea
+              )
+            ,
+              ( Aliki
+              , if
+                  | alikiIsOnYourSide -> Nay
+                  | youHaventSeenTheLastOfAlikiZoniUperetria -> EerilySilent
+                  | otherwise -> Yea
+              )
+            ]
+
+      pure $ CongressOfTheKeys $ attrs & setMetaKey "votes" votes
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record TheCellEscapedTheRedCoterie
       flavor $ setTitle "title" >> p "theTrial2"
@@ -473,7 +608,7 @@ instance RunMessage CongressOfTheKeys where
       pure s
     DoStep 1 Setup -> runScenarioSetup CongressOfTheKeys attrs do
       scope "version1" do
-        setup $ ul do
+        setup' $ ul do
           li "gatherSets"
           li.nested "placeLocations" do
             li "removeSanctum"
@@ -502,9 +637,40 @@ instance RunMessage CongressOfTheKeys where
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
       gather Set.LockedDoors
+
+      startAt =<< place Locations.scarletHallsLair
+      placeGroup
+        "coterieSanctuary"
+        [Locations.coterieLibraryLair, Locations.congressChamberLair, Locations.theKeyReliquaryLair]
+
+      setActDeck [Acts.secretsAndLiesV1, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
+      setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
+
+      let votes :: Map Coterie Vote = getMetaKeyDefault "votes" mempty attrs
+
+      lead <- getLead
+      theRedGlovedMan <- fetchCard Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead theRedGlovedMan
+      coterie <- shuffle $ mapMaybe (coterieEnemy . fst) $ filter ((== Nay) . snd) (Map.assocs votes)
+      investigators <- allInvestigators
+      let (toDraw, rest) = splitAt (length investigators) coterie
+      for_ (zip investigators toDraw) \(iid, card) -> drawCard iid =<< fetchCard card
+      addToEncounterDeck rest
+
+      let conspirators = mapMaybe (conspiratorAsset . fst) $ filter ((== Yea) . snd) (Map.assocs votes)
+      for_ conspirators \card -> do
+        leadChooseOneM do
+          questionLabeledCard card
+          portraits investigators $ createAssetAt_ card . InPlayArea
+      setAside
+        [ Locations.theKnottedTower
+        , Locations.gravityDefyingClimb
+        , Locations.theToweringVertexRuinousConflux
+        , Enemies.mimeticNemesisInfiltratorOfRealities
+        ]
     DoStep 2 Setup -> runScenarioSetup CongressOfTheKeys attrs do
       scope "version2" do
-        setup $ ul do
+        setup' $ ul do
           li.nested "gatherSets" do
             li "otherworldDeck"
           li.nested "placeLocations" do
@@ -529,10 +695,44 @@ instance RunMessage CongressOfTheKeys where
       gather Set.SecretWar
       gather Set.SpreadingCorruption
       gather Set.AncientEvils
-      gather Set.StrikingFear
+      gatherJust Set.StrikingFear [Treacheries.frozenInFear, Treacheries.dissonantVoices]
+
+      addExtraDeck OtherworldDeck =<< shuffle =<< fromGathered (CardWithTitle "City of Remnants")
+
+      startAt =<< place Locations.scarletHallsSanctum
+      placeGroup
+        "coterieSanctuary"
+        [ Locations.coterieLibrarySanctum
+        , Locations.congressChamberSanctum
+        , Locations.theKeyReliquarySanctum
+        ]
+
+      setActDeck [Acts.secretsAndLiesV2, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
+      setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
+
+      let votes :: Map Coterie Vote = getMetaKeyDefault "votes" mempty attrs
+      lead <- getLead
+      theRedGlovedMan <- fetchCard Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead theRedGlovedMan
+      setAside $ mapMaybe (coterieEnemy . fst) $ filter ((== Nay) . snd) (Map.assocs votes)
+      investigators <- allInvestigators
+
+      conspirators <-
+        shuffle $ mapMaybe (conspiratorAsset . fst) $ filter ((== Yea) . snd) (Map.assocs votes)
+      for_ conspirators \card -> do
+        leadChooseOneM do
+          questionLabeledCard card
+          portraits investigators $ createAssetAt_ card . InPlayArea
+
+      setAside
+        [ Locations.theKnottedTower
+        , Locations.gravityDefyingClimb
+        , Locations.theToweringVertexRuinousConflux
+        , Enemies.mimeticNemesisInfiltratorOfRealities
+        ]
     DoStep 3 Setup -> runScenarioSetup CongressOfTheKeys attrs do
       scope "version3" do
-        setup $ ul do
+        setup' $ ul do
           li.nested "gatherSets" do
             li "otherworldDeck"
           li.nested "placeLocations" do
@@ -561,5 +761,45 @@ instance RunMessage CongressOfTheKeys where
       gather Set.SecretWar
       gather Set.SpreadingCorruption
       gather Set.AncientEvils
-      gather Set.StrikingFear
+      gatherJust Set.StrikingFear [Treacheries.frozenInFear, Treacheries.dissonantVoices]
+
+      addExtraDeck OtherworldDeck =<< shuffle =<< fromGathered (CardWithTitle "City of Remnants")
+
+      startAt =<< place Locations.scarletHallsSanctum
+      placeGroup
+        "coterieSanctuary"
+        [ Locations.coterieLibrarySanctum
+        , Locations.congressChamberSanctum
+        , Locations.theKeyReliquarySanctum
+        ]
+
+      setActDeck [Acts.secretsAndLiesV3, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
+      setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
+
+      let votes :: Map Coterie Vote = getMetaKeyDefault "votes" mempty attrs
+
+      lead <- getLead
+      theRedGlovedMan <- fetchCard Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead theRedGlovedMan
+      coterie <-
+        shuffle $ mapMaybe (coterieEnemy . fst) $ filter ((== EerilySilent) . snd) (Map.assocs votes)
+      investigators <- allInvestigators
+      let (toDraw, rest) = splitAt (length investigators) coterie
+      for_ (zip investigators toDraw) \(iid, card) -> drawCard iid =<< fetchCard card
+      addToEncounterDeck rest
+
+      let conspirators =
+            Assets.theRedGlovedManHeWasAlwaysThere
+              : mapMaybe (conspiratorAsset . fst) (filter ((/= EerilySilent) . snd) (Map.assocs votes))
+      for_ conspirators \card -> do
+        leadChooseOneM do
+          questionLabeledCard card
+          portraits investigators $ createAssetAt_ card . InPlayArea
+
+      setAside
+        [ Locations.theKnottedTower
+        , Locations.gravityDefyingClimb
+        , Locations.theToweringVertexRuinousConflux
+        , Enemies.mimeticNemesisInfiltratorOfRealities
+        ]
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

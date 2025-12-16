@@ -8,7 +8,7 @@ newtype ScarletHallsLair = ScarletHallsLair LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scarletHallsLair :: LocationCard ScarletHallsLair
-scarletHallsLair = symbolLabel $ location ScarletHallsLair Cards.scarletHallsLair 0 (Static 0)
+scarletHallsLair = location ScarletHallsLair Cards.scarletHallsLair 0 (Static 0)
 
 instance HasAbilities ScarletHallsLair where
   getAbilities (ScarletHallsLair a) =

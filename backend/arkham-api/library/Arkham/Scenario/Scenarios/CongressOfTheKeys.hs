@@ -4,8 +4,10 @@ import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta
+import Arkham.Card.CardCode
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
@@ -48,17 +50,17 @@ instance RunMessage CongressOfTheKeys where
       flavor $ setTitle "title" >> p "theTrial1"
       theCellAidedTheKnight <- getHasRecord TheCellAidedTheKnight
       theCellFailedToFendOffTheBeast <- getHasRecord TheCellFailedToFendOffTheBeast
-      haventSeenTheLastOfTheClaretKnight <- getHasRecord YouHaventSeenTheLastOfTheClaretKnight
+      youHaventSeenTheLastOfTheClaretKnight <- getHasRecord YouHaventSeenTheLastOfTheClaretKnight
       theDogsAreAtWar <- getHasRecord TheDogsAreAtWar
       let
         nay1
           | theCellFailedToFendOffTheBeast = 0
-          | haventSeenTheLastOfTheClaretKnight = 0
+          | youHaventSeenTheLastOfTheClaretKnight = 0
           | theDogsAreAtWar = 0
           | otherwise = 1
         yay1
           | theCellFailedToFendOffTheBeast = 1
-          | haventSeenTheLastOfTheClaretKnight = 2
+          | youHaventSeenTheLastOfTheClaretKnight = 2
           | theDogsAreAtWar = 0
           | otherwise = 1
 
@@ -76,7 +78,7 @@ instance RunMessage CongressOfTheKeys where
           hr
           p.validate theCellFailedToFendOffTheBeast "theCellFailedToFendOffTheBeast"
           hr
-          p.validate haventSeenTheLastOfTheClaretKnight "haventSeenTheLastOfTheClaretKnight"
+          p.validate youHaventSeenTheLastOfTheClaretKnight "youHaventSeenTheLastOfTheClaretKnight"
           hr
           p.validate theDogsAreAtWar "theDogsAreAtWar"
           hr
@@ -84,7 +86,7 @@ instance RunMessage CongressOfTheKeys where
             ( not
                 $ theCellAidedTheKnight
                 || theCellFailedToFendOffTheBeast
-                || haventSeenTheLastOfTheClaretKnight
+                || youHaventSeenTheLastOfTheClaretKnight
                 || theDogsAreAtWar
             )
             "dogsOfWarSkipped"
@@ -92,7 +94,7 @@ instance RunMessage CongressOfTheKeys where
       unless
         ( theCellAidedTheKnight
             || theCellFailedToFendOffTheBeast
-            || haventSeenTheLastOfTheClaretKnight
+            || youHaventSeenTheLastOfTheClaretKnight
             || theDogsAreAtWar
         )
         do
@@ -131,18 +133,22 @@ instance RunMessage CongressOfTheKeys where
           hr
           p.validate (not $ eceTrustsTheCell || eceDoesNotTrustTheCell) "dealingsInTheDarkSkipped"
 
-      haventSeenTheLastOfAmaranth <- getHasRecord YouHaventSeenTheLastOfAmaranth
+      youHaventSeenTheLastOfAmaranth <- getHasRecord YouHaventSeenTheLastOfAmaranth
       theLoversAreReunited <- getHasRecord TheLoversAreReunited
       amaranthHasLeftTheCoterie <- getHasRecord TheRedCoterieWasDestroyedFromWithin
 
+      unless (youHaventSeenTheLastOfAmaranth || theLoversAreReunited || amaranthHasLeftTheCoterie) do
+        setBearer Keys.theLastBlossom (keyWithEnemy Enemies.amaranthScarletScorn)
+
       let
         nay3 = nay2
-        yay3 = yay2 + case () of
-          _
-            | haventSeenTheLastOfAmaranth -> 1
-            | theLoversAreReunited -> 2
-            | amaranthHasLeftTheCoterie -> 0
-            | otherwise -> 1
+        yay3 =
+          yay2 + case () of
+            _
+              | youHaventSeenTheLastOfAmaranth -> 1
+              | theLoversAreReunited -> 2
+              | amaranthHasLeftTheCoterie -> 0
+              | otherwise -> 1
 
       flavor do
         cols do
@@ -154,7 +160,7 @@ instance RunMessage CongressOfTheKeys where
             countVar yay3 $ p "yay.count"
 
         compose.red.bordered do
-          p.validate haventSeenTheLastOfAmaranth "haventSeenTheLastOfAmaranth"
+          p.validate youHaventSeenTheLastOfAmaranth "youHaventSeenTheLastOfAmaranth"
           hr
           p.validate theLoversAreReunited "theLoversAreReunited"
           hr
@@ -162,13 +168,162 @@ instance RunMessage CongressOfTheKeys where
           hr
           p.validate
             ( not
-                $ haventSeenTheLastOfAmaranth
+                $ youHaventSeenTheLastOfAmaranth
                 || theLoversAreReunited
                 || amaranthHasLeftTheCoterie
             )
             "deadHeatSkipped"
 
+      youHaventSeenTheLastOfThorne <- getHasRecord YouHaventSeenTheLastOfThorne
+      theCellMadeADealWithThorne <- getHasRecord TheCellMadeADealWithThorne
+      thorneDisappeared <- getHasRecord ThorneDisappeared
 
+      let
+        nay4 = nay3 + if theCellMadeADealWithThorne then 1 else 0
+        yay4 = yay3 + if youHaventSeenTheLastOfThorne then 1 else 0
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay4 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay4 $ p "yay.count"
+
+        compose.red.bordered do
+          p.validate youHaventSeenTheLastOfThorne "youHaventSeenTheLastOfThorne"
+          hr
+          p.validate theCellMadeADealWithThorne "theCellMadeADealWithThorne"
+          hr
+          p.validate thorneDisappeared "thorneDisappeared"
+          hr
+          p.validate
+            ( not
+                $ youHaventSeenTheLastOfThorne
+                || theCellMadeADealWithThorne
+                || thorneDisappeared
+            )
+            "onThinIceSkipped"
+
+      unless (youHaventSeenTheLastOfThorne || theCellMadeADealWithThorne || thorneDisappeared) do
+        setBearer Keys.theSableGlass (keyWithEnemy Enemies.thorneOpenToNegotiation)
+
+      alikiIsOnYourSide <- getHasRecord AlikiIsOnYourSide
+      youHaventSeenTheLastOfAlikiZoniUperetria <- getHasRecord YouHaventSeenTheLastOfAlikiZoniUperetria
+
+      let
+        nay5 = nay4 + if alikiIsOnYourSide then 1 else 0
+        yay5 = yay4 + if youHaventSeenTheLastOfAlikiZoniUperetria then 1 else 0
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay5 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay5 $ p "yay.count"
+
+        compose.red.bordered do
+          p.validate alikiIsOnYourSide "alikiIsOnYourSide"
+          hr
+          p.validate youHaventSeenTheLastOfAlikiZoniUperetria "youHaventSeenTheLastOfAlikiZoniUperetria"
+          hr
+          p.validate
+            (not $ alikiIsOnYourSide || youHaventSeenTheLastOfAlikiZoniUperetria)
+            "withoutATraceSkipped"
+
+      -- desiIsInYourDebt <- getHasRecord DesiIsInYourDebt
+      mdesi <- stored @CardCode "desidarioVersion"
+      let desiIsGood = mdesi == Just "09607"
+      let desiIsBad = mdesi == Just "09606"
+      youHaventSeenTheLastOfDesiderioDelgadoAlvarez <-
+        getHasRecord YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
+      let skippedDancingMad = not $ desiIsGood || desiIsBad || youHaventSeenTheLastOfDesiderioDelgadoAlvarez
+
+      let
+        nay6 = nay5 + if desiIsGood then 1 else 0
+        yay6 = yay5 + if skippedDancingMad then 1 else 0
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay6 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay6 $ p "yay.count"
+
+        compose.red.bordered do
+          p "desi"
+          hr
+          p.validate desiIsGood "desiIsGood"
+          hr
+          p.validate (desiIsBad || youHaventSeenTheLastOfDesiderioDelgadoAlvarez) "desiIsBad"
+          hr
+          p.validate skippedDancingMad "dancingMadSkipped"
+
+      when skippedDancingMad do
+        setBearer Keys.theMirroringBlade (keyWithEnemy Enemies.desiderioDelgadoAlvarezRedInHisLedger)
+
+      theCellMeddledInAbarransAffairs <- getHasRecord TheCellMeddledInAbarransAffairs
+
+      let
+        nay7 = nay6
+        yay7 = yay6 + if theCellMeddledInAbarransAffairs then 1 else 0
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay7 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay7 $ p "yay.count"
+
+        compose.red.bordered do
+          p.validate theCellMeddledInAbarransAffairs "theCellMeddledInAbarransAffairs"
+          hr
+          p.validate (not theCellMeddledInAbarransAffairs) "fortuneAndFollySkipped"
+
+      theCellKnowsTheTrueNatureOfTheCoterie <- getHasRecord TheCellKnowsTheTrueNatureOfTheCoterie
+      let eerilySilentCount =
+            count
+              id
+              [ thorneDisappeared
+              , youHaventSeenTheLastOfAlikiZoniUperetria
+              , youHaventSeenTheLastOfDesiderioDelgadoAlvarez || desiIsBad
+              ]
+      let eerilySilent = 1 + eerilySilentCount >= 3
+      let continueTheTrial = not $ theCellKnowsTheTrueNatureOfTheCoterie || eerilySilent
+
+      flavor do
+        cols do
+          compose do
+            p "nay.title"
+            countVar nay7 $ p "nay.count"
+          compose do
+            p "yay.title"
+            countVar yay7 $ p "yay.count"
+
+        compose.red.bordered do
+          p "noMatterWhat"
+          p.right.validate theCellKnowsTheTrueNatureOfTheCoterie "theCellKnowsTheTrueNatureOfTheCoterie"
+          p.right.validate eerilySilent "eerilySilent"
+          p.right.validate continueTheTrial "continueTheTrial"
+
+      if
+        | theCellKnowsTheTrueNatureOfTheCoterie -> doStep 6 PreScenarioSetup
+        | eerilySilent -> doStep 7 PreScenarioSetup
+        | otherwise -> do
+            pure ()
+      pure s
+    DoStep 6 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "theTrial6"
+      pure s
+    DoStep 7 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "theTrial7"
       pure s
     Setup -> runScenarioSetup CongressOfTheKeys attrs do
       gather Set.CongressOfTheKeys

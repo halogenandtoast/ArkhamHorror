@@ -495,7 +495,7 @@ ul, :deep(ul) {
         background-color: darkseagreen;
       }
 
-      &:has(.yay) {
+      &:has(.yea) {
         background-color: lightcoral;
         border-left: 2px solid #333;
       }

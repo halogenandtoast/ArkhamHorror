@@ -34,6 +34,9 @@ nextCampaignStep = push $ NextCampaignStep Nothing
 setNextCampaignStep :: ReverseQueue m => CampaignStep -> m ()
 setNextCampaignStep = push . NextCampaignStep . continue
 
+setNextCampaignStepEdit :: ReverseQueue m => CampaignStep -> (Continuation -> Continuation) -> m ()
+setNextCampaignStepEdit cs = push . NextCampaignStep . continueEdit cs
+
 interludeStepPart :: ReverseQueue m => Int -> Maybe InterludeKey -> Int -> m ()
 interludeStepPart n mKey part = push $ NextCampaignStep $ Just $ InterludeStepPart n mKey part
 
@@ -42,6 +45,9 @@ prologueStepPart part = push $ NextCampaignStep $ Just $ PrologueStepPart part
 
 campaignStep_ :: ReverseQueue m => CampaignStep -> m ()
 campaignStep_ s = setNextCampaignStep s
+
+campaignStepEdit_ :: ReverseQueue m => CampaignStep -> (Continuation -> Continuation) -> m ()
+campaignStepEdit_ s = setNextCampaignStepEdit s
 
 overMeta :: forall a. (ToJSON a, FromJSON a) => (a -> a) -> (CampaignAttrs -> CampaignAttrs)
 overMeta f = metaL %~ \m -> toJSON $ f $ toResult @a m

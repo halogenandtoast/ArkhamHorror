@@ -135,6 +135,7 @@ const inScenarioStep = computed(() => {
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
+      :canChooseSideStory="continueCampaign.canChooseSideStory"
       @choose="choose"
     />
   </div>
@@ -150,6 +151,7 @@ const inScenarioStep = computed(() => {
       :canUpgradeDecks="continueScenario.canUpgradeDecks"
       :step="continueScenario.nextStep"
       :chooseSideStory="continueScenario.chooseSideStory"
+      :canChooseSideStory="continueScenario.canChooseSideStory"
       @choose="choose"
     />
     <Scenario

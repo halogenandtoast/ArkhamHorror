@@ -63,19 +63,22 @@ pickSideStory attrs =
     $ NextCampaignStep
     $ Just
     $ ContinueCampaignStep
-    $ Continuation (embark attrs) False True Nothing
+    $ Continuation (embark attrs) False True Nothing True
 
 travel :: ReverseQueue m => CampaignAttrs -> MapLocationId -> Bool -> Int -> m TheScarletKeys
-travel attrs locId doTravel n = do
+travel attrs locId' doTravel n = do
   markTime n
+  t <- (n +) <$> getTime
+  let locId = if t >= 35 then Tunguska else locId'
   let
     attrs' =
       attrs
         & overMeta
-          ( (visitedLocationsL %~ if doTravel then (locId :) else id)
-              . (currentLocationL .~ locId)
-              . (unlockedLocationsL %~ if doTravel then filter (/= locId) else id)
+          ( (currentLocationL .~ locId)
+              . (visitedLocationsL %~ if doTravel then (locId :) else id)
+              . (unlockedLocationsL %~ if t >= 35 then (Tunguska :) else if doTravel then filter (/= locId) else id)
           )
+
   if doTravel
     then case locId of
       Marrakesh -> campaignStep_ DeadHeat
@@ -108,7 +111,10 @@ travel attrs locId doTravel n = do
       Nairobi -> campaignStep_ (InterludeStep 54 Nothing)
       Perth -> campaignStep_ (InterludeStep 55 Nothing)
       BermudaTriangle -> campaignStep_ WithoutATrace
-      Tunguska -> campaignStep_ CongressOfTheKeys
+      Tunguska -> do
+        if t >= 35
+          then campaignStepEdit_ CongressOfTheKeys noSideStory
+          else campaignStep_ CongressOfTheKeys
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'
@@ -178,28 +184,45 @@ instance RunMessage TheScarletKeys where
       campaignStep_ (embark attrs)
       pure c
     CampaignStep (CampaignSpecificStep "embark" _) -> scope "embark" do
+      t <- getTime
       lead <- getLeadPlayer
-      let meta = toResult attrs.meta
-
       let
+        meta = toResult attrs.meta
         mapKey :: MapLocationId -> Key
         mapKey = Key.fromText . tshow
         toEntry :: MapLocationId -> Pair
         toEntry locId = mapKey locId .= object ["travel" .= mapDistance meta locId]
-
         hasTicket =
           any (any ((== Assets.expeditedTicket.cardCode) . toCardCode)) (Map.elems attrs.storyCards)
-
-      push
-        $ Ask lead
-        $ PickCampaignSpecific "embark"
-        $ object
-          [ "current" .= meta.currentLocation
-          , "available" .= meta.unlockedLocations
-          , "locations" .= map toEntry [minBound ..]
-          , "hasTicket" .= hasTicket
-          ]
-      pure c
+      if t >= 35
+        then do
+          campaignSpecific "setCurrent" Tunguska
+          push
+            $ Ask lead
+            $ PickCampaignSpecific "embark"
+            $ object
+              [ "current" .= Tunguska
+              , "available" .= [Tunguska]
+              , "locations" .= map toEntry [minBound ..]
+              , "hasTicket" .= hasTicket
+              ]
+          pure $ TheScarletKeys $ attrs & overMeta \meta' ->
+            meta'
+              { currentLocation = Tunguska
+              , visitedLocations = Tunguska : meta'.visitedLocations
+              , unlockedLocations = [Tunguska]
+              }
+        else do
+          push
+            $ Ask lead
+            $ PickCampaignSpecific "embark"
+            $ object
+              [ "current" .= meta.currentLocation
+              , "available" .= meta.unlockedLocations
+              , "locations" .= map toEntry [minBound ..]
+              , "hasTicket" .= hasTicket
+              ]
+          pure c
     CampaignSpecific "setCurrent" v -> do
       let locId = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (currentLocationL .~ locId)

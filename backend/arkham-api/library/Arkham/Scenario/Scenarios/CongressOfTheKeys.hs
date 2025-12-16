@@ -27,6 +27,10 @@ congressOfTheKeys difficulty =
     difficulty
     []
 
+data Version = Version1 | Version2 | Version3
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 instance HasChaosTokenValue CongressOfTheKeys where
   getChaosTokenValue iid tokenFace (CongressOfTheKeys attrs) = case tokenFace of
     Skull -> pure $ toChaosTokenValue attrs Skull 3 5
@@ -60,7 +64,7 @@ instance RunMessage CongressOfTheKeys where
           | youHaventSeenTheLastOfTheClaretKnight = 0
           | theDogsAreAtWar = 0
           | otherwise = 1
-        yay1
+        yea1
           | theCellFailedToFendOffTheBeast = 1
           | youHaventSeenTheLastOfTheClaretKnight = 2
           | theDogsAreAtWar = 0
@@ -72,8 +76,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay1 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay1 $ p "yay.count"
+            p "yea.title"
+            countVar yea1 $ p "yea.count"
 
         compose.red.bordered do
           p.validate theCellAidedTheKnight "theCellAidedTheKnight"
@@ -117,7 +121,7 @@ instance RunMessage CongressOfTheKeys where
               | eceTrustsTheCell -> 1
               | eceDoesNotTrustTheCell -> 0
               | otherwise -> 1
-        yay2 = yay1
+        yea2 = yea1
 
       flavor do
         cols do
@@ -125,8 +129,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay2 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay2 $ p "yay.count"
+            p "yea.title"
+            countVar yea2 $ p "yea.count"
 
         compose.red.bordered do
           p.validate eceTrustsTheCell "eceTrustsTheCell"
@@ -144,8 +148,8 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay3 = nay2
-        yay3 =
-          yay2 + case () of
+        yea3 =
+          yea2 + case () of
             _
               | youHaventSeenTheLastOfAmaranth -> 1
               | theLoversAreReunited -> 2
@@ -158,8 +162,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay3 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay3 $ p "yay.count"
+            p "yea.title"
+            countVar yea3 $ p "yea.count"
 
         compose.red.bordered do
           p.validate youHaventSeenTheLastOfAmaranth "youHaventSeenTheLastOfAmaranth"
@@ -182,7 +186,7 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay4 = nay3 + if theCellMadeADealWithThorne then 1 else 0
-        yay4 = yay3 + if youHaventSeenTheLastOfThorne then 1 else 0
+        yea4 = yea3 + if youHaventSeenTheLastOfThorne then 1 else 0
 
       flavor do
         cols do
@@ -190,8 +194,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay4 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay4 $ p "yay.count"
+            p "yea.title"
+            countVar yea4 $ p "yea.count"
 
         compose.red.bordered do
           p.validate youHaventSeenTheLastOfThorne "youHaventSeenTheLastOfThorne"
@@ -216,7 +220,7 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay5 = nay4 + if alikiIsOnYourSide then 1 else 0
-        yay5 = yay4 + if youHaventSeenTheLastOfAlikiZoniUperetria then 1 else 0
+        yea5 = yea4 + if youHaventSeenTheLastOfAlikiZoniUperetria then 1 else 0
 
       flavor do
         cols do
@@ -224,8 +228,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay5 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay5 $ p "yay.count"
+            p "yea.title"
+            countVar yea5 $ p "yea.count"
 
         compose.red.bordered do
           p.validate alikiIsOnYourSide "alikiIsOnYourSide"
@@ -246,7 +250,7 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay6 = nay5 + if desiIsGood then 1 else 0
-        yay6 = yay5 + if skippedDancingMad then 1 else 0
+        yea6 = yea5 + if skippedDancingMad then 1 else 0
 
       flavor do
         cols do
@@ -254,8 +258,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay6 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay6 $ p "yay.count"
+            p "yea.title"
+            countVar yea6 $ p "yea.count"
 
         compose.red.bordered do
           p "desi"
@@ -273,7 +277,7 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay7 = nay6
-        yay7 = yay6 + if theCellMeddledInAbarransAffairs then 1 else 0
+        yea7 = yea6 + if theCellMeddledInAbarransAffairs then 1 else 0
 
       flavor do
         cols do
@@ -281,8 +285,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay7 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay7 $ p "yay.count"
+            p "yea.title"
+            countVar yea7 $ p "yea.count"
 
         compose.red.bordered do
           p.validate theCellMeddledInAbarransAffairs "theCellMeddledInAbarransAffairs"
@@ -306,8 +310,8 @@ instance RunMessage CongressOfTheKeys where
             p "nay.title"
             countVar nay7 $ p "nay.count"
           compose do
-            p "yay.title"
-            countVar yay7 $ p "yay.count"
+            p "yea.title"
+            countVar yea7 $ p "yea.count"
 
         compose.red.bordered do
           p "noMatterWhat"
@@ -335,8 +339,8 @@ instance RunMessage CongressOfTheKeys where
               laChicaRojaVotedNay = youHaventSeenTheLastOfTheSanguineWatcher || theSanguineWatchersTormentContinues
 
               nay8 = nay7 + if laChicaRojaVotedNay then 1 else 0
-              yay8 =
-                yay7 + case () of
+              yea8 =
+                yea7 + case () of
                   _
                     | youHaventSeenTheLastOfLaChicaRoja -> 1
                     | youHaventSeenTheLastOfTheSanguineWatcher -> 1
@@ -348,8 +352,8 @@ instance RunMessage CongressOfTheKeys where
                   p "nay.title"
                   countVar nay8 $ p "nay.count"
                 compose do
-                  p "yay.title"
-                  countVar yay8 $ p "yay.count"
+                  p "yea.title"
+                  countVar yea8 $ p "yea.count"
 
               compose.red.bordered do
                 p.validate youHaventSeenTheLastOfLaChicaRoja "youHaventSeenTheLastOfLaChicaRoja"
@@ -377,7 +381,7 @@ instance RunMessage CongressOfTheKeys where
 
             let
               nay9 = nay8
-              yay9 = yay8 + if tzuSanNiangIsUnderYourSway then 0 else 1
+              yea9 = yea8 + if tzuSanNiangIsUnderYourSway then 0 else 1
 
             flavor do
               cols do
@@ -385,8 +389,8 @@ instance RunMessage CongressOfTheKeys where
                   p "nay.title"
                   countVar nay9 $ p "nay.count"
                 compose do
-                  p "yay.title"
-                  countVar yay9 $ p "yay.count"
+                  p "yea.title"
+                  countVar yea9 $ p "yea.count"
 
               compose.red.bordered do
                 p.validate youHaventSeenTheLastOfTzuSanNiang "youHaventSeenTheLastOfTzuSanNiang"
@@ -407,7 +411,7 @@ instance RunMessage CongressOfTheKeys where
 
             let
               finalNay = nay9 + if tuwileMasaiIsOnYourSide then 1 else 0
-              finalYay = yay9 + if tuwileMasaiIsOnYourSide then 0 else 1
+              finalYea = yea9 + if tuwileMasaiIsOnYourSide then 0 else 1
 
             flavor do
               cols do
@@ -415,8 +419,8 @@ instance RunMessage CongressOfTheKeys where
                   p "nay.title"
                   countVar finalNay $ p "nay.count"
                 compose do
-                  p "yay.title"
-                  countVar finalYay $ p "yay.count"
+                  p "yea.title"
+                  countVar finalYea $ p "yea.count"
 
               compose.red.bordered do
                 p.validate tuwileMasaiIsOnYourSide "tuwileMasaiIsOnYourSide"
@@ -424,7 +428,7 @@ instance RunMessage CongressOfTheKeys where
                 p.validate (not tuwileMasaiIsOnYourSide) "tuwileMasaiIsNotOnYourSide"
 
             storyWithChooseOneM' (setTitle "title" >> p "trialResult") do
-              if finalYay >= finalNay
+              if finalYea >= finalNay
                 then labeled' "deemedALiability" $ doStep 2 PreScenarioSetup
                 else do
                   let canOverthrow = laChicaRojaVotedNay && eceTrustsTheCell && desiIsGood
@@ -436,7 +440,7 @@ instance RunMessage CongressOfTheKeys where
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record TheCellEscapedTheRedCoterie
       flavor $ setTitle "title" >> p "theTrial2"
-      pure s
+      pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version1
     DoStep 3 PreScenarioSetup -> scope "intro" do
       record TheCellOverthrewTheRedCoterie
       flavor $ setTitle "title" >> p "theTrial3"
@@ -454,13 +458,108 @@ instance RunMessage CongressOfTheKeys where
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial6"
-      pure s
+      pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version3
     DoStep 7 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial7"
-      pure s
+      pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version3
     DoStep 8 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "theTrial8"
+      pure $ CongressOfTheKeys $ attrs & setMetaKey "version" Version2
+    Setup -> do
+      case getMetaKeyDefault "version" Version1 attrs of
+        Version1 -> doStep 1 Setup
+        Version2 -> doStep 2 Setup
+        Version3 -> doStep 3 Setup
       pure s
-    Setup -> runScenarioSetup CongressOfTheKeys attrs do
+    DoStep 1 Setup -> runScenarioSetup CongressOfTheKeys attrs do
+      scope "version1" do
+        setup $ ul do
+          li "gatherSets"
+          li.nested "placeLocations" do
+            li "removeSanctum"
+            li "startAt"
+          li "actDeck"
+          li.nested "yea" do
+            li "doNotGatherNay"
+            li "theRedGlovedMan"
+            li "drawCoterie"
+            li "shuffleRemainingCoterie"
+            li "yeaNote"
+          li.nested "nay" do
+            li "nayNote"
+          li "setOutOfPlay"
+          unscoped $ li "shuffleRemainder"
+          li.nested "secondEncounterDeck" do
+            li "otherworldDeck"
+            li "shuffleRemainder"
+          li "decoys"
+          li "locationAdjacency"
+          unscoped $ li "readyToBegin"
+
       gather Set.CongressOfTheKeys
+      gather Set.RedCoterie
+      gather Set.ScarletSorcery
+      gather Set.SpatialAnomaly
+      gather Set.SpreadingCorruption
+      gather Set.LockedDoors
+    DoStep 2 Setup -> runScenarioSetup CongressOfTheKeys attrs do
+      scope "version2" do
+        setup $ ul do
+          li.nested "gatherSets" do
+            li "otherworldDeck"
+          li.nested "placeLocations" do
+            li "removeLair"
+            li "startAt"
+          li "actDeck"
+          li.nested "yea" do
+            li "yeaNote"
+          li.nested "nay" do
+            li "nayNote"
+          li "setOutOfPlay"
+          li "decoys"
+          unscoped $ li "shuffleRemainder"
+          li "locationAdjacency"
+          unscoped $ li "readyToBegin"
+
+      gather Set.CongressOfTheKeys
+      gather Set.AgentsOfTheOutside
+      gather Set.BeyondTheBeyond
+      gather Set.Outsiders
+      gather Set.RedCoterie
+      gather Set.SecretWar
+      gather Set.SpreadingCorruption
+      gather Set.AncientEvils
+      gather Set.StrikingFear
+    DoStep 3 Setup -> runScenarioSetup CongressOfTheKeys attrs do
+      scope "version3" do
+        setup $ ul do
+          li.nested "gatherSets" do
+            li "otherworldDeck"
+          li.nested "placeLocations" do
+            li "removeLair"
+            li "startAt"
+          li "actDeck"
+          li.nested "eerilySilent" do
+            li "doNotGatherRest"
+            li "theRedGlovedMan"
+            li "drawCoterie"
+            li "shuffleRemainingCoterie"
+          li.nested "theRedCoterieSparedTheCell" do
+            li "ignoreUnique"
+            li "conspiratorNote"
+          li "setOutOfPlay"
+          li "decoys"
+          unscoped $ li "shuffleRemainder"
+          li "locationAdjacency"
+          unscoped $ li "readyToBegin"
+
+      gather Set.CongressOfTheKeys
+      gather Set.AgentsOfTheOutside
+      gather Set.BeyondTheBeyond
+      gather Set.Outsiders
+      gather Set.RedCoterie
+      gather Set.SecretWar
+      gather Set.SpreadingCorruption
+      gather Set.AncientEvils
+      gather Set.StrikingFear
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

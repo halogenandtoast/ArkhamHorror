@@ -275,6 +275,7 @@ data Trait
   | Tindalos
   | Tome
   | Tool
+  | Tower
   | Train
   | Trap
   | Trick

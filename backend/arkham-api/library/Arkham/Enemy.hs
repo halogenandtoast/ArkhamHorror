@@ -536,6 +536,8 @@ allEnemies =
       SomeEnemyCard mimeticNemesisOtherworldlySubjugator
     , SomeEnemyCard protoplasmicReassembler
     , SomeEnemyCard golem
+    , --- Congress of the Keys [tsk]
+      SomeEnemyCard mimeticNemesisInfiltratorOfRealities
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

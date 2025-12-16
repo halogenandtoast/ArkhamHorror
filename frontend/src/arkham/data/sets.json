@@ -54,7 +54,7 @@
   { "name": "Edge of the Earth Campaign Expansion", "min": 8501, "max": 8738, "playerCards": 0, "code": "eoec", "cycle": 8 },
 
   { "name": "The Scarlet Keys Investigator Expansion", "min": 9001, "max": 9128, "playerCards": 128, "code": "tskp", "cycle": 9 },
-  { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9770, "playerCards": 0, "code": "tskc", "cycle": 9 },
+  { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9770, "playerCards": 0, "code": "tskc", "cycle": 9, "encounterDuplicates": 13 },
 
   { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 138, "code": "fhvp", "cycle": 10 },
   { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10742, "playerCards": 0, "code": "fhvc", "cycle": 10 },

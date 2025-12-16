@@ -38,6 +38,8 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'
     case 'GreenEntry': return 'green'
+    case 'RedEntry': return 'red'
+    case 'BorderedEntry': return 'bordered'
     case 'NestedEntry': return 'nested'
     case 'ResolutionEntry': return 'resolution'
     case 'CheckpointEntry': return 'checkpoint'
@@ -111,10 +113,10 @@ export default defineComponent({
 
   .composite:not(:first-child)::after {
     position: absolute;
-    bottom: -1rem;
-    left: 0;
+    inset: 0;
+    top: 10px;
+    bottom: 10px;
     height: calc(100% - 20px);
-    margin-bottom: 20px;
     content: '';
     border-left: 1px solid black;
   }
@@ -473,6 +475,41 @@ ul, :deep(ul) {
   }
 }
 
+:deep(.columns), .columns {
+  &:is(:first-child) {
+    padding: 0 !important;
+  }
+  &:has(.scarlet-keys-vote) {
+    background: var(--title);
+    padding: 0;
+    text-align: center;
+    gap: 0;
+    border-bottom: 2px solid #333;
+
+    > .composite {
+      padding: 0;
+      &::after {
+        border: 0 !important;
+      }
+      &:has(.nay) {
+        background-color: darkseagreen;
+      }
+
+      &:has(.yay) {
+        background-color: lightcoral;
+        border-left: 2px solid #333;
+      }
+    }
+    h3 {
+      text-align: center;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      padding-top: 10px;
+    }
+  }
+}
+
 .red, :deep(.red) {
   --color: #F4DFD1;
   &:not(.bordered) {
@@ -496,9 +533,14 @@ ul, :deep(ul) {
     padding: 10px;
     border: 2px solid black;
     border-radius: 55px;
-    overflow: hidden;
+    margin-inline: 10px;
     p:first-of-type {
       text-indent: 1.5em;
+    }
+
+    hr {
+      border-bottom: 2px solid black !important;
+      margin-inline: -10px;
     }
 
     &.bordered::before {

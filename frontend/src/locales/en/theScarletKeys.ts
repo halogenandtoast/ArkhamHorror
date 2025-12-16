@@ -8,6 +8,6 @@ import onThinIce from '@/locales/en/theScarletKeys/scenarios/onThinIce.json'
 import dogsOfWar from '@/locales/en/theScarletKeys/scenarios/dogsOfWar.json'
 import shadesOfSuffering from '@/locales/en/theScarletKeys/scenarios/shadesOfSuffering.json'
 import withoutATrace from '@/locales/en/theScarletKeys/scenarios/withoutATrace.json'
-import congressOfKeys from '@/locales/en/theScarletKeys/scenarios/congressOfKeys.json'
+import congressOfTheKeys from '@/locales/en/theScarletKeys/scenarios/congressOfTheKeys.json'
 
-export default {...base, riddlesAndRain, deadHeat, sanguineShadows, dealingsInTheDark, dancingMad, onThinIce, dogsOfWar, shadesOfSuffering, withoutATrace, congressOfKeys}
+export default {...base, riddlesAndRain, deadHeat, sanguineShadows, dealingsInTheDark, dancingMad, onThinIce, dogsOfWar, shadesOfSuffering, withoutATrace, congressOfTheKeys}

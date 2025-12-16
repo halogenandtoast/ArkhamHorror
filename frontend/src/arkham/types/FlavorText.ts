@@ -4,6 +4,8 @@ import { tarotCardArcanaDecoder, TarotCardArcana } from '@/arkham/types/TarotCar
 export type FlavorTextModifier
   = 'BlueEntry'
   | 'GreenEntry'
+  | 'RedEntry'
+  | 'BorderedEntry'
   | 'NestedEntry'
   | 'RightAligned'
   | 'CenteredEntry'
@@ -50,6 +52,8 @@ export const imageModifierDecoder = JsonDecoder.oneOf<ImageModifier>([
 export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('BlueEntry'),
   JsonDecoder.literal('GreenEntry'),
+  JsonDecoder.literal('RedEntry'),
+  JsonDecoder.literal('BorderedEntry'),
   JsonDecoder.literal('NestedEntry'),
   JsonDecoder.literal('ResolutionEntry'),
   JsonDecoder.literal('CheckpointEntry'),

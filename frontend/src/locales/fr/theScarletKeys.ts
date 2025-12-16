@@ -1,5 +1,5 @@
 import base from '@/locales/fr/theScarletKeys/base.json'
-import congressOfKeys from '@/locales/fr/theScarletKeys/scenarios/congressOfKeys.json'
+import congressOfTheKeys from '@/locales/fr/theScarletKeys/scenarios/congressOfTheKeys.json'
 import dancingMad from '@/locales/fr/theScarletKeys/scenarios/dancingMad.json'
 import deadHeat from '@/locales/fr/theScarletKeys/scenarios/deadHeat.json'
 import dealingsInTheDark from '@/locales/fr/theScarletKeys/scenarios/dealingsInTheDark.json'
@@ -11,4 +11,4 @@ import shadesOfSuffering from '@/locales/fr/theScarletKeys/scenarios/shadesOfSuf
 import withoutATrace from '@/locales/fr/theScarletKeys/scenarios/withoutATrace.json'
 
 
-export default {...base, congressOfKeys, dancingMad, deadHeat, dealingsInTheDark, dogsOfWar, onThinIce, riddlesAndRain, sanguineShadows, shadesOfSuffering, withoutATrace}
+export default {...base, dancingMad, deadHeat, dealingsInTheDark, dogsOfWar, onThinIce, riddlesAndRain, sanguineShadows, shadesOfSuffering, withoutATrace, congressOfTheKeys}

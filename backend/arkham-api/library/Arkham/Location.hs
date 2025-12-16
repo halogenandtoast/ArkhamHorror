@@ -874,7 +874,19 @@ allLocations =
     , --- Without a Trace [tsk]
       SomeLocationCard courtOfTheOutsiders
     , SomeLocationCard outsidersLairWithoutATrace
-    , --- Beyond the Beyong [tsk]
+    , --- Congress of the Keys [tsk]
+      SomeLocationCard scarletHallsSanctum
+    , SomeLocationCard scarletHallsLair
+    , SomeLocationCard congressChamberSanctum
+    , SomeLocationCard congressChamberLair
+    , SomeLocationCard coterieLibrarySanctum
+    , SomeLocationCard coterieLibraryLair
+    , SomeLocationCard theKeyReliquarySanctum
+    , SomeLocationCard theKeyReliquaryLair
+    , SomeLocationCard theKnottedTower
+    , SomeLocationCard gravityDefyingClimb
+    , SomeLocationCard theToweringVertexRuinousConflux
+    , --- Beyond the Beyond [tsk]
       SomeLocationCard ramblingRouteA
     , SomeLocationCard ramblingRouteB
     , SomeLocationCard ramblingRouteC

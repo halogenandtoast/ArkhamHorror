@@ -108,13 +108,13 @@ travel attrs locId doTravel n = do
       Nairobi -> campaignStep_ (InterludeStep 54 Nothing)
       Perth -> campaignStep_ (InterludeStep 55 Nothing)
       BermudaTriangle -> campaignStep_ WithoutATrace
+      Tunguska -> campaignStep_ CongressOfTheKeys
       -- side story locations
       Venice -> pickSideStory attrs'
       Cairo -> pickSideStory attrs'
       MonteCarlo -> pickSideStory attrs'
       Arkham -> pickSideStory attrs'
       NewOrleans -> pickSideStory attrs'
-      _ -> pure ()
     else campaignStep_ (embark attrs')
   pure $ TheScarletKeys attrs'
 

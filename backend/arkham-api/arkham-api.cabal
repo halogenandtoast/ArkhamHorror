@@ -222,6 +222,9 @@ library
       Arkham.Act.Cards.SearchingForAnswers
       Arkham.Act.Cards.SearchingForTheTome
       Arkham.Act.Cards.SearchingTheUnnamable
+      Arkham.Act.Cards.SecretsAndLiesV1
+      Arkham.Act.Cards.SecretsAndLiesV2
+      Arkham.Act.Cards.SecretsAndLiesV3
       Arkham.Act.Cards.SeekingTroubleLoadingDocks
       Arkham.Act.Cards.SeekingTroubleSentFromAnotherTime
       Arkham.Act.Cards.SeekOutTheNight
@@ -238,6 +241,7 @@ library
       Arkham.Act.Cards.StrangeRelicsMariaDeSilva
       Arkham.Act.Cards.StrangeRelicsMariasInformation
       Arkham.Act.Cards.TheAbominableContessa
+      Arkham.Act.Cards.TheAscent
       Arkham.Act.Cards.TheBarrier
       Arkham.Act.Cards.TheBindingRite
       Arkham.Act.Cards.TheBlackExpanse
@@ -257,6 +261,7 @@ library
       Arkham.Act.Cards.TheEscape
       Arkham.Act.Cards.TheExit
       Arkham.Act.Cards.TheFinalDescent
+      Arkham.Act.Cards.TheFinalErr
       Arkham.Act.Cards.TheFinalMirage
       Arkham.Act.Cards.TheFirstOath
       Arkham.Act.Cards.TheForgottenIsland
@@ -312,6 +317,7 @@ library
       Arkham.Act.Cards.ThroughTheCatacombs
       Arkham.Act.Cards.ThroughTheLabyrinth
       Arkham.Act.Cards.Timelock
+      Arkham.Act.Cards.ToTheTower
       Arkham.Act.Cards.Trapped
       Arkham.Act.Cards.TraversingTheOutside
       Arkham.Act.Cards.TrialOfTheHuntress
@@ -376,6 +382,7 @@ library
       Arkham.Agenda.Cards.CityOfTheGreatRace
       Arkham.Agenda.Cards.ColdWelcome
       Arkham.Agenda.Cards.CollidingRealities
+      Arkham.Agenda.Cards.ConfluxOfConsequence
       Arkham.Agenda.Cards.CrossroadsOfFate
       Arkham.Agenda.Cards.DeadOfNight
       Arkham.Agenda.Cards.DeathsApproach
@@ -459,6 +466,7 @@ library
       Arkham.Agenda.Cards.RiseOfTheGhouls
       Arkham.Agenda.Cards.RollingBackwards
       Arkham.Agenda.Cards.RunningOutOfTime
+      Arkham.Agenda.Cards.RunningRed
       Arkham.Agenda.Cards.SacrificeForTheDeep
       Arkham.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Agenda.Cards.SecretsOfTheSeaV1
@@ -552,6 +560,7 @@ library
       Arkham.Agenda.Cards.TheTurn
       Arkham.Agenda.Cards.TheWaterRises
       Arkham.Agenda.Cards.TheWitchLight
+      Arkham.Agenda.Cards.TheWorldUnbidden
       Arkham.Agenda.Cards.TheyAreUponYou
       Arkham.Agenda.Cards.TheyreGettingOut
       Arkham.Agenda.Cards.ThreadsOfTime
@@ -2027,6 +2036,7 @@ library
       Arkham.Enemy.Cards.MemoryOfARavagedCountry
       Arkham.Enemy.Cards.MemoryOfARegretfulVoyage
       Arkham.Enemy.Cards.MemoryOfATerribleDiscovery
+      Arkham.Enemy.Cards.MimeticNemesisInfiltratorOfRealities
       Arkham.Enemy.Cards.MimeticNemesisOtherworldlySubjugator
       Arkham.Enemy.Cards.MindlessDancer
       Arkham.Enemy.Cards.MobEnforcer
@@ -3107,8 +3117,12 @@ library
       Arkham.Location.Cards.CondemnedGoldMine
       Arkham.Location.Cards.CongregationalChurch_208
       Arkham.Location.Cards.CongregationalChurch_209
+      Arkham.Location.Cards.CongressChamberLair
+      Arkham.Location.Cards.CongressChamberSanctum
       Arkham.Location.Cards.CosmicGate
       Arkham.Location.Cards.CosmicIngress
+      Arkham.Location.Cards.CoterieLibraryLair
+      Arkham.Location.Cards.CoterieLibrarySanctum
       Arkham.Location.Cards.CountingRoom
       Arkham.Location.Cards.CourtOfTheGreatOldOnes
       Arkham.Location.Cards.CourtOfTheGreatOldOnesANotTooDistantFuture
@@ -3282,6 +3296,7 @@ library
       Arkham.Location.Cards.GrandRue
       Arkham.Location.Cards.GranTeatroDeLaHabana
       Arkham.Location.Cards.Graveyard
+      Arkham.Location.Cards.GravityDefyingClimb
       Arkham.Location.Cards.GreatHallOfCeleano
       Arkham.Location.Cards.GreatLibrary
       Arkham.Location.Cards.GreenRoom
@@ -3625,6 +3640,8 @@ library
       Arkham.Location.Cards.Sarnath
       Arkham.Location.Cards.SawboneAlley
       Arkham.Location.Cards.SawboneAlleyInTooDeep
+      Arkham.Location.Cards.ScarletHallsLair
+      Arkham.Location.Cards.ScarletHallsSanctum
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
       Arkham.Location.Cards.ScienceBuilding
@@ -3755,6 +3772,9 @@ library
       Arkham.Location.Cards.TheHiddenChamber
       Arkham.Location.Cards.TheHouseOnWaterStreet
       Arkham.Location.Cards.TheHouseOnWaterStreetInTooDeep
+      Arkham.Location.Cards.TheKeyReliquaryLair
+      Arkham.Location.Cards.TheKeyReliquarySanctum
+      Arkham.Location.Cards.TheKnottedTower
       Arkham.Location.Cards.TheLittleBookshop
       Arkham.Location.Cards.TheLittleBookshopInTooDeep
       Arkham.Location.Cards.TheMoonRoom
@@ -3763,6 +3783,7 @@ library
       Arkham.Location.Cards.TheSummit
       Arkham.Location.Cards.TheThroneRoom
       Arkham.Location.Cards.TheTowerBridge
+      Arkham.Location.Cards.TheToweringVertexRuinousConflux
       Arkham.Location.Cards.TheWhiteShip
       Arkham.Location.Cards.ThroneOfBloodRedAsBloodBlackAsNight
       Arkham.Location.Cards.ThroneRoom
@@ -3962,6 +3983,7 @@ library
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Scenario.Scenarios.CityOfTheElderThings
+      Arkham.Scenario.Scenarios.CongressOfTheKeys
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
       Arkham.Scenario.Scenarios.DancingMad
@@ -4082,6 +4104,7 @@ library
       Arkham.Scenarios.BloodOnTheAltar.Helpers
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CityOfTheElderThings.Helpers
+      Arkham.Scenarios.CongressOfTheKeys.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.DancingMad.Helpers

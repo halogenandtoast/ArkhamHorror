@@ -347,6 +347,7 @@ allEncounterEnemyCards =
       , memoryOfAnAlienTranslation
       , memoryOfAnUnrequitedLove
       , memoryOfAnUnspeakableEvil
+      , mimeticNemesisInfiltratorOfRealities
       , mimeticNemesisOtherworldlySubjugator
       , mindlessDancer
       , mrTrombly
@@ -3069,7 +3070,7 @@ voidChimeraFellhound =
 
 ravenousGrizzly :: CardDef
 ravenousGrizzly =
-  (enemy "09630" "Ravenous Grizzly" OnThinIce 2)
+  (enemy "09631" "Ravenous Grizzly" OnThinIce 2)
     { cdCardTraits = singleton Creature
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
@@ -3208,6 +3209,14 @@ protoplasmicReassembler =
     { cdCardTraits = setFromList [Monster, Outsider]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
+    }
+
+mimeticNemesisInfiltratorOfRealities :: CardDef
+mimeticNemesisInfiltratorOfRealities =
+  (enemy "09715" ("Mimetic Nemesis" <:> "Infiltrator of Realities") CongressOfTheKeys 1)
+    { cdCardTraits = setFromList [AncientOne, Outsider, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdUnique = True
     }
 
 coterieAgentA :: CardDef

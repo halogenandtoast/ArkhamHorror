@@ -354,6 +354,13 @@ allActs =
       SomeActCard traversingTheOutside
     , SomeActCard redRuin
     , SomeActCard escapingTheOtherworld
+    , --- Congress of the Keys [tsk]
+      SomeActCard secretsAndLiesV1
+    , SomeActCard secretsAndLiesV2
+    , SomeActCard secretsAndLiesV3
+    , SomeActCard toTheTower
+    , SomeActCard theAscent
+    , SomeActCard theFinalErr
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

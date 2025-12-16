@@ -58,6 +58,7 @@ allAgendaCards =
       , cityOfTheGreatRace
       , coldWelcome
       , collidingRealities
+      , confluxOfConsequence
       , crossroadsOfFate
       , deadOfNight
       , deathsApproach
@@ -141,6 +142,7 @@ allAgendaCards =
       , riseOfTheGhouls
       , rollingBackwards
       , runningOutOfTime
+      , runningRed
       , sacrificeForTheDeep
       , secretsBetterLeftHidden
       , secretsOfTheSeaV1
@@ -234,6 +236,7 @@ allAgendaCards =
       , theTurn
       , theWaterRises
       , theWitchLight
+      , theWorldUnbidden
       , theyAreUponYou
       , theyreGettingOut
       , threadsOfTime
@@ -859,6 +862,15 @@ otherworldlyLambs = agenda "09683" "Otherworldly Lambs" 2 WithoutATrace
 
 otherworldlySlaughter :: CardDef
 otherworldlySlaughter = agenda "09684" "Otherworldly Slaughter" 3 WithoutATrace
+
+confluxOfConsequence :: CardDef
+confluxOfConsequence = agenda "09695" "Conflux of Consequence" 1 CongressOfTheKeys
+
+theWorldUnbidden :: CardDef
+theWorldUnbidden = agenda "09696" "The World Unbidden" 2 CongressOfTheKeys
+
+runningRed :: CardDef
+runningRed = agenda "09697" "Running Red" 3 CongressOfTheKeys
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

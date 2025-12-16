@@ -277,8 +277,12 @@ allLocationCards =
       , condemnedGoldMine
       , congregationalChurch_208
       , congregationalChurch_209
+      , congressChamberLair
+      , congressChamberSanctum
       , cosmicGate
       , cosmicIngress
+      , coterieLibraryLair
+      , coterieLibrarySanctum
       , countingRoom
       , courtOfTheGreatOldOnes
       , courtOfTheGreatOldOnesANotTooDistantFuture
@@ -451,6 +455,7 @@ allLocationCards =
       , grandGuignol
       , grandRue
       , graveyard
+      , gravityDefyingClimb
       , greatHallOfCeleano
       , greatLibrary
       , greenRoom
@@ -794,6 +799,8 @@ allLocationCards =
       , sarnath
       , sawboneAlley
       , sawboneAlleyInTooDeep
+      , scarletHallsLair
+      , scarletHallsSanctum
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
@@ -924,6 +931,9 @@ allLocationCards =
       , theHiddenChamber
       , theHouseOnWaterStreet
       , theHouseOnWaterStreetInTooDeep
+      , theKeyReliquaryLair
+      , theKeyReliquarySanctum
+      , theKnottedTower
       , theLittleBookshop
       , theLittleBookshopInTooDeep
       , theMoonRoom
@@ -931,6 +941,7 @@ allLocationCards =
       , thePriceManor
       , theSummit
       , theTowerBridge
+      , theToweringVertexRuinousConflux
       , theThroneRoom
       , theWhiteShip
       , throneOfBloodRedAsBloodBlackAsNight
@@ -8997,6 +9008,140 @@ outsidersLairWithoutATrace =
       { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
       }
 
+scarletHallsSanctum :: CardDef
+scarletHallsSanctum =
+  location
+    "09704"
+    "Scarlet Halls"
+    [Sanctum]
+    Squiggle
+    [Square, Triangle, Diamond, Circle]
+    CongressOfTheKeys
+
+scarletHallsLair :: CardDef
+scarletHallsLair =
+  location
+    "09705"
+    "Scarlet Halls"
+    [Lair]
+    Squiggle
+    [Square, Triangle, Diamond, Circle]
+    CongressOfTheKeys
+
+congressChamberSanctum :: CardDef
+congressChamberSanctum =
+  locationWithUnrevealed
+    "09706"
+    "Coterie Sanctuary"
+    [Sanctum]
+    Circle
+    [Squiggle]
+    "Congress Chamber"
+    [Sanctum]
+    Square
+    [Squiggle]
+    CongressOfTheKeys
+
+congressChamberLair :: CardDef
+congressChamberLair =
+  locationWithUnrevealed
+    "09707"
+    "Coterie Sanctuary"
+    [Lair]
+    Circle
+    [Squiggle]
+    "Congress Chamber"
+    [Lair]
+    Square
+    [Squiggle]
+    CongressOfTheKeys
+
+coterieLibrarySanctum :: CardDef
+coterieLibrarySanctum =
+  locationWithUnrevealed
+    "09708"
+    "Coterie Sanctuary"
+    [Sanctum]
+    Circle
+    [Squiggle]
+    "Coterie Library"
+    [Sanctum]
+    Triangle
+    [Squiggle]
+    CongressOfTheKeys
+
+coterieLibraryLair :: CardDef
+coterieLibraryLair =
+  locationWithUnrevealed
+    "09709"
+    "Coterie Sanctuary"
+    [Lair]
+    Circle
+    [Squiggle]
+    "Coterie Library"
+    [Lair]
+    Triangle
+    [Squiggle]
+    CongressOfTheKeys
+
+theKeyReliquarySanctum :: CardDef
+theKeyReliquarySanctum =
+  locationWithUnrevealed
+    "09710"
+    "Coterie Sanctuary"
+    [Sanctum]
+    Circle
+    [Squiggle]
+    "The Key Reliquary"
+    [Sanctum]
+    Diamond
+    [Squiggle]
+    CongressOfTheKeys
+
+theKeyReliquaryLair :: CardDef
+theKeyReliquaryLair =
+  locationWithUnrevealed
+    "09711"
+    "Coterie Sanctuary"
+    [Lair]
+    Circle
+    [Squiggle]
+    "The Key Reliquary"
+    [Lair]
+    Diamond
+    [Squiggle]
+    CongressOfTheKeys
+
+theKnottedTower :: CardDef
+theKnottedTower =
+  location
+    "09712"
+    "Scarlet Halls"
+    [Otherworld]
+    Moon
+    [Equals]
+    CongressOfTheKeys
+
+gravityDefyingClimb :: CardDef
+gravityDefyingClimb =
+  location
+    "09713"
+    "Gravity-Defying Climb"
+    [Otherworld, Tower]
+    Equals
+    [Moon, Star]
+    CongressOfTheKeys
+
+theToweringVertexRuinousConflux :: CardDef
+theToweringVertexRuinousConflux =
+  location
+    "09714"
+    ("The Towering Vertex" <:> "Ruinous Conflux")
+    [Otherworld, Tower]
+    Star
+    [Equals]
+    CongressOfTheKeys
+
 ramblingRouteA :: CardDef
 ramblingRouteA =
   ( locationWithUnrevealed_
@@ -9005,7 +9150,7 @@ ramblingRouteA =
       [Otherworld]
       "Rambling Route"
       [Otherworld]
-      WithoutATrace
+      BeyondTheBeyond
   )
     { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
     }
@@ -9018,7 +9163,7 @@ ramblingRouteB =
       [Otherworld]
       "Rambling Route"
       [Otherworld]
-      WithoutATrace
+      BeyondTheBeyond
   )
     { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
     }
@@ -9031,7 +9176,7 @@ ramblingRouteC =
       [Otherworld]
       "Rambling Route"
       [Otherworld]
-      WithoutATrace
+      BeyondTheBeyond
   )
     { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
     }
@@ -9044,7 +9189,7 @@ alienFrontierA =
       [Otherworld]
       "Alien Frontier"
       [Otherworld]
-      WithoutATrace
+      BeyondTheBeyond
   )
     { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
     }
@@ -9057,7 +9202,7 @@ alienFrontierB =
       [Otherworld]
       "Alien Frontier"
       [Otherworld]
-      WithoutATrace
+      BeyondTheBeyond
   )
     { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
     }
@@ -9071,7 +9216,7 @@ wealdOfEffigiesA =
           [Otherworld]
           "Weald of Effigies"
           [Otherworld]
-          WithoutATrace
+          BeyondTheBeyond
       )
       { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
       }
@@ -9085,7 +9230,7 @@ wealdOfEffigiesB =
           [Otherworld]
           "Weald of Effigies"
           [Otherworld]
-          WithoutATrace
+          BeyondTheBeyond
       )
       { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
       }
@@ -9099,7 +9244,7 @@ cliffsOfInsanity =
           [Otherworld]
           "Cliffs of Insanity"
           [Otherworld]
-          WithoutATrace
+          BeyondTheBeyond
       )
       { cdKeywords = singleton (Keyword.Concealed CityOfRemnants (Static 1))
       , cdEncounterSetQuantity = Just 2

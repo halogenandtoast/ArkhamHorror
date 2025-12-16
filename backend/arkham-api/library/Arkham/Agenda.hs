@@ -315,6 +315,10 @@ allAgendas =
       SomeAgendaCard otherworldlyHorror
     , SomeAgendaCard otherworldlyLambs
     , SomeAgendaCard otherworldlySlaughter
+    , --- Congress of the Keys [tsk]
+      SomeAgendaCard confluxOfConsequence
+    , SomeAgendaCard theWorldUnbidden
+    , SomeAgendaCard runningRed
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

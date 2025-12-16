@@ -44,7 +44,7 @@ instance RunMessage EscapingTheOtherworld where
         selectAny
           $ VictoryDisplayCardMatch
           $ basic
-          $ cardIs Assets.alikiZoniUperetriaTheMaidWithTheScarletSash
+          $ cardIs Assets.theRedGlovedManHeWasAlwaysThere
 
       push $ case (aliki, theRedGlovedMan) of
         (True, True) -> R1

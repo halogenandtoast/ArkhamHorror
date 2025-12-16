@@ -528,6 +528,7 @@ getEnemy = \case
   ((windowType -> Window.EnemyWouldMove eid _ _ _) : _) -> eid
   ((windowType -> Window.WouldPatrol eid) : _) -> eid
   ((windowType -> Window.EnemyEngaged _ eid) : _) -> eid
+  ((windowType -> Window.EnterPlay (EnemyTarget eid)) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 

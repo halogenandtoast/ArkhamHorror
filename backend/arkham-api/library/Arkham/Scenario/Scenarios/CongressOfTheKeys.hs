@@ -632,7 +632,6 @@ instance RunMessage CongressOfTheKeys where
           unscoped $ li "readyToBegin"
 
       gather Set.CongressOfTheKeys
-      gather Set.RedCoterie
       gather Set.ScarletSorcery
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
@@ -691,7 +690,6 @@ instance RunMessage CongressOfTheKeys where
       gather Set.AgentsOfTheOutside
       gather Set.BeyondTheBeyond
       gather Set.Outsiders
-      gather Set.RedCoterie
       gather Set.SecretWar
       gather Set.SpreadingCorruption
       gather Set.AncientEvils
@@ -757,7 +755,6 @@ instance RunMessage CongressOfTheKeys where
       gather Set.AgentsOfTheOutside
       gather Set.BeyondTheBeyond
       gather Set.Outsiders
-      gather Set.RedCoterie
       gather Set.SecretWar
       gather Set.SpreadingCorruption
       gather Set.AncientEvils

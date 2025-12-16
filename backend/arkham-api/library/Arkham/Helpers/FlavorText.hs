@@ -67,9 +67,11 @@ ul = addEntry . FT.ul
 
 cols :: FlavorTextBuilder () -> FlavorTextBuilder ()
 cols body = do
-  let dup x = (x, x)
-  inner <- FlavorTextBuilder $ StateT $ Identity . dup . execState (runStoryBuilder body)
+  let inner = buildFlavor body
   addEntry $ FT.cols inner.flavorBody
+
+hr :: FlavorTextBuilder ()
+hr = addEntry FT.hr
 
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
@@ -141,6 +143,16 @@ instance HasField "green" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBu
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
 
+instance HasField "bordered" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (BorderedEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [BorderedEntry] inner'
+
+instance HasField "red" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (RedEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [RedEntry] inner'
+
 instance HasField "interlude" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
   getField f t = for_ (buildFlavor (f t)).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (InterludeEntry : mods) inner'
@@ -155,6 +167,26 @@ instance
   getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
+
+instance
+  HasField
+    "bordered"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (BorderedEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [BorderedEntry] inner'
+
+instance
+  HasField
+    "red"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (RedEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [RedEntry] inner'
 
 instance
   HasField

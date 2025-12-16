@@ -19,6 +19,8 @@ newtype Tooltip = Tooltip Text
 data FlavorTextModifier
   = BlueEntry
   | GreenEntry
+  | BorderedEntry
+  | RedEntry
   | RightAligned
   | PlainText
   | InvalidEntry

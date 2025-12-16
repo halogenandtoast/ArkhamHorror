@@ -8,7 +8,7 @@ newtype CongressChamberLair = CongressChamberLair LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congressChamberLair :: LocationCard CongressChamberLair
-congressChamberLair = symbolLabel $ location CongressChamberLair Cards.congressChamberLair 0 (Static 0)
+congressChamberLair = location CongressChamberLair Cards.congressChamberLair 0 (Static 0)
 
 instance HasAbilities CongressChamberLair where
   getAbilities (CongressChamberLair a) =

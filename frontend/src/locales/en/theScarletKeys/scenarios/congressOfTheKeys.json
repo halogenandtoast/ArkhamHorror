@@ -69,6 +69,7 @@
   },
   "version1": {
     "setup": {
+      "title": "Setup (v. I)",
       "gatherSets": "Gather all cards from the following encounter sets: *Congress of the Keys*, *Red Coterie*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/locked-doors.png'></section>",
       "placeLocations": "Put the _Lair_ versions of Scarlet Halls and the three Coterie Sanctuary locations into play.",
       "removeSanctum": "Remove the _Sanctum_ versions of these locations from the game.",
@@ -92,6 +93,7 @@
   },
   "version2": {
     "setup": {
+      "title": "Setup (v. II)",
       "gatherSets": "Gather all cards from the following encounter sets: *Congress of the Keys*, *Agents of the Outside*, *Beyond the Beyond*, *Outsiders*, *Red Coterie*, *Secret War*, *Spreading Corruption*, *Ancient Evils*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/beyond-the-beyond.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/secret-war.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/ancient-evils.png'><img src='{setImgPath}/striking-fear.png'></section> When gathering the Striking Fear encounter set, only gather the following cards (2x Frozen in Fear and 2x Dissonant Voices). Do not gather 3x Rotting Remains from that set.",
       "otherworldDeck": "Find each of the nine City of Remnants locations from the *Beyond the Beyond* encounter set. Shuffle these locations together, with their unrevealed sides faceup, to form a deck. This deck is called the Otherworld deck. Place this deck near the scenario reference card.",
       "placeLocations": "Put the _Sanctum_ versions of Scarlet Halls and the three Coterie Sanctuary locations into play.",
@@ -109,6 +111,7 @@
   },
   "version3": {
     "setup": {
+      "title": "Setup (v. III)",
       "gatherSets": "Gather all cards from the following encounter sets: *Congress of the Keys*, *Agents of the Outside*, *Beyond the Beyond*, *Outsiders*, *Red Coterie*, *Secret War*, *Spreading Corruption*, *Ancient Evils*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/beyond-the-beyond.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/secret-war.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/ancient-evils.png'><img src='{setImgPath}/striking-fear.png'></section> When gathering the Striking Fear encounter set, only gather the following cards (2x Frozen in Fear and 2x Dissonant Voices). Do not gather 3x Rotting Remains from that set.",
       "otherworldDeck": "Find each of the nine City of Remnants locations from the *Beyond the Beyond* encounter set. Shuffle these locations together, with their unrevealed sides faceup, to form a deck. This deck is called the Otherworld deck. Place this deck near the scenario reference card.",
       "placeLocations": "Put the _Sanctum_ versions of Scarlet Halls and the three Coterie Sanctuary locations into play.",

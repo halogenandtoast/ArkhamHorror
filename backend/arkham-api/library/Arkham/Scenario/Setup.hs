@@ -575,7 +575,7 @@ setExtraEncounterDeck
 setExtraEncounterDeck k as = do
   deck <- use (attrsL . encounterDeckL)
   cards <- for as \a -> do
-    case (findInDeck a deck) of
+    case findInDeck a deck of
       Just card -> do
         attrsL . encounterDeckL %= filter (/= card)
         pure $ toCard card

@@ -22,6 +22,11 @@ setup body = scope "setup" $ flavor do
   unscoped $ setTitle "setup"
   body
 
+setup' :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
+setup' body = scope "setup" $ flavor do
+  setTitle "title"
+  body
+
 resolutionOnly
   :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> (HasI18n => FlavorTextBuilder ()) -> m ()
 resolutionOnly iids builder = storyOnly iids do

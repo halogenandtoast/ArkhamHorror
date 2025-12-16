@@ -8,7 +8,7 @@ newtype TheKeyReliquarySanctum = TheKeyReliquarySanctum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKeyReliquarySanctum :: LocationCard TheKeyReliquarySanctum
-theKeyReliquarySanctum = symbolLabel $ location TheKeyReliquarySanctum Cards.theKeyReliquarySanctum 0 (Static 0)
+theKeyReliquarySanctum = location TheKeyReliquarySanctum Cards.theKeyReliquarySanctum 0 (Static 0)
 
 instance HasAbilities TheKeyReliquarySanctum where
   getAbilities (TheKeyReliquarySanctum a) =

@@ -66,6 +66,7 @@
   },
   "version1": {
     "setup": {
+      "title": "Setup (v. I)",
       "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, and *Dark Cult*. These sets are indicated by the following icons: <section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/dark-cult.png'></section>",
       "placeLocations": "Put the following locations into play: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, and Zan’et el Settat.",
       "startAt": "Each investigator begins play at Qaitbay Citadel.",
@@ -80,6 +81,7 @@
   },
   "version2": {
     "setup": {
+      "title": "Setup (v. II)",
       "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Cleanup Crew*, *Scarlet Sorcery*, *Spatial Anomaly*, and *Spreading Corruption*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/cleanup-crew.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'></section>",
       "placeLocations": "Put the following locations into play: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, and Zan’et el Settat.",
       "startAt": "Each investigator begins play at Qaitbay Citadel.",
@@ -95,6 +97,7 @@
   },
   "version3": {
     "setup": {
+      "title": "Setup (v. III)",
       "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Cleanup Crew*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, and *Dark Cult*. These sets are indicated by the following icons: <section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/cleanup-crew.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/dark-cult.png'></section>",
       "placeLocations": "Put the following locations into play: Windsor Palace Hotel, Victoria College, Qaitbay Citadel, The Corniche, and Zan’et el Settat.",
       "startAt": "Each investigator begins play at Qaitbay Citadel.",

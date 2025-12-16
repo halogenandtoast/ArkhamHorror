@@ -534,7 +534,11 @@ ul, :deep(ul) {
     border: 2px solid black;
     border-radius: 55px;
     margin-inline: 10px;
-    p:first-of-type {
+    > p:first-of-type {
+      text-indent: 1.5em;
+    }
+
+    .composite > *:nth-child(1) {
       text-indent: 1.5em;
     }
 

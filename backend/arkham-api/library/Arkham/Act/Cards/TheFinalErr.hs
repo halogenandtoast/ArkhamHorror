@@ -13,6 +13,6 @@ theFinalErr = act (4, A) TheFinalErr Cards.theFinalErr Nothing
 instance RunMessage TheFinalErr where
   runMessage msg a@(TheFinalErr attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R1
       pure a
     _ -> TheFinalErr <$> liftRunMessage msg attrs

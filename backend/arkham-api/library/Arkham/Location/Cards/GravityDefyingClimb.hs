@@ -14,7 +14,7 @@ gravityDefyingClimb =
     $ locationWith
       GravityDefyingClimb
       Cards.gravityDefyingClimb
-      0
+      4
       (Static 0)
       (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 4) "The Knotted Tower")
 

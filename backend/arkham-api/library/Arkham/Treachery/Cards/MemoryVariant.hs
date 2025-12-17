@@ -19,7 +19,7 @@ memoryVariant = treachery MemoryVariant Cards.memoryVariant
 
 instance HasModifiersFor MemoryVariant where
   getModifiersFor (MemoryVariant a) = do
-    modifySelect a AnyEvent [SetAfterPlay RemoveThisFromGame]
+    modifySelect a AnyEvent [SetAfterPlay DeferDiscard]
 
 instance HasAbilities MemoryVariant where
   getAbilities (MemoryVariant a) =

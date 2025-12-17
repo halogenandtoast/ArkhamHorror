@@ -187,6 +187,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
           PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
+          DeferDiscard -> push after
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))

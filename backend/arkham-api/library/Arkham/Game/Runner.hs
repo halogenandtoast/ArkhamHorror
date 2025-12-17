@@ -1176,6 +1176,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
                 , Just skillId
                 )
+              DeferDiscard -> (Noop, Nothing)
 
     pushAll $ map fst skillPairs
 

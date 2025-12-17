@@ -3,24 +3,34 @@ module Arkham.Scenario.Scenarios.CongressOfTheKeys (congressOfTheKeys) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheScarletKeys.Concealed (
+  ConcealedCardKind (CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR),
+  mkConcealedCard,
+ )
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Helpers qualified as Meta
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Meta
-import Arkham.Card.CardCode
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (isFightWith, withSkillTest)
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
@@ -31,6 +41,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
 import Arkham.Trait (Trait (Outsider))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
+import Control.Lens (non)
 import Data.Map.Strict qualified as Map
 
 newtype CongressOfTheKeys = CongressOfTheKeys ScenarioAttrs
@@ -560,16 +572,17 @@ instance RunMessage CongressOfTheKeys where
           li "locationAdjacency"
           unscoped $ li "readyToBegin"
 
+      setUsesGrid
       gather Set.CongressOfTheKeys
       gather Set.ScarletSorcery
       gather Set.SpatialAnomaly
       gather Set.SpreadingCorruption
       gather Set.LockedDoors
 
-      startAt =<< place Locations.scarletHallsLair
-      placeGroup
-        "coterieSanctuary"
-        [Locations.coterieLibraryLair, Locations.congressChamberLair, Locations.theKeyReliquaryLair]
+      startAt =<< placeInGrid (Pos 0 0) Locations.scarletHallsLair
+      coterieSanctuaries <-
+        shuffle [Locations.coterieLibraryLair, Locations.congressChamberLair, Locations.theKeyReliquaryLair]
+      zipWithM_ placeInGrid_ [Pos (-1) 1, Pos 0 1, Pos 1 1] coterieSanctuaries
 
       setActDeck [Acts.secretsAndLiesV1, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
@@ -606,6 +619,7 @@ instance RunMessage CongressOfTheKeys where
           li "locationAdjacency"
           unscoped $ li "readyToBegin"
 
+      setUsesGrid
       gather Set.CongressOfTheKeys
       gather Set.AgentsOfTheOutside
       gather Set.BeyondTheBeyond
@@ -617,13 +631,14 @@ instance RunMessage CongressOfTheKeys where
 
       addExtraDeck OtherworldDeck =<< shuffle =<< fromGathered (CardWithTitle "City of Remnants")
 
-      startAt =<< place Locations.scarletHallsSanctum
-      placeGroup
-        "coterieSanctuary"
-        [ Locations.coterieLibrarySanctum
-        , Locations.congressChamberSanctum
-        , Locations.theKeyReliquarySanctum
-        ]
+      startAt =<< placeInGrid (Pos 0 0) Locations.scarletHallsSanctum
+      coterieSanctuaries <-
+        shuffle
+          [ Locations.coterieLibrarySanctum
+          , Locations.congressChamberSanctum
+          , Locations.theKeyReliquarySanctum
+          ]
+      zipWithM_ placeInGrid_ [Pos (-1) 1, Pos 0 1, Pos 1 1] coterieSanctuaries
 
       setActDeck [Acts.secretsAndLiesV2, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
@@ -662,6 +677,7 @@ instance RunMessage CongressOfTheKeys where
           li "locationAdjacency"
           unscoped $ li "readyToBegin"
 
+      setUsesGrid
       gather Set.CongressOfTheKeys
       gather Set.AgentsOfTheOutside
       gather Set.BeyondTheBeyond
@@ -673,13 +689,14 @@ instance RunMessage CongressOfTheKeys where
 
       addExtraDeck OtherworldDeck =<< shuffle =<< fromGathered (CardWithTitle "City of Remnants")
 
-      startAt =<< place Locations.scarletHallsSanctum
-      placeGroup
-        "coterieSanctuary"
-        [ Locations.coterieLibrarySanctum
-        , Locations.congressChamberSanctum
-        , Locations.theKeyReliquarySanctum
-        ]
+      startAt =<< placeInGrid (Pos 0 0) Locations.scarletHallsSanctum
+      coterieSanctuaries <-
+        shuffle
+          [ Locations.coterieLibrarySanctum
+          , Locations.congressChamberSanctum
+          , Locations.theKeyReliquarySanctum
+          ]
+      zipWithM_ placeInGrid_ [Pos (-1) 1, Pos 0 1, Pos 1 1] coterieSanctuaries
 
       setActDeck [Acts.secretsAndLiesV3, Acts.toTheTower, Acts.theAscent, Acts.theFinalErr]
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
@@ -735,5 +752,144 @@ instance RunMessage CongressOfTheKeys where
       lead <- getLead
       for_ (zip shuffled positions) \(card, pos) -> do
         push $ PlaceConcealedCard lead (toId card) (InPosition pos)
+      pure s
+    ScenarioSpecific "setupOtherworld" _ -> do
+      let otherworldDeck = attrs ^. decksL . at OtherworldDeck . non []
+      let (inPlay, rest) = splitAt 3 otherworldDeck
+
+      meta <- case inPlay of
+        [x, y, z] -> do
+          ll <- placeLocation x
+          ml <- placeLocation y
+          rl <- placeLocation z
+          for_ [ll, ml, rl] \location -> do
+            push $ UpdateLocation location (Update LocationPlacement (Just InTheShadows))
+          pure
+            $ LocationsInShadowsMetadata
+              { locationsInShadows = LocationsInShadows (Just ll) (Just ml) (Just rl)
+              , concealedCards = mempty
+              }
+        _ -> error "expected exactly three locations in play"
+
+      cards <-
+        shuffle =<< traverse mkConcealedCard [CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR]
+
+      lead <- getLead
+      for_ (zip cards [Pos 1 0, Pos 0 (-1), Pos (-1) 0]) \(card, pos) -> do
+        push $ Msg.CreateConcealedCard card
+        push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
+      pure $ CongressOfTheKeys $ attrs & decksL . at OtherworldDeck ?~ rest & metaL .~ toJSON meta
+    LookAtTopOfDeck iid (ScenarioDeckTarget OtherworldDeck) n -> do
+      case fromJustNote "must be set" (lookup OtherworldDeck attrs.decks) of
+        cards -> focusCards (map flipCard $ take n cards) $ continue_ iid
+      pure s
+    ScenarioSpecific "swapLocations" v -> do
+      let (l1, l2) :: (LocationId, LocationId) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let
+        swapLocation loc =
+          if
+            | loc == l1 -> l2
+            | loc == l2 -> l1
+            | otherwise -> loc
+      let left = swapLocation <$> meta.locationsInShadows.left
+      let middle = swapLocation <$> meta.locationsInShadows.middle
+      let right = swapLocation <$> meta.locationsInShadows.right
+      let locationsInShadows = LocationsInShadows left middle right
+      pure
+        $ CongressOfTheKeys
+        $ attrs
+        & (metaL .~ toJSON (meta {locationsInShadows}))
+    ScenarioSpecific "swapMiniCards" v -> do
+      let (c1, c2) :: (ConcealedCardId, ConcealedCardId) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let
+        swapMiniCard c =
+          if
+            | c == c1 -> c2
+            | c == c2 -> c1
+            | otherwise -> c
+      let concealedCards = Map.map (map swapMiniCard) meta.concealedCards
+      pure
+        $ CongressOfTheKeys
+        $ attrs
+        & (metaL .~ toJSON (meta {concealedCards}))
+    ScenarioSpecific "distributeConcealedLocations" v -> do
+      let (iid, cs, current, original) :: (InvestigatorId, [ConcealedCard], [Pos], [Pos]) = toResult v
+      case cs of
+        [] -> pure ()
+        (x : xs) ->
+          if null current
+            then scenarioSpecific "distributeConcealedLocations" (iid, cs, original, original)
+            else chooseOneM iid do
+              for_ (eachWithRest current) \(pos, rest) -> do
+                gridLabeled (gridLabel pos) do
+                  push $ PlaceConcealedCard iid (toId x) (InPosition pos)
+                  scenarioSpecific "distributeConcealedLocations" (iid, xs, rest, original)
+      pure s
+    PlaceConcealedCard _ card (InPosition pos) -> do
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let current = Map.findWithDefault [] pos meta.concealedCards
+      cards <- shuffleM $ nub $ card : current
+      let concealedCards = Map.map (filter (/= card)) meta.concealedCards
+      pure
+        $ CongressOfTheKeys
+        $ attrs
+        & metaL
+        .~ toJSON (meta {concealedCards = Map.insert pos cards concealedCards})
+    Do (PlaceConcealedCard _ card (InPosition pos)) -> do
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let current = Map.findWithDefault [] pos meta.concealedCards
+      cards <- shuffleM $ nub $ card : current
+      let concealedCards = Map.map (filter (/= card)) meta.concealedCards
+      pure
+        $ CongressOfTheKeys
+        $ attrs
+        & metaL
+        .~ toJSON (meta {concealedCards = Map.insert pos cards concealedCards})
+    Do (ScenarioSpecific "exposed[CityOfRemnantsL]" v) -> do
+      CongressOfTheKeys
+        <$> handleCityOfRemnants attrs v (.left) (\locations ml -> locations {Meta.left = ml})
+    Do (ScenarioSpecific "exposed[CityOfRemnantsM]" v) -> do
+      CongressOfTheKeys
+        <$> handleCityOfRemnants attrs v (.middle) (\locations ml -> locations {middle = ml})
+    Do (ScenarioSpecific "exposed[CityOfRemnantsR]" v) -> do
+      CongressOfTheKeys
+        <$> handleCityOfRemnants attrs v (.right) (\locations ml -> locations {right = ml})
+    ScenarioSpecific "exposed[CityOfRemnantsL]" v -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.left \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, LeftPosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
+    ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.middle \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, MiddlePosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
+    ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let meta = toResult @LocationsInShadowsMetadata attrs.meta
+      let locationsInShadows = meta.locationsInShadows
+      for_ locationsInShadows.right \loc -> do
+        scenarioSpecific "exposed[CityOfRemnants]" (iid, RightPosition, loc)
+        do_ msg
+        forTarget_ loc msg
+      pure s
+    ForTarget (LocationTarget loc) (ScenarioSpecific x v) | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
+      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      withLocationOf iid \current -> do
+        whenMatch loc (ConnectedTo ForMovement $ LocationWithId current) do
+          whenM (getCanMoveTo iid attrs loc) do
+            checkAfter $ Window.ScenarioEvent "exposedAdjacentLocation" (Just iid) (toJSON loc)
+
+      checkAfter $ Window.CampaignEvent "exposed[location]" (Just iid) Null
       pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

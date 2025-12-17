@@ -160,19 +160,20 @@ placeSetAsideLocations_ = pushAll <=< Msg.placeSetAsideLocations
 placeSetAsideLocationsMatching_ :: ReverseQueue m => CardMatcher -> m ()
 placeSetAsideLocationsMatching_ matcher = getSetAsideCardsMatching (#location <> matcher) >>= placeSetAsideLocations_ . map toCardDef
 
-placeLocationCard
-  :: ReverseQueue m => CardDef -> m LocationId
+placeLocationCard :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
   push placement
   pure lid
 
-placeLocationCardInGrid
-  :: ReverseQueue m => Pos -> CardDef -> m LocationId
+placeLocationCardInGrid :: ReverseQueue m => Pos -> CardDef -> m LocationId
 placeLocationCardInGrid pos def = do
   (lid, placement) <- Msg.placeLocationCardInGrid pos def
   push placement
   pure lid
+
+placeLocationCardInGrid_ :: ReverseQueue m => Pos -> CardDef -> m ()
+placeLocationCardInGrid_ pos def = void $ placeLocationCardInGrid pos def
 
 placeLocationInGrid :: ReverseQueue m => Pos -> Card -> m LocationId
 placeLocationInGrid pos card = do

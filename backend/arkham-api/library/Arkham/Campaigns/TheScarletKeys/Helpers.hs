@@ -8,7 +8,7 @@ module Arkham.Campaigns.TheScarletKeys.Helpers (
 where
 
 import Arkham.Campaign.Types (Field (..))
-import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
@@ -17,6 +17,7 @@ import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -26,11 +27,12 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Scenario (getGrid)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Grid
-import Arkham.Location.Types (Field (LocationConcealedCards))
+import Arkham.Location.Types (Field (LocationConcealedCards, LocationPlacement, LocationPosition))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
@@ -41,11 +43,13 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup (ScenarioBuilderT, addToEncounterDeck)
+import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
+import Data.Map.Strict qualified as Map
 
 pattern HollowedCard :: ExtendedCardMatcher
 pattern HollowedCard <- CardWithModifier (CampaignModifier "hollowed")
@@ -251,3 +255,63 @@ scarletKeyWithEnemy = ScarletKeyWithEnemy . EnemyWithId . asId
 
 enemyWithScarletKey :: ToId enemy EnemyId => enemy -> Criterion
 enemyWithScarletKey = exists . scarletKeyWithEnemy
+
+handleCityOfRemnants
+  :: ReverseQueue m
+  => ScenarioAttrs
+  -> Value
+  -> (LocationsInShadows -> Maybe LocationId)
+  -> (LocationsInShadows -> Maybe LocationId -> LocationsInShadows)
+  -> m ScenarioAttrs
+handleCityOfRemnants attrs v getLocation setLocation = do
+  let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
+  let meta = toResult @LocationsInShadowsMetadata attrs.meta
+  let locationsInShadows = meta.locationsInShadows
+  invalidPositions <-
+    concatMap adjacentPositions
+      . catMaybes
+      <$> selectField LocationPosition (LocationWithModifier (ScenarioModifier "noCityOfRemnants"))
+  runMaybeT_ do
+    pos <- hoistMaybe $ case c.placement of
+      InPosition x -> Just x
+      _ -> Nothing
+    lid <- hoistMaybe $ getLocation locationsInShadows
+    lift do
+      push $ Msg.PlaceGrid (GridLocation pos lid)
+      newDecoy <- mkConcealedCard Decoy
+      push $ Msg.CreateConcealedCard newDecoy
+      newCards <- shuffle [c, newDecoy]
+      grid <- getGrid
+      case filter (`notElem` invalidPositions) (emptyPositionsInDirections grid pos [minBound ..]) of
+        [] -> pure ()
+        [pos'] -> for_ newCards \newCard -> do
+          push $ Msg.PlaceConcealedCard iid (toId newCard) (InPosition pos')
+        [x, y] -> for_ (zip newCards [x, y]) \(newCard, pos') -> do
+          push $ Msg.PlaceConcealedCard iid (toId newCard) (InPosition pos')
+        ps -> case newCards of
+          [a, b] -> chooseOneM iid do
+            for_ (eachWithRest ps) \(pos', rest) -> do
+              gridLabeled (gridLabel pos') do
+                push $ Msg.PlaceConcealedCard iid (toId a) (InPosition pos')
+                chooseOneM iid do
+                  for_ rest \pos'' -> do
+                    gridLabeled (gridLabel pos'') do
+                      push $ Msg.PlaceConcealedCard iid (toId b) (InPosition pos'')
+          _ -> error "expected exactly two cards"
+
+  let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
+  let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+  case otherworldDeck of
+    [] ->
+      pure
+        $ attrs
+        & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows Nothing}))
+    (x : xs) -> do
+      l <- placeLocation x
+      push $ Msg.UpdateLocation l (Update LocationPlacement (Just InTheShadows))
+      pure
+        $ attrs
+        & (decksL . at OtherworldDeck ?~ xs)
+        & ( metaL
+              .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows (Just l)})
+          )

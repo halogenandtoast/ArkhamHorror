@@ -1,8 +1,8 @@
 module Arkham.Location.Cards.CliffsOfInsanity (cliffsOfInsanity) where
 
 import Arkham.Ability
-import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
@@ -10,6 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Placement
 
 newtype CliffsOfInsanity = CliffsOfInsanity LocationAttrs
@@ -49,9 +50,16 @@ instance RunMessage CliffsOfInsanity where
         cliffPositions <- catMaybes <$> selectField LocationPosition (locationIs Cards.cliffsOfInsanity)
         otherPositions <-
           catMaybes <$> selectField LocationPosition (not_ $ locationIs Cards.cliffsOfInsanity)
+
+        invalidPositions <-
+          concatMap adjacentPositions
+            . catMaybes
+            <$> selectField LocationPosition (LocationWithModifier (ScenarioModifier "noCityOfRemnants"))
         let adjacentToCliffs = concatMap adjacentPositions cliffPositions
         let adjacentToOthers = concatMap adjacentPositions otherPositions
-        let targetPositions :: [Pos] = adjacentToOthers \\ (adjacentToCliffs <> cliffPositions <> otherPositions)
+        let targetPositions :: [Pos] =
+              nub adjacentToOthers
+                \\ nub (adjacentToCliffs <> cliffPositions <> otherPositions <> invalidPositions)
         scenarioSpecific "distributeConcealedLocations" (iid, cs, targetPositions, targetPositions)
       pure l
     _ -> CliffsOfInsanity <$> liftRunMessage msg attrs

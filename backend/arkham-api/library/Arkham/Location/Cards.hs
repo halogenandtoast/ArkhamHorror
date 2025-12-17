@@ -9116,7 +9116,7 @@ theKnottedTower :: CardDef
 theKnottedTower =
   location
     "09712"
-    "Scarlet Halls"
+    "The Knotted Tower"
     [Otherworld]
     Moon
     [Equals]

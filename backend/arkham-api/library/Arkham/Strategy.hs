@@ -78,6 +78,7 @@ data AfterPlayStrategy
   | AbsoluteRemoveThisFromGame
   | DevourThis InvestigatorId
   | PlaceThisBeneath Target
+  | DeferDiscard
   deriving stock (Show, Eq, Ord, Data)
 
 data ChosenCardStrategy
@@ -120,6 +121,7 @@ instance FromJSON AfterPlayStrategy where
     _ -> fail "invalid AfterPlayStrategy"
    where
     parseString = withText "AfterPlayStrategy" \case
+      "DeferDiscard" -> pure DeferDiscard
       "DiscardThis" -> pure DiscardThis
       "ExileThis" -> pure ExileThis
       "RemoveThisFromGame" -> pure RemoveThisFromGame
@@ -130,6 +132,7 @@ instance FromJSON AfterPlayStrategy where
     parseObject = withObject "AfterPlayStrategy" \o -> do
       tag <- o .: "tag"
       case tag :: Text of
+        "DeferDiscard" -> pure DeferDiscard
         "DiscardThis" -> pure DiscardThis
         "ExileThis" -> pure ExileThis
         "RemoveThisFromGame" -> pure RemoveThisFromGame

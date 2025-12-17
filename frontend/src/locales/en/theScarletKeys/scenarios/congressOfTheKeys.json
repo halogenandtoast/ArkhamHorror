@@ -1,4 +1,19 @@
 {
+  "heading": "File #59–Z (Finale)",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current act number.",
+      "cultist": "-5. You may flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -2, instead.",
+      "tablet": "-2. If this is an attack against a ready _Outsider_ enemy, you automatically fail, instead.",
+      "elderThing": "-3. Cancel the effects and icons of each card committed to this test and set each of them aside, out of play, as hollows."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current act number.",
+      "cultist": "-7. You may flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -4, instead.",
+      "tablet": "-2. If there is a ready _Outsider_ enemy at your location, you automatically fail, instead.",
+      "elderThing": "-4. Cancel the effects and icons of each card committed to this test and set each of them aside, out of play, as hollows."
+    }
+  },
   "intro": {
     "label": {
       "deemedALiability": "Proceed to _The Trial 2_.",

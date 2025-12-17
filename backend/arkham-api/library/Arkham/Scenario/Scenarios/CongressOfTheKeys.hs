@@ -16,6 +16,8 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.SkillTest (isFightWith, withSkillTest)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -25,6 +27,7 @@ import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
+import Arkham.Trait (Trait (Outsider))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
@@ -705,5 +708,19 @@ instance RunMessage CongressOfTheKeys where
             chooseTargetM iid controlledKeys (flipOverBy iid Cultist)
             chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusFour]
           unscoped skip_
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      ok <-
+        if isEasyStandard attrs
+          then isFightWith $ EnemyWithTrait Outsider <> ReadyEnemy
+          else selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Outsider <> ReadyEnemy
+      when ok failSkillTest
+      pure s
+    ResolveChaosToken drawnToken ElderThing _iid -> do
+      withSkillTest \sid -> do
+        skillTestModifier sid drawnToken.face sid CancelSkills
+        push CancelSkillEffects
+        cards <- concat <$> selectField InvestigatorCommittedCards Anyone
+        for_ cards \c -> for_ c.owner (`hollow` c)
       pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

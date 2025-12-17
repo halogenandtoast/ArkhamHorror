@@ -14,6 +14,12 @@
       "elderThing": "-4. Cancel the effects and icons of each card committed to this test and set each of them aside, out of play, as hollows."
     }
   },
+  "label": {
+    "cultist": {
+      "easyStandard": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -2, instead",
+      "hardExpert": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -4, instead"
+    }
+  },
   "intro": {
     "label": {
       "deemedALiability": "Proceed to _The Trial 2_.",

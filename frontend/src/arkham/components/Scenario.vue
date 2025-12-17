@@ -396,6 +396,12 @@ const inTheShadowLocations = computed(() => {
   if(!props.scenario.meta) return null
   return props.scenario.meta.locationsInShadows
 })
+
+const anyInTheShadowLocations = computed(() => {
+  const locations = inTheShadowLocations.value
+  if(!locations) return false
+  return locations.left || locations.right || locations.middle
+})
 const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
 const enemiesAsLocations = computed(() => enemyGroups.value.asLoc)
 const topEnemyInVoid = computed(() => enemyGroups.value.firstVoid)
@@ -887,8 +893,8 @@ async function addChaosToken(face: any){
         @close="hideCards"
       />
       <div class="scenario-cards">
-        <div v-if="inTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
-          <template v-if="inTheShadowLocations">
+        <div v-if="anyInTheShadowLocations || inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
+          <template v-if="anyInTheShadowLocations">
             <Location
               v-if="inTheShadowLocations.left && game.locations[inTheShadowLocations.left]"
               class="location"

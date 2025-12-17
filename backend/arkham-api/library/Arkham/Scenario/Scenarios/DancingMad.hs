@@ -73,6 +73,7 @@ instance RunMessage DancingMad where
           li.validate (n < 20) "fewerThanTwentyTime"
           li.validate (n >= 20) "twentyOrMoreTime"
       doStep (if n < 20 then 2 else 3) PreScenarioSetup
+      setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"

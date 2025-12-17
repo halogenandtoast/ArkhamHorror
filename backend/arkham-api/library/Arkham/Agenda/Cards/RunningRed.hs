@@ -13,6 +13,6 @@ runningRed = agenda (3, A) RunningRed Cards.runningRed (Static 7)
 instance RunMessage RunningRed where
   runMessage msg a@(RunningRed attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      eachInvestigator (investigatorDefeated attrs)
       pure a
     _ -> RunningRed <$> liftRunMessage msg attrs

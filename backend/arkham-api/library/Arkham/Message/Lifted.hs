@@ -3389,10 +3389,11 @@ drawCardFrom iid deck (toCard -> card) = do
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
     VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid deck vc
 
-drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+drawCard :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m ()
 drawCard iid card = do
-  obtainCard $ toCard card
-  case toCard card of
+  c <- fetchCard card
+  obtainCard c
+  case c of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
     VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc

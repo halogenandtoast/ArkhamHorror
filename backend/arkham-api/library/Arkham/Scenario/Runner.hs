@@ -1591,7 +1591,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           )
         <$> [Timing.When]
     pushAll $ windowMsgs <> [RemovedLocation lid]
-    pure a
+    pure $ a & gridL %~ deleteInGrid lid
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     xs <-

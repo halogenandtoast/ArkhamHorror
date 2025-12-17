@@ -64,64 +64,6 @@ instance HasChaosTokenValue WithoutATrace where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-handleCityOfRemnants
-  :: ReverseQueue m
-  => ScenarioAttrs
-  -> Value
-  -> (LocationsInShadows -> Maybe LocationId)
-  -> (LocationsInShadows -> Maybe LocationId -> LocationsInShadows)
-  -> m WithoutATrace
-handleCityOfRemnants attrs v getLocation setLocation = do
-  let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-  let meta = toResult @LocationsInShadowsMetadata attrs.meta
-  let locationsInShadows = meta.locationsInShadows
-  runMaybeT_ do
-    pos <- hoistMaybe $ case c.placement of
-      InPosition x -> Just x
-      _ -> Nothing
-    lid <- hoistMaybe $ getLocation locationsInShadows
-    lift do
-      push $ PlaceGrid (GridLocation pos lid)
-      newDecoy <- mkConcealedCard Decoy
-      push $ Msg.CreateConcealedCard newDecoy
-      newCards <- shuffle [c, newDecoy]
-      grid <- getGrid
-      case emptyPositionsInDirections grid pos [minBound ..] of
-        [] -> pure ()
-        [pos'] -> for_ newCards \newCard -> do
-          push $ Msg.PlaceConcealedCard iid (toId newCard) (InPosition pos')
-        [x, y] -> for_ (zip newCards [x, y]) \(newCard, pos') -> do
-          push $ Msg.PlaceConcealedCard iid (toId newCard) (InPosition pos')
-        ps -> case newCards of
-          [a, b] -> chooseOneM iid do
-            for_ (eachWithRest ps) \(pos', rest) -> do
-              gridLabeled (gridLabel pos') do
-                push $ Msg.PlaceConcealedCard iid (toId a) (InPosition pos')
-                chooseOneM iid do
-                  for_ rest \pos'' -> do
-                    gridLabeled (gridLabel pos'') do
-                      push $ Msg.PlaceConcealedCard iid (toId b) (InPosition pos'')
-          _ -> error "expected exactly two cards"
-
-  let otherworldDeck = fromJustNote "must be set" $ lookup OtherworldDeck attrs.decks
-  let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-  case otherworldDeck of
-    [] ->
-      pure
-        $ WithoutATrace
-        $ attrs
-        & (metaL .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows Nothing}))
-    (x : xs) -> do
-      l <- placeLocation x
-      push $ UpdateLocation l (Update LocationPlacement (Just InTheShadows))
-      pure
-        $ WithoutATrace
-        $ attrs
-        & (decksL . at OtherworldDeck ?~ xs)
-        & ( metaL
-              .~ toJSON (meta {concealedCards, locationsInShadows = setLocation locationsInShadows (Just l)})
-          )
-
 instance RunMessage WithoutATrace where
   runMessage msg s@(WithoutATrace attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
@@ -264,11 +206,11 @@ instance RunMessage WithoutATrace where
       checkAfter $ Window.CampaignEvent "exposed[location]" (Just iid) Null
       pure s
     Do (ScenarioSpecific "exposed[CityOfRemnantsL]" v) -> do
-      handleCityOfRemnants attrs v (.left) \locations ml -> locations {left = ml}
+      WithoutATrace <$> handleCityOfRemnants attrs v (.left) (\locations ml -> locations {left = ml})
     Do (ScenarioSpecific "exposed[CityOfRemnantsM]" v) -> do
-      handleCityOfRemnants attrs v (.middle) \locations ml -> locations {middle = ml}
+      WithoutATrace <$> handleCityOfRemnants attrs v (.middle) (\locations ml -> locations {middle = ml})
     Do (ScenarioSpecific "exposed[CityOfRemnantsR]" v) -> do
-      handleCityOfRemnants attrs v (.right) \locations ml -> locations {right = ml}
+      WithoutATrace <$> handleCityOfRemnants attrs v (.right) (\locations ml -> locations {right = ml})
     PlaceConcealedCard _ card (InPosition pos) -> do
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let current = Map.findWithDefault [] pos meta.concealedCards

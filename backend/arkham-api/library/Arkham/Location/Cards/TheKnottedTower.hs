@@ -8,7 +8,7 @@ newtype TheKnottedTower = TheKnottedTower LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKnottedTower :: LocationCard TheKnottedTower
-theKnottedTower = symbolLabel $ location TheKnottedTower Cards.theKnottedTower 0 (Static 0)
+theKnottedTower = symbolLabel $ locationWith TheKnottedTower Cards.theKnottedTower 0 (Static 0) connectsToAdjacent
 
 instance HasAbilities TheKnottedTower where
   getAbilities (TheKnottedTower a) =

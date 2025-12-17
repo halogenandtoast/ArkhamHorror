@@ -248,6 +248,12 @@ gridLabel (Pos x y) =
   negativeStr :: Int -> String
   negativeStr n = if n < 0 then "n" else ""
 
+deleteInGrid :: LocationId -> Grid -> Grid
+deleteInGrid b c =
+  case findInGrid b c of
+    Just pos -> clearGrid pos c
+    Nothing -> c
+
 findInGrid :: LocationId -> Grid -> Maybe Pos
 findInGrid b c =
   let leftBy = gridLeftAmount c

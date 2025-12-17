@@ -3378,6 +3378,9 @@ shuffleSetAsideIntoScenarioDeck key matcher = do
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
 setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 
+removeScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> m ()
+removeScenarioDeck key = setScenarioDeck key []
+
 chooseUpgradeDecks :: ReverseQueue m => m ()
 chooseUpgradeDecks = push . Msg.chooseUpgradeDecks =<< allPlayers
 

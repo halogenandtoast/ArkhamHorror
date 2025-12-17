@@ -818,6 +818,10 @@ instance RunMessage CongressOfTheKeys where
       let (iid, cs, current, original) :: (InvestigatorId, [ConcealedCard], [Pos], [Pos]) = toResult v
       case cs of
         [] -> pure ()
+        _ | length cs >= length current -> do
+          for_ (zip cs current) \(x, pos) -> do
+            push $ PlaceConcealedCard iid (toId x) (InPosition pos)
+          scenarioSpecific "distributeConcealedLocations" (iid, drop (length current) cs, original, original)
         (x : xs) ->
           if null current
             then scenarioSpecific "distributeConcealedLocations" (iid, cs, original, original)
@@ -883,13 +887,31 @@ instance RunMessage CongressOfTheKeys where
         do_ msg
         forTarget_ loc msg
       pure s
-    ForTarget (LocationTarget loc) (ScenarioSpecific x v) | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
-      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
-      withLocationOf iid \current -> do
-        whenMatch loc (ConnectedTo ForMovement $ LocationWithId current) do
-          whenM (getCanMoveTo iid attrs loc) do
-            checkAfter $ Window.ScenarioEvent "exposedAdjacentLocation" (Just iid) (toJSON loc)
+    ForTarget (LocationTarget loc) (ScenarioSpecific x v)
+      | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
+          let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+          withLocationOf iid \current -> do
+            whenMatch loc (ConnectedTo ForMovement $ LocationWithId current) do
+              whenM (getCanMoveTo iid attrs loc) do
+                checkAfter $ Window.ScenarioEvent "exposedAdjacentLocation" (Just iid) (toJSON loc)
 
-      checkAfter $ Window.CampaignEvent "exposed[location]" (Just iid) Null
-      pure s
+          checkAfter $ Window.CampaignEvent "exposed[location]" (Just iid) Null
+          pure s
+    RemoveLocation lid -> do
+      attrs' <- liftRunMessage msg attrs
+      case maybeResult @LocationsInShadowsMetadata attrs.meta of
+        Nothing -> pure $ CongressOfTheKeys attrs'
+        Just meta -> do
+          let
+            guardLocation a = guard (a /= Just lid) *> a
+            meta' =
+              meta
+                { locationsInShadows =
+                    LocationsInShadows
+                      { left = guardLocation meta.locationsInShadows.left
+                      , middle = guardLocation meta.locationsInShadows.middle
+                      , right = guardLocation meta.locationsInShadows.right
+                      }
+                }
+          pure $ CongressOfTheKeys $ attrs' & metaL .~ toJSON meta'
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

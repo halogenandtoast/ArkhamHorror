@@ -1,6 +1,5 @@
 module Arkham.Story.Cards.OffTheGalley (offTheGalley) where
 
-import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -25,17 +24,22 @@ instance RunMessage OffTheGalley where
       moonForest <- selectJust $ locationIs Locations.moonForest
       clues <- field LocationClues moonBeastGalley
       investigators <- select $ investigatorAt moonBeastGalley
-      enemies <- select $ enemyAt moonBeastGalley <> oneOf [UnengagedEnemy, MassiveEnemy]
       if clues == 0
         then do
-          for_ investigators $ \iid ->
+          selectEach (enemyAt moonBeastGalley) (toDiscard attrs)
+          for_ investigators \iid ->
             moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
         else do
-          raiseAlarmLevel attrs =<< getInvestigators
-          eachInvestigator $ \iid ->
+          raiseAlarmLevel attrs investigators
+          for_ investigators \iid ->
             moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
-          for_ enemies $ \eid -> enemyMoveTo attrs eid moonForest
+          doStep 2 msg
 
       removeFromGame moonBeastGalley
+      pure s
+    DoStep 2 (ResolveThisStory _ (is attrs -> True)) -> do
+      moonBeastGalley <- selectJust $ locationIs Locations.moonBeastGalley
+      moonForest <- selectJust $ locationIs Locations.moonForest
+      selectEach (enemyAt moonBeastGalley) \eid -> enemyMoveTo attrs eid moonForest
       pure s
     _ -> OffTheGalley <$> liftRunMessage msg attrs

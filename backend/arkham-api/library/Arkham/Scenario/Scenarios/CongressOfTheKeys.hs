@@ -6,18 +6,21 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher.Card
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
@@ -65,10 +68,12 @@ data Vote = Yea | Nay | Abstained | EerilySilent
 
 instance HasChaosTokenValue CongressOfTheKeys where
   getChaosTokenValue iid tokenFace (CongressOfTheKeys attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- getCurrentActStep
+      pure $ toChaosTokenValue attrs Skull n (n + 1)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 5 7
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 coterieEnemy :: Coterie -> Maybe CardDef
@@ -567,9 +572,9 @@ instance RunMessage CongressOfTheKeys where
       lead <- getLead
       coterie <- shuffle $ coterieEnemies attrs (== Nay)
       investigators <- allInvestigators
-      drawCard lead Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead Enemies.theRedGlovedManPurposeUnknown
       let (toDraw, rest) = splitAt (length investigators) coterie
-      for_ (zip investigators toDraw) \(iid, card) -> drawCard iid =<< fetchCard card
+      zipWithM_ drawCard investigators toDraw
       addToEncounterDeck rest
 
       for_ (conspiratorAssets attrs (== Yea)) \card -> do
@@ -619,7 +624,7 @@ instance RunMessage CongressOfTheKeys where
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
 
       lead <- getLead
-      drawCard lead Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead Enemies.theRedGlovedManPurposeUnknown
       setAside $ coterieEnemies attrs (== Nay)
 
       investigators <- allInvestigators
@@ -675,11 +680,12 @@ instance RunMessage CongressOfTheKeys where
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
 
       lead <- getLead
-      coterie <- shuffle $ coterieEnemies attrs (== EerilySilent)
+      coterie <-
+        shuffle $ filter (/= Enemies.theRedGlovedManPurposeUnknown) $ coterieEnemies attrs (== EerilySilent)
       investigators <- allInvestigators
-      drawCard lead Enemies.theRedGlovedManShroudedInMystery
+      drawCard lead Enemies.theRedGlovedManPurposeUnknown
       let (toDraw, rest) = splitAt (length investigators) coterie
-      for_ (zip investigators toDraw) \(iid, card) -> drawCard iid =<< fetchCard card
+      zipWithM_ drawCard investigators toDraw
       addToEncounterDeck rest
 
       for_ (Assets.theRedGlovedManHeWasAlwaysThere : conspiratorAssets attrs (/= EerilySilent)) \card -> do
@@ -688,4 +694,16 @@ instance RunMessage CongressOfTheKeys where
           portraits investigators $ createAssetAt_ card . InPlayArea
 
       setAside toSetAside
+    ResolveChaosToken drawnToken Cultist iid -> do
+      controlledKeys <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
+      unless (null controlledKeys) do
+        chooseOneM iid do
+          when (isEasyStandard attrs) $ labeled' "cultist.easyStandard" do
+            chooseTargetM iid controlledKeys (flipOverBy iid Cultist)
+            chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusTwo]
+          when (isHardExpert attrs) $ labeled' "cultist.hardExpert" do
+            chooseTargetM iid controlledKeys (flipOverBy iid Cultist)
+            chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusFour]
+          unscoped skip_
+      pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

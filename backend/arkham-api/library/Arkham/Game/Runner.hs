@@ -56,6 +56,7 @@ import Arkham.Helpers.Message hiding (
  )
 import Arkham.Helpers.Modifiers hiding (createWindowModifierEffect)
 import Arkham.Helpers.Playable
+import Arkham.Helpers.Phases (runEnemyPhase)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
@@ -522,6 +523,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         ]
     pure g
   RestartScenario -> pure $ g & (phaseL .~ InvestigationPhase)
+  SetPhase phase -> pure $ g & phaseL .~ phase
   BeginGame -> do
     let (before, _, after) = frame Window.GameBegins
     iids <- getInvestigatorsInOrder
@@ -2129,29 +2131,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (roundHistoryL %~ (<> view phaseHistoryL g))
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
-    phaseBeginsWindow <-
-      checkWindows
-        [ mkWhen Window.AnyPhaseBegins
-        , mkWhen (Window.PhaseBegins EnemyPhase)
-        , mkAfter Window.AnyPhaseBegins
-        , mkAfter (Window.PhaseBegins EnemyPhase)
-        ]
-    enemiesAttackWindow <-
-      checkWindows
-        [mkWhen Window.EnemiesAttackStep]
-    afterHuntersMoveWindow <-
-      checkWindows
-        [mkAfter Window.HuntersMoveStep]
-
-    fastWindow <- checkWindows [mkWhen Window.FastPlayerWindow]
-    let phaseStep step msgs = Msg.PhaseStep (EnemyPhaseStep step) msgs
-    pushAllEnd
-      [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
-      , phaseStep HunterEnemiesMoveStep [HuntersMove, afterHuntersMoveWindow]
-      , phaseStep ResolveAttacksWindow [fastWindow, enemiesAttackWindow]
-      , phaseStep ResolveAttacksStep [EnemiesAttack, fastWindow]
-      , phaseStep EnemyPhaseEndsStep [EndEnemy]
-      ]
+    runQueueT $ runEnemyPhase EndEnemy
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid source card -> do
     enemyId <- getRandom
@@ -2724,15 +2704,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   SetActiveInvestigator iid -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
-  -- InvestigatorDrawEncounterCard iid -> do
-  --   drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard iid $ g ^. phaseL]
-  --   pushAll
-  --     [ SetActiveInvestigator iid
-  --     , drawEncounterCardWindow
-  --     , InvestigatorDoDrawEncounterCard iid
-  --     , SetActiveInvestigator (g ^. activeInvestigatorIdL)
-  --     ]
-  --   pure g
   RevelationSkillTest sid iid (TreacherySource tid) skillType difficulty -> do
     -- [ALERT] If changed update (DreamersCurse, Somniphobia)
     mcard <- fieldMay TreacheryCard tid

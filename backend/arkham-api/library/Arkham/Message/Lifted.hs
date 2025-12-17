@@ -1547,7 +1547,10 @@ nextTurnModifiers iid source target modifiers = Msg.pushM $ Msg.nextTurnModifier
 
 flipOver
   :: (ReverseQueue m, Sourceable a, Targetable a) => InvestigatorId -> a -> m ()
-flipOver iid a = push $ Msg.Flip iid (toSource a) (toTarget a)
+flipOver iid a = do
+  mods <- Msg.getModifiers (toTarget a)
+  unless (CannotBeFlipped `elem` mods) do
+    push $ Msg.Flip iid (toSource a) (toTarget a)
 
 flipOverBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()

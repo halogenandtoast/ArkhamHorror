@@ -18,6 +18,12 @@
     "cultist": {
       "easyStandard": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -2, instead",
       "hardExpert": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -4, instead"
+    },
+    "theWorldUnbidden": {
+      "unstable": "Shift an _Unstable_ key they control without flipping it to its Stable side to cancel all of the damage and horror just dealt to them by the above effect.",
+      "stable": "Flip any number of _Stable_ keys they control to their _Unstable_ side to cancel that much damage/horror just dealt to them by the above effect.",
+      "damage": "Cancel 1 damage",
+      "horror": "Cancel 1 horror"
     }
   },
   "intro": {

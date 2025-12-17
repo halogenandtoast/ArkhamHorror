@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.CongressOfTheKeys (congressOfTheKeys) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
@@ -24,6 +25,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
@@ -722,5 +724,16 @@ instance RunMessage CongressOfTheKeys where
         push CancelSkillEffects
         cards <- concat <$> selectField InvestigatorCommittedCards Anyone
         for_ cards \c -> for_ c.owner (`hollow` c)
+      pure s
+    ScenarioSpecific "shuffleAllConcealed" _ -> do
+      concealedCards <-
+        select ConcealedCardAny >>= mapMaybeM \c -> runMaybeT do
+          InPosition pos <- lift $ field ConcealedCardPlacement c.id
+          pure (c, pos)
+      let (cards, positions) = unzip concealedCards
+      shuffled <- shuffle cards
+      lead <- getLead
+      for_ (zip shuffled positions) \(card, pos) -> do
+        push $ PlaceConcealedCard lead (toId card) (InPosition pos)
       pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

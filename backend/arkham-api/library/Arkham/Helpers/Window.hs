@@ -597,6 +597,8 @@ getTotalDamageAmounts target =
     (windowType -> Window.DealtDamage source _ (isTarget target -> True) d) -> MonoidalMap.singleton source (Sum d, Sum 0)
     (windowType -> Window.DealtHorror source (isTarget target -> True) h) -> MonoidalMap.singleton source (Sum 0, Sum h)
     (windowType -> Window.DealtExcessDamage source _ (isTarget target -> True) d) -> MonoidalMap.singleton source (Sum d, Sum 0)
+    (windowType -> Window.WouldTakeDamage source (isTarget target -> True) d _) -> MonoidalMap.singleton source (Sum d, Sum 0)
+    (windowType -> Window.WouldTakeHorror source (isTarget target -> True) h) -> MonoidalMap.singleton source (Sum 0, Sum h)
     _ -> mempty
 
 getTotalDamage :: [Window] -> Int

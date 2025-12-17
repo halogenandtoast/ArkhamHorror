@@ -551,6 +551,7 @@ data Message
   | -- Game State Control
     BeginGame
   | Begin Phase
+  | SetPhase Phase
   | Again Message -- if we repeat the investigation phase we need to reset actions
   | PhaseStep PhaseStep [Message]
   | BeginRound

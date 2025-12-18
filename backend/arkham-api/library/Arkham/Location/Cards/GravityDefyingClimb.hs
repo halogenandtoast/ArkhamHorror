@@ -1,8 +1,8 @@
 module Arkham.Location.Cards.GravityDefyingClimb (gravityDefyingClimb) where
 
+import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
-import Arkham.Cost
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
@@ -37,62 +37,56 @@ instance HasModifiersFor GravityDefyingClimb where
         (ConcealedCardOneOf $ map (ConcealedCardWithPlacement . InPosition) concealedPositions)
         [ScenarioModifier "doNotRemove"]
 
+withAdjacentConcealed
+  :: ReverseQueue m
+  => LocationAttrs
+  -> Value
+  -> ConcealedCardKind
+  -> (InvestigatorId -> ConcealedCard -> m LocationAttrs)
+  -> m GravityDefyingClimb
+withAdjacentConcealed attrs v ckind f = do
+  let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
+  if maybe True (`notElem` concealedPositions) c.position
+    then pure $ GravityDefyingClimb attrs
+    else do
+      chooseOneM iid $ abilityLabeled_ iid (mkAbility attrs (-1) $ forced AnyWindow)
+      attrs' <-
+        if getLocationMetaDefault CityOfRemnantsL attrs == ckind
+          then f iid c
+          else do
+            allCards <- selectMap (.id) ConcealedCardAny
+            for_ allCards $ doStep1 1 . lookAtRevealed iid ScenarioSource
+            pure $ attrs & setMeta CityOfRemnantsL
+      do_ $ PlaceConcealedCard iid c.id c.placement -- fix concealed placement
+      pure $ GravityDefyingClimb attrs'
+
 instance RunMessage GravityDefyingClimb where
   runMessage msg l@(GravityDefyingClimb attrs) = runQueueT $ case msg of
     ScenarioSpecific "exposed[CityOfRemnantsL]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      case getLocationMetaDefault CityOfRemnantsL attrs of
-        _ | maybe True (`notElem` concealedPositions) c.position -> pure l
-        CityOfRemnantsL -> do
-          otherCards <- select $ ConcealedCardAny <> NotConcealedCard (ConcealedCardWithId c.id)
-          chooseOneM iid do
-            for_ otherCards \otherCard ->
-              targeting otherCard.id do
-                exposeConcealed iid attrs otherCard.id
-                do_ $ PlaceConcealedCard iid otherCard.id otherCard.placement
-            withI18n skip_
-          do_ $ PlaceConcealedCard iid c.id c.placement
-          pure $ GravityDefyingClimb $ attrs & setMeta CityOfRemnantsM
-        _ -> do
-          allCards <- selectMap (.id) ConcealedCardAny
-          for_ allCards $ doStep1 1 . lookAtRevealed iid ScenarioSource
-          do_ $ PlaceConcealedCard iid c.id c.placement
-          pure $ GravityDefyingClimb $ attrs & setMeta CityOfRemnantsL
+      withAdjacentConcealed attrs v CityOfRemnantsL \iid c -> do
+        otherCards <- select $ ConcealedCardAny <> NotConcealedCard (ConcealedCardWithId c.id)
+        chooseOneM iid do
+          for_ otherCards \otherCard ->
+            targeting otherCard.id do
+              exposeConcealed iid attrs otherCard.id
+              do_ $ PlaceConcealedCard iid otherCard.id otherCard.placement
+          withI18n skip_
+        pure $ attrs & setMeta CityOfRemnantsM
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      case getLocationMetaDefault CityOfRemnantsL attrs of
-        _ | maybe True (`notElem` concealedPositions) c.position -> pure l
-        CityOfRemnantsM -> do
-          otherCards <- select $ ConcealedCardAny <> NotConcealedCard (ConcealedCardWithId c.id)
-          chooseOneM iid do
-            for_ otherCards \otherCard ->
-              targeting otherCard.id do
-                exposeConcealed iid attrs otherCard.id
-                do_ $ PlaceConcealedCard iid otherCard.id otherCard.placement
-            withI18n skip_
-          do_ $ PlaceConcealedCard iid c.id c.placement
-          pure $ GravityDefyingClimb $ attrs & setMeta CityOfRemnantsR
-        _ -> do
-          allCards <- selectMap (.id) ConcealedCardAny
-          for_ allCards $ doStep1 1 . lookAtRevealed iid ScenarioSource
-          do_ $ PlaceConcealedCard iid c.id c.placement
-          pure $ GravityDefyingClimb $ attrs & setMeta CityOfRemnantsL
+      withAdjacentConcealed attrs v CityOfRemnantsM \iid c -> do
+        otherCards <- select $ ConcealedCardAny <> NotConcealedCard (ConcealedCardWithId c.id)
+        chooseOneM iid do
+          for_ otherCards \otherCard ->
+            targeting otherCard.id do
+              exposeConcealed iid attrs otherCard.id
+              do_ $ PlaceConcealedCard iid otherCard.id otherCard.placement
+          withI18n skip_
+        pure $ attrs & setMeta CityOfRemnantsR
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
-      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      if maybe False (`elem` concealedPositions) c.position
-        then do
-          case getLocationMetaDefault CityOfRemnantsL attrs of
-            CityOfRemnantsR -> do
-              theToweringVertex <- selectJust $ locationIs Cards.theToweringVertexRuinousConflux
-              gameModifier ScenarioSource theToweringVertex (ScenarioModifier "canEnter")
-              do_ $ PlaceConcealedCard iid c.id c.placement
-              pure l
-            _ -> do
-              allCards <- selectMap (.id) ConcealedCardAny
-              for_ allCards $ doStep1 1 . lookAtRevealed iid ScenarioSource
-              do_ $ PlaceConcealedCard iid c.id c.placement
-              pure $ GravityDefyingClimb $ attrs & setMeta CityOfRemnantsL
-        else pure l
+      withAdjacentConcealed attrs v CityOfRemnantsR \_iid _c -> do
+        theToweringVertex <- selectJust $ locationIs Cards.theToweringVertexRuinousConflux
+        gameModifier ScenarioSource theToweringVertex (ScenarioModifier "canEnter")
+        pure attrs
     ScenarioSpecific "exposed[decoy]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       if maybe False (`elem` concealedPositions) c.position

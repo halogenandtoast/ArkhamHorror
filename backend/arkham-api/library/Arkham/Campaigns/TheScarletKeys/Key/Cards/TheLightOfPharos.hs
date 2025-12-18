@@ -67,6 +67,6 @@ instance RunMessage TheLightOfPharos where
             chooseTargetM iid cards \card -> do
               reduceCostOf attrs card 3
               playCardPayingCost iid card
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     _ -> TheLightOfPharos <$> liftRunMessage msg attrs

@@ -22,6 +22,7 @@ data Token
   | Doom
   | Durability
   | Eclipse
+  | Empowerment
   | Evidence
   | Growth
   | Horror

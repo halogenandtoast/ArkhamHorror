@@ -52,7 +52,7 @@ instance RunMessage TheBaleEngine where
                 $ AssetControlledBy (affectsColocated iid)
                 <> mapOneOf AssetCanHaveUses [Ammo, Charge, Secret, Supply, Evidence]
             chooseTargetM iid assets $ handleTarget iid attrs
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       canAmmo <- matches aid (AssetCanHaveUses Ammo)

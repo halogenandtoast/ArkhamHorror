@@ -39,6 +39,6 @@ instance RunMessage TheRuinousChime where
           withInvestigatorBearer attrs \iid -> do
             enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeEvadedBy (attrs.ability 1)
             chooseOneAtATimeM iid $ targets enemies $ automaticallyEvadeEnemy iid
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     _ -> TheRuinousChime <$> liftRunMessage msg attrs

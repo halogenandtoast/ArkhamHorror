@@ -54,7 +54,7 @@ instance RunMessage TheShadeReaper where
             withLocationOf iid \loc -> do
               enemies <- select $ enemyAt loc <> NonEliteEnemy
               chooseOneToHandle iid attrs enemies
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget enemy) -> do
       locations <- select $ connectedFrom $ locationWithEnemy enemy
@@ -66,7 +66,7 @@ instance RunMessage TheShadeReaper where
     DoStep 1 (HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget enemy)) -> do
       enemies <- select $ EnemyAt (locationWithEnemy enemy) <> not_ (EnemyWithId enemy)
       n <- (+) <$> field EnemyHealthDamage enemy <*> field EnemySanityDamage enemy
-      chooseOneM iid $ withI18n do
+      chooseOrRunOneM iid $ withI18n do
         targets enemies $ nonAttackEnemyDamage (Just iid) enemy n
         unscoped skip_
       pure k

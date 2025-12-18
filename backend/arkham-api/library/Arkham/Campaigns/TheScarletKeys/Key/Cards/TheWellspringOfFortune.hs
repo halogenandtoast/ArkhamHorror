@@ -33,7 +33,7 @@ instance RunMessage TheWellspringOfFortune where
           withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do
           createCardEffect Cards.theWellspringOfFortune (effectInt 1) (attrs.ability 1) attrs
-          withInvestigatorBearer attrs (`flipOver` attrs)
+          withInvestigatorBearer attrs (`handleUnstableFlip` attrs)
       pure k
     _ -> TheWellspringOfFortune <$> liftRunMessage msg attrs
 

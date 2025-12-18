@@ -57,6 +57,6 @@ instance RunMessage TheTwistedAntiprism where
         targets treacheries $ placeDoomOn attrs 1
         targets agendas $ placeDoomOn attrs 1
 
-      withInvestigatorBearer attrs (`flipOver` attrs)
+      withInvestigatorBearer attrs (`handleUnstableFlip` attrs)
       pure k
     _ -> TheTwistedAntiprism <$> liftRunMessage msg attrs

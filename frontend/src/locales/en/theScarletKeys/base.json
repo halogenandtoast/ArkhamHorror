@@ -214,6 +214,7 @@
     "youKnowThePassphrase": "You know the passphrase"
   },
   "label": {
+    "empowered": "Spend empowerment instead of flipping to _Unstable_ side",
     "figuresInTheDark": {
       "attack": "Each enemy in the shadows attacks you.",
       "loseAction": "Each investigator loses an action."

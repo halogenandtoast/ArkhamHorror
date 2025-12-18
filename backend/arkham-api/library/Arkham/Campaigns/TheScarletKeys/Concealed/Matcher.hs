@@ -16,6 +16,7 @@ data ConcealedCardMatcher
   | ConcealedCardAny
   | NotConcealedCard ConcealedCardMatcher
   | ExposableConcealedCard Source
+  | ExposedConcealedCard
   | ConcealedCardOneOf [ConcealedCardMatcher]
   | ConcealedCardMatchAll [ConcealedCardMatcher]
   | ConcealedCardAt LocationMatcher

@@ -20,7 +20,7 @@ mimeticNemesisInfiltratorOfRealities =
 instance HasModifiersFor MimeticNemesisInfiltratorOfRealities where
   getModifiersFor (MimeticNemesisInfiltratorOfRealities a) = do
     n <- perPlayer 3
-    modifySelf a [HealthModifier n]
+    modifySelf a [HealthModifier n, CannotMakeAttacksOfOpportunity]
 
 instance RunMessage MimeticNemesisInfiltratorOfRealities where
   runMessage msg (MimeticNemesisInfiltratorOfRealities attrs) = runQueueT $ case msg of

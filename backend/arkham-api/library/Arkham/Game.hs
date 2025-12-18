@@ -3112,6 +3112,7 @@ getConcealedCardsMatching matcher = do
     ConcealedCardWithPlacement placement -> pure $ filter ((== placement) . attr concealedCardPlacement) as
     ConcealedCardAny -> pure as
     ConcealedCardOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    ExposedConcealedCard -> pure $ filter (attr concealedCardFlipped) as
     ExposableConcealedCard source -> filterMatcher as (ConcealedCardAt $ LocationWithExposableConcealedCard source)
     NotConcealedCard m -> do
       matches' <- filterMatcher as m

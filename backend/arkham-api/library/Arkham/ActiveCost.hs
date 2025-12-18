@@ -20,6 +20,7 @@ import Arkham.Asset.Types (
 import Arkham.Attack
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers (addTekelili)
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -205,6 +206,10 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    FlipScarletKeyCost -> do
+      ks <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
+      push $ chooseOne player $ targetLabels ks $ only . Flip iid source . toTarget
+      pure c
     OneOfDistanceCost lmatcher inner -> do
       getLocationOf iid >>= \case
         Nothing -> pure c

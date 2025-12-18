@@ -210,6 +210,7 @@ data Cost
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost
+  | FlipScarletKeyCost
   | -- We do the costs that can kill the investigator last so we don't trigger discards before the cost is paid
     DirectHorrorCost Source InvestigatorMatcher Int
   | DirectDamageAndHorrorCost Source InvestigatorMatcher Int Int
@@ -261,6 +262,7 @@ displayCostType = \case
   XCost c -> "X " <> displayCostType c
   OneOfDistanceCost _ c -> "X " <> displayCostType c
   LabeledCost lbl _ -> lbl
+  FlipScarletKeyCost -> "Flip a Stable key you control to its Unstable side"
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"

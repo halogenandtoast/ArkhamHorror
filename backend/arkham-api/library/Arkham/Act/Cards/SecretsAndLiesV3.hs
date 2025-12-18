@@ -14,6 +14,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (setActiveDuringSetup)
+import Arkham.Scenarios.CongressOfTheKeys.Helpers
 
 newtype SecretsAndLiesV3 = SecretsAndLiesV3 ActAttrs
   deriving anyclass IsAct
@@ -60,7 +61,7 @@ instance RunMessage SecretsAndLiesV3 where
 
       moveAllTo attrs theKnottedTower
       place theRedGlovedMan theToweringVertex
-      scenarioSpecific_ "setupOtherworld"
+      scenarioSpecific "setupOtherworld" Version3
       advanceActDeck attrs
       pure a
     _ -> SecretsAndLiesV3 <$> liftRunMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Action (Action)
 import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.Base
@@ -95,6 +96,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
             [] -> pure False
         go windows'
       XCost c -> getCanAffordCost_ iid source actions windows' canModify c -- just need to afford once
+      FlipScarletKeyCost ->
+        selectAny $ StableScarletKey <> ScarletKeyWithBearer (Matcher.InvestigatorWithId iid)
       OneOfDistanceCost lmatcher c -> do
         getLocationOf iid >>= \case
           Nothing -> pure False

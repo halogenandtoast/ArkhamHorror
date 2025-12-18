@@ -135,14 +135,16 @@ exposedDecoy :: ReverseQueue m => InvestigatorId -> ConcealedCard -> Maybe Text 
 exposedDecoy iid card@(toTarget -> c) mtext = do
   whenM (getCanExpose iid card) do
     let ekey = "exposed[decoy]"
+    mods <- getModifiers c
     batched \_ -> do
       checkWhen $ Window.CampaignEvent ekey (Just iid) (toJSON c)
       for_ mtext \txt ->
         checkWhen $ Window.CampaignEvent ("exposed[" <> txt <> "]") (Just iid) (toJSON c)
+      scenarioSpecific "exposed[decoy]" (iid, card)
       checkAfter $ Window.CampaignEvent ekey (Just iid) (toJSON c)
       for_ mtext \txt ->
         checkAfter $ Window.CampaignEvent ("exposed[" <> txt <> "]") (Just iid) (toJSON c)
-      removeFromGame c
+      unless (ScenarioModifier "doNotRemove" `elem` mods) $ removeFromGame c
 
 whenExposed :: HasCardCode c => c -> WindowMatcher
 whenExposed c = CampaignEvent #when Nothing ekey

@@ -18,6 +18,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
@@ -42,7 +43,7 @@ import Arkham.Scenarios.CongressOfTheKeys.Helpers
 import Arkham.Trait (Trait (Outsider))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
-import Control.Lens (non)
+import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
 
 newtype CongressOfTheKeys = CongressOfTheKeys ScenarioAttrs
@@ -59,10 +60,6 @@ congressOfTheKeys difficulty =
     [ "coterieSanctuary1 coterieSanctuary2 coterieSanctuary3"
     , ".                 scarletHalls      ."
     ]
-
-data Version = Version1 | Version2 | Version3
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
 
 data Coterie
   = TheRedGlovedMan
@@ -579,6 +576,31 @@ instance RunMessage CongressOfTheKeys where
       gather Set.SpreadingCorruption
       gather Set.LockedDoors
 
+      -- extra deck, it is easier to gather it now since we can use the
+      -- scenario helpers
+      gather Set.AgentsOfTheOutside
+      gather Set.BeyondTheBeyond
+      gather Set.Outsiders
+      gather Set.SecretWar
+      gather Set.AncientEvils
+      gatherJust Set.StrikingFear [Treacheries.frozenInFear, Treacheries.dissonantVoices]
+
+      setExtraEncounterDeck SetAsideEncounterDeck
+        =<< amongGathered
+          ( SingleSidedCard
+              <> mapOneOf
+                CardFromEncounterSet
+                [ Set.AgentsOfTheOutside
+                , Set.BeyondTheBeyond
+                , Set.Outsiders
+                , Set.SecretWar
+                , Set.AncientEvils
+                , Set.StrikingFear
+                ]
+              <> not_ #location
+          )
+      addExtraDeck OtherworldDeck =<< shuffle =<< fromGathered (CardWithTitle "City of Remnants")
+
       startAt =<< placeInGrid (Pos 0 0) Locations.scarletHallsLair
       coterieSanctuaries <-
         shuffle [Locations.coterieLibraryLair, Locations.congressChamberLair, Locations.theKeyReliquaryLair]
@@ -753,7 +775,7 @@ instance RunMessage CongressOfTheKeys where
       for_ (zip shuffled positions) \(card, pos) -> do
         push $ PlaceConcealedCard lead (toId card) (InPosition pos)
       pure s
-    ScenarioSpecific "setupOtherworld" _ -> do
+    ScenarioSpecific "setupOtherworld" v -> do
       let otherworldDeck = attrs ^. decksL . at OtherworldDeck . non []
       let (inPlay, rest) = splitAt 3 otherworldDeck
 
@@ -778,7 +800,19 @@ instance RunMessage CongressOfTheKeys where
       for_ (zip cards [Pos 1 0, Pos 0 (-1), Pos (-1) 0]) \(card, pos) -> do
         push $ Msg.CreateConcealedCard card
         push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
-      pure $ CongressOfTheKeys $ attrs & decksL . at OtherworldDeck ?~ rest & metaL .~ toJSON meta
+
+      let
+        setDeck =
+          case toResult v of
+            Version1 -> const (attrs ^. encounterDecksL . at SetAsideEncounterDeck . non (Deck [], []) . _1)
+            _ -> id
+      pure
+        $ CongressOfTheKeys
+        $ attrs
+        & (encounterDecksL .~ mempty)
+        & (encounterDeckL %~ setDeck)
+        & (decksL . at OtherworldDeck ?~ rest)
+        & (metaL .~ toJSON meta)
     LookAtTopOfDeck iid (ScenarioDeckTarget OtherworldDeck) n -> do
       case fromJustNote "must be set" (lookup OtherworldDeck attrs.decks) of
         cards -> focusCards (map flipCard $ take n cards) $ continue_ iid

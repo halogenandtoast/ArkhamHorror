@@ -51,6 +51,7 @@ instance FromJSONKey ScenarioDeckKey
 data ScenarioEncounterDeckKey
   = RegularEncounterDeck
   | SpectralEncounterDeck -- The Wages of Sin
+  | SetAsideEncounterDeck -- Congress of the Keys
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioEncounterDeckKey)

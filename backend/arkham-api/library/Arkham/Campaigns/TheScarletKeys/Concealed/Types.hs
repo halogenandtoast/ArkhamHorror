@@ -8,7 +8,8 @@ import Arkham.Classes.Entity
 import Arkham.Field
 import Arkham.Id
 import Arkham.Json
-import {-# SOURCE #-} Arkham.Placement
+import Arkham.Location.Grid
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
@@ -30,6 +31,11 @@ instance AsId ConcealedCard where
 
 instance HasField "isDecoy" ConcealedCard Bool where
   getField c = c.kind == Decoy
+
+instance HasField "position" ConcealedCard (Maybe Pos) where
+  getField c = case c.placement of
+    InPosition pos -> Just pos
+    _ -> Nothing
 
 instance HasField "placement" ConcealedCard Placement where
   getField = concealedCardPlacement

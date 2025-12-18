@@ -25,7 +25,7 @@ instance HasAbilities DesiderioDelgadoAlvarezRedInHisLedger where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyWouldTakeDamage #when (EnemyAt (locationWithEnemy a) <> EnemyWithTrait Coterie)
+      $ EnemyWouldTakeDamage #when AnySource (EnemyAt (locationWithEnemy a) <> EnemyWithTrait Coterie)
 
 instance RunMessage DesiderioDelgadoAlvarezRedInHisLedger where
   runMessage msg e@(DesiderioDelgadoAlvarezRedInHisLedger attrs) = runQueueT $ case msg of

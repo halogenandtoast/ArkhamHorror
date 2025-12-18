@@ -105,7 +105,7 @@ data WindowMatcher
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
-  | EnemyWouldTakeDamage Timing EnemyMatcher
+  | EnemyWouldTakeDamage Timing SourceMatcher EnemyMatcher
   | WouldSearchDeck Timing Who DeckMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
   | LookedAtDeck Timing Who DeckMatcher
@@ -334,6 +334,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "EnemyWouldTakeDamage" -> do
+        econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case econtents of
+          Left (a, b) -> pure $ EnemyWouldTakeDamage a AnySource b
+          Right (a, b, c) -> pure $ EnemyWouldTakeDamage a b c
       "AddedToVictory" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

@@ -917,10 +917,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
-    Matcher.EnemyWouldTakeDamage timing enemyMatcher ->
+    Matcher.EnemyWouldTakeDamage timing sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.WouldTakeDamage _source (EnemyTarget eid) _ _strategy ->
-          matches eid enemyMatcher
+        Window.WouldTakeDamage source' (EnemyTarget eid) _ _strategy ->
+          andM 
+            [ matches eid enemyMatcher
+            , sourceMatches source' sourceMatcher
+            ]
         _ -> noMatch
     Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher damageTypeMatcher ->
       guardTiming timing $ \case

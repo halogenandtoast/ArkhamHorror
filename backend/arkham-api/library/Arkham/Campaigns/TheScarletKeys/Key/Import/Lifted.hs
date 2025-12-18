@@ -32,7 +32,11 @@ import Arkham.Prelude as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.I18n
 import Arkham.Id
+import Arkham.Message.Lifted.Choose
+import Arkham.Token
 import Arkham.Window
 
 withInvestigatorBearer
@@ -52,3 +56,11 @@ shiftKey attrs body = do
   checkWhen $ CampaignEvent "shiftKey" Nothing (toJSON attrs.id)
   body
   checkAfter $ CampaignEvent "shiftKey" Nothing (toJSON attrs.id)
+
+handleUnstableFlip :: ReverseQueue m => InvestigatorId -> ScarletKeyAttrs -> m ()
+handleUnstableFlip iid attrs = do
+  if attrs.token Empowerment > 0
+    then chooseOneM iid $ campaignI18n do
+      labeled' "empowered" $ removeTokens attrs attrs Empowerment 1
+      unscoped $ labeled' "skip" $ flipOver iid attrs
+    else flipOver iid attrs

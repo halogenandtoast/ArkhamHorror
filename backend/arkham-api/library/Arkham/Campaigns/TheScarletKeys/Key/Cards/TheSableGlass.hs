@@ -45,6 +45,6 @@ instance RunMessage TheSableGlass where
           withInvestigatorBearer attrs \iid -> do
             concealedCards <- select $ ConcealedCardAt (locationWithInvestigator iid)
             chooseOneAtATimeM iid $ targets concealedCards $ revealConcealed iid attrs . toId
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     _ -> TheSableGlass <$> liftRunMessage msg attrs

@@ -111,6 +111,12 @@ instance HasField "bearer" ScarletKeyAttrs Target where
 instance HasField "placement" ScarletKeyAttrs Placement where
   getField = keyPlacement
 
+instance HasField "tokens" ScarletKeyAttrs Tokens where
+  getField = keyTokens
+
+instance HasField "token" ScarletKeyAttrs (Token -> Int) where
+  getField a tType = countTokens tType a.tokens
+
 key :: (ScarletKeyAttrs -> a) -> CardDef -> CardBuilder (Target, ScarletKeyId) a
 key f cardDef =
   CardBuilder

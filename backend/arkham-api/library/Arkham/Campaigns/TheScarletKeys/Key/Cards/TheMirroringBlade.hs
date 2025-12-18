@@ -46,7 +46,7 @@ instance RunMessage TheMirroringBlade where
               labeled' "theMirroringBlade.all" do
                 chooseOneAtATimeM iid do
                   targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
 
       pure k
     _ -> TheMirroringBlade <$> liftRunMessage msg attrs

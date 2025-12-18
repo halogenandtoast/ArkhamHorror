@@ -13,7 +13,7 @@ newtype CongressChamberSanctum = CongressChamberSanctum LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congressChamberSanctum :: LocationCard CongressChamberSanctum
-congressChamberSanctum = location CongressChamberSanctum Cards.congressChamberSanctum 0 (Static 0)
+congressChamberSanctum = location CongressChamberSanctum Cards.congressChamberSanctum 3 (PerPlayer 1)
 
 instance HasAbilities CongressChamberSanctum where
   getAbilities (CongressChamberSanctum a) =

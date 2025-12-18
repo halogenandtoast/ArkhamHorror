@@ -39,7 +39,7 @@ instance RunMessage TheEyeOfRavens where
           withSkillTest \sid -> do
             withSkillTestInvestigator \iid -> do
               skillTestModifier sid attrs iid (BaseSkill 6)
-          withInvestigatorBearer attrs (`flipOver` attrs)
+          withInvestigatorBearer attrs (`handleUnstableFlip` attrs)
         when attrs.unstable $ batched \_ -> do
           withInvestigatorBearer attrs \iid -> do
             drawEncounterCardAndThen iid attrs $ flipOver iid attrs

@@ -54,6 +54,6 @@ instance RunMessage TheWeepingLady where
                 $ orConnected NotForMovement (locationWithInvestigator iid)
                 <> locationWithDiscoverableCluesBy iid
             chooseTargetM iid locations $ discoverAt NotInvestigate iid attrs 1
-            flipOver iid attrs
+            handleUnstableFlip iid attrs
       pure k
     _ -> TheWeepingLady <$> liftRunMessage msg attrs

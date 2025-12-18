@@ -2,9 +2,10 @@ module Arkham.Scenario.Scenarios.CongressOfTheKeys (congressOfTheKeys) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed (
-  ConcealedCardKind (CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR),
+  ConcealedCardKind (CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR, Decoy),
   mkConcealedCard,
  )
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
@@ -20,6 +21,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
+import Arkham.Helpers.Agenda (getCurrentAgenda)
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
@@ -778,6 +780,7 @@ instance RunMessage CongressOfTheKeys where
     ScenarioSpecific "setupOtherworld" v -> do
       let otherworldDeck = attrs ^. decksL . at OtherworldDeck . non []
       let (inPlay, rest) = splitAt 3 otherworldDeck
+      let version = toResult v
 
       meta <- case inPlay of
         [x, y, z] -> do
@@ -793,13 +796,19 @@ instance RunMessage CongressOfTheKeys where
               }
         _ -> error "expected exactly three locations in play"
 
+      decoys <- case version of
+        Version2 -> do
+          doom <- field AgendaDoom =<< getCurrentAgenda
+          pure $ replicate doom Decoy
+        _ -> pure []
       cards <-
-        shuffle =<< traverse mkConcealedCard [CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR]
+        shuffle =<< traverse mkConcealedCard ([CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR] <> decoys)
 
       lead <- getLead
-      for_ (zip cards [Pos 1 0, Pos 0 (-1), Pos (-1) 0]) \(card, pos) -> do
-        push $ Msg.CreateConcealedCard card
-        push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
+      for_ cards $ push . Msg.CreateConcealedCard
+
+      let positions = [Pos 1 0, Pos 0 (-1), Pos (-1) 0]
+      scenarioSpecific "distributeConcealedLocations" (lead, cards, positions, positions)
 
       let
         setDeck =

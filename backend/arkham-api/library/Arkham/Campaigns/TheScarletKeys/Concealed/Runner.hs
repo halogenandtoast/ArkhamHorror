@@ -102,6 +102,7 @@ instance RunMessage ConcealedCard where
           CityOfRemnantsL -> scenarioSpecific "exposed[CityOfRemnantsL]" (iid, c)
           CityOfRemnantsM -> scenarioSpecific "exposed[CityOfRemnantsM]" (iid, c)
           CityOfRemnantsR -> scenarioSpecific "exposed[CityOfRemnantsR]" (iid, c)
+          MimeticNemesis -> scenarioSpecific "exposed[MimeticNemesis]" (iid, c)
           _ -> pure ()
         Just def -> do
           enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title
@@ -132,6 +133,8 @@ instance RunMessage ConcealedCard where
                 _ -> error "invalid placement for concealed card"
               doStep 2 msg'
       pure $ c {concealedCardPlacement = Unplaced}
+    DoStep 0 (Flip _iid _ (isTarget c -> True)) -> do
+      pure $ c {concealedCardFlipped = True}
     AttackEnemy eid choose | eid == coerce (unConcealedCardId c.id) -> do
       let iid = choose.investigator
       let source = choose.source

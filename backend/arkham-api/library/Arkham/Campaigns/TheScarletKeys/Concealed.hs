@@ -35,6 +35,7 @@ mkConcealedCard kind = do
 
 instance HasAbilities ConcealedCard where
   getAbilities a = case a.placement of
+    InPosition _ | a.concealedCardFlipped -> []
     InPosition pos ->
       [ basicAbility
           $ restricted

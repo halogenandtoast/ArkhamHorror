@@ -2780,6 +2780,12 @@ discoverAt isInvestigate iid s n lid = do
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg
 
+doStep1 :: ReverseQueue m => Int -> QueueT Message m () -> m ()
+doStep1 n body =
+  capture body >>= \case
+    [msg] -> doStep n msg
+    _ -> error "doStep1 expects exactly one message"
+
 do_ :: ReverseQueue m => Message -> m ()
 do_ msg = push $ Msg.Do msg
 

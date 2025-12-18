@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -20,8 +21,8 @@ toTheTower = act (2, A) ToTheTower Cards.toTheTower Nothing
 
 instance HasModifiersFor ToTheTower where
   getModifiersFor (ToTheTower a) = do
-    when (onSide A a) $
-      modifySelect a (LocationWithTrait Tower) [ScenarioModifier "noCityOfRemnants"]
+    when (onSide A a)
+      $ modifySelect a (LocationWithTrait Tower) [ScenarioModifier "noCityOfRemnants"]
 
 instance HasAbilities ToTheTower where
   getAbilities = actAbilities1 \a ->
@@ -36,7 +37,9 @@ instance RunMessage ToTheTower where
       selectEach ConcealedCardAny removeFromGame
       selectEach (LocationWithPlacement InTheShadows) removeLocation
       removeScenarioDeck OtherworldDeck
-      cards <- shuffle =<< traverse mkConcealedCard [CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR, Decoy]
+      decoys <- flip replicate Decoy <$> perPlayer 1
+      cards <-
+        shuffle =<< traverse mkConcealedCard ([CityOfRemnantsL, CityOfRemnantsM, CityOfRemnantsR] <> decoys)
       lead <- getLead
       let positions = [Pos 1 1, Pos (-1) 1]
       for_ cards (push . CreateConcealedCard)

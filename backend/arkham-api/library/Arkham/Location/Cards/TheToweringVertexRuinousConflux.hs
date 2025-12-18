@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.TheToweringVertexRuinousConflux (theToweringVertexRuinousConflux) where
 
+import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modifySelect, modifySelf)
@@ -7,11 +8,12 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 
 newtype TheToweringVertexRuinousConflux = TheToweringVertexRuinousConflux LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theToweringVertexRuinousConflux :: LocationCard TheToweringVertexRuinousConflux
 theToweringVertexRuinousConflux =
@@ -32,20 +34,18 @@ instance HasModifiersFor TheToweringVertexRuinousConflux where
         (ConcealedCardOneOf $ map (ConcealedCardWithPlacement . InPosition) concealedPositions)
         [ScenarioModifier "doNotRemove"]
 
-instance HasAbilities TheToweringVertexRuinousConflux where
-  getAbilities (TheToweringVertexRuinousConflux a) =
-    extendRevealed a []
-
 instance RunMessage TheToweringVertexRuinousConflux where
   runMessage msg l@(TheToweringVertexRuinousConflux attrs) = runQueueT $ case msg of
     ScenarioSpecific "exposed[decoy]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       when (maybe False (`elem` concealedPositions) c.position) do
+        chooseOneM iid $ abilityLabeled_ iid (mkAbility attrs (-1) $ forced AnyWindow)
         do_ $ PlaceConcealedCard iid c.id c.placement
         doStep1 0 $ flipOver iid c
       pure l
     ScenarioSpecific "exposed[MimeticNemesis]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
+      chooseOneM iid $ abilityLabeled_ iid (mkAbility attrs (-1) $ forced AnyWindow)
       mimeticNemesis <- selectJust $ enemyIs Enemies.mimeticNemesisInfiltratorOfRealities
       nonAttackEnemyDamage (Just iid) attrs 3 mimeticNemesis
       do_ $ PlaceConcealedCard iid c.id c.placement

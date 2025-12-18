@@ -14,17 +14,13 @@ import Arkham.Placement
 
 newtype GravityDefyingClimb = GravityDefyingClimb LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 gravityDefyingClimb :: LocationCard GravityDefyingClimb
 gravityDefyingClimb =
   locationWith GravityDefyingClimb Cards.gravityDefyingClimb 4 (Static 0)
     $ costToEnterUnrevealedL
     .~ GroupClueCost (PerPlayer 4) "The Knotted Tower"
-
-instance HasAbilities GravityDefyingClimb where
-  getAbilities (GravityDefyingClimb a) =
-    extendRevealed a []
 
 concealedPositions :: [Pos]
 concealedPositions = [Pos (-1) 1, Pos 1 1]
@@ -91,6 +87,7 @@ instance RunMessage GravityDefyingClimb where
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       if maybe False (`elem` concealedPositions) c.position
         then do
+          chooseOneM iid $ abilityLabeled_ iid (mkAbility attrs (-1) $ forced AnyWindow)
           allCards <- selectMap (.id) ConcealedCardAny
           for_ allCards $ doStep1 1 . lookAtRevealed iid ScenarioSource
           do_ $ PlaceConcealedCard iid c.id c.placement

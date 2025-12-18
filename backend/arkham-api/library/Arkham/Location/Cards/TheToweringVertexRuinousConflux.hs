@@ -15,8 +15,10 @@ newtype TheToweringVertexRuinousConflux = TheToweringVertexRuinousConflux Locati
 
 theToweringVertexRuinousConflux :: LocationCard TheToweringVertexRuinousConflux
 theToweringVertexRuinousConflux =
-  symbolLabel
-    $ location TheToweringVertexRuinousConflux Cards.theToweringVertexRuinousConflux 0 (Static 0)
+  location TheToweringVertexRuinousConflux Cards.theToweringVertexRuinousConflux 6 (Static 0)
+
+concealedPositions :: [Pos]
+concealedPositions = [Pos (-1) 2, Pos 0 3, Pos 1 2]
 
 instance HasModifiersFor TheToweringVertexRuinousConflux where
   getModifiersFor (TheToweringVertexRuinousConflux a) = do
@@ -27,7 +29,7 @@ instance HasModifiersFor TheToweringVertexRuinousConflux where
     when a.revealed do
       modifySelect
         a
-        (ConcealedCardOneOf $ map (ConcealedCardWithPlacement . InPosition) [Pos (-1) 2, Pos 0 3, Pos 1 2])
+        (ConcealedCardOneOf $ map (ConcealedCardWithPlacement . InPosition) concealedPositions)
         [ScenarioModifier "doNotRemove"]
 
 instance HasAbilities TheToweringVertexRuinousConflux where
@@ -38,7 +40,7 @@ instance RunMessage TheToweringVertexRuinousConflux where
   runMessage msg l@(TheToweringVertexRuinousConflux attrs) = runQueueT $ case msg of
     ScenarioSpecific "exposed[decoy]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
-      when (c.placement `elem` (InPosition <$> [Pos (-1) 2, Pos 0 3, Pos 1 1])) do
+      when (maybe False (`elem` concealedPositions) c.position) do
         do_ $ PlaceConcealedCard iid c.id c.placement
         doStep1 0 $ flipOver iid c
       pure l

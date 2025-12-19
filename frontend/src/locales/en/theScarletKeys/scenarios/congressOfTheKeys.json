@@ -159,6 +159,9 @@
     }
   },
   "resolutions": {
+    "xp": {
+      "bonus": "Saved their dimension from a terrible fate."
+    },
     "defeated": {
       "title": "Investigator Defeat",
       "body": "<p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_:  With no dimension left for your body to exist within, every fiber of your being is torn apart. Your memories and thoughts drip through endless oblivion from now until the end of all things. But your consciousness, your awareness, remains. An infinite, eternal prison of nothingness.</p><ul><li>Each investigator who was defeated is driven _insane_ and is never seen or heard from again. All memory of their existence is purged from reality.</li><li>If another resolution was reached, the remaining investigators proceed to that resolution.</li><li>If no resolution was reached (each investigator was defeated): Go to _Resolution 2_.</li></ul>"

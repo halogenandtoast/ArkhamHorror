@@ -415,7 +415,7 @@ payCost msg c iid skipAdditionalCosts cost = do
     OrCost xs -> do
       xs' <- filterM (getCanAffordCost iid source actions c.windows) xs
       push
-        $ chooseOne player
+        $ chooseOrRunOne player
         $ map (\x -> Label (displayCostType x) [pay x]) xs'
       pure c
     OptionalCost x -> do

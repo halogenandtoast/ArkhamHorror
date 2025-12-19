@@ -143,10 +143,10 @@ instance RunMessage LukeRobinson where
                     playCard
         else runQueueT playCard
       -- we unset the tracked card here, it will have entered play and should be available again
-      pure $ LukeRobinson . (`with` Meta True) $ attrs & metaL .~ Null
+      pure $ LukeRobinson . (`with` meta) $ attrs & metaL .~ Null
     DoStep 1 (InitiatePlayCard iid card _ _ _ _) | iid == toId attrs -> do
       -- we've decided on the card so we need to track that
-      pure $ LukeRobinson . (`with` Meta True) $ attrs & metaL .~ toJSON card.id
+      pure $ LukeRobinson . (`with` meta) $ attrs & metaL .~ toJSON card.id
     HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) -> do
       pure $ LukeRobinson (attrs `with` Meta False)
     EndTurn _ -> do

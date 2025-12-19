@@ -1,19 +1,19 @@
 module Arkham.Location.Cards.CongressChamberLair (congressChamberLair) where
 
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Trait (Trait (Coterie))
 
 newtype CongressChamberLair = CongressChamberLair LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass (IsLocation, HasAbilities, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congressChamberLair :: LocationCard CongressChamberLair
-congressChamberLair = location CongressChamberLair Cards.congressChamberLair 0 (Static 0)
+congressChamberLair = location CongressChamberLair Cards.congressChamberLair 3 (PerPlayer 1)
 
-instance HasAbilities CongressChamberLair where
-  getAbilities (CongressChamberLair a) =
-    extendRevealed a []
-
-instance RunMessage CongressChamberLair where
-  runMessage msg (CongressChamberLair attrs) = runQueueT $ case msg of
-    _ -> CongressChamberLair <$> liftRunMessage msg attrs
+instance HasModifiersFor CongressChamberLair where
+  getModifiersFor (CongressChamberLair a) = do
+    whenAny (ReadyEnemy <> EnemyWithTrait Coterie) do
+      modifySelect a (InvestigatorAt $ be a) [IncreaseCostOf #asset 2]

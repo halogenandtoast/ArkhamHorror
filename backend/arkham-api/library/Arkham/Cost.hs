@@ -618,6 +618,9 @@ displayCostType = \case
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
 
 instance Semigroup Cost where
+  OrCost cs <> OrCost ys = OrCost [c <> y | c <- cs, y <- ys]
+  OrCost cs <> b = OrCost [c <> b | c <- cs]
+  a <> OrCost cs = OrCost [a <> c | c <- cs]
   AdditionalActionsCostThatReducesResourceCostBy n1 a <> AdditionalActionsCostThatReducesResourceCostBy n2 b = AdditionalActionsCostThatReducesResourceCostBy (max n1 n2) (a <> b)
   AdditionalActionsCostThatReducesResourceCostBy n a <> b = AdditionalActionsCostThatReducesResourceCostBy n (a <> b)
   a <> AdditionalActionsCostThatReducesResourceCostBy n b = AdditionalActionsCostThatReducesResourceCostBy n (a <> b)

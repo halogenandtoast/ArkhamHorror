@@ -169,7 +169,7 @@ isInvestigation = (== Just #investigate) <$> getSkillTestAction
 isInvestigationOf :: (HasGame m, Tracing m) => LocationMatcher -> m Bool
 isInvestigationOf matcher = runValidT do
   Action.Investigate <- MaybeT getSkillTestAction
-  LocationTarget lid <- MaybeT getSkillTestTarget
+  lid <- MaybeT getSkillTestTargetedLocation
   liftGuardM $ lid <=~> matcher
 
 isSkillTestAt :: (HasGame m, Tracing m, ToId location LocationId) => location -> m Bool
@@ -340,6 +340,9 @@ getAttackedEnemy = getSkillTestTargetedEnemy
 
 getSkillTestTargetedEnemy :: HasGame m => m (Maybe EnemyId)
 getSkillTestTargetedEnemy = ((.enemy) =<<) <$> getSkillTestTarget
+
+getSkillTestTargetedLocation :: HasGame m => m (Maybe LocationId)
+getSkillTestTargetedLocation = ((.location) =<<) <$> getSkillTestTarget
 
 withSkillTestTargetedEnemy :: HasGame m => (EnemyId -> m ()) -> m ()
 withSkillTestTargetedEnemy f =

@@ -244,7 +244,7 @@ maybeScarletKey sid = preview (entitiesL . scarletKeysL . ix sid) <$> getGame
 getConcealedCard :: (HasCallStack, HasGame m) => ConcealedCardId -> m ConcealedCard
 getConcealedCard cid = fromJustNote missingConcealedCard <$> maybeConcealedCard cid
  where
-  missingConcealedCard = "Unknown concealed card: " <> show cid
+  missingConcealedCard = "Unknown concealed card: " <> show cid <> "\n" <> prettyCallStack callStack
 
 maybeConcealedCard :: HasGame m => ConcealedCardId -> m (Maybe ConcealedCard)
 maybeConcealedCard cid = preview (entitiesL . concealedL . ix cid) <$> getGame

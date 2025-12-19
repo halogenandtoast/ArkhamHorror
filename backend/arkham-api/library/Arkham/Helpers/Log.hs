@@ -24,11 +24,15 @@ getCampaignLog =
     (field CampaignCampaignLog)
     (field ScenarioStandaloneCampaignLog)
 
-getInvestigatorHasRecord :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
+getInvestigatorHasRecord
+  :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
 getInvestigatorHasRecord iid k = fieldMap InvestigatorLog (hasRecord k) iid
 
 getHasRecord :: (HasGame m, Tracing m, IsCampaignLogKey k) => k -> m Bool
 getHasRecord k = hasRecord k <$> getCampaignLog
+
+getHasCrossedOutRecord :: (HasGame m, Tracing m, IsCampaignLogKey k) => k -> m Bool
+getHasCrossedOutRecord k = hasCrossedOut k <$> getCampaignLog
 
 countHasRecords :: (HasGame m, Tracing m, IsCampaignLogKey k) => [k] -> m Int
 countHasRecords ks = count id <$> traverse getHasRecord ks
@@ -39,6 +43,10 @@ hasRecord (toCampaignLogKey -> k) campaignLog =
     [ k `member` campaignLogRecorded campaignLog
     , k `member` campaignLogRecordedCounts campaignLog
     ]
+
+hasCrossedOut :: IsCampaignLogKey k => k -> CampaignLog -> Bool
+hasCrossedOut (toCampaignLogKey -> k) campaignLog =
+  k `member` campaignLogCrossedOut campaignLog
 
 whenHasRecord :: (HasGame m, Tracing m, IsCampaignLogKey k) => k -> m () -> m ()
 whenHasRecord k = whenM (getHasRecord k)
@@ -77,7 +85,8 @@ inRecordSet v k = do
   recordSet <- getRecordSet k
   pure $ recorded v `elem` recordSet
 
-getCircledRecord :: forall a k m. (Recordable a, HasGame m, Tracing m, IsCampaignLogKey k) => k -> m (Maybe a)
+getCircledRecord
+  :: forall a k m. (Recordable a, HasGame m, Tracing m, IsCampaignLogKey k) => k -> m (Maybe a)
 getCircledRecord k = do
   rs <- getRecordSet k
   pure $ case mapMaybe isCircled rs of

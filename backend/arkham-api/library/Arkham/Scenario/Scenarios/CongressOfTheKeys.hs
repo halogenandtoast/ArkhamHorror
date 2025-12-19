@@ -27,6 +27,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (isFightWith, withSkillTest)
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -39,6 +40,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CongressOfTheKeys.Helpers
@@ -957,4 +959,26 @@ instance RunMessage CongressOfTheKeys where
                       }
                 }
           pure $ CongressOfTheKeys $ attrs' & metaL .~ toJSON meta'
+    ScenarioResolution r -> scope "resolutions" do
+      defeated <- select DefeatedInvestigator
+      unless (null defeated) do
+        flavor $ scope "defeated" $ h "title" >> p "body"
+        for_ defeated drivenInsane
+      case r of
+        NoResolution -> do_ R2
+        _ -> do_ msg
+      pure s
+    Do (ScenarioResolution r) -> scope "resolutions" do
+      case r of
+        Resolution 1 -> do
+          record TheOutsidersWereStopped
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 5
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          endOfScenario
+        Resolution 2 -> do
+          record TheCellWasHollowed
+          resolution "resolution2"
+          gameOver
+        _ -> error "missing resolution"
+      pure s
     _ -> CongressOfTheKeys <$> liftRunMessage msg attrs

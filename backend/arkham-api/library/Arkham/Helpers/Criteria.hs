@@ -474,10 +474,10 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           let
             go = \case
               AbilitySource inner _ -> go inner
-              StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
-              AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
-              EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
-              ConcealedCardSource cid -> onSameLocation iid =<< field ConcealedCardPlacement cid
+              StorySource sid -> maybe (pure False) (onSameLocation iid) =<< fieldMay StoryPlacement sid
+              AssetSource aid -> maybe (pure False) (onSameLocation iid) =<< fieldMay AssetPlacement aid
+              EnemySource eid -> maybe (pure False) (onSameLocation iid) =<< fieldMay EnemyPlacement eid
+              ConcealedCardSource cid -> maybe (pure False) (onSameLocation iid) =<< fieldMay ConcealedCardPlacement cid
               TreacherySource tid -> maybe (pure False) (onSameLocation iid) =<< fieldMay TreacheryPlacement tid
               ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
               ProxySource (CardCodeSource _) (AssetSource aid) -> go (AssetSource aid)

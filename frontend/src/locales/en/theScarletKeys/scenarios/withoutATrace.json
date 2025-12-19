@@ -46,6 +46,9 @@
     "placeMiniCards": "Take one decoy mini-card and the three City of Remnants (L, M and R) mini-cards, shuffle them facedown, and arrange them around the Court of the Outsiders as follows: One to its left, one to its right, one above, and one below. "
   },
   "resolutions": {
+    "xp": {
+      "bonus": "Gained insight into the strange happenings around the world."
+    },
     "label": {
       "bermuda": "Depart from Bermuda",
       "yborCity": "Depart from Ybor City",

@@ -73,6 +73,9 @@
     "theBomoh4": "<p>_The Bomoh 4_: Before you leave Melati’s shop, she tells you of three epicenters of spiritual disturbance in the city.</p><ul><li>Put the Tin Mine and Wayang Kulit Theater locations into play.</li><li>Find the three set-aside _Geist_ enemies and spawn them as follows:<ul><li>Spawn Slain Foreman at Kuala Lumpur Station (West Wing).</li><li>Spawn Uncanny Shadow at Wayang Kulit Theatre</li><li>Spawn Buried Miner at Tin Mine</li></ul></li><li>Return Tzu San Niang (*The Lady with the Red Parasol*) to the shadows and resolve her concealed keyword, distributing each of those concealed mini-cards among each location with a _Geist_ enemy.</li><li>Remove all doom from each card in play other than Tzu San Niang. If it is agenda 1a, advance directly to agenda 2a (*Do not resolve agenda 1b*).</li></ul>"
   },
   "resolutions": {
+    "xp": {
+      "bonus": "Mastered the Shade Reaper."
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: Overwhelmed, you flee Kuala Lumpur. Whatever sway Tzu San Niang held over the city begins to infect your own mind and intrudes into your dreams. In the following nights, you wake up in a cold sweat, imagining yourself bowing before her, fixated on her mysterious red parasol. In idle moments, you catch yourself humming the soft, lilting song she sang as she followed you in Kuala Lumpur. You wonder if you will ever be able to truly leave her behind…</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>In your Campaign Log, record *you haven’t seen the last of Tzu San Niang*.</li><li>Tzu San Niang is the bearer of The Shade Reaper. Update the Campaign Log accordingly.</li><li>Mark 1 _time_ in your Campaign Log.</li><li>You may _embark_.</li></ul>"

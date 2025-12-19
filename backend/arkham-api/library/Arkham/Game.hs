@@ -2713,7 +2713,10 @@ getAssetsMatching matcher = do
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetWithKeyword k -> pure $ filter (member k . cdKeywords . toCardDef) as
-    AssetInSlot slot -> pure $ filter (elem slot . attr assetSlots) as
+    AssetInSlot slot -> do
+      slotMaps <- Map.unionsWith (<>) <$> selectField InvestigatorSlots Anyone
+      let inSlots = concatMap (.assets) $ Map.findWithDefault mempty slot slotMaps
+      pure $ filter ((`elem` inSlots) . toId) as
     AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . attr assetSlots) as
     AssetInSingleHand -> pure $ filter ((== 1) . count (== HandSlot) . attr assetSlots) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as

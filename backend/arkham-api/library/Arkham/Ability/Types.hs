@@ -46,6 +46,7 @@ data Ability = Ability
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
   , abilityTarget :: Maybe Target -- used to highlight the target of the ability in the UI
   , abilitySkipForAll :: Bool
+  , abilityIgnoreAllCosts :: Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -53,13 +54,13 @@ data Ability = Ability
 limitType :: Traversal' Ability AbilityLimitType
 limitType f ability = case ability.abilityLimit of
   PerInvestigatorLimit t n ->
-    (\t' -> ability { abilityLimit = PerInvestigatorLimit t' n }) <$> f t
+    (\t' -> ability {abilityLimit = PerInvestigatorLimit t' n}) <$> f t
   PlayerLimit t n ->
-    (\t' -> ability { abilityLimit = PlayerLimit t' n }) <$> f t
+    (\t' -> ability {abilityLimit = PlayerLimit t' n}) <$> f t
   GroupLimit t n ->
-    (\t' -> ability { abilityLimit = GroupLimit t' n }) <$> f t
+    (\t' -> ability {abilityLimit = GroupLimit t' n}) <$> f t
   MaxPer cd t n ->
-    (\t' -> ability { abilityLimit = MaxPer cd t' n }) <$> f t
+    (\t' -> ability {abilityLimit = MaxPer cd t' n}) <$> f t
   NoLimit -> pure ability
 
 overAbilityActions :: ([Action] -> [Action]) -> Ability -> Ability
@@ -94,6 +95,7 @@ buildAbility source idx abilityType =
     , abilityWantsSkillTest = Nothing
     , abilityTarget = Nothing
     , abilitySkipForAll = False
+    , abilityIgnoreAllCosts = False
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
@@ -258,6 +260,7 @@ instance FromJSON Ability where
     abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
     abilityTarget <- o .:? "target"
     abilitySkipForAll <- o .:? "skipForAll" .!= False
+    abilityIgnoreAllCosts <- o .:? "ignoreAllCosts" .!= False
 
     pure Ability {..}
 

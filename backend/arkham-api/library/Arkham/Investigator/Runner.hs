@@ -2350,6 +2350,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             $ assetControlledBy iid
             <> DiscardableAsset
             <> AssetOneOf (map AssetInSlot (nub $ missingSlotTypes <> additionalSlots))
+            <> not_ (AssetWithId aid)
 
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
@@ -4523,7 +4524,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                | c <- playableCards
                ]
             <> map
-              ((\f -> f windows [] [PlayerWindow iid additionalActions isAdditional False]) . AbilityLabel investigatorId)
+              ( (\f -> f windows [] [PlayerWindow iid additionalActions isAdditional False])
+                  . AbilityLabel investigatorId
+              )
               (filter (or . sequence [isFastAbility, not . isActionAbility]) actions)
       player <- getPlayer investigatorId
       unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices

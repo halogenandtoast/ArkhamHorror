@@ -991,6 +991,11 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ SpendActions iid source' actions' 1
       withPayment AdditionalActionPayment
     UseCost assetMatcher uType n -> do
+      let
+        doSpend =
+          case c.target of
+            ForAbility a -> not $ abilityIgnoreAllCosts a
+            _ -> True
       if n == 0
         then pure c
         else do
@@ -1001,15 +1006,17 @@ payCost msg c iid skipAdditionalCosts cost = do
               ok <- x <=~> (assetMatcher <> AssetWithSpendableUses (atLeast n) uType)
               if ok
                 then do
-                  push $ SpendUses source (AssetTarget x) uType n
+                  when doSpend do
+                    push $ SpendUses source (AssetTarget x) uType n
                   withPayment $ UsesPayment n
                 else error "Asset did not have enough tokens"
             xs -> do
               push
                 $ chooseOrRunOne
                   player
-                  [ targetLabel aid $ SpendUses source (AssetTarget aid) uType 1
-                      : [pay (UseCost assetMatcher uType (n - 1)) | n > 1]
+                  [ targetLabel aid
+                      $ [SpendUses source (AssetTarget aid) uType 1 | doSpend]
+                      <> [pay (UseCost assetMatcher uType (n - 1)) | n > 1]
                   | aid <- xs
                   ]
               withPayment $ UsesPayment 1

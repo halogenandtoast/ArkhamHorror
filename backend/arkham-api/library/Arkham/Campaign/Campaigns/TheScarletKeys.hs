@@ -987,6 +987,44 @@ instance RunMessage TheScarletKeys where
       flavor $ setTitle "title" >> p "paranaturalSelection4"
       campaignStep_ (embark attrs)
       pure c
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      flavor $ setTitle "title" >> p "epilogue1"
+      theCellJoinedTheRedCoterie <- getHasRecord TheCellJoinedTheRedCoterie
+      if theCellJoinedTheRedCoterie
+        then do
+          record TheRedCoterieAndTheCellAgreedToWorkTogether
+          flavor $ setTitle "title" >> p "epilogue2"
+        else do
+          trust <-
+            countHasRecords [TheCellIsAssistingAgentSirry, TheCellToldTheTruthToTaylor, AgentQuinnHasYourBack]
+          deliveredIntel <- getHasCrossedOutRecord TheCellIsDeliveringFoundationIntel
+          let trust' = trust + if deliveredIntel then 1 else 0
+          deception <-
+            countHasRecords
+              [ TheCellHidTheTruthFromTaylor
+              , TheCellIsOffMission
+              , TheCellAidedTheKnight
+              , EceTrustsTheCell
+              , TheCellMadeADealWithThorne
+              , AlikiIsOnYourSide
+              , DesiIsInYourDebt
+              , TuwileMasaiIsOnYourSide
+              ]
+          recordCount FoundationTrust trust'
+          recordCount CellDeception deception
+          flavor
+            $ withVars ["trust" .= trust', "deception" .= deception]
+            $ setTitle "title"
+            >> p "epilogue3"
+          if trust' >= deception
+            then do
+              record TheCellWasGivenAPermanentPosition
+              flavor $ setTitle "title" >> p "epilogue4"
+            else do
+              record TheCellWasDismantled
+              flavor $ setTitle "title" >> p "epilogue5"
+      gameOver
+      pure c
     CampaignStep (ScenarioStep _) -> do
       TheScarletKeys attrs' <- lift $ defaultCampaignRunner msg c
       let meta = toResult @TheScarletKeysMeta attrs'.meta

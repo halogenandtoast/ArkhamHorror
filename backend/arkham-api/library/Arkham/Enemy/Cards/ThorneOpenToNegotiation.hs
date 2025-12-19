@@ -32,6 +32,9 @@ instance HasAbilities ThorneOpenToNegotiation where
 
 instance RunMessage ThorneOpenToNegotiation where
   runMessage msg e@(ThorneOpenToNegotiation attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      ThorneOpenToNegotiation <$> liftRunMessage msg attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
       lead <- getLead

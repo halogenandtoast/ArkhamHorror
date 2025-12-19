@@ -4,12 +4,14 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.DogsOfWar.Helpers
 
@@ -37,6 +39,9 @@ instance HasAbilities TheClaretKnightHerSwornChampion where
 
 instance RunMessage TheClaretKnightHerSwornChampion where
   runMessage msg a@(TheClaretKnightHerSwornChampion attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- field InvestigatorResources iid
       scenarioI18n

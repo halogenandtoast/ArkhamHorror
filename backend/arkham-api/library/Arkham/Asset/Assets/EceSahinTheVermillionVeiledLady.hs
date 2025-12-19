@@ -3,12 +3,14 @@ module Arkham.Asset.Assets.EceSahinTheVermillionVeiledLady (eceSahinTheVermillio
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Strategy
 
 newtype EceSahinTheVermillionVeiledLady = EceSahinTheVermillionVeiledLady AssetAttrs
@@ -28,6 +30,9 @@ instance HasAbilities EceSahinTheVermillionVeiledLady where
 
 instance RunMessage EceSahinTheVermillionVeiledLady where
   runMessage msg a@(EceSahinTheVermillionVeiledLady attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- getInvestigators
       chooseTargetM iid investigators \iid' ->

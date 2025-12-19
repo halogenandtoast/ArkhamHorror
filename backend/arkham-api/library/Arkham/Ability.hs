@@ -302,6 +302,7 @@ mkAbility entity idx type' =
     , abilityWantsSkillTest = Nothing
     , abilityTarget = Nothing
     , abilitySkipForAll = False
+    , abilityIgnoreAllCosts = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
@@ -309,6 +310,7 @@ applyAbilityModifiers a@Ability {abilityType, abilityCriteria} modifiers =
   a
     { Arkham.Ability.Types.abilityType = applyAbilityTypeModifiers abilityType modifiers
     , Arkham.Ability.Types.abilityCriteria = applyAbilityCriteriaModifiers abilityCriteria modifiers
+    , Arkham.Ability.Types.abilityIgnoreAllCosts = IgnoreAllCosts `elem` modifiers
     }
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability

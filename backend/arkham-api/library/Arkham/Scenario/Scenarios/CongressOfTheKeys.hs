@@ -962,7 +962,7 @@ instance RunMessage CongressOfTheKeys where
     ScenarioResolution r -> scope "resolutions" do
       defeated <- select DefeatedInvestigator
       unless (null defeated) do
-        flavor $ scope "defeated" $ h "title" >> p "body"
+        resolution "defeated"
         for_ defeated drivenInsane
       case r of
         NoResolution -> do_ R2

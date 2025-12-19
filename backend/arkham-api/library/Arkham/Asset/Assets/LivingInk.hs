@@ -20,7 +20,7 @@ instance HasModifiersFor LivingInk where
   getModifiersFor (LivingInk a) = case a.controller of
     Nothing -> pure mempty
     Just iid -> do
-      controller <- maybeModified_ a iid do
+      maybeModified_ a iid do
         guard $ getAssetMetaDefault True a -- check subtle depiction
         -- handles EldritchInk && EldritchInk2
         let skills = [s | ChosenSkill s <- concatMap snd (toList a.customizations)]
@@ -29,12 +29,10 @@ instance HasModifiersFor LivingInk where
             then
               map (`SkillModifier` 2) skills <> [SkillModifier s (-1) | s <- [minBound ..], s `notElem` skills]
             else map (`SkillModifier` 1) skills
-      self <-
-        modifySelfWhen
-          a
-          (a `hasCustomization` ImbuedInk)
-          [AdditionalStartingUses 2, DoNotTakeUpSlot #body, AdditionalSlot #arcane]
-      pure $ self <> controller
+      modifySelfWhen
+        a
+        (a `hasCustomization` ImbuedInk)
+        [AdditionalStartingUses 2, DoNotTakeUpSlot #body, AdditionalSlot #arcane]
 
 instance HasAbilities LivingInk where
   getAbilities (LivingInk a) =

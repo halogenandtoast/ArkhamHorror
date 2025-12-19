@@ -59,7 +59,7 @@ data TheScarletKeysKey
   | TheDogsAreAtWar
   | TheFoundationRemainsInTheDark
   | TheLoversAreReunited
-  | TheOutsidersWhereStopped
+  | TheOutsidersWereStopped
   | TheRedCoterieAndTheCellAgreedToWorkTogether
   | TheRedCoterieSparedTheCell
   | TheRedCoterieWasDestroyedFromWithin

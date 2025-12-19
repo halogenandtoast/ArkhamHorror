@@ -144,6 +144,7 @@ instance IsCampaign TheScarletKeys where
     DogsOfWar -> continue (embark a)
     ShadesOfSuffering -> continue (embark a)
     WithoutATrace -> continue (embark a)
+    CongressOfTheKeys -> continue EpilogueStep
     EpilogueStep -> Nothing
     other -> defaultNextStep other
 

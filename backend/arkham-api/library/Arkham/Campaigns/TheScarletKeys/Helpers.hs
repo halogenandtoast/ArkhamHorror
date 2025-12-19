@@ -7,6 +7,7 @@ module Arkham.Campaigns.TheScarletKeys.Helpers (
 )
 where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.I18n
@@ -177,6 +178,29 @@ removeHollow :: (FetchCard c, ReverseQueue m) => c -> m ()
 removeHollow c = do
   obtainCard c
   fetchCard c >>= scenarioSpecific "removedHollow"
+
+keysFor :: (Tracing m, HasGame m, HasCardCode a) => a -> m [CardDef]
+keysFor a = do
+  statuses <- keyStatus <$> getCampaignMeta @TheScarletKeysMeta
+  pure $ Map.assocs statuses & mapMaybe \(k, v) -> do
+    KeyWithEnemy ccode _ <- pure v
+    guard $ ccode `elem` cardCodes
+    lookupCardDef k
+ where
+  this = toCardCode a
+  cardCodes =
+    if
+      | Assets.theClaretKnightHerSwornChampion.cardCode == this ->
+          [this, Enemies.theClaretKnightHoldsYouInContempt.cardCode]
+      | Assets.desiderioDelgadoAlvarez.cardCode == this ->
+          [this, Enemies.desiderioDelgadoAlvarezRedInHisLedger.cardCode]
+      | Assets.laChicaRojaYourWatchfulShadow.cardCode == this ->
+          [this, Enemies.laChicaRojaHotOnYourTrail.cardCode]
+      | Assets.thorneConsummateProfessional.cardCode == this ->
+          [this, Enemies.thorneOpenToNegotiation.cardCode]
+      | Assets.alikiZoniUperetriaTheMaidWithTheScarletSash.cardCode == this ->
+          [this, Enemies.alikiZoniUperetriaSpeaksInDeath.cardCode]
+      | otherwise -> [this]
 
 setBearer :: ReverseQueue m => CardDef -> KeyStatus -> m ()
 setBearer skey sts@(KeyWithInvestigator iid) = do

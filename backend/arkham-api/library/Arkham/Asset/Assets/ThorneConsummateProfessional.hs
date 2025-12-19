@@ -3,7 +3,9 @@ module Arkham.Asset.Assets.ThorneConsummateProfessional (thorneConsummateProfess
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Window qualified as Window
 
 newtype ThorneConsummateProfessional = ThorneConsummateProfessional AssetAttrs
@@ -21,6 +23,9 @@ instance HasAbilities ThorneConsummateProfessional where
 
 instance RunMessage ThorneConsummateProfessional where
   runMessage msg a@(ThorneConsummateProfessional attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
       let
         go = \case

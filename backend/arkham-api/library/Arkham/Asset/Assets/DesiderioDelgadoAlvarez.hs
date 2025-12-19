@@ -3,8 +3,10 @@ module Arkham.Asset.Assets.DesiderioDelgadoAlvarez (desiderioDelgadoAlvarez) whe
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Placement
 
 newtype DesiderioDelgadoAlvarez = DesiderioDelgadoAlvarez AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,6 +25,9 @@ instance HasAbilities DesiderioDelgadoAlvarez where
 
 instance RunMessage DesiderioDelgadoAlvarez where
   runMessage msg a@(DesiderioDelgadoAlvarez attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseCardAbility iid (isSource attrs -> True) 1 (getDamageSourceEnemy -> eid) _ -> do
       push $ CancelAssetDamage attrs.id (toSource eid) 1
       nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid

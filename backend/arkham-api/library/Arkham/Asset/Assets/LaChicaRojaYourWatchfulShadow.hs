@@ -6,6 +6,7 @@ module Arkham.Asset.Assets.LaChicaRojaYourWatchfulShadow (
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Effect.Import
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
@@ -30,6 +31,9 @@ instance HasAbilities LaChicaRojaYourWatchfulShadow where
 
 instance RunMessage LaChicaRojaYourWatchfulShadow where
   runMessage msg a@(LaChicaRojaYourWatchfulShadow attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         place iid InTheShadows

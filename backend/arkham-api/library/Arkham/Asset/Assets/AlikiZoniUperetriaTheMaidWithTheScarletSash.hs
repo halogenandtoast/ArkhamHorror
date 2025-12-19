@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 
 newtype AlikiZoniUperetriaTheMaidWithTheScarletSash = AlikiZoniUperetriaTheMaidWithTheScarletSash AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,6 +33,9 @@ instance HasAbilities AlikiZoniUperetriaTheMaidWithTheScarletSash where
 
 instance RunMessage AlikiZoniUperetriaTheMaidWithTheScarletSash where
   runMessage msg a@(AlikiZoniUperetriaTheMaidWithTheScarletSash attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | card.id == attrs.cardId -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToAsset attrs.id Nothing)
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hollows <- select $ HollowedCard <> basic (not_ $ cardIs Cards.theRedGlovedManHeWasAlwaysThere)
       chooseTargetM iid hollows \c -> do

@@ -33,6 +33,9 @@ instance HasAbilities LaChicaRojaHotOnYourTrail where
 
 instance RunMessage LaChicaRojaHotOnYourTrail where
   runMessage msg e@(LaChicaRojaHotOnYourTrail attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      LaChicaRojaHotOnYourTrail <$> liftRunMessage msg attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       selectEach InvestigatorWithAnyResources \iid -> moveTokens (attrs.ability 1) iid attrs #resource 1
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)

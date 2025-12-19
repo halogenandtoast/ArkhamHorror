@@ -7,6 +7,7 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Window (damagedAsset)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 
 newtype AmaranthScarletScorn = AmaranthScarletScorn EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -25,6 +26,9 @@ instance HasAbilities AmaranthScarletScorn where
 
 instance RunMessage AmaranthScarletScorn where
   runMessage msg e@(AmaranthScarletScorn attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      AmaranthScarletScorn <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skeys <- select $ scarletKeyWithEnemy attrs.id
       chooseOneAtATimeM iid $ targets skeys shift

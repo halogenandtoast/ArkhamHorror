@@ -37,6 +37,9 @@ instance HasAbilities TheClaretKnightHoldsYouInContempt where
 
 instance RunMessage TheClaretKnightHoldsYouInContempt where
   runMessage msg e@(TheClaretKnightHoldsYouInContempt attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      TheClaretKnightHoldsYouInContempt <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
       chooseOneAtATimeM iid $ targets skeys shift

@@ -30,6 +30,9 @@ instance HasAbilities TheRedGlovedManPurposeUnknown where
 
 instance RunMessage TheRedGlovedManPurposeUnknown where
   runMessage msg e@(TheRedGlovedManPurposeUnknown attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      TheRedGlovedManPurposeUnknown <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       initiateEnemyAttack attrs (attrs.ability 1) iid
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)

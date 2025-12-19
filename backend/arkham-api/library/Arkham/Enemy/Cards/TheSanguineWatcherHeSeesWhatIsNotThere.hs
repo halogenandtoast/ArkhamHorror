@@ -25,10 +25,16 @@ theSanguineWatcherHeSeesWhatIsNotThere =
 
 instance HasAbilities TheSanguineWatcherHeSeesWhatIsNotThere where
   getAbilities (TheSanguineWatcherHeSeesWhatIsNotThere a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a <> EnemyWithAnyScarletKey)
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyDefeated #when Anyone ByAny (be a <> EnemyWithAnyScarletKey)
 
 instance RunMessage TheSanguineWatcherHeSeesWhatIsNotThere where
   runMessage msg e@(TheSanguineWatcherHeSeesWhatIsNotThere attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      TheSanguineWatcherHeSeesWhatIsNotThere <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
       chooseOneAtATimeM iid do

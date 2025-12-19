@@ -23,6 +23,9 @@ instance HasAbilities AlikiZoniUperetriaSpeaksInDeath where
 
 instance RunMessage AlikiZoniUperetriaSpeaksInDeath where
   runMessage msg e@(AlikiZoniUperetriaSpeaksInDeath attrs) = runQueueT $ case msg of
+    InvestigatorDrawEnemy _ eid | eid == attrs.id -> do
+      keysFor attrs >>= traverse_ (`createScarletKeyAt_` AttachedToEnemy attrs.id)
+      AlikiZoniUperetriaSpeaksInDeath <$> liftRunMessage msg attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
         lookAt

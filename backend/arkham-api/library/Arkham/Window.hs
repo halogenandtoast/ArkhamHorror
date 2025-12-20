@@ -329,7 +329,7 @@ data WindowType
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target Int
   | Explored InvestigatorId (Maybe LocationId) (Result Card LocationId)
-  | AttemptExplore InvestigatorId
+  | AttemptExplore InvestigatorId (Maybe LocationId)
   | EnemiesAttackStep
   | AddingToCurrentDepth
   | EntersThreatArea InvestigatorId Card
@@ -352,6 +352,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "AttemptExplore" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Left i -> pure $ AttemptExplore i Nothing
+                Right (i, c) -> pure $ AttemptExplore i c
             "AddedToVictory" -> do
               contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of

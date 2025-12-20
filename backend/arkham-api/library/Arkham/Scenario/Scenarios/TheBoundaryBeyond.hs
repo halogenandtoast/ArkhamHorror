@@ -231,8 +231,8 @@ instance RunMessage TheBoundaryBeyond where
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup TheBoundaryBeyond attrs $ setupTheBoundaryBeyond attrs
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

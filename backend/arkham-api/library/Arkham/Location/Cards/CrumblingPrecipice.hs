@@ -15,7 +15,7 @@ crumblingPrecipice = symbolLabel $ location CrumblingPrecipice Cards.crumblingPr
 
 instance HasAbilities CrumblingPrecipice where
   getAbilities (CrumblingPrecipice a) =
-    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here $ forced $ AttemptExplore #when You
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here $ forced $ AttemptExplore #when You (be a)
 
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = runQueueT $ case msg of

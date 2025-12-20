@@ -267,8 +267,8 @@ instance RunMessage TheDepthsOfYoth where
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
         when (startingDamage > 0) $ placeTokens attrs harbingerId #damage startingDamage
       pure s
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

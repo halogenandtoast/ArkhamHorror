@@ -920,7 +920,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyWouldTakeDamage timing sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.WouldTakeDamage source' (EnemyTarget eid) _ _strategy ->
-          andM 
+          andM
             [ matches eid enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
@@ -2256,8 +2256,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               other -> maybe (pure False) (<=~> other) mwhere
           ]
       _ -> noMatch
-    Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case
-      Window.AttemptExplore who -> matchWho iid who whoMatcher
+    Matcher.AttemptExplore timing whoMatcher locationMatcher -> guardTiming timing $ \case
+      Window.AttemptExplore who mlocation -> case locationMatcher of
+        Matcher.Anywhere -> matchWho iid who whoMatcher
+        _ ->
+          andM
+            [ matchWho iid who whoMatcher
+            , maybe (pure False) (<=~> locationMatcher) mlocation
+            ]
       _ -> noMatch
 
 ignoreMatchingWindows :: (MonadTrans t, HasQueue Message m) => (Window -> Bool) -> t m ()

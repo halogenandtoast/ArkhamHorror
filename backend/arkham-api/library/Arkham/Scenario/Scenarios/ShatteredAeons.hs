@@ -281,8 +281,8 @@ instance RunMessage ShatteredAeons where
       modifiers <- getModifiers (ChaosTokenFaceTarget face)
       when (RevealAnotherChaosToken `elem` modifiers) $ drawAnotherChaosToken iid
       ShatteredAeons <$> liftRunMessage msg attrs
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

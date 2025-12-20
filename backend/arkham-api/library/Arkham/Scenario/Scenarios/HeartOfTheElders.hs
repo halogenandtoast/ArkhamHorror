@@ -453,8 +453,8 @@ instance RunMessage HeartOfTheElders where
     Setup ->
       runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs
         $ setupHeartOfTheElders metadata attrs
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

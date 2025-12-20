@@ -270,7 +270,7 @@ data WindowMatcher
   | CommittedCard Timing Who ExtendedCardMatcher
   | ActivateAbility Timing Who AbilityMatcher
   | Explored Timing Who LocationMatcher ExploreMatcher
-  | AttemptExplore Timing Who
+  | AttemptExplore Timing Who Where
   | PhaseStep Timing PhaseStepMatcher
   | SkillTestStep Timing SkillTestStep
   | AddingToCurrentDepth
@@ -334,6 +334,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AttemptExplore" -> do
+        econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case econtents of
+          Left (a, b) -> pure $ AttemptExplore a b Anywhere
+          Right (a, b, c) -> pure $ AttemptExplore a b c
       "EnemyWouldTakeDamage" -> do
         econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
         case econtents of

@@ -200,8 +200,8 @@ instance RunMessage TheDoomOfEztli where
       setChaosTokens standaloneChaosTokens
       pure . TheDoomOfEztli $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup TheDoomOfEztli attrs $ setupTheDoomOfEztli attrs
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

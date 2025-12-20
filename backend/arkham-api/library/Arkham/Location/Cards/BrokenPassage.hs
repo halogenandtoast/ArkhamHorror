@@ -19,7 +19,7 @@ instance HasAbilities BrokenPassage where
     extendRevealed1 a
       $ restricted a 1 (Here <> youExist (not_ $ InvestigatorWithSupply Pickaxe))
       $ forced
-      $ AttemptExplore #when You
+      $ AttemptExplore #when You (be a)
 
 instance RunMessage BrokenPassage where
   runMessage msg l@(BrokenPassage attrs) = runQueueT $ case msg of

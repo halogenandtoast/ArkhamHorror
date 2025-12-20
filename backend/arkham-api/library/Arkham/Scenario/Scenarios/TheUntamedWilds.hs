@@ -149,8 +149,8 @@ instance RunMessage TheUntamedWilds where
             createWeaknessInThreatArea poisoned iid
         _ -> pure ()
       pure s
-    Explore iid _ _ -> do
-      checkWhen $ Window.AttemptExplore iid
+    Explore iid source _ -> do
+      checkWhen $ Window.AttemptExplore iid source.location
       do_ msg
       pure s
     Do (Explore iid source locationMatcher) -> do

@@ -17,10 +17,12 @@ ropeBridge :: LocationCard RopeBridge
 ropeBridge = symbolLabel $ location RopeBridge Cards.ropeBridge 2 (PerPlayer 1)
 
 instance HasAbilities RopeBridge where
-  getAbilities (RopeBridge attrs) =
-    extendRevealed
-      attrs
-      [skillTestAbility $ restrictedAbility attrs 1 Here $ forced $ AttemptExplore #when You]
+  getAbilities (RopeBridge a) =
+    extendRevealed1 a
+      $ skillTestAbility
+      $ restricted a 1 Here
+      $ forced
+      $ AttemptExplore #when You (be a)
 
 instance RunMessage RopeBridge where
   runMessage msg l@(RopeBridge attrs) = runQueueT $ case msg of

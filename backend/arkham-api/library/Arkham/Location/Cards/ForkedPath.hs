@@ -25,7 +25,7 @@ instance HasAbilities ForkedPath where
     extendRevealed1 a
       $ restricted a 1 (Here <> InvestigatorExists (You <> InvestigatorWithSupply Map))
       $ forced
-      $ AttemptExplore #when You
+      $ AttemptExplore #when You (be a)
 
 instance RunMessage ForkedPath where
   runMessage msg l@(ForkedPath attrs) = runQueueT $ case msg of

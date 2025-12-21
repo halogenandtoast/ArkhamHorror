@@ -23,7 +23,7 @@ theUnveiling = story TheUnveiling Cards.theUnveiling
 
 instance HasAbilities TheUnveiling where
   getAbilities (TheUnveiling a) =
-    [ mkAbility a 1 $ forced $ PlacedCounterOnEnemy #after AnyEnemy AnySource #doom (atLeast 1)
+    [ mkAbility a 1 $ forced $ PlacedCounterOnEnemy #after EnemyWithTrait Cultist AnySource #doom (atLeast 1)
     , restricted a 2 (exists $ EnemyWithClues (moreThan 3)) Anytime
     ]
 

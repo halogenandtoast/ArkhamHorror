@@ -24,11 +24,12 @@ instance HasAbilities OccultLexicon3 where
     [ restrictedAbility a 1 ControlsThis
         $ freeReaction
         $ Matcher.PlayCard #when You (basic $ cardIs Events.bloodRite)
+    , controlled_ a 1 $ forced $ AssetEntersPlay #after (be a)
     ]
 
 instance RunMessage OccultLexicon3 where
   runMessage msg a@(OccultLexicon3 attrs) = runQueueT $ case msg of
-    InvestigatorPlayAsset iid aid | aid == attrs.id -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       bonded <- take 3 <$> searchBonded iid Events.bloodRite
       for_ (nonEmpty bonded) \(handBloodRite :| deckBloodRites) -> do
         addToHand iid (only handBloodRite)

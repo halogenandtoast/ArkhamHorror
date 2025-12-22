@@ -38,25 +38,26 @@ instance HasAbilities ChuckFergus2 where
 instance RunMessage ChuckFergus2 where
   runMessage msg a@(ChuckFergus2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card@(PlayerCard pc)) _ -> do
-      cost <- getModifiedCardCost iid card
-      canAffordCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ResourceCost cost)
-      canAffordActionCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ActionCost 1)
+      mCost <- getModifiedCardCost iid card
+      for_ mCost \cost -> do
+        canAffordCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ResourceCost cost)
+        canAffordActionCost <- getCanAffordCost iid (CardIdSource pc.id) [#play] ws (ActionCost 1)
 
-      requiresFast <- andM [inFastWindow, not <$> cardIsFast card]
+        requiresFast <- andM [inFastWindow, not <$> cardIsFast card]
 
-      unless (canAffordActionCost && not requiresFast)
-        $ eventModifier attrs card
-        $ BecomesFast FastPlayerWindow
-      unless canAffordCost $ eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
+        unless (canAffordActionCost && not requiresFast)
+          $ eventModifier attrs card
+          $ BecomesFast FastPlayerWindow
+        unless canAffordCost $ eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
 
-      -- can something else reduce the cost enough?
-      when (canAffordCost && canAffordActionCost && not requiresFast) do
-        chooseOneM iid do
-          labeled "That event gains fast" $ eventModifier attrs card $ BecomesFast FastPlayerWindow
-          labeled "That event costs 2 fewer resources to play." do
-            eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
-          labeled "You get +2 skill value while performing a skill test during the resolution of that event." do
-            eventModifier attrs iid $ AnySkillValue 2
+        -- can something else reduce the cost enough?
+        when (canAffordCost && canAffordActionCost && not requiresFast) do
+          chooseOneM iid do
+            labeled "That event gains fast" $ eventModifier attrs card $ BecomesFast FastPlayerWindow
+            labeled "That event costs 2 fewer resources to play." do
+              eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
+            labeled "You get +2 skill value while performing a skill test during the resolution of that event." do
+              eventModifier attrs iid $ AnySkillValue 2
 
       pure a
     _ -> ChuckFergus2 <$> liftRunMessage msg attrs

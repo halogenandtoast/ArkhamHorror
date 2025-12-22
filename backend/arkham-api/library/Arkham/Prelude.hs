@@ -153,6 +153,9 @@ maxes ps = case sortedPairs of
  where
   sortedPairs = sortOn (Down . snd) ps
 
+minsBy :: (a -> Int) -> [a] -> [a]
+minsBy f xs = mins [(x, f x) | x <- xs]
+
 mins :: [(a, Int)] -> [a]
 mins ps = case sortedPairs of
   [] -> []

@@ -326,8 +326,7 @@ aChanceEncounter2 =
   (event "03238" "A Chance Encounter" 0 Survivor)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Fortune
-    , cdCost = Just DynamicCost
-    , cdCriteria = Just $ Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard [Ally]
+    , cdCost = Just (AnyMatchingCardCost $ PlayableCard (UnpaidCost NoAction) (InDiscardOf (affectsOthers can.have.cards.leaveDiscard) <> #ally))
     , cdLevel = Just 2
     }
 

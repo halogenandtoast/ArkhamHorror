@@ -663,7 +663,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           _ -> getPlayedCard xs
         cardPlay = getPlayedCard c.windows
       availableResources <- getSpendableResources iid
-      requiredResources <- getModifiedCardCost iid cardPlay.card
+      requiredResources <- fromMaybe 0 <$> getModifiedCardCost iid cardPlay.card
       let minimumHorror = max 1 (requiredResources - availableResources)
       sanity <- field InvestigatorRemainingSanity iid
       name <- fieldMap InvestigatorName toTitle iid
@@ -912,7 +912,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                       (zip rs2 resourcesFromAssets)
       extra <- case activeCostTarget c of
         ForCard _ card -> do
-          ucost <- getUnboundedModifiedCardCost iid card
+          ucost <- fromMaybe 0 <$> getUnboundedModifiedCardCost iid card
           if ucost < 0
             then pure (-ucost)
             else pure 0

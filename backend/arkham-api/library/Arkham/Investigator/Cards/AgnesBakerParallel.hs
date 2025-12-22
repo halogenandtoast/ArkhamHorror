@@ -30,6 +30,7 @@ instance HasModifiersFor AgnesBakerParallel where
         Just DynamicCost -> pure 0
         Just (MaxDynamicCost _) -> pure 0
         Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== card.cardCode) . toCardCode)) a.id
+        Just (AnyMatchingCardCost {}) -> pure 0
         Nothing -> pure 0
       pure
         [ AdditionalCost

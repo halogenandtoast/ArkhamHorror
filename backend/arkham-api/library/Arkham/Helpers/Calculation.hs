@@ -99,7 +99,7 @@ calculate = go
       maybe (pure 0) (field fld) =<< field InvestigatorLocation iid
     InvestigatorLocationMaybeFieldCalculation iid fld -> do
       maybe (pure 0) (fieldMap fld (fromMaybe 0)) =<< field InvestigatorLocation iid
-    CardCostCalculation iid' cId -> getCard cId >>= getModifiedCardCost iid'
+    CardCostCalculation iid' cId -> getCard cId >>= (fmap (fromMaybe 0) . getModifiedCardCost iid')
     ScenarioInDiscardCountCalculation mtchr -> length <$> findInDiscard mtchr
     InvestigatorTokenCountCalculation iid token -> fieldMap InvestigatorTokens (countTokens token) iid
     AssetTokenCountCalculation aid token -> fieldMap AssetTokens (countTokens token) aid

@@ -416,9 +416,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         pure $ totalSpendableClues >= cost
       IncreaseCostOfThis cardId n -> do
         card <- getCard cardId
-        cost <- getModifiedCardCost iid card
+        mCost <- getModifiedCardCost iid card
         resources <- getSpendableResources iid
-        pure $ resources >= cost + n
+        pure $ case mCost of
+          Nothing -> False
+          Just cost -> resources >= cost + n
       ResourceCost n -> do
         resources <- getSpendableResources iid
         pure $ resources >= n

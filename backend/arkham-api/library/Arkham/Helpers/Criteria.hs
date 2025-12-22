@@ -80,7 +80,6 @@ import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
-import Arkham.Trait
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
@@ -539,7 +538,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           Just (card, AuxiliaryCost aux inner) -> do
             let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
             withModifiersOf card GameSource [increase] $ go (Just (card, inner))
-          Just (card, UnpaidCost _) -> getModifiedCardCost iid card
+          Just (card, UnpaidCost _) -> fromMaybe 0 <$> getModifiedCardCost iid card
           Just (_, PaidCost) -> pure 0
           Nothing -> pure 0
       increase <- go mcard
@@ -582,18 +581,12 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
               anyM
                 (\window -> locationMatches iid source window lid locationMatcher)
                 windows'
-    Criteria.ReturnableCardInDiscard discardSignifier traits -> do
+    Criteria.ReturnableCardInDiscard discardSignifier ecMatcher -> do
       let
         investigatorMatcher = case discardSignifier of
           Criteria.DiscardOf matcher -> matcher
           Criteria.AnyPlayerDiscard -> Matcher.Anyone
-      investigatorIds <- select (investigatorMatcher <> can.have.cards.leaveDiscard)
-      discards <- concatMapM (field InvestigatorDiscard) investigatorIds
-      let
-        filteredDiscards = case traits of
-          [] -> discards
-          traitsToMatch -> filter (any (`elem` traitsToMatch) . toTraits) discards
-      pure $ notNull filteredDiscards
+      selectAny $ ecMatcher <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
     Criteria.CanAffordCostIncrease n -> do
       let
         go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Bool
@@ -602,7 +595,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
             let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
             withModifiersOf card GameSource [increase] $ go (Just (card, inner))
           Just (card, UnpaidCost _) -> do
-            cost <- getModifiedCardCost iid card
+            cost <- fromMaybe 0 <$> getModifiedCardCost iid card
             resources <- getSpendableResources iid
             pure $ resources >= cost + n
           Just (_, PaidCost) -> pure True

@@ -318,23 +318,29 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
 getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
   error "should not check vengeance card"
 
-getModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Int
-getModifiedCardCost iid c = max 0 <$> getUnboundedModifiedCardCost iid c
+getModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m (Maybe Int)
+getModifiedCardCost iid c = fmap (max 0) <$> getUnboundedModifiedCardCost iid c
 
-getUnboundedModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Int
+getUnboundedModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m (Maybe Int)
 getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers iid
   cardModifiers <- getModifiers c.id
-  startingCost <- getStartingCost
-  foldM applyModifier startingCost (modifiers <> cardModifiers)
+  mStartingCost <- getStartingCost
+  for mStartingCost \startingCost ->
+    foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
   getStartingCost = case cdCost pcDef of
-    Just (StaticCost n) -> pure n
-    Just DynamicCost -> pure 0
-    Just (MaxDynamicCost _) -> pure 0
-    Just DiscardAmountCost -> fieldMap Field.InvestigatorDiscard (count ((== toCardCode c) . toCardCode)) iid
-    Nothing -> pure 0
+    Just (StaticCost n) -> pure $ Just n
+    Just DynamicCost -> pure $ Just 0
+    Just (MaxDynamicCost _) -> pure $ Just 0
+    Just (AnyMatchingCardCost ecMatcher) -> do
+      cards <- select ecMatcher
+      pure $ case minsBy getCost cards of
+        [] -> Nothing
+        (x : _) -> Just $ getCost x
+    Just DiscardAmountCost -> fieldMap Field.InvestigatorDiscard (Just . count ((== toCardCode c) . toCardCode)) iid
+    Nothing -> pure $ Just 0
   -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
   applyModifier n _ | isNothing (cdCost pcDef) = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do
@@ -347,7 +353,7 @@ getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   applyModifier n _ = pure n
 getUnboundedModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  foldM
+  Just <$> foldM
     applyModifier
     (error "we need so specify ecCost for this to work")
     modifiers

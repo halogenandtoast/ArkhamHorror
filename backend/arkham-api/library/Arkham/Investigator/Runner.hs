@@ -268,12 +268,13 @@ getWindowSkippable
       (Timing.When, Window.PlayCard iid (Window.CardPlay card@(PlayerCard pc) asAction))
     ) | iid == toId attrs = do
     allModifiers <- getModifiers card
-    cost <- getModifiedCardCost iid card
+    mCost <- getModifiedCardCost iid card
     isFast <- cardIsFast' (\_ -> pure allModifiers) card
     needsFast <- Helpers.inFastWindow
 
     runValidT do
       when needsFast $ guard isFast
+      cost <- hoistMaybe mCost
       liftGuardM
         $ withAlteredGame withoutCanModifiers
         $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
@@ -294,11 +295,14 @@ getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.Ac
     ]
 getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
   allModifiers <- getModifiers card
-  cost <- getModifiedCardCost iid card
+  mCost <- getModifiedCardCost iid card
   let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
   andM
-    [ withAlteredGame withoutCanModifiers
-        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+    [ case mCost of
+        Nothing -> pure True
+        Just cost ->
+          withAlteredGame withoutCanModifiers
+            $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
     , if isFast
         then pure True
         else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)

@@ -272,9 +272,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         . sum
         <$> traverse (field InvestigatorResources . fst) canHelpPay
 
-    baseModifiedCardCost <- getModifiedCardCost iid c
-    modifiedCardCost <- getPotentiallyModifiedCardCost iid c True baseModifiedCardCost
-    modifiedCardCostWithChuckFergus <- getPotentiallyModifiedCardCost iid c False baseModifiedCardCost
+    mBaseModifiedCardCost <- getModifiedCardCost iid c
+    mModifiedCardCost <-
+      maybe (pure Nothing) (fmap Just . getPotentiallyModifiedCardCost iid c True) mBaseModifiedCardCost
+    mModifiedCardCostWithChuckFergus <-
+      maybe (pure Nothing) (fmap Just . getPotentiallyModifiedCardCost iid c False) mBaseModifiedCardCost
 
     let
       alternateResourceCost = \case
@@ -303,15 +305,20 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         s -> s
       replaceThisCardSource :: Data a => a -> a
       replaceThisCardSource = over biplate (replaceThisCard' c)
-      canAffordCost' = modifiedCardCost + auxiliaryResourceCosts <= availableResources + additionalResources
+      canAffordCost' = case mModifiedCardCost of
+        Nothing -> False
+        Just modifiedCardCost ->
+          modifiedCardCost + auxiliaryResourceCosts <= availableResources + additionalResources
       canAffordCost =
         if canAffordCost'
           then canAffordCost'
-          else
-            modifiedCardCostWithChuckFergus
-              + auxiliaryResourceCosts
-              <= availableResources
-              + additionalResources
+          else case mModifiedCardCostWithChuckFergus of
+            Nothing -> False
+            Just modifiedCardCostWithChuckFergus ->
+              modifiedCardCostWithChuckFergus
+                + auxiliaryResourceCosts
+                <= availableResources
+                + additionalResources
       needsChuckFergus = not canAffordCost' && canAffordCost
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m

@@ -25,7 +25,7 @@ instance HasAbilities FrenchHill_290 where
 instance RunMessage FrenchHill_290 where
   runMessage msg l@(FrenchHill_290 attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ (discardedCards -> (card : _)) -> do
-      let icons = count (== #willpower) $ cdSkills $ toCardDef card
+      let icons = count (`elem` [#willpower, #wild]) $ cdSkills $ toCardDef card
           n = 1 + min (maybe 0 countBreaches $ locationBreaches attrs) icons
       act <- selectJust AnyAct
       removeBreaches attrs n

@@ -52,7 +52,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Taboo.Types
 import Arkham.Token
-import Arkham.Trait
+import Arkham.Trait (Trait)
 import Arkham.Zone
 import Control.Lens (Plated, Prism', prism')
 import Data.Aeson.TH
@@ -235,7 +235,7 @@ data Criterion
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
   | TokensOnLocation Where Token ValueMatcher
-  | ReturnableCardInDiscard DiscardSignifier [Trait]
+  | ReturnableCardInDiscard DiscardSignifier ExtendedCardMatcher
   | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility
   | ScenarioDeckWithCard ScenarioDeckKey
@@ -551,6 +551,11 @@ instance FromJSON Criterion where
   parseJSON = withObject "Criterion" $ \o -> do
     tag <- o .: "tag"
     case (tag :: Text) of
+      "ReturnableCardInDiscard" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        pure $ case contents of
+          Right (ds, em) -> ReturnableCardInDiscard ds em
+          Left (ds, ts :: [Trait]) -> ReturnableCardInDiscard ds (BasicCardMatch $ mapOneOf CardWithTrait ts)
       "EnemyCount" -> do
         contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
         pure $ case contents of

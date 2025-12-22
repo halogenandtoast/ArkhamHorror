@@ -10,7 +10,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
-import Arkham.Classes.Query ((<=~>))
+import Arkham.Classes.Query ((<=~>), select)
 import Arkham.Cost qualified as Cost
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy.Types (Enemy)
@@ -268,7 +268,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
     if IgnoreAllCosts `elem` allModifiers
       then pure Cost.Free
       else do
-        resources <- getModifiedCardCost iid card
+        mResources <- getModifiedCardCost iid card
         investigator' <- getInvestigator iid
         let
           isInvestigate = #investigate `elem` card.actions
@@ -282,8 +282,13 @@ createActiveCostForCard iid card isPlayAction windows' = do
               Keyword.Seal sealing -> sealingToCost sealing
               _ -> Nothing
 
-          resourceCost =
-            if resources == 0
+        resourceCost <- case mResources of
+          Nothing -> pure Cost.UnpayableCost
+          Just resources -> case cdCost (toCardDef card) of
+            Just (AnyMatchingCardCost ecMatcher) -> do
+              cards <- select ecMatcher
+              pure $ Cost.OrCost $ map (Cost.ResourceCost . getCost) cards
+            _ -> pure $ if resources == 0
               then
                 if isDynamic card
                   then case maxDynamic card of

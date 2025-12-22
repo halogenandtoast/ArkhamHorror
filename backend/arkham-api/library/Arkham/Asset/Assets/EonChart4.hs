@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
@@ -26,7 +26,9 @@ eonChart4 = asset EonChart4 Cards.eonChart4
 
 instance HasAbilities EonChart4 where
   getAbilities (EonChart4 attrs) =
-    [controlled attrs 1 matcher $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)]
+    [ controlled attrs 1 (DuringTurn You <> matcher)
+        $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)
+    ]
    where
     actions = [#move, #investigate, #evade]
     matcher =
@@ -51,7 +53,8 @@ getAvailable iid attrs canDoActions = do
       (abilityF $ PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
   pure (playableCards, abilities)
 
-getAvailableActionTypes :: (Tracing m, HasGame m) => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]
+getAvailableActionTypes
+  :: (Tracing m, HasGame m) => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]
 getAvailableActionTypes iid attrs canDoActions = do
   (cards, abilities) <- getAvailable iid attrs canDoActions
   let cActions = nub $ concatMap (.actions) cards

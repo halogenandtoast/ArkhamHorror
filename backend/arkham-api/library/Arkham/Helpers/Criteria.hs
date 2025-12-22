@@ -340,8 +340,8 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
                 else pure $ unsafeToCardId aid `elem` discard
             InvestigatorSource _ -> case mcard of
               Just (card, _) -> pure $ toCardId card `elem` discard
-              _ -> error "No card available to check"
-            _ -> error $ "source not handled for in your discard: " <> show source
+              _ -> pure False
+            _ -> pure False
     Criteria.InThreatAreaOf (Matcher.replaceYouMatcher iid -> who) -> do
       case source of
         TreacherySource tid ->
@@ -506,11 +506,10 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           Just tIid -> nub $ mkWhen (Window.DuringTurn tIid) : windows'
       availableResources <- getSpendableResources iid
       results <- select cardMatcher
-      -- GameSource is important because it allows us to skip the action cost
       anyM
         ( getIsPlayableWithResources
             iid
-            GameSource
+            source
             (availableResources + n)
             (UnpaidCost NoAction)
             updatedWindows

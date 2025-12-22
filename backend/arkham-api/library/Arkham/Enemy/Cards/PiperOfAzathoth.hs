@@ -10,7 +10,9 @@ newtype PiperOfAzathoth = PiperOfAzathoth EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, AsId)
 
 piperOfAzathoth :: EnemyCard PiperOfAzathoth
-piperOfAzathoth = enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
+piperOfAzathoth =
+  enemy PiperOfAzathoth Cards.piperOfAzathoth (5, Static 7, 2) (0, 2)
+    & setPrey LowestRemainingSanity
 
 instance HasAbilities PiperOfAzathoth where
   getAbilities (PiperOfAzathoth a) = extend1 a $ mkAbility a 1 $ forced $ PhaseEnds #when #enemy

@@ -21,8 +21,8 @@ instance HasAbilities JacobMorrisonCostGuardCaptain3 where
   getAbilities (JacobMorrisonCostGuardCaptain3 a) =
     [ controlled_ a 1
         $ triggered (WouldHaveSkillTestResult #when You #any #failure) (exhaust a)
-    , controlled a 1 (DuringSkillTest (YourSkillTest #any) <> exists (be a <> AssetExhausted))
-        $ triggered (RevealChaosToken #when Anyone #bless) (exhaust a)
+    , controlled a 2 (DuringSkillTest (YourSkillTest #any) <> exists (be a <> AssetExhausted))
+        $ freeReaction (RevealChaosToken #when Anyone #bless)
     ]
 
 instance RunMessage JacobMorrisonCostGuardCaptain3 where

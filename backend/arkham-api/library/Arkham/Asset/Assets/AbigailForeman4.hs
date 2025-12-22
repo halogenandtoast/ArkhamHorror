@@ -3,12 +3,11 @@ module Arkham.Asset.Assets.AbigailForeman4 (abigailForeman4) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Window (getAbility)
 import Arkham.Matcher
-import Arkham.Helpers.Modifiers (ModifierType(..), modifySelect)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype AbigailForeman4 = AbigailForeman4 AssetAttrs
   deriving anyclass IsAsset
@@ -24,29 +23,24 @@ instance HasModifiersFor AbigailForeman4 where
 instance HasAbilities AbigailForeman4 where
   getAbilities (AbigailForeman4 a) =
     [ controlled a 1 criteria $ FastAbility Free
-    , restricted a 2 ControlsThis
+    , controlled_ a 2
         $ triggered
           ( ActivateAbility #after You
               $ PerformableAbility [IgnoreAllCosts]
-              <> AbilityIsActionAbility
+              <> #action
               <> AssetAbility (AssetAttachedToAsset (be a))
           )
           (exhaust a)
     ]
    where
     criteria = case a.controller of
-      Just iid -> exists (#tome <> AssetWithPlacement (InPlayArea iid))
+      Just iid -> exists $ #tome <> assetInPlayAreaOf iid <> not_ (AssetAttachedToAsset (be a))
       Nothing -> Never
-
-getAbility :: [Window] -> (Ability, [Window])
-getAbility [] = error "No windows"
-getAbility ((windowType -> Window.ActivateAbility _ ws ab) : _) = (ab, ws)
-getAbility (_ : rest) = getAbility rest
 
 instance RunMessage AbigailForeman4 where
   runMessage msg a@(AbigailForeman4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      as <- select $ assetControlledBy iid <> #tome <> AssetWithPlacement (InPlayArea iid)
+      as <- select $ assetControlledBy iid <> #tome <> assetInPlayAreaOf iid
       mAttachedAsset <- selectOne $ AssetAttachedToAsset (be attrs)
       chooseOrRunOneM iid do
         targets as \x -> do

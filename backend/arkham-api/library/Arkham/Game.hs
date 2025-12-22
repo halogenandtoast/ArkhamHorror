@@ -2742,6 +2742,7 @@ getAssetsMatching matcher = do
       let
         inPlayArea = \case
           InPlayArea iid' -> iid' `elem` iids
+          AttachedToAsset _ (Just inner) -> inPlayArea inner
           _ -> False
       filterM (fieldP AssetPlacement inPlayArea . toId) as
     AssetAttachedTo targetMatcher -> do

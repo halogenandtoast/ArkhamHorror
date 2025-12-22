@@ -662,6 +662,11 @@ getDefeatedAsset = \case
   (_ : rest) -> getDefeatedAsset rest
   _ -> error "impossible"
 
+getAbility :: [Window] -> (Ability, [Window])
+getAbility [] = error "No windows"
+getAbility ((windowType -> Window.ActivateAbility _ ws ab) : _) = (ab, ws)
+getAbility (_ : rest) = getAbility rest
+
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
 getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of

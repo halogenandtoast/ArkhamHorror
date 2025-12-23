@@ -264,7 +264,7 @@ instance RunMessage TheCircleUndone where
         addChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix attrs.difficulty
       when isReturnTo do
         when arrestedAnette $ removeChaosToken Skull
-        when arrestedSanford $ removeChaosToken Skull
+        when arrestedSanford $ addChaosToken #"-1"
         when assumedControlOfTheLodge do
           investigators <- allInvestigators
           for_ investigators \iid -> do

@@ -3,19 +3,15 @@ module Arkham.Investigator.Cards.PennyWhite (pennyWhite, pennyWhiteEffect, Penny
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
 import Arkham.Card
-import Arkham.Discover
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Effect
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (..), discardL)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Modifier
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
@@ -43,19 +39,16 @@ pennyWhite =
 
 instance HasModifiersFor PennyWhite where
   getModifiersFor (PennyWhite a) = do
-    self <-
-      modifySelfWith
-        a
-        setActiveDuringSetup
-        [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
-    assets <-
-      modifySelectWith a (assetIs Cards.flashlight) setActiveDuringSetup [AdditionalStartingUses (-1)]
-    pure $ self <> assets
+    modifySelfWith
+      a
+      setActiveDuringSetup
+      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
+    modifySelectWith a (assetIs Cards.flashlight) setActiveDuringSetup [AdditionalStartingUses (-1)]
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 (Self <> ClueOnLocation)
+        $ restricted a 1 (Self <> ClueOnLocation)
         $ freeReaction
         $ SkillTestResult #after You SkillTestFromRevelation (SuccessResult AnyValue)
     ]
@@ -66,15 +59,15 @@ instance HasChaosTokenValue PennyWhite where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PennyWhite where
-  runMessage msg i@(PennyWhite attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
+  runMessage msg i@(PennyWhite attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest
-      for_ mSkillTest $ \skillTest ->
+      for_ mSkillTest \skillTest ->
         when (skillTestIsRevelation skillTest) do
-          push =<< createCardEffect Cards.pennyWhite Nothing (toSource attrs) (toTarget attrs)
+          createCardEffect Cards.pennyWhite Nothing attrs attrs
       pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
       push $ FinishedWithMulligan iid
@@ -89,7 +82,10 @@ instance RunMessage PennyWhite where
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> pure i
     DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
-    _ -> PennyWhite <$> runMessage msg attrs
+    _ -> do
+      attrs' <- liftRunMessage msg attrs
+      for_ (investigatorDiscard attrs) obtainCard
+      pure $ PennyWhite $ attrs' & discardL .~ []
 
 newtype PennyWhiteEffect = PennyWhiteEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -100,8 +96,9 @@ pennyWhiteEffect :: EffectArgs -> PennyWhiteEffect
 pennyWhiteEffect = cardEffect PennyWhiteEffect Cards.pennyWhite
 
 instance RunMessage PennyWhiteEffect where
-  runMessage msg e@(PennyWhiteEffect attrs) = case msg of
+  runMessage msg e@(PennyWhiteEffect attrs) = runQueueT $ case msg of
     BeginTurn iid | InvestigatorTarget iid == attrs.target -> do
-      pushAll [disable attrs, GainActions iid (ChaosTokenEffectSource ElderSign) 1]
+      disable attrs
+      push $ GainActions iid (ChaosTokenEffectSource ElderSign) 1
       pure e
-    _ -> PennyWhiteEffect <$> runMessage msg attrs
+    _ -> PennyWhiteEffect <$> liftRunMessage msg attrs

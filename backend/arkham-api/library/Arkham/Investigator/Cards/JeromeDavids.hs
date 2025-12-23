@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers (modifySelfWith)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Types (Field (..), discardL)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
@@ -79,4 +79,7 @@ instance RunMessage JeromeDavids where
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
     DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
-    _ -> JeromeDavids <$> liftRunMessage msg attrs
+    _ -> do
+      attrs' <- liftRunMessage msg attrs
+      for_ (investigatorDiscard attrs) obtainCard
+      pure $ JeromeDavids $ attrs' & discardL .~ []

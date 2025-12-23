@@ -326,7 +326,13 @@ aChanceEncounter2 =
   (event "03238" "A Chance Encounter" 0 Survivor)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Fortune
-    , cdCost = Just (AnyMatchingCardCost $ PlayableCard (UnpaidCost NoAction) (InDiscardOf (affectsOthers can.have.cards.leaveDiscard) <> #ally))
+    , cdCost =
+        Just
+          ( AnyMatchingCardCost
+              $ PlayableCard
+                (UnpaidCost NoAction)
+                (InDiscardOf (affectsOthers can.have.cards.leaveDiscard) <> #ally)
+          )
     , cdLevel = Just 2
     }
 
@@ -403,7 +409,8 @@ trueSurvivor3 :: CardDef
 trueSurvivor3 =
   (event "03273" "True Survivor" 3 Survivor)
     { cdCardTraits = singleton Spirit
-    , cdCriteria = Just $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithTrait Innate)
+    , cdCriteria =
+        Just $ Criteria.ReturnableCardInDiscard (Criteria.DiscardOf You) (basic $ CardWithTrait Innate)
     , cdLevel = Just 3
     }
 

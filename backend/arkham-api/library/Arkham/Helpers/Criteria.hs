@@ -585,7 +585,10 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
         investigatorMatcher = case discardSignifier of
           Criteria.DiscardOf matcher -> matcher
           Criteria.AnyPlayerDiscard -> Matcher.Anyone
-      selectAny $ ecMatcher <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
+        wrapper = case mcard of
+          Just (card, _) -> (Matcher.basic (not_ (Matcher.CardWithId card.id)) <>)
+          Nothing -> id
+      selectAny $ wrapper $ ecMatcher <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
     Criteria.CanAffordCostIncrease n -> do
       let
         go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Bool
@@ -600,15 +603,15 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
           Just (_, PaidCost) -> pure True
           Nothing -> error $ "no card for CanAffordCostIncrease: " <> show source
       go mcard
-    Criteria.CardInDiscard discardSignifier cardMatcher -> do
-      let
-        investigatorMatcher = case discardSignifier of
-          Criteria.DiscardOf matcher -> matcher
-          Criteria.AnyPlayerDiscard -> Matcher.Anyone
-      investigatorIds <- select investigatorMatcher
-      discards <- concatMapM (field InvestigatorDiscard) investigatorIds
-      let filteredDiscards = filter (`cardMatch` cardMatcher) discards
-      pure $ notNull filteredDiscards
+    -- Criteria.CardInDiscard discardSignifier cardMatcher -> do
+    --   let
+    --     investigatorMatcher = case discardSignifier of
+    --       Criteria.DiscardOf matcher -> matcher
+    --       Criteria.AnyPlayerDiscard -> Matcher.Anyone
+    --   investigatorIds <- select investigatorMatcher
+    --   discards <- concatMapM (field InvestigatorDiscard) investigatorIds
+    --   let filteredDiscards = filter (`cardMatch` cardMatcher) discards
+    --   pure $ notNull filteredDiscards
     Criteria.ClueOnLocation ->
       maybe (pure False) (fmap (maybe False (> 0)) . fieldMay LocationClues)
         =<< field InvestigatorLocation iid

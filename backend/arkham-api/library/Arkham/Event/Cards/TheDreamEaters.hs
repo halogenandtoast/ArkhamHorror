@@ -152,7 +152,7 @@ scroungeForSupplies :: CardDef
 scroungeForSupplies =
   (event "06165" "Scrounge for Supplies" 0 Survivor)
     { cdCardTraits = singleton Fortune
-    , cdCriteria = Just $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
+    , cdCriteria = Just $ Criteria.ReturnableCardInDiscard (Criteria.DiscardOf You) (basic $ CardWithLevel 0)
     }
 
 practiceMakesPerfect :: CardDef

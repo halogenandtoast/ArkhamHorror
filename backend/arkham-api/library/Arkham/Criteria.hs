@@ -188,7 +188,6 @@ data Criterion
   | PlayerCountIs Int
   | OnAct Int
   | CardExists CardMatcher
-  | CardInDiscard DiscardSignifier CardMatcher
   | ChargesOnThis ValueMatcher
   | TokensOnThis Token ValueMatcher
   | ClueOnLocation
@@ -556,6 +555,9 @@ instance FromJSON Criterion where
         pure $ case contents of
           Right (ds, em) -> ReturnableCardInDiscard ds em
           Left (ds, ts :: [Trait]) -> ReturnableCardInDiscard ds (BasicCardMatch $ mapOneOf CardWithTrait ts)
+      "CardInDiscard" -> do
+        (ds, cm) <- o .: "contents"
+        pure $ ReturnableCardInDiscard ds (BasicCardMatch cm)
       "EnemyCount" -> do
         contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
         pure $ case contents of

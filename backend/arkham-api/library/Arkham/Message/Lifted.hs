@@ -2555,8 +2555,13 @@ afterSearch
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
 afterSearch body = do
   msgs <- capture body
+  let
+    isEndSearch = \case
+      EndSearch {} -> True
+      _ -> False
   insertAfterMatching msgs \case
     FinishedSearch {} -> True
+    Would _ inner | any isEndSearch inner -> True
     _ -> False
 
 afterEvade

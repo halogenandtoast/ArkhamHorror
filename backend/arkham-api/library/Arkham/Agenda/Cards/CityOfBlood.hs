@@ -5,7 +5,9 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log (whenHasRecord)
-import Arkham.Placement
+import Arkham.Helpers.Scenario (getIsReturnTo)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Zone
 
@@ -20,9 +22,11 @@ instance RunMessage CityOfBlood where
   runMessage msg a@(CityOfBlood attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       whenHasRecord TheHarbingerIsStillAlive do
-        fetchCardMaybe
-          [SetAsideCard Enemies.harbingerOfValusia, SetAsideCard Enemies.harbingerOfValusiaTheSleeperReturns]
-          >>= traverse_ \harbinger -> createEnemy_ harbinger (OutOfPlay PursuitZone)
+        isReturnTo <- getIsReturnTo
+        let version = if isReturnTo then Enemies.harbingerOfValusiaTheSleeperReturns else Enemies.harbingerOfValusia
+        selectOne (OutOfPlayEnemy SetAsideZone $ enemyIs version) >>= \case
+          Just enemy -> place enemy (OutOfPlay PursuitZone)
+          Nothing -> whenJustM (fetchCardMaybe version) (`createEnemy_` OutOfPlay PursuitZone)
       doStep 1 msg
       advanceAgendaDeck attrs
       pure a

@@ -23,10 +23,10 @@ theRedGlovedManPurposeUnknown =
 
 instance HasAbilities TheRedGlovedManPurposeUnknown where
   getAbilities (TheRedGlovedManPurposeUnknown a) =
-    [ restricted a 1 (thisExists a $ oneOf [EnemyWithAnyScarletKey, EnemyCanAttack You])
-        $ forced
-        $ CampaignEvent #after (Just You) "stabilizedKey"
-    ]
+    extend1 a
+      $ restricted a 1 (thisExists a $ oneOf [EnemyWithAnyScarletKey, EnemyCanAttack You])
+      $ forced
+      $ CampaignEvent #after (Just You) "stabilizedKey"
 
 instance RunMessage TheRedGlovedManPurposeUnknown where
   runMessage msg e@(TheRedGlovedManPurposeUnknown attrs) = runQueueT $ case msg of

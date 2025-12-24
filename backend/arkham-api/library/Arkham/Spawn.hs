@@ -2,10 +2,11 @@
 
 module Arkham.Spawn where
 
-import Arkham.Prelude
-import Arkham.Matcher
 import Arkham.Id
+import Arkham.Matcher
+import {-# SOURCE #-} Arkham.Message
 import Arkham.Placement
+import Arkham.Prelude
 import Data.Aeson.TH
 import GHC.Records
 
@@ -16,6 +17,7 @@ data SpawnDetails = SpawnDetails
   , spawnDetailsOverridden :: Bool
   , spawnDetailsExhausted :: Bool
   , spawnDetailsUnengaged :: Bool
+  , spawnDetailsAfter :: [Message]
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -28,6 +30,7 @@ mkSpawnDetails enemy spawnAt =
     , spawnDetailsOverridden = False
     , spawnDetailsExhausted = False
     , spawnDetailsUnengaged = False
+    , spawnDetailsAfter = []
     }
 
 setLocation :: LocationId -> SpawnDetails -> SpawnDetails
@@ -38,6 +41,9 @@ instance HasField "overridden" SpawnDetails Bool where
 
 instance HasField "enemy" SpawnDetails EnemyId where
   getField = spawnDetailsEnemy
+
+instance HasField "after" SpawnDetails [Message] where
+  getField = spawnDetailsAfter
 
 instance HasField "investigator" SpawnDetails (Maybe InvestigatorId) where
   getField = spawnDetailsInvestigator
@@ -89,4 +95,5 @@ instance FromJSON SpawnDetails where
     spawnDetailsOverridden <- o .:? "spawnDetailsOverridden" .!= False
     spawnDetailsExhausted <- o .:? "spawnDetailsExhausted" .!= False
     spawnDetailsUnengaged <- o .:? "spawnDetailsUnengaged" .!= False
+    spawnDetailsAfter <- o .:? "spawnDetailsAfter" .!= []
     pure SpawnDetails {..}

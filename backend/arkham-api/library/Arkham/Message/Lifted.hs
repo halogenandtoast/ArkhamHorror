@@ -105,6 +105,7 @@ import Arkham.Search qualified as Search
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Target
 import Arkham.Token
 import Arkham.Tracing
@@ -3750,6 +3751,11 @@ changeSpawnAt enemyId locationId = lift $ replaceAllMessagesMatching ((== Just E
   EnemySpawnAtLocationMatching miid _ eid | eid == enemyId -> [EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid]
   After (EnemySpawnAtLocationMatching miid _ eid) | eid == enemyId -> [After (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)]
   other -> [other]
+
+updateSpawnDetails :: ReverseQueue m => EnemyId -> (SpawnDetails -> SpawnDetails) -> m ()
+updateSpawnDetails enemyId f = do
+  spawn <- field EnemySpawnDetails enemyId
+  push $ UpdateEnemy enemyId $ Update EnemySpawnDetails (f <$> spawn)
 
 createWeaknessInThreatArea
   :: (FetchCard card, ToId investigator InvestigatorId, ReverseQueue m)

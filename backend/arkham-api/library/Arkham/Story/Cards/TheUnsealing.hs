@@ -57,7 +57,8 @@ instance RunMessage TheUnsealing where
   runMessage msg s@(TheUnsealing attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
       pure s
-    UseCardAbility _ (isSource attrs -> True) 1 (getEnemy -> x) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws@(getEnemy -> x) _ -> do
+      cancelWindowBatch ws
       push $ HunterMove x
       temporaryModifier x attrs DoNotExhaust do
         push $ ForTarget (toTarget x) EnemiesAttack

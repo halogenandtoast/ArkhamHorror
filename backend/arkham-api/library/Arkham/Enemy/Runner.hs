@@ -470,7 +470,11 @@ instance RunMessage EnemyAttrs where
                                 $ chooseOne lead
                                 $ [ targetLabel
                                       iid
-                                      [EnemyEntered eid lid, Will (EnemyEngageInvestigator eid iid), afterSpawns, EnemySpawned details]
+                                      [ EnemyEntered eid lid
+                                      , Will (EnemyEngageInvestigator eid iid)
+                                      , afterSpawns
+                                      , EnemySpawned details
+                                      ]
                                   | iid <- choices
                                   ]
                 else
@@ -487,6 +491,8 @@ instance RunMessage EnemyAttrs where
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure a
     EnemySpawned details | details.enemy == enemyId -> do
+      unless (null details.after) do
+        pushAll details.after
       pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do
       case enemyPlacement of

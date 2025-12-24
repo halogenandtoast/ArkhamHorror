@@ -3,12 +3,11 @@ module Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn (witchHauntedWoodsOv
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.GameValue
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Spawn
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype WitchHauntedWoodsOvergrownBarn = WitchHauntedWoodsOvergrownBarn LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,37 +27,13 @@ instance HasAbilities WitchHauntedWoodsOvergrownBarn where
 
 instance RunMessage WitchHauntedWoodsOvergrownBarn where
   runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.EnemyWouldSpawnAt enemyId _)] _ ->
-      do
-        insteadOfMatchingWith
-          \case
-            When (EnemySpawn details) -> details.enemy == enemyId
-            _ -> False
-          \case
-            When (EnemySpawn details) ->
-              pure [When $ EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}]
-            _ -> error "bad match"
-        insteadOfMatchingWith
-          \case
-            EnemySpawn details -> details.enemy == enemyId
-            _ -> False
-          \case
-            EnemySpawn details ->
-              pure
-                [ EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}
-                , EnemyCheckEngagement enemyId
-                ]
-            _ -> error "bad match"
-        iids <- select $ investigatorAt $ toId attrs
-        insteadOfMatchingWith
-          \case
-            After (EnemySpawn details) -> details.enemy == enemyId
-            _ -> False
-          \case
-            After (EnemySpawn details) ->
-              pure
-                $ After (EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id})
-                : map (InitiateEnemyAttack . enemyAttack details.enemy attrs) iids
-            _ -> error "bad match"
-        pure l
+    UseCardAbility _ (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
+      iids <- select $ investigatorAt $ toId attrs
+      updateSpawnDetails enemy \details ->
+        details
+          { spawnDetailsSpawnAt = SpawnAtLocation attrs.id
+          , spawnDetailsAfter =
+              EnemyCheckEngagement enemy : map (InitiateEnemyAttack . enemyAttack details.enemy attrs) iids
+          }
+      pure l
     _ -> WitchHauntedWoodsOvergrownBarn <$> liftRunMessage msg attrs

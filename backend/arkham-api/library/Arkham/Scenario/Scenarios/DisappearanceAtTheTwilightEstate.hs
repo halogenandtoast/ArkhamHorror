@@ -301,8 +301,6 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       runScenarioSetup DisappearanceAtTheTwilightEstate attrs
         $ setupDisappearanceAtTheTwilightEstate attrs
     SetupStep (isTarget attrs -> True) 2 -> do
-      agendaId <- selectJust AnyAgenda
-
       whenAny (investigatorIs Investigators.gavriellaMizrah) do
         theSpectralWatcher <- selectJust $ enemyIs Enemies.theSpectralWatcher
         nonAttackEnemyDamage Nothing attrs 1 theSpectralWatcher
@@ -310,12 +308,12 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       whenAny (investigatorIs Investigators.valentinoRivas) do
         terrorInTheNight <- genCard Treacheries.terrorInTheNight
         tid1 <- getRandom
-        push $ AttachStoryTreacheryTo tid1 terrorInTheNight (toTarget agendaId)
+        push $ CreateTreacheryAt tid1 terrorInTheNight NextToAgenda
 
       whenAny (investigatorIs Investigators.pennyWhite) do
         whispersInTheDark <- genCard Treacheries.whispersInTheDark
         tid2 <- getRandom
-        push $ AttachStoryTreacheryTo tid2 whispersInTheDark (toTarget agendaId)
+        push $ CreateTreacheryAt tid2 whispersInTheDark NextToAgenda
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

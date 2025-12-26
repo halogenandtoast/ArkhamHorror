@@ -44,7 +44,7 @@ instance RunMessage SlainForemanFamilialPain where
             ((_, card) : _) -> printedCardCost card `div` 2
             _ -> 0
       sid <- getRandom
-      parley sid iid (attrs.ability 1) attrs #combat (Fixed $ max 0 $ 6 - n)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed $ max 0 $ 6 - n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       flipOverBy iid (attrs.ability 2) attrs

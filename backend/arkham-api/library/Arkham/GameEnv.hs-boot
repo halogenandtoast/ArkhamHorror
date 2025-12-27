@@ -20,6 +20,7 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Random
 import Arkham.SkillTest.Base
+import {-# SOURCE #-} Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Window
@@ -33,7 +34,7 @@ withModifiers'
   -> m [Modifier]
   -> ReaderT Game m a
   -> m a
-
+withoutModifiersOf :: (HasGame m, Sourceable source) => source -> ReaderT Game m a -> m a
 withoutModifiersFrom :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]

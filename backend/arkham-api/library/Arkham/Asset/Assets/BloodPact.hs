@@ -25,7 +25,7 @@ instance HasAbilities BloodPact where
         "{fast} Add 1 doom to Blood Pact: You get +2 {combat} for this skill test. (Limit once per test.)"
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest #combat)
-        $ controlled x 2 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 2) (toTarget x) 2)
+        $ controlled x 2 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 2) (toTarget x) 1)
     ]
 
 instance RunMessage BloodPact where

@@ -23,7 +23,7 @@ theGreatWebVastWeb =
 instance HasAbilities TheGreatWebVastWeb where
   getAbilities (TheGreatWebVastWeb a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> not_ (OnAct 1) <> not_ (CluesOnThis $ LessThanOrEqualTo (PerPlayer 1)))
+      $ restricted a 1 (Here <> not_ (OnAct 1) <> CluesOnThis (LessThanOrEqualTo (PerPlayer 1)))
       $ ActionAbility [#move] (ActionCost 1)
 
 instance RunMessage TheGreatWebVastWeb where

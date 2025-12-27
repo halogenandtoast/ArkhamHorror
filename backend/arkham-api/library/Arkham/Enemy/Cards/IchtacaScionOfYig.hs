@@ -27,7 +27,7 @@ instance RunMessage IchtacaScionOfYig where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       createCardEffect Cards.ichtacaScionOfYig Nothing attrs sid
-      parley sid iid attrs attrs #intellect (Fixed 5)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 5)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       initiateEnemyAttack attrs attrs iid

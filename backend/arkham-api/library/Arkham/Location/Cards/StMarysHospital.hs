@@ -14,10 +14,10 @@ stMarysHospital :: LocationCard StMarysHospital
 stMarysHospital = location StMarysHospital Cards.stMarysHospital 2 (PerPlayer 1)
 
 instance HasAbilities StMarysHospital where
-  getAbilities (StMarysHospital x) =
-    extendRevealed1 x
+  getAbilities (StMarysHospital a) =
+    extendRevealed1 a
       $ playerLimit PerGame
-      $ restricted x 1 (Here <> exists (HealableInvestigator (toSource x) #damage You)) actionAbility
+      $ restricted a 1 (Here <> exists (HealableInvestigator (a.ability 1) #damage You)) actionAbility
 
 instance RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = runQueueT $ case msg of

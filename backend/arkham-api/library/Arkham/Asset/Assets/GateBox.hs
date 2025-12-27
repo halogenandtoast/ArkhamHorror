@@ -22,8 +22,7 @@ instance HasAbilities GateBox where
         a
         1
         (oneOf [youExist $ InvestigatorEngagedWith AnyEnemy, notExists $ LocationWithTitle "Dream-Gate"])
-        $ FastAbility
-        $ assetUseCost a Charge 1
+        $ FastAbility (assetUseCost a Charge 1 <> exhaust a)
     ]
 
 instance RunMessage GateBox where

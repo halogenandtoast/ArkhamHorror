@@ -132,8 +132,10 @@ sourceMatches s = \case
   Matcher.SourceOwnedBy whoMatcher ->
     let
       checkSource = \case
-        AbilitySource source' _ -> checkSource source'
-        UseAbilitySource _ source' _ -> checkSource source'
+        AbilitySource source' n -> do
+          iid' <- getActiveInvestigatorId
+          checkSource (UseAbilitySource iid' source' n)
+        UseAbilitySource iid' source' _ -> orM [elem iid' <$> select whoMatcher, checkSource source']
         AssetSource aid ->
           selectAssetController aid >>= \case
             Just iid' -> elem iid' <$> select whoMatcher
@@ -143,7 +145,7 @@ sourceMatches s = \case
             Just controllerId -> elem controllerId <$> select whoMatcher
             Nothing -> do
               -- event may have been discarded already
-              mOwner <- join . fmap toCardOwner <$> fieldMay EventCard eid
+              mOwner <- (toCardOwner =<<) <$> fieldMay EventCard eid
               case mOwner of
                 Just owner -> elem owner <$> select whoMatcher
                 Nothing -> pure False
@@ -323,7 +325,8 @@ sourceMatches s = \case
         ChaosTokenSource _ -> pure True
         ChaosTokenEffectSource _ -> pure True
         _ -> pure False
-     in check s
+     in
+      check s
   Matcher.SourceIsScenarioCardEffect ->
     let
       check = \case

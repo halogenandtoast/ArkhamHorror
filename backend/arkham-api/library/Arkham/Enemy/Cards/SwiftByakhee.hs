@@ -4,13 +4,12 @@ import Arkham.Ability
 import Arkham.Distance
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -32,8 +31,7 @@ instance RunMessage SwiftByakhee where
           EnemyMove eid _ -> eid == attrs.id
           _ -> False
         do
-          enemyLocation <- field EnemyLocation (toId attrs)
-          for_ enemyLocation \loc -> do
+          withLocationOf attrs \loc -> do
             prey <- select (enemyPrey attrs)
             preyWithLocationsAndDistances <- forMaybeM prey \preyId -> runMaybeT do
               lid <- MaybeT $ selectOne $ locationWithInvestigator preyId

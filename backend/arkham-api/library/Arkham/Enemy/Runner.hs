@@ -1755,9 +1755,11 @@ instance RunMessage EnemyAttrs where
         Just AnyEnemy -> pure ()
         Just m -> whenM (enemyId <!=~> m) handleAttack
       pure a
-    ForTarget (isTarget a -> True) (CancelNext _ AttackMessage) -> do
+    ForTarget (isTarget a -> True) (CancelEachNext mCardId source [AttackMessage]) -> do
       let details = fromJustNote "missing attack details" enemyAttacking
           details' = details {attackCancelled = True}
+      Lifted.checkWhen $ Window.CancelledOrIgnoredCardOrGameEffect source mCardId
+      Lifted.checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect source mCardId
       pure $ a & attackingL ?~ details'
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])

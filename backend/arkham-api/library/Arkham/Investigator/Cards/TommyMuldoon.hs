@@ -55,6 +55,7 @@ instance RunMessage TommyMuldoon where
               (toTarget iid)
           else do
             gainResources iid (attrs.ability 1) (damage + horror)
+      cancelAssetLeavePlay asset
       shuffleIntoDeck iid asset
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

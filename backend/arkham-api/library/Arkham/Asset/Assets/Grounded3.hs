@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestSource)
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Spell))
 
@@ -25,7 +26,9 @@ instance HasAbilities Grounded3 where
 instance HasModifiersFor Grounded3 where
   getModifiersFor (Grounded3 a) = do
     modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-    controllerGets a [AnySkillValue 1]
+    withSkillTestSource \s ->
+      whenM (sourceMatches s (SourceWithTrait Spell)) do
+        controllerGets a [AnySkillValue 1]
 
 instance RunMessage Grounded3 where
   runMessage msg a@(Grounded3 attrs) = runQueueT $ case msg of

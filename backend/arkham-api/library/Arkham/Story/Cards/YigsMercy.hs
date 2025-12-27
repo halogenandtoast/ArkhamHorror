@@ -29,11 +29,11 @@ instance RunMessage YigsMercy where
         if yigsFury >= 16
           then labeled' "yigsMercy.refuses" nothing
           else do
-            labeled' "yigsMercury.reject" do
+            labeled' "yigsMercy.reject" do
               exhaustThis ichtaca
               disengageFromAll ichtaca
               gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
-            labeled' "yigsMercury.accept" do
+            labeled' "yigsMercy.accept" do
               removeEnemy ichtaca
               advanceToAct' attrs 1 Acts.paradiseLost A
               gameModifiers

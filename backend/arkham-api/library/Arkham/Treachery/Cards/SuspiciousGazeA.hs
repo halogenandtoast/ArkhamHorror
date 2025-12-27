@@ -21,7 +21,7 @@ instance RunMessage SuspiciousGazeA where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       x <- getAlarmLevel iid
-      let n = x + 1 `div` 2
+      let n = (x + 1) `div` 2
       chooseOneM iid $ scenarioI18n do
         unscoped $ countVar n $ labeledValidate' (n > 0) "takeDamage" $ assignDamage iid attrs n
         labeledValidate' (n < 10) "suspiciousGaze.alarm" $ raiseAlarmLevel attrs [iid]

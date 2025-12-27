@@ -481,13 +481,13 @@ instance RunMessage EnemyAttrs where
                   unless (#massive `elem` keywords)
                     $ pushAll [EnemyEntered eid lid, afterSpawns, EnemySpawned details]
         SpawnPlaced placement -> do
-          mLocation <- placementLocation placement
-          afterMessages <- case mLocation of
-            Nothing -> pure []
-            Just lid -> do
-              afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-              pure [afterSpawns, EnemySpawned details]
-          pushAll $ [PlaceEnemy enemyId placement] <> afterMessages
+          placementLocation placement >>= \case
+            Nothing -> push $ PlaceEnemy enemyId placement
+            Just lid -> canSpawnInLocation enemyId lid >>= \case
+              True -> do
+                afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
+                pushAll [PlaceEnemy enemyId placement, afterSpawns, EnemySpawned details]
+              False -> push $ toDiscard GameSource enemyId
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure a
     EnemySpawned details | details.enemy == enemyId -> do

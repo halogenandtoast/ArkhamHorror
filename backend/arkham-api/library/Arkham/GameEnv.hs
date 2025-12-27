@@ -227,7 +227,19 @@ withoutModifiersFrom iid body = do
   game <- getGame
   let
     modifiers = gameModifiers game
-    modifiers' = Map.adjust (filter ((/= (toSource iid)) . (.source))) (toTarget iid) modifiers
+    modifiers' = Map.adjust (filter ((/= toSource iid) . (.source))) (toTarget iid) modifiers
+  runReaderT body $ game & modifiersL .~ modifiers'
+
+withoutModifiersOf
+  :: (HasGame m, Sourceable source)
+  => source
+  -> ReaderT Game m a
+  -> m a
+withoutModifiersOf source body = do
+  game <- getGame
+  let
+    modifiers = gameModifiers game
+    modifiers' = Map.map (filter ((/= toSource source) . (.source))) modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
 withActiveInvestigator :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a

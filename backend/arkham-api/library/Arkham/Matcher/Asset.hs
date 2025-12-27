@@ -84,6 +84,7 @@ data AssetMatcher
   | AssetWithSealedChaosTokens Int ChaosTokenMatcher
   | AssetWithoutSealedTokens
   | AssetInSlot SlotType
+  | AssetWithSlot SlotType
   | AssetInTwoHandSlots
   | AssetInSingleHand
   | AssetIs CardCode

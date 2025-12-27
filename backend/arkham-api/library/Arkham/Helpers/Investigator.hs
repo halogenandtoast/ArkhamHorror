@@ -257,10 +257,8 @@ fitsAvailableSlots aid a = do
         concatMap (\(k, xs) -> replicate (count (elem aid . slotItems) xs) k)
           $ Map.toList (a ^. slotsL)
 
-  availableSlots <-
-    concatForM
-      (nub slotTypes)
-      (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a.slots)
+  availableSlots <- concatForM (nub slotTypes) \slotType ->
+    map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a.slots
   let missingSlotTypes = slotTypes \\ (availableSlots <> currentSlots)
 
   pure $ if null missingSlotTypes then FitsSlots else MissingSlots missingSlotTypes
@@ -274,7 +272,7 @@ availableSlotTypesFor
   -> m [SlotType]
 availableSlotTypesFor slotType canHoldMap a initSlots = do
   let possibleSlotTypes = slotType : findWithDefault [] slotType canHoldMap
-  concatForM possibleSlotTypes $ \sType -> do
+  concatForM possibleSlotTypes \sType -> do
     let slots = findWithDefault [] sType initSlots
     xs <- filterM (canPutIntoSlot a) slots
     pure $ replicate (length xs) sType

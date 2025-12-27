@@ -2717,6 +2717,9 @@ getAssetsMatching matcher = do
       slotMaps <- Map.unionsWith (<>) <$> selectField InvestigatorSlots Anyone
       let inSlots = concatMap (.assets) $ Map.findWithDefault mempty slot slotMaps
       pure $ filter ((`elem` inSlots) . toId) as
+    AssetWithSlot slot -> as & filterM \a -> do
+      slots <- field AssetSlots a.id
+      pure $ slot `elem` slots
     AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . attr assetSlots) as
     AssetInSingleHand -> pure $ filter ((== 1) . count (== HandSlot) . attr assetSlots) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as

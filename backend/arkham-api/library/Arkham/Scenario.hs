@@ -29,6 +29,7 @@ import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
@@ -513,8 +514,15 @@ instance RunMessage Scenario where
           -- before going into the resolution
           if not $ attr scenarioInResolution x
             then do
+              addToVictoryMsgs <- Lifted.capture do
+                -- also clean up victory enemies
+                select (Matcher.OutOfPlayEnemy RemovedZone Matcher.EnemyWithVictory)
+                  >>= traverse_ Lifted.addToVictoryIfNeeded
+
+              -- We want to empty the queue for triggering a resolution
+              clearQueue
               whenEnd <- checkWindows [mkWhen Window.EndOfGame]
-              pushAll [whenEnd, msg]
+              pushAll $ addToVictoryMsgs <> [whenEnd, msg]
               pure $ overAttrs (\a -> a & inResolutionL .~ True) x
             else go
         _ -> go

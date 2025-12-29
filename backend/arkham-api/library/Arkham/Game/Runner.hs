@@ -3337,8 +3337,6 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
           Just (x : xs) -> Just (x : xs)
     pure $ g & windowDepthL -~ 1 & windowStackL .~ windowStack
   ScenarioResolution _ -> do
-    -- We want to empty the queue for triggering a resolution
-    clearQueue
     pure
       $ g
       & (skillTestL .~ Nothing)

@@ -34,7 +34,7 @@ instance RunMessage CatedralMetropolitana where
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) succeededBy -> do
       concealedCards <- map toId <$> getConcealedAtAll (ForExpose $ toSource attrs) attrs.id
-      let n = 1 + succeededBy `div` 2
+      let n = 1 + (succeededBy `div` 2)
       chooseNM iid n $ targets concealedCards $ revealConcealed iid (attrs.ability 1)
       pure l
     _ -> CatedralMetropolitana <$> liftRunMessage msg attrs

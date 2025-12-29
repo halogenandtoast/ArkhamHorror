@@ -13,20 +13,14 @@ theyMustBeDestroyed :: ActCard TheyMustBeDestroyed
 theyMustBeDestroyed = act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
 instance HasAbilities TheyMustBeDestroyed where
-  getAbilities (TheyMustBeDestroyed x) | onSide A x = do
-    [ restricted
-        x
-        1
-        ( not_
-            $ oneOf
-              [ exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
-              , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
-              ]
+  getAbilities = actAbilities1 \a ->
+    mkAbility a 1 (Objective $ forced AnyWindow)
+      `withCriteria` not_
+        ( oneOf
+            [ exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+            , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
+            ]
         )
-        $ Objective
-        $ forced AnyWindow
-      ]
-  getAbilities _ = []
 
 instance RunMessage TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = runQueueT $ case msg of

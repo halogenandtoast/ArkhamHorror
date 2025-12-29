@@ -5,14 +5,12 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
 import Arkham.Campaigns.NightOfTheZealot.Import
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Message (pushWhenM)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
@@ -127,56 +125,48 @@ setupTheDevourerBelow attrs = do
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents attrs.difficulty)
+      setChaosTokens (chaosBagContents attrs.difficulty)
       pure s
-    PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup TheDevourerBelow attrs $ setupTheDevourerBelow attrs
     ResolveChaosToken _ Cultist iid -> do
-      let doom = if isEasyStandard attrs then 1 else 2
-      enemies <- select $ NearestEnemyToFallback iid AnyEnemy
-      chooseOrRunOneM iid $ targets enemies \x -> placeTokens Cultist x #doom doom
+      enemies <- select $ NearestEnemyToFallback iid (InPlayEnemy AnyEnemy)
+      chooseTargetM iid enemies $ placeDoomOn Cultist (byDifficulty attrs 1 2)
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      let horror = byDifficulty attrs 0 1
-      whenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Monster)
-        $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 horror
+      whenAny (at_ (locationWithInvestigator iid) <> EnemyWithTrait Monster) do
+        assignDamageAndHorror iid Tablet 1 $ byDifficulty attrs 0 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      pushWhenM (selectAny $ InPlayEnemy $ EnemyWithTrait AncientOne) $ DrawAnotherChaosToken iid
+      whenAny (InPlayEnemy $ EnemyWithTrait AncientOne) $ drawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
-      findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster
+      findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Monster
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18n "noResolution"
           record ArkhamSuccumbedToUmordhothsTerribleVengeance
+          resolution "noResolution"
         Resolution 1 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 5
-          story $ withVars ["xp" .= xp] $ i18n "resolution1"
           record TheRitualToSummonUmordhothWasBroken
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus.resolution1" 5
         Resolution 2 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 10
-          story $ withVars ["xp" .= xp] $ i18n "resolution2"
           record TheInvestigatorsRepelledUmordoth
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus.resolution2" 10
         Resolution 3 -> do
-          xp <- allGainXp' attrs
-          story $ withVars ["xp" .= xp] $ i18n "resolution3"
           record TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+          resolutionWithXp "resolution3" $ allGainXp' attrs
         _ -> error "Invalid resolution"
       endOfScenario
       pure s
     HandleOption option -> do
-      whenM getIsStandalone $ do
-        case option of
-          AddLitaChantler -> do
-            investigators <- allInvestigators
-            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.litaChantler
-          _ -> error $ "Unhandled option: " <> show option
+      whenM getIsStandalone $ case option of
+        AddLitaChantler -> do
+          investigators <- allInvestigators
+          forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.litaChantler
+        _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheDevourerBelow <$> liftRunMessage msg attrs

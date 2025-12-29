@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Lifeline1 (lifeline1, Lifeline1 (..)) where
+module Arkham.Event.Events.Lifeline1 (lifeline1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -22,8 +22,8 @@ instance RunMessage Lifeline1 where
       for_ miid \iid -> do
         x <- getHistoryField TurnHistory iid HistorySkillTestsPerformed
         let failed = count (isFailedResult . snd) x
+        cancelWindowBatch attrs.windows
         cancelEndTurn iid
-        push $ GainActions iid (toSource attrs) failed
-        push $ PlayerWindow iid [] False False
+        gainActions iid attrs failed
       pure e
     _ -> Lifeline1 <$> liftRunMessage msg attrs

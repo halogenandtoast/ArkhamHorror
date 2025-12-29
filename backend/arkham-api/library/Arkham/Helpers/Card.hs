@@ -353,10 +353,11 @@ getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   applyModifier n _ = pure n
 getUnboundedModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  Just <$> foldM
-    applyModifier
-    (error "we need so specify ecCost for this to work")
-    modifiers
+  Just
+    <$> foldM
+      applyModifier
+      (error "we need so specify ecCost for this to work")
+      modifiers
  where
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then n - m else n

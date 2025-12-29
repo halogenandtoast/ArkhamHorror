@@ -2961,6 +2961,7 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
  where
   isEndTurnWindow w = case w.kind of
     Window.TurnEnds _ -> True
+    Window.WouldEndTurn _ -> True
     _ -> False
 
 obtainCard :: (FetchCard a, ReverseQueue m) => a -> m ()

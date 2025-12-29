@@ -55,8 +55,8 @@ import Arkham.Helpers.Message hiding (
   createEnemy,
  )
 import Arkham.Helpers.Modifiers hiding (createWindowModifierEffect)
-import Arkham.Helpers.Playable
 import Arkham.Helpers.Phases (runEnemyPhase)
+import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
@@ -1393,6 +1393,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
@@ -2100,7 +2101,21 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
   After (EndTurn _) -> do
-    pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
+    let
+      isPerTurn = \case
+        MaxPerTurn _ -> True
+        _ -> False
+    let turnEndUses =
+          map cdCardCode
+            . filter (any isPerTurn . cdLimits)
+            . mapMaybe lookupCardDef
+            $ Map.keys (view cardUsesL g)
+    pure
+      $ g
+      & (turnHistoryL .~ mempty)
+      & (turnPlayerInvestigatorIdL .~ Nothing)
+      & cardUsesL
+      %~ Map.filterWithKey (\k _ -> k `notElem` turnEndUses)
   ClearQueue -> do
     clearQueue
     pure g
@@ -2739,6 +2754,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)

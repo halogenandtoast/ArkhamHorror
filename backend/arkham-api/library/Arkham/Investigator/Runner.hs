@@ -2982,10 +2982,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> do
-    unless (view endedTurnL a) do
-      wouldWindow <- checkWindows [mkWhen $ Window.WouldEndTurn iid]
-      msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
-      pushAll $ wouldWindow : msgs
+    if view endedTurnL a
+      then Lifted.do_ msg
+      else do
+        Lifted.batched \_ -> do
+          Lifted.checkWhen $ Window.WouldEndTurn iid
+          Lifted.do_ msg
+    pure a
+  Do (ChooseEndTurn iid) | iid == investigatorId -> do
+    msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
+    pushAll msgs
     pure $ a & endedTurnL .~ True
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a

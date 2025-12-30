@@ -636,6 +636,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             abilityAdditionalCosts ability <> flip mapMaybe modifiers' \case
               AdditionalCost c -> Just c
               _ -> Nothing
+    -- NOTE: In order for Frozen in Fear to affect free triggered abilities
+    -- like those provided by Shortcut (2) we have to add a 0 value ActionCost
+    -- here so that it can add the additional
     let
       fixEnemy = maybe id replaceThatEnemy $ getThatEnemy windows'
       activeCost =
@@ -645,7 +648,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               fixEnemy
                 $ mconcat
                   ( costF (abilityCost ability)
-                      : additionalCosts ++ investigateCosts ++ resignCosts
+                      : additionalCosts ++ investigateCosts ++ resignCosts ++ [ActionCost 0]
                   )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
@@ -658,22 +661,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure $ g & activeCostL %~ insertMap acId activeCost
   PayCostFinished acId -> pure $ g & activeCostL %~ deleteMap acId
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
-    (effectId, effect) <-
-      createWindowModifierEffect
-        effectWindow
-        effectMetadata
-        source
-        target
+    (effectId, effect) <- createWindowModifierEffect effectWindow effectMetadata source target
     push (CreatedEffect effectId (Just effectMetadata) source target)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateChaosTokenEffect effectMetadata source token -> do
     (effectId, effect) <- createChaosTokenEffect effectMetadata source token
-    push
-      $ CreatedEffect
-        effectId
-        (Just effectMetadata)
-        source
-        (ChaosTokenTarget token)
+    push $ CreatedEffect effectId (Just effectMetadata) source (ChaosTokenTarget token)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateOnRevealChaosTokenEffect sid matchr source target message -> do
     (effectId, effect) <- createOnRevealChaosTokenEffect sid matchr source target message

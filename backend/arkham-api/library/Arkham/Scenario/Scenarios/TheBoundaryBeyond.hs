@@ -243,19 +243,23 @@ instance RunMessage TheBoundaryBeyond where
       title <- fieldMap LocationName nameTitle lid
       oldCardCode <- getLocationGlobalMeta @CardCode "replacedLocation" lid
       let
-        replacement = case oldCardCode of
-          Just cc -> fromMaybe (error "invalid card code") (lookupCardDef cc)
+        mreplacement = case oldCardCode of
+          Just cc -> lookupCardDef cc
           Nothing -> case title of
-            "Templo Mayor" -> Locations.templeRuins
-            "Temples of Tenochtitlán" -> Locations.metropolitanCathedral
-            "Chapultepec Hill" -> Locations.chapultepecPark
-            "Canals of Tenochtitlán" -> Locations.zocalo
-            "Lake Xochimilco" -> Locations.xochimilco
-            "Sacred Woods" -> Locations.coyoacan
-            _ -> error $ "Unmatched location title: " <> show title
-      card <- genCard replacement
-      push $ ReplaceLocation lid card Swap
-      pure s
+            "Templo Mayor" -> Just Locations.templeRuins
+            "Temples of Tenochtitlán" -> Just Locations.metropolitanCathedral
+            "Chapultepec Hill" -> Just Locations.chapultepecPark
+            "Canals of Tenochtitlán" -> Just Locations.zocalo
+            "Lake Xochimilco" -> Just Locations.xochimilco
+            "Sacred Woods" -> Just Locations.coyoacan
+            _ -> Nothing
+
+      case mreplacement of
+        Just replacement -> do
+          card <- genCard replacement
+          push $ ReplaceLocation lid card Swap
+          pure s
+        Nothing -> TheBoundaryBeyond <$> liftRunMessage msg attrs
     ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet] -> do
       drawAnotherChaosToken iid
       pure s

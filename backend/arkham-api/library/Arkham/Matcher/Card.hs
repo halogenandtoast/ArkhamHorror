@@ -254,6 +254,9 @@ instance IsString CardMatcher where
 instance IsLabel "any" CardMatcher where
   fromLabel = AnyCard
 
+instance IsLabel "unique" CardMatcher where
+  fromLabel = CardIsUnique
+
 instance IsLabel "charm" CardMatcher where
   fromLabel = CardWithTrait Charm
 

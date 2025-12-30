@@ -45,14 +45,11 @@ instance HasChaosTokenValue BodyOfAYithian where
 instance RunMessage BodyOfAYithian where
   runMessage msg i@(BodyOfAYithian (attrs `With` meta)) = runQueueT $ case msg of
     SetupInvestigator iid | iid == toId attrs -> do
-      attrs' <- liftRunMessage msg attrs
       let prophecies = filterCards (cardIs Treacheries.prophecyOfTheEnd) (unDeck attrs.deck)
       for_ prophecies (removeCard . toCardId)
-      pure
-        $ BodyOfAYithian
-        . (`with` meta)
-        $ attrs'
-        & (deckL %~ withDeck (filterCards (not_ $ cardIs Treacheries.prophecyOfTheEnd)))
+      let cardFilter = not_ $ oneOf [cardIs Treacheries.prophecyOfTheEnd, #unique <> #item <> #asset]
+      attrs' <- liftRunMessage msg (attrs & (deckL %~ withDeck (filterCards cardFilter)))
+      pure $ BodyOfAYithian $ attrs' `with` meta
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       drawCards iid ElderSign 1
       pure i

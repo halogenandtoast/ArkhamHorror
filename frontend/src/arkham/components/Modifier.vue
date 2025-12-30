@@ -86,7 +86,7 @@ const normalizeSkill = (skill: string) => {
 <template>
   <div class="modifier" :data-image-id="modifierSource">
     <template v-if="modifier.type.tag === 'CannotCommitCards'">
-      <span>{{cannotCommitCardsToWords(modifier.type)}}</span>
+      <span class="text">Cannot Commit Cards</span>
     </template>
     <template v-else-if="modifier.type.tag === 'Difficulty'">
       <span><template v-if="modifier.type.contents >= 0">+</template>{{modifier.type.contents}}</span>

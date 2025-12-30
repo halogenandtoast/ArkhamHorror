@@ -120,6 +120,7 @@ import Arkham.Matcher (
   ScenarioMatcher (..),
   SourceMatcher (..),
   TreacheryMatcher (..),
+  WindowMatcher (AnyWindow),
   assetControlledBy,
   assetIs,
   at_,
@@ -4491,7 +4492,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           guardMustTake $ (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canPlay <- guardMustTake $ canDo iid #play
         player <- getPlayer iid
-        let playableCards' = if canPlay then playableCards else filter isFastCard playableCards
+
+        let
+          promoteCanBecomeFast c = do
+            mods <- getModifiers c
+            let promoted = [BecomesFast AnyWindow | CanBecomeFast matcher <- modifiers, cardMatch c matcher]
+            pure $ mods <> promoted
+
+        playableCards' <-
+          if canPlay
+            then pure playableCards
+            else playableCards & filterM (cardIsFast' promoteCanBecomeFast)
 
         push
           $ AskPlayer

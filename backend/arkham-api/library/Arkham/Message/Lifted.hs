@@ -3328,6 +3328,7 @@ createAssetAt_
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
 createAssetAt_ c placement = do
   card <- fetchCard c
+  obtainCard card
   push =<< Msg.createAssetAt_ card placement
 
 createScarletKeyAt

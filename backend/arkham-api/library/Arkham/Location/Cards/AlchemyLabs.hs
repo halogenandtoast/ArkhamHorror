@@ -37,7 +37,7 @@ instance RunMessage AlchemyLabs where
       investigate sid iid (attrs.ability 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      alchemicalConcoction <- fetchCard Assets.alchemicalConcoction
-      createAssetAt_ alchemicalConcoction (InPlayArea iid)
+      for_ (find (`cardMatch` cardIs Assets.alchemicalConcoction) attrs.underneath) \card -> do
+        createAssetAt_ card (InPlayArea iid)
       pure l
     _ -> AlchemyLabs <$> liftRunMessage msg attrs

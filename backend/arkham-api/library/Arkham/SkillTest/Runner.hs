@@ -418,7 +418,7 @@ instance RunMessage SkillTest where
           cardModifiers <- getModifiers c
           let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
           pure $ cardModifiers & mapMaybe \case
-            AdditionalCostToCommit iid' cst | iid' == iid && noAdditionalCosts -> Just cst
+            AdditionalCostToCommit iid' cst | iid' == iid && not noAdditionalCosts -> Just cst
             _ -> Nothing
 
       let playerCommitCosts = [c | CommitCost c <- modifiers']

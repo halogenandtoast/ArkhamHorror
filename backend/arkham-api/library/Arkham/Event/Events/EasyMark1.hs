@@ -1,11 +1,11 @@
 module Arkham.Event.Events.EasyMark1 (easyMark1, easyMark1Effect) where
 
 import Arkham.Ability
-import Arkham.Modifier
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype EasyMark1 = EasyMark1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -45,7 +45,7 @@ instance HasAbilities EasyMark1Effect where
       [ displayAsCard
           $ withTooltip
             "{reaction}: After you play Easy Mark: Play another Easy Mark from your hand, at no cost."
-          $ restricted a 1 (youExist $ InvestigatorWithId iid <> handWith Cards.easyMark1)
+          $ restricted a 1 (exists $ InHandOf ForPlay (InvestigatorWithId iid) <> basicCardIs Cards.easyMark1)
           $ freeReaction (Arkham.Matcher.PlayEvent #after (InvestigatorWithId iid) (EventWithId eid))
       ]
 

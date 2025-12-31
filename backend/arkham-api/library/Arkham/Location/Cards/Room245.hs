@@ -4,18 +4,18 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers ()
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isSkillTestSource)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message (pattern MovedClues)
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 
 newtype Room245 = Room245 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 room245 :: LocationCard Room245
@@ -24,24 +24,26 @@ room245 = locationWith Room245 Cards.room245 2 (PerPlayer 1) (labelL .~ "room245
 instance HasAbilities Room245 where
   getAbilities (Room245 a) = extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
+instance HasModifiersFor Room245 where
+  getModifiersFor (Room245 attrs) = runMaybeT_ do
+    liftGuardM $ isSkillTestSource (attrs.ability 1)
+    iid <- MaybeT getSkillTestInvestigator
+    mtop <- lift $ fieldMap InvestigatorDiscard headMay iid
+    lift $ eachInvestigator \iid' -> do
+      modified_ attrs iid'
+        $ if
+          | iid == iid'
+          , Just topOfDiscard <- mtop ->
+              [ CanCommitToSkillTestsAsIfInHand $ toCard topOfDiscard
+              , CannotCommitCards (NotCard $ CardWithId $ toCardId topOfDiscard)
+              ]
+          | otherwise -> [CannotCommitCards AnyCard]
+    for_ mtop \topOfDiscard -> modified_ attrs topOfDiscard [PlaceOnBottomOfDeckInsteadOfDiscard]
+
 instance RunMessage Room245 where
   runMessage msg l@(Room245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      fieldMap InvestigatorDiscard headMay iid >>= \case
-        Just topOfDiscard -> do
-          skillTestModifier sid (attrs.ability 1) topOfDiscard.id PlaceOnBottomOfDeckInsteadOfDiscard
-          eachInvestigator \investigator -> do
-            skillTestModifiers sid (attrs.ability 1) investigator
-              $ if investigator == iid
-                then
-                  [ CanCommitToSkillTestsAsIfInHand $ toCard topOfDiscard
-                  , CannotCommitCards (NotCard $ CardWithId $ toCardId topOfDiscard)
-                  ]
-                else [CannotCommitCards AnyCard]
-        Nothing -> eachInvestigator \investigator -> do
-          skillTestModifiers sid (attrs.ability 1) investigator [CannotCommitCards AnyCard]
-
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

@@ -1993,7 +1993,7 @@ instance RunMessage EnemyAttrs where
       pure a
     ObtainCard c -> do
       pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
-    PlaceInBonded _iid card -> do
+    When (PlaceInBonded _iid card) -> do
       when (toCard a == card) do
         removeAllMessagesMatching \case
           Discarded (EnemyTarget aid) _ _ -> aid == a.id

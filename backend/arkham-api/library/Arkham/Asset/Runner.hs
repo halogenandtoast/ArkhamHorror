@@ -581,18 +581,17 @@ instance RunMessage AssetAttrs where
           <> map (DiscardedCard . toCardId) a.cardsUnderneath
           <> [RemovedFromPlay source]
       pure $ a & cardsUnderneathL .~ []
-    PlaceInBonded _iid card -> do
-      when (toCard a == card) do
-        removeAllMessagesMatching \case
-          Discarded (AssetTarget aid) _ _ -> aid == a.id
-          CheckWindows ws -> flip any ws \case
-            (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
-            _ -> False
-          Do (CheckWindows ws) -> flip any ws \case
-            (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
-            _ -> False
+    When (PlaceInBonded _iid card) | toCardId a == card.id -> do
+      removeAllMessagesMatching \case
+        Discarded (AssetTarget aid) _ _ -> aid == a.id
+        CheckWindows ws -> flip any ws \case
+          (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
           _ -> False
-        push $ RemoveFromGame (toTarget a)
+        Do (CheckWindows ws) -> flip any ws \case
+          (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
+          _ -> False
+        _ -> False
+      push $ RemoveFromGame (toTarget a)
       pure a
     RemovedFromPlay (isSource a -> True) -> do
       pure $ a & placementL .~ OutOfPlay Zone.RemovedZone

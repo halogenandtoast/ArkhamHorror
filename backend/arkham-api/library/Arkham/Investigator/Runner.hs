@@ -2433,6 +2433,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (handL %~ filter (/= card))
+      & (bondedCardsL %~ filter (/= card))
   Msg.InvestigatorDamage iid source damage horror | iid == investigatorId -> do
     mods <- getModifiers a
     let damage' = damage + sum [x | DamageTaken x <- mods]
@@ -4299,6 +4300,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     for_ (lookupCardDef cardCode) (genCard >=> Lifted.placeInBonded iid)
     pure a
   PlaceInBonded iid card | iid == investigatorId -> do
+    pushAll [When (PlaceInBonded iid card), Do (PlaceInBonded iid card)]
+    pure a
+  Do (PlaceInBonded iid card) | iid == investigatorId -> do
     pure
       $ a
       & (bondedCardsL %~ nub . (card :))

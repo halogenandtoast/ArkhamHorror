@@ -26,7 +26,7 @@ instance HasModifiersFor SirenCall where
     _ -> pure mempty
 
 instance HasAbilities SirenCall where
-  getAbilities (SirenCall a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (SirenCall a) = [restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage SirenCall where
   runMessage msg t@(SirenCall attrs) = runQueueT $ case msg of

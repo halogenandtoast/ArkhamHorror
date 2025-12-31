@@ -61,9 +61,8 @@ instance HasChaosTokenValue ShatteredAeons where
     Skull -> do
       atRelicsLocation <-
         selectAny
-          $ assetIs Assets.relicOfAgesUnleashTheTimestream
-          <> AssetAt
-            (locationWithInvestigator iid)
+          $ mapOneOf assetIs [Assets.relicOfAgesUnleashTheTimestream, Assets.relicOfAgesForestallingTheFuture]
+          <> at_ (locationWithInvestigator iid)
       pure
         $ if atRelicsLocation
           then toChaosTokenValue attrs Skull 4 5

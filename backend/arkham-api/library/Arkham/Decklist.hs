@@ -8,7 +8,7 @@ import Arkham.Id
 import Arkham.Investigator
 import Arkham.Name
 import Arkham.PlayerCard
-import Arkham.Prelude hiding (try, (<|>))
+import Arkham.Prelude hiding (optional, try, (<|>))
 import Arkham.Taboo.Types
 import Data.Aeson
 import Data.Aeson.Key (fromText)
@@ -137,7 +137,7 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
           )
   parseTraits = sepBy1 parseTrait (char '^')
   parseTrait = do
-    t <- many1 (alphaNum <|> space)
+    t <- many1 (alphaNum <|> space) <* optional (char '.')
     case fromJSON (String . T.concat . T.words . T.toTitle $ pack t) of
       Success x -> pure $ ChosenTrait x
       _ -> unexpected ("invalid trait: " ++ t)

@@ -1272,13 +1272,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g
-  PlaceInBonded _ (toCardId -> cardId) -> do
-    assets <- select $ AssetWithCardId cardId
+  When (PlaceInBonded _ (toCardId -> cardId)) -> do
     events <- select $ EventWithCardId cardId
     skills <- select $ SkillWithCardId cardId
     enemies <- select $ EnemyWithCardId cardId
     treacheries <- select $ TreacheryWithCardId cardId
-    pushAll $ map (RemovedFromPlay . AssetSource) assets
     pushAll $ map (RemovedFromPlay . EventSource) events
     pushAll $ map (RemovedFromPlay . SkillSource) skills
     pushAll $ map (RemovedFromPlay . EnemySource) enemies

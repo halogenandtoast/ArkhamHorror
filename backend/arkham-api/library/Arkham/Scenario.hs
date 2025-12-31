@@ -524,7 +524,7 @@ instance RunMessage Scenario where
               whenEnd <- checkWindows [mkWhen Window.EndOfGame]
               pushAll $ addToVictoryMsgs <> [whenEnd, msg]
               pure $ overAttrs (\a -> a & inResolutionL .~ True) x
-            else go
+            else clearQueue >> go
         _ -> go
    where
     go = Scenario <$> runMessage msg s

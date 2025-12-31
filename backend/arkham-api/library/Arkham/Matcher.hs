@@ -362,7 +362,7 @@ locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
 orConnected :: Be matcher LocationMatcher => ForMovement -> matcher -> LocationMatcher
-orConnected forMovement x = let m = be x in oneOf [m, ConnectedTo forMovement m]
+orConnected forMovement x = let m = be x in oneOf [m, ConnectedFrom forMovement m]
 {-# INLINE orConnected #-}
 
 orConnected_ :: Be matcher LocationMatcher => matcher -> LocationMatcher

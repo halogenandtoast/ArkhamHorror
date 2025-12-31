@@ -44,8 +44,8 @@ instance RunMessage TheTrueCulpritV3 where
         for_ staffWithIsElite \(staff, isElite) ->
           targeting staff do
             if isElite
-              then addToVictory iid staff
-              else nonAttackEnemyDamage (Just iid) originalSource 2 staff
+              then nonAttackEnemyDamage (Just iid) originalSource 2 staff
+              else addToVictory iid staff
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceAgenda attrs

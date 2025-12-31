@@ -23,6 +23,9 @@ instance RunMessage WingingIt where
       when (zone == Zone.FromDiscard) do
         skillTestModifier sid attrs iid (DiscoveredClues 1)
       investigate sid iid attrs
+      doStep 1 msg
+      pure e
+    DoStep 1 (InvestigatorPlayEvent iid (is attrs -> True) _ _ zone) -> do
       when (zone == Zone.FromDiscard) $ shuffleIntoDeck iid attrs
       pure e
     _ -> WingingIt <$> liftRunMessage msg attrs

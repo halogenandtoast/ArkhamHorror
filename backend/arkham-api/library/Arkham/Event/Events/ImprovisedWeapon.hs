@@ -17,9 +17,12 @@ instance RunMessage ImprovisedWeapon where
       sid <- getRandom
       when attrs.playedFromDiscard $ skillTestModifier sid attrs iid (DamageDealt 1)
       chooseFightEnemy sid iid attrs
-      when attrs.playedFromDiscard $ shuffleIntoDeck iid attrs
+      doStep 1 msg
       pure e
     ChoseEnemy sid _ (isSource attrs -> True) enemyId -> do
       skillTestModifier sid attrs enemyId (EnemyFight (-1))
+      pure e
+    PlayThisEvent iid (is attrs -> True) -> do
+      when attrs.playedFromDiscard $ shuffleIntoDeck iid attrs
       pure e
     _ -> ImprovisedWeapon <$> liftRunMessage msg attrs

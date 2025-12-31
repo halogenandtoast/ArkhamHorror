@@ -457,13 +457,14 @@ const flippableCard = (cardCode: string) => {
 const cardFilter = useDebouncedRef('')
 const store = useDbCardStore()
 
-const filteredCards = computed<{ choice: CardLabel, index: number }[]>(() => {
-  if (cardFilter.value === '') return cardLabels.value
+const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
+  const q = cardFilter.value.trim().toLowerCase()
+  if (q === '') return cardLabels.value
 
-  return cardLabels.value.filter(({choice}) => {
+  return cardLabels.value.filter(({ choice }) => {
     const card = store.getDbCard(choice.cardCode.replace(/^c/, ''))
     if (!card) return false
-    return card.name.includes(cardFilter.value)
+    return card.name.toLowerCase().includes(q)
   })
 })
 

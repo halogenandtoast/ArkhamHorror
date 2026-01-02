@@ -23,12 +23,13 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Criteria
+import Arkham.Difficulty qualified as Difficulty
 import Arkham.Effect.Window
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators)
-import Arkham.Helpers.Scenario (getGrid)
+import Arkham.Helpers.Scenario (getGrid, unlessStandalone)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -90,8 +91,29 @@ data StatusReport = Alpha | Beta | Epsilon | Zeta | Gamma | Theta | Psi | Omega
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+{- FOURMOLU_DISABLE -}
+campaignChaosBag :: Difficulty.Difficulty -> [ChaosTokenFace]
+campaignChaosBag = \case
+  Difficulty.Easy ->
+    [ #"+1", #"+1", #"0", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2"
+    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
+    ]
+  Difficulty.Standard ->
+    [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4"
+    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
+    ]
+  Difficulty.Hard ->
+    [ #"0", #"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4", #"-5"
+    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
+    ]
+  Difficulty.Expert ->
+    [ #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4", #"-4", #"-5", #"-6", #"-8"
+    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
+    ]
+{- FOURMOLU_ENABLE -}
+
 markTime :: ReverseQueue m => Int -> m ()
-markTime n = do
+markTime n = unlessStandalone do
   t <- getTime
   meta <- getCampaignMeta @TheScarletKeysMeta
   incrementRecordCount Time n

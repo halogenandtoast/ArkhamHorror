@@ -98,6 +98,9 @@ const selectCampaign = (campaignId: string) => {
   selectedCampaign.value = campaignId,
   selectedScenario.value = null
   returnTo.value = false
+  if (campaignId === '09') {
+    fullCampaign.value = 'FullCampaign'
+  }
 }
 
 watch(
@@ -163,6 +166,15 @@ const campaign = computed(() =>
     ? campaigns.value.find((c) => c.id === selectedCampaign.value)
     : null
 )
+
+const canStandalone = computed(() => {
+  if (gameMode.value !== 'Campaign') return false
+  const c = campaign.value
+  if (!c) return false
+
+  return c.id !== '09'
+})
+
 
 async function start() {
   if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
@@ -261,7 +273,7 @@ async function start() {
               <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
             </div>
 
-            <div v-if="gameMode === 'Campaign' && campaign" class="options">
+            <div v-if="canStandalone" class="options">
               <input type="radio" v-model="fullCampaign" :value="'FullCampaign'" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
               <input type="radio" v-model="fullCampaign" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
               <template v-if="campaign.settings">

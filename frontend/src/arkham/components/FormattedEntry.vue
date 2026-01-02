@@ -244,6 +244,20 @@ export default defineComponent({
   padding-bottom: 1.3em;
 }
 
+:deep(span.wolgast) {
+  font-family: "Wolgast";
+}
+
+:deep(div.wolgast) {
+  font-family: "Wolgast";
+  text-align: center;
+  margin-block: 30px;
+  p {
+    margin-block: -20px;
+    font-family: "Wolgast";
+  }
+}
+
 :deep(b) { font-family: none; }
 :deep(i) { font-style: italic; }
 

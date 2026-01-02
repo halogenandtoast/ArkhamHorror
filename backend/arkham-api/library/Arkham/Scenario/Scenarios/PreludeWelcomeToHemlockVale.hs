@@ -2,10 +2,10 @@ module Arkham.Scenario.Scenarios.PreludeWelcomeToHemlockVale (preludeWelcomeToHe
 
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.EncounterSet qualified as Set
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenario.Import.Lifted
 import Arkham.Helpers.FlavorText
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenario.Import.Lifted
 
 newtype PreludeWelcomeToHemlockVale = PreludeWelcomeToHemlockVale ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -13,12 +13,20 @@ newtype PreludeWelcomeToHemlockVale = PreludeWelcomeToHemlockVale ScenarioAttrs
 
 preludeWelcomeToHemlockVale :: Difficulty -> PreludeWelcomeToHemlockVale
 preludeWelcomeToHemlockVale difficulty =
-  scenario
+  scenarioWith
     PreludeWelcomeToHemlockVale
     "10675a"
     "Prelude: Welcome to Hemlock Vale"
     difficulty
-    []
+    [ ".     triangle square"
+    , "moon  triangle square"
+    , "moon  diamond  star"
+    , "heart diamond  star"
+    , "heart circle   spade"
+    , ".     circle   spade"
+    ]
+    $ (referenceL .~ "10704")
+    . (additionalReferencesL .~ ["10675"])
 
 instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
   getChaosTokenValue iid tokenFace (PreludeWelcomeToHemlockVale attrs) = case tokenFace of
@@ -29,7 +37,7 @@ instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage PreludeWelcomeToHemlockVale where
-  runMessage msg s@(PreludeWelcomeToHemlockVale attrs) = runQueueT $ campaignI18n $ case msg of
+  runMessage msg s@(PreludeWelcomeToHemlockVale attrs) = runQueueT $ campaignI18n $ scope "prelude1" $ case msg of
     PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (h "title" >> p "intro1") do
         labeled' "survey" $ doStep 2 PreScenarioSetup

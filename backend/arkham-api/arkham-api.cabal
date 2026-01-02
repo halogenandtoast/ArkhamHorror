@@ -1569,7 +1569,7 @@ library
       Arkham.Asset.Cards.TheDreamEaters
       Arkham.Asset.Cards.TheDrownedCity
       Arkham.Asset.Cards.TheDunwichLegacy
-      Arkham.Asset.Cards.TheFeastOfHemlochVale
+      Arkham.Asset.Cards.TheFeastOfHemlockVale
       Arkham.Asset.Cards.TheForgottenAge
       Arkham.Asset.Cards.TheInnsmouthConspiracy
       Arkham.Asset.Cards.ThePathToCarcosa
@@ -1595,6 +1595,7 @@ library
       Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Campaign.Campaigns.TheFeastOfHemlockVale
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
@@ -1636,6 +1637,8 @@ library
       Arkham.Campaigns.TheDunwichLegacy.Helpers
       Arkham.Campaigns.TheDunwichLegacy.Import
       Arkham.Campaigns.TheDunwichLegacy.Key
+      Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps
+      Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
       Arkham.Campaigns.TheForgottenAge.CampaignSteps
       Arkham.Campaigns.TheForgottenAge.ChaosBag
       Arkham.Campaigns.TheForgottenAge.Helpers
@@ -2279,7 +2282,7 @@ library
       Arkham.Event.Cards.TheDreamEaters
       Arkham.Event.Cards.TheDrownedCity
       Arkham.Event.Cards.TheDunwichLegacy
-      Arkham.Event.Cards.TheFeastOfHemlochVale
+      Arkham.Event.Cards.TheFeastOfHemlockVale
       Arkham.Event.Cards.TheForgottenAge
       Arkham.Event.Cards.TheInnsmouthConspiracy
       Arkham.Event.Cards.ThePathToCarcosa
@@ -3029,6 +3032,8 @@ library
       Arkham.Location.Cards.BleakPlainsBleakDesolation
       Arkham.Location.Cards.BleakPlainsStarsOfAldebaran
       Arkham.Location.Cards.BlockedPassage
+      Arkham.Location.Cards.BoardingHouseDay
+      Arkham.Location.Cards.BoardingHouseNight
       Arkham.Location.Cards.BoneFilledCaverns
       Arkham.Location.Cards.BoneRiddenPit
       Arkham.Location.Cards.BootleggersHideaway_174a
@@ -3325,6 +3330,8 @@ library
       Arkham.Location.Cards.HauntedFieldsSpectral
       Arkham.Location.Cards.HazuthKleg
       Arkham.Location.Cards.HedgeMaze
+      Arkham.Location.Cards.HemlockChapelDay
+      Arkham.Location.Cards.HemlockChapelNight
       Arkham.Location.Cards.HereticsGraves_171
       Arkham.Location.Cards.HereticsGraves_172
       Arkham.Location.Cards.HereticsGravesSpectral_171
@@ -3719,6 +3726,8 @@ library
       Arkham.Location.Cards.SunkenGrottoUpperDepths
       Arkham.Location.Cards.SunkenHalls
       Arkham.Location.Cards.SyzygyChamber
+      Arkham.Location.Cards.TadsGeneralStoreDay
+      Arkham.Location.Cards.TadsGeneralStoreNight
       Arkham.Location.Cards.Tanneries
       Arkham.Location.Cards.TanneriesAbandoned
       Arkham.Location.Cards.TarPit
@@ -3743,6 +3752,8 @@ library
       Arkham.Location.Cards.The9thWard
       Arkham.Location.Cards.Theatre
       Arkham.Location.Cards.TheatreLounge
+      Arkham.Location.Cards.TheAtwoodHouseDay
+      Arkham.Location.Cards.TheAtwoodHouseNight
       Arkham.Location.Cards.TheBlackCore
       Arkham.Location.Cards.TheBlackStone
       Arkham.Location.Cards.TheBlackThrone
@@ -3751,7 +3762,11 @@ library
       Arkham.Location.Cards.TheBourseLocusSafeguard
       Arkham.Location.Cards.TheCabildo
       Arkham.Location.Cards.TheCavernOfFlame
+      Arkham.Location.Cards.TheCommonsDay
+      Arkham.Location.Cards.TheCommonsNight
       Arkham.Location.Cards.TheCorniche
+      Arkham.Location.Cards.TheCrossroadsDay
+      Arkham.Location.Cards.TheCrossroadsNight
       Arkham.Location.Cards.TheDarkCrater
       Arkham.Location.Cards.TheEdgeOfTheUniverse
       Arkham.Location.Cards.TheEnchantedPath
@@ -3779,6 +3794,8 @@ library
       Arkham.Location.Cards.TheLittleBookshop
       Arkham.Location.Cards.TheLittleBookshopInTooDeep
       Arkham.Location.Cards.TheMoonRoom
+      Arkham.Location.Cards.TheOldMillDay
+      Arkham.Location.Cards.TheOldMillNight
       Arkham.Location.Cards.TheOnyxCastle
       Arkham.Location.Cards.ThePriceManor
       Arkham.Location.Cards.TheSummit
@@ -3842,6 +3859,8 @@ library
       Arkham.Location.Cards.Uptown_296
       Arkham.Location.Cards.Uptown_297
       Arkham.Location.Cards.ValeOfPnath
+      Arkham.Location.Cards.ValeSchoolhouseDay
+      Arkham.Location.Cards.ValeSchoolhouseNight
       Arkham.Location.Cards.Valusia
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.Vault
@@ -4013,6 +4032,7 @@ library
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.OnThinIce
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.PreludeWelcomeToHemlockVale
       Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
       Arkham.Scenario.Scenarios.ReturnToAtDeathsDoorstep
       Arkham.Scenario.Scenarios.ReturnToBeforeTheBlackThrone

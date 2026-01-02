@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
+module Arkham.Campaign.Campaigns.TheDreamEaters (theDreamEaters) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner hiding (story, storyWithChooseOne)
@@ -129,14 +129,14 @@ instance IsCampaign TheDreamEaters where
               FullMode ->
                 if WakingNightmare `elem` campaignCompletedSteps (toAttrs a)
                   then continue $ InterludeStep 1 Nothing
-                  else continueNoUpgrade $ WakingNightmare
+                  else continueNoUpgrade WakingNightmare
               PartialMode _ -> continue $ InterludeStep 1 Nothing
           WakingNightmare ->
             case campaignMode meta of
               FullMode ->
                 if BeyondTheGatesOfSleep `elem` campaignCompletedSteps (toAttrs a)
                   then continue $ InterludeStep 1 Nothing
-                  else continueNoUpgrade $ BeyondTheGatesOfSleep
+                  else continueNoUpgrade BeyondTheGatesOfSleep
               PartialMode _ -> continue $ InterludeStep 1 Nothing
           InterludeStep 1 _ -> error $ "Unhandled campaign step: " <> show a
           TheSearchForKadath ->

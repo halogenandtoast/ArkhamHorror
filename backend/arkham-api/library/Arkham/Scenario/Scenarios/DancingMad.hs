@@ -90,6 +90,38 @@ instance RunMessage DancingMad where
       doStep 2 Setup
       pure s
     DoStep n Setup -> runScenarioSetup DancingMad attrs do
+      let version = if n == 1 then "version1" else "version2"
+      setup $ scope version $ ul $ case n of
+        1 -> do
+          li "gatherSets"
+          li "actDeck"
+          li.nested "placeLocations" do
+            li "beginPlay"
+          li "remainingLocations"
+          li.nested "desiderio" do
+            li "encounterVersion"
+            li "assetVersion"
+          li "takeControlOfDesiderio"
+          li "setSetsOutOfPlay"
+          li "miniCards"
+          unscoped $ li "shuffleRemainder"
+          unscoped $ li "readyToBegin"
+        2 -> do
+          li "gatherSets"
+          li "actDeck"
+          li.nested "placeLocations" do
+            li "beginPlay"
+            li "remainingLocations"
+          li "desiderio"
+          li "setOutOfPlay"
+          li "miniCards"
+          unscoped $ li "shuffleRemainder"
+          li.nested "theShadows" do
+            li "spawnDesiderio"
+            li "spawnCoterie"
+          unscoped $ li "readyToBegin"
+        _ -> error "Invalid step"
+
       gather Set.DancingMad
       gather Set.AgentsOfTheOutside
       gather Set.SecretWar

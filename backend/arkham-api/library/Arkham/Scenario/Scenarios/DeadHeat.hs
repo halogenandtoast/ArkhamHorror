@@ -67,6 +67,9 @@ instance HasModifiersFor DeadHeat where
 
 instance RunMessage DeadHeat where
   runMessage msg s@(DeadHeat attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens $ campaignChaosBag attrs.difficulty
+      pure s
     PreScenarioSetup -> scope "intro" do
       n <- getTime
       flavor do

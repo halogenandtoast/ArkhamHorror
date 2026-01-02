@@ -52,6 +52,9 @@ instance HasChaosTokenValue RiddlesAndRain where
 
 instance RunMessage RiddlesAndRain where
   runMessage msg s@(RiddlesAndRain attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens $ campaignChaosBag attrs.difficulty
+      pure s
     PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro1"
       flavor $ setTitle "title" >> p "letter"

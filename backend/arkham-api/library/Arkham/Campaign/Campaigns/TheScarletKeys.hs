@@ -36,27 +36,6 @@ newtype TheScarletKeys = TheScarletKeys CampaignAttrs
 theScarletKeys :: Difficulty -> TheScarletKeys
 theScarletKeys = campaign TheScarletKeys (CampaignId "09") "The Scarlet Keys"
 
-{- FOURMOLU_DISABLE -}
-campaignChaosBag :: Difficulty -> [ChaosTokenFace]
-campaignChaosBag = \case
-  Easy ->
-    [ #"+1", #"+1", #"0", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2"
-    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
-    ]
-  Standard ->
-    [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4"
-    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
-    ]
-  Hard ->
-    [ #"0", #"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4", #"-5"
-    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
-    ]
-  Expert ->
-    [ #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-4", #"-4", #"-5", #"-6", #"-8"
-    , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
-    ]
-{- FOURMOLU_ENABLE -}
-
 pickSideStory :: ReverseQueue m => CampaignAttrs -> m ()
 pickSideStory attrs =
   push

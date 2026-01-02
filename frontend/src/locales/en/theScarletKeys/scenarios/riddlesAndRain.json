@@ -49,6 +49,15 @@
     "title": "File #5–A (Prologue): Riddles and Rain",
     "body": "<h3>Tracking Time</h3><p class='file'>Throughout this campaign, tracking the passage of time is of crucial importance. As time marches on, these paranormal events will grow more and more dangerous, and machinations beyond your understanding will progress. Additionally, some opportunities may only be open to you during certain windows of time. When you are instructed to mark one or more _time_ in your Campaign Log, fill in that many boxes under the “Time Passed” header.</p><p>If you fill in a box that has a symbol (in the form of a Greek letter), proceed to the Status Reports section of the Campaign Guide, find the status report matching that letter, and read the text that follows.</p>"
   },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Riddles and Rain*, *Crimson Conspiracy*, *Dark Veiling*, *Outsiders*, *Shadow of a Doubt*, *Strange Happenings*, *Chilling Cold*, *Locked Doors*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/riddles-and-rain.png' /><img src='{setImgPath}/crimson-conspiracy.png' /><img src='{setImgPath}/dark-veiling.png' /><img src='{setImgPath}/outsiders.png' /><img src='{setImgPath}/shadow-of-a-doubt.png' /><img src='{setImgPath}/strange-happenings.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/midnight-masks.png' /></section> When gathering *The Midnight Masks* encounter set, only gather the five treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the locations, acts, agendas, and scenario reference cards from that set.",
+    "setSetsOutOfPlay": "Set the *Crimson Conspiracy* and *Outsiders* encounter sets aside, out of play.",
+    "placeLocations": "Put the Rainy London Streets location into play.",
+    "beginPlay": "Each investigator begins play at Rainy London Streets.",
+    "remainingLocations": "Set each other location aside, out of play.",
+    "setOutOfPlay": "Set The Red-Gloved Man enemy and The Eye of Ravens key aside, out of play.",
+    "miniCards": "Gather each decoy mini-card and each of the following mini‑cards: The Red‑Gloved Man and Coterie Agents (A, B and C). Set them aside, out of play."
+  },
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

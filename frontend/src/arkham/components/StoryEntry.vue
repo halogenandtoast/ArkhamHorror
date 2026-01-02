@@ -417,6 +417,10 @@ a.button {
     }
   }
 
+  :deep(span.wolgast) {
+    font-family: "Wolgast";
+  }
+
   :deep(div.wolgast) {
     font-family: "Wolgast";
     text-align: center;

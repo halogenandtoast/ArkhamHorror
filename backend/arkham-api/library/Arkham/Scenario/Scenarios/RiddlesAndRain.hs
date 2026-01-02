@@ -96,6 +96,17 @@ instance RunMessage RiddlesAndRain where
       markTime 2
       pure s
     Setup -> runScenarioSetup RiddlesAndRain attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setSetsOutOfPlay"
+        li.nested "placeLocations" do
+          li "beginPlay"
+          li "remainingLocations"
+        li "setOutOfPlay"
+        li "miniCards"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
       gather Set.RiddlesAndRain
       gather Set.DarkVeiling
       gather Set.ShadowOfADoubt

@@ -11,7 +11,7 @@ import Arkham.Asset.Cards.TheCircleUndone as X
 import Arkham.Asset.Cards.TheDreamEaters as X
 import Arkham.Asset.Cards.TheDrownedCity as X
 import Arkham.Asset.Cards.TheDunwichLegacy as X
-import Arkham.Asset.Cards.TheFeastOfHemlochVale as X
+import Arkham.Asset.Cards.TheFeastOfHemlockVale as X
 import Arkham.Asset.Cards.TheForgottenAge as X
 import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X

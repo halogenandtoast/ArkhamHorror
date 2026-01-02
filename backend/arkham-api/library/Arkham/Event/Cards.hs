@@ -13,7 +13,7 @@ import Arkham.Event.Cards.TheCircleUndone as X
 import Arkham.Event.Cards.TheDreamEaters as X
 import Arkham.Event.Cards.TheDrownedCity as X
 import Arkham.Event.Cards.TheDunwichLegacy as X
-import Arkham.Event.Cards.TheFeastOfHemlochVale as X
+import Arkham.Event.Cards.TheFeastOfHemlockVale as X
 import Arkham.Event.Cards.TheForgottenAge as X
 import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X

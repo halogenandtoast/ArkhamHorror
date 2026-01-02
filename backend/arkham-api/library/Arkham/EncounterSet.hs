@@ -189,6 +189,32 @@ data EncounterSet
   | BeyondTheBeyond
   | RedCoterie
   | Globetrotting
+  | WrittenInRock
+  | HemlockHouse
+  | TheSilentHeath
+  | TheLostSister
+  | TheThingInTheDepths
+  | TheTwistedHollow
+  | TheLongestNight
+  | FateOfTheVale
+  | TheFirstDay
+  | TheSecondDay
+  | TheFinalDay
+  | DayOfRest
+  | DayOfRain
+  | DayOfTheFeast
+  | Residents
+  | TheVale
+  | Heirlooms
+  | HorrorsInTheRock
+  | AgentsOfTheColour
+  | Transfiguration
+  | Blight
+  | Refractions
+  | TheForest
+  | Myconids
+  | Mutations
+  | Fire
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

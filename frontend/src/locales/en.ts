@@ -13,6 +13,7 @@ import theDreamEaters from '@/locales/en/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/en/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/en/edgeOfTheEarth'
 import theScarletKeys from '@/locales/en/theScarletKeys'
+import theFeastOfHemlockVale from '@/locales/en/theFeastOfHemlockVale'
 import standalone from '@/locales/en/standalone'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
 import xp from '@/locales/en/xp.json'
@@ -36,5 +37,6 @@ export default
   , theInnsmouthConspiracy
   , edgeOfTheEarth
   , theScarletKeys
+  , theFeastOfHemlockVale
   , standalone
   }

@@ -955,5 +955,6 @@
   { "id": "06", "name": "The Dream-Eaters" },
   { "id": "07", "name": "The Innsmouth Conspiracy" },
   { "id": "08", "name": "Edge of the Earth" },
-  { "id": "09", "name": "The Scarlet Keys", "beta": true }
+  { "id": "09", "name": "The Scarlet Keys", "beta": true },
+  { "id": "10", "name": "The Feast of Hemlock Vale", "alpha": true, "dev": true }
 ]

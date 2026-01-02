@@ -53,6 +53,7 @@ allCampaigns =
     , ("07", SomeCampaign theInnsmouthConspiracy)
     , ("08", SomeCampaign edgeOfTheEarth)
     , ("09", SomeCampaign theScarletKeys)
+    , ("10", SomeCampaign theFeastOfHemlockVale)
     , ("50", SomeCampaign returnToNightOfTheZealot)
     , ("51", SomeCampaign returnToTheDunwichLegacy)
     , ("52", SomeCampaign returnToThePathToCarcosa)

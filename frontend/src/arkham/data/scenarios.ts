@@ -7,6 +7,19 @@ import theDreamEaters from '@/arkham/data/theDreamEaters.json'
 import theInnsmouthConspiracy from '@/arkham/data/theInnsmouthConspiracy.json'
 import edgeOfTheEarth from '@/arkham/data/edgeOfTheEarth.json'
 import theScarletKeys from '@/arkham/data/theScarletKeys.json'
+import theFeastOfHemlockVale from '@/arkham/data/theFeastOfHemlockVale.json'
 import sideStories from '@/arkham/data/side-stories.json'
 
-export default [...nightOfTheZealot, ...theDunwichLegacy, ...thePathToCarcosa, ...theForgottenAge, ...theCircleUndone, ...theDreamEaters, ...theInnsmouthConspiracy, ...edgeOfTheEarth, ...theScarletKeys, ...sideStories]
+export default
+  [ ...nightOfTheZealot
+  , ...theDunwichLegacy
+  , ...thePathToCarcosa
+  , ...theForgottenAge
+  , ...theCircleUndone
+  , ...theDreamEaters
+  , ...theInnsmouthConspiracy
+  , ...edgeOfTheEarth
+  , ...theScarletKeys
+  , ...theFeastOfHemlockVale
+  , ...sideStories
+  ]

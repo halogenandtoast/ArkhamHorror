@@ -895,6 +895,24 @@ allLocations =
     , SomeLocationCard wealdOfEffigiesA
     , SomeLocationCard wealdOfEffigiesB
     , SomeLocationCard cliffsOfInsanity
+    , -- The Feast of Hemlock Vale
+      --- The Vale
+      SomeLocationCard boardingHouseDay
+    , SomeLocationCard boardingHouseNight
+    , SomeLocationCard theCrossroadsDay
+    , SomeLocationCard theCrossroadsNight
+    , SomeLocationCard hemlockChapelDay
+    , SomeLocationCard hemlockChapelNight
+    , SomeLocationCard theOldMillDay
+    , SomeLocationCard theOldMillNight
+    , SomeLocationCard theAtwoodHouseDay
+    , SomeLocationCard theAtwoodHouseNight
+    , SomeLocationCard tadsGeneralStoreDay
+    , SomeLocationCard tadsGeneralStoreNight
+    , SomeLocationCard valeSchoolhouseDay
+    , SomeLocationCard valeSchoolhouseNight
+    , SomeLocationCard theCommonsDay
+    , SomeLocationCard theCommonsNight
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

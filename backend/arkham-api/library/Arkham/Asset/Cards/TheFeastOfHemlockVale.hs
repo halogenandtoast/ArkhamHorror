@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.TheFeastOfHemlochVale where
+module Arkham.Asset.Cards.TheFeastOfHemlockVale where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Criteria qualified as Criteria

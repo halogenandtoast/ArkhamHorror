@@ -128,6 +128,7 @@ data Trait
   | Haunted
   | Havana
   | Hazard
+  | HemlockVale
   | Hex
   | Hideout
   | HistoricalSociety

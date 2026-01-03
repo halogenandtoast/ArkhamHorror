@@ -3,9 +3,9 @@ module Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps where
 import Arkham.CampaignStep
 
 pattern PreludeWelcomeToHemlockVale :: CampaignStep
-pattern PreludeWelcomeToHemlockVale <- ScenarioStep "10675a"
+pattern PreludeWelcomeToHemlockVale <- ScenarioStep "10704"
   where
-    PreludeWelcomeToHemlockVale = ScenarioStep "10675a"
+    PreludeWelcomeToHemlockVale = ScenarioStep "10704"
 
 pattern WrittenInRock :: CampaignStep
 pattern WrittenInRock <- ScenarioStep "10501"

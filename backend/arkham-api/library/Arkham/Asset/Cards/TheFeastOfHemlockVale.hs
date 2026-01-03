@@ -579,3 +579,93 @@ vowOfDrzytelech =
     { cdCardTraits = setFromList [Pact]
     , cdSlots = [#arcane]
     }
+
+motherRachelKindlyMatron :: CardDef
+motherRachelKindlyMatron =
+  (storyAsset_ "10693" ("Mother Rachel" <:> "Kindly Matron") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10693b"
+    }
+
+leahAtwoodTheValeCook :: CardDef
+leahAtwoodTheValeCook =
+  (storyAsset_ "10694" ("Leah Atwood" <:> "The Vale Cook") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10694b"
+    }
+
+simeonAtwoodDedicatedTroublemaker :: CardDef
+simeonAtwoodDedicatedTroublemaker =
+  (storyAsset_ "10695" ("Simeon Atwood" <:> "Dedicated Troublemaker") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10695b"
+    }
+
+williamHemlockAspiringPoet :: CardDef
+williamHemlockAspiringPoet =
+  (storyAsset_ "10696" ("William Hemlock" <:> "Aspiring Poet") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10696b"
+    }
+
+riverHawthorneBigInNewYork :: CardDef
+riverHawthorneBigInNewYork =
+  (storyAsset_ "10697" ("River Hawthorne" <:> "Big in New York") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10697b"
+    }
+
+gideonMizrahSeasonedSailor :: CardDef
+gideonMizrahSeasonedSailor =
+  (storyAsset_ "10698" ("Gideon Mizrah" <:> "Seasoned Sailor") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10698b"
+    }
+
+judithParkTheMuscle :: CardDef
+judithParkTheMuscle =
+  (storyAsset_ "10699" ("Judith Park" <:> "The Muscle") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10699b"
+    }
+
+theoPetersJackOfAllTrades :: CardDef
+theoPetersJackOfAllTrades =
+  (storyAsset_ "10700" ("Theo Peters" <:> "Jack of All Trades") Residents)
+    { cdCardTraits = singleton Resident
+    , cdUnique = True
+    , cdOtherSide = Just "10700b"
+    }
+
+bertieMusgraveATrueAesthete :: CardDef
+bertieMusgraveATrueAesthete =
+  (storyAsset_ "10701" ("Bertie Musgrave" <:> "A True Aesthete") Residents)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Assistant]
+    , cdUnique = True
+    , cdOtherSide = Just "10701b"
+    }
+
+drRosaMarquezBestInHerField :: CardDef
+drRosaMarquezBestInHerField =
+  (storyAsset "10702" ("Dr. Rosa Marquez" <:> "Best in Her Field") 4 Residents)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Wayfarer]
+    , cdUnique = True
+    , cdSkills = [#intellect, #agility, #wild]
+    , cdSlots = [#ally]
+    }
+
+helenPetersTheEldestSister :: CardDef
+helenPetersTheEldestSister =
+  (storyAsset "10703" ("Helen Peters" <:> "The Eldest Sister") 3 Residents)
+    { cdCardTraits = setFromList [Ally, Hunter]
+    , cdUnique = True
+    , cdSkills = [#willpower, #combat, #wild]
+    , cdSlots = [#ally]
+    }

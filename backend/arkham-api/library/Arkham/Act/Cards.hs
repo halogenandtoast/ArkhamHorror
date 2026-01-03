@@ -68,6 +68,7 @@ allActCards =
       , curtainCall
       , darkKnowledgeV1
       , darkKnowledgeV2
+      , dawnOfTheFirstDay
       , descentIntoDark
       , destroyTheSource
       , discoverTheTruth
@@ -1063,6 +1064,9 @@ theAscent = act "09702" "The Ascent" 3 CongressOfTheKeys
 
 theFinalErr :: CardDef
 theFinalErr = act "09703" "The Final Err" 4 CongressOfTheKeys
+
+dawnOfTheFirstDay :: CardDef
+dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

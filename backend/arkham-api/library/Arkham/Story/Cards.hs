@@ -162,6 +162,8 @@ allStoryCards =
       , exhumeTheBones
       , sympathyPain
       , familialPain
+      , dayOne
+      , nightOne
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , returnToUnfinishedBusiness_38
@@ -542,6 +544,12 @@ sympathyPain = story "09676b" "Sympathy Pain" ShadesOfSuffering & otherSideIs "0
 
 familialPain :: CardDef
 familialPain = story "09676d" "Familial Pain" ShadesOfSuffering & otherSideIs "09676c"
+
+dayOne :: CardDef
+dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"
+
+nightOne :: CardDef
+nightOne = story "10675b" "Day One" TheFirstDay & otherSideIs "10675"
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

@@ -170,6 +170,7 @@ data Cost
   | ScenarioResourceCost Int
   | ResourceCost Int
   | CalculatedResourceCost GameCalculation
+  | CalculatedHandDiscardCost GameCalculation ExtendedCardMatcher
   | FieldResourceCost FieldCost
   | MaybeFieldResourceCost MaybeFieldCost
   | UseCost AssetMatcher UseType Int
@@ -613,6 +614,7 @@ displayCostType = \case
   FieldResourceCost {} -> "X"
   MaybeFieldResourceCost {} -> "X"
   CalculatedResourceCost {} -> "X"
+  CalculatedHandDiscardCost {} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n

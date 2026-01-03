@@ -695,10 +695,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     Lifted.checkWhen $ Window.InvestigatorResigned iid
     pure $ a & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
-    -- a card effect defeats an investigator directly
-    windowMsg <-
-      checkWindows [mkWhen $ Window.InvestigatorWouldBeDefeated (DefeatedByOther source) (toId a)]
-    pushAll [windowMsg, InvestigatorIsDefeated source iid]
+    whenM (withoutModifier a CannotBeDefeated) do
+      -- a card effect defeats an investigator directly
+      windowMsg <-
+        checkWindows [mkWhen $ Window.InvestigatorWouldBeDefeated (DefeatedByOther source) (toId a)]
+      pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorIsDefeated source iid | iid == investigatorId -> do
     isLead <- (== iid) <$> getLead

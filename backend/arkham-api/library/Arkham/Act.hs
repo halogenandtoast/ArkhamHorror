@@ -361,6 +361,9 @@ allActs =
     , SomeActCard toTheTower
     , SomeActCard theAscent
     , SomeActCard theFinalErr
+    , -- The Feast of Hemlock Vale
+      --- Day of Rest
+      SomeActCard dawnOfTheFirstDay
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

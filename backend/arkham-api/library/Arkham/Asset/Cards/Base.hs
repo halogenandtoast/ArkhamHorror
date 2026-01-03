@@ -20,6 +20,10 @@ storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
   (baseAsset (Just (encounterSet, 1)) cardCode name cost (singleton Neutral)) {cdLevel = Nothing}
 
+storyAsset_ :: CardCode -> Name -> EncounterSet -> CardDef
+storyAsset_ cardCode name encounterSet =
+  (baseAsset (Just (encounterSet, 1)) cardCode name 0 (singleton Neutral)) {cdLevel = Nothing, cdCost = Nothing}
+
 storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
 storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
   (baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost (singleton Neutral))

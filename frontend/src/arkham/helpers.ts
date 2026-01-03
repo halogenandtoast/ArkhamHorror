@@ -152,6 +152,9 @@ export function replaceIcons(body: string) {
     replace(/{sealC}/g, '<span class="seal-c-icon"></span>').
     replace(/{sealD}/g, '<span class="seal-d-icon"></span>').
     replace(/{sealE}/g, '<span class="seal-e-icon"></span>').
+    replace(/{codex}/g, '<span class="codex-icon"></span>').
+    replace(/{day}/g, '<span class="day-icon"></span>').
+    replace(/{night}/g, '<span class="night-icon"></span>').
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 

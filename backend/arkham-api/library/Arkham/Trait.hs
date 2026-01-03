@@ -215,6 +215,7 @@ data Trait
   | Relic
   | Reporter
   | Research
+  | Resident
   | Resolute
   | Restricted
   | Risen

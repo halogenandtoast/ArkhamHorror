@@ -564,7 +564,7 @@ scenarioCard cCode name ecSet =
 
 allScenarioCards :: Map CardCode CardDef
 allScenarioCards =
-  mapFromList $ flip map (filter ((`notElem` duplicatedScenarios) . fst) $ mapToList allScenarios) $ \(c, SomeScenario s) -> do
+  mapFromList $ allScenarios & mapToList & filter ((`notElem` duplicatedScenarios) . fst) & map \(c, SomeScenario s) -> do
     let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets
         name = scenarioName $ toAttrs $ Scenario (s Easy)
         normalizeCardCode = \case
@@ -652,7 +652,7 @@ allScenarios =
     , ("09660", SomeScenario shadesOfSuffering)
     , ("09681", SomeScenario withoutATrace)
     , ("09694", SomeScenario congressOfTheKeys)
-    , ("10675a", SomeScenario preludeWelcomeToHemlockVale)
+    , ("10704", SomeScenario preludeWelcomeToHemlockVale)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
@@ -777,7 +777,7 @@ scenarioEncounterSets =
     , ("09660", EncounterSet.ShadesOfSuffering)
     , ("09681", EncounterSet.WithoutATrace)
     , ("09694", EncounterSet.CongressOfTheKeys)
-    , ("10675a", EncounterSet.TheVale)
+    , ("10704", EncounterSet.TheVale)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)

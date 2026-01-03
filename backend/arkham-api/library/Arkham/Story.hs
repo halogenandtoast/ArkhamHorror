@@ -158,6 +158,10 @@ allStories =
     , SomeStoryCard exhumeTheBones
     , SomeStoryCard sympathyPain
     , SomeStoryCard familialPain
+    , -- The Feast of Hemlock Vale
+      --- The First Day
+      SomeStoryCard dayOne
+    , SomeStoryCard nightOne
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

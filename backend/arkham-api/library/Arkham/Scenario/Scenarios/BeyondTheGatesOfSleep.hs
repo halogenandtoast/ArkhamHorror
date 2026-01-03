@@ -23,7 +23,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (hasEncounterDeckL)
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Strategy
 import Arkham.Trait (

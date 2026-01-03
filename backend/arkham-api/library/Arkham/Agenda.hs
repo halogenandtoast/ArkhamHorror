@@ -319,8 +319,11 @@ allAgendas =
       SomeAgendaCard confluxOfConsequence
     , SomeAgendaCard theWorldUnbidden
     , SomeAgendaCard runningRed
+    , -- The Feast of Hemlock Vale
+      --- Day of Rest
+      SomeAgendaCard welcomeToHemlockVale
     , -- Return to the Night of the Zealot
-      -- Return to the Midnight Masks
+      --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey
     , -- Return to the Dunwich Legacy
       --- Return to the Essex County Express

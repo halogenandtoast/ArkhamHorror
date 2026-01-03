@@ -250,6 +250,7 @@ allAgendaCards =
       , unexpectedGuests
       , vengeance
       , vengeanceAwaits
+      , welcomeToHemlockVale
       , whatLurksBelowV1
       , whatLurksBelowV2
       , whatsGoingOn
@@ -871,6 +872,9 @@ theWorldUnbidden = agenda "09696" "The World Unbidden" 2 CongressOfTheKeys
 
 runningRed :: CardDef
 runningRed = agenda "09697" "Running Red" 3 CongressOfTheKeys
+
+welcomeToHemlockVale :: CardDef
+welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

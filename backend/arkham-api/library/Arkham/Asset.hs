@@ -1077,6 +1077,18 @@ allAssets =
     , SomeAssetCard backInjury
     , SomeAssetCard theSilverMoth
     , SomeAssetCard vowOfDrzytelech
+    , --- Residents [fhv]
+      SomeAssetCard motherRachelKindlyMatron
+    , SomeAssetCard leahAtwoodTheValeCook
+    , SomeAssetCard simeonAtwoodDedicatedTroublemaker
+    , SomeAssetCard williamHemlockAspiringPoet
+    , SomeAssetCard riverHawthorneBigInNewYork
+    , SomeAssetCard gideonMizrahSeasonedSailor
+    , SomeAssetCard judithParkTheMuscle
+    , SomeAssetCard theoPetersJackOfAllTrades
+    , SomeAssetCard bertieMusgraveATrueAesthete
+    , SomeAssetCard drRosaMarquezBestInHerField
+    , SomeAssetCard helenPetersTheEldestSister
     , -- The Drowned City
       --- signature [tdc]
       SomeAssetCard bookOfVerseUnCommonplaceBook

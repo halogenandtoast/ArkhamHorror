@@ -413,6 +413,30 @@ button {
   }
 }
 
+.codex-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0068";
+  }
+}
+
+.day-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0069";
+  }
+}
+
+.night-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\006a";
+  }
+}
+
 .wild-icon {
   &:before {
     text-transform: none;

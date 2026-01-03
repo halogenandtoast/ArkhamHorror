@@ -1,7 +1,42 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
+import Arkham.Classes.HasGame
+import Arkham.Helpers.Campaign
 import Arkham.I18n
-import Arkham.Prelude
+import Arkham.Id
+import Arkham.Message.Lifted
+import Arkham.Prelude hiding (Day)
+import Arkham.Tracing
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theFeastOfHemlockVale" a
+
+codex :: ReverseQueue m => InvestigatorId -> Int -> m ()
+codex iid n = scenarioSpecific "codex" (iid, n)
+
+data Day = Day1 | Day2 | Day3
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data Time = Night | Day
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+initMeta :: TheFeastOfHemlockValeMeta
+initMeta = TheFeastOfHemlockValeMeta Day1 Day
+
+data TheFeastOfHemlockValeMeta = TheFeastOfHemlockValeMeta
+  { day :: Day
+  , time :: Time
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+getCampaignTime :: (Tracing m, HasGame m) => m Time
+getCampaignTime = withCampaignMeta @TheFeastOfHemlockValeMeta (.time)
+
+getCampaignDay :: (Tracing m, HasGame m) => m Day
+getCampaignDay = withCampaignMeta @TheFeastOfHemlockValeMeta (.day)

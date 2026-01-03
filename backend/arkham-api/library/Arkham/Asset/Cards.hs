@@ -988,6 +988,17 @@ allEncounterAssetCards =
       , theClaretKnightHerSwornChampion
       , theRedGlovedManHeWasAlwaysThere
       , alikiZoniUperetriaTheMaidWithTheScarletSash
+      , motherRachelKindlyMatron
+      , leahAtwoodTheValeCook
+      , simeonAtwoodDedicatedTroublemaker
+      , williamHemlockAspiringPoet
+      , riverHawthorneBigInNewYork
+      , gideonMizrahSeasonedSailor
+      , judithParkTheMuscle
+      , theoPetersJackOfAllTrades
+      , bertieMusgraveATrueAesthete
+      , drRosaMarquezBestInHerField
+      , helenPetersTheEldestSister
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

@@ -703,6 +703,9 @@ const TOKEN_MAP: Record<string, string> = {
   '[seal_c]': '<span class="seal-c-icon"></span>',
   '[seal_d]': '<span class="seal-d-icon"></span>',
   '[seal_e]': '<span class="seal-e-icon"></span>',
+  '[day]': '<span class="day-icon"></span>',
+  '[night]': '<span class="night-icon"></span>',
+  '[codex]': '<span class="codex-icon"></span>',
 }
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

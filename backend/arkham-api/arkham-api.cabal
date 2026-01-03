@@ -94,6 +94,7 @@ library
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DarkKnowledgeV1
       Arkham.Act.Cards.DarkKnowledgeV2
+      Arkham.Act.Cards.DawnOfTheFirstDay
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DestroyTheSource
       Arkham.Act.Cards.DiscoveringTheTruth
@@ -574,6 +575,7 @@ library
       Arkham.Agenda.Cards.UnexpectedGuests
       Arkham.Agenda.Cards.Vengeance
       Arkham.Agenda.Cards.VengeanceAwaits
+      Arkham.Agenda.Cards.WelcomeToHemlockVale
       Arkham.Agenda.Cards.WhatLurksBelowV1
       Arkham.Agenda.Cards.WhatLurksBelowV2
       Arkham.Agenda.Cards.WhatsGoingOn
@@ -683,6 +685,7 @@ library
       Arkham.Asset.Assets.BeatCop2
       Arkham.Asset.Assets.Becky
       Arkham.Asset.Assets.BerettaM19184
+      Arkham.Asset.Assets.BertieMusgraveATrueAesthete
       Arkham.Asset.Assets.BestowResolve2
       Arkham.Asset.Assets.Bewitching3
       Arkham.Asset.Assets.BiancaDieKatzSingingYourSong
@@ -856,6 +859,7 @@ library
       Arkham.Asset.Assets.DrMalaSinhaDaringPhysicianResolute
       Arkham.Asset.Assets.DrMilanChristopher
       Arkham.Asset.Assets.DrMyaBadry
+      Arkham.Asset.Assets.DrRosaMarquezBestInHerField
       Arkham.Asset.Assets.DrShivaniMaheswaran
       Arkham.Asset.Assets.DrWilliamTMaleson
       Arkham.Asset.Assets.DrWilliamTMaleson2
@@ -967,6 +971,7 @@ library
       Arkham.Asset.Assets.GearedUp
       Arkham.Asset.Assets.Geas2
       Arkham.Asset.Assets.GeneBeauregard3
+      Arkham.Asset.Assets.GideonMizrahSeasonedSailor
       Arkham.Asset.Assets.GiftOfNodens5
       Arkham.Asset.Assets.GildedVolto
       Arkham.Asset.Assets.GirishKadakiaICPCPunjabDetective4
@@ -1015,6 +1020,7 @@ library
       Arkham.Asset.Assets.HeavyFurs
       Arkham.Asset.Assets.HeirloomOfHyperborea
       Arkham.Asset.Assets.HeirloomOfHyperboreaAdvanced
+      Arkham.Asset.Assets.HelenPetersTheEldestSister
       Arkham.Asset.Assets.HeliosTelescopeGateToTheCosmos
       Arkham.Asset.Assets.HelplessPassenger
       Arkham.Asset.Assets.HemisphericMap3
@@ -1075,6 +1081,7 @@ library
       Arkham.Asset.Assets.JoeyTheRatVigil3
       Arkham.Asset.Assets.JohnnyValoneReadyToMakeADeal
       Arkham.Asset.Assets.JordanPerry
+      Arkham.Asset.Assets.JudithParkTheMuscle
       Arkham.Asset.Assets.Katana
       Arkham.Asset.Assets.KatarinaSojkamissaryFromUlthar
       Arkham.Asset.Assets.KatjaEastbankKeeperOfEsotericLore2
@@ -1099,6 +1106,7 @@ library
       Arkham.Asset.Assets.Lantern
       Arkham.Asset.Assets.Lantern2
       Arkham.Asset.Assets.LawrenceCarlisleSculptingHisDreams
+      Arkham.Asset.Assets.LeahAtwoodTheValeCook
       Arkham.Asset.Assets.LeatherCoat
       Arkham.Asset.Assets.LeatherCoat1
       Arkham.Asset.Assets.LeatherJacket
@@ -1176,6 +1184,7 @@ library
       Arkham.Asset.Assets.MoonPendant2
       Arkham.Asset.Assets.Moonstone
       Arkham.Asset.Assets.MortarAndPestle
+      Arkham.Asset.Assets.MotherRachelKindlyMatron
       Arkham.Asset.Assets.MouseMaskTheMeekWatcher
       Arkham.Asset.Assets.Moxie1
       Arkham.Asset.Assets.Moxie3
@@ -1298,6 +1307,7 @@ library
       Arkham.Asset.Assets.RiteOfSeeking2
       Arkham.Asset.Assets.RiteOfSeeking4
       Arkham.Asset.Assets.RitualCandles
+      Arkham.Asset.Assets.RiverHawthorneBigInNewYork
       Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorer
       Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorerResolute
       Arkham.Asset.Assets.RobertCastaigneHasYourBack
@@ -1361,6 +1371,7 @@ library
       Arkham.Asset.Assets.SignMagick3
       Arkham.Asset.Assets.SignOfXelotaphSymbolOfProtection
       Arkham.Asset.Assets.SilassNet
+      Arkham.Asset.Assets.SimeonAtwoodDedicatedTroublemaker
       Arkham.Asset.Assets.SinEater3
       Arkham.Asset.Assets.SinhasMedicalKit
       Arkham.Asset.Assets.SinisterSolution
@@ -1462,6 +1473,7 @@ library
       Arkham.Asset.Assets.TheNecronomiconAdvanced
       Arkham.Asset.Assets.TheNecronomiconOlausWormiusTranslation
       Arkham.Asset.Assets.TheNecronomiconPetrusDeDaciaTranslation5
+      Arkham.Asset.Assets.TheoPetersJackOfAllTrades
       Arkham.Asset.Assets.ThePaleLanternBeguilingAura
       Arkham.Asset.Assets.ThePaleLanternHypnoticGlow
       Arkham.Asset.Assets.ThePallidMask
@@ -1542,6 +1554,7 @@ library
       Arkham.Asset.Assets.WhittonGreene2
       Arkham.Asset.Assets.WickedAthame
       Arkham.Asset.Assets.WilliamBainLookingForThoseLost
+      Arkham.Asset.Assets.WilliamHemlockAspiringPoet
       Arkham.Asset.Assets.WishEater
       Arkham.Asset.Assets.Wither
       Arkham.Asset.Assets.Wither4
@@ -1639,6 +1652,7 @@ library
       Arkham.Campaigns.TheDunwichLegacy.Key
       Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps
       Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+      Arkham.Campaigns.TheFeastOfHemlockVale.Key
       Arkham.Campaigns.TheForgottenAge.CampaignSteps
       Arkham.Campaigns.TheForgottenAge.ChaosBag
       Arkham.Campaigns.TheForgottenAge.Helpers
@@ -4369,6 +4383,7 @@ library
       Arkham.Story.Cards.CracksInTheIce
       Arkham.Story.Cards.CrypticSouls
       Arkham.Story.Cards.CylindersOfKadatheron
+      Arkham.Story.Cards.DayOne
       Arkham.Story.Cards.DeadEnd
       Arkham.Story.Cards.DeckOfPossibilities
       Arkham.Story.Cards.DeckOfTheTheodosia
@@ -4418,6 +4433,7 @@ library
       Arkham.Story.Cards.MiskatonicUniversityAllied
       Arkham.Story.Cards.MiskatonicUniversityRival
       Arkham.Story.Cards.MoaiStatues
+      Arkham.Story.Cards.NightOne
       Arkham.Story.Cards.OffTheGalley
       Arkham.Story.Cards.OttomanFront
       Arkham.Story.Cards.PackageDelivery

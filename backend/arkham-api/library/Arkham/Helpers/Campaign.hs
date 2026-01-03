@@ -84,6 +84,10 @@ getCampaignMeta = do
     Success a -> pure a
     Error e -> error $ "Failed to parse campaign meta: " <> e
 
+withCampaignMeta
+  :: forall a m r. (HasCallStack, HasGame m, Tracing m, FromJSON a) => (a -> r) -> m r
+withCampaignMeta f = f <$> getCampaignMeta @a
+
 getCampaignStore :: (HasCallStack, HasGame m, Tracing m) => m (Map Text Value)
 getCampaignStore = campaignField CampaignStore
 

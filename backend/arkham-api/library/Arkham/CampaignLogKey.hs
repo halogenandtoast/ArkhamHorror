@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
@@ -36,6 +37,7 @@ data CampaignLogKey
   | TheInnsmouthConspiracyKey TheInnsmouthConspiracyKey
   | EdgeOfTheEarthKey EdgeOfTheEarthKey
   | TheScarletKeysKey TheScarletKeysKey
+  | TheFeastOfHemlockValeKey TheFeastOfHemlockValeKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -84,6 +86,7 @@ instance FromJSON CampaignLogKey where
       <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
       <|> (EdgeOfTheEarthKey <$> parseJSON o)
       <|> (TheScarletKeysKey <$> parseJSON o)
+      <|> (TheFeastOfHemlockValeKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
       <|> fail ("Could not parse CampaignLogKey" <> show o)
@@ -182,6 +185,12 @@ instance IsCampaignLogKey TheScarletKeysKey where
     TheScarletKeysKey k -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey TheFeastOfHemlockValeKey where
+  toCampaignLogKey = TheFeastOfHemlockValeKey
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey k -> Just k
+    _ -> Nothing
+
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
@@ -242,6 +251,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     TheInnsmouthConspiracyKey k -> pack . go $ show k
     EdgeOfTheEarthKey k -> pack . go $ show k
     TheScarletKeysKey k -> pack . go $ show k
+    TheFeastOfHemlockValeKey k -> pack . go $ show k
     s -> pack . go $ show s
    where
     go :: String -> String

@@ -281,6 +281,9 @@ instance IsLabel "illicit" CardMatcher where
 instance IsLabel "tactic" CardMatcher where
   fromLabel = CardWithTrait Tactic
 
+instance IsLabel "trick" CardMatcher where
+  fromLabel = CardWithTrait Trick
+
 instance IsLabel "insight" CardMatcher where
   fromLabel = CardWithTrait Insight
 

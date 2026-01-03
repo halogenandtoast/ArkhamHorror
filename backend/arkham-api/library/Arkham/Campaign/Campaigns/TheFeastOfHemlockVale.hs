@@ -42,9 +42,15 @@ instance IsCampaign TheFeastOfHemlockVale where
     _ -> Nothing
 
 instance RunMessage TheFeastOfHemlockVale where
-  runMessage msg c@(TheFeastOfHemlockVale _attrs) = runQueueT $ campaignI18n $ case msg of
-    CampaignStep PrologueStep -> scope "prologue" do
-      flavor $ setTitle "title" >> p "body"
+  runMessage msg c@(TheFeastOfHemlockVale attrs) = runQueueT $ campaignI18n $ case msg of
+    CampaignStep PrologueStep -> do
+      scope "prologue" $ flavor $ setTitle "title" >> p "body"
+      scope "additionalRulesAndClarifications" do
+        flavor $ setTitle "title" >> p "theCodex"
+        flavor $ setTitle "title" >> p "threeDaysThreeNights"
+        flavor $ setTitle "title" >> p "residentsAndRelationshipLevels"
+        flavor $ setTitle "title" >> p "locationAdjacency"
+      scope "newKeywords" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
-      pure c
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON initMeta
     _ -> lift $ defaultCampaignRunner msg c

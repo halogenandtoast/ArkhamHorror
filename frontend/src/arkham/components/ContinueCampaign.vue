@@ -30,17 +30,25 @@ const hasSent = ref(false)
 const sendOnce = (payload: unknown) => {
   if (hasSent.value) return
   hasSent.value = true
-  // vue-use's useWebSocket expects a string
   send(JSON.stringify(payload))
+}
+const normalizedContents = (step: CampaignStep): string => {
+  if (step.tag === 'ScenarioStepWithOptions') {
+    return step.contents[0]
+  }
+  return step.contents
 }
 // reset the lock on a "fresh update" of the step (new step name/kind)
 onMounted(() => { hasSent.value = false })
-const stepKey = computed(() => `${props.step.tag}:${JSON.stringify(props.step.contents)}`)
+const stepKey = computed(() => `${props.step.tag}:${JSON.stringify(normalizedContents(props.step))}`)
 watch(stepKey, () => { hasSent.value = false })
 const bonusXp = computed(() => props.campaign?.meta?.bonusXp ?? null)
 const scenario = computed(() => {
   if (props.step.tag === 'ScenarioStep') {
     return props.step.contents.slice(1)
+  }
+  if (props.step.tag === 'ScenarioStepWithOptions') {
+    return props.step.contents[0].slice(1)
   }
   if (props.step.tag === 'StandaloneScenarioStep') {
     return props.step.contents[0].slice(1)
@@ -96,6 +104,14 @@ const kind = computed(() => {
     return t('headings.scenario')
   }
 
+  if (props.step.tag === 'ScenarioStepWithOptions') {
+    const scenarioId = props.step.contents[0]
+    const prefix = scenarioIdToI18n(scenarioId)
+    const key = `${prefix}.heading`
+    if (te(key)) return t(key)
+    return t('headings.scenario')
+  }
+
   if (props.step.tag === 'InterludeStep') {
     if (props.game.campaign) {
       const key = `${toCamelCase(props.game.campaign.name)}.headings.interludes.${props.step.contents[0]}`
@@ -137,9 +153,9 @@ const minXp = computed<number>(() => {
 const canUpgrade = computed(() => {
   if (!props.campaign) return false
   if (!props.canUpgradeDecks) return false
-  if (props.step.tag !== "ScenarioStep" && props.step.tag !== "StandaloneScenarioStep") return false
+  if (!["ScenarioStep", "ScenarioStepWithOptions", "StandaloneScenarioStep"].includes(props.step.tag)) return false
   if (props.step.tag === "ContinueCampaignStep" && !props.step.contents.canUpgradeDecks) return false
-  return props.campaign.completedSteps.some((step: CampaignStep) => step.tag === 'ScenarioStep' || step.tag === 'StandaloneScenarioStep')
+  return props.campaign.completedSteps.some((step: CampaignStep) => ['ScenarioStep', 'ScenarioStepWithOptions', 'StandaloneScenarioStep'].includes(step.tag))
 })
 
 const isScenario = computed(() =>  {
@@ -208,7 +224,7 @@ async function upgradeDecks() {
 }
 
 async function startStep() {
-  if (props.step.tag === 'ScenarioStep' || props.step.tag === 'StandaloneScenarioStep') {
+  if (['ScenarioStep', 'StandaloneScenarioStep', 'ScenarioStepWithOptions'].includes(props.step.tag)) {
     if (isScenario.value && leadInvestigatorId.value !== null) {
       // inform the server of the lead investigator
       sendOnce({

@@ -415,14 +415,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     -- gameActionDiff contains a list of diffs, in order, to revert the game
     -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
-  EndOfGame mNextCampaignStep -> do
-    pushEnd $ EndOfScenario mNextCampaignStep
-    pure g
-  EndOfScenario _ -> do
+  ForTarget GameTarget (EndOfScenario _) -> do
+    persistedAssets <- select $ AssetWithModifier Persist
     let
       update g' =
         g'
-          & (entitiesL . assetsL .~ mempty)
+          & (entitiesL . assetsL %~ Map.filterWithKey (\k _ -> k `elem` persistedAssets))
           & (entitiesL . locationsL .~ mempty)
           & (entitiesL . enemiesL .~ mempty)
           & (entitiesL . actsL .~ mempty)
@@ -447,13 +445,14 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     case gameMode g of
       These c _ -> pure $ update $ g & (modeL .~ This c)
       _ -> pure $ update g
-  ResetGame -> do
+  ForTarget GameTarget ResetGame -> do
+    persistedAssets <- select (AssetWithModifier Persist)
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
-      & (entitiesL . assetsL .~ mempty)
+      & (entitiesL . assetsL %~ Map.filterWithKey (\k _ -> k `elem` persistedAssets))
       & (entitiesL . locationsL .~ mempty)
       & (entitiesL . enemiesL .~ mempty)
       & (entitiesL . actsL .~ mempty)
@@ -3322,7 +3321,7 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
   DrawCards iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
-  ResetGame -> do
+  ForTarget GameTarget ResetGame -> do
     let
       promoteHomunculus (k, i) =
         if i.form == HomunculusForm

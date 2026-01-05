@@ -47,6 +47,12 @@ import Data.List (nubBy)
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 
+getStartingResources :: HasGame m => InvestigatorId -> m Int
+getStartingResources a = do
+  mods <- getModifiers a
+  let base = fromMaybe 5 $ listToMaybe [n | BaseStartingResources n <- mods]
+  pure $ max 0 $ getSum $ mconcat $ Sum base : [Sum n | StartingResources n <- mods]
+
 getSkillValue :: (HasGame m, Tracing m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = do
   mods <- getModifiers iid

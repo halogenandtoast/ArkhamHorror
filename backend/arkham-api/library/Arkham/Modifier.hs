@@ -370,6 +370,7 @@ data ModifierType
   | NonDirectHorrorMustBeAssignToThisFirst
   | NonTraitRestrictedModifier Trait ModifierType
   | Omnipotent
+  | Persist
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
   | PlaceOnBottomOfDeckInsteadOfDiscard

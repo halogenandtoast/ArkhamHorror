@@ -3,12 +3,16 @@
 
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
+import Arkham.CampaignStep
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (push)
 import Arkham.Helpers.Campaign
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Message.Lifted
+import Arkham.Message (Message (NextCampaignStep))
+import Arkham.Message.Lifted hiding (continue)
 import Arkham.Prelude hiding (Day)
+import Arkham.Scenario.Options
 import Arkham.Tracing
 
 campaignI18n :: (HasI18n => a) -> a
@@ -40,3 +44,12 @@ getCampaignTime = withCampaignMeta @TheFeastOfHemlockValeMeta (.time)
 
 getCampaignDay :: (Tracing m, HasGame m) => m Day
 getCampaignDay = withCampaignMeta @TheFeastOfHemlockValeMeta (.day)
+
+afterPrelude :: ReverseQueue m => CampaignStep -> m ()
+afterPrelude =
+  setNextCampaignStep . \case
+    ScenarioStep sid ->
+      ScenarioStepWithOptions sid defaultScenarioOptions {scenarioOptionsSkipInvestigatorSetup = True}
+    other -> other
+ where
+  setNextCampaignStep = push . NextCampaignStep . continueNoUpgrade

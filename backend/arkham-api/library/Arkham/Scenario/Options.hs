@@ -9,6 +9,7 @@ data ScenarioOptions = ScenarioOptions
   , scenarioOptionsPerformTarotReading :: Bool
   , scenarioOptionsLeadInvestigator :: Maybe InvestigatorId
   , scenarioOptionsDelayChoosingLead :: Bool
+  , scenarioOptionsSkipInvestigatorSetup :: Bool
   }
   deriving stock (Eq, Ord, Show, Generic, Data)
   deriving anyclass ToJSON
@@ -25,12 +26,16 @@ instance HasField "leadInvestigator" ScenarioOptions (Maybe InvestigatorId) wher
 instance HasField "delayChoosingLead" ScenarioOptions Bool where
   getField = scenarioOptionsDelayChoosingLead
 
+instance HasField "skipInvestigatorSetup" ScenarioOptions Bool where
+  getField = scenarioOptionsSkipInvestigatorSetup
+
 defaultScenarioOptions :: ScenarioOptions
 defaultScenarioOptions = ScenarioOptions
   { scenarioOptionsStandalone = False
   , scenarioOptionsPerformTarotReading = False
   , scenarioOptionsLeadInvestigator = Nothing
   , scenarioOptionsDelayChoosingLead = False
+  , scenarioOptionsSkipInvestigatorSetup = False
   }
 
 instance FromJSON ScenarioOptions where
@@ -39,4 +44,5 @@ instance FromJSON ScenarioOptions where
     scenarioOptionsPerformTarotReading <- o .: "scenarioOptionsPerformTarotReading"
     scenarioOptionsLeadInvestigator <- o .:? "scenarioOptionsLeadInvestigator"
     scenarioOptionsDelayChoosingLead <- o .:? "scenarioOptionsDelayChoosingLead" .!= False
+    scenarioOptionsSkipInvestigatorSetup <- o .:? "scenarioOptionsSkipInvestigatorSetup" .!= False
     pure ScenarioOptions {..}

@@ -37,7 +37,7 @@ instance RunMessage GrandBazaarRooftopAccess where
   runMessage msg l@(GrandBazaarRooftopAccess attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 4)
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       locations <- getAccessibleLocations iid (attrs.ability 1)

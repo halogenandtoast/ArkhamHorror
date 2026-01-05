@@ -556,6 +556,10 @@ effectModifiers
   :: (HasGame m, Tracing m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Message)
 effectModifiers source ms = EffectModifiers <$> toModifiers source ms
 
+effectModifiersWith
+  :: (HasGame m, Tracing m, Sourceable a) => (Modifier -> Modifier) -> a -> [ModifierType] -> m (EffectMetadata Message)
+effectModifiersWith f source ms = EffectModifiers . map f <$> toModifiers source ms
+
 createWindowModifierEffect
   :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => EffectWindow
@@ -564,7 +568,11 @@ createWindowModifierEffect
   -> [ModifierType]
   -> m Message
 createWindowModifierEffect eWindow (toSource -> source) (toTarget -> target) mods = do
-  ems <- effectModifiers source mods
+  ems <- case eWindow of
+    EffectSetupWindow -> effectModifiersWith setActiveDuringSetup source mods
+    EffectScenarioSetupWindow _ -> effectModifiersWith setActiveDuringSetup source mods
+    _ -> effectModifiers source mods
+
   pure $ CreateWindowModifierEffect eWindow ems source target
 
 createCostModifiers

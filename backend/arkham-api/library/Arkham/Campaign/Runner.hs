@@ -68,17 +68,36 @@ defaultCampaignRunner msg a = case msg of
       xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
   CampaignStep (ScenarioStepWithOptions sid opts) -> do
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid (Just opts)]
+    pushAll
+      $ [ ResetInvestigators
+        , ResetGame
+        , ForTarget GameTarget ResetGame
+        ]
+      <> [ForInvestigators [] ResetGame | not opts.skipInvestigatorSetup]
+      <> [ StartScenario sid (Just opts)
+         ]
     -- [ALERT] Update TheDreamEaters if this alters a
     pure a
   CampaignStep (ScenarioStep sid) -> do
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid Nothing]
+    pushAll
+      [ ResetInvestigators
+      , ResetGame
+      , ForTarget GameTarget ResetGame
+      , ForInvestigators [] ResetGame
+      , StartScenario sid Nothing
+      ]
     -- [ALERT] Update TheDreamEaters if this alters a
     pure a
   CampaignStep (UpgradeDeckStep _) -> do
     investigators <- select InvestigatorCanAddCardsToDeck
     players <- traverse getPlayer investigators
-    pushAll $ ResetGame : chooseUpgradeDecks players : [FinishedUpgradingDecks]
+    pushAll
+      [ ResetGame
+      , ForTarget GameTarget ResetGame
+      , ForInvestigators [] ResetGame
+      , chooseUpgradeDecks players
+      , FinishedUpgradingDecks
+      ]
     pure a
   CampaignStep (ChooseDecksStep _) -> do
     players <- allPlayers
@@ -90,12 +109,24 @@ defaultCampaignRunner msg a = case msg of
     pure a
   CampaignStep (StandaloneScenarioStep sid _) -> do
     let xp = getSideStoryCost sid
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid Nothing]
+    pushAll
+      [ ResetInvestigators
+      , ResetGame
+      , ForTarget GameTarget ResetGame
+      , ForInvestigators [] ResetGame
+      , StartScenario sid Nothing
+      ]
     select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
     pure a
   CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) -> do
     let xp = getSideStoryCost sid
-    pushAll [ResetInvestigators, ResetGame, StartScenario sid (Just opts)]
+    pushAll
+      [ ResetInvestigators
+      , ResetGame
+      , ForTarget GameTarget ResetGame
+      , ForInvestigators [] ResetGame
+      , StartScenario sid (Just opts)
+      ]
     select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
@@ -249,9 +280,9 @@ defaultCampaignRunner msg a = case msg of
         $ "Your game can continue without issue, but please file a bug for this. Invalid state: "
         <> tshow (campaignStep (toAttrs a))
       pure a
-  ResetGame -> runMessage ReloadDecks a
+  ForInvestigators _ ResetGame -> runMessage ReloadDecks a
   ReloadDecks -> do
-    for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do
+    for_ (mapToList $ campaignDecks $ toAttrs a) \(iid, Deck deck) -> do
       let storyCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
       let storyCardCodes = map toCardCode storyCards
       let (deck', removals) =

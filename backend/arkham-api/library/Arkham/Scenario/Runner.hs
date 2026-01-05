@@ -139,6 +139,7 @@ filterOutCards cs a =
 runScenarioAttrs :: Runner ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ResetGame -> do
+    pushAll [ForTarget GameTarget ResetGame, ForInvestigators [] ResetGame]
     whenM getIsStandalone do
       for_ (mapToList scenarioPlayerDecks) $ \(iid, deck) -> do
         let deckCardCodes = map toCardCode $ unDeck deck
@@ -494,7 +495,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
     pure a
   EndOfScenario mNextCampaignStep -> do
+    -- Do not update without updating Hemlock Preludes
     clearQueue
+    Lifted.eachInvestigator (`Lifted.forTarget` msg)
+    Lifted.forTarget GameTarget msg
     standalone <- getIsStandalone
     push $ if standalone then GameOver else NextCampaignStep mNextCampaignStep
     pure a
@@ -1870,4 +1874,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   NextScenarioCampaignStep (Just step) -> do
     pushAll [HandleKilledOrInsaneInvestigators, ScenarioCampaignStep step]
     pure $ a & campaignStepL ?~ step
+  EndOfGame mNextCampaignStep -> do
+    pushEnd $ EndOfScenario mNextCampaignStep
+    pure a
   _ -> pure a

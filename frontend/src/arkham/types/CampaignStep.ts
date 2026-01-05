@@ -111,7 +111,7 @@ export const standaloneScenarioStepDecoder = JsonDecoder.object<StandaloneScenar
     tag: JsonDecoder.literal('StandaloneScenarioStep'),
     contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed()], 'contents'),
   },
-  'StandabloneScenarioStep',
+  'StandaloneScenarioStep',
 );
 
 export const standaloneScenarioStepWithOptionsDecoder = JsonDecoder.object<StandaloneScenarioStepWithOptions>(
@@ -119,7 +119,7 @@ export const standaloneScenarioStepWithOptionsDecoder = JsonDecoder.object<Stand
     tag: JsonDecoder.literal('StandaloneScenarioStepWithOptions'),
     contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed(), scenarioOptionsDecoder], 'contents'),
   },
-  'StandabloneScenarioWithOptionsStep',
+  'StandaloneScenarioWithOptionsStep',
 );
 
 export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
@@ -232,7 +232,19 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   'Question',
 );
 
-export function extendWithOptions(step: ScenarioStep | StandaloneScenarioStep, options: Partial<ScenarioOptions>): ScenarioStepWithOptions | StandaloneScenarioStepWithOptions {
+export function extendWithOptions(step: ScenarioStep | ScenarioStepWithOptions | StandaloneScenarioStep, options: Partial<ScenarioOptions>): ScenarioStepWithOptions | StandaloneScenarioStepWithOptions {
+  console.log(step)
+  if (step.tag === 'ScenarioStepWithOptions') {
+    const mergedOptions: ScenarioOptions = {
+      ...step.contents[1],
+      ...options,
+    }
+    return {
+      tag: 'ScenarioStepWithOptions',
+      contents: [step.contents[0], mergedOptions],
+    }
+  }
+
   const mergedOptions: ScenarioOptions = {
     ...defaultScenarioOptions,
     ...options,
@@ -265,6 +277,12 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       const key = `${prefix}.names.${part}`
       if (te(key)) return t(key)
     }
+    if (step.tag === 'ScenarioStepWithOptions') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const part = step.contents[0].slice(-1) === 'b' ? 'part2' : 'part1'
+      const key = `${prefix}.names.${part}`
+      if (te(key)) return t(key)
+    }
 
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
     if (result && result.returnTo && result.returnTo === scenarioId) {
@@ -286,6 +304,12 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
       const key = `${prefix}.names.${part}`
       if (te(key)) return t(key)
     }
+    if (step.contents[1]?.tag === 'ScenarioStepWithOptions') {
+      const prefix = scenarioIdToI18n(scenarioId)
+      const part = step.contents[1].contents[0].slice(-1) === 'b' ? 'part2' : 'part1'
+      const key = `${prefix}.names.${part}`
+      if (te(key)) return t(key)
+    }
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
     if (result && result.returnTo && result.returnTo === scenarioId) {
       return result.returnToName
@@ -295,6 +319,15 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
 
   if (step.tag === 'ScenarioStep') {
     const scenarioId = step.contents.slice(1)
+    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
+    if (result && result.returnTo && result.returnTo === scenarioId) {
+      return result.returnToName
+    }
+    return result?.name || "Unknown Scenario"
+  }
+
+  if (step.tag === 'ScenarioStepWithOptions') {
+    const scenarioId = step.contents[0].slice(1)
     const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
     if (result && result.returnTo && result.returnTo === scenarioId) {
       return result.returnToName

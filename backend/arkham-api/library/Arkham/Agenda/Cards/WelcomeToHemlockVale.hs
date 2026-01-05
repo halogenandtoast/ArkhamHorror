@@ -20,7 +20,6 @@ instance HasAbilities WelcomeToHemlockVale where
 instance RunMessage WelcomeToHemlockVale where
   runMessage msg a@(WelcomeToHemlockVale attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      eachInvestigator resign
       push R1
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> weakness) _ -> do

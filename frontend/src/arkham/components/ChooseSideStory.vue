@@ -33,7 +33,7 @@ const minXp = computed<number>(() => {
 })
 
 const standalones = computed(() => {
-  if (props.step.tag !== "ScenarioStep") return []
+  if (props.step.tag !== "ScenarioStep" && props.step.tag !== "ScenarioStepWithOptions") return []
   const completed = props.campaign.completedSteps.reduce((acc: string[], step: CampaignStep) => {
     if (step.tag === 'StandaloneScenarioStep') {
       acc.push(step.contents[0].replace(/^c/, ''))

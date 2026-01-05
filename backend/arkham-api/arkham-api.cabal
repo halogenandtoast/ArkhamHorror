@@ -4123,6 +4123,7 @@ library
       Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Scenario.Scenarios.WhereTheGodsDwell
       Arkham.Scenario.Scenarios.WithoutATrace
+      Arkham.Scenario.Scenarios.WrittenInRock
       Arkham.Scenario.Setup
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
@@ -4209,6 +4210,7 @@ library
       Arkham.Scenarios.WhereDoomAwaits.Helpers
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Scenarios.WithoutATrace.Helpers
+      Arkham.Scenarios.WrittenInRock.Helpers
       Arkham.Script
       Arkham.Search
       Arkham.SideStory

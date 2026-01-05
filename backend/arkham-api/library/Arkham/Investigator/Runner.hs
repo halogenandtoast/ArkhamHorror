@@ -452,9 +452,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         )
         <$> filterM filterAbility investigatorUsedAbilities
     pure $ a & usedAbilitiesL .~ usedAbilities
-  EndOfScenario {} -> do
+  ForTarget (isTarget a -> True) (EndOfScenario {}) -> do
     pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False
-  ResetGame ->
+  ForInvestigators _ ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
         { Attrs.investigatorId = investigatorId
@@ -592,13 +592,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
     mods <- getModifiers a
-    let
-      base = fromMaybe 5 $ listToMaybe [n | BaseStartingResources n <- mods]
-      startingResources =
-        if CannotGainResources `elem` mods
-          then 0
-          else max 0 $ getSum $ mconcat $ Sum base : [Sum n | StartingResources n <- mods]
-      startingClues = getSum $ mconcat [Sum n | StartingClues n <- mods]
+    startingResources <- do
+      if CannotGainResources `elem` mods
+        then pure 0
+        else getStartingResources iid
+    let startingClues = getSum $ mconcat [Sum n | StartingClues n <- mods]
     pure $ a & tokensL %~ (setTokens Resource startingResources . setTokens Clue startingClues)
   InvestigatorMulligan iid | iid == investigatorId -> do
     unableToMulligan <- hasModifier a CannotMulligan

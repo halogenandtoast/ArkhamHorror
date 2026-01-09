@@ -15,12 +15,12 @@ beatCop2 :: AssetCard BeatCop2
 beatCop2 = ally BeatCop2 Cards.beatCop2 (3, 2)
 
 instance HasModifiersFor BeatCop2 where
-  getModifiersFor (BeatCop2 a) = controllerGets a [SkillModifier #combat 1]
+  getModifiersFor = givesController [SkillModifier #combat 1]
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
     [ controlled x 1 (canDamageEnemyAt (x.ability 1) YourLocation)
-        $ FastAbility
+        $ freeTrigger
         $ Costs [exhaust x, damageCost x 1]
     ]
 

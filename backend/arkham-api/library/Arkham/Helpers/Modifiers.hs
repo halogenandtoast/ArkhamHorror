@@ -866,6 +866,18 @@ revelationModifier
 revelationModifier (toSource -> source) (toTarget -> target) tid modifier = do
   revelationModifiers source target tid [modifier]
 
+givesController
+  :: ( HasField "controller" source (Maybe InvestigatorId)
+     , Sourceable source
+     , HasGame m
+     , Tracing m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => [ModifierType]
+  -> source
+  -> m ()
+givesController = flip controllerGets
+
 controllerGets
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source

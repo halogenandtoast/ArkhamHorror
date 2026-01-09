@@ -82,6 +82,12 @@ pattern FastAbility cost <- FastAbility' cost []
   where
     FastAbility cost = FastAbility' cost []
 
+freeTrigger_ :: AbilityType
+freeTrigger_ = FastAbility' Free []
+
+freeTrigger :: Cost -> AbilityType
+freeTrigger c = FastAbility' c []
+
 data AbilityType
   = FastAbility' {cost :: Cost, actions :: [Action]}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}

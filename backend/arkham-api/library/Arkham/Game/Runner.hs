@@ -3353,7 +3353,6 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
     -- if we reset and there is no player order, set it to the current investigator keys
     pure
       $ g
-      & (modifiersL .~ mempty)
       & (entitiesL . investigatorsL %~ map returnToBody)
       & (removedFromPlayL .~ [])
       & (playerOrderL %~ \po -> if null po then view (entitiesL . investigatorsL . to Map.keys) g else po)

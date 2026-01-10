@@ -697,12 +697,13 @@ instance RunMessage FortuneAndFollyPart2 where
           resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
             setTitle "title"
             p "body"
-            ul do
-              li.nested.validate isScarletKeys "scarletKeys" do
-                li "meddled"
-                li "bearer"
-              li "xp"
-              li "additionalRewards"
+            popScope do
+              ul do
+                li.nested.validate isScarletKeys "scarletKeys" do
+                  li "meddled"
+                  li "bearer"
+                li "xp"
+                li "additionalRewards"
 
           when isScarletKeys $ chooseBearer Keys.theWellspringOfFortune
           do_ msg
@@ -715,13 +716,14 @@ instance RunMessage FortuneAndFollyPart2 where
           resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution2" do
             setTitle "title"
             p "body"
-            ul do
-              li.nested.validate isScarletKeys "scarletKeys" do
-                li "meddled"
-                li "bearer"
-              li "fortunesChosen"
-              li "xp"
-              li "additionalRewards"
+            popScope do
+              ul do
+                li.nested.validate isScarletKeys "scarletKeys" do
+                  li "meddled"
+                  li "bearer"
+                li "fortunesChosen"
+                li "xp"
+                li "additionalRewards"
           do_ msg
           endOfScenario
         Resolution 3 -> do
@@ -732,13 +734,14 @@ instance RunMessage FortuneAndFollyPart2 where
           resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution3" do
             setTitle "title"
             p "body"
-            ul do
-              li.nested.validate isScarletKeys "scarletKeys" do
-                li "meddled"
-                li "bearer"
-              li "fortunesChosen"
-              li "xp"
-              li "additionalRewards"
+            popScope do
+              ul do
+                li.nested.validate isScarletKeys "scarletKeys" do
+                  li "meddled"
+                  li "bearer"
+                li "fortunesChosen"
+                li "xp"
+                li "additionalRewards"
           do_ msg
           endOfScenario
         _ -> error "invalid resolution"

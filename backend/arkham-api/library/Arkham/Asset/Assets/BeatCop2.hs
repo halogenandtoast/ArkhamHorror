@@ -15,7 +15,7 @@ beatCop2 :: AssetCard BeatCop2
 beatCop2 = ally BeatCop2 Cards.beatCop2 (3, 2)
 
 instance HasModifiersFor BeatCop2 where
-  getModifiersFor = givesController [SkillModifier #combat 1]
+  getModifiersFor (BeatCop2 a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =

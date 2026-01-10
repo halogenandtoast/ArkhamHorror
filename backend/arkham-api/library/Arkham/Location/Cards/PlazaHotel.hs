@@ -17,7 +17,10 @@ plazaHotel = symbolLabel $ location PlazaHotel Cards.plazaHotel 2 (PerPlayer 1)
 
 instance HasAbilities PlazaHotel where
   getAbilities (PlazaHotel a) =
-    extendRevealed1 a $ restricted a 1 Here $ FastAbility (HorrorCost (toSource a) YouTarget 1)
+    extendRevealed1 a
+      $ groupLimit PerRound
+      $ restricted a 1 Here 
+      $ FastAbility (HorrorCost (toSource a) YouTarget 1)
 
 instance RunMessage PlazaHotel where
   runMessage msg l@(PlazaHotel attrs) = runQueueT $ case msg of

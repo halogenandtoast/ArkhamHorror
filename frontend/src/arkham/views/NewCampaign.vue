@@ -2,46 +2,48 @@
 import { watch, ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRoute } from 'vue-router'
-import type { User } from '@/types'
 import { useRouter } from 'vue-router'
 import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
+import { storeToRefs } from 'pinia'
 
 import campaignJSON from '@/arkham/data/campaigns'
 import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories'
 
-const store = useUserStore()
-const currentUser = computed<User | null>(() => store.currentUser)
-const route = useRoute();
-const queryParams = route.query;
-
-onMounted(async () => {
-  if (queryParams.alpha !== undefined) {
-    localStorage.setItem('alpha', 'true')
-  }
-})
-
-const alpha = computed(() => {
-  return queryParams.alpha !== undefined || localStorage.getItem('alpha') === 'true'
-})
-
 type GameMode = 'Campaign' | 'SideStory'
+type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
+type CampaignType = 'FullCampaign' | 'PartialCampaign' | 'Standalone'
 
+const store = useUserStore()
+const route = useRoute();
+const queryParams = computed(() => route.query);
+const alpha = ref(false)
 const gameMode = ref<GameMode>('Campaign')
-
 const includeTarotReadings = ref(false)
+const dev = import.meta.env.PROD ? false : true
+const router = useRouter()
+const decks = ref<Arkham.Deck[]>([])
+const ready = ref(false)
+const playerCount = ref(1)
+const selectedDifficulty = ref<Difficulty>('Easy')
+const deckIds = ref<(string | null)[]>([null, null, null, null])
+const fullCampaign = ref<CampaignType>('FullCampaign')
+const selectedCampaign = ref<string | null>(null)
+const selectedScenario = ref<string | null>(null)
+const campaignName = ref<string | null>(null)
+const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
+const returnTo = ref(false)
+const { currentUser } = storeToRefs(store)
 
 const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter((s) => {
   if (s.beta) return currentUser.value && currentUser.value.beta
   if (s.alpha) return alpha.value
   return true
 }))
-
-const dev = import.meta.env.PROD ? false : true
 
 const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) => {
   if (s.beta) return currentUser.value && currentUser.value.beta
@@ -71,24 +73,6 @@ const difficulties = computed<Difficulty[]>(() => {
   return ['Easy', 'Standard', 'Hard', 'Expert']
 })
 
-const router = useRouter()
-const decks = ref<Arkham.Deck[]>([])
-const ready = ref(false)
-const playerCount = ref(1)
-
-type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
-
-type CampaignType = 'FullCampaign' | 'PartialCampaign' | 'Standalone'
-
-const selectedDifficulty = ref<Difficulty>('Easy')
-const deckIds = ref<(string | null)[]>([null, null, null, null])
-const fullCampaign = ref<CampaignType>('FullCampaign')
-const selectedCampaign = ref<string | null>(null)
-const selectedScenario = ref<string | null>(null)
-const campaignName = ref<string | null>(null)
-const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
-const returnTo = ref(false)
-
 const campaignScenarios = computed(() => selectedCampaign.value
   ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && s.show !== false)
   : []
@@ -102,16 +86,6 @@ const selectCampaign = (campaignId: string) => {
     fullCampaign.value = 'FullCampaign'
   }
 }
-
-watch(
-  difficulties,
-  async (newDifficulties) => selectedDifficulty.value = newDifficulties[0]
-)
-
-fetchDecks().then((result) => {
-  decks.value = result;
-  ready.value = true;
-})
 
 const selectedCampaignReturnTo = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
@@ -154,7 +128,6 @@ const currentCampaignName = computed(() => {
     : defaultCampaignName.value
 })
 
-
 const scenario = computed(() =>
   gameMode.value === 'SideStory'
     ? sideStories.value.find((s) => s.id === selectedScenario.value)
@@ -175,6 +148,20 @@ const canStandalone = computed(() => {
   return c.id !== '09'
 })
 
+onMounted(async () => {
+  alpha.value = route.query.alpha !== undefined || localStorage.getItem('alpha') === 'true'
+  if (route.query.alpha !== undefined) localStorage.setItem('alpha', 'true')
+})
+
+watch(
+  difficulties,
+  async (newDifficulties) => selectedDifficulty.value = newDifficulties[0]
+)
+
+fetchDecks().then((result) => {
+  decks.value = result;
+  ready.value = true;
+})
 
 async function start() {
   if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
@@ -208,7 +195,6 @@ async function start() {
     }
   }
 }
-
 </script>
 
 <template>

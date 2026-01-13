@@ -16,7 +16,7 @@ furtiveLocals :: TreacheryCard FurtiveLocals
 furtiveLocals = treachery FurtiveLocals Cards.furtiveLocals
 
 instance HasModifiersFor FurtiveLocals where
-  getModifiersFor (FurtiveLocals a) = modifySelect a Anyone [CannotTakeAction #parley]
+  getModifiersFor (FurtiveLocals a) = modifySelect a Anyone [CannotPerformAction #parley]
 
 instance HasAbilities FurtiveLocals where
   getAbilities (FurtiveLocals a) =

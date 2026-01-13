@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.Action (canDo, getCanAfford)
+import Arkham.Helpers.Action (canDo_, getCanAfford)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Investigator, remainingActionsL)
@@ -50,7 +50,7 @@ instance RunMessage CloseTheCircle1 where
       iattrs <- getAttrs @Investigator iid
       abilities <- selectMap (`decrease_` 1) (performableAbilityWithoutActionBy iid #basic)
       cstate <- withGrantedAction iid attrs do
-        canPlay <- canDo iid #play
+        canPlay <- canDo_ iid #play
         playableCards <-
           if canPlay
             then
@@ -59,14 +59,14 @@ instance RunMessage CloseTheCircle1 where
             else pure []
         canTakeResource <-
           andM
-            [ canDo iid #resource
+            [ canDo_ iid #resource
             , can.gain.resources FromOtherSource iid
             , getCanAfford (iattrs & remainingActionsL +~ 1) [#resource]
             ]
         canDraw <-
           andM
             [ getCanAfford (iattrs & remainingActionsL +~ 1) [#draw]
-            , canDo iid #draw
+            , canDo_ iid #draw
             ]
         pure CloseTheCircle1State {..}
 

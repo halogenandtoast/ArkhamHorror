@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.DistortedReasoning (distortedReasoning) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (CannotTakeAction), modified_)
+import Arkham.Helpers.Modifiers (ModifierType (CannotPerformAction), modified_)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,7 +18,7 @@ instance HasModifiersFor DistortedReasoning where
   getModifiersFor (DistortedReasoning a) = case a.placement of
     InThreatArea iid -> do
       let as = toResultDefault [] a.meta
-      modified_ a iid $ map (CannotTakeAction . IsAction) as
+      modified_ a iid $ map (CannotPerformAction . IsAction) as
     _ -> pure ()
 
 instance HasAbilities DistortedReasoning where

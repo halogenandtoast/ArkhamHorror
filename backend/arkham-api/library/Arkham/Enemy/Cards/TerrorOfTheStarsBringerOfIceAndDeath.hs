@@ -29,7 +29,7 @@ instance HasModifiersFor TerrorOfTheStarsBringerOfIceAndDeath where
     when a.ready do
       modifySelectMapM a Anyone \iid -> do
         sameLocation <- onSameLocation iid a.placement
-        pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotTakeAction #resign | sameLocation]
+        pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotPerformAction #resign | sameLocation]
 
 instance RunMessage TerrorOfTheStarsBringerOfIceAndDeath where
   runMessage msg (TerrorOfTheStarsBringerOfIceAndDeath attrs) = runQueueT $ case msg of

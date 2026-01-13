@@ -7,7 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Action (canDo, getActions)
+import Arkham.Helpers.Action (canDo_, getActions)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   getModifiers,
@@ -82,7 +82,7 @@ instance RunMessage LukeRobinson where
     PlayerWindow iid additionalActions isAdditional immediate | active meta -> do
       -- N.B. we are not checking if iid is us so we must be careful not to use it incorrectly
       let usesAction = not isAdditional
-      canPlay <- canDo (toId attrs) #play
+      canPlay <- canDo_ (toId attrs) #play
 
       if canPlay
         then do

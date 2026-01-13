@@ -220,6 +220,7 @@ data ModifierType
   | CannotLeavePlay
   | CannotLeaveYourHand
   | CannotTakeAction ActionTarget
+  | CannotPerformAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher
   | CannotTriggerFastAbilities

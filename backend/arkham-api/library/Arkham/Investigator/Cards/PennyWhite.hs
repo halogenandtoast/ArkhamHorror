@@ -42,7 +42,7 @@ instance HasModifiersFor PennyWhite where
     modifySelfWith
       a
       setActiveDuringSetup
-      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
+      [CannotPerformAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
     modifySelectWith a (assetIs Cards.flashlight) setActiveDuringSetup [AdditionalStartingUses (-1)]
 
 instance HasAbilities PennyWhite where

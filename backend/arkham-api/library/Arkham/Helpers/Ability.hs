@@ -76,10 +76,11 @@ preventedByInvestigatorModifiers
 preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
-  if isForced then pure False else anyM prevents modifiers
+  if isForced then pure False else anyM (prevents modifiers) modifiers
  where
-  prevents = \case
-    CannotTakeAction x -> preventsAbility x
+  prevents modifiers = \case
+    CannotPerformAction x -> preventsAbility x
+    CannotTakeAction x | not (isFastAbility ability || ActionsAreFree `elem` modifiers) -> preventsAbility x
     MustTakeAction x -> not <$> preventsAbility x -- reads a little weird but we want only thing things x would prevent with cannot take action
     _ -> pure False
   preventsAbility = \case

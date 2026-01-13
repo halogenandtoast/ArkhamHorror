@@ -31,7 +31,7 @@ instance HasModifiersFor MysteriousStairs_186 where
       attrs
       hasResources
       (investigatorAt attrs)
-      [CannotMove, CannotTakeAction #resign]
+      [CannotMove, CannotPerformAction #resign]
 
 instance HasAbilities MysteriousStairs_186 where
   getAbilities (MysteriousStairs_186 attrs) =

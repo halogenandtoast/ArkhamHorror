@@ -75,7 +75,7 @@ instance RunMessage TonyMorgan where
           <$> getPlayableCards attrs iid (UnpaidCost NoAction) windows'
 
       chooseOneM iid do
-        whenM (canDo (toId attrs) #play) do
+        whenM (canDo_ (toId attrs) #play) do
           targets playableCards \c -> do
             playCardPayingCost iid c
             doStep 1 msg

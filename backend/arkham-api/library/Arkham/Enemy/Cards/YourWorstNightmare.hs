@@ -16,7 +16,7 @@ yourWorstNightmare =
 instance HasModifiersFor YourWorstNightmare where
   getModifiersFor (YourWorstNightmare a) = do
     for_ (enemyBearer a) \iid -> do
-      modified_ a iid [CannotTakeAction $ EnemyAction #fight $ EnemyWithId a.id]
+      modified_ a iid [CannotPerformAction $ EnemyAction #fight $ EnemyWithId a.id]
       modifySelf
         a
         [ CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)

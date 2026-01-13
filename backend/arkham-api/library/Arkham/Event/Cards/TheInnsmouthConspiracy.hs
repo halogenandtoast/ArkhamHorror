@@ -62,7 +62,7 @@ tidesOfFate =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Spell, Blessed]
     , cdFastWindow = Just $ oneOf [FastPlayerWindow, RoundBegins #when]
-    , cdCriteria = Just $ Criteria.ChaosTokenCountIs #bless (atLeast 1)
+    , cdCriteria = Just $ Criteria.ChaosTokenCountIs #curse (atLeast 1) <> Criteria.HasRemainingBlessTokens
     }
 
 wardOfRadiance :: CardDef

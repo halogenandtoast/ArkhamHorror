@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Action (canDo)
+import Arkham.Helpers.Action (canDo_)
 import Arkham.Helpers.Modifiers (modified_, withGrantedAction)
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Matcher
@@ -54,7 +54,7 @@ instance RunMessage DisciplineBalanceOfBody where
           abilityLabeled iid (overCost (`decreaseActionCost` 1) ab) do
             handleTarget iid (toSource attrs) (AbilityTarget iid ab.ref)
             doStep (n - 1) msg'
-        whenM (canDo iid #play) do
+        whenM (canDo_ iid #play) do
           targets playableCards \c -> do
             playCardPayingCost iid c
             doStep (n - 1) msg'

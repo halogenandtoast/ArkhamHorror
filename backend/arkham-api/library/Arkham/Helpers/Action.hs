@@ -34,6 +34,9 @@ import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
 
+data IsFast = IsFast | NotFast
+  deriving stock Eq
+
 actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool
 actionMatches _ _ AnyAction = pure True
 actionMatches _ a (ActionIs a') = pure $ a == a'
@@ -53,9 +56,9 @@ actionMatches iid a RepeatableAction = do
   canAffordDrawCards <- withModifiersOf iid GameSource [ActionCostOf IsAnyAction (-1)] do
     getCanAfford a' [#draw]
   let available = filter (elem a . abilityActions) actions
-  canDraw <- canDo iid #draw
-  canTakeResource <- canDo iid #resource
-  canPlay <- canDo iid #play
+  canDraw <- canDo_ iid #draw
+  canTakeResource <- canDo_ iid #resource
+  canPlay <- canDo_ iid #play
   pure
     $ or
       [ notNull available
@@ -64,12 +67,16 @@ actionMatches iid a RepeatableAction = do
       , canPlay && notNull playableCards && a == #play
       ]
 
-canDo :: (HasGame m, Tracing m) => InvestigatorId -> Action -> m Bool
-canDo iid action = do
+canDo_ :: (HasGame m, Tracing m) => InvestigatorId -> Action -> m Bool
+canDo_ iid action = canDo iid action NotFast
+
+canDo :: (HasGame m, Tracing m) => InvestigatorId -> Action -> IsFast -> m Bool
+canDo iid action isFast = do
   mods <- getModifiers iid
   let
     prevents = \case
-      CannotTakeAction x -> preventsAction x
+      CannotPerformAction x -> preventsAction x
+      CannotTakeAction x | isFast == NotFast && ActionsAreFree `notElem` mods -> preventsAction x
       MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
       CannotDrawCards -> pure $ action == #draw
       CannotDrawCardsFromPlayerCardEffects -> pure $ action == #draw
@@ -247,10 +254,9 @@ hasFightActions
   -> WindowMatcher
   -> [Window]
   -> m Bool
-hasFightActions iid requestor window windows' =
-  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
-    . map (setRequestor requestor)
-    =<< select (BasicAbility <> AbilityIsAction #fight <> AbilityWindow window)
+hasFightActions iid requestor window windows' = do
+  abilities <- selectMap (setRequestor requestor) (#basic <> #fight <> AbilityWindow window)
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
 
 hasEvadeActions
   :: (HasCallStack, Tracing m, HasGame m)
@@ -258,9 +264,9 @@ hasEvadeActions
   -> WindowMatcher
   -> [Window]
   -> m Bool
-hasEvadeActions iid window windows' =
-  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
-    =<< select (AbilityIsAction #evade <> AbilityWindow window)
+hasEvadeActions iid window windows' = do
+  abilities <- select $ #evade <> AbilityWindow window
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
 
 hasInvestigateActions
   :: (Sourceable source, Tracing m, HasGame m)
@@ -269,7 +275,6 @@ hasInvestigateActions
   -> WindowMatcher
   -> [Window]
   -> m Bool
-hasInvestigateActions iid requestor window windows' =
-  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
-    . map (setRequestor requestor)
-    =<< select (BasicAbility <> AbilityIsAction #investigate <> AbilityWindow window)
+hasInvestigateActions iid requestor window windows' = do
+  abilities <- selectMap (setRequestor requestor) (#basic <> #investigate <> AbilityWindow window)
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities

@@ -22,7 +22,7 @@ instance HasModifiersFor PartyGuest where
     modifySelect
       a
       Anyone
-      [CannotTakeAction $ AssetAction #parley $ AssetWithTrait Bystander <> at_ (locationWithAsset a)]
+      [CannotPerformAction $ AssetAction #parley $ AssetWithTrait Bystander <> at_ (locationWithAsset a)]
 
 instance HasAbilities PartyGuest where
   getAbilities (PartyGuest a) = [restricted a 1 OnSameLocation $ parleyAction (ResourceCost 2)]

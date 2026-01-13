@@ -109,7 +109,7 @@ instance RunMessage IceAndDeathPart3 where
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
-      eachInvestigator \iid -> gameModifier ScenarioSource iid (CannotTakeAction $ IsAction #resign)
+      eachInvestigator \iid -> gameModifier ScenarioSource iid (CannotPerformAction $ IsAction #resign)
       pure s
     Setup -> runScenarioSetup IceAndDeathPart3 attrs do
       gather Set.IceAndDeath

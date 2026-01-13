@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Action (canDo, getActions, getCanAfford)
+import Arkham.Helpers.Action (canDo_, getActions, getCanAfford)
 import Arkham.Helpers.Modifiers (ModifierType (..), withGrantedAction, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Field (..), Investigator)
@@ -38,9 +38,9 @@ instance RunMessage CaptivatingPerformance3 where
         filterCards (not_ FastCard) <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
       (resourceOk, drawOk) <- withModifiersOf iid attrs [ActionCostOf IsAnyAction (-1)] do
         (,)
-          <$> andM [pure $ #resource `elem` as, canDo iid #resource, getCanAfford a' [#resource]]
-          <*> andM [pure $ #draw `elem` as, canDo iid #draw, getCanAfford a' [#draw]]
-      playOk <- andM [pure $ #play `elem` as, canDo iid #play]
+          <$> andM [pure $ #resource `elem` as, canDo_ iid #resource, getCanAfford a' [#resource]]
+          <*> andM [pure $ #draw `elem` as, canDo_ iid #draw, getCanAfford a' [#draw]]
+      playOk <- andM [pure $ #play `elem` as, canDo_ iid #play]
 
       chooseOneM iid do
         for_ actions \ab -> abilityLabeled iid (decrease_ ab 1) nothing

@@ -1170,9 +1170,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           filter (\x -> any (abilityIs x) allowed) <$> getActions iid (Window.defaultWindows iid)
         (resourceOk, drawOk) <- Helpers.withModifiersOf iid (toAttrs a) [ActionCostOf IsAnyAction (-1)] do
           (,)
-            <$> andM [pure $ #resource `elem` allowed, canDo iid #resource, getCanAfford (toAttrs a) [#resource]]
-            <*> andM [pure $ #draw `elem` allowed, canDo iid #draw, getCanAfford (toAttrs a) [#draw]]
-        playOk <- andM [pure $ #play `elem` allowed, canDo iid #play]
+            <$> andM [pure $ #resource `elem` allowed, canDo_ iid #resource, getCanAfford (toAttrs a) [#resource]]
+            <*> andM [pure $ #draw `elem` allowed, canDo_ iid #draw, getCanAfford (toAttrs a) [#draw]]
+        playOk <- andM [pure $ #play `elem` allowed, canDo_ iid #play]
         playableCards <-
           if playOk
             then

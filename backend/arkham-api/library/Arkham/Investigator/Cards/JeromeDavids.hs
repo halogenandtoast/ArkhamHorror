@@ -42,7 +42,7 @@ instance HasModifiersFor JeromeDavids where
     modifySelfWith
       a
       setActiveDuringSetup
-      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
+      [CannotPerformAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =

@@ -38,7 +38,7 @@ instance HasModifiersFor GavriellaMizrah where
     modifySelfWith
       a
       setActiveDuringSetup
-      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
+      [CannotPerformAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
     modifySelectWith
       a
       (assetIs Cards.fortyFiveAutomatic)

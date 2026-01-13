@@ -24,7 +24,7 @@ instance HasModifiersFor MysteriousStairs_185 where
   getModifiersFor (MysteriousStairs_185 a) = whenRevealed a do
     readyEnemy <- selectAny $ enemyAt a <> ReadyEnemy
     if readyEnemy
-      then modifySelect a (investigatorAt a) [CannotMove, CannotTakeAction #resign]
+      then modifySelect a (investigatorAt a) [CannotMove, CannotPerformAction #resign]
       else pure mempty
 
 instance HasAbilities MysteriousStairs_185 where

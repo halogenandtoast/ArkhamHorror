@@ -39,7 +39,7 @@ instance HasModifiersFor ValentinoRivas where
     modifySelfWith
       a
       setActiveDuringSetup
-      [ CannotTakeAction #draw
+      [ CannotPerformAction #draw
       , CannotDrawCards
       , CannotManipulateDeck
       , StartingResources 5

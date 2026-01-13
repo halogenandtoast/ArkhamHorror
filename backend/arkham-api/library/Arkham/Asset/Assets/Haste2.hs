@@ -5,7 +5,7 @@ import Arkham.Action (Action)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Action (canDo, getActions, getCanAfford)
+import Arkham.Helpers.Action (canDo_, getActions, getCanAfford)
 import Arkham.Helpers.Modifiers (ModifierType (..), withGrantedAction, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Investigator)
@@ -38,7 +38,7 @@ instance RunMessage Haste2 where
       a' <- getAttrs @Investigator iid
       actions <- withGrantedAction iid attrs do
         filter (\x -> any (abilityIs x) as) <$> getActions iid (defaultWindows iid)
-      canPlay <- canDo iid #play
+      canPlay <- canDo_ iid #play
       let cardF = if #play `elem` as then id else (<> mapOneOf CardWithAction as)
       playableCards <-
         if canPlay
@@ -50,8 +50,8 @@ instance RunMessage Haste2 where
 
       (resourceOk, drawOk) <- withModifiersOf iid attrs [ActionCostOf IsAnyAction (-1)] do
         (,)
-          <$> andM [pure $ #resource `elem` as, canDo iid #resource, getCanAfford a' [#resource]]
-          <*> andM [pure $ #draw `elem` as, canDo iid #draw, getCanAfford a' [#draw]]
+          <$> andM [pure $ #resource `elem` as, canDo_ iid #resource, getCanAfford a' [#resource]]
+          <*> andM [pure $ #draw `elem` as, canDo_ iid #draw, getCanAfford a' [#draw]]
 
       chooseOneM iid do
         for_ actions \ab -> abilityLabeled iid (decrease_ ab 1) nothing

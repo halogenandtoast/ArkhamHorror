@@ -23,7 +23,7 @@ instance HasModifiersFor MysteriousStairs_184 where
   getModifiersFor (MysteriousStairs_184 a) = whenRevealed a do
     hasClues <- fieldSome LocationClues a.id
     if hasClues
-      then modifySelect a (investigatorAt a) [CannotMove, CannotTakeAction #resign]
+      then modifySelect a (investigatorAt a) [CannotMove, CannotPerformAction #resign]
       else pure mempty
 
 instance RunMessage MysteriousStairs_184 where

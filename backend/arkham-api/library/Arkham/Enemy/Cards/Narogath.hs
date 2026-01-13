@@ -28,7 +28,7 @@ instance HasModifiersFor Narogath where
       a
       a.ready
       (InvestigatorAt $ AccessibleFrom NotForMovement $ locationWithEnemy a)
-      [CannotTakeAction $ EnemyAction Parley $ EnemyWithTrait Cultist]
+      [CannotPerformAction $ EnemyAction Parley $ EnemyWithTrait Cultist]
     n <- perPlayer 3
     modifySelf a [HealthModifier n]
 

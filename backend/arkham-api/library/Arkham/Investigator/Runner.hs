@@ -58,7 +58,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
 import Arkham.Helpers.Action (
   additionalActionCovers,
-  canDo,
+  canDo_,
   getActions,
   getAdditionalActions,
   getCanAfford,
@@ -4490,10 +4490,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
 
         let guardMustTake = if null mustTakeActions then id else const (pure False)
 
-        canDraw <- guardMustTake $ canDo iid #draw
+        canDraw <- guardMustTake $ canDo_ iid #draw
         canTakeResource <-
-          guardMustTake $ (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
-        canPlay <- guardMustTake $ canDo iid #play
+          guardMustTake $ (&&) <$> canDo_ iid #resource <*> can.gain.resources FromOtherSource iid
+        canPlay <- guardMustTake $ canDo_ iid #play
         player <- getPlayer iid
 
         let

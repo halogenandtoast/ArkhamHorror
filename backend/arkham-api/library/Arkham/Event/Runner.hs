@@ -226,7 +226,9 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
   Exile target | a `isTarget` target -> do
     pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
-    pure a
+    -- once exiled we don't want any other discard effect to take hold, so we
+    -- overwrite to defer discard which is effectively a no op
+    pure $ a & afterPlayL .~ DeferDiscard
   ShuffleCardsIntoDeck _ cards ->
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
   RemoveAllAttachments source target -> do

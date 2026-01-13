@@ -19,14 +19,14 @@ instance RunMessage ABalefulWelcome where
       isFirst <- isFirstCopyThisPhase attrs
       chooseNM iid (if isFirst then 2 else 3) do
         labeled' "investigate" do
-          eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #investigate)
+          eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #investigate)
         labeled' "fight" do
-          eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #fight)
+          eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #fight)
         labeled' "evade" do
-          eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #evade)
+          eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #evade)
         labeled' "move" do
-          eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #move)
+          eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #move)
         labeled' "play" do
-          eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #play)
+          eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #play)
       pure t
     _ -> ABalefulWelcome <$> liftRunMessage msg attrs

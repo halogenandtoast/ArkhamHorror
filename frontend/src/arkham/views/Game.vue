@@ -136,15 +136,22 @@ const websocketUrl = computed(() => {
     replace(/http/, 'ws')
 })
 
-await fetchGame(props.gameId, props.spectate).then(async ({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
-  try { await loadAllImages(newGame) } catch (e) { console.error(e) }
-  window.g = newGame
-  game.value = newGame
-  solo.value = multiplayerMode === "Solo"
-  gameLog.value = Object.freeze(newGame.log)
-  playerId.value = newPlayerId
-  ready.value = true
-})
+watch(
+  () => props.gameId,
+  async (newV, oldV) => {
+    if (!newV) return
+    if (newV === oldV) return
+    await fetchGame(props.gameId, props.spectate).then(async ({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
+      try { await loadAllImages(newGame) } catch (e) { console.error(e) }
+      window.g = newGame
+      game.value = newGame
+      solo.value = multiplayerMode === "Solo"
+      gameLog.value = Object.freeze(newGame.log)
+      playerId.value = newPlayerId
+      ready.value = true
+    })
+  }, { immediate: true }
+)
 
 // Local Decoders
 const gameCardDecoder = JsonDecoder.object<GameCard>(

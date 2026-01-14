@@ -9,7 +9,15 @@ export type ChaosToken = {
   modifiers?: Modifier[];
 }
 
-export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign' | 'CurseToken' | 'BlessToken' | 'FrostToken'
+export const tokenOrder = [
+  'PlusOne', 'Zero',
+  'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight',
+  'Skull', 'Cultist', 'Tablet', 'ElderThing',
+  'AutoFail', 'ElderSign',
+  'CurseToken', 'BlessToken', 'FrostToken',
+] as const
+
+export type TokenFace = typeof tokenOrder[number]
 
 export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.literal('PlusOne'),

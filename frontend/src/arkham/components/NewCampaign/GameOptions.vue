@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { imgsrc } from '@/arkham/helpers'
+import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 
@@ -34,6 +35,30 @@ const selectedScenario = defineModel<string | null>('selectedScenario', { requir
 const selectedDifficulty = defineModel<Difficulty>('selectedDifficulty', { required: true })
 const includeTarotReadings = defineModel<boolean>('includeTarotReadings', { required: true })
 const campaignName = defineModel<string | null>('campaignName', { required: true })
+
+const showAlphaWarning = computed(() => {
+  if (props.gameMode === 'Campaign' && props.campaign) {
+    return props.campaign.alpha
+  }
+
+  if (props.gameMode === 'SideStory' && props.scenario) {
+    return props.scenario.alpha
+  }
+
+  return false
+})
+
+const showBetaWarning = computed(() => {
+  if (props.gameMode === 'Campaign' && props.campaign) {
+    return props.campaign.beta
+  }
+
+  if (props.gameMode === 'SideStory' && props.scenario) {
+    return props.scenario.beta
+  }
+
+  return false
+})
 
 const showReturnToToggle = computed(() => {
   return (
@@ -75,25 +100,65 @@ const selectionSummary = computed(() => {
 const selectionBoxSrc = computed(() =>
   selectionSummary.value ? imgsrc(`boxes/${selectionSummary.value.id}.jpg`) : null
 )
+
+const selectionKind = computed(() => selectionSummary.value?.kind ?? null)
+
+type TokenFace =
+  | 'PlusOne' | 'Zero'
+  | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight'
+  | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing'
+  | 'AutoFail' | 'ElderSign'
+  | 'CurseToken' | 'BlessToken' | 'FrostToken'
+
+function sortTokenFaces(a: TokenFace, b: TokenFace) {
+  return tokenOrder.indexOf(a) - tokenOrder.indexOf(b)
+}
+
+const difficultyLevels = computed<Record<Difficulty, TokenFace[]> | null>(() => {
+  const c = props.campaign as any
+  if (c?.difficultyLevels) return c.difficultyLevels as Record<Difficulty, TokenFace[]>
+
+  const s = props.scenario as any
+  if (s?.difficultyLevels) return s.difficultyLevels as Record<Difficulty, TokenFace[]>
+
+  return null
+})
+
+const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
+  const levels = difficultyLevels.value
+  if (!levels) return []
+  return (levels[selectedDifficulty.value] ?? []).slice().sort(sortTokenFaces)
+})
 </script>
 
 <template>
+  <div class="alpha-warning" v-if="showAlphaWarning">
+    {{ $t('create.alphaWarning') }}
+  </div>
+  <div class="beta-warning" v-if="showBetaWarning">
+    {{ $t('create.betaWarning') }}
+  </div>
   <div class="game-options">
-    <!-- LEFT: selection summary -->
     <aside v-if="selectionSummary && selectionBoxSrc" class="summary">
-      <div class="selection-box" style="view-transition-name: selected-game-box;">
-        <img class="selection-bg" :src="selectionBoxSrc" alt="" />
+      <div
+        class="selection-box"
+        :class="{
+          campaign: selectionKind === 'Campaign',
+          sidestory: selectionKind === 'SideStory'
+        }"
+        style="view-transition-name: selected-game-box;"
+      >
         <img class="selection-img" :src="selectionBoxSrc" :alt="selectionSummary.title" />
+
         <div class="selection-overlay">
           <div class="chip">
-            {{ selectionSummary.kind === 'Campaign' ? $t('create.campaign') : $t('create.sideStory') }}
+            {{ selectionKind === 'Campaign' ? $t('create.campaign') : $t('create.sideStory') }}
           </div>
           <div class="selection-title">{{ selectionSummary.title }}</div>
         </div>
       </div>
     </aside>
 
-    <!-- RIGHT: options -->
     <section class="config">
       <div class="card">
         <div class="card-title">{{ $t('create.gameName') }}</div>
@@ -122,6 +187,16 @@ const selectionBoxSrc = computed(() =>
               <input type="radio" v-model="multiplayerVariant" value="TrueSolo" id="solo" />
               <label for="solo">{{ $t('create.multihandedSolo') }}</label>
             </div>
+          </div>
+        </transition>
+
+        <transition name="slide">
+        <div v-if="multiplayerVariant === 'TrueSolo' && playerCount > 1" class="callout">
+            <div class="callout-title">
+              <font-awesome-icon icon="eye" class="callout-icon" />
+              {{ $t('create.switchingPerspectives') }}
+            </div>
+            <div class="callout-body" v-html="$t('create.switchingPerspectivesDescription')"></div>
           </div>
         </transition>
       </div>
@@ -183,6 +258,15 @@ const selectionBoxSrc = computed(() =>
             <label :for="`difficulty${difficulty}`">{{ $t('create.' + difficulty) }}</label>
           </template>
         </div>
+        <div v-if="chaosTokensForDifficulty.length > 0" class="token-preview callout">
+          <img
+            v-for="(tokenFace, idx) in chaosTokensForDifficulty"
+            :key="`${tokenFace}-${idx}`"
+            class="token"
+            :src="chaosTokenImage(tokenFace)"
+            :alt="tokenFace"
+          />
+        </div>
       </div>
 
       <div class="card">
@@ -199,11 +283,10 @@ const selectionBoxSrc = computed(() =>
   </div>
 </template>
 
-<style lang="css" scoped>
-/* Layout */
+<style lang="scss" scoped>
 .game-options {
   display: grid;
-  grid-template-columns: minmax(240px, 360px) 1fr;
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
@@ -212,58 +295,52 @@ const selectionBoxSrc = computed(() =>
   .game-options {
     grid-template-columns: 1fr;
   }
-  .summary {
-    position: static;
-  }
 }
 
-/* LEFT summary is sticky and doesn't dominate */
 .summary {
   position: sticky;
-  top: 12px;
 }
 
-/* Selection art */
-.selection-box {
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
-  background: rgba(0,0,0,0.25);
-
-  /* cap the height so it never takes over */
-  height: clamp(180px, 34vh, 320px);
+.config {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
 }
 
-.selection-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(18px) saturate(1.1);
-  transform: scale(1.12);
-  opacity: 0.45;
+.selection-box.campaign {
+  aspect-ratio: 4 / 3;
+}
+
+.selection-box.sidestory {
+  aspect-ratio: 3 / 2;
 }
 
 .selection-img {
-  position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 10px;
+  border-radius: 14px;
+  display: block;
+  object-fit: cover;
+  object-position: 50% 50%;
   filter: contrast(1.05);
+  outline: 1px solid rgba(154 196 78 / 0.55);
+  pointer-events: none;
 }
 
 .selection-overlay {
+  border-radius: 14px;
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 10px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+  background: linear-gradient(
+    to top,
+    rgba(0 0 0 / 0.85),
+    rgba(0 0 0 / 0.05) 60%,
+    rgba(0 0 0 / 0)
+  );
   pointer-events: none;
 }
 
@@ -277,8 +354,8 @@ const selectionBoxSrc = computed(() =>
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(6px);
   margin-bottom: 6px;
 }
@@ -287,34 +364,29 @@ const selectionBoxSrc = computed(() =>
   font-family: Teutonic;
   font-size: 18px;
   letter-spacing: 0.02em;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
-/* RIGHT side cards */
-.config {
-  display: grid;
-  gap: 12px;
-}
-
+/* Cards */
 .card {
   border-radius: 12px;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 12px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
 }
 
 .subcard {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .card-title {
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.78);
+  color: rgba(255, 255, 255, 0.78);
   margin-bottom: 8px;
 }
 
@@ -326,15 +398,15 @@ const selectionBoxSrc = computed(() =>
 .text {
   width: 100%;
   outline: 0;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 10px;
   padding: 10px 12px;
-  background: rgba(0,0,0,0.22);
+  background: rgba(0, 0, 0, 0.22);
   color: #fff;
 }
 
 .text::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Segmented controls */
@@ -344,11 +416,10 @@ input[type='radio'] {
 
 .segmented {
   display: grid;
-  gap: 0;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
 }
 
 .segmented-2 { grid-template-columns: repeat(2, 1fr); }
@@ -365,8 +436,8 @@ input[type='radio'] {
   font-size: 12px;
   user-select: none;
   cursor: pointer;
-  background: rgba(255,255,255,0.06);
-  border-right: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .segmented label:last-of-type {
@@ -374,15 +445,15 @@ input[type='radio'] {
 }
 
 .segmented label:hover {
-  background: rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 input[type='radio']:checked + label {
   background: rgba(110, 134, 64, 0.95);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
 
-/* Scenario picker tiles (better than raw imgs) */
+/* Scenario picker */
 .scenario-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -402,8 +473,8 @@ input[type='radio']:checked + label {
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-  outline: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  outline: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .scenario-tile img {
@@ -422,21 +493,139 @@ input[type='radio']:checked + label {
   filter: none;
 }
 
-/* Your existing slide transition can stay */
+/* Slide transition */
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.3s ease-in-out;
 }
+
 .slide-enter-to,
 .slide-leave-from {
   overflow: hidden;
   max-height: 1000px;
   opacity: 1;
 }
+
 .slide-enter-from,
 .slide-leave-to {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
+}
+
+.callout {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 6px;
+}
+
+.callout-icon {
+  opacity: 0.9;
+  animation: glow 1.5s infinite alternate;
+}
+
+.callout-body {
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(255,255,255,0.72);
+}
+
+@keyframes glow {
+  from {
+    color: #000; /* Or any other default color */
+    text-shadow: 0 0 0px #ff00ff;
+  }
+  to {
+    color: #ff00ff; /* Glowing color */
+    text-shadow: 0 0 10px #ff00ff;
+  }
+}
+
+.token-preview {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 3fr 1fr 1fr 1fr;
+    img{
+      margin: 0 auto;
+    }
+    img:nth-child(6n+1) {
+      grid-column: 1;
+    }
+
+    img:nth-child(6n+2) {
+      grid-column: 2;
+    }
+
+    img:nth-child(6n+3) {
+      grid-column: 3;
+    }
+
+    img:nth-child(6n+4) {
+      grid-column: 5;
+    }
+
+    img:nth-child(6n+5) {
+      grid-column: 6;
+    }
+
+    img:nth-child(6n) {
+      grid-column: 7;
+    }
+  }
+  
+  img {
+    width: 30px;
+    height: auto;
+    transition: transform 0.2s;
+    &:hover {
+      transform: scale(1.2);
+    }
+    &.token-big {
+      width: 50px;
+      border-radius: 50px;
+    }
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 30px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.5);
+  }
+}
+
+.beta-warning,
+.alpha-warning {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+}
+
+.beta-warning {
+  background: rgba(184, 134, 11, 0.25);
+}
+
+.alpha-warning {
+  background: rgba(139, 0, 0, 0.25);
 }
 </style>

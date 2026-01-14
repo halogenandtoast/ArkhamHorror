@@ -1,8 +1,48 @@
 [
-  { "id": "01", "name": "The Night of the Zealot", "returnTo": { "id": "50" } },
+  {
+    "id": "01",
+    "name": "The Night of the Zealot",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+        ]
+    },
+    "returnTo": { "id": "50" }
+  },
   {
     "id": "02",
     "name": "The Dunwich Legacy",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Cultist", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Cultist", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Cultist", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Cultist", "AutoFail", "ElderSign"
+        ]
+    },
     "returnTo": { "id": "51" },
     "settings": [
       {
@@ -391,570 +431,709 @@
       }
     ]
   },
-  { "id": "03", "name": "The Path to Carcosa", "returnTo": { "id": "52" } },
-  { "id": "04", "name": "The Forgotten Age", "returnTo": { "id": "53", "beta": true } },
-  { "id": "05", "name": "The Circle Undone", "returnTo": { "id": "54", "beta": true }, "settings": [
-    {
-      "key": "Disappearance at the Twilight Estate",
-      "scenarioId": "05043",
-      "settings": [
-        {
-          "key": "MissingPersons",
-          "ckey": "MissingPersons",
-          "recordable": "RecordableCardCode",
-          "type": "CrossOut",
-          "content": [
-            { "key": "Gaveriella Mizrah", "content": "05046" },
-            { "key": "Jerome Davids", "content": "05047" },
-            { "key": "Valentino Rivas", "content": "05048" },
-            { "key": "Penny White", "content": "05049" }
-          ]
-        },
-        {
-          "type": "Record",
-          "key": "WasTakenByTheWatcher",
-          "recordable": "RecordableCardCode",
-          "content": [
-            {
-              "key": "Gaveriella Mizrah",
-              "content": "05046",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05046" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
-              ]
-            },
-            {
-              "key": "Jerome Davids",
-              "content": "05047",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05047" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
-              ]
-            },
-            {
-              "key": "Valentino Rivas",
-              "content": "05048",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05048" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
-              ]
-            },
-            {
-              "key": "Penny White",
-              "content": "05049",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05049" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "Record",
-          "key": "WasClaimedBySpecters",
-          "recordable": "RecordableCardCode",
-          "content": [
-            {
-              "key": "Gaveriella Mizrah",
-              "content": "05046",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05046" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
-              ]
-            },
-            {
-              "key": "Jerome Davids",
-              "content": "05047",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05047" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
-              ]
-            },
-            {
-              "key": "Valentino Rivas",
-              "content": "05048",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05048" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
-              ]
-            },
-            {
-              "key": "Penny White",
-              "content": "05049",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05049" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "Record",
-          "key": "DisappearedIntoTheMist",
-          "recordable": "RecordableCardCode",
-          "content": [
-            {
-              "key": "Gaveriella Mizrah",
-              "content": "05046",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05046" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
-              ]
-            },
-            {
-              "key": "Jerome Davids",
-              "content": "05047",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05047" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
-              ]
-            },
-            {
-              "key": "Valentino Rivas",
-              "content": "05048",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05048" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
-              ]
-            },
-            {
-              "key": "Penny White",
-              "content": "05049",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05049" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "Record",
-          "key": "WasPulledIntoTheSpectralRealm",
-          "recordable": "RecordableCardCode",
-          "content": [
-            {
-              "key": "Gaveriella Mizrah",
-              "content": "05046",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05046" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } }
-              ]
-            },
-            {
-              "key": "Jerome Davids",
-              "content": "05047",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05047" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } }
-              ]
-            },
-            {
-              "key": "Valentino Rivas",
-              "content": "05048",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05048" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } }
-              ]
-            },
-            {
-              "key": "Penny White",
-              "content": "05049",
-              "ifRecorded": [
-                {"type": "inSet", "key": "MissingPersons", "content": "05049" },
-                { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
-                { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } }
-              ]
-            }
-          ]
-        },
-        {
-          "key": "PiecesOfEvidenceWereLeftBehind",
-          "ckey": "PiecesOfEvidenceWereLeftBehind",
-          "type": "ChooseNum"
-        }
-      ],
-      "resolutions": [
-        { "resolution": "No Resolution", "settings":
-          [
-            {
-              "key": "PiecesOfEvidenceWereLeftBehind",
-              "ckey": "PiecesOfEvidenceWereLeftBehind",
-              "type": "ChooseNum"
-            }
-          ]
-        }
-      ]
+  {
+    "id": "03",
+    "name": "The Path to Carcosa",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+        ]
     },
-    {
-      "key": "The Witching Hour",
-      "scenarioId": "05050",
-      "settings": [
-        {
-          "type": "ChooseKey",
-          "key": "ChooseYourFate",
-          "content": [{ "key": "YouHaveAcceptedYourFate" }, { "key": "YouHaveRejectedYourFate" }]
-        },
-        {
-          "type": "ChooseKey",
-          "key": "WitchingHourResolution",
-          "content": [{ "key": "TheWitches'SpellWasBroken" }, { "key": "TheWitches'SpellWasCast" }]
-        },
-        {
-          "type": "SetRecordable",
-          "recordable": "RecordableMemento",
-          "ckey": "MementosDiscovered",
-          "key": "DiscoveredMesmerizingFlute",
-          "content": "MesmerizingFlute"
-        },
-        {
-          "type": "ChooseRecordable",
-          "key": "TheWitches'SpellWasBrokenMemento",
-          "ckey": "MementosDiscovered",
-          "recordable": "RecordableMemento",
-          "ifRecorded": [
-            { "key": "TheWitches'SpellWasBroken", "type": "key" },
-            {
-              "key": "MementosDiscovered",
-              "type": "inSet",
-              "recordable": "RecordableMemento",
-              "content": "MesmerizingFlute"
-            }
-          ],
-          "content": [
-            { "key": "Ritual Components", "content": "RitualComponents" },
-            { "key": "Scrap of Torn Shadow", "content": "ScrapOfTornShadow" }
-          ]
-        }
-      ]
+    "returnTo": { "id": "52" }
+  },
+  {
+    "id": "04",
+    "name": "The Forgotten Age",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne" , "PlusOne" , "Zero" , "Zero" , "Zero" , "MinusOne" , "MinusOne" , "MinusTwo" , "MinusThree"
+        , "Skull" , "Skull" , "ElderThing" , "AutoFail" , "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne" , "Zero" , "Zero" , "Zero" , "MinusOne" , "MinusTwo" , "MinusTwo" , "MinusThree" , "MinusFive"
+        , "Skull" , "Skull" , "ElderThing" , "AutoFail" , "ElderSign"
+        ],
+      "Hard":
+        [ "PlusOne" , "Zero" , "Zero" , "MinusOne" , "MinusTwo" , "MinusThree" , "MinusThree" , "MinusFour" , "MinusSix"
+        , "Skull" , "Skull" , "ElderThing" , "AutoFail" , "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "ElderThing", "AutoFail", "ElderSign"
+        ]
     },
-    {
-      "key": "At Death's Doorstep",
-      "scenarioId": "05065",
-      "settings": [
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsAreOnGavriella'sTrail",
-          "ckey": "TheInvestigatorsAreOnGavriella'sTrail",
-          "ifRecorded": [
-            {
-              "key": "MissingPersons",
-              "type": "inSet",
-              "recordable": "RecordableCardCode",
-              "content": "05046"
-            }]
-        },
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsAreOnJerome'sTrail",
-          "ckey": "TheInvestigatorsAreOnJerome'sTrail",
-          "ifRecorded": [
-            {
-              "key": "MissingPersons",
-              "type": "inSet",
-              "recordable": "RecordableCardCode",
-              "content": "05047"
-            }
-          ]
-        },
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsAreOnPenny'sTrail",
-          "ckey": "TheInvestigatorsAreOnPenny'sTrail",
-          "ifRecorded": [
-            {
-              "key": "MissingPersons",
-              "type": "inSet",
-              "recordable": "RecordableCardCode",
-              "content": "05049"
-            }
-          ]
-        },
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsAreOnValentino'sTrail",
-          "ckey": "TheInvestigatorsAreOnValentino'sTrail",
-          "ifRecorded": [
-            {
-              "key": "MissingPersons",
-              "type": "inSet",
-              "recordable": "RecordableCardCode",
-              "content": "05048"
-            }
-          ]
-        },
-        {
-          "type": "ChooseKey",
-          "key": "AtDeathsDoorResolution",
-          "content": [
-            { "key": "TheInvestigatorsEscapedTheSpectralRealm" },
-            { "key": "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes" },
-            { "key": "TheInvestigatorsAreNeverSeenOrHeardFromAgain" }
-          ]
-        }
-      ]
+    "returnTo": { "id": "53", "beta": true }
+  },
+  {
+    "id": "05",
+    "name": "The Circle Undone",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusThree"
+        , "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "AutoFail", "ElderSign"
+        ]
     },
-    {
-      "key": "Interlude II: The Price of Progress",
-      "ifRecorded": [{"key": "TheInvestigatorsEscapedTheSpectralRealm", "type": "key" }],
-      "settings": [
-        {
-          "type": "ChooseKey",
-          "key": "JosefsFate",
-          "content": [
-            { "key": "JosefDisappearedIntoTheMist" },
-            { "key": "TheInvestigatorsRescuedJosef" },
-            { "key": "JosefIsAliveAndWell" }
-          ]
-        },
-        {
-          "type": "ForceKey",
-          "ifRecorded": [ {"key": "JosefDisappearedIntoTheMist", "type": "key" }],
-          "key": "TheInvestigatorsAreEnemiesOfTheLodge"
-        },
-        {
-          "type": "ChooseKey",
-          "key": "LodgeRelationship",
-          "anyRecorded": [
-            {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
-            {"key": "JosefIsAliveAndWell", "type": "key" }
-          ],
-          "content": [
-            { "key": "TheInvestigatorsAreEnemiesOfTheLodge" },
-            { "key": "TheInvestigatorsAreMembersOfTheLodge" }
-          ]
-        },
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsAreDeceivingTheLodge",
-          "ckey": "TheInvestigatorsAreDeceivingTheLodge",
-          "ifRecorded": [{"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }]
-        }
-      ]
-    },
-    {
-      "key": "The Secret Name",
-      "scenarioId": "05120",
-      "settings": [
-        {
-          "type": "ChooseKey",
-          "key": "TellTheLodge",
-          "ifRecorded": [
-            {"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }
-          ],
-          "content": [
-            { "key": "TheInvestigatorsToldTheLodgeAboutTheCoven" },
-            { "key": "TheInvestigatorsHidTheirKnowledgeOfTheCoven" }
-          ]
-        },
-        {
-          "type": "SetRecordable",
-          "recordable": "RecordableMemento",
-          "ckey": "MementosDiscovered",
-          "key": "DiscoveredGilmansJournal",
-          "content": "Gilman'sJournal"
-        },
-        {
-          "type": "SetRecordable",
-          "recordable": "RecordableMemento",
-          "ckey": "MementosDiscovered",
-          "key": "DiscoveredKeziahsFormulae",
-          "content": "Keziah'sFormulae",
-          "ifRecorded": [
-            {
-              "key": "MementosDiscovered",
-              "type": "inSet",
-              "recordable": "RecordableMemento",
-              "content": "Gilman'sJournal"
-            }
-          ]
-        },
-        {
-          "type": "SetRecordable",
-          "recordable": "RecordableMemento",
-          "ckey": "MementosDiscovered",
-          "key": "DiscoveredWornCrucifix",
-          "content": "WornCrucifix",
-          "ifRecorded": [
-            {
-              "key": "MementosDiscovered",
-              "type": "inSet",
-              "recordable": "RecordableMemento",
-              "content": "Keziah'sFormulae"
-            }
-          ]
-        },
-        {
-          "type": "Option",
-          "key": "TakeBlackBook",
-          "ckey": "TakeBlackBook"
-        }
-      ]
-    },
-    {
-      "key": "The Wages of Sin",
-      "scenarioId": "05161",
-      "settings": [
-        {
-          "key": "HereticsWereUnleashedUntoArkham",
-          "ckey": "HereticsWereUnleashedUntoArkham",
-          "type": "ChooseNum",
-          "max": 4
-        },
-        {
-          "type": "ForceRecorded",
-          "ifRecorded": [
-            {
-              "key": "HereticsWereUnleashedUntoArkham",
-              "type": "count",
-              "predicate": { "type": "lte", "value": 3 }
-            }
-          ],
-          "recordable": "RecordableMemento",
-          "ckey": "MementosDiscovered",
-          "key": "DiscoveredWispOfSpectralMist",
-          "content": "WispOfSpectralMist"
-        },
-        {
-          "type": "SetKey",
-          "key": "TheInvestigatorsSurvivedTheWatchersEmbrace",
-          "ckey": "TheInvestigatorsSurvivedTheWatchersEmbrace"
-        }
-      ]
-    },
-    {
-      "key": "For the Greater Good",
-      "scenarioId": "05197",
-      "settings": [
-        {
-          "type": "ChooseKey",
-          "key": "ForTheGreaterGoodResolution",
-          "content": [
-            { "key": "TheGuardianOfTheTrapEmerged" },
-            { "key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox" },
-            { "key": "TheGuardianOfTheTrapEmergedAndWasDefeated" }
-          ]
-        },
-        {
-          "type": "Option",
-          "key": "TakePuzzleBox",
-          "ckey": "TakePuzzleBox",
-          "ifRecorded": [
-            {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
-          ]
-        },
-        {
-          "type": "Option",
-          "key": "ProceedToInterlude3",
-          "ckey": "ProceedToInterlude3",
-          "ifRecorded": [
-            {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "Interlude III: The Price of Progress",
-      "ifRecorded": [{"key": "ProceedToInterlude3", "type": "option" }],
-      "settings": [
-        {
-          "type": "ChooseOption",
-          "key": "Interlude3",
-          "content": [
-            { "key": "GiveMrSanfordEverything" },
-            { "key": "GiveMrSanfordNothing" }
-          ]
-        },
-        {
-          "type": "ForceKey",
-          "key": "TheInvestigatorsWereInductedIntoTheInnerCircle",
-          "ifRecorded": [
-            {"key": "GiveMrSanfordEverything", "type": "option" },
-            {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
-            {"key": "TheInvestigatorsToldTheLodgeAboutTheCoven", "type": "key" }
-          ]
-        },
-        {
-          "type": "ForceKey",
-          "key": "TheInvestigatorsKeptTheirMementosHidden",
-          "ifRecorded": [
-            {"key": "GiveMrSanfordNothing", "type": "option" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "Union and Disillusion",
-      "scenarioId": "05238",
-      "settings": [
-        {
-          "type": "ChooseOption",
-          "key": "ChooseSide",
-          "content": [
-            { "key": "SideWithTheLodge" },
-            { "key": "SideWithTheCoven" }
-          ]
-        },
-        {
-          "type": "ForceKey",
-          "key": "TheInvestigatorsSidedWithTheLodge",
-          "ifRecorded": [
-            {"key": "SideWithTheLodge", "type": "option" }
-          ]
-        },
-        {
-          "type": "ForceKey",
-          "key": "TheInvestigatorsSidedWithTheCoven",
-          "ifRecorded": [
-            {"key": "SideWithTheCoven", "type": "option" }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "In the Clutches of Chaos",
-      "scenarioId": "05284",
-      "settings": []
-    },
-    {
-      "key": "Before the Black Throne",
-      "scenarioId": "05325",
-      "settings": []
+    "returnTo": { "id": "54", "beta": true },
+    "settings": [
+      {
+        "key": "Disappearance at the Twilight Estate",
+        "scenarioId": "05043",
+        "settings": [
+          {
+            "key": "MissingPersons",
+            "ckey": "MissingPersons",
+            "recordable": "RecordableCardCode",
+            "type": "CrossOut",
+            "content": [
+              { "key": "Gaveriella Mizrah", "content": "05046" },
+              { "key": "Jerome Davids", "content": "05047" },
+              { "key": "Valentino Rivas", "content": "05048" },
+              { "key": "Penny White", "content": "05049" }
+            ]
+          },
+          {
+            "type": "Record",
+            "key": "WasTakenByTheWatcher",
+            "recordable": "RecordableCardCode",
+            "content": [
+              {
+                "key": "Gaveriella Mizrah",
+                "content": "05046",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+                ]
+              },
+              {
+                "key": "Jerome Davids",
+                "content": "05047",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+                ]
+              },
+              {
+                "key": "Valentino Rivas",
+                "content": "05048",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+                ]
+              },
+              {
+                "key": "Penny White",
+                "content": "05049",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Record",
+            "key": "WasClaimedBySpecters",
+            "recordable": "RecordableCardCode",
+            "content": [
+              {
+                "key": "Gaveriella Mizrah",
+                "content": "05046",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+                ]
+              },
+              {
+                "key": "Jerome Davids",
+                "content": "05047",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+                ]
+              },
+              {
+                "key": "Valentino Rivas",
+                "content": "05048",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+                ]
+              },
+              {
+                "key": "Penny White",
+                "content": "05049",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Record",
+            "key": "DisappearedIntoTheMist",
+            "recordable": "RecordableCardCode",
+            "content": [
+              {
+                "key": "Gaveriella Mizrah",
+                "content": "05046",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05046" } }
+                ]
+              },
+              {
+                "key": "Jerome Davids",
+                "content": "05047",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05047" } }
+                ]
+              },
+              {
+                "key": "Valentino Rivas",
+                "content": "05048",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05048" } }
+                ]
+              },
+              {
+                "key": "Penny White",
+                "content": "05049",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasPulledIntoTheSpectralRealm", "content": "05049" } }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Record",
+            "key": "WasPulledIntoTheSpectralRealm",
+            "recordable": "RecordableCardCode",
+            "content": [
+              {
+                "key": "Gaveriella Mizrah",
+                "content": "05046",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05046" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05046" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05046" } }
+                ]
+              },
+              {
+                "key": "Jerome Davids",
+                "content": "05047",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05047" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05047" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05047" } }
+                ]
+              },
+              {
+                "key": "Valentino Rivas",
+                "content": "05048",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05048" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05048" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05048" } }
+                ]
+              },
+              {
+                "key": "Penny White",
+                "content": "05049",
+                "ifRecorded": [
+                  {"type": "inSet", "key": "MissingPersons", "content": "05049" },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasTakenByTheWatcher", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "WasClaimedBySpecters", "content": "05049" } },
+                  { "type": "not", "content": {"type": "inSet", "key": "DisappearedIntoTheMist", "content": "05049" } }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "PiecesOfEvidenceWereLeftBehind",
+            "ckey": "PiecesOfEvidenceWereLeftBehind",
+            "type": "ChooseNum"
+          }
+        ],
+        "resolutions": [
+          { "resolution": "No Resolution", "settings":
+            [
+              {
+                "key": "PiecesOfEvidenceWereLeftBehind",
+                "ckey": "PiecesOfEvidenceWereLeftBehind",
+                "type": "ChooseNum"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "The Witching Hour",
+        "scenarioId": "05050",
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "ChooseYourFate",
+            "content": [{ "key": "YouHaveAcceptedYourFate" }, { "key": "YouHaveRejectedYourFate" }]
+          },
+          {
+            "type": "ChooseKey",
+            "key": "WitchingHourResolution",
+            "content": [{ "key": "TheWitches'SpellWasBroken" }, { "key": "TheWitches'SpellWasCast" }]
+          },
+          {
+            "type": "SetRecordable",
+            "recordable": "RecordableMemento",
+            "ckey": "MementosDiscovered",
+            "key": "DiscoveredMesmerizingFlute",
+            "content": "MesmerizingFlute"
+          },
+          {
+            "type": "ChooseRecordable",
+            "key": "TheWitches'SpellWasBrokenMemento",
+            "ckey": "MementosDiscovered",
+            "recordable": "RecordableMemento",
+            "ifRecorded": [
+              { "key": "TheWitches'SpellWasBroken", "type": "key" },
+              {
+                "key": "MementosDiscovered",
+                "type": "inSet",
+                "recordable": "RecordableMemento",
+                "content": "MesmerizingFlute"
+              }
+            ],
+            "content": [
+              { "key": "Ritual Components", "content": "RitualComponents" },
+              { "key": "Scrap of Torn Shadow", "content": "ScrapOfTornShadow" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "At Death's Doorstep",
+        "scenarioId": "05065",
+        "settings": [
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsAreOnGavriella'sTrail",
+            "ckey": "TheInvestigatorsAreOnGavriella'sTrail",
+            "ifRecorded": [
+              {
+                "key": "MissingPersons",
+                "type": "inSet",
+                "recordable": "RecordableCardCode",
+                "content": "05046"
+              }]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsAreOnJerome'sTrail",
+            "ckey": "TheInvestigatorsAreOnJerome'sTrail",
+            "ifRecorded": [
+              {
+                "key": "MissingPersons",
+                "type": "inSet",
+                "recordable": "RecordableCardCode",
+                "content": "05047"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsAreOnPenny'sTrail",
+            "ckey": "TheInvestigatorsAreOnPenny'sTrail",
+            "ifRecorded": [
+              {
+                "key": "MissingPersons",
+                "type": "inSet",
+                "recordable": "RecordableCardCode",
+                "content": "05049"
+              }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsAreOnValentino'sTrail",
+            "ckey": "TheInvestigatorsAreOnValentino'sTrail",
+            "ifRecorded": [
+              {
+                "key": "MissingPersons",
+                "type": "inSet",
+                "recordable": "RecordableCardCode",
+                "content": "05048"
+              }
+            ]
+          },
+          {
+            "type": "ChooseKey",
+            "key": "AtDeathsDoorResolution",
+            "content": [
+              { "key": "TheInvestigatorsEscapedTheSpectralRealm" },
+              { "key": "TheInvestigatorsLearnedNothingOfTheLodge'sSchemes" },
+              { "key": "TheInvestigatorsAreNeverSeenOrHeardFromAgain" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "Interlude II: The Price of Progress",
+        "ifRecorded": [{"key": "TheInvestigatorsEscapedTheSpectralRealm", "type": "key" }],
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "JosefsFate",
+            "content": [
+              { "key": "JosefDisappearedIntoTheMist" },
+              { "key": "TheInvestigatorsRescuedJosef" },
+              { "key": "JosefIsAliveAndWell" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "ifRecorded": [ {"key": "JosefDisappearedIntoTheMist", "type": "key" }],
+            "key": "TheInvestigatorsAreEnemiesOfTheLodge"
+          },
+          {
+            "type": "ChooseKey",
+            "key": "LodgeRelationship",
+            "anyRecorded": [
+              {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
+              {"key": "JosefIsAliveAndWell", "type": "key" }
+            ],
+            "content": [
+              { "key": "TheInvestigatorsAreEnemiesOfTheLodge" },
+              { "key": "TheInvestigatorsAreMembersOfTheLodge" }
+            ]
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsAreDeceivingTheLodge",
+            "ckey": "TheInvestigatorsAreDeceivingTheLodge",
+            "ifRecorded": [{"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }]
+          }
+        ]
+      },
+      {
+        "key": "The Secret Name",
+        "scenarioId": "05120",
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "TellTheLodge",
+            "ifRecorded": [
+              {"key": "TheInvestigatorsAreMembersOfTheLodge", "type": "key" }
+            ],
+            "content": [
+              { "key": "TheInvestigatorsToldTheLodgeAboutTheCoven" },
+              { "key": "TheInvestigatorsHidTheirKnowledgeOfTheCoven" }
+            ]
+          },
+          {
+            "type": "SetRecordable",
+            "recordable": "RecordableMemento",
+            "ckey": "MementosDiscovered",
+            "key": "DiscoveredGilmansJournal",
+            "content": "Gilman'sJournal"
+          },
+          {
+            "type": "SetRecordable",
+            "recordable": "RecordableMemento",
+            "ckey": "MementosDiscovered",
+            "key": "DiscoveredKeziahsFormulae",
+            "content": "Keziah'sFormulae",
+            "ifRecorded": [
+              {
+                "key": "MementosDiscovered",
+                "type": "inSet",
+                "recordable": "RecordableMemento",
+                "content": "Gilman'sJournal"
+              }
+            ]
+          },
+          {
+            "type": "SetRecordable",
+            "recordable": "RecordableMemento",
+            "ckey": "MementosDiscovered",
+            "key": "DiscoveredWornCrucifix",
+            "content": "WornCrucifix",
+            "ifRecorded": [
+              {
+                "key": "MementosDiscovered",
+                "type": "inSet",
+                "recordable": "RecordableMemento",
+                "content": "Keziah'sFormulae"
+              }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakeBlackBook",
+            "ckey": "TakeBlackBook"
+          }
+        ]
+      },
+      {
+        "key": "The Wages of Sin",
+        "scenarioId": "05161",
+        "settings": [
+          {
+            "key": "HereticsWereUnleashedUntoArkham",
+            "ckey": "HereticsWereUnleashedUntoArkham",
+            "type": "ChooseNum",
+            "max": 4
+          },
+          {
+            "type": "ForceRecorded",
+            "ifRecorded": [
+              {
+                "key": "HereticsWereUnleashedUntoArkham",
+                "type": "count",
+                "predicate": { "type": "lte", "value": 3 }
+              }
+            ],
+            "recordable": "RecordableMemento",
+            "ckey": "MementosDiscovered",
+            "key": "DiscoveredWispOfSpectralMist",
+            "content": "WispOfSpectralMist"
+          },
+          {
+            "type": "SetKey",
+            "key": "TheInvestigatorsSurvivedTheWatchersEmbrace",
+            "ckey": "TheInvestigatorsSurvivedTheWatchersEmbrace"
+          }
+        ]
+      },
+      {
+        "key": "For the Greater Good",
+        "scenarioId": "05197",
+        "settings": [
+          {
+            "type": "ChooseKey",
+            "key": "ForTheGreaterGoodResolution",
+            "content": [
+              { "key": "TheGuardianOfTheTrapEmerged" },
+              { "key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox" },
+              { "key": "TheGuardianOfTheTrapEmergedAndWasDefeated" }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "TakePuzzleBox",
+            "ckey": "TakePuzzleBox",
+            "ifRecorded": [
+              {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
+            ]
+          },
+          {
+            "type": "Option",
+            "key": "ProceedToInterlude3",
+            "ckey": "ProceedToInterlude3",
+            "ifRecorded": [
+              {"key": "TheInvestigatorsDiscoveredHowToOpenThePuzzleBox", "type": "key" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "Interlude III: The Price of Progress",
+        "ifRecorded": [{"key": "ProceedToInterlude3", "type": "option" }],
+        "settings": [
+          {
+            "type": "ChooseOption",
+            "key": "Interlude3",
+            "content": [
+              { "key": "GiveMrSanfordEverything" },
+              { "key": "GiveMrSanfordNothing" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "key": "TheInvestigatorsWereInductedIntoTheInnerCircle",
+            "ifRecorded": [
+              {"key": "GiveMrSanfordEverything", "type": "option" },
+              {"key": "TheInvestigatorsRescuedJosef", "type": "key" },
+              {"key": "TheInvestigatorsToldTheLodgeAboutTheCoven", "type": "key" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "key": "TheInvestigatorsKeptTheirMementosHidden",
+            "ifRecorded": [
+              {"key": "GiveMrSanfordNothing", "type": "option" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "Union and Disillusion",
+        "scenarioId": "05238",
+        "settings": [
+          {
+            "type": "ChooseOption",
+            "key": "ChooseSide",
+            "content": [
+              { "key": "SideWithTheLodge" },
+              { "key": "SideWithTheCoven" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "key": "TheInvestigatorsSidedWithTheLodge",
+            "ifRecorded": [
+              {"key": "SideWithTheLodge", "type": "option" }
+            ]
+          },
+          {
+            "type": "ForceKey",
+            "key": "TheInvestigatorsSidedWithTheCoven",
+            "ifRecorded": [
+              {"key": "SideWithTheCoven", "type": "option" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "In the Clutches of Chaos",
+        "scenarioId": "05284",
+        "settings": []
+      },
+      {
+        "key": "Before the Black Throne",
+        "scenarioId": "05325",
+        "settings": []
+      }
+    ]
+  },
+  {
+    "id": "06",
+    "name": "The Dream-Eaters"
+  },
+  {
+    "id": "07",
+    "name": "The Innsmouth Conspiracy",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Cultist", "Cultist", "Tablet", "Tablet", "ElderThing", "ElderThing", "AutoFail", "ElderSign"
+        ]
     }
-  ]},
-  { "id": "06", "name": "The Dream-Eaters" },
-  { "id": "07", "name": "The Innsmouth Conspiracy" },
-  { "id": "08", "name": "Edge of the Earth" },
-  { "id": "09", "name": "The Scarlet Keys", "beta": true },
-  { "id": "10", "name": "The Feast of Hemlock Vale", "alpha": true, "dev": true }
+  },
+  {
+    "id": "08",
+    "name": "Edge of the Earth",
+    "difficultyLevels": {
+      "Easy": [
+        "PlusOne", "PlusOne", "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+      ],
+      "Standard": [
+        "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour",
+        "FrostToken", "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFour", "MinusFive",
+        "FrostToken", "FrostToken", "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+      ],
+      "Expert": [
+        "Zero", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSeven",
+        "FrostToken", "FrostToken", "FrostToken", "Skull", "Skull", "Cultist", "Tablet", "AutoFail", "ElderSign"
+      ]
+    }
+  },
+  {
+    "id": "09",
+    "name": "The Scarlet Keys",
+    "difficultyLevels": {
+      "Easy":
+        [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
+        , "Skull", "Skull", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Standard":
+        [ "PlusOne", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour"
+        , "Skull", "Skull", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Hard":
+        [ "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFive"
+        , "Skull", "Skull", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ],
+      "Expert":
+        [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
+        , "Skull", "Skull", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+        ]
+    },
+    "beta": true
+  },
+  {
+    "id": "10",
+    "name": "The Feast of Hemlock Vale",
+    "alpha": true,
+    "dev": true
+  }
 ]

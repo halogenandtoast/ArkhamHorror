@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, ref, computed, onMounted } from 'vue'
+import { watch, ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import * as Arkham from '@/arkham/types/Deck'
@@ -183,10 +183,22 @@ function cancelOrBack() {
   }
 }
 
+function onKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Escape') return
+  if (step.value !== 'ChooseMode') {
+    setStep('ChooseMode') // uses view transition
+  }
+}
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+})
+
 // ----- lifecycle / watches -----
 onMounted(async () => {
   alpha.value = route.query.alpha !== undefined || localStorage.getItem('alpha') === 'true'
   if (route.query.alpha !== undefined) localStorage.setItem('alpha', 'true')
+  window.addEventListener('keydown', onKeydown)
 })
 
 watch(difficulties, (ds) => {
@@ -269,12 +281,7 @@ const emit = defineEmits<{
       <div key="new-game">
         <header>
           <h2>{{ $t('newGame') }}</h2>
-          <slot
-            name="cancel"
-            :onClick="cancelOrBack"
-            :isBack="step === 'GameOptions'"
-            :step="step"
-          />
+          <slot name="cancel" />
         </header>
 
         <form id="new-campaign" @submit.prevent="goNext">
@@ -287,6 +294,7 @@ const emit = defineEmits<{
             :sideStories="sideStories"
             :campaign="campaign"
             :scenario="scenario"
+            @go="goNext"
           />
 
           <GameOptions
@@ -312,13 +320,18 @@ const emit = defineEmits<{
             :chosenSideStoryId="gameMode === 'SideStory' ? selectedScenario : null"
           />
 
-          <div class="buttons">
-            <button v-if="step === 'GameOptions'" type="button" class="secondary" @click="goBack">
-              Back
+          <div class="wizard-actions buttons">
+            <button
+              v-if="step === 'GameOptions'"
+              type="button"
+              class="action secondary"
+              @click="goBack"
+            >
+              {{ $t('Back') ?? 'Back' }}
             </button>
 
-            <button type="submit" :disabled="nextDisabled">
-              {{ step === 'ChooseMode' ? 'Next' : $t('create.create') }}
+            <button v-if="step === 'GameOptions'" class="primary-action" type="submit" :disabled="nextDisabled">
+              {{ $t('create.create') }}
             </button>
           </div>
         </form>
@@ -503,5 +516,108 @@ input[type='image'] {
 .buttons {
   display: flex;
   gap: 10px;
+}
+
+.wizard-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 6px;
+
+  /* lay children out left-to-right */
+  grid-auto-flow: column;
+
+  /* each child becomes a column that shares space equally */
+  grid-auto-columns: 1fr;
+
+  /* no predefined columns needed */
+  grid-template-columns: none;
+}
+
+/* If there is only one action, make it span full width */
+.wizard-actions > *:only-child {
+  grid-column: 1 / -1;
+}
+
+/* If you end up with 3+ actions, wrap to next row nicely */
+.wizard-actions {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* unify action button styling; avoid the old “full-width bar” vibe */
+.wizard-actions .action {
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+  transition: transform 120ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-actions .action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 5px 28px rgba(0,0,0,0.35);
+}
+
+.wizard-actions .action:active:not(:disabled) {
+  transform: translateY(0px);
+}
+
+.wizard-actions .action.primary {
+  background: rgba(110, 134, 64, 0.95);
+  border-color: rgba(255,255,255,0.10);
+  color: white;
+}
+
+.wizard-actions .action.primary:hover:not(:disabled) {
+  background: rgba(110, 134, 64, 1);
+}
+
+.wizard-actions .action.secondary {
+  background: rgba(255,255,255,0.06);
+}
+
+.wizard-actions .action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .wizard-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.primary-action {
+  width: 100%;
+  height: 56px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(110, 134, 64, 0.95);
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 5px 28px rgba(0,0,0,0.35);
+  transition: transform 120ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.primary-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(110, 134, 64, 1);
+  box-shadow: 0 18px 34px rgba(0,0,0,0.45);
+}
+
+.primary-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 </style>

@@ -2,8 +2,8 @@
     "newGame": "New Game",
 
     "numberOfPlayers" : "Number of Players",
-    "withFriends": "WithFriends",
-    "multihandedSolo": "Multi-handed Solo",
+    "withFriends": "With Friends",
+    "multihandedSolo": "Solo",
 
     "campaign": "Campaign",
     "standalone": "Standalone",
@@ -18,6 +18,9 @@
     
     "fullCampaign": "Full Campaign",
     "partialCampaign": "Partial Campaign",
+    "multiplayerVariant": "Multiplayer Variant",
+    "campaignType": "Campaign Type",
+    "pickScenario": "Pick Scenario",
 
     "difficulty": "Difficulty",
     "Easy": "Easy",

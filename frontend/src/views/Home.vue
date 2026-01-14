@@ -69,9 +69,12 @@ const dismissNotification = (notification) => {
 
       <div v-if="currentUser" class="new-game">
         <transition name="slide">
-          <NewGame v-if="newGame">
-            <template #cancel>
-              <button @click="toggleNewGame" class="cancel-new-game-button">&#10006;</button>
+          <NewGame v-if="newGame" @close="toggleNewGame">
+            <template #cancel="{ onClick, isBack }">
+              <button @click="onClick" class="cancel-new-game-button">
+                <span v-if="isBack">←</span>
+                <span v-else>&#10006;</span>
+              </button>
             </template>
           </NewGame>
         </transition>

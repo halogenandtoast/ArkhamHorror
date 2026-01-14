@@ -167,6 +167,7 @@ export const newGame = async (
     campaignName,
     multiplayerVariant,
     includeTarotReadings,
+    options: []
   })
   return gameDecoder.decodePromise(data)
 }

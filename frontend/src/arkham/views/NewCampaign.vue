@@ -543,7 +543,7 @@ input[type='image'] {
 /* unify action button styling; avoid the old “full-width bar” vibe */
 .wizard-actions .action {
   height: 52px;
-  border-radius: 12px;
+  border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.22);
   color: rgba(255,255,255,0.9);
@@ -593,7 +593,6 @@ input[type='image'] {
 
 .primary-action {
   width: 100%;
-  height: 56px;
   border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(110, 134, 64, 0.95);

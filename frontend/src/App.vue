@@ -711,4 +711,14 @@ footer {
     animation: glow 3s linear infinite;
   }
 }
+
+::view-transition-group(selected-game-box) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+::view-transition-old(selected-game-box),
+::view-transition-new(selected-game-box) {
+  mix-blend-mode: normal;
+}
 </style>

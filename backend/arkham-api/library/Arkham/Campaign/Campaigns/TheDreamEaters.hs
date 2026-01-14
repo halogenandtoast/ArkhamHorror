@@ -1,7 +1,9 @@
 module Arkham.Campaign.Campaigns.TheDreamEaters (theDreamEaters) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.Campaign.Runner hiding (story, storyWithChooseOne)
+import Arkham.CampaignLog (optionsL)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheDreamEaters.Import
@@ -206,6 +208,8 @@ instance RunMessage TheDreamEaters where
         _ -> error "Could not read Metadata"
 
     case msg of
+      HandleOption opt@(CampaignVariant _variant) -> do
+        pure $ TheDreamEaters $ attrs & logL . optionsL %~ insertSet opt
       StartCampaign -> do
         -- [ALERT] StartCampaign, overriden to not choose decks yet
         lead <- getActivePlayer
@@ -214,15 +218,15 @@ instance RunMessage TheDreamEaters where
           <> [CampaignStep $ campaignStep attrs]
         pure c
       CampaignStep PrologueStep -> do
-        lead <- getActivePlayer
         story prologue
+        theDreamQuest <- hasCampaignOption (CampaignVariant "theDreamQuest")
+        theWebOfDreams <- hasCampaignOption (CampaignVariant "theWebOfDreams")
+
         push
-          $ Msg.questionLabel "Which mode would you like to play" lead
-          $ ChooseOne
-            [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
-            , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
-            , Label "The Web of Dreams" [CampaignStep (PrologueStepPart 3)]
-            ]
+          $ if
+            | theDreamQuest -> CampaignStep (PrologueStepPart 2)
+            | theWebOfDreams -> CampaignStep (PrologueStepPart 3)
+            | otherwise -> CampaignStep (PrologueStepPart 1)
         pure c
       CampaignStep ((.unwrap) -> PrologueStep) -> do
         lead <- getActivePlayer

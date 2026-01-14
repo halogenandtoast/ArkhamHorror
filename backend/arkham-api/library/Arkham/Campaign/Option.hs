@@ -8,6 +8,7 @@ import Data.Aeson.TH
 data CampaignOption
   = PerformIntro
   | PlayersDoNotControlStoryAssetClues
+  | CampaignVariant Text
   | -- | Night of the Zealot
     AddLitaChantler
   | -- | The Dunwich Legacy

@@ -224,7 +224,7 @@ watch([selectedCampaign, fullCampaign], () => {
   }
 
   const c: any = campaign.value
-  const opts = c?.fullCampaignOptions as { key: string }[] | undefined
+  const opts = c?.variants as { key: string }[] | undefined
   fullCampaignOptionKey.value = opts?.[0]?.key ?? null
 })
 

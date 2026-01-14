@@ -21,6 +21,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Id
+import Arkham.Message (Message (HandleOption))
 import Arkham.Queue
 import Conduit
 import Control.Monad.Random (mkStdGen)
@@ -117,6 +118,7 @@ postApiV1ArkhamGamesR = do
 
     runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
+      traverse_ (push . HandleOption) (toList options)
       runMessages (gameIdToText gameId) Nothing
 
     updatedQueue <- liftIO $ readIORef (queueToRef queueRef)

@@ -1,5 +1,6 @@
 module Arkham.Helpers.Log where
 
+import Arkham.Campaign.Option
 import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -23,6 +24,12 @@ getCampaignLog =
   withStandalone
     (field CampaignCampaignLog)
     (field ScenarioStandaloneCampaignLog)
+
+getCampaignOptions :: (HasGame m, Tracing m) => m (Set CampaignOption)
+getCampaignOptions = campaignLogOptions <$> getCampaignLog
+
+hasCampaignOption :: (HasGame m, Tracing m) => CampaignOption -> m Bool
+hasCampaignOption option = member option <$> getCampaignOptions
 
 getInvestigatorHasRecord
   :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool

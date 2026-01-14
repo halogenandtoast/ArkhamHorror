@@ -25,6 +25,7 @@ import Arkham.Asset.Types (
  )
 import Arkham.Asset.Uses (Uses (..), useType)
 import Arkham.Campaign
+import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Concealed
@@ -84,6 +85,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Location hiding (getConnectedMatcher)
 import Arkham.Helpers.Location qualified as Helpers
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -4453,7 +4455,10 @@ instance Projection Investigator where
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> do
-        controlledAssetClues <- getSum <$> selectAgg Sum AssetClues (assetControlledBy attrs.id)
+        includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
+        let storyWrapper = if includeStory then id else (<> AssetNonStory)
+        controlledAssetClues <-
+          getSum <$> selectAgg Sum AssetClues (storyWrapper $ assetControlledBy attrs.id)
         pure $ investigatorClues attrs + controlledAssetClues
       InvestigatorCluesInPool -> pure $ investigatorClues attrs
       InvestigatorTokens -> pure investigatorTokens

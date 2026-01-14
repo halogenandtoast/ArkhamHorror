@@ -16,6 +16,7 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared
+import Arkham.Campaign.Option
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
@@ -83,6 +84,7 @@ data CreateGamePost = CreateGamePost
   , campaignName :: Text
   , multiplayerVariant :: MultiplayerVariant
   , includeTarotReadings :: Bool
+  , options :: Set CampaignOption
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON

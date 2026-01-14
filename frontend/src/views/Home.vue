@@ -44,13 +44,25 @@ const submitDebugUpload = async (e: Event) => {
 
 const newGame = ref(route.path === "/new-game" || false)
 
-const toggleNewGame = () => {
-  newGame.value = !newGame.value
-  if (newGame.value === true) {
-    router.push({ path: "/new-game" })
+// View Transition helper
+function withViewTransition(fn: () => void) {
+  const d = document as any
+  if (typeof d.startViewTransition === 'function') {
+    d.startViewTransition(() => fn())
   } else {
-    router.push({ path: "/" })
+    fn()
   }
+}
+
+const toggleNewGame = () => {
+  withViewTransition(() => {
+    newGame.value = !newGame.value
+    if (newGame.value === true) {
+      router.push({ path: "/new-game" })
+    } else {
+      router.push({ path: "/" })
+    }
+  })
 }
 
 const dismissNotification = (notification) => {
@@ -67,46 +79,42 @@ const dismissNotification = (notification) => {
         <a @click.prevent="dismissNotification(notification)" href="#">Dismiss</a>
       </div>
 
-      <div v-if="currentUser" class="new-game">
-        <transition name="slide">
-          <NewGame v-if="newGame" @close="toggleNewGame">
-            <template #cancel>
-              <button @click="toggleNewGame" class="cancel-new-game-button">
-                <span>&#10006;</span>
-              </button>
-            </template>
-          </NewGame>
-        </transition>
+      <div v-if="currentUser" class="container">
+        <NewGame v-if="newGame" @close="toggleNewGame">
+          <template #cancel>
+            <button @click="toggleNewGame" class="cancel-new-game-button">
+              <span>Cancel</span>
+            </button>
+          </template>
+        </NewGame>
       </div>
 
-      <transition name="slide">
-        <div v-if="!newGame" class="games">
-          <section>
-            <header>
-              <h2>{{$t('activeGames')}}</h2>
-              <button @click="toggleNewGame" class="new-game-button">+</button>
-            </header>
-            <div v-if="activeGames.length === 0" class="box">
-              <p>No active games.</p>
-            </div>
-            <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
-          </section>
+      <div v-if="!newGame" class="container">
+        <section>
+          <header class="main-header">
+            <h2>{{$t('activeGames')}}</h2>
+            <button @click="toggleNewGame" class="new-game-button">New Game</button>
+          </header>
+          <div v-if="activeGames.length === 0" class="box">
+            <p>No active games.</p>
+          </div>
+          <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+        </section>
 
-          <section>
-            <header><h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2></header>
-            <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+        <section>
+          <header><h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2></header>
+          <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
-          </section>
-          <section v-if="currentUser && currentUser.beta === true">
-            <header><h2>{{$t('debugGame')}}</h2></header>
-            <form enctype="multipart/form-data" method=POST class="box">
-              <p>Load a game previously exported view the "Debug Export"</p>
-              <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
-              <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
-            </form>
-          </section>
-        </div>
-      </transition>
+        </section>
+        <section v-if="currentUser && currentUser.beta === true">
+          <header><h2>{{$t('debugGame')}}</h2></header>
+          <form enctype="multipart/form-data" method=POST class="box">
+            <p>Load a game previously exported view the "Debug Export"</p>
+            <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
+            <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
+          </form>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -175,6 +183,15 @@ button.cancel-new-game-button {
   &:hover {
     background-color: var(--survivor-extra-dark);
   }
+}
+
+button.new-game-button {
+  height: fit-content;
+  align-self: center;
+  font-size: 1em;
+  font-weight: bolder;
+  width: fit-content;
+  margin-block: 10px;
 }
 
 p {
@@ -256,6 +273,16 @@ header {
   :deep(a) {
     color: var(--seeker-dark);
     text-decoration: underline;
+  }
+}
+
+header.main-header {
+  view-transition-name: main-header;
+  h2 {
+    view-transition-name: main-header-title;
+  }
+  button {
+    view-transition-name: main-header-button;
   }
 }
 </style>

@@ -157,7 +157,9 @@ export const newGame = async (
   campaignName: string,
   multiplayerVariant: string,
   includeTarotReadings: boolean,
+  fullCampaignOptionKey: string | null
 ): Promise<Game> => {
+  const variant = fullCampaignOptionKey ? [{ 'tag': 'CampaignVariant', 'contents': fullCampaignOptionKey }] : [];
   const { data } = await api.post('arkham/games', {
     deckIds,
     playerCount,
@@ -167,7 +169,7 @@ export const newGame = async (
     campaignName,
     multiplayerVariant,
     includeTarotReadings,
-    options: []
+    options: [...variant],
   })
   return gameDecoder.decodePromise(data)
 }

@@ -41,5 +41,12 @@
     "loadNewDeck": "Load New Deck",
     "selectADeck": "-- Select a Deck --",
     "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
-    "choose": "Choose"
+    "choose": "Choose",
+
+    "variant": "Campaign Variant",
+    "fullCampaignOption": {
+      "theDreamEaters": "The Dream-Eaters<br><small>8-part campaign</small>",
+      "theDreamQuest": "The Dream-Quest<br><small>4-part campaign</small>",
+      "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
+    }
 }

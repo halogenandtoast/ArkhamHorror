@@ -7,6 +7,7 @@ import { fetchDecks, newGame } from '@/arkham/api'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import { storeToRefs } from 'pinia'
+import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 
 import campaignJSON from '@/arkham/data/campaigns'
 import scenarioJSON from '@/arkham/data/scenarios'
@@ -16,9 +17,6 @@ import ChooseMode from '@/arkham/components/NewCampaign/ChooseMode.vue'
 import GameOptions from '@/arkham/components/NewCampaign/GameOptions.vue'
 
 type Gateable = { alpha?: boolean; beta?: boolean; dev?: boolean }
-type GameMode = 'Campaign' | 'SideStory'
-type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
-type CampaignType = 'FullCampaign' | 'PartialCampaign' | 'Standalone'
 
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -58,6 +56,8 @@ const selectedScenario = ref<string | null>(null)
 const campaignName = ref<string | null>(null)
 const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
+
+const fullCampaignOptionKey = ref<string | null>(null)
 
 // ----- data -----
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
@@ -175,14 +175,6 @@ async function goNext() {
   await start()
 }
 
-function cancelOrBack() {
-  if (step.value === 'ChooseMode') {
-    emit('close')
-  } else {
-    setStep('ChooseMode')
-  }
-}
-
 function onKeydown(e: KeyboardEvent) {
   if (e.key !== 'Escape') return
   if (step.value !== 'ChooseMode') {
@@ -206,7 +198,6 @@ watch(difficulties, (ds) => {
 })
 
 watch(gameMode, (mode) => {
-  // reset selections when switching mode
   returnTo.value = false
   campaignName.value = null
 
@@ -221,10 +212,20 @@ watch(gameMode, (mode) => {
 })
 
 watch(selectedCampaign, (id) => {
-  // mirrors your selectCampaign() logic, but centralized
   selectedScenario.value = null
   returnTo.value = false
   if (id === '09') fullCampaign.value = 'FullCampaign'
+})
+
+watch([selectedCampaign, fullCampaign], () => {
+  if (fullCampaign.value !== 'FullCampaign') {
+    fullCampaignOptionKey.value = null
+    return
+  }
+
+  const c: any = campaign.value
+  const opts = c?.fullCampaignOptions as { key: string }[] | undefined
+  fullCampaignOptionKey.value = opts?.[0]?.key ?? null
 })
 
 // ----- data fetch -----
@@ -248,7 +249,8 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        includeTarotReadings.value
+        includeTarotReadings.value,
+        fullCampaignOptionKey.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   } else {
@@ -264,7 +266,8 @@ async function start() {
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
-        includeTarotReadings.value
+        includeTarotReadings.value,
+        fullCampaignOptionKey.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   }
@@ -305,6 +308,7 @@ const emit = defineEmits<{
         v-model:selectedDifficulty="selectedDifficulty"
         v-model:includeTarotReadings="includeTarotReadings"
         v-model:campaignName="campaignName"
+        v-model:fullCampaignOptionKey="fullCampaignOptionKey"
         :gameMode="gameMode"
         :campaign="campaign"
         :scenario="scenario"

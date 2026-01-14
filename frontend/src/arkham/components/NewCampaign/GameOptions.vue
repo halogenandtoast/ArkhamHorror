@@ -4,10 +4,12 @@ import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
+import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 
-type GameMode = 'Campaign' | 'SideStory'
-type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
-type CampaignType = 'FullCampaign' | 'PartialCampaign' | 'Standalone'
+type FullCampaignOption = {
+  key: string
+  difficultyLevels: Record<Difficulty, TokenFace[]>
+}
 
 const props = defineProps<{
   gameMode: GameMode
@@ -29,12 +31,12 @@ const props = defineProps<{
 const playerCount = defineModel<number>('playerCount', { required: true })
 const multiplayerVariant = defineModel<MultiplayerVariant>('multiplayerVariant', { required: true })
 const returnTo = defineModel<boolean>('returnTo', { required: true })
-const fullCampaign = defineModel<CampaignType>('fullCampaign', { required: true })
-
+const fullCampaign = defineModel<CampaignType>('FullCampaign', { required: true })
 const selectedScenario = defineModel<string | null>('selectedScenario', { required: true })
 const selectedDifficulty = defineModel<Difficulty>('selectedDifficulty', { required: true })
 const includeTarotReadings = defineModel<boolean>('includeTarotReadings', { required: true })
 const campaignName = defineModel<string | null>('campaignName', { required: true })
+const fullCampaignOptionKey = defineModel<string | null>('fullCampaignOptionKey', { required: true })
 
 const showAlphaWarning = computed(() => {
   if (props.gameMode === 'Campaign' && props.campaign) {
@@ -115,6 +117,9 @@ function sortTokenFaces(a: TokenFace, b: TokenFace) {
 }
 
 const difficultyLevels = computed<Record<Difficulty, TokenFace[]> | null>(() => {
+  const opt = selectedFullCampaignOption.value
+  if (opt?.difficultyLevels) return opt.difficultyLevels
+
   const c = props.campaign as any
   if (c?.difficultyLevels) return c.difficultyLevels as Record<Difficulty, TokenFace[]>
 
@@ -128,6 +133,23 @@ const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
   const levels = difficultyLevels.value
   if (!levels) return []
   return (levels[selectedDifficulty.value] ?? []).slice().sort(sortTokenFaces)
+})
+
+const variants = computed<FullCampaignOption[]>(() => {
+  const c = props.campaign as any
+  return (c?.variants ?? []) as FullCampaignOption[]
+})
+
+const showFullCampaignOptions = computed(() =>
+  props.gameMode === 'Campaign' &&
+  fullCampaign.value === 'FullCampaign' &&
+  variants.value.length > 0
+)
+
+const selectedFullCampaignOption = computed<FullCampaignOption | null>(() => {
+  if (!showFullCampaignOptions.value) return null
+  const key = fullCampaignOptionKey.value ?? variants.value[0]?.key
+  return variants.value.find(o => o.key === key) ?? null
 })
 </script>
 
@@ -184,14 +206,14 @@ const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
             <div class="segmented segmented-2">
               <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" />
               <label for="friends">{{ $t('create.withFriends') }}</label>
-              <input type="radio" v-model="multiplayerVariant" value="TrueSolo" id="solo" />
+              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" />
               <label for="solo">{{ $t('create.multihandedSolo') }}</label>
             </div>
           </div>
         </transition>
 
         <transition name="slide">
-        <div v-if="multiplayerVariant === 'TrueSolo' && playerCount > 1" class="callout">
+        <div v-if="multiplayerVariant === 'Solo' && playerCount > 1" class="callout">
             <div class="callout-title">
               <font-awesome-icon icon="eye" class="callout-icon" />
               {{ $t('create.switchingPerspectives') }}
@@ -243,6 +265,22 @@ const chaosTokensForDifficulty = computed<TokenFace[]>(() => {
             </div>
           </div>
         </template>
+      </div>
+
+      <div v-if="showFullCampaignOptions" class="card">
+        <div class="card-title">{{ $t('create.variant') }}</div>
+
+        <div class="segmented" :class="`segmented-${variants.length}`">
+          <template v-for="opt in variants" :key="opt.key">
+            <input
+              type="radio"
+              v-model="fullCampaignOptionKey"
+              :value="opt.key"
+              :id="`fullCampaignOption-${opt.key}`"
+            />
+            <label class="variant" :for="`fullCampaignOption-${opt.key}`" v-html="$t(`create.fullCampaignOption.${opt.key}`)" />
+          </template>
+        </div>
       </div>
 
       <div class="card">
@@ -627,5 +665,15 @@ input[type='radio']:checked + label {
 
 .alpha-warning {
   background: rgba(139, 0, 0, 0.25);
+}
+
+.variant {
+  display: flex;
+  flex-direction: column;
+  :deep(small) {
+    font-size: 0.85em;
+    margin-top: 4px;
+    color: rgba(255 255 255 / 0.75);
+  }
 }
 </style>

@@ -3,11 +3,11 @@
 module Arkham.Campaign.Option where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
 
 data CampaignOption
   = PerformIntro
+  | PlayersDoNotControlStoryAssetClues
   | -- | Night of the Zealot
     AddLitaChantler
   | -- | The Dunwich Legacy

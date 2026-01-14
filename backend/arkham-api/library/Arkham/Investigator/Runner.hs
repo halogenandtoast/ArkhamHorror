@@ -30,6 +30,7 @@ import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
@@ -76,6 +77,7 @@ import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, withLocationOf)
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
 import Arkham.Helpers.Ref (sourceToCard)
@@ -751,10 +753,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure $ a & resignedL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
-    mlid <- field InvestigatorLocation iid
-    for_ mlid $ \lid -> do
-      assets <- select $ assetControlledBy iid <> AssetWithAnyClues
-      for_ assets \asset -> do
+    withLocationOf iid \lid -> do
+      includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
+      let storyWrapper = if includeStory then id else (<> AssetNonStory)
+      Lifted.selectEach (storyWrapper $ assetControlledBy iid <> AssetWithAnyClues) \asset -> do
         assetClues <- field AssetClues asset
         push $ MoveTokens GameSource (AssetSource asset) (toTarget lid) Clue assetClues
       pushAll
@@ -4341,7 +4343,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       pushBatched batchId [would, Do msg]
     pure a
   Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do
-    field InvestigatorLocation iid >>= traverse_ \lid -> do
+    withLocationOf iid \lid -> do
       assetClues <- selectSum AssetClues $ assetControlledBy iid <> AssetWithAnyClues
       let cluesToPlace = min n (investigatorClues a + assetClues)
       push $ MoveTokens source (toSource a) (LocationTarget lid) Clue cluesToPlace
@@ -4351,8 +4353,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect
-    mlid <- field InvestigatorLocation iid
-    for_ mlid $ \lid ->
+    withLocationOf iid \lid -> do
       push $ PlaceTokens source (LocationTarget lid) Clue (investigatorClues a)
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveFromBearersDeckOrDiscard card -> do
@@ -4362,14 +4363,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       Just pc ->
         pure
           $ a
-          & discardL
-          %~ filter (/= pc)
-          & handL
-          %~ filter (/= card)
+          & (discardL %~ filter (/= pc))
+          & (handL %~ filter (/= card))
           & (deckL %~ Deck . filter (/= pc) . unDeck)
-          & foundCardsL
-          . each
-          %~ filter (/= card)
+          & (foundCardsL . each %~ filter (/= card))
       Nothing ->
         -- encounter cards can only be in hand
         pure $ a & (handL %~ filter (/= card))

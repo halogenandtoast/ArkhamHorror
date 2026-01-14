@@ -721,4 +721,14 @@ footer {
 ::view-transition-new(selected-game-box) {
   mix-blend-mode: normal;
 }
+
+::view-transition-group(main-header) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+::view-transition-old(main-header),
+::view-transition-new(main-header) {
+  mix-blend-mode: normal;
+}
 </style>

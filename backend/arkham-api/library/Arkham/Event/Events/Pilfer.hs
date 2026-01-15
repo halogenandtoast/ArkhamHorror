@@ -1,12 +1,10 @@
-module Arkham.Event.Events.Pilfer (pilfer, Pilfer (..)) where
+module Arkham.Event.Events.Pilfer (pilfer) where
 
-import Arkham.Aspect
-import Arkham.Classes
+import Arkham.Aspect.Types
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Investigate
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype Pilfer = Pilfer EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,11 +14,10 @@ pilfer :: EventCard Pilfer
 pilfer = event Pilfer Cards.pilfer
 
 instance RunMessage Pilfer where
-  runMessage msg e@(Pilfer attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(Pilfer attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      investigation <- aspect iid attrs (#agility `InsteadOf` #intellect) (mkInvestigate sid iid attrs)
-      enabled <- skillTestModifier sid attrs iid (DiscoveredClues 2)
-      pushAll $ enabled : leftOr investigation
+      skillTestModifier sid attrs iid (DiscoveredClues 2)
+      aspect iid attrs (#agility `InsteadOf` #intellect) (mkInvestigate sid iid attrs)
       pure e
-    _ -> Pilfer <$> runMessage msg attrs
+    _ -> Pilfer <$> liftRunMessage msg attrs

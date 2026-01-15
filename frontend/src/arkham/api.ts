@@ -7,7 +7,8 @@ import { Source } from '@/arkham/types/Source';
 import { Token } from '@/arkham/types/Token';
 import { DestinyDrawing } from '@/arkham/types/Question';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
-import { CampaignLogSettings, CampaignOption, Key } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, Key, CampaignOption } from '@/arkham/types/CampaignSettings'
+import * as NewGame from '@/arkham/types/NewGame'
 import * as JsonDecoder from 'ts.data.json';
 
 interface FetchData {
@@ -157,7 +158,7 @@ export const newGame = async (
   campaignName: string,
   multiplayerVariant: string,
   includeTarotReadings: boolean,
-  options: [CampaignOption]
+  options: NewGame.CampaignOption[]
 ): Promise<Game> => {
   const { data } = await api.post('arkham/games', {
     deckIds,

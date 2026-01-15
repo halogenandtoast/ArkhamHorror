@@ -166,6 +166,12 @@ getSkillTestMatchingSkillIcons =
 isInvestigation :: HasGame m => m Bool
 isInvestigation = (== Just #investigate) <$> getSkillTestAction
 
+isBasicInvestigation :: HasGame m => m Bool
+isBasicInvestigation = runValidT do
+  liftGuardM isInvestigation
+  AbilitySource (LocationSource _) AbilityInvestigate <- MaybeT getSkillTestAbilitySource
+  pure ()
+
 isInvestigationOf :: (HasGame m, Tracing m) => LocationMatcher -> m Bool
 isInvestigationOf matcher = runValidT do
   Action.Investigate <- MaybeT getSkillTestAction

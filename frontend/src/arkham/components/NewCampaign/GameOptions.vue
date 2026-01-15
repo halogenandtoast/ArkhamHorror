@@ -167,14 +167,13 @@ const recommendedToggles = computed<RecommendedToggle[]>(() => {
 })
 
 function optKey(o: RecommendedToggle) {
-  // if later you add option.contents, switch this to JSON.stringify(o.option)
   return o.option.tag
 }
 
 function isOptEnabled(o: RecommendedToggle) {
   const k = optKey(o)
   const v = recommendedOptionState.value[k]
-  return v ?? true // default ON if not set
+  return v ?? true
 }
 
 function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
@@ -651,7 +650,7 @@ input[type='radio']:checked + label {
 
 @keyframes glow {
   from {
-    color: #000; /* Or any other default color */
+    color: #000;
     text-shadow: 0 0 0px #ff00ff;
   }
   to {

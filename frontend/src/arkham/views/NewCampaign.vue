@@ -17,6 +17,7 @@ import ChooseMode from '@/arkham/components/NewCampaign/ChooseMode.vue'
 import GameOptions from '@/arkham/components/NewCampaign/GameOptions.vue'
 
 type Gateable = { alpha?: boolean; beta?: boolean; dev?: boolean }
+type Step = 'ChooseMode' | 'GameOptions'
 
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
@@ -36,11 +37,7 @@ const gate = <T extends Gateable>(items: T[]) =>
     return true
   })
 
-type Step = 'ChooseMode' | 'GameOptions'
-
 const step = ref<Step>('ChooseMode')
-
-// ----- state (shared) -----
 const gameMode = ref<GameMode>('Campaign')
 const includeTarotReadings = ref(false)
 const decks = ref<Arkham.Deck[]>([])
@@ -60,7 +57,6 @@ const returnTo = ref(false)
 const fullCampaignOptionKey = ref<string | null>(null)
 const recommendedOptionState = ref<Record<string, boolean>>({})
 
-// ----- data -----
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
@@ -137,7 +133,6 @@ const disabled = computed(() => {
   }
 })
 
-// ----- step gating -----
 const canGoNextFromStep1 = computed(() => {
   if (gameMode.value === 'SideStory') return !!selectedScenario.value
   return !!selectedCampaign.value
@@ -147,7 +142,6 @@ const nextDisabled = computed(() =>
   step.value === 'ChooseMode' ? !canGoNextFromStep1.value : disabled.value
 )
 
-// View Transition helper
 function withViewTransition(fn: () => void) {
   const d = document as any
   if (typeof d.startViewTransition === 'function') {
@@ -179,7 +173,7 @@ async function goNext() {
 function onKeydown(e: KeyboardEvent) {
   if (e.key !== 'Escape') return
   if (step.value !== 'ChooseMode') {
-    setStep('ChooseMode') // uses view transition
+    setStep('ChooseMode')
   }
 }
 
@@ -187,7 +181,6 @@ onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
 })
 
-// ----- lifecycle / watches -----
 onMounted(async () => {
   alpha.value = route.query.alpha !== undefined || localStorage.getItem('alpha') === 'true'
   if (route.query.alpha !== undefined) localStorage.setItem('alpha', 'true')
@@ -228,7 +221,6 @@ watch(campaign, (c) => {
     if (r.type === 'toggle' && r.option?.tag) next[r.option.tag] = true
   }
 
-  // preserve any existing user overrides (e.g. false)
   recommendedOptionState.value = { ...next, ...recommendedOptionState.value }
 }, { immediate: true })
 
@@ -243,18 +235,16 @@ watch([selectedCampaign, fullCampaign], () => {
   fullCampaignOptionKey.value = opts?.[0]?.key ?? null
 })
 
-// ----- data fetch -----
 fetchDecks().then((result) => {
   decks.value = result
   ready.value = true
 })
 
-// ----- create -----
 async function start() {
   console.log(recommendedOptionState.value)
   const enabledRecommendedOptions = Object.entries(recommendedOptionState.value)
     .filter(([, enabled]) => enabled)
-    .map(([tag]) => ({ tag })) // or { tag, contents } later
+    .map(([tag]) => ({ tag }))
 
   const variant = fullCampaignOptionKey.value ? [{ 'tag': 'CampaignVariant', 'contents': fullCampaignOptionKey.value }] : [];
 
@@ -262,8 +252,6 @@ async function start() {
     ...enabledRecommendedOptions,
     ...variant
   ]
-
-  console.log(options)
 
   if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
     if (scenario.value && currentCampaignName.value) {
@@ -301,10 +289,6 @@ async function start() {
     }
   }
 }
-
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
 </script>
 
 <template>
@@ -370,7 +354,7 @@ const emit = defineEmits<{
   </div>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 .container {
   min-width: 60vw;
   margin: 0 auto;
@@ -552,29 +536,20 @@ input[type='image'] {
   display: grid;
   gap: 12px;
   margin-top: 6px;
-
-  /* lay children out left-to-right */
   grid-auto-flow: column;
-
-  /* each child becomes a column that shares space equally */
   grid-auto-columns: 1fr;
-
-  /* no predefined columns needed */
   grid-template-columns: none;
 }
 
-/* If there is only one action, make it span full width */
 .wizard-actions > *:only-child {
   grid-column: 1 / -1;
 }
 
-/* If you end up with 3+ actions, wrap to next row nicely */
 .wizard-actions {
   grid-auto-flow: row;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-/* unify action button styling; avoid the old “full-width bar” vibe */
 .wizard-actions .action {
   height: 52px;
   border-radius: 5px;

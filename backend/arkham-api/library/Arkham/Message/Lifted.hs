@@ -2770,16 +2770,10 @@ discoverAt
   -> m ()
 discoverAt isInvestigate iid s n lid = do
   canDiscover <- getCanDiscoverClues isInvestigate iid (asId lid)
-  additional <-
-    if isInvestigate == IsInvestigate
-      then do
-        mods <- Msg.getModifiers iid
-        pure $ sum [m | DiscoveredClues m <- mods]
-      else pure 0
 
   Msg.pushWhen canDiscover
     $ Msg.DiscoverClues iid
-    $ (Msg.discover lid s (n + additional))
+    $ (Msg.discover lid s n)
       { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
       }
 

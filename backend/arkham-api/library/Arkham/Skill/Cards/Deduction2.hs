@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.Deduction2 (deduction2) where
 
-import Arkham.Helpers.SkillTest (withSkillTest, isInvestigation)
+import Arkham.Helpers.SkillTest (isInvestigation, withSkillTest)
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

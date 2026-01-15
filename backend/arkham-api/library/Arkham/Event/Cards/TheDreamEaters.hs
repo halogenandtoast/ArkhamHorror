@@ -43,8 +43,11 @@ stargazing1 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Insight, Augury]
     , cdLimits = [MaxPerGame 2]
-    , cdCriteria = Just $ Criteria.EncounterDeckWith $ LengthIs (atLeast 10)
-    , cdBondedWith = [(1, "06028")]
+    , cdCriteria =
+        Just
+          $ Criteria.EncounterDeckWith (LengthIs (atLeast 10))
+          <> youExist (InvestigatorWithBondedCard $ CardWithCardCode "06028")
+    , cdBondedWith = [(2, "06028")]
     , cdLevel = Just 1
     }
 
@@ -152,7 +155,8 @@ scroungeForSupplies :: CardDef
 scroungeForSupplies =
   (event "06165" "Scrounge for Supplies" 0 Survivor)
     { cdCardTraits = singleton Fortune
-    , cdCriteria = Just $ Criteria.ReturnableCardInDiscard (Criteria.DiscardOf You) (basic $ CardWithLevel 0)
+    , cdCriteria =
+        Just $ Criteria.ReturnableCardInDiscard (Criteria.DiscardOf You) (basic $ CardWithLevel 0)
     }
 
 practiceMakesPerfect :: CardDef

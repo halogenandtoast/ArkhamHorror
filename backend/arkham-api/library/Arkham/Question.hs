@@ -53,6 +53,11 @@ pattern HorrorLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Horror
   where
     HorrorLabel iid msgs = ComponentLabel (InvestigatorComponent iid HorrorToken) msgs
 
+pattern AuxiliaryHorrorLabel :: InvestigatorId -> [msg] -> UI msg
+pattern AuxiliaryHorrorLabel iid msgs <- AuxiliaryComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+  where
+    AuxiliaryHorrorLabel iid msgs = AuxiliaryComponentLabel (InvestigatorComponent iid HorrorToken) msgs
+
 pattern AssetHorrorLabel :: AssetId -> [msg] -> UI msg
 pattern AssetHorrorLabel aid msgs <- ComponentLabel (AssetComponent aid HorrorToken) msgs
   where
@@ -87,6 +92,7 @@ data UI msg
       , messages :: [msg]
       }
   | ComponentLabel {component :: Component, messages :: [msg]}
+  | AuxiliaryComponentLabel {component :: Component, messages :: [msg]}
   | EndTurnButton {investigatorId :: InvestigatorId, messages :: [msg]}
   | StartSkillTestButton {investigatorId :: InvestigatorId}
   | SkillTestApplyResultsButton

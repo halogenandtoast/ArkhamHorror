@@ -1948,6 +1948,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                     damageTargets
                     ((if applyAll then replicate sanity else pure) (toTarget iid') <> horrorTargets)
                 ]
+
+            auxiliaryDamageInvestigator iid' =
+              AuxiliaryHorrorLabel
+                iid'
+                [ Msg.InvestigatorDamage iid' source 0 sanity
+                , assignRestOfSanityDamage 0 damageTargets
+                    $ replicate sanity (toTarget iid') <> horrorTargets
+                ]
             damageAsset aid applyAll =
               AssetHorrorLabel
                 aid
@@ -2004,6 +2012,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 pure $ [damageInvestigator iid applyAll | null mustBeAssignedHorrorFirstBeforeInvestigator]
                   <> map (`damageAsset` applyAll) sanityDamageableAssets
                   <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
+                  <> [ auxiliaryDamageInvestigator iid
+                     | null mustBeAssignedHorrorFirstBeforeInvestigator && not applyAll
+                     ]
               DamageFirst def -> do
                 validAssets <-
                   List.intersect sanityDamageableAssets

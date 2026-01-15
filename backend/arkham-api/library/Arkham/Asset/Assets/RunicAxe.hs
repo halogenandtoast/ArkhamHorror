@@ -181,7 +181,11 @@ instance RunMessage RunicAxe where
                       chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
                   else do
                     engaged <- eid <=~> enemyEngagedWith iid
-                    unless engaged $ enemyEngageInvestigator eid iid
+                    if engaged
+                      then do
+                        locations <- getAccessibleLocations iid (attrs.ability 1)
+                        chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
+                      else enemyEngageInvestigator eid iid
         Fury -> pure ()
       RunicAxe . (`with` Metadata (inscription : inscriptions meta)) <$> liftRunMessage msg attrs
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

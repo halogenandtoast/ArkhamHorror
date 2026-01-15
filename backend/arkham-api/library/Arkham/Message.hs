@@ -1496,6 +1496,7 @@ uiToRun = \case
   EngageLabel _ msgs -> Run msgs
   AbilityLabel iid ab windows before msgs -> Run $ before <> [UseAbility iid ab windows] <> msgs
   ComponentLabel _ msgs -> Run msgs
+  AuxiliaryComponentLabel _ msgs -> Run msgs
   EndTurnButton _ msgs -> Run msgs
   StartSkillTestButton iid -> Run [StartSkillTest iid]
   SkillTestApplyResultsButton -> Run [SkillTestApplyResults]

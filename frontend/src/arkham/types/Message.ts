@@ -21,6 +21,7 @@ export enum MessageType {
   KEY_LABEL = 'KeyLabel',
   PORTRAIT_LABEL = 'PortraitLabel',
   COMPONENT_LABEL = 'ComponentLabel',
+  AUXILIARY_COMPONENT_LABEL = 'AuxiliaryComponentLabel',
   ABILITY_LABEL = 'AbilityLabel',
   END_TURN_BUTTON = 'EndTurnButton',
   START_SKILL_TEST_BUTTON = 'StartSkillTestButton',
@@ -164,6 +165,11 @@ export const componentDecoder = JsonDecoder.oneOf<Component>(
 
 export type ComponentLabel = {
   tag: MessageType.COMPONENT_LABEL
+  component: Component
+}
+
+export type AuxiliaryComponentLabel = {
+  tag: MessageType.AUXILIARY_COMPONENT_LABEL
   component: Component
 }
 
@@ -314,6 +320,7 @@ export type Message =
   | KeyLabel 
   | PortraitLabel 
   | ComponentLabel 
+  | AuxiliaryComponentLabel
   | AbilityLabel 
   | EndTurnButton 
   | StartSkillTestButton 
@@ -403,6 +410,12 @@ export const componentLabelDecoder = JsonDecoder.object<ComponentLabel>(
     component: componentDecoder
   }, 'ComponentLabel')
 
+export const auxiliaryComponentLabelDecoder = JsonDecoder.object<AuxiliaryComponentLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.AUXILIARY_COMPONENT_LABEL),
+    component: componentDecoder
+  }, 'AuxiliaryComponentLabel')
+
 export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
   {
     tag: JsonDecoder.literal(MessageType.END_TURN_BUTTON),
@@ -450,6 +463,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     keyLabelDecoder,
     portraitLabelDecoder,
     componentLabelDecoder,
+    auxiliaryComponentLabelDecoder,
     abilityLabelDecoder,
     endTurnButtonDecoder,
     startSkillTestButtonDecoder,

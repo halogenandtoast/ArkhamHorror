@@ -58,6 +58,7 @@ const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 const fullCampaignOptionKey = ref<string | null>(null)
+const recommendedOptionState = ref<Record<string, boolean>>({})
 
 // ----- data -----
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
@@ -214,8 +215,22 @@ watch(gameMode, (mode) => {
 watch(selectedCampaign, (id) => {
   selectedScenario.value = null
   returnTo.value = false
+  recommendedOptionState.value = {}
+
   if (id === '09') fullCampaign.value = 'FullCampaign'
 })
+
+watch(campaign, (c) => {
+  const recs = ((c as any)?.recommendedOptions ?? []) as Array<{ type: 'toggle'; option: { tag: string } }>
+  const next: Record<string, boolean> = {}
+
+  for (const r of recs) {
+    if (r.type === 'toggle' && r.option?.tag) next[r.option.tag] = true
+  }
+
+  // preserve any existing user overrides (e.g. false)
+  recommendedOptionState.value = { ...next, ...recommendedOptionState.value }
+}, { immediate: true })
 
 watch([selectedCampaign, fullCampaign], () => {
   if (fullCampaign.value !== 'FullCampaign') {
@@ -236,6 +251,20 @@ fetchDecks().then((result) => {
 
 // ----- create -----
 async function start() {
+  console.log(recommendedOptionState.value)
+  const enabledRecommendedOptions = Object.entries(recommendedOptionState.value)
+    .filter(([, enabled]) => enabled)
+    .map(([tag]) => ({ tag })) // or { tag, contents } later
+
+  const variant = fullCampaignOptionKey.value ? [{ 'tag': 'CampaignVariant', 'contents': fullCampaignOptionKey.value }] : [];
+
+  const options = [
+    ...enabledRecommendedOptions,
+    ...variant
+  ]
+
+  console.log(options)
+
   if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
     if (scenario.value && currentCampaignName.value) {
       const scenarioId =
@@ -250,7 +279,7 @@ async function start() {
         currentCampaignName.value,
         multiplayerVariant.value,
         includeTarotReadings.value,
-        fullCampaignOptionKey.value
+        options
       ).then((game) => router.push(`/games/${game.id}`))
     }
   } else {
@@ -267,7 +296,7 @@ async function start() {
         currentCampaignName.value,
         multiplayerVariant.value,
         includeTarotReadings.value,
-        fullCampaignOptionKey.value
+        options
       ).then((game) => router.push(`/games/${game.id}`))
     }
   }
@@ -309,6 +338,7 @@ const emit = defineEmits<{
         v-model:includeTarotReadings="includeTarotReadings"
         v-model:campaignName="campaignName"
         v-model:fullCampaignOptionKey="fullCampaignOptionKey"
+        v-model:recommendedOptionState="recommendedOptionState"
         :gameMode="gameMode"
         :campaign="campaign"
         :scenario="scenario"

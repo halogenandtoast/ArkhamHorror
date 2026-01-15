@@ -48,5 +48,14 @@
       "theDreamEaters": "The Dream-Eaters<br><small>8-part campaign</small>",
       "theDreamQuest": "The Dream-Quest<br><small>4-part campaign</small>",
       "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
+    },
+
+    "recommendedOptions": "Recommended Options",
+
+    "recommendedOption": {
+      "PlayersDoNotControlStoryAssetClues": {
+        "title": "Players Do Not Control Story Asset Clues",
+        "description": "Since The Feast of Hemlock Vale players now control clues on assets they control, this has some weird interactions in this campaign so it is recommended to enable this option to exclude story assets from that rule."
+      }
     }
 }

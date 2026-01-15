@@ -25,6 +25,7 @@
   {
     "id": "02",
     "name": "The Dunwich Legacy",
+    "recommendedOptions": [{ "type": "toggle", "option": { "tag": "PlayersDoNotControlStoryAssetClues" }}],
     "difficultyLevels": {
       "Easy":
         [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"
@@ -457,6 +458,7 @@
   {
     "id": "04",
     "name": "The Forgotten Age",
+    "recommendedOptions": [{ "type": "toggle", "option": { "tag": "PlayersDoNotControlStoryAssetClues" }}],
     "difficultyLevels": {
       "Easy":
         [ "PlusOne" , "PlusOne" , "Zero" , "Zero" , "Zero" , "MinusOne" , "MinusOne" , "MinusTwo" , "MinusThree"

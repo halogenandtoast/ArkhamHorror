@@ -141,6 +141,8 @@ instance RunMessage TheDunwichLegacy where
         p $ if warned then "epilogue2" else "epilogue1"
       gameOver
       pure c
+    HandleOption PlayersDoNotControlStoryAssetClues -> do
+      pure $ TheDunwichLegacy $ c.attrs & logL . optionsL %~ insertSet PlayersDoNotControlStoryAssetClues
     HandleOption option -> do
       investigators <- allInvestigators
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth

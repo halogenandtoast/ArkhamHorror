@@ -405,7 +405,8 @@ defaultCampaignRunner msg a = case msg of
           & (stepL %~ maybe id const mstep)
           & (completedStepsL %~ completeStep (campaignStep attrs).unwrapScenario)
   SetCampaignStep step' -> pure $ updateAttrs a $ stepL .~ step'
-  SetCampaignLog newLog -> pure $ updateAttrs a $ logL .~ newLog
+  SetCampaignLog newLog ->
+    pure $ updateAttrs a $ logL %~ \oldLog -> newLog {campaignLogOptions = newLog.options <> oldLog.options}
   SpendXP iid n -> do
     runMessage
       (ReportXp $ XpBreakdown [InvestigatorLoseXp iid $ XpDetail XpFromCardEffect "Spent Xp" n])

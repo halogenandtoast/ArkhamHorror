@@ -11,6 +11,11 @@ type FullCampaignOption = {
   difficultyLevels: Record<Difficulty, TokenFace[]>
 }
 
+type RecommendedToggle = {
+  type: 'toggle'
+  option: { tag: string }
+}
+
 const props = defineProps<{
   gameMode: GameMode
   campaign: Campaign | null | undefined
@@ -151,6 +156,33 @@ const selectedFullCampaignOption = computed<FullCampaignOption | null>(() => {
   const key = fullCampaignOptionKey.value ?? variants.value[0]?.key
   return variants.value.find(o => o.key === key) ?? null
 })
+
+const recommendedOptionState =
+  defineModel<Record<string, boolean>>('recommendedOptionState', { required: true })
+
+const recommendedToggles = computed<RecommendedToggle[]>(() => {
+  const c = props.campaign as any
+  const opts = (c?.recommendedOptions ?? []) as RecommendedToggle[]
+  return opts.filter((o) => o.type === 'toggle' && o.option?.tag)
+})
+
+function optKey(o: RecommendedToggle) {
+  // if later you add option.contents, switch this to JSON.stringify(o.option)
+  return o.option.tag
+}
+
+function isOptEnabled(o: RecommendedToggle) {
+  const k = optKey(o)
+  const v = recommendedOptionState.value[k]
+  return v ?? true // default ON if not set
+}
+
+function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
+  recommendedOptionState.value = {
+    ...recommendedOptionState.value,
+    [optKey(o)]: enabled,
+  }
+}
 </script>
 
 <template>
@@ -315,6 +347,41 @@ const selectedFullCampaignOption = computed<FullCampaignOption | null>(() => {
 
           <input type="radio" v-model="includeTarotReadings" :value="true" id="tarotYes" />
           <label for="tarotYes">{{ $t('Yes') }}</label>
+        </div>
+      </div>
+
+      <div v-if="recommendedToggles.length > 0" class="card">
+        <div class="card-title">{{ $t('create.recommendedOptions') ?? 'Recommended options' }}</div>
+
+        <div class="recommended-list">
+          <div class="recommended-row" v-for="o in recommendedToggles" :key="optKey(o)">
+            <div class="recommended-text">
+              <div class="recommended-name">
+                {{ $t(`create.recommendedOption.${o.option.tag}.title`) ?? o.option.tag }}
+              </div>
+              <div class="recommended-desc" v-if="$te?.(`create.recommendedOption.${o.option.tag}.description`)">
+                {{ $t(`create.recommendedOption.${o.option.tag}.description`) }}
+              </div>
+            </div>
+
+            <div class="segmented segmented-2 recommended-toggle">
+              <input
+                type="radio"
+                :id="`rec-${optKey(o)}-on`"
+                :checked="isOptEnabled(o)"
+                @change="setOptEnabled(o, true)"
+              />
+              <label :for="`rec-${optKey(o)}-on`">{{ $t('On') ?? 'On' }}</label>
+
+              <input
+                type="radio"
+                :id="`rec-${optKey(o)}-off`"
+                :checked="!isOptEnabled(o)"
+                @change="setOptEnabled(o, false)"
+              />
+              <label :for="`rec-${optKey(o)}-off`">{{ $t('Off') ?? 'Off' }}</label>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -674,6 +741,50 @@ input[type='radio']:checked + label {
     font-size: 0.85em;
     margin-top: 4px;
     color: rgba(255 255 255 / 0.75);
+  }
+}
+
+.recommended-list {
+  display: grid;
+  gap: 10px;
+}
+
+.recommended-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.recommended-row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.recommended-name {
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+}
+
+.recommended-desc {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(255,255,255,0.65);
+}
+
+.recommended-toggle {
+  width: 180px;
+}
+
+@media (max-width: 700px) {
+  .recommended-row {
+    grid-template-columns: 1fr;
+  }
+  .recommended-toggle {
+    width: 100%;
   }
 }
 </style>

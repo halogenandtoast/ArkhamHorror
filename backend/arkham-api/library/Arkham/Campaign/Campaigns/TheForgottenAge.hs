@@ -2,6 +2,8 @@ module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenA
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Option
+import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.CampaignSteps
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
@@ -704,4 +706,6 @@ instance RunMessage TheForgottenAge where
         case fromJSON value of
           Success meta' -> pure . TheForgottenAge $ attrs {campaignMeta = meta'}
           _ -> error "Invalid meta!"
+      HandleOption PlayersDoNotControlStoryAssetClues -> do
+        pure $ TheForgottenAge $ attrs & logL . optionsL %~ insertSet PlayersDoNotControlStoryAssetClues
       _ -> lift $ defaultCampaignRunner msg c

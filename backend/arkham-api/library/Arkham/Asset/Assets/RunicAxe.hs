@@ -63,6 +63,7 @@ override a iid distance =
  where
   atDistance n =
     EnemyAt
+      $ CanMoveToLocation You (toSource a)
       $ if n == 1
         then AccessibleFrom ForMovement (locationWithInvestigator iid)
         else LocationWithAccessiblePath (toSource a) n (InvestigatorWithId iid) Anywhere

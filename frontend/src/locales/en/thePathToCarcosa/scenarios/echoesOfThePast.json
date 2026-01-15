@@ -69,7 +69,7 @@
       "r2": "It's just a silly trinket, and it would be wrong to steal from the Historical Society. Leave it behind (-> R2)"
     },
     "ledAstray": {
-      "placeClues": "Place 1 of your clues on a Cultist enemy"
+      "placeClue": "Place 1 of your clues on a Cultist enemy"
     }
   },
   "tooltips": {

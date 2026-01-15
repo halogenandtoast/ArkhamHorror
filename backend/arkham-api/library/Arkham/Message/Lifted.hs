@@ -2017,6 +2017,9 @@ focusChaosTokens tokens f = do
   push $ FocusChaosTokens tokens
   f UnfocusChaosTokens
 
+focusChaosTokens_ :: ReverseQueue m => [ChaosToken] -> m () -> m ()
+focusChaosTokens_ tokens body = focusChaosTokens tokens \u -> body >> push u
+
 data Unfocus = NeedsUnfocus | Unfocused
 
 unfocusCards :: (ReverseQueue m, MonadState Unfocus m) => m ()

@@ -1,8 +1,9 @@
-module Arkham.Investigator.Cards.WendyAdamsParallel (wendyAdamsParallel, WendyAdamsParallel (..)) where
+module Arkham.Investigator.Cards.WendyAdamsParallel (wendyAdamsParallel) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
+import Arkham.Helpers.SkillTest.Target
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher hiding (RevealChaosToken)
@@ -22,9 +23,9 @@ wendyAdamsParallel =
 instance HasAbilities WendyAdamsParallel where
   getAbilities (WendyAdamsParallel a) =
     [ playerLimit PerTestOrAbility
-        $ restricted a 1 Self
+        $ selfAbility_ a 1
         $ freeReaction
-        $ SkillTestResult #after You #evading #success
+        $ SkillTestResult #after You (WhileEvadingAnEnemy NonEliteEnemy) #success
     ]
 
 instance HasChaosTokenValue WendyAdamsParallel where
@@ -35,8 +36,7 @@ instance HasChaosTokenValue WendyAdamsParallel where
 instance RunMessage WendyAdamsParallel where
   runMessage msg i@(WendyAdamsParallel attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      revealedTokens <-
-        filter ((`elem` [CurseToken, BlessToken]) . (.face)) <$> getSkillTestRevealedChaosTokens
+      revealedTokens <- filter ((`elem` [#curse, #bless]) . (.face)) <$> getSkillTestRevealedChaosTokens
       inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
 
       chooseOneM iid do
@@ -47,45 +47,31 @@ instance RunMessage WendyAdamsParallel where
             doStep 2 msg
       pure i
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> do
-          inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
-          push $ FocusChaosTokens inBag
-          chooseOneM iid do
-            targets inBag \token -> do
-              push $ SealChaosToken token
-              push $ SealedChaosToken token (Just iid) (toTarget eid)
-          push $ UnfocusChaosTokens
-        _ -> pure ()
+      withSkillTestEnemyTarget \eid -> do
+        inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
+        focusChaosTokens_ inBag do
+          chooseOneM iid $ targets inBag $ sealChaosToken iid eid
       pure i
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> do
-          revealedTokens <-
-            filter ((`elem` [CurseToken, BlessToken]) . (.face)) <$> getSkillTestRevealedChaosTokens
-          push $ FocusChaosTokens revealedTokens
+      withSkillTestEnemyTarget \eid -> do
+        revealedTokens <- filter ((`elem` [#curse, #bless]) . (.face)) <$> getSkillTestRevealedChaosTokens
+        focusChaosTokens_ revealedTokens do
           chooseUpToNM iid (length revealedTokens) "Done sealing tokens" do
-            targets revealedTokens \token -> do
-              push $ SealChaosToken token
-              push $ SealedChaosToken token (Just iid) (toTarget eid)
-          push $ UnfocusChaosTokens
-        _ -> pure ()
+            targets revealedTokens $ sealChaosToken iid eid
       pure i
     ElderSignEffect (is attrs -> True) -> do
       withSkillTest \sid -> do
         tokens <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
         when (notNull tokens) do
-          push $ FocusChaosTokens tokens
-          chooseUpToNM attrs.id 2 "Do not choose any more tokens" do
-            targets tokens \token -> do
-              skillTestModifiers
-                sid
-                attrs
-                token
-                [IgnoreChaosTokenModifier, IgnoreChaosTokenEffects, ReturnCursedToChaosBag, ReturnBlessedToChaosBag]
-              push $ RevealChaosToken (SkillTestSource sid) attrs.id token
-              push $ RevealSkillTestChaosTokensAgain attrs.id
-          push UnfocusChaosTokens
-
+          focusChaosTokens_ tokens do
+            chooseUpToNM attrs.id 2 "Do not choose any more tokens" do
+              targets tokens \token -> do
+                skillTestModifiers
+                  sid
+                  attrs
+                  token
+                  [IgnoreChaosTokenModifier, IgnoreChaosTokenEffects, ReturnCursedToChaosBag, ReturnBlessedToChaosBag]
+                push $ RevealChaosToken (SkillTestSource sid) attrs.id token
+                push $ RevealSkillTestChaosTokensAgain attrs.id
       pure i
     _ -> WendyAdamsParallel <$> liftRunMessage msg attrs

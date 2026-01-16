@@ -22,12 +22,17 @@ instance RunMessage SubstanceDissimulation where
       hollowCards <- traverse fetchCard hollowed
       hollowedMatches <- forMaybeM hollowCards \card -> do
         others <-
-          select $ oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid] <> basic (CardWithTitle card.title)
+          select
+            $ oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+            <> basic (CardWithTitle card.title <> not_ PermanentCard)
         pure $ guard (notNull others) $> (card, others)
 
       if null hollowedMatches
         then do
-          cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+          cards <-
+            select
+              $ basic (NonWeakness <> not_ PermanentCard)
+              <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
           focusCards cards $ chooseTargetM iid cards $ hollow iid
         else do
           focusCards hollowCards do

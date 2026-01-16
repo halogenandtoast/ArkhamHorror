@@ -28,7 +28,10 @@ instance RunMessage ApocalypticPresage where
   runMessage msg e@(ApocalypticPresage attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
-        cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+        cards <-
+          select
+            $ basic (NonWeakness <> not_ PermanentCard)
+            <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
         focusCards cards $ chooseTargetM iid cards $ hollow iid
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do

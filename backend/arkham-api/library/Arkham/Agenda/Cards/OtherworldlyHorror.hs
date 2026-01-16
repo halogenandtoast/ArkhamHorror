@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (getLead, getInvestigators)
+import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -45,7 +45,9 @@ instance RunMessage OtherworldlyHorror where
       investigators <- getInvestigators
       canHollow <-
         investigators & anyM \iid ->
-          selectAny $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+          selectAny
+            $ basic (NonWeakness <> not_ PermanentCard)
+            <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
 
       anyConcealed <- selectAny ConcealedCardAny
 
@@ -54,7 +56,10 @@ instance RunMessage OtherworldlyHorror where
           eachInvestigator \iid -> assignDamageAndHorror iid attrs 1 1
         labeledValidate' canHollow "otherworldlyHorror.hollows" do
           eachInvestigator \iid -> do
-            cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+            cards <-
+              select
+                $ basic (NonWeakness <> not_ PermanentCard)
+                <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
             focusCards cards $ chooseTargetM iid cards $ hollow iid
         labeledValidate' anyConcealed "otherworldlyHorror.shuffleAllConcealed" do
           scenarioSpecific_ "shuffleAllConcealed"

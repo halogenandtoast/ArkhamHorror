@@ -1,51 +1,39 @@
 module Arkham.Event.Events.OneTwoPunch (oneTwoPunch) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (getSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.SkillTest.Base
 
-newtype Metadata = Metadata {isFirst :: Bool}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype OneTwoPunch = OneTwoPunch (EventAttrs `With` Metadata)
+newtype OneTwoPunch = OneTwoPunch EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oneTwoPunch :: EventCard OneTwoPunch
-oneTwoPunch = event (OneTwoPunch . (`with` Metadata True)) Cards.oneTwoPunch
+oneTwoPunch = event OneTwoPunch Cards.oneTwoPunch
 
 instance RunMessage OneTwoPunch where
-  runMessage msg e@(OneTwoPunch (attrs `With` metadata)) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(OneTwoPunch attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid attrs
-      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat 1)
-      pushAll [enabled, chooseFight]
+      skillTestModifier sid attrs iid (SkillModifier #combat 1)
+      chooseFightEnemy sid iid attrs
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
+    PassedThisSkillTest iid (isSource attrs -> True) | getEventMetaDefault True attrs -> do
       skillTest <- fromJustNote "invalid call" <$> getSkillTest
-      isStillAlive <- case skillTestTarget skillTest of
+      isStillAlive <- case skillTest.target of
         EnemyTarget eid -> selectAny $ EnemyWithId eid
         LocationTarget lid -> selectAny $ LocationWithId lid
         AssetTarget aid -> selectAny $ AssetWithId aid
         _ -> error "invalid call"
-
-      player <- getPlayer iid
       sid <- getRandom
-      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-              "Fight that enemy again"
-              [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
-          | isStillAlive
-          ]
-        <> [Label "Do not fight that enemy again" []]
-      pure . OneTwoPunch $ attrs `with` Metadata False
-    _ -> OneTwoPunch . (`with` metadata) <$> runMessage msg attrs
+      enabled <- capture $ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
+      chooseOrRunOneM iid $ cardI18n do
+        labeledValidate' isStillAlive "oneTwoPunch.again" do
+          push $ BeginSkillTestWithPreMessages' enabled (resetSkillTest sid skillTest)
+        labeled' "oneTwoPunch.skip" nothing
+      pure . OneTwoPunch $ attrs & setMeta False
+    _ -> OneTwoPunch <$> liftRunMessage msg attrs

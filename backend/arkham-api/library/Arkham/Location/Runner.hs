@@ -29,6 +29,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -238,8 +239,9 @@ instance RunMessage LocationAttrs where
             lift $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
           pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
         else do
-          tokens <- field LocationTokens lid
-          putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
+          concealed <- getConcealedAt (ForExpose $ toSource iid) lid
+          when (notNull concealed) do
+            chooseExposeConcealedAt iid iid (LocationWithId lid)
 
       pure a
     FailedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do

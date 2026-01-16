@@ -50,6 +50,6 @@ instance RunMessage UncannyShadowPlayfulShadows where
       flipOverBy iid (attrs.ability 2) attrs
       pure e
     Flip iid _source (isTarget attrs -> True) -> do
-      readStoryWithPlacement iid attrs Stories.timorousShadows (enemyPlacement attrs)
+      readStoryWithPlacement iid attrs Stories.playfulShadows (enemyPlacement attrs)
       pure e
     _ -> UncannyShadowPlayfulShadows <$> liftRunMessage msg attrs

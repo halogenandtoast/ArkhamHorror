@@ -1,4 +1,4 @@
-module Arkham.Event.Events.OneTwoPunch (oneTwoPunch, OneTwoPunch (..)) where
+module Arkham.Event.Events.OneTwoPunch (oneTwoPunch) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
@@ -30,33 +30,22 @@ instance RunMessage OneTwoPunch where
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
       skillTest <- fromJustNote "invalid call" <$> getSkillTest
-      case skillTestTarget skillTest of
-        EnemyTarget eid -> do
-          isStillAlive <- selectAny $ EnemyWithId eid
-          player <- getPlayer iid
-          sid <- getRandom
-          enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-          push
-            $ chooseOrRunOne player
-            $ [ Label
-                "Fight that enemy again"
-                [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
-              | isStillAlive
-              ]
-            <> [Label "Do not fight that enemy again" []]
-        LocationTarget lid -> do
-          isStillAlive <- selectAny $ LocationWithId lid
-          player <- getPlayer iid
-          sid <- getRandom
-          enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-          push
-            $ chooseOrRunOne player
-            $ [ Label
-                "Fight that location again"
-                [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
-              | isStillAlive
-              ]
-            <> [Label "Do not fight that location again" []]
-        other -> error $ "invalid call: " <> show other
+      isStillAlive <- case skillTestTarget skillTest of
+        EnemyTarget eid -> selectAny $ EnemyWithId eid
+        LocationTarget lid -> selectAny $ LocationWithId lid
+        AssetTarget aid -> selectAny $ AssetWithId aid
+        _ -> error "invalid call"
+
+      player <- getPlayer iid
+      sid <- getRandom
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
+      push
+        $ chooseOrRunOne player
+        $ [ Label
+              "Fight that enemy again"
+              [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
+          | isStillAlive
+          ]
+        <> [Label "Do not fight that enemy again" []]
       pure . OneTwoPunch $ attrs `with` Metadata False
     _ -> OneTwoPunch . (`with` metadata) <$> runMessage msg attrs

@@ -27,7 +27,10 @@ instance RunMessage WarpedReality where
       withLocationOf iid $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+      cards <-
+        select
+          $ basic (NonWeakness <> not_ PermanentCard)
+          <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
       focusCards cards $ chooseTargetM iid cards $ hollow iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

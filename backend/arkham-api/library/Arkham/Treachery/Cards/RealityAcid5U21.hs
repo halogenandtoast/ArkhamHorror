@@ -169,7 +169,8 @@ instance RunMessage RealityAcid5U21 where
             inDeck <- select $ inDeckOf investigator <> basic (SignatureCard <> NonWeakness)
             inHand <- select $ inHandOf NotForPlay investigator <> basic (SignatureCard <> NonWeakness)
             inDiscard <- select $ inDiscardOf investigator <> basic (SignatureCard <> NonWeakness)
-            inPlay <- select $ inPlayAreaOf investigator <> basic (SignatureCard <> NonWeakness)
+            inPlay <-
+              select $ inPlayAreaOf investigator <> basic (SignatureCard <> NonWeakness <> not_ PermanentCard)
 
             let choices = inDeck <> inHand <> inDiscard <> inPlay
 
@@ -180,8 +181,8 @@ instance RunMessage RealityAcid5U21 where
                   Just
                     $ ( investigator
                       , [ targetLabel x
-                          $ [ObtainCard x.id, Devoured iid (toCard x)]
-                          <> [ShuffleDeck (Deck.InvestigatorDeck investigator) | x `elem` inDeck]
+                            $ [ObtainCard x.id, Devoured iid (toCard x)]
+                            <> [ShuffleDeck (Deck.InvestigatorDeck investigator) | x `elem` inDeck]
                         | x <- inDeck <> inHand <> inDiscard <> inPlay
                         ]
                       )

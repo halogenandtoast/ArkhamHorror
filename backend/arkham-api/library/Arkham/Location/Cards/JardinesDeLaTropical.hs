@@ -42,7 +42,10 @@ instance RunMessage JardinesDeLaTropical where
             targets cards $ drawCard iid'
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+      cards <-
+        select
+          $ basic (NonWeakness <> not_ PermanentCard)
+          <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
       focusCards cards $ chooseTargetM iid cards $ hollow iid
       pure l
     _ -> JardinesDeLaTropical <$> liftRunMessage msg attrs

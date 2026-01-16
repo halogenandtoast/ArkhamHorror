@@ -43,7 +43,9 @@ instance RunMessage OtherworldlyLambs where
       investigators <- getInvestigators
       canHollow <-
         investigators & anyM \iid ->
-          selectAny $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+          selectAny
+            $ basic (NonWeakness <> not_ PermanentCard)
+            <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
 
       anyConcealed <- selectAny ConcealedCardAny
 
@@ -52,7 +54,10 @@ instance RunMessage OtherworldlyLambs where
           eachInvestigator \iid -> assignDamageAndHorror iid attrs 1 1
         labeledValidate' canHollow "otherworldlyLambs.hollows" do
           eachInvestigator \iid -> do
-            cards <- select $ basic NonWeakness <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
+            cards <-
+              select
+                $ basic (NonWeakness <> not_ PermanentCard)
+                <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
             focusCards cards $ chooseTargetM iid cards $ hollow iid
         labeledValidate' anyConcealed "otherworldlyLambs.shuffleAllConcealed" do
           scenarioSpecific_ "shuffleAllConcealed"

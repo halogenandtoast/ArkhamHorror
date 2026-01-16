@@ -40,7 +40,7 @@ instance RunMessage ReawakenedElderThing where
     RemovedFromPlay (isSource attrs -> True) -> do
       mloc <- field EnemyLocation attrs.id
       for_ mloc $ for_ (enemyKeys attrs) . placeKey
-      pure e
+      ReawakenedElderThing <$> liftRunMessage msg (attrs & keysL .~ mempty)
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       unless attrs.ready $ readyThis attrs
       case attrs.placement of

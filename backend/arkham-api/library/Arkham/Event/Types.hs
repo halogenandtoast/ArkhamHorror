@@ -361,6 +361,11 @@ getEventMeta a = case fromJSON (eventMeta a) of
   Error _ -> Nothing
   Success a' -> Just a'
 
+getEventMetaDefault :: FromJSON a => a -> EventAttrs -> a
+getEventMetaDefault def a = case fromJSON a.meta of
+  Error _ -> def
+  Success a' -> a'
+
 setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> EventAttrs -> EventAttrs
 setMetaKey k v attrs = case attrs.meta of
   Object o -> attrs {eventMeta = Object $ KeyMap.insert k (toJSON v) o}

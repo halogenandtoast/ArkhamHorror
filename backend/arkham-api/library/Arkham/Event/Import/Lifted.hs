@@ -11,6 +11,7 @@ import Arkham.Event.Runner as X (
   event,
   eventWith,
   getEventMeta,
+  getEventMetaDefault,
   getMetaKey,
   getMetaKeyDefault,
   is,

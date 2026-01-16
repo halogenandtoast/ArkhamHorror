@@ -2,6 +2,10 @@
   "label": {
     "occultReliquary": {
       "choose": "Choose initial slot type for Occult Reliquary"
+    },
+    "oneTwoPunch": {
+      "again": "Fight that enemy again",
+      "skip": "Do not fight that enemy again"
     }
   }
 }

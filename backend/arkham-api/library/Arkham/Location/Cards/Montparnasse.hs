@@ -23,7 +23,7 @@ instance HasAbilities Montparnasse where
 
 instance RunMessage Montparnasse where
   runMessage msg a@(Montparnasse attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (DiscardCardPayment cards) -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (discardedCards -> cards) -> do
       let countWillpower = count (== #willpower) . cdSkills . toCardDef
       let totalWillpower = sum $ map countWillpower cards
       gainResources iid (attrs.ability 1) totalWillpower

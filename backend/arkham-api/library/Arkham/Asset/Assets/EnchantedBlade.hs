@@ -14,9 +14,7 @@ enchantedBlade :: AssetCard EnchantedBlade
 enchantedBlade = asset EnchantedBlade Cards.enchantedBlade
 
 getPaidUse :: Payment -> Bool
-getPaidUse (UsesPayment n) = n > 0
-getPaidUse (Payments ps) = any getPaidUse ps
-getPaidUse _ = False
+getPaidUse = (> 0) . totalUsesPayment
 
 instance HasAbilities EnchantedBlade where
   getAbilities (EnchantedBlade attrs) =

@@ -1343,9 +1343,10 @@ chooseAmount
   -> target
   -> m ()
 chooseAmount iid label choiceLabel minVal maxVal target = do
-  player <- getPlayer iid
-  Msg.pushM
-    $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
+  unless (maxVal == 0) do
+    player <- getPlayer iid
+    Msg.pushM
+      $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
 
 -- Don't use this yet
 chooseAmountLabeled

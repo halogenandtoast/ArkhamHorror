@@ -32,7 +32,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Control.Lens (Plated (..), cosmos, sumOf, toListOf, _2)
+import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
 import Data.Map.Strict qualified as Map
@@ -715,6 +715,14 @@ totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPaym
 
 discardPayments :: Payment -> [(Zone, Card)]
 discardPayments = concat . toListOf (cosmos . _DiscardPayment)
+
+discardPayment :: Payment -> Maybe Card
+discardPayment = preview (cosmos . _DiscardPayment . _singleton . _2)
+
+_singleton :: Prism' [a] a
+_singleton = prism' (: []) \case
+  [a] -> Just a
+  _ -> Nothing
 
 chosenEnemyPayment :: Payment -> Maybe EnemyId
 chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)

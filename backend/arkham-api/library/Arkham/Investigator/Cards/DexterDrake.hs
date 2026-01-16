@@ -51,13 +51,9 @@ instance HasChaosTokenValue DexterDrake where
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-toCardPaid :: Payment -> Card
-toCardPaid (DiscardPayment [(_, c)]) = c
-toCardPaid _ = error "Invalid payment"
-
 instance RunMessage DexterDrake where
   runMessage msg i@(DexterDrake attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (discardPayment -> Just card) -> do
       cards <-
         select
           $ ExtendedCardWithOneOf

@@ -14,11 +14,6 @@ newtype EnchantedBladeMystic3 = EnchantedBladeMystic3 AssetAttrs
 enchantedBladeMystic3 :: AssetCard EnchantedBladeMystic3
 enchantedBladeMystic3 = asset EnchantedBladeMystic3 Cards.enchantedBladeMystic3
 
-getUsesPaid :: Payment -> Int
-getUsesPaid (UsesPayment n) = n
-getUsesPaid (Payments ps) = sum $ map getUsesPaid ps
-getUsesPaid _ = 0
-
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
     [ withAdditionalCost (UpTo (Fixed 2) $ assetUseCost attrs Charge 1)
@@ -27,7 +22,7 @@ instance HasAbilities EnchantedBladeMystic3 where
 
 instance RunMessage EnchantedBladeMystic3 where
   runMessage msg a@(EnchantedBladeMystic3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (getUsesPaid -> usesPaid) -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> usesPaid) -> do
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source

@@ -28,15 +28,9 @@ instance HasAbilities TheBlackBook where
         $ triggered (PlayCard #when You #any) (exhaust a <> HorrorCostX (toSource a))
     ]
 
-toHorror :: Payment -> Int
-toHorror = \case
-  HorrorPayment n -> n
-  Payments ps -> sum $ map toHorror ps
-  _ -> 0
-
 instance RunMessage TheBlackBook where
   runMessage msg a@(TheBlackBook attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (cardPlayed -> card) (toHorror -> n) -> do
+    UseCardAbility _ (isSource attrs -> True) 1 (cardPlayed -> card) (horrorPaid -> n) -> do
       reduceCostOf (attrs.ability 1) card n
       pure a
     _ -> TheBlackBook <$> liftRunMessage msg attrs

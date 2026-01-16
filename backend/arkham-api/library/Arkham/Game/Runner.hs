@@ -2011,7 +2011,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   AddToVictory miid (LocationTarget lid) -> do
     card <- field LocationCard lid
+    pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
     pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
+    pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
   PlayerWindow iid _ _ _ -> do
     player <- getPlayer iid

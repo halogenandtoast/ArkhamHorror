@@ -969,8 +969,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       flip runMatchesM as $ \i -> do
         selfCount <- length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
         pure $ selfCount == maximum (ncons selfCount allCounts)
-    HasMatchingAsset assetMatcher -> flip runMatchesM as $ \i ->
-      selectAny $ assetMatcher <> assetControlledBy (toId i)
+    HasMatchingAsset assetMatcher ->
+      as & runMatchesM \i ->
+        selectAny (assetMatcher <> AssetControlledBy (IncludeEliminated $ InvestigatorWithId $ toId i))
     HasMatchingTreachery treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
     InvestigatorWithScarletKey sm -> do

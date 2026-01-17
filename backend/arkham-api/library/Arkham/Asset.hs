@@ -1005,6 +1005,7 @@ allAssets =
     , SomeAssetCard agentAriQuinnFoundationResearcher
     , SomeAssetCard drDewiIrawanCryptozoologist
     , SomeAssetCard expeditedTicket
+    , SomeAssetCard foundationIntel
     , -- The Feast of Hemloch Vale
       --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive

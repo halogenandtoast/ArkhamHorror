@@ -54,7 +54,12 @@
     "theGrifter": {
       "rank": "Change Rank",
       "suit": "Change Suit",
-      "color": "Change Color"
+      "color": "Change Color",
+      "alarmLevel": "Reduce your alarm level by 1",
+      "change": {
+        "unpracticed": "Raise your alarm level by 1 to change the rank, suit, or color of a discarded game icon (to anything).",
+        "practiced": "Raise your alarm level by 1 to change the rank, suit, or color of up to 2 discarded game icons (to anything)."
+      }
     },
     "rank": {
       "Four": "Four",

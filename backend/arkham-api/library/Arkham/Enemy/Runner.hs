@@ -445,6 +445,7 @@ instance RunMessage EnemyAttrs where
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll $ EnemyEntered eid lid
                         : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
+                          <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
                           <> [afterSpawns, EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
@@ -483,11 +484,12 @@ instance RunMessage EnemyAttrs where
         SpawnPlaced placement -> do
           placementLocation placement >>= \case
             Nothing -> push $ PlaceEnemy enemyId placement
-            Just lid -> canSpawnInLocation enemyId lid >>= \case
-              True -> do
-                afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-                pushAll [PlaceEnemy enemyId placement, afterSpawns, EnemySpawned details]
-              False -> push $ toDiscard GameSource enemyId
+            Just lid ->
+              canSpawnInLocation enemyId lid >>= \case
+                True -> do
+                  afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
+                  pushAll [PlaceEnemy enemyId placement, afterSpawns, EnemySpawned details]
+                False -> push $ toDiscard GameSource enemyId
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure a
     EnemySpawned details | details.enemy == enemyId -> do

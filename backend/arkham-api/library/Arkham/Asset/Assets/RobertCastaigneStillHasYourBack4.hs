@@ -52,7 +52,7 @@ instance RunMessage RobertCastaigneStillHasYourBack4 where
       abilities <-
         filterM (getCanPerformAbility iid (defaultWindows iid))
           =<< selectMap adjustAbility (AssetAbility (AssetWithId aid) <> #fight)
-      chooseOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing
+      chooseOneM iid $ for_ abilities \ab -> abilityLabeledWithBefore iid ab [UnfocusCards] nothing
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       inHand <- selectAny $ inHandOf NotForPlay iid

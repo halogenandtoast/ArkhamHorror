@@ -114,3 +114,7 @@ raiseAlarmLevel source iids = do
   unless (null valids) do
     checkWindows $ mkAfter <$> map IncreasedAlarmLevel valids
 {-# INLINE raiseAlarmLevel #-}
+
+raiseAlarmLevelOf :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
+raiseAlarmLevelOf source iid = raiseAlarmLevel source [iid]
+{-# INLINE raiseAlarmLevelOf #-}

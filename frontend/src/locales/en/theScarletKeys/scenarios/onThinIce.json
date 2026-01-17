@@ -1,4 +1,18 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of _Hazard_ treacheries in play.",
+      "cultist": "-4. If you fail, choose a non-weakness card in your hand and set it aside, out of play, as a hollow.",
+      "tablet": "-2 (-5 instead if Void Chimera is at your location).",
+      "elderThing": "-3. If you fail, look at the top card of your deck. If it is not a weakness, set it aside, out of play, as a hollow."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of _Hazard_ treacheries in play.",
+      "cultist": "-5. Choose a non-weakness card in your hand and set it aside, out of play, as a hollow.",
+      "tablet": "-3. If Void Chimera is at your location, you automatically fail, instead.",
+      "elderThing": "-4. Look at the top card of your deck. If it is not a weakness, set it aside, out of play, as a hollow."
+    }
+  },
   "tooltips": {
     "anchorage": {
       "resign": "\"I thought Alaska was supposed to be nice this time of year!\""

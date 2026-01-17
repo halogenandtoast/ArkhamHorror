@@ -5297,6 +5297,7 @@ instance Projection Agenda where
       AgendaAbilities -> pure $ getAbilities a
       AgendaCard -> pure $ lookupCard (unAgendaId aid) agendaCardId
       AgendaUsedWheelOfFortuneX -> pure agendaUsedWheelOfFortuneX
+      AgendaFlipped -> pure agendaFlipped
       AgendaTokens -> pure agendaTokens
 
 instance Projection Campaign where

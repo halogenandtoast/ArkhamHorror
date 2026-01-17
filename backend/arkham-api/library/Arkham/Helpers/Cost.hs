@@ -472,6 +472,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better
       EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher
+      SkillIconCostMatching n skillTypes matcher -> do
+        cards <- mapMaybe (preview _PlayerCard) <$> select matcher
+        let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
+        let total = sum $ map (count countF . cdSkills . toCardDef) cards
+        pure $ total >= n
       SkillIconCost n skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
         let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
@@ -480,6 +485,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       SameSkillIconCost n -> do
         handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
         let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) handCards
+        let wildCount = total ^. at #wild . non 0
+        pure $ foldr (\x y -> y || x + wildCount >= n) False $ toList $ deleteMap #wild total
+      SameSkillIconCostMatching n matcher -> do
+        cards <- mapMaybe (preview _PlayerCard) <$> select matcher
+        let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) cards
         let wildCount = total ^. at #wild . non 0
         pure $ foldr (\x y -> y || x + wildCount >= n) False $ toList $ deleteMap #wild total
       DiscardCombinedCost n -> do

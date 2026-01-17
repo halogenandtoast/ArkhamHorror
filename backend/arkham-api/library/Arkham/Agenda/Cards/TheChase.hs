@@ -49,7 +49,7 @@ instance RunMessage TheChase where
         targets enemies \x -> do
           push $ HunterMove x
           temporaryModifier x attrs DoNotExhaust do
-            push $ ForTarget (toTarget x) EnemiesAttack
+            push $ ForTarget (toTarget x) (Do EnemiesAttack)
 
       enemyCount <- selectCount AnyEnemy
       investigators <- inTurnOrder =<< select UneliminatedInvestigator

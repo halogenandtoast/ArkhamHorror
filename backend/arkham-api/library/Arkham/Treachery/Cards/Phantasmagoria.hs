@@ -34,7 +34,7 @@ instance RunMessage Phantasmagoria where
                 [] -> do
                   push $ HunterMove x
                   temporaryModifier x attrs DoNotExhaust do
-                    push $ ForTarget (toTarget x) EnemiesAttack
+                    push $ ForTarget (toTarget x) (Do EnemiesAttack)
                 (n : _) ->
                   field EnemyLocation x >>= traverse_ \lid -> do
                     obtainCard n

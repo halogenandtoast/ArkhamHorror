@@ -61,7 +61,7 @@ instance RunMessage TheUnsealing where
       cancelWindowBatch ws
       push $ HunterMove x
       temporaryModifier x attrs DoNotExhaust do
-        push $ ForTarget (toTarget x) EnemiesAttack
+        push $ ForTarget (toTarget x) (Do EnemiesAttack)
       pure s
     UseCardAbility _iid (isSource attrs -> True) 2 (getEnemy -> x) _ -> do
       twistedAntiprism <- selectJust $ scarletKeyIs ScarletKeys.theTwistedAntiprism

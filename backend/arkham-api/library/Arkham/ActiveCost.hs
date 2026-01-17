@@ -1343,6 +1343,29 @@ payCost msg c iid skipAdditionalCosts cost = do
             cards
       push $ chooseOne player cardMsgs
       pure c
+    SkillIconCostMatching x skillTypes matcher -> do
+      matchedCards <- mapMaybe (preview _PlayerCard) <$> select matcher
+      handCards <-
+        filter (`elem` matchedCards) . mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+      let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
+      let
+        cards =
+          filter ((> 0) . fst)
+            $ map (toFst (count countF . cdSkills . toCardDef)) matchedCards
+        handleDiscard card
+          | card `elem` handCards = toMessage (discardCard iid c.source card)
+          | otherwise = toDiscardBy iid c.source card
+        cardMsgs =
+          map
+            ( \(n, card) ->
+                targetLabel (toCardId card)
+                  $ handleDiscard card
+                  : PaidAbilityCost iid Nothing (SkillIconPayment card.skills)
+                  : [pay (SkillIconCostMatching (x - n) skillTypes matcher) | n < x]
+            )
+            cards
+      push $ chooseOne player cardMsgs
+      pure c
     SameSkillIconCost x -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) handCards
@@ -1352,6 +1375,18 @@ payCost msg c iid skipAdditionalCosts cost = do
         $ chooseOne
           player
           [ SkillLabel skill [pay (SkillIconCost x (singleton $ SkillIcon skill))]
+          | SkillIcon skill <- choices
+          ]
+      pure c
+    SameSkillIconCostMatching x matcher -> do
+      cards <- mapMaybe (preview _PlayerCard) <$> select matcher
+      let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) cards
+      let wildCount = total ^. at #wild . non 0
+      let choices = keys $ filterMap (\n -> n + wildCount >= x) $ deleteMap #wild total
+      push
+        $ chooseOne
+          player
+          [ SkillLabel skill [pay (SkillIconCostMatching x (singleton $ SkillIcon skill) matcher)]
           | SkillIcon skill <- choices
           ]
       pure c

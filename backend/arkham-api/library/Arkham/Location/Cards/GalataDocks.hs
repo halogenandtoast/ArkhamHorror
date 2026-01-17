@@ -15,7 +15,12 @@ galataDocks = symbolLabel $ location GalataDocks Cards.galataDocks 5 (PerPlayer 
 
 instance HasModifiersFor GalataDocks where
   getModifiersFor (GalataDocks attrs) = do
-    modifySelf attrs [AdditionalCostToEnter $ SameSkillIconCost 3]
+    modifySelf
+      attrs
+      [ AdditionalCostToEnter
+          $ SameSkillIconCostMatching 3
+          $ oneOf [InHandOf NotForPlay You, InPlayAreaOf You <> basic (not_ PermanentCard)]
+      ]
     -- We include galata docks itself so the blocked icon does not show
     modifySelect
       attrs

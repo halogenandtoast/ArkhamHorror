@@ -51,6 +51,7 @@ data instance Field Agenda :: Type -> Type where
   AgendaAbilities :: Field Agenda [Ability]
   AgendaUsedWheelOfFortuneX :: Field Agenda Bool
   AgendaTokens :: Field Agenda Tokens
+  AgendaFlipped :: Field Agenda Bool
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int

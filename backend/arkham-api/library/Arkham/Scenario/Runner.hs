@@ -628,8 +628,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let card' = if flipped then flipCard card else card
     pure $ a & (victoryDisplayL %~ nub . (card' :))
   AddToVictory _ (AgendaTarget aid) -> do
+    flipped <- field AgendaFlipped aid
     card <- field AgendaCard aid
-    pure $ a & (victoryDisplayL %~ nub . (card :))
+    let card' = if flipped then flipCard card else card
+    pure $ a & (victoryDisplayL %~ nub . (card' :))
   RemoveEnemy eid -> do
     fieldMay EnemyPlacement eid >>= \case
       Just (OutOfPlay Zone.VictoryDisplayZone) -> do

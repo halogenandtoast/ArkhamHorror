@@ -23,7 +23,7 @@ instance RunMessage DholeTunnel where
           pushAll
             [ Ready (toTarget slitheringDhole)
             , SendMessage (toTarget slitheringDhole) HuntersMove
-            , SendMessage (toTarget slitheringDhole) EnemiesAttack
+            , SendMessage (toTarget slitheringDhole) (Do EnemiesAttack)
             ]
         Nothing -> do
           nearestDholeTunnel <-

@@ -45,7 +45,7 @@ instance RunMessage CatacombsStinksOfDeath where
       chooseTargetM iid enemies \enemy -> do
         readyThis enemy
         sendMessage enemy HuntersMove
-        sendMessage enemy EnemiesAttack
+        sendMessage enemy (Do EnemiesAttack)
       pure l
     UseCardAbility _iid (isSource attrs -> True) 3 (defeatedEnemy -> enemy) _ -> do
       cancelEnemyDefeat enemy

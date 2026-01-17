@@ -30,7 +30,7 @@ instance RunMessage MyriadForms where
 
       for_ mInPlay $ \nyarlathotep -> do
         pushAll
-          [SendMessage (toTarget nyarlathotep) HuntersMove, SendMessage (toTarget nyarlathotep) EnemiesAttack]
+          [SendMessage (toTarget nyarlathotep) HuntersMove, SendMessage (toTarget nyarlathotep) (Do EnemiesAttack)]
 
       push $ DoStep 1 msg
 

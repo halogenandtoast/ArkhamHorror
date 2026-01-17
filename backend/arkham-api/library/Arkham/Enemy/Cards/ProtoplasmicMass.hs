@@ -31,5 +31,5 @@ instance RunMessage ProtoplasmicMass where
       doStep 1 msg
       ProtoplasmicMass <$> liftRunMessage HuntersMove attrs
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
-      ProtoplasmicMass <$> liftRunMessage EnemiesAttack attrs
+      ProtoplasmicMass <$> liftRunMessage (Do EnemiesAttack) attrs
     _ -> ProtoplasmicMass <$> liftRunMessage msg attrs

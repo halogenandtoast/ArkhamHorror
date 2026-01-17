@@ -21,6 +21,6 @@ instance RunMessage RazinFarhiReanimatedArtificer where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       if attrs.exhausted
         then readyThis attrs
-        else push $ SendMessage (toTarget attrs) EnemiesAttack
+        else push $ SendMessage (toTarget attrs) (Do EnemiesAttack)
       pure e
     _ -> RazinFarhiReanimatedArtificer <$> liftRunMessage msg attrs

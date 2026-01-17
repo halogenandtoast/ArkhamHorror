@@ -4,6 +4,7 @@ import Arkham.Action qualified as Action
 import Arkham.Enemy.Types qualified as Enemy (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier (ModifierType (..))
 
@@ -26,15 +27,22 @@ instance RunMessage ImpromptuBarrier where
       pure e
     ChosenEvadeEnemy sid (isSource attrs -> True) eid -> do
       skillTestModifier sid attrs eid (EnemyEvade (-1))
-      pure e
+      mloc <- getLocationOf eid
+      pure $ ImpromptuBarrier $ attrs & setMeta mloc
     Successful (Action.Evade, EnemyTarget enemyId) iid source (isTarget attrs -> True) n -> do
       push $ Successful (#evade, EnemyTarget enemyId) iid source (toTarget enemyId) n
-      enemies <- select $ EnemyWithMaybeFieldLessThanOrEqualTo n Enemy.EnemyEvade <> not_ (be enemyId)
-      chooseOrRunOneM iid do
-        questionLabeled "Evade another enemy"
-        questionLabeledCard attrs
-        labeled "Do not evade another enemy" nothing
-        targets enemies (automaticallyEvadeEnemy iid)
+      let mloc = getEventMetaDefault Nothing attrs
+      for_ mloc \loc -> do
+        enemies <-
+          select
+            $ EnemyWithMaybeFieldLessThanOrEqualTo n Enemy.EnemyEvade
+            <> not_ (be enemyId)
+            <> at_ (LocationWithId loc)
+        chooseOrRunOneM iid do
+          questionLabeled "Evade another enemy"
+          questionLabeledCard attrs
+          labeled "Do not evade another enemy" nothing
+          targets enemies (automaticallyEvadeEnemy iid)
 
       pure e
     _ -> ImpromptuBarrier <$> liftRunMessage msg attrs

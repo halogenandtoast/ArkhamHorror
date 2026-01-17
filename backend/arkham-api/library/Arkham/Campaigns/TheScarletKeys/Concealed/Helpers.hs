@@ -104,7 +104,7 @@ gatherConcealedCards a = do
               [ DecoyVoidChimeraFellbeak
               , DecoyVoidChimeraFellhound
               , DecoyVoidChimeraGorefeaster
-              , DecoyVoidChimeraFellhound
+              , DecoyVoidChimeraEarsplitter
               ]
             else replicate n Decoy
     (card,) <$> (shuffle cards >>= traverse mkConcealedCard)

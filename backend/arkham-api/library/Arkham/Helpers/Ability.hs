@@ -43,14 +43,6 @@ getCanPerformAbility !iid !ws !ability = do
   abilityModifiers <- getModifiers (AbilityTarget iid ability.ref)
 
   let
-    mThatEnemy = getThatEnemy ws
-    fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
-    actions = ability.actions
-    additionalCosts =
-      abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
-        AdditionalCost x -> Just x
-        _ -> Nothing
-    cost = (`applyCostModifiers` abilityModifiers) $ fixEnemy ability.cost
     criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
     setCriteria = \case
@@ -63,8 +55,7 @@ getCanPerformAbility !iid !ws !ability = do
   runValidT do
     when ability.skipForAll do
       liftGuardM $ selectNone Matcher.InvestigatorSkippedWindow
-    liftGuardM
-      $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
+    liftGuardM $ getCanAffordAbility iid ability ws
     liftGuardM $ meetsActionRestrictions iid ws ability
     liftGuardM $ anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
     liftGuardM $ withActiveInvestigator iid do
@@ -256,6 +247,7 @@ getCanAffordAbilityCost
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
+  imods <- getModifiers iid
   doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
     Nothing -> pure False
     Just delay -> case delay of
@@ -283,7 +275,6 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       then case a.source.location of
         Just lid -> do
           mods <- getModifiers lid
-          imods <- getModifiers iid
           pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
           pure
             $ map snd pcosts
@@ -309,26 +300,28 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
-  go (costF . (`applyCostModifiers` modifiers)) abilityType
+    additionalCosts =
+      abilityAdditionalCosts <> flip mapMaybe modifiers \case
+        AdditionalCost x -> Just x
+        _ -> Nothing
+  go
+    ((fold additionalCosts <>) . (ActionCost 0 <>) . costF . (`applyCostModifiers` modifiers))
+    abilityType
  where
   go f = \case
     ServitorAbility _ -> pure True
     Haunted -> pure True
     Cosmos -> pure True
-    ActionAbility actions cost ->
-      getCanAffordCost iid (toSource a) actions ws (f cost)
-    ActionAbilityWithSkill actions _ cost ->
-      getCanAffordCost iid (toSource a) actions ws (f cost)
+    ActionAbility actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
+    ActionAbilityWithSkill actions _ cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
     ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
-    ForcedAbilityWithCost _ cost ->
-      getCanAffordCost iid (toSource a) [] ws (f cost)
+    ForcedAbilityWithCost _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
-    AbilityEffect actions cost ->
-      getCanAffordCost iid (toSource a) actions ws (f cost)
+    AbilityEffect actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
     Objective {} -> pure True
     DelayedAbility inner -> go f inner
     ForcedWhen _ aType -> go f aType

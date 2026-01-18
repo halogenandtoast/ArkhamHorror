@@ -39,6 +39,6 @@ instance RunMessage Defiance2Effect where
   runMessage msg e@(Defiance2Effect attrs) = runQueueT $ case msg of
     ResolveChaosToken _drawnToken chaosTokenFace _ | not attrs.finished && chaosTokenFace `elem` [Skull, Cultist, Tablet, ElderThing] -> do
       cancelledOrIgnoredCardOrGameEffect attrs.source
-      pure $ Defiance2Effect $ finishedEffect attrs
+      pure e
     SkillTestEnds _ _ _ -> disableReturn e
     _ -> Defiance2Effect <$> liftRunMessage msg attrs

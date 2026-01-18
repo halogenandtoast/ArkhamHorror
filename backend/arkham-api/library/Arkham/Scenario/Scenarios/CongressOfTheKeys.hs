@@ -614,14 +614,14 @@ instance RunMessage CongressOfTheKeys where
       setAgendaDeck [Agendas.confluxOfConsequence, Agendas.theWorldUnbidden, Agendas.runningRed]
 
       lead <- getLead
-      coterie <- shuffle $ coterieEnemies attrs (== Nay)
+      coterie <- shuffle $ coterieEnemies attrs (== Yea)
       investigators <- allInvestigators
       drawCard lead Enemies.theRedGlovedManPurposeUnknown
       let (toDraw, rest) = splitAt (length investigators) coterie
       zipWithM_ drawCard investigators toDraw
       addToEncounterDeck rest
 
-      for_ (conspiratorAssets attrs (== Yea)) \card -> do
+      for_ (conspiratorAssets attrs (== Nay)) \card -> do
         leadChooseOneM do
           questionLabeledCard card
           portraits investigators $ createAssetAt_ card . InPlayArea

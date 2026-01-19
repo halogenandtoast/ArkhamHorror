@@ -4644,7 +4644,7 @@ instance Query ChaosTokenMatcher where
               ChaosTokenValue _ other -> do
                 currentSkillValue <- getSkillTestModifiedSkillValue
                 currentChaosTokenModifier <- fromMaybe 0 <$> chaosTokenModifierToInt other
-                pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
+                pure $ currentSkillValue > 0 && ((currentSkillValue + currentChaosTokenModifier) <= 0)
       IsSymbol -> pure . isSymbolChaosToken . chaosTokenFace
       WithNegativeModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 
@@ -17,11 +18,13 @@ shortcut2 = event Shortcut2 Cards.shortcut2
 instance HasAbilities Shortcut2 where
   getAbilities (Shortcut2 a) = case a.attachedTo.location of
     Just lid ->
-      [ restricted
-          (proxied lid a)
-          1
-          (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
-          (FastAbility' (exhaust a) [#move])
+      [ cardI18n
+          $ withI18nTooltip "shortcut.ability"
+          $ restricted
+            (proxied lid a)
+            1
+            (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
+            (FastAbility' (exhaust a) [#move])
       ]
     _ -> []
 

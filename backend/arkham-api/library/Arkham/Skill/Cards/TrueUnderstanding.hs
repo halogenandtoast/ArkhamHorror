@@ -14,6 +14,6 @@ instance RunMessage TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       skillTestResultOption "True Understanding" do
-        discoverAtYourLocation NotInvestigate iid attrs 1
+        discoverAtYourLocation NotInvestigate attrs.owner attrs 1
       pure s
     _ -> TrueUnderstanding <$> liftRunMessage msg attrs

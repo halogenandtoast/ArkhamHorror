@@ -313,12 +313,15 @@ instance RunMessage EnemyAttrs where
             select imatcher >>= \case
               [iid] -> do
                 let
-                  getModifiedSpawnAt [] = Nothing
-                  getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
+                  getModifiedSpawnAt [] = pure Nothing
+                  getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = pure $ Just m
+                  getModifiedSpawnAt (ChangeSpawnLocation mtch newMatch : _) = do
+                    ok <- selectAny $ mtch <> locationWithInvestigator iid
+                    pure $ guard ok $> SpawnAt newMatch
                   getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
                 mods <- getCombinedModifiers [toTarget enemyId, toTarget (toCardId a)]
 
-                case getModifiedSpawnAt mods of
+                getModifiedSpawnAt mods >>= \case
                   Just m -> getSpawnLocation m
                   Nothing -> getLocationOf iid
               _ -> pure Nothing
@@ -366,11 +369,14 @@ instance RunMessage EnemyAttrs where
             [] -> pure ()
             [iid] -> do
               let
-                getModifiedSpawnAt [] = Nothing
-                getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
+                getModifiedSpawnAt [] = pure Nothing
+                getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = pure $ Just m
+                getModifiedSpawnAt (ChangeSpawnLocation mtch newMatch : _) = do
+                  ok <- selectAny $ mtch <> locationWithInvestigator iid
+                  pure $ guard ok $> SpawnAt newMatch
                 getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
 
-              case getModifiedSpawnAt mods of
+              getModifiedSpawnAt mods >>= \case
                 Just m -> push $ EnemySpawn details {spawnDetailsSpawnAt = m}
                 Nothing -> withLocationOf iid \lid -> do
                   canSpawn <- canSpawnInLocation enemyId lid

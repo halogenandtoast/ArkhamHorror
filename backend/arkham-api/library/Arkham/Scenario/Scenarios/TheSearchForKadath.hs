@@ -246,8 +246,8 @@ instance RunMessage TheSearchForKadath where
           [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
           _ ->
             [ Ask lead
-              $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
-              $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
+                $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
+                $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
             | t <- tenebrousNightgaunts
             ]
 
@@ -349,5 +349,11 @@ instance RunMessage TheSearchForKadath where
           record VirgilWasCaptured
           record randolphStatus
           endOfScenario
+      pure s
+    SearchFound _ ScenarioTarget _ cards -> do
+      n <- getPlayerCount
+      let f = take (if n >= 3 then 2 else 1)
+      mtNgranek <- selectJust $ location_ "Mt. Ngranek"
+      for_ (f cards) (`createEnemyAt` mtNgranek)
       pure s
     _ -> TheSearchForKadath <$> liftRunMessage msg attrs

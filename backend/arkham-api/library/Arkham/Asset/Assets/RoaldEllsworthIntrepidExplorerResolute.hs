@@ -28,7 +28,7 @@ instance HasAbilities RoaldEllsworthIntrepidExplorerResolute where
     [ controlled
         a
         1
-        (DuringTurn You <> exists (TreacheryIsNonWeakness <> TreacheryAttachedToLocation Anywhere))
+        (DuringTurn Anyone <> exists (TreacheryIsNonWeakness <> TreacheryAttachedToLocation Anywhere))
         $ FastAbility (OrCost [exhaust a, assetUseCost a Supply 1])
     ]
 

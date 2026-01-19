@@ -56,11 +56,17 @@ import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
+import Arkham.Helpers.Ability (
+  getAbilityLimit,
+  getCanAffordUseWith,
+  getCanPerformAbility,
+  isForcedAbility,
+ )
 import Arkham.Helpers.Action (
   additionalActionCovers,
   canDo_,
   getActions,
+  getActionsWith,
   getAdditionalActions,
   getCanAfford,
  )
@@ -162,7 +168,7 @@ import Arkham.Token qualified as Token
 import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
+import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over, sumOf, _Just)
@@ -812,6 +818,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (deckL .~ mempty)
       & (eliminatedL .~ True)
       & (placementL .~ Unplaced)
+  PerformAction iid source action | iid == investigatorId -> do
+    let windows' = defaultWindows iid
+    let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
+    actions <-
+      filterM (getCanPerformAbility iid windows')
+        . filter (`abilityIs` action)
+        =<< getActionsWith iid windows' decreaseCost
+    handCards <- field InvestigatorHand iid
+    let actionCards = filter (elem action . cdActions . toCardDef) handCards
+    playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
+    when (notNull actions || notNull playableCards) do
+      Lifted.chooseOne iid
+        $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
+        <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+    pure a
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveAllDoom _ (InvestigatorTarget iid) | iid == investigatorId -> do

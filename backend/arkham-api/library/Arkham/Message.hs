@@ -704,6 +704,7 @@ data Message
   | EnemyAttack EnemyAttackDetails
   | HandleElusive EnemyId
   | InitiateEnemyAttack EnemyAttackDetails
+  | PerformAction InvestigatorId Source Action
   | PerformEnemyAttack EnemyId -- Internal
   | AfterEnemyAttack EnemyId [Message]
   | EnemyAttackFromDiscard InvestigatorId Source Card

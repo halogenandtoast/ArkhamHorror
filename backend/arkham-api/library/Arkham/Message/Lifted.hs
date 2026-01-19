@@ -48,9 +48,7 @@ import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
-import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -68,7 +66,6 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Message.Discard qualified as HandDiscard
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution, getIsStandalone)
@@ -87,7 +84,7 @@ import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
-import Arkham.Matcher
+import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount)
 import Arkham.Message.Lifted.Queue as X
@@ -2937,20 +2934,7 @@ moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg t
 
 performActionAction
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Action -> m ()
-performActionAction iid source action = do
-  let windows' = defaultWindows iid
-  let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
-  actions <-
-    filterM (getCanPerformAbility iid windows')
-      . filter (`abilityIs` action)
-      =<< getActionsWith iid windows' decreaseCost
-  handCards <- field InvestigatorHand iid
-  let actionCards = filter (elem action . cdActions . toCardDef) handCards
-  playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
-  when (notNull actions || notNull playableCards) do
-    Arkham.Message.Lifted.chooseOne iid
-      $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
-      <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+performActionAction iid source action = push $ PerformAction iid (toSource source) action
 
 cancelEndTurn :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> t m ()
 cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case

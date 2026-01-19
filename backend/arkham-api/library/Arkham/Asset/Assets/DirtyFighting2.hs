@@ -26,8 +26,7 @@ instance HasModifiersFor DirtyFighting2 where
 
 instance HasAbilities DirtyFighting2 where
   getAbilities (DirtyFighting2 a) =
-    [ restricted a 1 ControlsThis
-        $ triggered (EnemyEvaded #after You $ ignoreAloofFightOverride AnyEnemy) (exhaust a)
+    [ controlled_ a 1 $ triggered (EnemyEvaded #after You $ ignoreAloofFightOverride AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage DirtyFighting2 where

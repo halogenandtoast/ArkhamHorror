@@ -7,5 +7,10 @@
       "again": "Fight that enemy again",
       "skip": "Do not fight that enemy again"
     }
+  },
+  "tooltips": {
+    "shortcut": {
+      "ability": "{'{'}fast{'}'} Exhaust Shortcut: _Move_ (to a connecting location). Any investigator at this location may trigger this ability."
+    }
   }
 }

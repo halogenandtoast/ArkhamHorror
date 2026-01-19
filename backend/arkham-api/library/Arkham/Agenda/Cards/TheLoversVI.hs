@@ -7,9 +7,10 @@ import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyTokens))
-import Arkham.Matcher
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (getRecordSet)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
+import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Token
 import Arkham.Zone
@@ -52,7 +53,8 @@ instance HasModifiersFor TheLoversVIEffect where
   getModifiersFor (TheLoversVIEffect attrs) = do
     modifySelectMaybe attrs (enemyIs Enemies.theSpectralWatcher) \eid -> do
       tokens <- lift $ fieldMap EnemyTokens (countTokens LostSoul) eid
-      pure [EnemyFight tokens, HealthModifier tokens]
+      n <- perPlayer 1
+      pure [EnemyFight tokens, HealthModifier (tokens * n)]
 
 instance RunMessage TheLoversVIEffect where
   runMessage msg (TheLoversVIEffect attrs) = TheLoversVIEffect <$> runMessage msg attrs

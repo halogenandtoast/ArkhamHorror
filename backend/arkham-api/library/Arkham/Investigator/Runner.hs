@@ -811,6 +811,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (discardL .~ mempty)
       & (deckL .~ mempty)
       & (eliminatedL .~ True)
+      & (placementL .~ Unplaced)
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveAllDoom _ (InvestigatorTarget iid) | iid == investigatorId -> do

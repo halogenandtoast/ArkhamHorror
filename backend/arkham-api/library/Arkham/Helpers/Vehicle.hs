@@ -27,7 +27,7 @@ enterOrExitVehicle
   :: (ReverseQueue m, Entity a, EntityAttrs a ~ AssetAttrs) => InvestigatorId -> a -> m a
 enterOrExitVehicle iid a = do
   field InvestigatorPlacement iid >>= \case
-    AtLocation _ -> place iid (InVehicle $ (toAttrs a).id)
+    AtLocation _ -> place iid (InVehicle (toAttrs a).id)
     p@(InVehicle _) ->
       placementLocation p >>= \case
         Nothing -> error "No location for vehicle"

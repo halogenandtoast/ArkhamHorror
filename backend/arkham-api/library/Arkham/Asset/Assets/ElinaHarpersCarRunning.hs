@@ -7,7 +7,7 @@ import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.Vehicle
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Name
@@ -57,7 +57,7 @@ instance RunMessage ElinaHarpersCarRunning where
           targets passengers $ push . SetDriver attrs.id
       pure . ElinaHarpersCarRunning $ attrs' & driverL .~ Nothing
     Flip _ _ (isTarget attrs -> True) -> do
-      push $ ReplaceAsset attrs.id Cards.thomasDawsonsCarStopped
+      push $ ReplaceAsset attrs.id Cards.elinaHarpersCarStopped
       pure a
     PlaceAsset aid (AtLocation lid) | aid == attrs.id -> do
       case attrs.placement of
@@ -68,4 +68,12 @@ instance RunMessage ElinaHarpersCarRunning where
         _ -> ElinaHarpersCarRunning <$> liftRunMessage msg attrs
     Do msg'@(PlaceAsset aid (AtLocation _lid)) | aid == attrs.id -> do
       ElinaHarpersCarRunning <$> liftRunMessage msg' attrs
+    InvestigatorEliminated iid -> do
+      case assetDriver attrs of
+        Just driver | driver == iid -> do
+          mpassenger <- selectOne $ InVehicleMatching (be attrs) <> not_ (InvestigatorWithId iid)
+          pure $ ElinaHarpersCarRunning $ attrs & driverL .~ mpassenger
+        _ -> pure a
+    HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
+      pure $ ElinaHarpersCarRunning $ attrs & driverL ?~ iid
     _ -> ElinaHarpersCarRunning <$> liftRunMessage msg attrs

@@ -137,6 +137,9 @@ instance IsString AssetMatcher where
 instance IsLabel "ready" AssetMatcher where
   fromLabel = AssetReady
 
+instance IsLabel "vehicle" AssetMatcher where
+  fromLabel = AssetWithTrait Vehicle
+
 instance IsLabel "talent" AssetMatcher where
   fromLabel = AssetWithTrait Talent
 

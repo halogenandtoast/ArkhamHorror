@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.PedalToTheMetal (PedalToTheMetal (..), pedalToTheMetal) where
+module Arkham.Act.Cards.PedalToTheMetal (pedalToTheMetal) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,7 +11,7 @@ import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Trait (Trait (Road, Vehicle))
+import Arkham.Trait (Trait (Road))
 
 newtype PedalToTheMetal = PedalToTheMetal ActAttrs
   deriving anyclass IsAct
@@ -29,11 +29,7 @@ instance HasAbilities PedalToTheMetal where
       $ restricted
         x
         1
-        ( exists
-            $ AssetWithTrait Vehicle
-            <> AssetWithSubtitle "Running"
-            <> AssetWithoutModifier VehicleCannotMove
-        )
+        (exists $ #vehicle <> AssetWithSubtitle "Running" <> AssetWithoutModifier VehicleCannotMove)
       $ forced
       $ PhaseEnds #when #investigation
 
@@ -44,13 +40,10 @@ instance RunMessage PedalToTheMetal where
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       vehicles <-
-        select
-          $ AssetWithTrait Vehicle
-          <> AssetWithSubtitle "Running"
-          <> AssetWithoutModifier VehicleCannotMove
+        filterM (fieldMap AssetDriver isJust)
+          =<< select (#vehicle <> AssetWithSubtitle "Running" <> AssetWithoutModifier VehicleCannotMove)
       lead <- getLead
-      chooseOneAtATimeM lead do
-        targets vehicles $ handleTarget lead (attrs.ability 1)
+      chooseOneAtATimeM lead $ targets vehicles $ handleTarget lead (attrs.ability 1)
       pure a
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
       getLocationOf aid >>= traverse_ \lid -> do

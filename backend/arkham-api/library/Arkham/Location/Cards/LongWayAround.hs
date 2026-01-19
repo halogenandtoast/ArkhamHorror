@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.LongWayAround (longWayAround, longWayAroundEffect, LongWayAround (..)) where
+module Arkham.Location.Cards.LongWayAround (longWayAround, longWayAroundEffect) where
 
 import Arkham.Ability
 import Arkham.Direction

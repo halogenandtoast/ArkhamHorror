@@ -301,7 +301,12 @@ instance RunMessage LocationAttrs where
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure a
     PlaceAsset aid (AtLocation lid) | lid == locationId -> do
-      mInVehicle <- selectOne $ ActiveInvestigator <> InvestigatorWithPlacement (InVehicle aid)
+      mInVehicle <-
+        runMaybeT
+          $ asum
+            [ MaybeT $ selectOne $ ActiveInvestigator <> InvestigatorWithPlacement (InVehicle aid)
+            , MaybeT $ selectOne $ InvestigatorWithPlacement (InVehicle aid)
+            ]
       for_ mInVehicle \iid -> do
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [Window.mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]

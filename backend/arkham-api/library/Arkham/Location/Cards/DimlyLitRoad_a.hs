@@ -1,4 +1,5 @@
-module Arkham.Location.Cards.DimlyLitRoad_a (dimlyLitRoad_a, DimlyLitRoad_a (..)) where
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Location.Cards.DimlyLitRoad_a (dimlyLitRoad_a) where
 
 import Arkham.Ability
 import Arkham.Direction

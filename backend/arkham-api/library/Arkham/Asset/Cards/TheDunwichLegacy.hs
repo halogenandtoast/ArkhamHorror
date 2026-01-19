@@ -502,7 +502,7 @@ strangeSolutionAcidicIchor4 =
     { cdCardTraits = setFromList [Item, Science]
     , cdSkills = [#combat, #combat]
     , cdLevel = Just 4
-    , cdUses = uses Supply 4
+    , cdUses = uses Supply 3
     , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheSolution
     }
 

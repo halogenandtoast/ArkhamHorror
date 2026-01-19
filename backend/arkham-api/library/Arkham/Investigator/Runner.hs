@@ -274,13 +274,41 @@ getWindowSkippable
     mCost <- getModifiedCardCost iid card
     isFast <- cardIsFast' (\_ -> pure allModifiers) card
     needsFast <- Helpers.inFastWindow
+    iids <- filter (/= iid) <$> getInvestigators
+    iidsWithModifiers <- for iids \iid' -> (iid',) <$> getModifiers iid'
+    modifiers <- getModifiers iid
+
+    canHelpPay <-
+      iidsWithModifiers & filterM \(_iid', modifiers') -> do
+        modifiers' & anyM \case
+          CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> runValidT do
+            guard $ cardMatch card cMatcher
+            guard $ CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers'
+            liftGuardM $ iid <=~> iMatcher
+          _ -> pure False
+
+    resourcesFromAssets <-
+      sum <$> for ((iid, modifiers) : iidsWithModifiers) \(iid', modifiers') -> do
+        sum <$> for modifiers' \case
+          CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher | cardMatch card cMatcher -> do
+            let canAffect = iid == iid' || CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers'
+            canContribute <- (canAffect &&) <$> iid <=~> iMatcher
+            if canContribute
+              then fieldMap AssetUses (findWithDefault 0 uType) assetId
+              else pure 0
+          _ -> pure 0
+    additionalResources <-
+      (resourcesFromAssets +)
+        . sum
+        <$> traverse (field InvestigatorResources . fst) canHelpPay
 
     runValidT do
       when needsFast $ guard isFast
       cost <- hoistMaybe mCost
+
       liftGuardM
         $ withAlteredGame withoutCanModifiers
-        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do

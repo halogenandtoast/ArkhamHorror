@@ -3,9 +3,10 @@ module Arkham.Event.Events.BloodOfKnYan3 (bloodOfKnYan3) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Slot
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Slot
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher.Patterns
 import Arkham.Projection
 
 newtype BloodOfKnYan3 = BloodOfKnYan3 EventAttrs
@@ -28,7 +29,8 @@ instance RunMessage BloodOfKnYan3 where
         skillLabeled sType $ chooseFightEnemyEdit sid iid attrs (withSkillType sType)
       pure e
     EnemyDefeated eid _ (isSource attrs -> True) _ -> do
-      addToVictory attrs.controller eid
-      addToVictory attrs.controller attrs
+      whenMatch eid NonEliteEnemy do
+        addToVictory attrs.controller eid
+        addToVictory attrs.controller attrs
       pure e
     _ -> BloodOfKnYan3 <$> liftRunMessage msg attrs

@@ -18,4 +18,4 @@ instance HasModifiersFor GardensOfLuxembourg where
     modifySelect
       a
       (LocationWithEnemy $ MovingEnemy <> EnemyWithTrait Byakhee)
-      [ConnectedToWhen Anywhere (be a)]
+      [ConnectedToWhen Anywhere (be a <> LocationWithInvestigator Anyone)]

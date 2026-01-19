@@ -1722,8 +1722,10 @@ nextSkillTestModifier
   -> target
   -> ModifierType
   -> m ()
-nextSkillTestModifier investigator source target x =
-  Msg.pushM $ Msg.nextSkillTestModifier investigator source target x
+nextSkillTestModifier investigator source target x = do
+  getSkillTestId >>= \case
+    Just sid -> skillTestModifier sid source target x
+    Nothing -> Msg.pushM $ Msg.nextSkillTestModifier investigator source target x
 
 nextSkillTestModifiers
   :: ( ReverseQueue m
@@ -1737,8 +1739,10 @@ nextSkillTestModifiers
   -> target
   -> [ModifierType]
   -> m ()
-nextSkillTestModifiers investigator source target xs =
-  Msg.pushM $ Msg.nextSkillTestModifiers investigator source target xs
+nextSkillTestModifiers investigator source target xs = do
+  getSkillTestId >>= \case
+    Just sid -> skillTestModifiers sid source target xs
+    Nothing -> Msg.pushM $ Msg.nextSkillTestModifiers investigator source target xs
 
 searchModifier
   :: forall target source m

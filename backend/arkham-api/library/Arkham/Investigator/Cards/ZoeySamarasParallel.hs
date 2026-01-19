@@ -1,8 +1,4 @@
-module Arkham.Investigator.Cards.ZoeySamarasParallel (
-  zoeySamarasParallel,
-  ZoeySamarasParallel (..),
-)
-where
+module Arkham.Investigator.Cards.ZoeySamarasParallel (zoeySamarasParallel) where
 
 import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
@@ -23,15 +19,12 @@ zoeySamarasParallel =
 instance HasAbilities ZoeySamarasParallel where
   getAbilities (ZoeySamarasParallel a) =
     [ playerLimit PerPhase
-        $ restrictedAbility a 1 (Self <> HasRemainingBlessTokens)
+        $ selfAbility a 1 HasRemainingBlessTokens
         $ freeReaction
         $ EnemyDealtDamage #after AnyDamageEffect AnyEnemy
         $ SourceOwnedBy You
     , playerLimit PerRound
-        $ restrictedAbility
-          a
-          2
-          (Self <> DuringSkillTest (YourSkillTest #attacking <> SkillTestBeforeRevealingChaosTokens))
+        $ selfAbility a 2 (DuringSkillTest (YourSkillTest #attacking <> SkillTestBeforeRevealingChaosTokens))
         $ FastAbility
         $ ReturnChaosTokensToPoolCost 3 #bless
     ]
@@ -45,7 +38,7 @@ instance HasChaosTokenValue ZoeySamarasParallel where
 instance RunMessage ZoeySamarasParallel where
   runMessage msg i@(ZoeySamarasParallel attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ AddChaosToken #bless
+      addChaosToken #bless
       pure i
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       nextSkillTestModifier iid (attrs.ability 2) iid (DamageDealt 1)

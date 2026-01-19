@@ -4636,13 +4636,13 @@ instance Query ChaosTokenMatcher where
       WouldReduceYourSkillValueToZero -> \t ->
         fromMaybe False <$> runMaybeT do
           guard $ not $ chaosTokenCancelled t
-          skillTest <- MaybeT getSkillTest
+          MaybeT $ void <$> getSkillTest
           lift do
             iid' <- toId <$> getActiveInvestigator
             getChaosTokenValue iid' t.face () >>= \case
               ChaosTokenValue _ AutoFailModifier -> pure True
               ChaosTokenValue _ other -> do
-                currentSkillValue <- getCurrentSkillValue skillTest
+                currentSkillValue <- getSkillTestModifiedSkillValue
                 currentChaosTokenModifier <- fromMaybe 0 <$> chaosTokenModifierToInt other
                 pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
       IsSymbol -> pure . isSymbolChaosToken . chaosTokenFace

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Import.Lifted
+import Arkham.Location.Import.Lifted hiding (PerformAction)
 import Arkham.Matcher
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries

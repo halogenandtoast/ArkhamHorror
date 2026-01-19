@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.DianneDevineKnowsWhatYoureUpTo (dianneDevineKnowsWhatY
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Import.Lifted hiding (PerformAction)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher

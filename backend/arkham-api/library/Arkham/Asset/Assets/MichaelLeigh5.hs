@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.MichaelLeigh5 (michaelLeigh5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (PerformAction)
 import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers hiding (nextSkillTestModifier)
 import Arkham.Matcher

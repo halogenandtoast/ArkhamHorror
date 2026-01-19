@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Import.Lifted
+import Arkham.Location.Import.Lifted hiding (PerformAction)
 import Arkham.Matcher
 
 newtype LivingRoom = LivingRoom LocationAttrs

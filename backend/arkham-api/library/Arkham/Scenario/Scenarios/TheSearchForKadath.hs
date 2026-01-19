@@ -282,7 +282,7 @@ instance RunMessage TheSearchForKadath where
           moveAllTo (toSource attrs) baharna
           for_ locations removeLocation
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
-            $ defer attrs IsNotDraw
+            $ defer (LabeledTarget "oriab" ScenarioTarget) IsNotDraw
           push $ AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
           doStep 1 msg
         Mnar -> do
@@ -326,7 +326,7 @@ instance RunMessage TheSearchForKadath where
 
           shuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.priestOfAThousandMasks)
-            $ defer attrs IsNotDraw
+            $ defer (LabeledTarget "timelessRealm" ScenarioTarget) IsNotDraw
           push $ AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
           doStep 1 msg
       pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
@@ -350,10 +350,18 @@ instance RunMessage TheSearchForKadath where
           record randolphStatus
           endOfScenario
       pure s
-    SearchFound _ ScenarioTarget _ cards -> do
+    SearchFound _ (LabeledTarget "oriab" ScenarioTarget) _ cards -> do
+      mtNgranek <- selectJust $ location_ "Mt. Ngranek"
+      namelessRuins <- selectJust $ location_ "Nameless Ruins"
       n <- getPlayerCount
       let f = take (if n >= 3 then 2 else 1)
-      mtNgranek <- selectJust $ location_ "Mt. Ngranek"
-      for_ (f cards) (`createEnemyAt` mtNgranek)
+      for_ (f $ zip cards [mtNgranek, namelessRuins]) (uncurry createEnemyAt_)
+      pure s
+    SearchFound _ (LabeledTarget "timelessRealm" ScenarioTarget) _ cards -> do
+      hazuthKleg <- selectJust $ location_ "Hazuth-Kleg"
+      celephais <- selectJust $ location_ "Celephaïs"
+      n <- getPlayerCount
+      let f = take (if n >= 3 then 2 else 1)
+      for_ (f $ zip cards [hazuthKleg, celephais]) (uncurry createEnemyAt_)
       pure s
     _ -> TheSearchForKadath <$> liftRunMessage msg attrs

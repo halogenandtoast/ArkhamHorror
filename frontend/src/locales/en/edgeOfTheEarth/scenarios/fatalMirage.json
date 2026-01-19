@@ -1,5 +1,8 @@
 {
   "heading": "Scenario ???",
+  "tooltips": {
+    "mirage": "Mirage"
+  },
   "intro1": {
     "title": "Scenario ???: Fatal Mirage",
     "body": "<p class='basic valid'>If this is your first time playing Fatal Mirage this campaign, proceed to _Intro 1_. Otherwise, skip to _Intro 2_.</p><p>_Intro 1_: Upon entering the doorway, you find yourself in a web of icy tunnels, swathed in miasma and dripping with prismatic ichor. Your reflection peers back at you in myriad peculiar angles. Your voice echoes throughout this infinite hall of mirrors. You turn around to discover that your entryway has vanished behind you. Then, in the corner of your eye, you spot a familiar figure traversing the same mists—but, no, that can’t be possible. Can it?</p><p class='basic'>Find and read the passage below that corresponds to which character was killed in the plane crash. Then, proceed to _Setup_.</p>"

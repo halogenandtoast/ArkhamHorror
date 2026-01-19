@@ -322,7 +322,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     AbilityEffect actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
-    Objective {} -> pure True
+    Objective inner -> go f inner
     DelayedAbility inner -> go f inner
     ForcedWhen _ aType -> go f aType
     ConstantAbility -> pure False -- Never affordable, we should ignore

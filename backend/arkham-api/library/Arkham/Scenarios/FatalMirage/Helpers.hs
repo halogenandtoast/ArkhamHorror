@@ -55,8 +55,9 @@ mirage
   -> Int
   -> [location]
   -> Ability
-mirage a clues locations =
-  restricted a MirageAbility (Here <> SetAsideCardExists (mapOneOf cardIs locations))
+mirage a clues locations = scenarioI18n do
+  withI18nTooltip "mirage"
+    $ restricted a MirageAbility (Here <> SetAsideCardExists (mapOneOf cardIs locations))
     $ FastAbility
     $ CostWhenTreacheryElse
       ( TreacheryAt (LocationWithId $ asId a)

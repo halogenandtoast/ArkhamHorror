@@ -37,6 +37,6 @@ instance RunMessage ElinaHarpersCarStopped where
       flipOver iid attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
-      push $ ReplaceAsset attrs.id Cards.thomasDawsonsCarRunning
+      push $ ReplaceAsset attrs.id Cards.elinaHarpersCarRunning
       pure a
     _ -> ElinaHarpersCarStopped <$> liftRunMessage msg attrs

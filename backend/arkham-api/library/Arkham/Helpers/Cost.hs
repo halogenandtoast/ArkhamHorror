@@ -79,6 +79,7 @@ getCanAffordCost_
   -> source
   -> [Action]
   -> [Window]
+
   -> Bool
   -> Cost
   -> m Bool

@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.HasturTheKingInYellow (hasturTheKingInYellow) where
 
 import Arkham.Ability
+import Arkham.Attack.Types (EnemyAttackDetails (..))
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -30,7 +31,8 @@ instance HasAbilities HasturTheKingInYellow where
 instance RunMessage HasturTheKingInYellow where
   runMessage msg e@(HasturTheKingInYellow attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator $ initiateEnemyAttack attrs (attrs.ability 1)
+      eachInvestigator \i ->
+        initiateEnemyAttackEdit attrs (attrs.ability 1) i \d -> d {attackDamageStrategy = DamageFromHastur}
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

@@ -5805,7 +5805,6 @@ runMessages gameId mLogger = do
                   BeginAction {} -> False
                   CheckAttackOfOpportunity {} -> False
                   CheckEnemyEngagement {} -> False
-                  CheckWindows {} -> False
                   Do (CheckWindows {}) -> False
                   ClearUI {} -> False
                   CreatedCost {} -> False
@@ -5826,18 +5825,19 @@ runMessages gameId mLogger = do
                 addAttribute currentSpan "gameId" gameId
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
-                overGameM
-                  $ if shouldPreloadModifiers msg
-                    then
-                      runMessage msg
-                        >=> withSpan_ "preloadModifiers"
-                        . preloadModifiers
-                        >=> handleAsIfChanges asIfLocations
-                        >=> handleAloofChanges aloofEnemies
-                        >=> withSpan_ "handleTraitRestrictedModifiers"
-                        . handleTraitRestrictedModifiers
-                        >=> handleBlanked
-                    else runMessage msg
+                if shouldPreloadModifiers msg
+                  then do
+                    overGameM
+                      $ runMessage msg
+                      >=> withSpan_ "preloadModifiers"
+                      . preloadModifiers
+                    overGameM
+                      $ handleAsIfChanges asIfLocations
+                      >=> handleAloofChanges aloofEnemies
+                      >=> withSpan_ "handleTraitRestrictedModifiers"
+                      . handleTraitRestrictedModifiers
+                      >=> handleBlanked
+                  else overGameM $ runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages gameId mLogger
         go msg
@@ -5854,7 +5854,7 @@ getAsIfLocationMap = do
 
 handleAloofChanges :: [EnemyId] -> Game -> GameT Game
 handleAloofChanges aloof g = withSpan_ "handleAloofChanges" do
-  noLongerAloof <- select $ mapOneOf EnemyWithId aloof <> not_ AloofEnemy
+  noLongerAloof <- select (mapOneOf EnemyWithId aloof <> not_ AloofEnemy)
   foldM (\g' eid -> runMessage (EnemyCheckEngagement eid) g') g noLongerAloof
 
 handleAsIfChanges :: Map InvestigatorId LocationId -> Game -> GameT Game

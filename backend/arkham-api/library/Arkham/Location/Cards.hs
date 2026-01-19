@@ -7558,7 +7558,7 @@ crystallineCavern =
 
 prisonOfMemories :: CardDef
 prisonOfMemories =
-  singleSided
+  otherSideIs "08556b"
     $ location
       "08556"
       "Prison of Memories"
@@ -7569,7 +7569,7 @@ prisonOfMemories =
 
 baseCamp :: CardDef
 baseCamp =
-  singleSided
+  otherSideIs "08557b"
     $ location
       "08557"
       "Base Camp"
@@ -7580,7 +7580,7 @@ baseCamp =
 
 deckOfTheTheodosia :: CardDef
 deckOfTheTheodosia =
-  singleSided
+  otherSideIs "08558b"
     $ location
       "08558"
       "Deck of the Theodosia"
@@ -7591,7 +7591,7 @@ deckOfTheTheodosia =
 
 universityHalls :: CardDef
 universityHalls =
-  singleSided
+  otherSideIs "08559b"
     $ location
       "08559"
       "University Halls"
@@ -7602,7 +7602,7 @@ universityHalls =
 
 hedgeMaze :: CardDef
 hedgeMaze =
-  singleSided
+  otherSideIs "08560b"
     $ location
       "08560"
       "Hedge Maze"
@@ -7613,7 +7613,7 @@ hedgeMaze =
 
 desertedStation :: CardDef
 desertedStation =
-  singleSided
+  otherSideIs "08561b"
     $ location
       "08561"
       "Deserted Station"
@@ -7624,7 +7624,7 @@ desertedStation =
 
 coastalWaters :: CardDef
 coastalWaters =
-  singleSided
+  otherSideIs "08562b"
     $ location
       "08562"
       "Coastal Waters"
@@ -7635,7 +7635,7 @@ coastalWaters =
 
 elderChamber :: CardDef
 elderChamber =
-  singleSided
+  otherSideIs "08563b"
     $ location
       "08563"
       "Elder Chamber"
@@ -7646,7 +7646,7 @@ elderChamber =
 
 riverviewTheatre :: CardDef
 riverviewTheatre =
-  singleSided
+  otherSideIs "08564b"
     $ location
       "08564"
       "Riverview Theatre"
@@ -7657,7 +7657,7 @@ riverviewTheatre =
 
 standingStones :: CardDef
 standingStones =
-  singleSided
+  otherSideIs "08565b"
     $ location
       "08565"
       "Standing Stones"
@@ -7668,7 +7668,7 @@ standingStones =
 
 airfield :: CardDef
 airfield =
-  singleSided
+  otherSideIs "08566b"
     $ location
       "08566"
       "Airfield"
@@ -7679,7 +7679,7 @@ airfield =
 
 alaskanWilds :: CardDef
 alaskanWilds =
-  singleSided
+  otherSideIs "08567b"
     $ location
       "08567"
       "Alaskan Wilds"
@@ -7690,7 +7690,7 @@ alaskanWilds =
 
 clutteredDormitory :: CardDef
 clutteredDormitory =
-  singleSided
+  otherSideIs "08568b"
     $ location
       "08568"
       "Cluttered Dormitory"
@@ -7701,7 +7701,7 @@ clutteredDormitory =
 
 dyersClassroom :: CardDef
 dyersClassroom =
-  singleSided
+  otherSideIs "08569b"
     $ location
       "08569"
       "Dyer's Classroom"
@@ -7712,7 +7712,7 @@ dyersClassroom =
 
 infirmaryFatalMirage :: CardDef
 infirmaryFatalMirage =
-  singleSided
+  otherSideIs "08570b"
     $ location
       "08570"
       "Infirmary"
@@ -7723,7 +7723,7 @@ infirmaryFatalMirage =
 
 drKenslersOffice :: CardDef
 drKenslersOffice =
-  singleSided
+  otherSideIs "08571b"
     $ location
       "08571"
       "Dr. Kensler's Office"
@@ -7734,7 +7734,7 @@ drKenslersOffice =
 
 moaiStatues :: CardDef
 moaiStatues =
-  singleSided
+  otherSideIs "08572b"
     $ location
       "08572"
       "Mo'ai Statues"
@@ -7745,7 +7745,7 @@ moaiStatues =
 
 ottomanFront :: CardDef
 ottomanFront =
-  singleSided
+  otherSideIs "08573b"
     $ location
       "08573"
       "Ottoman Front"
@@ -7756,7 +7756,7 @@ ottomanFront =
 
 theBlackStone :: CardDef
 theBlackStone =
-  singleSided
+  otherSideIs "08574b"
     $ location
       "08574"
       "The Black Stone"

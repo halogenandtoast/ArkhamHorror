@@ -182,10 +182,16 @@ instance RunMessage FatalMirage where
       startAt =<< place Locations.prisonOfMemories
 
       for_ (recordedCardCodes memoriesDiscovered) \cardCode -> do
-        location <- amongGathered (CardWithCardCode cardCode)
+        location <- fromGathered (CardWithCardCode cardCode)
         for_ location (place_ . toCardDef)
 
-      setAside =<< amongGathered #location
+      (banishedLocations, setAsideLocations) <-
+        partition
+          (maybe False ((`elem` memoriesBanished) . recorded) . cdOtherSide . toCardDef)
+          <$> fromGathered #location
+      setAside setAsideLocations
+      placeInVictory
+        $ mapMaybe (lookupCardDef <=< cdOtherSide . toCardDef) banishedLocations
 
       let
         (banished, enemies) =
@@ -204,7 +210,7 @@ instance RunMessage FatalMirage where
       setAside enemies
       placeInVictory $ mapMaybe (lookupCardDef <=< cdOtherSide) banished
 
-      setAside =<< amongGathered (CardWithTrait Resolute)
+      setAside =<< fromGathered (CardWithTrait Resolute)
 
       case attrs.difficulty of
         Expert -> placeDoomOnAgenda 2

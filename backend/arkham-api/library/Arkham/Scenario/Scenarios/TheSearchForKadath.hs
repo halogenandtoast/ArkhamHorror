@@ -198,8 +198,8 @@ instance RunMessage TheSearchForKadath where
         ]
 
       startAt =<< place Locations.ulthar
-
-      placeAll [Locations.skaiRiver, Locations.dylathLeen]
+      skaiRiver <- place Locations.skaiRiver
+      dylathLeen <- place Locations.dylathLeen
 
       setAgendaDeck [Agendas.journeyAcrossTheDreamlands, Agendas.agentsOfTheOuterGods]
       setActDeck
@@ -209,6 +209,9 @@ instance RunMessage TheSearchForKadath where
         , Acts.seekOutTheNight
         , Acts.theKingsDecree
         ]
+      enemyAt_ Enemies.packOfVooniths skaiRiver
+      n <- getPlayerCount
+      when (n >= 3) $ enemyAt_ Enemies.packOfVooniths dylathLeen
       lead <- getLead
       beginWithStoryAsset lead Assets.virgilGray
     ResolveChaosToken _ Cultist iid -> do

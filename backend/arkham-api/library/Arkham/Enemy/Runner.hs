@@ -1650,7 +1650,13 @@ instance RunMessage EnemyAttrs where
           ForceSpawnLocation _ -> True
           _ -> False
 
-      let forcedEngagement = any isForcedEngagement mods
+      let
+        forcedEngagement =
+          any isForcedEngagement mods || case enemySpawnDetails of
+            Nothing -> False
+            Just sd -> case sd.spawnAt of
+              SpawnEngagedWith {} -> spawnDetailsOverridden sd
+              _ -> False
       kws <- getModifiedKeywords a
       if forcedEngagement
         then push msg'

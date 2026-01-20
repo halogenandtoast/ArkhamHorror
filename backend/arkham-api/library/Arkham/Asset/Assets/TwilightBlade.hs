@@ -25,7 +25,7 @@ instance HasModifiersFor TwilightBlade where
       a
       underDiana
       [AdditionalCost (ExhaustCost $ toTarget a), AdditionalCostToCommit iid (ExhaustCost $ toTarget a)]
-    modified_ a iid $ concatMap (\c -> [AsIfInHand c, CanCommitToSkillTestsAsIfInHand c]) underDiana
+    modified_ a iid $ concatMap (\c -> [AsIfInHandFor ForPlay c.id, CanCommitToSkillTestsAsIfInHand c]) underDiana
 
 instance HasAbilities TwilightBlade where
   getAbilities (TwilightBlade a) = [restricted a 1 ControlsThis fightAction_]

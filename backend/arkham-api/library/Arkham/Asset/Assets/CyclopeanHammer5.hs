@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.CyclopeanHammer5 (cyclopeanHammer5) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestTargetedEnemy)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -29,50 +29,46 @@ instance RunMessage CyclopeanHammer5 where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       if tabooed TabooList20 attrs
         then when attrs.ready do
-          chooseOrRunOneM iid do
-            when (n >= 3) do
-              labeled
-                "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you."
-                do
-                  exhaustThis attrs
-                  doStep 1 msg
-            labeled "Do not exhaust" do
-              getSkillTestTarget >>= \case
-                Just (EnemyTarget enemy) -> do
-                  whenM (enemy <=~> NonEliteEnemy) do
-                    choices <-
-                      select
-                        $ connectedFrom (locationWithInvestigator iid)
-                        <> LocationCanBeEnteredBy enemy
-                    when (notNull choices) do
-                      chooseOneM iid do
-                        labeled "Do not move enemy" nothing
-                        labeled "Move enemy" do
-                          chooseOneM iid do
-                            questionLabeled "Move enemy away"
-                            targets choices (push . EnemyMove enemy)
-                _ -> nothing
+          withSkillTestTargetedEnemy \enemy -> do
+            chooseOrRunOneM iid do
+              when (n >= 3) do
+                labeled
+                  "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you."
+                  do
+                    exhaustThis attrs
+                    doStep 1 msg
+              labeled "Do not exhaust" do
+                whenM (enemy <=~> NonEliteEnemy) do
+                  choices <-
+                    select
+                      $ connectedFrom (locationWithInvestigator iid)
+                      <> LocationCanBeEnteredBy enemy
+                  when (notNull choices) do
+                    chooseOneM iid do
+                      labeled "Do not move enemy" nothing
+                      labeled "Move enemy" do
+                        chooseOneM iid do
+                          questionLabeled "Move enemy away"
+                          targets choices (push . EnemyMove enemy)
         else doStep 1 msg
       pure a
     DoStep 1 (PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n) -> do
-      getSkillTestTarget >>= \case
-        Just (EnemyTarget enemy) -> do
-          when (n >= 3) do
-            withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-            whenM (enemy <=~> NonEliteEnemy) do
-              choices <-
-                select
-                  $ LocationWithDistanceFromAtMost
-                    (if n >= 3 then 2 else 1)
-                    (locationWithInvestigator iid)
-                    (LocationCanBeEnteredBy enemy <> not_ (locationWithInvestigator iid))
-              when (notNull choices) do
-                chooseOneM iid do
-                  labeled "Do not move enemy" nothing
-                  labeled "Move enemy" do
-                    chooseOneM iid do
-                      questionLabeled "Move enemy away"
-                      targets choices (push . EnemyMove enemy)
-        _ -> error "Something went wrong"
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      withSkillTestTargetedEnemy \enemy -> do
+        when (n >= 3) do
+          whenM (enemy <=~> NonEliteEnemy) do
+            choices <-
+              select
+                $ LocationWithDistanceFromAtMost
+                  (if n >= 3 then 2 else 1)
+                  (locationWithInvestigator iid)
+                  (LocationCanBeEnteredBy enemy <> not_ (locationWithInvestigator iid))
+            when (notNull choices) do
+              chooseOneM iid do
+                labeled "Do not move enemy" nothing
+                labeled "Move enemy" do
+                  chooseOneM iid do
+                    questionLabeled "Move enemy away"
+                    targets choices (push . EnemyMove enemy)
       pure a
     _ -> CyclopeanHammer5 <$> liftRunMessage msg attrs

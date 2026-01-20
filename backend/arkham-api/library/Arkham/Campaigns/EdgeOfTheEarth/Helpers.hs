@@ -135,11 +135,11 @@ chaosBagContents = \case
   Expert -> [#"0", #"-1", #"-2", #"-2", #"-3", #"-4", #"-4", #"-5", #"-7", #frost, #frost, #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
 {- FOURMOLU_ENABLE -}
 
-getShouldResolveEffectsAgain
+additionalTimesToResolveEffects
   :: (HasGame m, IsCard card, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator -> card -> m Bool
-getShouldResolveEffectsAgain investigator card = do
+  => investigator -> card -> m Int
+additionalTimesToResolveEffects investigator card = do
   mods <- getModifiers (asId investigator)
-  pure $ flip any mods \case
+  pure $ mods & count \case
     ResolveEffectsAgainMatch cm -> cardMatch card cm
     _ -> False

@@ -2042,8 +2042,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep NextInvestigatorsTurnBeginsStep [ChoosePlayer iid SetTurnPlayer]
           ]
-      xs -> do
-        player <- getPlayer (g ^. leadInvestigatorIdL)
+      xs@(x : _) -> do
+        let fixId z = if z == "00000" then x else z
+        player <- getPlayer (fixId (g ^. leadInvestigatorIdL))
         pushAll
           [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow, afterPhaseBeginsWindow]
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]

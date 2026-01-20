@@ -1,12 +1,11 @@
-module Arkham.Asset.Assets.HenryWan (henryWan, HenryWan (..)) where
+module Arkham.Asset.Assets.HenryWan (henryWan) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.ChaosBag.RevealStrategy
+import Arkham.Asset.Import.Lifted
+import Arkham.Capability
 import Arkham.ChaosToken
-import Arkham.Prelude
-import Arkham.RequestedChaosTokenStrategy
+import Arkham.Message.Lifted.Choose
 
 newtype Metadata = Metadata {revealedChaosTokens :: [ChaosToken]}
   deriving stock (Show, Eq, Generic)
@@ -20,42 +19,36 @@ henryWan :: AssetCard HenryWan
 henryWan = ally (HenryWan . (`with` Metadata [])) Cards.henryWan (1, 2)
 
 instance HasAbilities HenryWan where
-  getAbilities (HenryWan (a `With` _)) = [restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)]
+  getAbilities (HenryWan (a `With` _)) = [controlled_ a 1 $ actionAbilityWithCost (exhaust a)]
 
-validToken :: ChaosToken -> Bool
-validToken = (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace
+invalidToken :: ChaosToken -> Bool
+invalidToken = (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace
 
 instance RunMessage HenryWan where
-  runMessage msg a@(HenryWan (attrs `With` meta)) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside
+  runMessage msg a@(HenryWan (attrs `With` meta)) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      requestChaosTokens iid (attrs.ability 1) 1
       pure a
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      player <- getPlayer iid
       let source = attrs.ability 1
-      push
-        $ chooseOne player
-        $ if any validToken tokens
-          then
-            [Label "Do nothing" [HandleTargetChoice iid source (toTarget attrs)]]
-          else
-            [ Label "Stop" [HandleTargetChoice iid source (toTarget attrs)]
-            , Label "Draw Another" [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
-            ]
+      chooseOneM iid do
+        if any invalidToken tokens
+          then labeled "Do nothing" $ handleTarget iid source attrs
+          else do
+            labeled "Stop" $ handleTarget iid source attrs
+            labeled "Draw Another" $ requestChaosTokens iid source 1
       pure $ HenryWan (attrs `with` Metadata (tokens <> revealedChaosTokens meta))
-    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) _ -> do
-      push $ ResetChaosTokens (toAbilitySource attrs 1)
-      unless (any validToken (revealedChaosTokens meta)) do
-        let source = attrs.ability 1
-        mDrawing <- drawCardsIfCan iid source 1
-        mGainResources <- gainResourcesIfCan iid source 1
-        when (isJust mDrawing || isJust mGainResources) do
-          player <- getPlayer iid
-          msgs <- for (revealedChaosTokens meta) \_ -> do
-            pure
-              $ chooseOrRunOne player
-              $ [Label "Draw 1 card" [drawing] | drawing <- toList mDrawing]
-              <> [Label "Gain 1 resources" [gain] | gain <- toList mGainResources]
-          pushAll msgs
+    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) _ -> do
+      resetChaosTokens (attrs.ability 1)
+      unfocusChaosTokens
+      for_ (filter (not . invalidToken) (revealedChaosTokens meta)) (`forTarget_` msg)
       pure $ HenryWan (attrs `with` Metadata [])
-    _ -> HenryWan . (`with` meta) <$> runMessage msg attrs
+    ForTarget (ChaosTokenTarget _) (HandleTargetChoice iid (isAbilitySource attrs 1 -> True) _) -> do
+      drawOk <- can.draw.cards iid
+      resourceOk <- can.gain.resources iid
+      when (drawOk || resourceOk) do
+        chooseOrRunOneM iid do
+          when drawOk $ labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
+          when resourceOk $ labeled "Gain 1 resources" $ gainResources iid (attrs.ability 1) 1
+      pure a
+    _ -> HenryWan . (`with` meta) <$> liftRunMessage msg attrs

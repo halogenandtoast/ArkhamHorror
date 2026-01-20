@@ -37,11 +37,12 @@ instance RunMessage IfItBleeds where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      lead <- getLead
-      voidChimera <- fetchCard Enemies.voidChimeraTrueForm
-      drawCard lead voidChimera
-      doStep 1 msg
+      chimera <- spawnEnemy Enemies.voidChimeraTrueForm
+      forTarget_ chimera msg
       advanceActDeck attrs
+      pure a
+    ForTarget (EnemyTarget chimera) (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      resolveConcealed_ chimera
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       chimeraMiniCards <-

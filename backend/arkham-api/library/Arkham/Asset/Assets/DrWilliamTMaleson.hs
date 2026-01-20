@@ -17,7 +17,7 @@ drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
 instance HasAbilities DrWilliamTMaleson where
   getAbilities (DrWilliamTMaleson attrs) =
-    [ restricted attrs 1 ControlsThis
+    [ controlled_ attrs 1
         $ triggered
           (DrawCard #when You (basic IsEncounterCard) EncounterDeck)
           (exhaust attrs <> PlaceClueOnLocationCost 1)

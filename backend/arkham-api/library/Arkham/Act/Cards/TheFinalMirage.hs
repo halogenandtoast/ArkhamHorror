@@ -1,11 +1,12 @@
 module Arkham.Act.Cards.TheFinalMirage (theFinalMirage) where
 
 import Arkham.Ability
+import Arkham.Card.CardCode
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, hasModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect, modifySelf)
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
 import Arkham.Window (getBatchId)
@@ -18,7 +19,9 @@ theFinalMirage :: ActCard TheFinalMirage
 theFinalMirage = act (4, A) TheFinalMirage Cards.theFinalMirage Nothing
 
 instance HasModifiersFor TheFinalMirage where
-  getModifiersFor (TheFinalMirage a) = modifySelect a (enemyIs Enemies.theNamelessMadness) [AddKeyword Hunter]
+  getModifiersFor (TheFinalMirage a) = do
+    modifySelf a [ActIsAgenda]
+    modifySelect a (enemyIs Enemies.theNamelessMadness) [AddKeyword Hunter]
 
 instance HasAbilities TheFinalMirage where
   getAbilities (TheFinalMirage a) =
@@ -49,4 +52,6 @@ instance RunMessage TheFinalMirage where
             ["theGateOfYquaa", "titanicRamp1", "titanicRamp2", "titanicRamp3", "titanicRamp4", "hiddenTunnel"]
       for_ mleftmost (createSetAsideEnemy_ Enemies.theNamelessMadness)
       pure a
+    PlaceTokens s (AgendaTarget aid) tkn n | toCardCode aid == toCardCode attrs -> do
+      TheFinalMirage <$> liftRunMessage (PlaceTokens s (ActTarget $ toId attrs) tkn n) attrs
     _ -> TheFinalMirage <$> liftRunMessage msg attrs

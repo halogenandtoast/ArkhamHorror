@@ -137,4 +137,8 @@ instance RunMessage ActAttrs where
       pure a
     Msg.PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL %~ (<> cards)
+    PlaceDoom source (isTarget a -> True) n -> do
+      pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
+      wouldDo msg (Window.WouldPlaceDoom source (toTarget a) n) (Window.PlacedDoom source (toTarget a) n)
+      pure a
     _ -> pure a

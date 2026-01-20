@@ -18,10 +18,7 @@ instance RunMessage GetOverHere where
     PlayThisEvent iid (is attrs -> True) -> do
       withLocationOf iid \lid -> do
         let m = LocationWithId lid
-        enemies <-
-          select
-            $ NonEliteEnemy
-            <> at_ (oneOf [m, connectedFrom m, LocationWithDistanceFrom 2 m Anywhere])
+        enemies <- select $ NonEliteEnemy <> at_ (oneOf [m, connectedFrom m])
         sid <- getRandom
         chooseTargetM iid enemies \enemy -> do
           push $ EnemyEngageInvestigator enemy iid

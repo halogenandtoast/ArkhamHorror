@@ -4220,14 +4220,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                           then
                             chooseOne
                               player
-                              [ Label "Draw it" [addFoundToHand]
+                              [ Label "Draw it" [drawFoundToHand]
                               , Label "Commit to skill test" [CommitCard who card]
                               ]
-                          else addFoundToHand
+                          else drawFoundToHand
                       ]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
-                  , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
+                  , let drawFoundToHand = DrawFocusedToHand iid (toTarget who) zone (toCardId card)
                   ]
               push
                 $ if null choices

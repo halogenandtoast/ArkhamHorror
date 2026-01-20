@@ -20,9 +20,9 @@ instance RunMessage ParadimensionalUnderstanding where
       unstableKeys <- select $ ScarletKeyWithInvestigator (InvestigatorWithId iid) <> UnstableScarletKey
       stableKeys <- select $ ScarletKeyWithInvestigator (InvestigatorWithId iid) <> StableScarletKey
       chooseOneM iid $ campaignI18n do
-        labeled' "paradimensionalUnderstanding.unstable" do
+        labeledValidate' (notNull unstableKeys) "paradimensionalUnderstanding.unstable" do
           chooseTargetM iid unstableKeys shift
-        labeled' "paradimensionalUnderstanding.stable" do
+        labeledValidate' (notNull stableKeys) "paradimensionalUnderstanding.stable" do
           for_ stableKeys $ flipOverBy iid attrs
       pure t
     _ -> ParadimensionalUnderstanding <$> liftRunMessage msg attrs

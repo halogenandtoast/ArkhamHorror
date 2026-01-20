@@ -23,7 +23,10 @@ instance RunMessage LostAndForgotten where
             $ oneOf [#item, #ally]
             <> assetControlledBy iid
             <> AssetCanLeavePlayByNormalMeans
-        chooseOneM iid $ for_ assets \(aid, card) -> targeting aid $ hollow iid card
+        cards <- select $ inHandOf NotForPlay iid <> basic (oneOf [#item, #ally])
+        chooseOneM iid do
+          for_ assets \(aid, card) -> targeting aid $ hollow iid card
+          targets cards (hollow iid)
       advanceAgendaDeck attrs
       pure a
     _ -> LostAndForgotten <$> liftRunMessage msg attrs

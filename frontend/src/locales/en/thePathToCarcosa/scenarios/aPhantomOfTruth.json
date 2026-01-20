@@ -15,10 +15,6 @@
     }
   },
   "label": {
-    "dream10": {
-      "dream11": "“How could any of this be beautiful to you?”",
-      "dream12": "“What exactly am I looking at?”"
-    },
     "theParisianConspiracy": {
       "spawn": "Where to spawn the organist"
     },
@@ -31,6 +27,12 @@
     }
   },
   "intro": {
+    "label": {
+      "dream10": {
+        "dream11": "“How could any of this be beautiful to you?”",
+        "dream12": "“What exactly am I looking at?”"
+      }
+    },
     "title": "Scenario VI: A Phantom of Truth",
     "readIntro1": "Check Campaign Log. *If the King claimed its victims*: Read _Intro 1_.",
     "readIntro2": "Otherwise, skip to _Intro 2_.",

@@ -18,8 +18,8 @@ instance RunMessage Tekelili_227 where
     Revelation iid (isSource attrs -> True) -> do
       isTurn <- iid <=~> TurnInvestigator
 
-      n <- ifM_ (getShouldResolveEffectsAgain iid attrs) 2 1
-      repeated n
+      n <- additionalTimesToResolveEffects iid attrs
+      repeated (n + 1)
         $ if isTurn
           then loseActions iid attrs 1
           else createCardEffect Cards.tekelili_227 Nothing attrs iid

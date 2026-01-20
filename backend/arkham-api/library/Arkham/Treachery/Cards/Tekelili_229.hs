@@ -14,8 +14,8 @@ tekelili_229 = treachery Tekelili_229 Cards.tekelili_229
 instance RunMessage Tekelili_229 where
   runMessage msg t@(Tekelili_229 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      n <- ifM_ (getShouldResolveEffectsAgain iid attrs) 2 1
-      repeated n $ chooseAndDiscardAsset iid attrs
+      n <- additionalTimesToResolveEffects iid attrs
+      repeated (n + 1) $ chooseAndDiscardAsset iid attrs
       resolveTekelili iid attrs
       pure t
     _ -> Tekelili_229 <$> liftRunMessage msg attrs

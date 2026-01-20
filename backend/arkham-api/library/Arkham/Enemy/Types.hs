@@ -212,6 +212,10 @@ setExhausted
   => CardBuilder EnemyId a -> CardBuilder EnemyId a
 setExhausted = fmap (overAttrs (\a -> a {enemyExhausted = True}))
 
+isConcealed :: Keyword -> Bool
+isConcealed Concealed {} = True
+isConcealed _ = False
+
 enemyWith
   :: (EnemyAttrs -> a)
   -> CardDef
@@ -241,7 +245,11 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyModifiers = mempty
             , enemyExhausted = False
             , enemyTokens = mempty
-            , enemySpawnAt = if Hidden `elem` cdKeywords cardDef then Just NoSpawn else Nothing
+            , enemySpawnAt =
+                if
+                  | Hidden `elem` cdKeywords cardDef -> Just NoSpawn
+                  | any isConcealed (cdKeywords cardDef) -> Just $ SpawnPlaced InTheShadows
+                  | otherwise -> Nothing
             , enemySurgeIfUnableToSpawn = False
             , enemyAsSelfLocation = Nothing
             , enemyMovedFromHunterKeyword = False

@@ -47,7 +47,8 @@ exposeConcealed
 exposeConcealed iid source cid = doFlip iid source cid
 
 exposedInShadows
-  :: (Sourceable a, HasCardCode a, ReverseQueue m) => InvestigatorId -> a -> QueueT Msg.Message m () -> m ()
+  :: (Sourceable a, HasCardCode a, ReverseQueue m)
+  => InvestigatorId -> a -> QueueT Msg.Message m () -> m ()
 exposedInShadows iid source = chooseOneM iid . abilityLabeled iid (mkAbility source (-1) $ forced AnyWindow)
 
 moveFromShadows
@@ -123,6 +124,11 @@ placeConcealed iid kind cards = do
     select $ LocationWithoutModifier $ CampaignModifier ("noConcealed[" <> tshow kind <> "]")
   for_ cards $ push . Msg.CreateConcealedCard
   push $ Msg.PlaceConcealedCards iid (map toId cards) locations
+
+resolveConcealed_ :: ReverseQueue m => EnemyId -> m ()
+resolveConcealed_ eid = do
+  lead <- getLead
+  resolveConcealed lead eid
 
 resolveConcealed :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 resolveConcealed iid eid =

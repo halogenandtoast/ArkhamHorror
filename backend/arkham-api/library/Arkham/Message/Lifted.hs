@@ -806,15 +806,20 @@ createEnemy
   -> m EnemyId
 createEnemy card creation = createEnemyWith card creation id
 
-spawnEnemy :: (ReverseQueue m, IsCard card) => card -> m EnemyId
-spawnEnemy card = createEnemyWith card () id
+spawnEnemy :: (ReverseQueue m, FetchCard card) => card -> m EnemyId
+spawnEnemy card = do
+  card' <- fetchCard card
+  createEnemyWith card' () id
 
-spawnEnemy_ :: (ReverseQueue m, IsCard card) => card -> m ()
+spawnEnemy_ :: (ReverseQueue m, FetchCard card) => card -> m ()
 spawnEnemy_ = void . spawnEnemy
 
 spawnEnemyAt_
-  :: (ReverseQueue m, IsCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
-spawnEnemyAt_ card location = push $ SpawnEnemyAt (toCard card) (asId location)
+  :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId)
+  => card -> location -> m ()
+spawnEnemyAt_ card location = do
+  card' <- fetchCard card
+  push $ SpawnEnemyAt card' (asId location)
 
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards

@@ -233,6 +233,10 @@
       "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",
       "shuffleAllConcealed": "Shuffle all concealed mini-cards facedown, then place them at random in the positions they were in."
     },
+    "paradimensionalUnderstanding": {
+      "stable": "Flip each _Stable_ key you control to its _Unstable_ side.",
+      "unstable": "Immediately shift an _Unstable_ key you control."
+    },
     "doNotExposeConcealed": "Do not expose Concealed Card",
     "doNotRevealConcealed": "Do not reveal Concealed Card"
   },

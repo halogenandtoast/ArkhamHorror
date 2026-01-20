@@ -7,8 +7,8 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Coterie))
 
 newtype CongressChamberLair = CongressChamberLair LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities, RunMessage)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 congressChamberLair :: LocationCard CongressChamberLair
 congressChamberLair = location CongressChamberLair Cards.congressChamberLair 3 (PerPlayer 1)

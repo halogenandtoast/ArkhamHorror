@@ -6,8 +6,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype TheKeyReliquaryLair = TheKeyReliquaryLair LocationAttrs
-  deriving anyclass (IsLocation, RunMessage, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theKeyReliquaryLair :: LocationCard TheKeyReliquaryLair
 theKeyReliquaryLair = location TheKeyReliquaryLair Cards.theKeyReliquaryLair 1 (PerPlayer 1)

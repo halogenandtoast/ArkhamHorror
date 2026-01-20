@@ -23,7 +23,7 @@ instance RunMessage PredatorOrPrey where
         then drawCardsIfCan iid attrs 1
         else do
           unengagedEnemies <-
-            mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation UnengagedEnemy
+            mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation (UnengagedEnemy <> not_ (at_ $ locationWithInvestigator iid))
           investigators <- select Anyone
           chooseOneM iid do
             when (notNull unengagedEnemies) do
@@ -45,6 +45,7 @@ instance RunMessage PredatorOrPrey where
             $ CanMoveToLocation (InvestigatorWithId iid) (toSource attrs)
             $ AccessibleFrom ForMovement (LocationWithId loc)
             <> LocationFartherFrom loc (NearestLocationTo iid $ LocationWithEnemy AnyEnemy)
+            <> not_ (LocationWithId loc)
         chooseTargetM iid locations $ moveTo attrs iid
       pure e
     _ -> PredatorOrPrey <$> liftRunMessage msg attrs

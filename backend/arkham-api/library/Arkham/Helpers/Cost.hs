@@ -572,7 +572,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         resources <- getSpendableResources iid
         pure $ any (resources >=) ns
       MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
-        ns <- catMaybes <$> selectFields fld mtchr
+        ns <- catMaybes <$> selectFields fld (Matcher.replaceYouMatcher iid mtchr)
         resources <- getSpendableResources iid
         pure $ any (resources >=) ns
       CalculatedResourceCost calc -> do

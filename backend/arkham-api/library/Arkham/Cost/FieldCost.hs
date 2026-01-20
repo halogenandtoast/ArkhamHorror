@@ -81,6 +81,7 @@ data MaybeFieldCost where
     :: forall matcher rec fld
      . ( fld ~ Field rec (Maybe Int)
        , QueryElement matcher ~ EntityId rec
+       , Data matcher
        , Typeable matcher
        , Typeable rec
        , Typeable fld

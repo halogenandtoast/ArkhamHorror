@@ -495,6 +495,7 @@ export function choiceRequiresModal(c: Message) {
       return c.ability.displayAs;
     }
     case 'CardLabel': return true;
+    case 'ChaosTokenLabel': return true;
     case 'KeyLabel': return false; // expect all keys to be visible
     case 'TarotLabel': return true;
     case 'ChaosTokenGroupChoice': return true;

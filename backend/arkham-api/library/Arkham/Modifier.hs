@@ -45,6 +45,7 @@ data ModifierType
   = CriteriaModifier Criterion ModifierType
   | OnCommitCardModifier InvestigatorId ExtendedCardMatcher ModifierType
   | AbilityModifier Target Int ModifierType
+  | ActIsAgenda
   | ActionCostModifier Int
   | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int

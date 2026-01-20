@@ -280,6 +280,7 @@ allAgendas =
     , --- Stirring in the Deep [eote]
       SomeAgendaCard theSealWeakens
     , SomeAgendaCard thatWhichHasNoName
+    , SomeAgendaCard theFinalMirage
     , -- The Scarlet Keys
       --- Riddles and Rain [tsk]
       SomeAgendaCard whenItRains

@@ -19,9 +19,7 @@ import Data.Text qualified as T
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
-  showEncounter <-
-    maybe False (const True)
-      <$> lookupGetParam "includeEncounter"
+  showEncounter <- isJust <$> lookupGetParam "includeEncounter"
   let
     cards =
       if showEncounter

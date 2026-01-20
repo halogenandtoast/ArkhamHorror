@@ -188,6 +188,7 @@ allAgendaCards =
       , theFamiliar
       , theFestivitiesBegin
       , theFinalCountdown
+      , theFinalMirage
       , theFirstNight
       , theFlood
       , theHangedManXII
@@ -788,6 +789,9 @@ theSealWeakens = agenda "08671" "The Seal Weakens" 4 StirringInTheDeep
 
 thatWhichHasNoName :: CardDef
 thatWhichHasNoName = agenda "08672" "That Which Has No Name" 5 StirringInTheDeep
+
+theFinalMirage :: CardDef
+theFinalMirage = agenda "08681" "The Final Mirage" 6 StirringInTheDeep
 
 whenItRains :: CardDef
 whenItRains = agenda "09502" "When It Rains..." 1 RiddlesAndRain

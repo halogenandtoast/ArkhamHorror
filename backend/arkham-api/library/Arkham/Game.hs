@@ -8,6 +8,7 @@ import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
 import Arkham.Act.Types (ActAttrs (..), Field (..))
 import Arkham.Action qualified as Action
+import Arkham.Agenda (lookupAgenda)
 import Arkham.Agenda.Cards qualified as Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Agenda, AgendaAttrs (..), Field (..))
@@ -1386,10 +1387,26 @@ getCardsInPlayCount i = do
   skills <- Sum <$> selectCount (SkillWithPlacement $ InPlayArea i)
   pure . getSum $ assets <> events <> skills
 
+actAsAgenda :: Act -> Agenda
+actAsAgenda act =
+  let
+    attrs = toAttrs act
+    n =
+      case actSequence attrs of
+        AC.Sequence s _ -> s
+   in
+    lookupAgenda (coerce $ toId act) n (actCardId attrs)
+
 getAgendasMatching :: (HasGame m, Tracing m) => AgendaMatcher -> m [Agenda]
 getAgendasMatching matcher = do
   allGameAgendas <- toList . view (entitiesL . agendasL) <$> getGame
-  filterM (matcherFilter matcher) allGameAgendas
+  actAgendas <-
+    filterM (\act -> elem ActIsAgenda <$> getModifiers act)
+      . toList
+      . view (entitiesL . actsL)
+      =<< getGame
+
+  filterM (matcherFilter matcher) (allGameAgendas <> map actAsAgenda actAgendas)
  where
   matcherFilter = \case
     AnyAgenda -> pure . const True
@@ -3948,7 +3965,11 @@ getAgenda aid = fromJustNote missingAgenda <$> maybeAgenda aid
   missingAgenda = "Unknown agenda: " <> show aid
 
 maybeAgenda :: HasGame m => AgendaId -> m (Maybe Agenda)
-maybeAgenda aid = preview (entitiesL . agendasL . ix aid) <$> getGame
+maybeAgenda aid = runMaybeT do
+  asum
+    [ MaybeT $ preview (entitiesL . agendasL . ix aid) <$> getGame
+    , MaybeT $ fmap actAsAgenda . preview (entitiesL . actsL . ix (coerce aid)) <$> getGame
+    ]
 
 instance Projection Location where
   getAttrs lid = toAttrs <$> getLocation lid

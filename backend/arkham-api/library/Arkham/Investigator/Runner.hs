@@ -2064,7 +2064,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   <> map (`damageAsset` applyAll) sanityDamageableAssets
                   <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
                   <> [ auxiliaryDamageInvestigator iid
-                     | null mustBeAssignedHorrorFirstBeforeInvestigator && not applyAll
+                     | null mustBeAssignedHorrorFirstBeforeInvestigator && not applyAll && sanity > 1
                      ]
               DamageFirst def -> do
                 validAssets <-

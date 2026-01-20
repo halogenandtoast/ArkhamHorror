@@ -194,6 +194,9 @@
       "body": "<ul><li>Check the number of tasks on The Heist story card that were completed during this scenario. If you skipped part I, treat the number of tasks completed as 2 more than what was completed during the scenario.<ul><li>Each investigator earns 1 bonus experience for each additional task beyond the minimum of 4 completed on The Heist story card.</li><li>If only 4 or fewer tasks were completed, no additional rewards are granted.</li><li>If 5 or more tasks were completed and Isamara Ordoñez was in play at the end of the scenario, the investigators have earned Isamara Ordoñez. Any one investigator may choose to add Isamara Ordoñez (The Torch Singer) to their deck. This card does not count toward that investigator’s deck size.</li><li> If 6 or more tasks were completed, the investigators have earned the Deck of Possibilities. Any one investigator may choose to add the Deck of Possibilities to their deck. This card does not count toward that investigator’s deck size. During the setup of each scenario, that investigator gathers the encounter cards from Fortune and Folly with the following game icons: J ♠, J ♥, J ♦, J ♣, Q ♦, Q ♠, K ♣, K ♥, A ♠. These cards are shuffled into a separate “possibilities deck.” (Alternatively, you may use standard playing cards instead of encounter cards from Fortune and Folly.)</li></ul></li></ul>"
     },
     "resolutions": {
+      "label": {
+        "fortunesChosen": "Choose any number token in the chaos bag. Replace it with a number token of a value 2 lower (*e.g. You may replace a 0 token with a –2 token, or a –3 token with a –5 token*)."
+      },
       "scarletKeys": "If you are playing The Scarlet Keys campaign:",
       "meddled": "In your Campaign Log, record that the cell meddled in Abarran’s affairs.",
       "bearer": "Choose an investigator to be the bearer of The Wellspring of Fortune and update the Campaign Log accordingly.",

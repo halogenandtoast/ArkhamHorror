@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCard, AssetCardCode, AssetPlacement))
+import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
@@ -16,6 +17,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Campaign (campaignField)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
@@ -531,6 +533,27 @@ instance RunMessage FortuneAndFolly where
             }
     _ -> FortuneAndFolly <$> liftRunMessage msg attrs
 
+fortunesChosenToken :: ChaosTokenFace -> Maybe ChaosTokenFace
+fortunesChosenToken face = case face of
+  PlusOne -> Just MinusOne
+  Zero -> Just MinusTwo
+  MinusOne -> Just MinusThree
+  MinusTwo -> Just MinusFour
+  MinusThree -> Just MinusFive
+  MinusFour -> Just MinusSix
+  MinusFive -> Just MinusSeven
+  MinusSix -> Just MinusEight
+  _ -> Nothing
+
+handleFortunesChosen :: (HasI18n, ReverseQueue m) => m ()
+handleFortunesChosen = unlessM getIsStandalone do
+  tokens <- campaignField CampaignChaosBag
+  let tokenPairs = mapMaybe (\face -> (face,) <$> fortunesChosenToken face) tokens
+  leadChooseOneM do
+    questionLabeled' "fortunesChosen"
+    for_ tokenPairs \(original, replacement) -> do
+      chaosTokenLabeled original $ push $ SwapChaosToken original replacement
+
 instance RunMessage FortuneAndFollyPart2 where
   runMessage msg s@(FortuneAndFollyPart2 fortuneAndFolly'@(FortuneAndFolly attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (FortuneAndFollyPart2 . FortuneAndFolly) attrs do
@@ -724,6 +747,7 @@ instance RunMessage FortuneAndFollyPart2 where
                 li "fortunesChosen"
                 li "xp"
                 li "additionalRewards"
+          handleFortunesChosen
           do_ msg
           endOfScenario
         Resolution 3 -> do
@@ -742,6 +766,7 @@ instance RunMessage FortuneAndFollyPart2 where
                 li "fortunesChosen"
                 li "xp"
                 li "additionalRewards"
+          handleFortunesChosen
           do_ msg
           endOfScenario
         _ -> error "invalid resolution"

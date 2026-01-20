@@ -492,7 +492,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       </template>
     </div>
 
-    <div v-if="chaosTokenLabels.length > 0" class="cardLabels">
+    <div v-if="chaosTokenLabels.length > 0" class="chaosTokenLabels">
       <template v-for="{choice, index} in chaosTokenLabels" :key="index">
         <img
           class="token front"
@@ -1166,6 +1166,16 @@ h2 {
 
   .card {
     max-width: 200px;
+  }
+}
+
+.chaosTokenLabels {
+  margin: 10px;
+  img {
+    width: 10vw;
+    max-width: 150px;
+    border: 1px solid var(--select);
+    border-radius: 100vw;
   }
 }
 

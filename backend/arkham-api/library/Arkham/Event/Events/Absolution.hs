@@ -1,13 +1,11 @@
-module Arkham.Event.Events.Absolution (absolution, Absolution (..)) where
+module Arkham.Event.Events.Absolution (absolution) where
 
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher
-import Arkham.RequestedChaosTokenStrategy
 
 newtype Absolution = Absolution EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,12 +18,12 @@ instance RunMessage Absolution where
   runMessage msg e@(Absolution attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let x = totalResourcePayment attrs.payment
-      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal $ 3 + x) SetAside
+      requestChaosTokens iid attrs (3 + x)
       pure e
     RequestedChaosTokens (isSource attrs -> True) _ tokens -> do
       let nonSymbols = count (not . isSymbolChaosToken . (.face)) tokens
       availableBless <- getRemainingBlessTokens
-      replicateM_ (min nonSymbols availableBless) $ push $ AddChaosToken #bless
+      repeated (min nonSymbols availableBless) $ addChaosToken #bless
 
       let bless = count ((== #bless) . (.face)) tokens
       doStep bless msg
@@ -36,10 +34,9 @@ instance RunMessage Absolution where
       investigators <- selectTargets $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
 
       when (notNull assets || notNull investigators) do
-        chooseOne
-          iid
-          [ targetLabel target [HealHorror target (toSource attrs) 1, DoStep (n - 1) msg']
-          | target <- assets <> investigators
-          ]
+        chooseOneM iid do
+          targets (assets <> investigators) \t -> do
+            healHorror t attrs 1
+            doStep (n - 1) msg'
       pure e
     _ -> Absolution <$> liftRunMessage msg attrs

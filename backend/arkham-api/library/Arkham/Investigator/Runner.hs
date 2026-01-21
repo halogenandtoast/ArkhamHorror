@@ -4799,6 +4799,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+  ResolvedAbility {} -> do
+    depth <- getWindowDepth
+    pure
+      $ a
+      & ( usedAbilitiesL %~ filter \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just PerTestOrAbility -> usedDepth < depth
+              _ -> True
+        )
+      & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
   PerformEnemyAttack eid -> do
     withMaybeField Field.EnemyAttacking eid \details -> do
       when (any (isTarget a) details.targets) do

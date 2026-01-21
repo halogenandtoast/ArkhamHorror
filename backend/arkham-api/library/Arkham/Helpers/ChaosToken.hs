@@ -22,22 +22,18 @@ matchChaosToken
 matchChaosToken _ = (<=~>)
 
 cancelChaosToken :: HasQueue Message m => ChaosToken -> m ()
-cancelChaosToken token = withQueue_ $ \queue ->
-  mapMaybe
-    ( \case
-        When (RevealChaosToken _ _ token') | token == token' -> Nothing
-        RevealChaosToken _ _ token' | token == token' -> Nothing
-        After (RevealChaosToken _ _ token') | token == token' -> Nothing
-        CheckWindows ws -> case filter (not . isRevealChaosToken) ws of
-          [] -> Nothing
-          ws' -> Just $ CheckWindows ws'
-        Do (CheckWindows ws) -> case filter (not . isRevealChaosToken) ws of
-          [] -> Nothing
-          ws' -> Just $ Do (CheckWindows ws')
-        RequestedChaosTokens s miid ts -> Just $ RequestedChaosTokens s miid (filter (/= token) ts)
-        msg -> Just msg
-    )
-    queue
+cancelChaosToken token = withQueue_ $ mapMaybe \case
+  When (RevealChaosToken _ _ token') | token == token' -> Nothing
+  RevealChaosToken _ _ token' | token == token' -> Nothing
+  After (RevealChaosToken _ _ token') | token == token' -> Nothing
+  CheckWindows ws -> case filter (not . isRevealChaosToken) ws of
+    [] -> Nothing
+    ws' -> Just $ CheckWindows ws'
+  Do (CheckWindows ws) -> case filter (not . isRevealChaosToken) ws of
+    [] -> Nothing
+    ws' -> Just $ Do (CheckWindows ws')
+  RequestedChaosTokens s miid ts -> Just $ RequestedChaosTokens s miid (filter (/= token) ts)
+  msg -> Just msg
  where
   isRevealChaosToken w = case windowType w of
     Window.RevealChaosToken _ token' -> token == token'

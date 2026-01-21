@@ -6,6 +6,7 @@ import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Json
 import Arkham.Prelude
+import Arkham.Source
 import Data.Aeson.TH
 import GHC.Records
 
@@ -17,15 +18,12 @@ data ChaosBag = ChaosBag
   , chaosBagForceDraw :: Maybe ChaosTokenFace
   , chaosBagTokenPool :: [ChaosToken]
   , chaosBagTotalRevealedChaosTokens :: [ChaosToken]
+  , chaosBagPendingRequest :: Maybe (Source, [ChaosToken])
   }
   deriving stock (Show, Eq, Generic)
 
 allChaosBagChaosTokens :: ChaosBag -> [ChaosToken]
-allChaosBagChaosTokens ChaosBag {..} =
-  nub
-    $ chaosBagChaosTokens
-    <> chaosBagSetAsideChaosTokens
-    <> chaosBagRevealedChaosTokens
+allChaosBagChaosTokens ChaosBag {..} = nub $ chaosBagChaosTokens <> chaosBagSetAsideChaosTokens <> chaosBagRevealedChaosTokens
 
 $(deriveToJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
 
@@ -38,6 +36,7 @@ instance FromJSON ChaosBag where
     chaosBagForceDraw <- o .:? "forceDraw"
     chaosBagTokenPool <- o .: "tokenPool"
     chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
+    chaosBagPendingRequest <- o .:? "pendingRequest"
     pure ChaosBag {..}
 
 emptyChaosBag :: ChaosBag
@@ -50,6 +49,7 @@ emptyChaosBag =
     , chaosBagForceDraw = Nothing
     , chaosBagTokenPool = []
     , chaosBagTotalRevealedChaosTokens = []
+    , chaosBagPendingRequest = Nothing
     }
 
 instance HasField "revealed" ChaosBag [ChaosToken] where
@@ -66,6 +66,9 @@ tokenPoolL = lens chaosBagTokenPool $ \m x -> m {chaosBagTokenPool = x}
 
 forceDrawL :: Lens' ChaosBag (Maybe ChaosTokenFace)
 forceDrawL = lens chaosBagForceDraw $ \m x -> m {chaosBagForceDraw = x}
+
+pendingRequestL :: Lens' ChaosBag (Maybe (Source, [ChaosToken]))
+pendingRequestL = lens chaosBagPendingRequest $ \m x -> m {chaosBagPendingRequest = x}
 
 setAsideChaosTokensL :: Lens' ChaosBag [ChaosToken]
 setAsideChaosTokensL =

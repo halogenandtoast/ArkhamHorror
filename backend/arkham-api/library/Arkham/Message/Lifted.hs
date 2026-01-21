@@ -1023,7 +1023,10 @@ moveTokensNoDefeated
 moveTokensNoDefeated source from destination token n = push $ Msg.MoveTokensNoDefeated (toSource source) (toSource from) (toTarget destination) token n
 
 drawAnotherChaosToken :: ReverseQueue m => InvestigatorId -> m ()
-drawAnotherChaosToken = push . DrawAnotherChaosToken
+drawAnotherChaosToken iid = do
+  getSkillTest >>= \case
+    Just _ -> push $ DrawAnotherChaosToken iid
+    Nothing -> push $ RequestAnotherChaosToken iid
 
 assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
 assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment

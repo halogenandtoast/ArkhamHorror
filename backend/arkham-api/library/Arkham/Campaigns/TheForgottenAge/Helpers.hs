@@ -194,7 +194,6 @@ explore iid source cardMatcher exploreRule matchCount = do
       if toCardDef x == Treacheries.perilsOfYoth
         then do
           setScenarioDeck ExplorationDeck (drawn <> rest) -- unshuffled in case we continue
-          checkAfter $ Window.Explored iid mlid (Failure x)
         else do
           unless (null drawn) do
             deck' <- shuffle (drawn <> rest)
@@ -209,6 +208,8 @@ explore iid source cardMatcher exploreRule matchCount = do
           , cardDrewRules = mempty
           , cardDrewTarget = Nothing
           }
+
+      checkAfter $ Window.Explored iid mlid (Failure x)
     Nothing -> do
       let (matched, notMatched) = partition (`cardMatch` cardMatcher') drawn
       case matched of

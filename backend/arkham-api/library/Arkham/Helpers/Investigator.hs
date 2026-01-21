@@ -154,14 +154,15 @@ damageValueFor :: (Tracing m, HasGame m) => Int -> InvestigatorId -> DamageFor -
 damageValueFor baseValue iid damageFor = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
-  foldrM applyModifier baseValue' modifiers
+  if NoDamageDealt `elem` modifiers
+    then pure 0
+    else foldrM applyModifier baseValue' modifiers
  where
   applyModifier (DamageDealt m) n = pure $ max 0 (n + m)
   applyModifier (CriteriaModifier c (DamageDealt m)) n = do
     passes <- passesCriteria iid Nothing GameSource GameSource [] c
     pure $ max 0 (n + if passes then m else 0)
   applyModifier (DamageDealtToInvestigator m) n | damageFor == DamageForInvestigator = pure $ max 0 (n + m)
-  applyModifier NoDamageDealt _ = pure 0
   applyModifier _ n = pure n
 
 getHandSize :: (HasGame m, ToId investigator InvestigatorId) => investigator -> m Int

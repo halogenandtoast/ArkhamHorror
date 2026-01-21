@@ -95,4 +95,10 @@ instance RunMessage Decoy where
     InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
+    InDiscard iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["enemyCount" .= (2 :: Int)]
+      pure e
+    InDiscard iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
+      pure e
     _ -> Decoy <$> liftRunMessage msg attrs

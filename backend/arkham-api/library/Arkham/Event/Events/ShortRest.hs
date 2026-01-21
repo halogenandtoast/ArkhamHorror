@@ -46,4 +46,7 @@ instance RunMessage ShortRest where
     InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       playCardPayingCost iid (toCard attrs)
       pure e
+    InDiscard iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
+      playCardPayingCost iid (toCard attrs)
+      pure e
     _ -> ShortRest <$> liftRunMessage msg attrs

@@ -72,4 +72,14 @@ instance RunMessage IntelReport where
         $ MetaModifier
         $ object ["discoverUpToTwoAway" .= True]
       pure e
+    InDiscard iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
+      cardResolutionModifier (toCard attrs) attrs (toCardId attrs)
+        $ MetaModifier
+        $ object ["clueCount" .= (2 :: Int)]
+      pure e
+    InDiscard iid (UseCardAbility iid' (isSource attrs -> True) 2 _ _) | iid == iid' -> do
+      cardResolutionModifier (toCard attrs) attrs (toCardId attrs)
+        $ MetaModifier
+        $ object ["discoverUpToTwoAway" .= True]
+      pure e
     _ -> IntelReport <$> liftRunMessage msg attrs

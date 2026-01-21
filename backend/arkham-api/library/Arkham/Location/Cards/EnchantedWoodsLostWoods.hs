@@ -49,4 +49,7 @@ instance RunMessage EnchantedWoodsLostWoodsEffect where
     MoveTo (moveTarget -> InvestigatorTarget iid) | attrs.target == toTarget iid -> do
       push $ disable attrs
       pure e
+    After (MoveTo (moveTarget -> InvestigatorTarget iid)) | attrs.target == toTarget iid -> do
+      push $ disable attrs
+      pure e
     _ -> EnchantedWoodsLostWoodsEffect <$> runMessage msg attrs

@@ -563,7 +563,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     push $ CreatedEffect effectId (Just ems) source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card windows' -> do
-    activeCost <- createActiveCostForCard iid card NotPlayAction windows'
+    pushAll [BeforeCardCost iid NoAction windows' card.id, Do msg]
+    pure g
+  Do (PayCardCost iid card windows') -> do
+    card' <- Lifted.fetchCard (toCardId card)
+    activeCost <- createActiveCostForCard iid card' NotPlayAction windows'
     -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
     push $ CreatedCost (activeCostId activeCost)
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
@@ -1331,6 +1335,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       runQueueT $ removeLocation locationId
     pure g
   PlayCard iid card _mtarget _payment windows' True -> do
+    pushAll [BeforeCardCost iid NeedsAction windows' card.id, Do msg]
+    pure g
+  Do (PlayCard iid card' _mtarget _payment windows' True) -> do
+    card <- Lifted.fetchCard (toCardId card')
     allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
     let
       isFast = case card of

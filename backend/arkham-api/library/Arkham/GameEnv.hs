@@ -15,17 +15,20 @@ import {-# SOURCE #-} Arkham.Card (
 import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
+import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Distance
+import Arkham.Entities
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import Arkham.GameT
 import Arkham.History
 import Arkham.Id
+import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
@@ -241,6 +244,12 @@ withoutModifiersOf source body = do
     modifiers = gameModifiers game
     modifiers' = Map.map (filter ((/= toSource source) . (.source))) modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
+
+withInvestigatorEdit
+  :: HasGame m => InvestigatorId -> (InvestigatorAttrs -> InvestigatorAttrs) -> ReaderT Game m a -> m a
+withInvestigatorEdit iid f body = do
+  game <- getGame
+  runReaderT body $ game & entitiesL . investigatorsL . ix iid %~ overAttrs f
 
 withActiveInvestigator :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigator iid body = do

@@ -853,6 +853,7 @@ data Message
   | InvestigatorAdjustSlot InvestigatorId Slot SlotType SlotType
   | InvestigatorPlayedAsset InvestigatorId AssetId
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
+  | BeforeCardCost InvestigatorId ActionStatus [Window] CardId
   | FinishedEvent EventId
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int

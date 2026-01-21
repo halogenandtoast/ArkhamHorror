@@ -4,8 +4,8 @@ import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Cost (getSpendableResources)
-import Arkham.Helpers.Playable (getIsPlayableWithResources)
+import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.Helpers.Investigator (withAdditionalResources)
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Window (defaultWindows)
 
@@ -20,10 +20,9 @@ instance RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let windows'' = nub $ attrs.windows <> defaultWindows iid
-      availableResources <- getSpendableResources iid
-      cards <-
+      cards <- withAdditionalResources iid 3 do
         filterM
-          (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
+          (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'')
           =<< select (inHandOf NotForPlay iid <> basic (oneOf [#spell, #ritual]))
 
       focusCards cards do

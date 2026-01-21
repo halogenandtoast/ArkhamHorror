@@ -11,6 +11,7 @@ thePaintedWorld =
       { cdSkills = [#willpower, #agility, #wild]
       , cdCardTraits = singleton Spell
       , cdSkipPlayWindows = True
+      , cdOutOfPlayEffects = [InHandEffect]
       , cdFastWindow =
           Just
             $ PlayerHasPlayableCard (UnpaidCost NeedsAction)

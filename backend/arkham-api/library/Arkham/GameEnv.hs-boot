@@ -1,10 +1,11 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.GameEnv where
 
 import Arkham.Prelude
 
 import Arkham.Ability.Types
 import Arkham.ActiveCost.Base
-import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardId)
+import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardGen, CardId)
 import Arkham.Card.CardDef
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
@@ -13,6 +14,7 @@ import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import Arkham.GameT
+import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.History
 import Arkham.Id
 import {-# SOURCE #-} Arkham.Message
@@ -44,6 +46,7 @@ getCurrentBatchId :: HasGame m => m (Maybe BatchId)
 getWindowDepth :: HasGame m => m Int
 getDepthLock :: HasGame m => m Int
 getSkillTest :: HasGame m => m (Maybe SkillTest)
+getSkillTestId :: HasGame m => m (Maybe SkillTestId)
 getActiveCosts :: HasGame m => m [ActiveCost]
 getDistance :: (HasGame m, Tracing m) => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
@@ -57,6 +60,7 @@ getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k 
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest
 getCard :: (HasCallStack, HasGame m) => CardId -> m Card
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
+findAllCards :: HasGame m => (Card -> Bool) -> m [Card]
 getSettings :: HasGame m => m Settings
 getAllPlayers :: HasGame m => m [PlayerId]
 getActivePlayer :: HasGame m => m PlayerId
@@ -73,3 +77,10 @@ runWithEnv
   => GameT a
   -> m a
 getTurnOrder :: HasGame m => m [InvestigatorId]
+withInvestigatorEdit
+  :: HasGame m => InvestigatorId -> (InvestigatorAttrs -> InvestigatorAttrs) -> ReaderT Game m a -> m a
+withActiveInvestigatorAdjust
+  :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
+
+instance CardGen GameT
+instance MonadRandom GameT

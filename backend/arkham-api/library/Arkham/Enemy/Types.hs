@@ -351,6 +351,9 @@ instance AsId Enemy where
 instance HasField "id" Enemy EnemyId where
   getField (Enemy e) = attr enemyId e
 
+instance HasField "lastKnownLocation" Enemy (Maybe LocationId) where
+  getField = (.lastKnownLocation) . toAttrs
+
 instance HasField "placement" Enemy Placement where
   getField = (.placement) . toAttrs
 

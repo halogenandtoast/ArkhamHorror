@@ -96,6 +96,9 @@ instance HasField "meta" EnemyAttrs Value where
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
 
+instance HasField "lastKnownLocation" EnemyAttrs (Maybe LocationId) where
+  getField = enemyLastKnownLocation
+
 instance HasField "isInPlay" EnemyAttrs Bool where
   getField = (.placement.isInPlay)
 

@@ -3675,7 +3675,11 @@ enemyMatcherFilter es matcher' = do
       flip filterM es \enemy -> do
         if enemy.placement.isAttached
           then pure False
-          else Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
+          else
+            orM
+              [ pure $ maybe False (`elem` locations) enemy.lastKnownLocation
+              , Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
+              ]
     CanFightEnemyWith sourceMatcher -> do
       sources <- select sourceMatcher
       nubOrdOn (.id) . concat <$> traverse (enemyMatcherFilter es . CanFightEnemy) sources

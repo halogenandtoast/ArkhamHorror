@@ -2242,7 +2242,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.LeavePlay (LocationTarget aid) -> elem aid <$> select locationMatcher
       _ -> noMatch
     Matcher.EnemyLeavesPlay timing enemyMatcher -> guardTiming timing $ \case
-      Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select enemyMatcher
+      Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select (IncludeOutOfPlayEnemy enemyMatcher)
       _ -> noMatch
     Matcher.Explored timing whoMatcher fromLocationMatcher resultMatcher -> guardTiming timing $ \case
       Window.Explored who mwhere result ->

@@ -1603,7 +1603,7 @@ instance RunMessage EnemyAttrs where
         & (tokensL .~ mempty)
     Discard miid source target | a `isTarget` target -> do
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
-      afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
+      afterLeavePlay <- checkWindows [mkAfter $ Window.LeavePlay (toTarget a)]
       let
         card = case enemyPlacement of
           AsSwarm _ c -> c

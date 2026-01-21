@@ -674,6 +674,7 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherChaosToken InvestigatorId
+  | RequestAnotherChaosToken InvestigatorId
   | DrawChaosToken InvestigatorId ChaosToken
   | DrewPlayerEnemy InvestigatorId Card
   | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card
@@ -1030,6 +1031,7 @@ data Message
   | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
+  | FinalizeRequestedChaosTokens Source (Maybe InvestigatorId)
   | RunSkillTest InvestigatorId
   | RecalculateSkillTestResults
   | RecalculateSkillTestResultsCanChangeAutomatic Bool

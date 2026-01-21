@@ -251,8 +251,7 @@ instance RunMessage SkillTest where
         _ -> True
       hasRun <- fromQueue (elem (RunSkillTest iid))
       pushAll
-        $ [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
-          ]
+        $ [RequestAnotherChaosToken iid]
         <> [RunSkillTest iid | not hasRun]
       pure s
     RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokens -> do

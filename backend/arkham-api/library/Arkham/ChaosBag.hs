@@ -704,6 +704,7 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL .~ mempty)
         & (revealedChaosTokensL .~ mempty)
         & (totalRevealedChaosTokensL .~ mempty)
+        & (pendingRequestL .~ Nothing)
         & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> case revealStrategy of
@@ -818,6 +819,7 @@ instance RunMessage ChaosBag where
       pure
         $ c
         & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
+        & (pendingRequestL %~ fmap (second (filter (/= token))))
         & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
@@ -879,9 +881,13 @@ instance RunMessage ChaosBag where
                 : willRevealF tokens'
                   <> checkWindowMsgs
                   <> revealF tokens'
-                  <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
+                  <> [FinalizeRequestedChaosTokens source miid, UnfocusChaosTokens]
             )
-          pure $ c & choiceL .~ Nothing & totalRevealedChaosTokensL %~ (nub . (<> tokens'))
+          pure
+            $ c
+            & (choiceL .~ Nothing)
+            & (totalRevealedChaosTokensL %~ (nub . (<> tokens')))
+            & (pendingRequestL %~ maybe (Just (source, tokens')) (Just . second (nub . (<> tokens'))))
         _ -> do
           iid <- maybe getLead pure miid
           ((choice'', msgs), c') <-
@@ -891,13 +897,29 @@ instance RunMessage ChaosBag where
           push (RunDrawFromBag source miid strategy)
           pushAll msgs
           pure $ c' & choiceL ?~ choice''
+    RequestAnotherChaosToken iid -> do
+      for_ chaosBagPendingRequest \(s, _) ->
+        push $ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
+      pure c
+    FinalizeRequestedChaosTokens source miid -> do
+      for_ chaosBagPendingRequest \(s, tkns) ->
+        when (s == source) do
+          push $ RequestedChaosTokens source miid tkns
+      -- why do we just clear the tokens and not the source? Because when
+      -- dealing with a skill test we might want to draw more tokens later, but
+      -- not include them in the tokens to reveal
+      pure $ c & pendingRequestL %~ fmap (second (const []))
     ChaosTokenSelected _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
+      pure
+        $ c
+        & (totalRevealedChaosTokensL %~ (nub . (token :)))
+        & (pendingRequestL %~ fmap (second (nub . (token :))))
     ChaosTokenIgnored _ _ token -> do
       let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
       pure
         $ c
         & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
+        & (pendingRequestL %~ fmap (second (filter (/= token))))
         & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"

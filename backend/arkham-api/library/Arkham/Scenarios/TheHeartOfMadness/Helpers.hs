@@ -23,7 +23,7 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
 import Arkham.Tracing
-import Arkham.Trait (Trait (Ancient))
+import Arkham.Trait (Trait (AncientOne))
 
 scenarioI18n :: Int -> (HasI18n => a) -> a
 scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
@@ -85,7 +85,7 @@ getChaosTokenValueFromScenario
   => InvestigatorId -> ChaosTokenFace -> s -> m ChaosTokenValue
 getChaosTokenValueFromScenario iid tokenFace (toAttrs -> attrs) = case tokenFace of
   Skull -> do
-    ancient <- selectAny $ withTrait Ancient <> EnemyAt (locationWithInvestigator iid)
+    ancient <- selectAny $ withTrait AncientOne <> EnemyAt (locationWithInvestigator iid)
     pure
       $ if ancient
         then toChaosTokenValue attrs Skull 2 4

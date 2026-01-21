@@ -16,7 +16,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
@@ -268,7 +268,8 @@ instance RunMessage TheDepthsOfYoth where
         when (startingDamage > 0) $ placeTokens attrs harbingerId #damage startingDamage
       pure s
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [MaybeT $ getLocationOf iid, hoistMaybe source.location]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

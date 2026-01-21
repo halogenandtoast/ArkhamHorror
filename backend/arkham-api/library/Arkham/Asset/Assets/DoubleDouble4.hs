@@ -16,7 +16,7 @@ doubleDouble4 = asset DoubleDouble4 Cards.doubleDouble4
 
 instance HasAbilities DoubleDouble4 where
   getAbilities (DoubleDouble4 a) =
-    [ restricted a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
           ( PlayCard #after You
               $ PlayableCard (UnpaidCost NoAction)

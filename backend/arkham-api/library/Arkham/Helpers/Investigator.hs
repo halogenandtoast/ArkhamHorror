@@ -15,6 +15,7 @@ import Arkham.Classes.Query
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
+import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
@@ -39,6 +40,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
+import Arkham.Token
 import Arkham.Tracing
 import Arkham.Window (Window (..), WindowType (Healed))
 import Data.Foldable (foldrM)
@@ -776,3 +778,6 @@ selectAffectsOthers iid matcher = withActiveInvestigator iid $ select $ affectsO
 selectAffectsColocated
   :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
 selectAffectsColocated iid matcher = selectAffectsOthers iid (colocatedWith iid <> matcher)
+
+withAdditionalResources :: HasGame m => InvestigatorId -> Int -> ReaderT Game m a -> m a
+withAdditionalResources iid n = withInvestigatorEdit iid (tokensL %~ addTokens #resource n)

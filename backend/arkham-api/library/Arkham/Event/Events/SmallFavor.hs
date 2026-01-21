@@ -68,4 +68,10 @@ instance RunMessage SmallFavor where
     InHand iid (UseCardAbility iid' (isSource attrs -> True) 2 _ _) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
+    InDiscard iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["damageCount" .= (2 :: Int)]
+      pure e
+    InDiscard iid (UseCardAbility iid' (isSource attrs -> True) 2 _ _) | iid == iid' -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
+      pure e
     _ -> SmallFavor <$> liftRunMessage msg attrs

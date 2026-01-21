@@ -18,7 +18,7 @@ spec = describe "Rex's Curse" $ do
       $ TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
       <> treacheryIs Cards.rexsCurse
 
-  it "causes you to reveal another token" $ gameTest $ \investigator -> do
+  it "causes you to reveal another token" . gameTest $ \investigator -> do
     updateInvestigator investigator (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
 

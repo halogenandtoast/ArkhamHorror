@@ -4805,7 +4805,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       $ a
       & ( usedAbilitiesL %~ filter \UsedAbility {..} ->
             case abilityLimitType (abilityLimit usedAbility) of
-              Just PerTestOrAbility -> usedDepth < depth
+              Just PerTestOrAbility -> usedDepth <= depth
               _ -> True
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))

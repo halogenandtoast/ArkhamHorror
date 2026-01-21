@@ -674,7 +674,7 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherChaosToken InvestigatorId
-  | RequestAnotherChaosToken InvestigatorId
+  | RequestAnotherChaosToken InvestigatorId Source
   | DrawChaosToken InvestigatorId ChaosToken
   | DrewPlayerEnemy InvestigatorId Card
   | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card

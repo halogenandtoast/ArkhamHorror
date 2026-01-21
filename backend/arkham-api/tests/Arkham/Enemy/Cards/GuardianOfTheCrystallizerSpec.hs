@@ -37,6 +37,7 @@ spec = describe "Guardian of the Crystallizer" do
         self `playCard` crystallizerOfDreams
         crystallizerOfDream <- selectJust $ assetIs Assets.crystallizerOfDreams
         run $ Discard Nothing (TestSource mempty) (toTarget crystallizerOfDream)
+        self.discard `shouldReturn` onlyPlayerCards [crystallizerOfDreams]
         self `drawCards` 1
         useForcedAbility
         assertNone $ enemyIs Enemies.guardianOfTheCrystallizer

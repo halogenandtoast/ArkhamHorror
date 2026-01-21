@@ -18,7 +18,7 @@ data ChaosBag = ChaosBag
   , chaosBagForceDraw :: Maybe ChaosTokenFace
   , chaosBagTokenPool :: [ChaosToken]
   , chaosBagTotalRevealedChaosTokens :: [ChaosToken]
-  , chaosBagPendingRequest :: Maybe (Source, [ChaosToken])
+  , chaosBagPendingRequests :: Map Source [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -36,7 +36,7 @@ instance FromJSON ChaosBag where
     chaosBagForceDraw <- o .:? "forceDraw"
     chaosBagTokenPool <- o .: "tokenPool"
     chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
-    chaosBagPendingRequest <- o .:? "pendingRequest"
+    chaosBagPendingRequests <- o .:? "pendingRequests" .!= mempty
     pure ChaosBag {..}
 
 emptyChaosBag :: ChaosBag
@@ -49,7 +49,7 @@ emptyChaosBag =
     , chaosBagForceDraw = Nothing
     , chaosBagTokenPool = []
     , chaosBagTotalRevealedChaosTokens = []
-    , chaosBagPendingRequest = Nothing
+    , chaosBagPendingRequests = mempty
     }
 
 instance HasField "revealed" ChaosBag [ChaosToken] where
@@ -67,8 +67,8 @@ tokenPoolL = lens chaosBagTokenPool $ \m x -> m {chaosBagTokenPool = x}
 forceDrawL :: Lens' ChaosBag (Maybe ChaosTokenFace)
 forceDrawL = lens chaosBagForceDraw $ \m x -> m {chaosBagForceDraw = x}
 
-pendingRequestL :: Lens' ChaosBag (Maybe (Source, [ChaosToken]))
-pendingRequestL = lens chaosBagPendingRequest $ \m x -> m {chaosBagPendingRequest = x}
+pendingRequestsL :: Lens' ChaosBag (Map Source [ChaosToken])
+pendingRequestsL = lens chaosBagPendingRequests $ \m x -> m {chaosBagPendingRequests = x}
 
 setAsideChaosTokensL :: Lens' ChaosBag [ChaosToken]
 setAsideChaosTokensL =

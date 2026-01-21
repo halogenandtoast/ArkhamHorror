@@ -132,11 +132,7 @@ useFastActionOf (toSource -> source) idx = chooseOptionMatching "use fast action
   _ -> False
 
 genMyCard :: Investigator -> CardDef -> TestAppT Card
-genMyCard self cardDef = do
-  card <- genCard cardDef
-  pure $ case card of
-    PlayerCard pc -> PlayerCard (pc {pcOwner = Just (toId self)})
-    other -> other
+genMyCard self = genCard >=> setOwner self.id
 
 useForcedAbility :: HasCallStack => TestAppT ()
 useForcedAbility = chooseOptionMatching "use forced ability" \case

@@ -1026,7 +1026,7 @@ drawAnotherChaosToken :: ReverseQueue m => InvestigatorId -> m ()
 drawAnotherChaosToken iid = do
   getSkillTest >>= \case
     Just _ -> push $ DrawAnotherChaosToken iid
-    Nothing -> push $ RequestAnotherChaosToken iid
+    Nothing -> push $ RequestAnotherChaosToken iid GameSource
 
 assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
 assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment

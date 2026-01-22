@@ -7,7 +7,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding (Byakhee, Dreamlands)
+import Arkham.EncounterSet hiding (Blight, Byakhee, Dreamlands)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
@@ -146,6 +146,7 @@ allEncounterEnemyCards =
       , brownJenkin
       , buriedMinerALostMemento
       , buriedMinerExhumeTheBones
+      , burrowingHybrid
       , captiveSubjects
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
@@ -181,6 +182,7 @@ allEncounterEnemyCards =
       , crazedGuest
       , crazedShoggoth
       , creatureOutOfDemhe
+      , crystalParasite
       , cultistOfTheEnclave
       , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged
@@ -240,6 +242,7 @@ allEncounterEnemyCards =
       , fortunesShieldA
       , fortunesShieldB
       , frenziedExplorer
+      , frenziedMiner
       , furtiveZoog
       , gavriellaMizrah
       , ghostLight
@@ -456,6 +459,7 @@ allEncounterEnemyCards =
       , stealthyByakhee
       , stealthyZoog
       , stolenMind
+      , subterraneanBeast
       , summonedBeast
       , suspiciousOrderly
       , swampLeech
@@ -548,7 +552,9 @@ allEncounterEnemyCards =
 allSpecialEnemyCards :: Map CardCode CardDef
 allSpecialEnemyCards =
   mapFromList
-    $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead, nyarlathotepTrueShape, golem, extradimensionalEnemy]
+    $ map
+      (toCardCode &&& id)
+      [flyingPolyp, reanimatedDead, nyarlathotepTrueShape, golem, extradimensionalEnemy]
 
 mobEnforcer :: CardDef
 mobEnforcer =
@@ -3089,7 +3095,8 @@ theBeastInACowlOfCrimsonRavagerInRed :: CardDef
 theBeastInACowlOfCrimsonRavagerInRed =
   (enemy "09655" ("The Beast in a Cowl of Crimson" <:> "Ravager in Red") DogsOfWar 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus")), Keyword.Retaliate]
+    , cdKeywords =
+        setFromList [Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus")), Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdDoubleSided = True
@@ -3117,7 +3124,8 @@ coterieProvocateur :: CardDef
 coterieProvocateur =
   (enemy "09657" "Coterie Provocateur" DogsOfWar 2)
     { cdCardTraits = setFromList [Monster, Coterie]
-    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus"))]
+    , cdKeywords =
+        setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithModifier (ScenarioModifier "keyLocus"))]
     }
 
 uncannyShadowPlayfulShadows :: CardDef
@@ -3426,6 +3434,36 @@ biancaDieKatz =
     { cdCardTraits = setFromList [Humanoid, Criminal, Socialite]
     , cdKeywords = setFromList [Keyword.Bonded 1 "10062", Keyword.Hunter]
     , cdVictoryPoints = Just 0
+    }
+
+subterraneanBeast :: CardDef
+subterraneanBeast =
+  (enemy "10517" "Subterranean Beast" WrittenInRock 1)
+    { cdCardTraits = setFromList [Abomination, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 2
+    }
+
+burrowingHybrid :: CardDef
+burrowingHybrid =
+  (enemy "10518" "Burrowing Hybrid" WrittenInRock 3)
+    { cdCardTraits = setFromList [Creature, Mutated]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+frenziedMiner :: CardDef
+frenziedMiner =
+  (enemy "10519" "Frenzied Miner" WrittenInRock 3)
+    { cdCardTraits = setFromList [Humanoid]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+crystalParasite :: CardDef
+crystalParasite =
+  (enemy "10721" "Crystal Parasite" HorrorsInTheRock 2)
+    { cdCardTraits = setFromList [Monster, Insect, Blight]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
     }
 
 corpseHungryGhoul :: CardDef

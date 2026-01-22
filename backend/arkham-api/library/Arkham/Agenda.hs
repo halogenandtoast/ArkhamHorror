@@ -321,7 +321,10 @@ allAgendas =
     , SomeAgendaCard theWorldUnbidden
     , SomeAgendaCard runningRed
     , -- The Feast of Hemlock Vale
-      --- Day of Rest
+      --- Written in Rock
+      SomeAgendaCard undergroundSurvey
+    , SomeAgendaCard dangerousRide
+    , --- Day of Rest
       SomeAgendaCard welcomeToHemlockVale
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks

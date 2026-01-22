@@ -1078,6 +1078,9 @@ allAssets =
     , SomeAssetCard backInjury
     , SomeAssetCard theSilverMoth
     , SomeAssetCard vowOfDrzytelech
+    , --- Written in Rock [fhv]
+      SomeAssetCard mineCartReliableButBroken
+    , SomeAssetCard prismaticShardAlienMeteorite
     , --- Residents [fhv]
       SomeAssetCard motherRachelKindlyMatron
     , SomeAssetCard leahAtwoodTheValeCook

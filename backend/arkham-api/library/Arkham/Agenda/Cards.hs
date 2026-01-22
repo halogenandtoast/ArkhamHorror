@@ -60,6 +60,7 @@ allAgendaCards =
       , collidingRealities
       , confluxOfConsequence
       , crossroadsOfFate
+      , dangerousRide
       , deadOfNight
       , deathsApproach
       , decrepitDecay
@@ -247,6 +248,7 @@ allAgendaCards =
       , torturousDescent
       , unchangingAsTheSea
       , undergroundMuscle
+      , undergroundSurvey
       , underTheSurface
       , unexpectedGuests
       , vengeance
@@ -876,6 +878,12 @@ theWorldUnbidden = agenda "09696" "The World Unbidden" 2 CongressOfTheKeys
 
 runningRed :: CardDef
 runningRed = agenda "09697" "Running Red" 3 CongressOfTheKeys
+
+undergroundSurvey :: CardDef
+undergroundSurvey = agenda "10503" "Underground Survey" 1 WrittenInRock
+
+dangerousRide :: CardDef
+dangerousRide = agenda "10504" "Dangerous Ride" 2 WrittenInRock
 
 welcomeToHemlockVale :: CardDef
 welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest

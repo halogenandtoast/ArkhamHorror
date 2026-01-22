@@ -12,6 +12,7 @@ data Token
   | Ammo
   | Antiquity
   | Bounty
+  | Brilliance
   | Charge
   | Civilian
   | Clue
@@ -37,6 +38,7 @@ data Token
   | Portent
   | Resource
   | ScoutingReport
+  | Scrap
   | Seal
   | Secret
   | Shard

@@ -32,6 +32,7 @@ data Trait
   | Bazaar
   | Believer
   | Blessed
+  | Blight
   | Blunder
   | Boat
   | Bold
@@ -43,6 +44,7 @@ data Trait
   | Bystander
   | Campsite
   | Carnevale
+  | Cart
   | Casino
   | Castle
   | Cave
@@ -56,6 +58,7 @@ data Trait
   | Clothing
   | CloverClub
   | Coastal
+  | Colour
   | Composure
   | Condition
   | Connection
@@ -73,6 +76,7 @@ data Trait
   | Cultist
   | Curse
   | Cursed
+  | Dark
   | DarkYoung
   | DeepOne
   | Depths
@@ -182,6 +186,7 @@ data Trait
   | Monster
   | Mountain
   | Mountains
+  | Mutated
   | Mystery
   | NewOrleans
   | Nightgaunt
@@ -258,6 +263,7 @@ data Trait
   | StMarys
   | Stable
   | Staff
+  | Station
   | Steps
   | Summon
   | Supply

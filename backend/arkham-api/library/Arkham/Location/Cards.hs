@@ -4,6 +4,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
+import Arkham.Direction
 import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
@@ -118,6 +119,8 @@ allLocationCards =
       , alienFrontierA
       , alienFrontierB
       , alchemyLabs
+      , alkalineForest
+      , alkalineRail
       , altarToDagon
       , anchorage
       , ancientHall
@@ -281,6 +284,7 @@ allLocationCards =
       , congregationalChurch_209
       , congressChamberLair
       , congressChamberSanctum
+      , controlStation
       , cosmicGate
       , cosmicIngress
       , coterieLibraryLair
@@ -346,6 +350,7 @@ allLocationCards =
       , dreamGateWondrousJourney
       , dressingRoom
       , drKenslersOffice
+      , dryBurrow
       , dunwichVillage_242
       , dunwichVillage_243
       , dyersClassroom
@@ -407,6 +412,7 @@ allLocationCards =
       , forgottenMarsh
       , forgottenOutpost
       , forkedPath
+      , forkedRail
       , forkInTheRoad_a
       , forkInTheRoad_b
       , forsakenTemple
@@ -540,6 +546,7 @@ allLocationCards =
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
+      , iridescentPassage
       , isolatedRoad
       , istanbulUniversity
       , jardinesDeLaTropical
@@ -569,6 +576,8 @@ allLocationCards =
       , lanternRoom
       , leMarais217
       , leMarais218
+      , leftTurnA
+      , leftTurnB
       , library
       , libraryOfEbla
       , libraryOfKos
@@ -607,6 +616,7 @@ allLocationCards =
       , merchantDistrict_301
       , messHall
       , metropolitanCathedral
+      , mineralTunnel
       , miramarYachtClub
       , miskatonicQuad
       , miskatonicRiver
@@ -674,6 +684,7 @@ allLocationCards =
       , outsidersLairWithoutATrace
       , overgrownCairns
       , overgrownRuins
+      , overgrownTunnel
       , ownersOffice
       , palaceOfTheKing
       , palacioErrazuriz
@@ -712,6 +723,8 @@ allLocationCards =
       , qaitbayCitadel
       , quietHalls_131
       , quietHalls_135
+      , railBridge
+      , railExit
       , railroadStation
       , rainyLondonStreets
       , ramblingRouteA
@@ -763,6 +776,8 @@ allLocationCards =
       , returnToXochimilco
       , returnToZocalo
       , rialtoBridge
+      , rightTurnA
+      , rightTurnB
       , ritualGrounds
       , ritualSite
       , ritualSiteTeetawn
@@ -880,6 +895,7 @@ allLocationCards =
       , sunkenGrottoLowerDepths
       , sunkenGrottoUpperDepths
       , sunkenHalls
+      , sunkenRail
       , syzygyChamber
       , tadsGeneralStoreDay
       , tadsGeneralStoreNight
@@ -1033,6 +1049,7 @@ allLocationCards =
       , vipArea
       , waitingRoom
       , walterGilmansRoom
+      , warpedRail
       , warrenObservatory
       , waterfall
       , wavewornIsland
@@ -9266,85 +9283,203 @@ cliffsOfInsanity =
       , cdEncounterSetQuantity = Just 2
       }
 
+railIcons :: [GridDirection] -> CardDef -> CardDef
+railIcons dirs def =
+  def
+    { cdMeta = mapFromList [("rails", toJSON dirs)]
+    }
+
+controlStation :: CardDef
+controlStation =
+  location_ "10508" "Control Station" [Rail, Station] WrittenInRock
+    & railIcons [North, East]
+
+railExit :: CardDef
+railExit =
+  victory 1
+    $ location_ "10509" "Control Station" [Rail] WrittenInRock
+    & railIcons [South]
+
+leftTurnA :: CardDef
+leftTurnA =
+  locationWithUnrevealed_ "10510a" "Rail Tunnel" [Rail] "Left Turn" [Rail] WrittenInRock
+    & railIcons [North, West]
+
+leftTurnB :: CardDef
+leftTurnB =
+  locationWithUnrevealed_ "10510b" "Rail Tunnel" [Rail] "Left Turn" [Rail] WrittenInRock
+    & railIcons [North, West]
+
+rightTurnA :: CardDef
+rightTurnA =
+  locationWithUnrevealed_ "10511a" "Rail Tunnel" [Rail] "Right Turn" [Rail] WrittenInRock
+    & railIcons [East, South]
+
+rightTurnB :: CardDef
+rightTurnB =
+  locationWithUnrevealed_ "10511b" "Rail Tunnel" [Rail] "Right Turn" [Rail] WrittenInRock
+    & railIcons [East, South]
+
+alkalineRail :: CardDef
+alkalineRail =
+  quantity 2
+    $ locationWithUnrevealed_ "10512" "Rail Tunnel" [Rail] "Alkaline Rail" [Rail] WrittenInRock
+    & railIcons [East, West]
+
+warpedRail :: CardDef
+warpedRail =
+  quantity 2
+    $ victory 1
+    $ locationWithUnrevealed_ "10513" "Rail Tunnel" [Rail] "Warped Rail" [Rail] WrittenInRock
+    & railIcons [East, West]
+
+sunkenRail :: CardDef
+sunkenRail =
+  quantity 2
+    $ locationWithUnrevealed_ "10514" "Rail Tunnel" [Rail] "Sunken Rail" [Rail] WrittenInRock
+    & railIcons [North, East, South]
+
+forkedRail :: CardDef
+forkedRail =
+  quantity 3
+    $ locationWithUnrevealed_ "10515" "Rail Tunnel" [Rail] "Forked Rail" [Rail] WrittenInRock
+    & railIcons [North, East, South, West]
+
+railBridge :: CardDef
+railBridge =
+  locationWithUnrevealed_ "10516" "Rail Tunnel" [Rail] "Rail Bridge" [Rail] WrittenInRock
+    & railIcons [North, South]
+
 boardingHouseDay :: CardDef
-boardingHouseDay = 
+boardingHouseDay =
   otherSideIs "10705b"
     $ location "10705a" "Boarding House" [HemlockVale] Circle [Diamond, Spade] TheVale
 
 boardingHouseNight :: CardDef
-boardingHouseNight = 
+boardingHouseNight =
   otherSideIs "10705a"
     $ location "10705b" "Boarding House" [HemlockVale] Circle [Diamond, Spade] TheVale
 
 theCrossroadsDay :: CardDef
-theCrossroadsDay = 
+theCrossroadsDay =
   otherSideIs "10706b"
-    $ location "10706a" "The Crossroads" [HemlockVale, Central] Diamond [Triangle, Square, Star, Circle, Heart, Moon] TheVale
+    $ location
+      "10706a"
+      "The Crossroads"
+      [HemlockVale, Central]
+      Diamond
+      [Triangle, Square, Star, Circle, Heart, Moon]
+      TheVale
 
 theCrossroadsNight :: CardDef
-theCrossroadsNight = 
+theCrossroadsNight =
   otherSideIs "10706a"
-    $ location "10706b" "The Crossroads" [HemlockVale, Central] Diamond [Triangle, Square, Star, Circle, Heart, Moon] TheVale
+    $ location
+      "10706b"
+      "The Crossroads"
+      [HemlockVale, Central]
+      Diamond
+      [Triangle, Square, Star, Circle, Heart, Moon]
+      TheVale
 
 hemlockChapelDay :: CardDef
-hemlockChapelDay = 
+hemlockChapelDay =
   otherSideIs "10707b"
     $ location "10707a" "Hemlock Chapel" [HemlockVale] Triangle [Diamond, Moon] TheVale
 
 hemlockChapelNight :: CardDef
-hemlockChapelNight = 
+hemlockChapelNight =
   otherSideIs "10707a"
     $ location "10707b" "Hemlock Chapel" [HemlockVale] Triangle [Diamond, Moon] TheVale
 
 theOldMillDay :: CardDef
-theOldMillDay = 
+theOldMillDay =
   otherSideIs "10708b"
     $ location "10708a" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] TheVale
 
 theOldMillNight :: CardDef
-theOldMillNight = 
+theOldMillNight =
   otherSideIs "10708a"
     $ location "10708b" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] TheVale
 
 theAtwoodHouseDay :: CardDef
-theAtwoodHouseDay = 
+theAtwoodHouseDay =
   otherSideIs "10709b"
     $ location "10709a" "The Atwood House" [HemlockVale] Moon [Diamond, Triangle, Heart] TheVale
 
 theAtwoodHouseNight :: CardDef
-theAtwoodHouseNight = 
+theAtwoodHouseNight =
   otherSideIs "10709a"
     $ location "10709b" "The Atwood House" [HemlockVale] Moon [Diamond, Triangle, Heart, Droplet] TheVale
 
 tadsGeneralStoreDay :: CardDef
-tadsGeneralStoreDay = 
+tadsGeneralStoreDay =
   otherSideIs "10710b"
     $ location "10710a" "Tad's General Store" [HemlockVale] Square [Diamond, Star] TheVale
 
 tadsGeneralStoreNight :: CardDef
-tadsGeneralStoreNight = 
+tadsGeneralStoreNight =
   otherSideIs "10710a"
     $ location "10710b" "Tad's General Store" [HemlockVale] Square [Diamond, Star] TheVale
 
 valeSchoolhouseDay :: CardDef
-valeSchoolhouseDay = 
+valeSchoolhouseDay =
   otherSideIs "10711b"
     $ location "10711a" "Vale Schoolhouse" [HemlockVale] Spade [Star, Circle] TheVale
 
 valeSchoolhouseNight :: CardDef
-valeSchoolhouseNight = 
+valeSchoolhouseNight =
   otherSideIs "10711a"
     $ location "10711b" "Vale Schoolhouse" [HemlockVale] Spade [Star, Circle] TheVale
 
 theCommonsDay :: CardDef
-theCommonsDay = 
+theCommonsDay =
   otherSideIs "10712b"
     $ location "10712a" "The Commons" [HemlockVale] Star [Diamond, Square, Spade] TheVale
 
 theCommonsNight :: CardDef
-theCommonsNight = 
+theCommonsNight =
   otherSideIs "10712a"
     $ location "10712b" "The Commons" [HemlockVale] Star [Diamond, Square, Spade] TheVale
+
+dryBurrow :: CardDef
+dryBurrow =
+  quantity 2
+    $ locationWithUnrevealed_ "10716" "Cavern" [Cave, Dark] "Dry Burrow" [Cave, Dark] HorrorsInTheRock
+
+alkalineForest :: CardDef
+alkalineForest =
+  locationWithUnrevealed_
+    "10717"
+    "Cavern"
+    [Cave, Dark]
+    "Alkaline Forest"
+    [Cave, Dark]
+    HorrorsInTheRock
+
+iridescentPassage :: CardDef
+iridescentPassage =
+  locationWithUnrevealed_
+    "10718"
+    "Cavern"
+    [Cave, Dark]
+    "Iridescent Passage"
+    [Cave, Dark]
+    HorrorsInTheRock
+
+overgrownTunnel :: CardDef
+overgrownTunnel =
+  locationWithUnrevealed_
+    "10719"
+    "Cavern"
+    [Cave, Dark]
+    "Overgrown Tunnel"
+    [Cave, Dark]
+    HorrorsInTheRock
+
+mineralTunnel :: CardDef
+mineralTunnel =
+  locationWithUnrevealed_ "10720" "Cavern" [Cave, Dark] "Mineral Tunnel" [Cave, Dark] HorrorsInTheRock
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

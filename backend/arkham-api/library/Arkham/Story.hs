@@ -162,6 +162,10 @@ allStories =
       --- The First Day
       SomeStoryCard dayOne
     , SomeStoryCard nightOne
+    , SomeStoryCard dayTwo
+    , SomeStoryCard nightTwo
+    , SomeStoryCard dayThree
+    , SomeStoryCard nightThree
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

@@ -6,6 +6,7 @@ export type Token
   | 'Ammo'
   | 'Antiquity'
   | 'Bounty'
+  | 'Brilliance'
   | 'Charge'
   | 'Civilian'
   | 'Clue'
@@ -31,6 +32,7 @@ export type Token
   | 'Portent'
   | 'Resource'
   | 'ScoutingReport'
+  | 'Scrap'
   | 'Seal'
   | 'Secret'
   | 'Shard'
@@ -54,6 +56,7 @@ export const TokenType = {
   Antiquity: 'Antiquity',
   Portent: 'Portent',
   Bounty: 'Bounty',
+  Brilliance: 'Brilliance',
   Charge: 'Charge',
   Civilian: 'Civilian',
   Clue: 'Clue',
@@ -78,6 +81,7 @@ export const TokenType = {
   Pillar: 'Pillar',
   Resource: 'Resource',
   ScoutingReport: 'ScoutingReport',
+  Scrap: 'Scrap',
   Seal: 'Seal',
   Secret: 'Secret',
   Shard: 'Shard',
@@ -101,6 +105,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Ammo'),
   JsonDecoder.literal('Antiquity'),
   JsonDecoder.literal('Bounty'),
+  JsonDecoder.literal('Brilliance'),
   JsonDecoder.literal('Charge'),
   JsonDecoder.literal('Civilian'),
   JsonDecoder.literal('Clue'),
@@ -126,6 +131,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Portent'),
   JsonDecoder.literal('Resource'),
   JsonDecoder.literal('ScoutingReport'),
+  JsonDecoder.literal('Scrap'),
   JsonDecoder.literal('Seal'),
   JsonDecoder.literal('Secret'),
   JsonDecoder.literal('Shard'),

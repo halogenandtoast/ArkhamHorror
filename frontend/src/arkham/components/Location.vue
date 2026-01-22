@@ -270,6 +270,7 @@ const hasPool = computed(() => {
     (breaches.value && breaches.value > 0) ||
     (shards.value && shards.value > 0) ||
     (scoutingReports.value && scoutingReports.value > 0) ||
+    (scraps.value && scraps.value > 0) ||
     (depletion.value && depletion.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
     (props.location.cardsUnderneath.length > 0) ||
@@ -307,6 +308,7 @@ const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
 const shards = computed(() => props.location.tokens[TokenType.Shard])
 const scoutingReports = computed(() => props.location.tokens[TokenType.ScoutingReport])
+const scraps = computed(() => props.location.tokens[TokenType.Scrap])
 const depletion = computed(() => props.location.tokens[TokenType.Depletion])
 const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const civilians = computed(() => props.location.tokens[TokenType.Civilian])
@@ -421,6 +423,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
             <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
             <PoolItem v-if="scoutingReports && scoutingReports > 0" type="resource" tooltip="Scouting Report" :amount="scoutingReports" />
+            <PoolItem v-if="scraps && scraps > 0" type="resource" tooltip="Scrap" :amount="scraps" />
             <PoolItem v-if="depletion && depletion > 0" type="resource" tooltip="Scouting Report" :amount="depletion" />
             <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
             <PoolItem v-if="civilians && civilians > 0" type="resource" tooltip="Civilian" :amount="civilians" />

@@ -653,6 +653,7 @@ allScenarios =
     , ("09681", SomeScenario withoutATrace)
     , ("09694", SomeScenario congressOfTheKeys)
     , ("10501", SomeScenario writtenInRock)
+    , ("10502", SomeScenario writtenInRock) -- duplicated for card view
     , ("10704", SomeScenario preludeWelcomeToHemlockVale)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
@@ -779,6 +780,7 @@ scenarioEncounterSets =
     , ("09681", EncounterSet.WithoutATrace)
     , ("09694", EncounterSet.CongressOfTheKeys)
     , ("10501", EncounterSet.WrittenInRock)
+    , ("10502", EncounterSet.WrittenInRock)
     , ("10704", EncounterSet.TheVale)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)

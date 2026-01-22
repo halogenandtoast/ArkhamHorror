@@ -70,6 +70,7 @@ allActCards =
       , darkKnowledgeV2
       , dawnOfTheFirstDay
       , descentIntoDark
+      , descentIntoTheMines
       , destroyTheSource
       , discoverTheTruth
       , discoveringTheTruth
@@ -284,6 +285,7 @@ allActCards =
       , theThingInTheRobes
       , theThirdOath
       , theTrialOfNashtAndKamanThah
+      , theUndergroundMaze
       , theUnvisitedIsle
       , theWayOut
       , theWeaverOfTheCosmos
@@ -1064,6 +1066,12 @@ theAscent = act "09702" "The Ascent" 3 CongressOfTheKeys
 
 theFinalErr :: CardDef
 theFinalErr = act "09703" "The Final Err" 4 CongressOfTheKeys
+
+descentIntoTheMines :: CardDef
+descentIntoTheMines = act "10505" "Descent into the Mines" 1 WrittenInRock
+
+theUndergroundMaze :: CardDef
+theUndergroundMaze = act "10506" "The Underground Maze" 2 WrittenInRock
 
 dawnOfTheFirstDay :: CardDef
 dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest

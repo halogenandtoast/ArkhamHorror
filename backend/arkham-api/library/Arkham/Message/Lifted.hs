@@ -1667,6 +1667,9 @@ setupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
 
+keepCardCache :: ReverseQueue m => m ()
+keepCardCache = setupModifier GameSource GameTarget Persist
+
 scenarioSetupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => ScenarioId

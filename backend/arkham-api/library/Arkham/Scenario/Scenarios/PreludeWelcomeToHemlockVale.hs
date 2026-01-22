@@ -289,6 +289,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             n <- field InvestigatorResources iid
             when (n > rs) $ loseResources iid ScenarioSource (n - rs)
           addChaosToken AutoFail
+          keepCardCache
           endOfScenario
         _ -> error "invalid resolution"
       pure s

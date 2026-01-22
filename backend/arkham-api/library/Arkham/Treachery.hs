@@ -631,10 +631,21 @@ allTreacheries =
     , --- Globetrotting [tsk]
       SomeTreacheryCard paradimensionalUnderstanding
     , -- The Feast of Hemloch Vale
-      -- signature [fhv]
+      --- signature [fhv]
       SomeTreacheryCard hastyRepairs
     , SomeTreacheryCard failedExperiment
     , SomeTreacheryCard wheresPa
+    , --- Written in Rock [fhv]
+      SomeTreacheryCard caveIn
+    , SomeTreacheryCard wildRide
+    , --- The First Day [fhv]
+      SomeTreacheryCard swarm
+    , --- Horrors in the Rock [fhv]
+      SomeTreacheryCard chromaBlight
+    , SomeTreacheryCard calcification
+    , --- Horrors in the Rock [fhv]
+      SomeTreacheryCard empyreanBrilliance
+    , SomeTreacheryCard captivatingGleam
     , -- The Drowned City
       -- signature [tdc]
       SomeTreacheryCard illDoItMyself

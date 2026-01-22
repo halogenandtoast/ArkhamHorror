@@ -652,6 +652,7 @@ allPlayerAssetCards =
       , preciousMementoFromAFutureLife4
       , pressPass2
       , priestOfTwoFaiths1
+      , prismaticShardAlienMeteorite
       , prismaticSpectaclesLensToTheOtherworld2
       , profaneIdol
       , professorWarrenRice
@@ -988,6 +989,7 @@ allEncounterAssetCards =
       , theClaretKnightHerSwornChampion
       , theRedGlovedManHeWasAlwaysThere
       , alikiZoniUperetriaTheMaidWithTheScarletSash
+      , mineCartReliableButBroken
       , motherRachelKindlyMatron
       , leahAtwoodTheValeCook
       , simeonAtwoodDedicatedTroublemaker

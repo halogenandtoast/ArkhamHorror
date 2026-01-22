@@ -896,7 +896,19 @@ allLocations =
     , SomeLocationCard wealdOfEffigiesB
     , SomeLocationCard cliffsOfInsanity
     , -- The Feast of Hemlock Vale
-      --- The Vale
+      --- Written in Rock
+      SomeLocationCard controlStation
+    , SomeLocationCard railExit
+    , SomeLocationCard leftTurnA
+    , SomeLocationCard leftTurnB
+    , SomeLocationCard rightTurnA
+    , SomeLocationCard rightTurnB
+    , SomeLocationCard alkalineRail
+    , SomeLocationCard warpedRail
+    , SomeLocationCard sunkenRail
+    , SomeLocationCard forkedRail
+    , SomeLocationCard railBridge
+    , --- The Vale
       SomeLocationCard boardingHouseDay
     , SomeLocationCard boardingHouseNight
     , SomeLocationCard theCrossroadsDay
@@ -913,6 +925,12 @@ allLocations =
     , SomeLocationCard valeSchoolhouseNight
     , SomeLocationCard theCommonsDay
     , SomeLocationCard theCommonsNight
+    , --- Horrors in the Rock
+      SomeLocationCard dryBurrow
+    , SomeLocationCard alkalineForest
+    , SomeLocationCard iridescentPassage
+    , SomeLocationCard overgrownTunnel
+    , SomeLocationCard mineralTunnel
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -164,6 +164,10 @@ allStoryCards =
       , familialPain
       , dayOne
       , nightOne
+      , dayTwo
+      , nightTwo
+      , dayThree
+      , nightThree
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , returnToUnfinishedBusiness_38
@@ -550,6 +554,18 @@ dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"
 
 nightOne :: CardDef
 nightOne = story "10675b" "Day One" TheFirstDay & otherSideIs "10675"
+
+dayTwo :: CardDef
+dayTwo = story "10677" "Day Two" TheSecondDay & otherSideIs "10677b"
+
+nightTwo :: CardDef
+nightTwo = story "10677b" "Night Two" TheSecondDay & otherSideIs "10677"
+
+dayThree :: CardDef
+dayThree = story "10679" "Day One" TheFinalDay & otherSideIs "10679b"
+
+nightThree :: CardDef
+nightThree = story "10679b" "Night Three" TheFinalDay & otherSideIs "10679"
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

@@ -569,11 +569,17 @@ allEnemies =
     , SomeEnemyCard amaranthScarletScorn
     , SomeEnemyCard alikiZoniUperetriaSpeaksInDeath
     , -- The Feast of Hemloch Vale
-      -- signature [fhv]
+      --- signature [fhv]
       SomeEnemyCard zamacona
     , SomeEnemyCard weepingYurei
-    , -- rogue (bonded) [fhv]
+    , --- rogue (bonded) [fhv]
       SomeEnemyCard biancaDieKatz
+    , --- Written in Rock [fhv]
+      SomeEnemyCard subterraneanBeast
+    , SomeEnemyCard burrowingHybrid
+    , SomeEnemyCard frenziedMiner
+    , --- Horrors in the Rock [fhv]
+      SomeEnemyCard crystalParasite
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

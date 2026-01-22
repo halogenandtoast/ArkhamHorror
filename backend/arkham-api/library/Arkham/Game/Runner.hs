@@ -447,6 +447,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       _ -> pure $ update g
   ForTarget GameTarget ResetGame -> do
     persistedAssets <- select (AssetWithModifier Persist)
+    let keepCardCache =
+          Persist `elem` map modifierType (Map.findWithDefault [] GameTarget (gameModifiers g))
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
@@ -483,11 +485,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (phaseHistoryL .~ mempty)
       & (turnHistoryL .~ mempty)
       & (roundHistoryL .~ mempty)
-      & (cardsL .~ mempty)
+      & (cardsL %~ if keepCardCache then id else const mempty)
   StartScenario sid mopts -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.
     let
+      keepCardCache =
+        Persist `elem` map modifierType (Map.findWithDefault [] GameTarget (gameModifiers g))
       difficulty = these difficultyOf difficultyOfScenario (const . difficultyOf) (g ^. modeL)
       mCampaignLog =
         these (const Nothing) (Just . attr scenarioStandaloneCampaignLog) (\_ _ -> Nothing) (g ^. modeL)
@@ -510,7 +514,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       $ g
       & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
-      & (cardsL %~ filterMap (not . isEncounterCard))
+      & (cardsL %~ if keepCardCache then id else filterMap (not . isEncounterCard))
   PerformTarotReading -> do
     lead <- getLeadPlayer
     push

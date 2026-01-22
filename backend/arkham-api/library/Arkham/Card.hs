@@ -459,6 +459,9 @@ instance HasField "owner" Card (Maybe InvestigatorId) where
 instance HasField "singleSided" Card Bool where
   getField = not . cdDoubleSided . toCardDef
 
+instance HasField "defs" Card [CardDef] where
+  getField = (.defs) . toCardDef
+
 instance Eq Card where
   a == b = toCardId a == toCardId b
 

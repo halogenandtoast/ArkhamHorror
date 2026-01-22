@@ -2,6 +2,7 @@ module Arkham.Asset.Cards.TheFeastOfHemlockVale where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Criteria qualified as Criteria
+import Arkham.Direction
 import Arkham.Keyword qualified as Keyword
 import Arkham.Trait qualified as Trait
 
@@ -578,6 +579,20 @@ vowOfDrzytelech =
   (basicWeakness "10138" "Vow of Dryztelech")
     { cdCardTraits = setFromList [Pact]
     , cdSlots = [#arcane]
+    }
+
+mineCartReliableButBroken :: CardDef
+mineCartReliableButBroken =
+  (storyAsset_ "10507" ("Mine Cart" <:> "Reliable But Broken") WrittenInRock)
+    { cdCardTraits = setFromList [Vehicle, Cart]
+    , cdMeta = mapFromList [("rails", toJSON [East])]
+    }
+
+prismaticShardAlienMeteorite :: CardDef
+prismaticShardAlienMeteorite =
+  (storyAsset "10522" ("Prismatic Shard" <:> "Alien Meteorite") 2 WrittenInRock)
+    { cdCardTraits = setFromList [Vehicle, Cart]
+    , cdUses = uses Brilliance 4
     }
 
 motherRachelKindlyMatron :: CardDef

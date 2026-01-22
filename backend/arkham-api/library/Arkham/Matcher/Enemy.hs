@@ -54,6 +54,7 @@ data EnemyMatcher
   | EnemyWithToken Token
   | EnemyWithTokens GameValue Token
   | EnemyAt LocationMatcher
+  | EnemyWasAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
   | EnemyAttachedTo TargetMatcher
   | EnemyCanEnter LocationMatcher

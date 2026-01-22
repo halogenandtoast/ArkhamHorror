@@ -1851,7 +1851,7 @@ instance RunMessage EnemyAttrs where
           pushAll $ windows' : resolve (EnemySpawn $ mkSpawnDetails eid (SpawnAtLocation lid))
         xs -> spawnAtOneOf Nothing eid xs
       pure a
-    After (InvestigatorEliminated iid) ->
+    InvestigatorEliminated iid ->
       case enemyPlacement of
         InThreatArea iid' | iid == iid' -> do
           getMaybeLocation iid >>= \case

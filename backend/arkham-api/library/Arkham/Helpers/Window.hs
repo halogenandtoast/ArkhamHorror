@@ -59,7 +59,9 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window
 import Arkham.Window qualified as Window
 import Arkham.Zone
+import Control.Lens (over, transform)
 import Control.Monad.Trans.Class
+import Data.Data.Lens (biplate)
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 
@@ -2248,7 +2250,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.LeavePlay (LocationTarget aid) -> elem aid <$> select locationMatcher
       _ -> noMatch
     Matcher.EnemyLeavesPlay timing enemyMatcher -> guardTiming timing $ \case
-      Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select (IncludeOutOfPlayEnemy enemyMatcher)
+      Window.LeavePlay (EnemyTarget eid)
+        | timing == #after ->
+            let
+              useLastKnownLocation :: EnemyMatcher -> EnemyMatcher
+              useLastKnownLocation (EnemyAt inner) = EnemyWasAt inner
+              useLastKnownLocation other = other
+             in
+              elem eid <$> select (over biplate (transform useLastKnownLocation) enemyMatcher)
+      Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select enemyMatcher
       _ -> noMatch
     Matcher.Explored timing whoMatcher fromLocationMatcher resultMatcher -> guardTiming timing $ \case
       Window.Explored who mwhere result ->

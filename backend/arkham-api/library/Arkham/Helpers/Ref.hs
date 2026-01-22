@@ -82,7 +82,8 @@ sourceToMaybeTarget = \case
   GameSource -> Just $ GameTarget
   ActSource aid -> Just $ ActTarget aid
   EncounterCardSource _ -> Nothing
-  TestSource {} -> Just $ TestTarget
+  TestSource {} -> Just TestTarget
+  DiscoverSource did -> Just $ DiscoverTarget did
   ProxySource _ source -> sourceToMaybeTarget source
   IndexedSource _ source -> sourceToMaybeTarget source
   EffectSource eid -> Just $ EffectTarget eid
@@ -135,6 +136,7 @@ targetToSource = \case
   SearchedCardTarget _ -> error "can not convert"
   EventTarget eid -> EventSource eid
   SkillTarget sid -> SkillSource sid
+  DiscoverTarget did -> DiscoverSource did
   SkillTestInitiatorTarget _ -> error "can not convert"
   ChaosTokenTarget _ -> error "not convertable"
   ChaosTokenFaceTarget _ -> error "Not convertable"

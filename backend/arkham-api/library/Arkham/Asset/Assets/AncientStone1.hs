@@ -37,8 +37,9 @@ instance RunMessage AncientStone1 where
     Successful (Action.Investigate, LocationTarget lid) iid _ target _ | attrs `is` target -> do
       amount <- min 2 <$> field LocationClues lid
       difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
+      discovery <- viaInvestigate <$> discover lid (toAbilitySource attrs 1) amount
       pushAll
-        $ [ Msg.DiscoverClues iid $ viaInvestigate $ discover lid (toAbilitySource attrs 1) amount
+        $ [ Msg.DiscoverClues iid discovery
           , toDiscardBy iid (toAbilitySource attrs 1) attrs
           ]
         <> [RecordCount YouHaveIdentifiedTheStone difficulty]

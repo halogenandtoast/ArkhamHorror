@@ -3677,7 +3677,9 @@ enemyMatcherFilter es matcher' = do
           then pure False
           else
             orM
-              [ pure $ maybe False (`elem` locations) enemy.lastKnownLocation
+              [ pure
+                  $ isOutOfPlayPlacement enemy.placement
+                  && maybe False (`elem` locations) enemy.lastKnownLocation
               , Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
               ]
     CanFightEnemyWith sourceMatcher -> do

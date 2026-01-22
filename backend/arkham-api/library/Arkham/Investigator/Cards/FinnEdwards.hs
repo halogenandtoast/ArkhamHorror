@@ -40,9 +40,10 @@ instance RunMessage FinnEdwards where
           canDiscover <- getCanDiscoverClues NotInvestigate (toId attrs) lid
           hasClues <- fieldP LocationClues (> 0) lid
           player <- getPlayer iid
+          discovery <- discoverAtYourLocation attrs 1
           pushWhen (hasClues && canDiscover)
             $ chooseOne player
-            $ [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid $ discoverAtYourLocation attrs 1]
+            $ [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid discovery]
               , Label "Do not discover a clue" []
               ]
       pure i

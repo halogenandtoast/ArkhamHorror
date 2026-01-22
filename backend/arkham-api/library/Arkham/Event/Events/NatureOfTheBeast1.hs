@@ -43,6 +43,7 @@ instance RunMessage NatureOfTheBeast1 where
       pure e
     DoStep 2 (Revelation owner (isSource attrs -> True)) -> do
       investigators <- select (affectsOthers Anyone)
+      did <- getRandom
 
       choices <- forMaybeM investigators \iid -> do
         player <- getPlayer iid
@@ -51,7 +52,7 @@ instance RunMessage NatureOfTheBeast1 where
           $ guard (notNull locations)
           $> targetLabel
             iid
-            [ Msg.chooseOne player [targetLabel lid [DiscoverClues iid $ discover lid attrs 1] | lid <- locations]
+            [ Msg.chooseOne player [targetLabel lid [DiscoverClues iid $ discoverPure did lid attrs 1] | lid <- locations]
             ]
 
       when (notNull choices) $ do

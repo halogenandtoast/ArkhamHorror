@@ -21,6 +21,7 @@ sourceTraits :: (HasCallStack, HasGame m, Tracing m) => Source -> m (Set Trait)
 sourceTraits = \case
   UseAbilitySource _ s _ -> sourceTraits s
   AbilitySource s _ -> sourceTraits s
+  DiscoverSource _ -> pure mempty
   ActDeckSource -> pure mempty
   ActMatcherSource _ -> pure mempty
   ActSource _ -> pure mempty
@@ -166,6 +167,7 @@ sourceMatches s = \case
   Matcher.SourceIsCardEffect -> do
     let
       go = \case
+        DiscoverSource {} -> False
         ChaosTokenSource {} -> True
         ChaosTokenEffectSource {} -> True
         ElderSignEffectSource {} -> True

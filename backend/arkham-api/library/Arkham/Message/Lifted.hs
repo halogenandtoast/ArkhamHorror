@@ -2728,9 +2728,10 @@ healDamageOn source n target = healDamage target source n
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
+  discovery <- Msg.discoverAtYourLocation s n
   push
     $ Msg.DiscoverClues iid
-    $ (Msg.discoverAtYourLocation s n)
+    $ discovery
       { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
       }
 
@@ -2746,9 +2747,10 @@ discoverAtYourLocationAndThen isInvestigate iid s n andThenMsgs = do
   withLocationOf iid \loc -> do
     whenM (getCanDiscoverClues isInvestigate iid loc) do
       msgs <- capture andThenMsgs
+      discovery <- Msg.discoverAtYourLocation s n
       push
         $ Msg.DiscoverClues iid
-        $ (Msg.discoverAtYourLocation s n)
+        $ discovery
           { Msg.discoverThen = msgs
           , Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
           }
@@ -2764,12 +2766,13 @@ discoverAtMatchingLocation
 discoverAtMatchingLocation isInvestigate iid s mtchr n = do
   locations <- filterM (getCanDiscoverClues isInvestigate iid) =<< select mtchr
   when (notNull locations) do
+    did <- getRandom
     Arkham.Message.Lifted.chooseOrRunOne
       iid
       [ targetLabel
           location
           [ Msg.DiscoverClues iid
-              $ (Msg.discover location s n)
+              $ (Msg.discoverPure did location s n)
                 { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
                 }
           ]
@@ -2786,10 +2789,11 @@ discoverAt
   -> m ()
 discoverAt isInvestigate iid s n lid = do
   canDiscover <- getCanDiscoverClues isInvestigate iid (asId lid)
+  did <- getRandom
 
   Msg.pushWhen canDiscover
     $ Msg.DiscoverClues iid
-    $ (Msg.discover lid s n)
+    $ (Msg.discoverPure did lid s n)
       { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
       }
 

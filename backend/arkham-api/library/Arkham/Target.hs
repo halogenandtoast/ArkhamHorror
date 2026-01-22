@@ -35,6 +35,7 @@ data Target
   = AssetTarget AssetId
   | EnemyTarget EnemyId
   | ScenarioTarget
+  | DiscoverTarget DiscoverId
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
   | InvestigatorDiscardTarget InvestigatorId -- used for cards in discard

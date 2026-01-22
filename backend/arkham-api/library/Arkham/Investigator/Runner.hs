@@ -2121,8 +2121,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
     mods <- getModifiers iid
+    dmods <- getModifiers $ DiscoverTarget d.id
     let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | DiscoveredClues x <- mods])
+    let additionalDiscovered =
+          getSum
+            ( fold $ [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
+                <> [Sum x | DiscoveredClues x <- dmods]
+            )
 
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
 

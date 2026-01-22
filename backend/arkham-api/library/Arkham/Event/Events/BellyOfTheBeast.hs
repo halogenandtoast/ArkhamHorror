@@ -24,6 +24,7 @@ instance RunMessage BellyOfTheBeast where
   runMessage msg e@(BellyOfTheBeast attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (toEnemyId -> enemyId) _ | eid == toId attrs -> do
       mlid <- selectOne $ locationWithEnemy enemyId
-      for_ mlid $ \lid -> push $ Msg.DiscoverClues iid $ discover lid attrs 1
+      did <- getRandom
+      for_ mlid $ \lid -> push $ Msg.DiscoverClues iid $ discoverPure did lid attrs 1
       pure e
     _ -> BellyOfTheBeast <$> liftRunMessage msg attrs

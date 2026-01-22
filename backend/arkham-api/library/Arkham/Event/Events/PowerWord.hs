@@ -260,10 +260,11 @@ instance RunMessage PowerWord where
 
               when (notNull choices) $ chooseOrRunOne iid $ map (uncurry targetLabel) choices
             ConfessCommand ->
-              field EnemyLocation eid >>= traverse_ \lid ->
+              field EnemyLocation eid >>= traverse_ \lid -> do
+                did <- getRandom
                 pushWhenM (lid <=~> LocationWithDiscoverableCluesBy (InvestigatorWithId iid))
                   $ DiscoverClues iid
-                  $ discover lid (attrs.ability 1) 1
+                  $ discoverPure did lid (attrs.ability 1) 1
             DistractCommand -> do
               enemies <-
                 select

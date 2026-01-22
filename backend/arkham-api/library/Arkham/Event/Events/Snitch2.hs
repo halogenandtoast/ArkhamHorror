@@ -23,9 +23,11 @@ instance RunMessage Snitch2 where
           $ locationWithDiscoverableCluesBy iid
           <> oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)]
       when (notNull locations) do
+        did <- getRandom
         chooseOrRunOne
           iid
-          [targetLabel location [DiscoverClues iid $ discover location attrs 1] | location <- locations]
+          [ targetLabel location [DiscoverClues iid $ discoverPure did location attrs 1] | location <- locations
+          ]
       doStep (n - 1) msg'
       pure e
     _ -> Snitch2 <$> liftRunMessage msg attrs

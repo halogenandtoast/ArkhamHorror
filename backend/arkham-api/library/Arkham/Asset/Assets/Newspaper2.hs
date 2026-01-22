@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Window (getDiscover)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -31,7 +32,8 @@ instance HasAbilities Newspaper2 where
 
 instance RunMessage Newspaper2 where
   runMessage msg a@(Newspaper2 attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+    UseCardAbility _iid (isSource attrs -> True) 1 (getDiscover -> did) _ -> do
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) (DiscoverTarget did) (DiscoveredClues 1)
       pure a
     _ -> Newspaper2 <$> liftRunMessage msg attrs

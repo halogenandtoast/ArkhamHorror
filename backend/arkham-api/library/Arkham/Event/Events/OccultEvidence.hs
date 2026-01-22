@@ -37,9 +37,10 @@ instance RunMessage OccultEvidence where
       canDiscoverClues <- maybe (pure False) (getCanDiscoverClues NotInvestigate iid) mLocation
       hasClues <- maybe (pure False) (fieldSome LocationClues) mLocation
       let source = toAbilitySource attrs 1
+      did <- getRandom
       pushAll
         $ [RemoveCardFromSearch iid (toCardId attrs), DrawToHandFrom iid (Deck.toDeck iid) [toCard attrs]]
-        <> [ Msg.DiscoverClues iid $ discover lid source 1 | canDiscoverClues && hasClues, lid <- toList mLocation
+        <> [ Msg.DiscoverClues iid $ discoverPure did lid source 1 | canDiscoverClues && hasClues, lid <- toList mLocation
            ]
       pure e
     PlayThisEvent iid eid | eid == toId attrs -> do

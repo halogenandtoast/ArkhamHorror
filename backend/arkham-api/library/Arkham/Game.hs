@@ -3672,16 +3672,13 @@ enemyMatcherFilter es matcher' = do
           _ -> False
     M.EnemyAt locationMatcher -> do
       locations <- select locationMatcher
-      flip filterM es \enemy -> do
-        if enemy.placement.isAttached
-          then pure False
-          else
-            orM
-              [ pure
-                  $ isOutOfPlayPlacement enemy.placement
-                  && maybe False (`elem` locations) enemy.lastKnownLocation
-              , Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
-              ]
+      es & filterM \enemy -> do
+        if
+          | enemy.placement.isAttached -> pure False
+          | isOutOfPlayPlacement enemy.placement ->
+              pure $ maybe False (`elem` locations) enemy.lastKnownLocation
+          | otherwise ->
+              Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
     CanFightEnemyWith sourceMatcher -> do
       sources <- select sourceMatcher
       nubOrdOn (.id) . concat <$> traverse (enemyMatcherFilter es . CanFightEnemy) sources

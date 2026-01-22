@@ -80,7 +80,6 @@ allPlayerTreacheryCards =
       , calledByTheMists
       , castAdrift
       , caughtRedHanded
-      , caveIn
       , chronophobia
       , confiscation
       , coverUp
@@ -245,6 +244,7 @@ allEncounterTreacheryCards =
       , catAndMouse
       , caughtCheating
       , caughtInAWeb
+      , caveIn
       , celestialShower
       , centuriesOfSecrets
       , chaosInTheWater

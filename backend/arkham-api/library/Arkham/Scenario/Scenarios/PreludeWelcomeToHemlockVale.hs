@@ -303,6 +303,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         then push GameOver
         else do
           leadChooseOneM do
+            questionLabeled' "survey"
             labeled' "writtenInRock" $ afterPrelude WrittenInRock
             labeled' "hemlockHouse" $ afterPrelude HemlockHouse
             labeled' "theSilentHeath" $ afterPrelude TheSilentHeath

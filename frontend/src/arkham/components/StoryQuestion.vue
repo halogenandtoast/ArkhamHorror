@@ -29,6 +29,7 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 const label = function(body: string) {
+  console.log("Label body:", body)
   if (body.startsWith("$")) {
     return formatContent(handleI18n(body.slice(1), t))
   }
@@ -173,10 +174,10 @@ const flippableCard = (cardCode: string) => {
         </div>
         <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
           <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+            <button @click="choose(index)" v-tooltip="choice.tooltip">{{label(choice.label)}}</button>
           </template>
           <template v-if="choice.tag === MessageType.LABEL">
-            <button @click="choose(index)">{{label(choice.label)}}</button>
+            <button @click="choose(index)"><span v-html="formatContent(label(choice.label))"></span></button>
           </template>
           <template v-if="choice.tag === MessageType.INFO">
             <FormattedEntry :entry="entry" v-for="entry in choice.flavor.body" />
@@ -218,14 +219,16 @@ const flippableCard = (cardCode: string) => {
           </div>
         </template>
       </div>
+
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === 'Done'">
-          <button @click="choose(index)">{{choice.label}}</button>
+          <button @click="choose(index)">{{label(choice.label)}}</button>
         </div>
-        <div v-if="choice.tag === 'Label'">
-          <button @click="choose(index)">{{choice.label}}</button>
+        <div v-if="choice.tag === 'Label'" class="choice-label">
+          <button @click="choose(index)"><span v-html="formatContent(label(choice.label))"></span></button>
         </div>
       </template>
+
       <div class="portrait-choices" v-if="portraitChoices.length > 0">
         <template v-for="[choice, index] in portraitChoices" :key="index">
           <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">

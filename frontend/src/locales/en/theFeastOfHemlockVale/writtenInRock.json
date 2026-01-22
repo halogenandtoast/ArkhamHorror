@@ -1,0 +1,23 @@
+{
+  "intro": {
+    "title": "Scenario: Written in Rock",
+    "body": "<p>The path to North Point Mine runs through a narrow ravine in the heart of Pearl Ridge. With little to go on, you asked around the Vale for more information about the mine, but all you could gather were several conflicting accounts. People have gone missing in the mines recently, although the mining operation is purportedly shut down. The lichens and moss are supposedly nutritious, but some are lethal? Nobody explained why the mine shut down in the first place, either.</p><p>The path ends at the mouth of a yawning cave. Following an old rail track in, you find heaps of abandoned equipment overgrown with bright yellow fungi. The fungus looks far from edible, and emits a putrescent stench. Eventually, the tunnel opens into a massive cavern filled with luminescent mushrooms and towering crystal formations. The ground shifts with a slight tremor, followed by an echoing cry from deeper in the mine. Steeling yourself, you trek deeper into the cave. At the very least, Dr. Marquez will want samples of the strange overgrowth on the rusted equipment.</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Written in Rock*, *Horrors in the Rock*, *Refractions*, *Chilling Cold*, and *Ghouls*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/written-in-rock.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/ghouls.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "caves": "Gather the 6 _Cave_ locations and randomly remove 2 of them from the game. Place the rest as shown in the Location Placement diagram on page 11 (see _Location Adjacency_ on page 3).",
+    "otherLocations": "Gather each location from the *Written in Rock* encounter set. Put the Control Station location into play as shown. Set the remaining 15 _Rail_ locations aside, out of play.",
+    "scrap": "Place 1 resource on each location, as a scrap. (*Hint: The scraps collected during Act 1 will help investigators during Act 2*).",
+    "startAt": "Investigators begin play at the leftmost location.",
+    "residents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "riverHawthorne": "If it is _Day 1_, place River Hawthorne at the location in column 3.",
+    "simeonAtwood": "If it is _Day 1_ or _Day 2_, set Simeon Atwood aside, out of play.",
+    "leahAtwood": "If it is _Day 3_, set Leah Atwood aside, out of play.",
+    "remainingResidents": "Remove the rest of the *Residents* encounter set from the game.",
+    "subterraneanBeast": "If it is (_Day {'{'}day{'}'}), remove the Subterranean Beast enemy from the game.",
+    "scenarioReference": "Put the scenario reference card into play on its Act 1 side.",
+    "setOutOfPlay": "Set both copies of the Crystal Parasite enemy and each other card from the *Written in Rock* encounter set aside, out of play."
+  }
+}

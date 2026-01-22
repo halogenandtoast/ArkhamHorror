@@ -3673,6 +3673,12 @@ enemyMatcherFilter es matcher' = do
     M.EnemyAt locationMatcher -> do
       locations <- select locationMatcher
       es & filterM \enemy -> do
+        if enemy.placement.isAttached
+          then pure False
+          else Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
+    M.EnemyWasAt locationMatcher -> do
+      locations <- select locationMatcher
+      es & filterM \enemy -> do
         if
           | enemy.placement.isAttached -> pure False
           | isOutOfPlayPlacement enemy.placement ->

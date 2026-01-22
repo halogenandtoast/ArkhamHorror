@@ -24,8 +24,9 @@ ghastlyRevelation = event GhastlyRevelation Cards.ghastlyRevelation
 instance RunMessage GhastlyRevelation where
   runMessage msg e@(GhastlyRevelation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      discovery <- discoverAtYourLocation (toSource attrs) 3
       pushAll
-        [ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 3
+        [ Msg.DiscoverClues iid discovery
         , ResolveEvent iid eid Nothing []
         ]
       pure e

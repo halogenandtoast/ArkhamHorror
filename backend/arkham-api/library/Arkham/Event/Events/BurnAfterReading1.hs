@@ -26,7 +26,8 @@ instance RunMessage BurnAfterReading1 where
 
       withLocationOf iid \lid -> do
         canDiscoverClues <- getCanDiscoverClues NotInvestigate iid lid
-        pushWhen canDiscoverClues $ Msg.DiscoverClues iid (discover lid attrs 2)
+        did <- getRandom
+        pushWhen canDiscoverClues $ Msg.DiscoverClues iid (discoverPure did lid attrs 2)
 
       push $ DoStep 2 msg
       exile attrs

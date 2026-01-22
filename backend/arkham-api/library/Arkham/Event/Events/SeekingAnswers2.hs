@@ -36,10 +36,11 @@ instance RunMessage SeekingAnswers2 where
           $ oneOf [locationWithInvestigator iid, ConnectedLocation NotForMovement]
           <> locationWithDiscoverableCluesBy iid
       player <- getPlayer iid
+      did <- getRandom
       pushIfAny lids
         $ chooseOrRunOne player
         $ [ targetLabel lid'
-              $ [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' (toSource attrs) 1]
+              $ [Msg.DiscoverClues iid $ viaInvestigate $ discoverPure did lid' (toSource attrs) 1]
           | lid' <- lids
           ]
       pure e

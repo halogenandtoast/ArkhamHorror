@@ -169,14 +169,20 @@ discoveredClues :: HasCallStack => [Window] -> Int
 discoveredClues =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ _ _ n) -> Just n
-    (windowType -> Window.WouldDiscoverClues _ _ _ n) -> Just n
+    (windowType -> Window.WouldDiscoverClues _ _ _ _ n) -> Just n
+    _ -> Nothing
+
+getDiscover :: HasCallStack => [Window] -> DiscoverId
+getDiscover =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.WouldDiscoverClues _ _ did _ _) -> Just did
     _ -> Nothing
 
 discoveredCluesAt :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredCluesAt =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ lid _ n) -> Just (lid, n)
-    (windowType -> Window.WouldDiscoverClues _ lid _ n) -> Just (lid, n)
+    (windowType -> Window.WouldDiscoverClues _ lid _ _ n) -> Just (lid, n)
     _ -> Nothing
 
 discoveredLocation :: HasCallStack => [Window] -> LocationId
@@ -2109,7 +2115,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.WouldDiscoverClues timing whoMatcher whereMatcher valueMatcher ->
       guardTiming timing $ \case
-        Window.WouldDiscoverClues who lid _ n ->
+        Window.WouldDiscoverClues who lid _ _ n ->
           andM
             [ matchWho iid who (Matcher.replaceThatLocation lid whoMatcher)
             , locationMatches iid source window' lid whereMatcher

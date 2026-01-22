@@ -31,7 +31,8 @@ instance RunMessage Morgue where
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Msg.DiscoverClues iid $ discover (toId attrs) (attrs.ability 1) 1
+      did <- getRandom
+      push $ Msg.DiscoverClues iid $ discoverPure did (toId attrs) (attrs.ability 1) 1
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       assignHorror iid (attrs.ability 1) 1

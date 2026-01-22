@@ -401,7 +401,8 @@ runSkillTest sid i st n = do
 discoverClues :: Investigator -> Int -> TestAppT ()
 discoverClues i n = do
   lid <- fieldJust InvestigatorLocation i.id
-  run $ DiscoverClues i.id $ discover lid GameSource n
+  did <- getRandom
+  run $ DiscoverClues i.id $ discoverPure did lid GameSource n
 
 getActionsFrom :: Sourceable source => Investigator -> source -> TestAppT [Ability]
 getActionsFrom i s = do

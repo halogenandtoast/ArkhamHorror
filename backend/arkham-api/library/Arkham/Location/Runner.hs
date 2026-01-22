@@ -197,7 +197,8 @@ instance RunMessage LocationAttrs where
       push before
 
       when (null alternateSuccessfullInvestigation) do
-        push $ Msg.DiscoverClues iid $ viaInvestigate $ discover lid (toSource a) 1
+        did <- getRandom
+        push $ Msg.DiscoverClues iid $ viaInvestigate $ discoverPure did lid (toSource a) 1
 
       for_ alternateSuccessfullInvestigation \target' ->
         push $ Successful (Action.Investigate, toTarget lid) iid source target' n
@@ -230,13 +231,13 @@ instance RunMessage LocationAttrs where
           base <- total lid (d.count + additionalDiscovered)
           discoveredClues <- min base <$> field LocationClues lid
           checkWindowMsg <-
-            checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
+            checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid d.id d.source discoveredClues)]
 
           otherWindows <- forMaybeM (mapToList additionalDiscoveredAt) \(lid', n) -> runMaybeT do
             liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'
             discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
             guard (discoveredClues' > 0)
-            lift $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
+            lift $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.id d.source discoveredClues')]
           pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
         else do
           concealed <- getConcealedAt (ForExpose $ toSource iid) lid

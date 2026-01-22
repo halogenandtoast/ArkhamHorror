@@ -21,9 +21,10 @@ instance RunMessage ConnectTheDots where
           $ RevealedLocation
           <> LocationWithLowerPrintedShroudThan (locationWithInvestigator iid)
           <> locationWithDiscoverableCluesBy iid
+      did <- getRandom
       chooseOrRunOne
         iid
-        [ targetLabel location [Msg.DiscoverClues iid $ discover location attrs 2]
+        [ targetLabel location [Msg.DiscoverClues iid $ discoverPure did location attrs 2]
         | location <- locations
         ]
       pure e

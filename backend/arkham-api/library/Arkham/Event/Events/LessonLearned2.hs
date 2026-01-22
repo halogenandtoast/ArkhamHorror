@@ -17,6 +17,7 @@ lessonLearned2 = event LessonLearned2 Cards.lessonLearned2
 instance RunMessage LessonLearned2 where
   runMessage msg e@(LessonLearned2 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2
+      discovery <- discoverAtYourLocation (toSource attrs) 2
+      push $ Msg.DiscoverClues iid discovery
       pure e
     _ -> LessonLearned2 <$> runMessage msg attrs

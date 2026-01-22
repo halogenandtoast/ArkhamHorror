@@ -179,7 +179,7 @@ data WindowType
   | DiscardedFromHand InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
   | DiscoverClues InvestigatorId LocationId Source Int
-  | WouldDiscoverClues InvestigatorId LocationId Source Int
+  | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId
@@ -352,6 +352,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "WouldDiscoverClues" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Left (a, b, c, d) -> pure $ WouldDiscoverClues a b (DiscoverId UUID.nil) c d
+                Right (a, b, c, d, e) -> pure $ WouldDiscoverClues a b c d e
             "AttemptExplore" -> do
               contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
@@ -404,7 +409,7 @@ mconcat
                 Left (i, e) -> pure $ AttemptToEvadeEnemy (SkillTestId UUID.nil) i e
                 Right (sid, i, e) -> pure $ AttemptToEvadeEnemy sid i e
             "PlayCard" -> do
-              contents <- (Right <$> o .: "contents") <|>  (Left <$> o .: "contents")
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               case contents of
                 Left (i, c) -> pure $ PlayCard i (CardPlay c True)
                 Right (i, cp) -> pure $ PlayCard i cp

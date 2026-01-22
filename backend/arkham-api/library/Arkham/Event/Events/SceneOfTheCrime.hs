@@ -20,6 +20,7 @@ instance RunMessage SceneOfTheCrime where
     PlayThisEvent iid eid | eid == toId attrs -> do
       hasEnemies <- selectAny $ IncludeOmnipotent $ enemyAtLocationWith iid
       let clueCount = if hasEnemies then 2 else 1
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation attrs clueCount
+      discovery <- discoverAtYourLocation attrs clueCount
+      push $ Msg.DiscoverClues iid discovery
       pure e
     _ -> SceneOfTheCrime <$> runMessage msg attrs

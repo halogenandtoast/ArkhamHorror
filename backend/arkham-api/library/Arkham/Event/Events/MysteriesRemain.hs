@@ -21,13 +21,14 @@ instance RunMessage MysteriesRemain where
     PlayThisEvent iid eid | eid == toId attrs -> do
       location <- getJustLocation iid
       canDiscover <- getCanDiscoverClues NotInvestigate iid location
+      did <- getRandom
 
       chooseOrRunOne iid
         $ [ Label
               "Place 1 clue (from the token bank) on your location"
               [PlaceClues (toSource attrs) (toTarget location) 1]
           ]
-        <> [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid $ discover location attrs 1]
+        <> [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid $ discoverPure did location attrs 1]
            | canDiscover
            ]
 

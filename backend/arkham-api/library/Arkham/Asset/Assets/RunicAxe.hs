@@ -193,9 +193,10 @@ instance RunMessage RunicAxe where
       withLocationOf iid \loc -> do
         let elderCount = count (== Elders) (inscriptions meta)
         field LocationShroud loc >>= traverse_ \shroud -> do
+          did <- getRandom
           pushWhen (elderCount > 0 && n >= shroud)
             $ DiscoverClues iid
-            $ discover loc (attrs.ability 1) elderCount
+            $ discoverPure did loc (attrs.ability 1) elderCount
 
       let furyCount = count (== Fury) (inscriptions meta)
       when (furyCount > 0) do

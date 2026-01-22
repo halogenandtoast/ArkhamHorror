@@ -32,7 +32,8 @@ instance HasAbilities DownstairsDoorwayDen where
 instance RunMessage DownstairsDoorwayDen where
   runMessage msg l@(DownstairsDoorwayDen attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
+      did <- getRandom
+      push $ Msg.DiscoverClues iid $ discoverPure did attrs (attrs.ability 1) 1
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ Remember StudiedADesecratedPortrait

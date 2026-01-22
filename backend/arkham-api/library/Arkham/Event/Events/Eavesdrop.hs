@@ -43,6 +43,7 @@ instance RunMessage Eavesdrop where
       push $ beginSkillTest sid iid attrs attrs #intellect (EnemyMaybeFieldCalculation eid EnemyEvade)
       pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2
+      discovery <- discoverAtYourLocation (toSource attrs) 2
+      push $ Msg.DiscoverClues iid discovery
       pure e
     _ -> Eavesdrop <$> runMessage msg attrs

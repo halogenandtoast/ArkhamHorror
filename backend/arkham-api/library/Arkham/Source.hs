@@ -30,6 +30,7 @@ data Source
   | AbilitySource Source Int
   | UseAbilitySource InvestigatorId Source Int
   | ActiveCostSource ActiveCostId
+  | DiscoverSource DiscoverId
   | ActDeckSource
   | ActSource ActId
   | AgendaDeckSource

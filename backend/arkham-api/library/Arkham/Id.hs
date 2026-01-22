@@ -21,6 +21,10 @@ newtype MovementId = MovementId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+newtype DiscoverId = DiscoverId UUID
+  deriving stock Data
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
+
 newtype SkillTestId = SkillTestId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)

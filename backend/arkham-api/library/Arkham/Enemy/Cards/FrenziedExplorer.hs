@@ -35,7 +35,7 @@ instance HasAbilities FrenziedExplorer where
 instance RunMessage FrenziedExplorer where
   runMessage msg e@(FrenziedExplorer attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      withLocationOf attrs $ moveTokensFrom (attrs.ability 1) attrs #doom (attrs.token #doom)
+      withLocationOf attrs $ moveTokensTo (attrs.ability 1) attrs #doom (attrs.token #doom)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       when (attrs.token #doom > 0) do

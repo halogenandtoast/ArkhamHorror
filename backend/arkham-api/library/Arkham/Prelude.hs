@@ -3,7 +3,7 @@ module Arkham.Prelude (
   module Arkham.Prelude,
 ) where
 
-import ClassyPrelude as X hiding (foldlM, on, (\\), orElse)
+import ClassyPrelude as X hiding (foldlM, on, orElse, (\\))
 import Data.Type.Equality as X (type (~))
 
 import Control.Exception as X (throw)
@@ -75,6 +75,7 @@ import System.Random.Shuffle as X hiding (shuffle)
 
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Key
+import Data.Char (isLower, isUpper)
 import Data.Foldable (Foldable (foldMap), foldlM)
 import Data.List.NonEmpty qualified as NE
 import Data.Proxy
@@ -552,3 +553,11 @@ retryUntil p ma = do
   if p a
     then pure a
     else retryUntil p ma
+
+splitCamelCase :: String -> String
+splitCamelCase "" = ""
+splitCamelCase [x] = [x]
+splitCamelCase (x : y : rest) =
+  if isLower x && isUpper y
+    then [x, ' ', y] <> splitCamelCase rest
+    else [x] <> splitCamelCase (y : rest)

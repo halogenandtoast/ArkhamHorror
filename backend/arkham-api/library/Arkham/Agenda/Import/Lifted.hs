@@ -65,6 +65,9 @@ advanceToAgenda attrs newAgenda side = push $ AdvanceToAgenda attrs.deck newAgen
 setMeta :: ToJSON a => a -> AgendaAttrs -> AgendaAttrs
 setMeta meta attrs = attrs & metaL .~ toJSON meta
 
+getMetaDefault :: FromJSON a => a -> AgendaAttrs -> a
+getMetaDefault def attrs = toResultDefault def attrs.meta
+
 ifEnemyDefeated :: CardDef -> WindowMatcher
 ifEnemyDefeated = ifEnemyDefeatedMatch . enemyIs
 

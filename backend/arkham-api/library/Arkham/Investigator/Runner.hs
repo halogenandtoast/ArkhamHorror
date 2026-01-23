@@ -154,6 +154,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -1193,6 +1194,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         , beforeWindowMsg
         , TakeActions iid [#engage] (ActionCost 1)
         ]
+      <> [ Will (CheckAttackOfOpportunity iid False Nothing)
+         | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
+         ]
       <> [ CheckAttackOfOpportunity iid False Nothing
          | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
          ]
@@ -2098,6 +2102,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           , beforeWindowMsg
           , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
           ]
+        <> [ Will (CheckAttackOfOpportunity investigatorId False Nothing)
+           | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
+           ]
         <> [ CheckAttackOfOpportunity investigatorId False Nothing
            | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
            ]
@@ -3190,6 +3197,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           $ [BeginAction, beforeWindowMsg]
           <> [drawEncounterCardWindow | cardDraw.isEncounterDraw]
           <> [ TakeActions iid [#draw] (ActionCost 1)
+             , Will (CheckAttackOfOpportunity iid False Nothing)
              , CheckAttackOfOpportunity iid False Nothing
              , wouldDrawCard
              , DoDrawCards iid
@@ -3451,8 +3459,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (LoseResources iid source n) | iid == investigatorId -> liftRunMessage (RemoveTokens source (toTarget a) #resource n) a
-  LoseAll iid _source token | iid == investigatorId -> do
-    pure $ a & tokensL %~ deleteMap token
+  LoseTokens iid _source token rule | iid == investigatorId -> do
+    let
+      f =
+        case rule of
+          AllLost -> deleteMap token
+          AllLostBut n -> ix token %~ min n
+          Lose n -> subtractTokens token n
+    pure $ a & tokensL %~ f
   TakeResources iid n source True | iid == investigatorId -> do
     let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
@@ -3467,6 +3481,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         , beforeWindowMsg
         , whenActivateAbilityWindow
         , TakeActions iid [#resource] (ActionCost 1)
+        , Will (CheckAttackOfOpportunity iid False Nothing)
         , CheckAttackOfOpportunity iid False Nothing
         , TakeResources iid n source False
         , afterWindowMsg

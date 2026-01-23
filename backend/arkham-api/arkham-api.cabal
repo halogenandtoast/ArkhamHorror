@@ -2986,7 +2986,8 @@ library
       Arkham.Location.Cards.AlienFrontierA
       Arkham.Location.Cards.AlienFrontierB
       Arkham.Location.Cards.AlkalineForest
-      Arkham.Location.Cards.AlkalineRail
+      Arkham.Location.Cards.AlkalineRailA
+      Arkham.Location.Cards.AlkalineRailB
       Arkham.Location.Cards.AltarToDagon
       Arkham.Location.Cards.Anchorage
       Arkham.Location.Cards.AncientHall
@@ -3764,7 +3765,8 @@ library
       Arkham.Location.Cards.SunkenGrottoLowerDepths
       Arkham.Location.Cards.SunkenGrottoUpperDepths
       Arkham.Location.Cards.SunkenHalls
-      Arkham.Location.Cards.SunkenRail
+      Arkham.Location.Cards.SunkenRailA
+      Arkham.Location.Cards.SunkenRailB
       Arkham.Location.Cards.SyzygyChamber
       Arkham.Location.Cards.TadsGeneralStoreDay
       Arkham.Location.Cards.TadsGeneralStoreNight
@@ -3918,7 +3920,8 @@ library
       Arkham.Location.Cards.VipArea
       Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
-      Arkham.Location.Cards.WarpedRail
+      Arkham.Location.Cards.WarpedRailA
+      Arkham.Location.Cards.WarpedRailB
       Arkham.Location.Cards.WarrenObservatory
       Arkham.Location.Cards.Waterfall
       Arkham.Location.Cards.WavewornIsland
@@ -4019,6 +4022,7 @@ library
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard
+      Arkham.Plural
       Arkham.Prelude
       Arkham.Projection
       Arkham.Query

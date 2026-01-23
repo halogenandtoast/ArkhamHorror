@@ -120,7 +120,8 @@ allLocationCards =
       , alienFrontierB
       , alchemyLabs
       , alkalineForest
-      , alkalineRail
+      , alkalineRailA
+      , alkalineRailB
       , altarToDagon
       , anchorage
       , ancientHall
@@ -895,7 +896,8 @@ allLocationCards =
       , sunkenGrottoLowerDepths
       , sunkenGrottoUpperDepths
       , sunkenHalls
-      , sunkenRail
+      , sunkenRailA
+      , sunkenRailB
       , syzygyChamber
       , tadsGeneralStoreDay
       , tadsGeneralStoreNight
@@ -1049,7 +1051,8 @@ allLocationCards =
       , vipArea
       , waitingRoom
       , walterGilmansRoom
-      , warpedRail
+      , warpedRailA
+      , warpedRailB
       , warrenObservatory
       , waterfall
       , wavewornIsland
@@ -9320,23 +9323,36 @@ rightTurnB =
   locationWithUnrevealed_ "10511b" "Rail Tunnel" [Rail] "Right Turn" [Rail] WrittenInRock
     & railIcons [East, South]
 
-alkalineRail :: CardDef
-alkalineRail =
-  quantity 2
-    $ locationWithUnrevealed_ "10512" "Rail Tunnel" [Rail] "Alkaline Rail" [Rail] WrittenInRock
+alkalineRailA :: CardDef
+alkalineRailA =
+  locationWithUnrevealed_ "10512a" "Rail Tunnel" [Rail] "Alkaline Rail" [Rail] WrittenInRock
     & railIcons [East, West]
 
-warpedRail :: CardDef
-warpedRail =
-  quantity 2
-    $ victory 1
-    $ locationWithUnrevealed_ "10513" "Rail Tunnel" [Rail] "Warped Rail" [Rail] WrittenInRock
+alkalineRailB :: CardDef
+alkalineRailB =
+  locationWithUnrevealed_ "10512b" "Rail Tunnel" [Rail] "Alkaline Rail" [Rail] WrittenInRock
+    & railIcons [North, South]
+
+warpedRailA :: CardDef
+warpedRailA =
+  victory 1
+    $ locationWithUnrevealed_ "10513a" "Rail Tunnel" [Rail] "Warped Rail" [Rail] WrittenInRock
     & railIcons [East, West]
 
-sunkenRail :: CardDef
-sunkenRail =
-  quantity 2
-    $ locationWithUnrevealed_ "10514" "Rail Tunnel" [Rail] "Sunken Rail" [Rail] WrittenInRock
+warpedRailB :: CardDef
+warpedRailB =
+  victory 1
+    $ locationWithUnrevealed_ "10513b" "Rail Tunnel" [Rail] "Warped Rail" [Rail] WrittenInRock
+    & railIcons [North, East, South]
+
+sunkenRailA :: CardDef
+sunkenRailA =
+  locationWithUnrevealed_ "10514a" "Rail Tunnel" [Rail] "Sunken Rail" [Rail] WrittenInRock
+    & railIcons [East, South, West]
+
+sunkenRailB :: CardDef
+sunkenRailB =
+  locationWithUnrevealed_ "10514b" "Rail Tunnel" [Rail] "Sunken Rail" [Rail] WrittenInRock
     & railIcons [North, East, South]
 
 forkedRail :: CardDef

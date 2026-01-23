@@ -1,7 +1,5 @@
 module Arkham.Helpers.Act where
 
-import Arkham.Prelude
-
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Classes.Entity
@@ -12,6 +10,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Tracing

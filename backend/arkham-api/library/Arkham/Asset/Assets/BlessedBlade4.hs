@@ -7,6 +7,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Cost
 import Arkham.Helpers.SkillTest
 import Arkham.Modifier
+import Arkham.Plural
 
 newtype BlessedBlade4 = BlessedBlade4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

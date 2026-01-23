@@ -669,6 +669,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
             Nothing -> pure False
             Just scenario -> pure $ "5" `T.isPrefixOf` coerce scenario
         Just campaign -> pure $ "5" `T.isPrefixOf` coerce campaign
+    Criteria.ScenarioExists matcher -> selectAny matcher
     Criteria.DifferentAssetsExist matcher1 matcher2 -> do
       m1 <- select (Matcher.replaceYouMatcher iid matcher1)
       m2 <- select (Matcher.replaceYouMatcher iid matcher2)

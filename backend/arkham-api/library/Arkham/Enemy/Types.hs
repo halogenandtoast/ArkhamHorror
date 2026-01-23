@@ -272,6 +272,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyReferenceCards = []
             , enemySpawnDetails = Nothing
             , enemyMovement = Nothing
+            , enemyAttackOfOpportunityFlagged = False
             }
     }
 

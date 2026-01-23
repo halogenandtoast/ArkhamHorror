@@ -200,6 +200,11 @@ instance Sourceable a => Is a Source where
 instance Targetable a => Is a Target where
   is = isTarget
 
+pattern LoseAll :: InvestigatorId -> Source -> Token -> Message
+pattern LoseAll iid source token <- LoseTokens iid source token AllLost
+  where
+    LoseAll iid source token = LoseTokens iid source token AllLost
+
 pattern LoseAllResources :: InvestigatorId -> Source -> Message
 pattern LoseAllResources iid source <- LoseAll iid source Token.Resource
   where
@@ -413,6 +418,10 @@ instance Semigroup AutoStatus where
   Auto <> _ = Auto
   _ <> Auto = Auto
   Manual <> Manual = Manual
+
+data TokenLoss = AllLost | AllLostBut Int | Lose Int
+  deriving stock (Show, Ord, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -865,7 +874,7 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
-  | LoseAll InvestigatorId Source Token
+  | LoseTokens InvestigatorId Source Token TokenLoss
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
@@ -1251,6 +1260,9 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "LoseAll" -> do
+        (iid, source, tkn) <- o .: "contents"
+        pure $ LoseTokens iid source tkn AllLost
       "SetRole" -> do
         (iid, role :: ClassSymbol) <- o .: "contents"
         pure $ InvestigatorSpecific iid "setRole" (toJSON role)

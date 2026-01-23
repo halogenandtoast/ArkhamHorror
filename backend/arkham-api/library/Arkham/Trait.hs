@@ -1,12 +1,6 @@
-module Arkham.Trait (
-  displayTrait,
-  Trait (..),
-  EnemyTrait (..),
-  HasTraits (..),
-) where
+module Arkham.Trait (displayTrait, Trait (..), EnemyTrait (..), HasTraits (..)) where
 
 import Arkham.Prelude
-import Data.Char (isLower, isUpper)
 
 newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
@@ -319,11 +313,3 @@ class HasTraits a where
 
 displayTrait :: Trait -> Text
 displayTrait t = pack $ splitCamelCase $ show t
-
-splitCamelCase :: String -> String
-splitCamelCase "" = ""
-splitCamelCase [x] = [x]
-splitCamelCase (x : y : rest) =
-  if isLower x && isUpper y
-    then [x, ' ', y] <> splitCamelCase rest
-    else [x] <> splitCamelCase (y : rest)

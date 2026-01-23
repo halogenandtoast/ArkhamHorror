@@ -903,9 +903,12 @@ allLocations =
     , SomeLocationCard leftTurnB
     , SomeLocationCard rightTurnA
     , SomeLocationCard rightTurnB
-    , SomeLocationCard alkalineRail
-    , SomeLocationCard warpedRail
-    , SomeLocationCard sunkenRail
+    , SomeLocationCard alkalineRailA
+    , SomeLocationCard alkalineRailB
+    , SomeLocationCard warpedRailA
+    , SomeLocationCard warpedRailB
+    , SomeLocationCard sunkenRailA
+    , SomeLocationCard sunkenRailB
     , SomeLocationCard forkedRail
     , SomeLocationCard railBridge
     , --- The Vale

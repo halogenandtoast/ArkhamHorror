@@ -1602,6 +1602,9 @@ getScenariosMatching matcher = do
  where
   go = \case
     TheScenario -> pure . const True
+    ScenarioWithModifier modifierType -> \s -> do
+      modifiers' <- getModifiers (toTarget s)
+      pure $ modifierType `elem` modifiers'
 
 abilityMatches :: (HasGame m, Tracing m) => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
@@ -2623,6 +2626,8 @@ getLocationsMatching lmatcher = do
       pure $ mins $ mapMaybe (\l -> (l,) . positionColumn <$> attr locationPosition l) ls
     LocationInRow n -> do
       pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
+    LocationInColumn n -> do
+      pure $ filter (maybe False ((== n) . positionColumn) . attr locationPosition) ls
     LocationInRowOf inner -> do
       xs <- catMaybes <$> selectMapM (fmap (fmap positionRow . attr locationPosition) . getLocation) inner
       pure $ filter (maybe False ((`elem` xs) . positionRow) . attr locationPosition) ls

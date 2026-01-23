@@ -1,4 +1,18 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is your location's column number.",
+      "cultist": "-1. Place 1 resource on this card, as a scrap.",
+      "tablet": "-2. If you fail, remove 1 scrap from this card.",
+      "elderThing": "-3. If you fail, take 1 damage."
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice your location's column number.",
+      "cultist": "-3. If you succeed, place 1 resource on this card, as a scrap.",
+      "tablet": "-4. Remove 1 scrap from this card.",
+      "elderThing": "-5. Take 1 damage."
+    }
+  },
   "intro": {
     "title": "Scenario: Written in Rock",
     "body": "<p>The path to North Point Mine runs through a narrow ravine in the heart of Pearl Ridge. With little to go on, you asked around the Vale for more information about the mine, but all you could gather were several conflicting accounts. People have gone missing in the mines recently, although the mining operation is purportedly shut down. The lichens and moss are supposedly nutritious, but some are lethal? Nobody explained why the mine shut down in the first place, either.</p><p>The path ends at the mouth of a yawning cave. Following an old rail track in, you find heaps of abandoned equipment overgrown with bright yellow fungi. The fungus looks far from edible, and emits a putrescent stench. Eventually, the tunnel opens into a massive cavern filled with luminescent mushrooms and towering crystal formations. The ground shifts with a slight tremor, followed by an echoing cry from deeper in the mine. Steeling yourself, you trek deeper into the cave. At the very least, Dr. Marquez will want samples of the strange overgrowth on the rusted equipment.</p><p class='basic right'>Proceed to _Setup_.</p>"
@@ -16,7 +30,7 @@
     "simeonAtwood": "If it is _Day 1_ or _Day 2_, set Simeon Atwood aside, out of play.",
     "leahAtwood": "If it is _Day 3_, set Leah Atwood aside, out of play.",
     "remainingResidents": "Remove the rest of the *Residents* encounter set from the game.",
-    "subterraneanBeast": "If it is (_Day {'{'}day{'}'}), remove the Subterranean Beast enemy from the game.",
+    "subterraneanBeast": "If it is (_Day {'{'}day{'}'}_), remove the Subterranean Beast enemy from the game.",
     "scenarioReference": "Put the scenario reference card into play on its Act 1 side.",
     "setOutOfPlay": "Set both copies of the Crystal Parasite enemy and each other card from the *Written in Rock* encounter set aside, out of play."
   }

@@ -6,6 +6,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Plural
 import Arkham.Projection
 
 newtype TheGreatWebPrisonOfCocoons = TheGreatWebPrisonOfCocoons LocationAttrs

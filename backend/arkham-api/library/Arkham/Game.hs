@@ -5473,7 +5473,10 @@ instance Projection Scenario where
   getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking scenario attrs" <$> getScenario
   project _ = getScenario
   field fld _ = do
-    s <- fromJustNote ("should be impossible, was looking for field: " <> show fld) <$> getScenario
+    s <-
+      fromJustNote
+        ("should be impossible, was looking for field: " <> show fld <> "\n" <> prettyCallStack callStack)
+        <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioLocationLayout -> pure scenarioLocationLayout

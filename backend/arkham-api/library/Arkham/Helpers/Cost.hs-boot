@@ -10,7 +10,7 @@ import Arkham.Tracing
 import Arkham.Window (Window)
 
 getCanAffordCost
-  :: (HasGame m, Tracing m, Sourceable source)
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
   -> source
   -> [Action]

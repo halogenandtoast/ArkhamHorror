@@ -105,6 +105,12 @@ instance HasField "card" TreacheryAttrs Card where
 instance HasField "exhausted" TreacheryAttrs Bool where
   getField = treacheryExhausted
 
+instance HasField "tokens" TreacheryAttrs Tokens where
+  getField = treacheryTokens
+
+instance HasField "token" TreacheryAttrs (Token -> Int) where
+  getField t tType = countTokens tType t.tokens
+
 instance HasField "drawnFrom" TreacheryAttrs (Maybe DeckSignifier) where
   getField = treacheryDrawnFrom
 

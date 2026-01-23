@@ -45,7 +45,7 @@ instance RunMessage ThorneTheOneWithTheRedCravat where
       skeys <- select $ scarletKeyWithEnemy attrs.id
       chooseOneAtATimeM lead $ targets skeys shift
       pure e
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       lead <- getLead
       investigators <- getInvestigators
       theSableGlass <- selectJust $ scarletKeyIs Keys.theSableGlass

@@ -5,6 +5,7 @@ import Arkham.Investigator.Types (Field (InvestigatorPlacement))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Plural
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

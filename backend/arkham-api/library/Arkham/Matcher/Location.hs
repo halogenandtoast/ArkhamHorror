@@ -167,6 +167,7 @@ data LocationMatcher
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
   | LocationInRow Int
+  | LocationInColumn Int
   | LocationInRowOf LocationMatcher
   | LocationInColumnOf LocationMatcher
   | LocationInPosition Pos

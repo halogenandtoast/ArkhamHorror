@@ -6,13 +6,18 @@ module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 import Arkham.CampaignStep
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
+import Arkham.Criteria
 import Arkham.Helpers.Campaign
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Matcher.Scenario
 import Arkham.Message (Message (NextCampaignStep))
 import Arkham.Message.Lifted hiding (continue)
+import Arkham.Modifier
 import Arkham.Prelude hiding (Day)
 import Arkham.Scenario.Options
+import Arkham.Source
+import Arkham.Target
 import Arkham.Tracing
 
 campaignI18n :: (HasI18n => a) -> a
@@ -44,6 +49,23 @@ getCampaignTime = withCampaignMeta @TheFeastOfHemlockValeMeta (.time)
 
 getCampaignDay :: (Tracing m, HasGame m) => m Day
 getCampaignDay = withCampaignMeta @TheFeastOfHemlockValeMeta (.day)
+
+pattern IsDay :: Criterion
+pattern IsDay <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
+  where
+    IsDay = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
+
+pattern IsNight :: Criterion
+pattern IsNight <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+  where
+    IsNight = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+
+setScenarioDayAndTime :: ReverseQueue m => m ()
+setScenarioDayAndTime = do
+  day <- getCampaignDay
+  time <- getCampaignTime
+  gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "day" (toJSON day))
+  gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "time" (toJSON time))
 
 afterPrelude :: ReverseQueue m => CampaignStep -> m ()
 afterPrelude =

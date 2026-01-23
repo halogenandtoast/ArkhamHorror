@@ -7,6 +7,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Plural
 
 newtype TheGreatWebCosmicWeb = TheGreatWebCosmicWeb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

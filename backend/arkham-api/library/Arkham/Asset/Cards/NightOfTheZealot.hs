@@ -442,12 +442,11 @@ aquinnah1 =
 
 knife :: CardDef
 knife =
-  (asset "01086" "Knife" 1 Neutral)
-    { cdSkills = [#combat]
-    , cdCardTraits = setFromList [Item, Weapon, Melee]
-    , cdSlots = [#hand]
-    , cdAlternateCardCodes = ["01586"]
-    }
+  asset "01086" "Knife" 1 Neutral
+    & skills [#combat]
+    & traits [Item, Weapon, Melee]
+    & slot #hand
+    & alternateCardCodes ["01586"]
 
 flashlight :: CardDef
 flashlight =

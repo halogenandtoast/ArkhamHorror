@@ -1631,6 +1631,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideKeysL %~ insertSet k & keysL %~ deleteSet k
   PlaceKey target k | not (isTarget a target) -> do
     pure $ a & (setAsideKeysL %~ deleteSet k)
+  MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s target tType n) a
   PlaceTokens _ ScenarioTarget token amount -> do
     pure $ a & tokensL %~ addTokens token amount
   RemoveTokens _ ScenarioTarget token amount -> do

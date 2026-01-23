@@ -3,6 +3,7 @@ module Arkham.Skill.Cards.Predestined (predestined) where
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Plural
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 

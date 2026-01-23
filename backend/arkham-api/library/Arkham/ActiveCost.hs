@@ -183,7 +183,9 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     mods <- getModifiers iid
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
-      $ [BeginAction, beforeWindowMsg, PayCosts activeCostId]
+      $ [BeginAction, beforeWindowMsg]
+      <> [Will (CheckAttackOfOpportunity iid False noAooFrom) | checkAttackOfOpportunity mods actions]
+      <> [PayCosts activeCostId]
       <> [CheckAttackOfOpportunity iid False noAooFrom | checkAttackOfOpportunity mods actions]
 
 nonAttackOfOpportunityActions :: [Action]
@@ -1475,7 +1477,14 @@ instance RunMessage ActiveCost where
             <> [ wouldPayWindowMsg
                , Would
                    batchId
-                   $ [PayCosts acId]
+                   $ [ Will (CheckAttackOfOpportunity iid False Nothing)
+                     | not modifiersPreventAttackOfOpportunity
+                         && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                         && isNothing cardDef.fastWindow
+                         && all (`notElem` nonAttackOfOpportunityActions) actions
+                         && (totalActionCost c.costs > 0)
+                     ]
+                   <> [PayCosts acId]
                    <> [ CheckAttackOfOpportunity iid False Nothing
                       | not modifiersPreventAttackOfOpportunity
                           && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)

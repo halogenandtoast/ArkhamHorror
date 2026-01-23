@@ -83,6 +83,9 @@ instance HasField "isPlayerDraw" (CardDraw msg) Bool where
     InvestigatorDeck {} -> True
     _ -> False
 
+instance HasField "source" CardDrew Source where
+  getField = cardDrewSource
+
 instance HasField "target" CardDrew (Maybe Target) where
   getField = cardDrewTarget
 

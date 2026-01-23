@@ -517,6 +517,8 @@ const phase = computed(() => props.game.phase)
 const phaseStep = computed(() => props.game.phaseStep)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const civiliansSlain = computed(() => props.scenario.counts["CiviliansSlain"])
+const scraps = computed(() => props.scenario.tokens[TokenType.Scrap])
+const switches = computed(() => props.scenario.tokens[TokenType.Switch])
 const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
 const distortion = computed(() => props.scenario.counts["Distortion"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -1120,6 +1122,8 @@ async function addChaosToken(face: any){
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
             <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
             <PoolItem class="targets" v-if="targets" type="resource" :amount="targets" />
+            <PoolItem class="scraps" v-if="scraps" type="resource" :amount="scraps" />
+            <PoolItem class="switches" v-if="switches" type="resource" :amount="switches" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
@@ -1644,7 +1648,7 @@ async function addChaosToken(face: any){
   position: relative;
   isolation: isolate;
 
-  .depth, .civilians-slain, .targets {
+  .depth, .civilians-slain, .targets, .scraps, .switches {
     position: absolute;
     bottom: 0;
     right: 0;

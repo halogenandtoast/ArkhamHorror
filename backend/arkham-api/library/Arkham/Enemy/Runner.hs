@@ -1742,7 +1742,9 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ first (max 0 . subtract x))
-    CheckAttackOfOpportunity iid isFast mtchr | not isFast && not enemyExhausted -> do
+    Will (CheckAttackOfOpportunity {}) -> do
+      pure $ a & attackOfOpportunityFlaggedL .~ True
+    CheckAttackOfOpportunity iid isFast mtchr | not isFast && not enemyExhausted && enemyAttackOfOpportunityFlagged -> do
       let
         handleAttack = whenM (matches iid $ investigatorEngagedWith enemyId) do
           modifiers' <- getModifiers enemyId
@@ -1768,7 +1770,9 @@ instance RunMessage EnemyAttrs where
         Nothing -> handleAttack
         Just AnyEnemy -> pure ()
         Just m -> whenM (enemyId <!=~> m) handleAttack
-      pure a
+      pure $ a & attackOfOpportunityFlaggedL .~ False
+    CheckAttackOfOpportunity {} -> do
+      pure $ a & attackOfOpportunityFlaggedL .~ False
     ForTarget (isTarget a -> True) (CancelEachNext mCardId source [AttackMessage]) -> do
       let details = fromJustNote "missing attack details" enemyAttacking
           details' = details {attackCancelled = True}

@@ -46,6 +46,7 @@ data Token
   | Study
   | Supply
   | Suspicion
+  | Switch
   | Target
   | Ticket
   | Time

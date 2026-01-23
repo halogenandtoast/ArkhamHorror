@@ -39,6 +39,7 @@ import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Phase
+import Arkham.Matcher.Scenario
 import Arkham.Matcher.Skill
 import Arkham.Matcher.SkillTest
 import Arkham.Matcher.Source
@@ -172,6 +173,7 @@ overCriteria f = \case
 data Criterion
   = AssetExists AssetMatcher
   | TargetExists TargetMatcher
+  | ScenarioExists ScenarioMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher
   | DifferentEnemiesExist EnemyMatcher EnemyMatcher
   | EventExists EventMatcher

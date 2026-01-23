@@ -13,6 +13,7 @@ import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (getModifiers, withoutModifier)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario (getScenarioDeck)
@@ -281,6 +282,15 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             <> [m | not doDelayAdditionalCosts, AdditionalCostToEnter m <- mods]
         _ -> pure []
       else pure []
+  leaveCosts <-
+    if #move `elem` abilityActions a
+      then
+        getLocationOf iid >>= \case
+          Just lid -> do
+            mods <- getModifiers lid
+            pure $ [m | not doDelayAdditionalCosts, AdditionalCostToLeave m <- mods]
+          _ -> pure []
+      else pure []
   resignCosts <-
     if #resign `elem` abilityActions a
       then do
@@ -295,8 +305,8 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts) . const c
-        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts <> leaveCosts) . const c
+        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts <> leaveCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False

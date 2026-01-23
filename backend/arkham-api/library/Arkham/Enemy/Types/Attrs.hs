@@ -66,6 +66,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyReferenceCards :: [CardCode]
   , enemySpawnDetails :: Maybe SpawnDetails
   , enemyMovement :: Maybe Movement
+  , enemyAttackOfOpportunityFlagged :: Bool
   }
   deriving stock (Show, Data)
 
@@ -187,4 +188,5 @@ instance FromJSON EnemyAttrs where
     enemyReferenceCards <- v .:? "referenceCards" .!= []
     enemySpawnDetails <- v .:? "spawnDetails"
     enemyMovement <- v .:? "movement"
+    enemyAttackOfOpportunityFlagged <- v .:? "attackOfOpportunityFlagged" .!= False
     pure EnemyAttrs {..}

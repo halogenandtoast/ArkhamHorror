@@ -325,7 +325,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
 }
 
 /* Larger hover zone so moving through the gap doesn't collapse the control */
-.pool-item-wrap--sanity::before {
+.pool-item-wrap--active.pool-item-wrap--sanity::before {
   content: "";
   position: absolute;
   left: 50%;

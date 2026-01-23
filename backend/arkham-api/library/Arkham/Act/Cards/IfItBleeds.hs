@@ -39,6 +39,7 @@ instance RunMessage IfItBleeds where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       chimera <- spawnEnemy Enemies.voidChimeraTrueForm
       forTarget_ chimera msg
+      doStep 1 msg
       advanceActDeck attrs
       pure a
     ForTarget (EnemyTarget chimera) (AdvanceAct (isSide B attrs -> True) _ _) -> do

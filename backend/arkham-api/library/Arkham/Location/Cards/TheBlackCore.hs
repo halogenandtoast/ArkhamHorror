@@ -43,7 +43,7 @@ instance RunMessage TheBlackCore where
       sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 2) iid s (Fixed 3)]
+        [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 2) iid s (Fixed 2)]
         | s <- [#willpower, #combat]
         ]
       pure l

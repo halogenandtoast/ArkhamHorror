@@ -245,7 +245,7 @@ getCanAffordAbility iid ability ws = do
     ]
 
 getCanAffordAbilityCost
-  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
   imods <- getModifiers iid

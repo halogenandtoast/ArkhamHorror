@@ -63,7 +63,7 @@ import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
 
 getCanAffordCost
-  :: (HasGame m, Tracing m, Sourceable source)
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
   -> source
   -> [Action]
@@ -74,7 +74,7 @@ getCanAffordCost iid source actions windows' cost =
   getCanAffordCost_ iid source actions windows' True cost
 
 getCanAffordCost_
-  :: (HasGame m, Tracing m, Sourceable source)
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
   -> source
   -> [Action]

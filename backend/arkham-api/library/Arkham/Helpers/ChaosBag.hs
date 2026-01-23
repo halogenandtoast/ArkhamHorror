@@ -19,7 +19,7 @@ import Arkham.Tracing
 getOnlyChaosTokensInBag :: (HasGame m, Tracing m) => m [ChaosToken]
 getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
 
-getBagChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
+getBagChaosTokens :: (HasCallStack, HasGame m, Tracing m) => m [ChaosToken]
 getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
 
 getTokenPool :: (HasGame m, Tracing m) => m [ChaosToken]

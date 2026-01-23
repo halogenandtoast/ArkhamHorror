@@ -780,7 +780,7 @@ instance RunMessage TheDreamEaters where
         when (notNull iids) do
           players <- traverse getPlayer iids
           push $ Msg.story players $ i18n "theDreamEaters.brokeTheLawOfUlthar"
-          for_ iids $ kill attrs
+          for_ iids $ push . InvestigatorKilled (toSource attrs)
         push GameOver
         pure c
       InTheDreamQuest msg' -> do

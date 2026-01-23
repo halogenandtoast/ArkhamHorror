@@ -3344,8 +3344,11 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
           else (k, i)
     pure $ g & (entitiesL . investigatorsL %~ mapFromList . map promoteHomunculus . mapToList)
   CheckWindows ws | notNull ws -> do
-    pushAll [Do (CheckWindows ws), EndCheckWindow]
-    pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
+    if isJust $ modeScenario $ g ^. modeL
+      then do
+        pushAll [Do (CheckWindows ws), EndCheckWindow]
+        pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
+      else pure g
   EndCheckWindow -> do
     let
       windowStack =

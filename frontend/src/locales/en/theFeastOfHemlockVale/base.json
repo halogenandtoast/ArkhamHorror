@@ -1,4 +1,9 @@
 {
+  "label": {
+    "calcification": {
+      "pay": "Take 1 direct damage for this test to automatically succeed"
+    }
+  },
   "prologue": {
     "title": "Against Nature",
     "body": "<p>“It was just a colour out of space—a frightful messenger from unformed realms of infinity beyond all Nature as we know it; from realms whose mere existence stuns the brain and numbs us with the black extra-cosmic gulfs it throws open before our frenzied eyes.”</p><p class='basic right'>– H. P. Lovecraft, “The Colour Out of Space”</p>"

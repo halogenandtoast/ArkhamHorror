@@ -13,6 +13,7 @@ data ActionMatcher
   | ActionOneOf [ActionMatcher]
   | ActionMatches [ActionMatcher]
   | RepeatableAction
+  | FirstActionMatchOfRound ActionMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup ActionMatcher where

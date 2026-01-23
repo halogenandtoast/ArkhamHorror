@@ -42,6 +42,12 @@ actionMatches _ _ AnyAction = pure True
 actionMatches _ a (ActionIs a') = pure $ a == a'
 actionMatches iid a (ActionMatches as) = allM (actionMatches iid a) as
 actionMatches iid a (ActionOneOf as) = anyM (actionMatches iid a) as
+actionMatches iid a (FirstActionMatchOfRound inner) = do
+  performed <- concat <$> field InvestigatorActionsPerformed iid
+  andM
+    [ actionMatches iid a inner
+    , noneM (\b -> actionMatches iid b inner) performed
+    ]
 actionMatches iid a RepeatableAction = do
   a' <- getAttrs @Investigator iid
   actions <- withGrantedAction iid GameSource $ getActions iid (defaultWindows iid)

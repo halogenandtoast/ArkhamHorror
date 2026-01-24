@@ -53,5 +53,7 @@ instance RunMessage UndergroundSurvey where
       advanceToActA attrs Acts.theUndergroundMaze
       advanceAgendaDeck attrs
       placeDoomOnAgenda attrs.doom
+      selectEach (assetIs Assets.drRosaMarquezBestInHerField) \asset -> do
+        clearAbilityUse $ AbilityRef (toSource asset) 1
       pure a
     _ -> UndergroundSurvey <$> liftRunMessage msg attrs

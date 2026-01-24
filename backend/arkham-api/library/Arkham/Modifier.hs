@@ -389,6 +389,7 @@ data ModifierType
   | RemoveSkillIcons [SkillIcon]
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild
+  | ResolveHunterTwice
   | SkillIconsSubtract
   | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolveEffectsAgainMatch CardMatcher -- NOTE: If used for more than Tekelili, need to figure out what to do
@@ -458,6 +459,7 @@ data UIModifier
   | Locus -- from Prophesiae Profana
   | ImportantToScenario Text
   | OverlayCheckmark {left :: Double, top :: Double} -- See The Stakeout for example
+  | Rotated Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

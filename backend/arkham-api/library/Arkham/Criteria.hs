@@ -224,6 +224,7 @@ data Criterion
   | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
   | AllLocationsMatch LocationMatcher LocationMatcher
+  | HasAdjacentLocations LocationMatcher
   | CanAffordCostIncrease Int
   | OnSameLocation
   | OwnCardWithDoom

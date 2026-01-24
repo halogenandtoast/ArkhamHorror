@@ -48,6 +48,8 @@ pattern West <- GridLeft
   where
     West = GridLeft
 
+{-# COMPLETE North, East, South, West #-}
+
 oppositeDirection :: GridDirection -> GridDirection
 oppositeDirection = \case
   GridUp -> GridDown

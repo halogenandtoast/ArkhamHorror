@@ -41,6 +41,20 @@ const emits = defineEmits<{
 
 const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
+
+const uiRotation = computed<number>(() => {
+  const mods = props.asset.modifiers ?? []
+
+  for (let i = mods.length - 1; i >= 0; i--) {
+    const t: any = mods[i]?.type
+    if (t?.tag === 'UIModifier' && t?.contents?.tag === 'Rotated') {
+      return t.contents.contents
+    }
+  }
+
+  return 0
+})
+
 const cardCode = computed(() => props.asset.cardCode)
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
 const image = computed(() => {
@@ -238,6 +252,8 @@ const assetStory = computed(() => {
             :src="image"
             class="card"
             :class="{ exhausted }"
+            :style="{ '--ui-rotation': `${uiRotation}deg` }"
+            :data-rotation="uiRotation || undefined"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
           />
@@ -346,11 +362,14 @@ const assetStory = computed(() => {
 
 <style scoped>
 .card {
+  --exhaust-rotation: 0deg;
+  --ui-rotation: 0deg;
   width: var(--card-width);
   max-width: var(--card-width);
   border-radius: 5px;
-  transform: rotate(0deg);
   transition: transform 0.2s linear;
+  transform: rotate(calc(var(--exhaust-rotation) + var(--ui-rotation)));
+  transform-origin: center;
 }
 
 .asset {
@@ -359,8 +378,7 @@ const assetStory = computed(() => {
 }
 
 .exhausted {
-  transition: transform 0.2s linear;
-  transform: rotate(90deg);
+  --exhaust-rotation: 90deg;
   margin: 0 30px;
 }
 

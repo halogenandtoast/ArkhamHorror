@@ -234,6 +234,10 @@ updatePosition (Pos x y) dir = case dir of
 adjacentPositions :: Pos -> [Pos]
 adjacentPositions pos = map (updatePosition pos) [GridLeft, GridRight, GridUp, GridDown]
 
+isAdjacent :: Pos -> Pos -> Bool
+isAdjacent (Pos x1 y1) (Pos x2 y2) =
+  abs (x1 - x2) + abs (y1 - y2) == 1
+
 positionsInDirections :: Pos -> [GridDirection] -> [Pos]
 positionsInDirections pos dirs = map (updatePosition pos) dirs
 

@@ -75,3 +75,18 @@ afterPrelude =
     other -> other
  where
   setNextCampaignStep = push . NextCampaignStep . continueNoUpgrade
+
+pattern Theta :: Int
+pattern Theta = 100
+
+pattern Omega :: Int
+pattern Omega = 101
+
+pattern Psi :: Int
+pattern Psi = 102
+
+pattern Phi :: Int
+pattern Phi = 103
+
+pattern Sigma :: Int
+pattern Sigma = 104

@@ -11,7 +11,7 @@ newtype AlkalineRailB = AlkalineRailB LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alkalineRailB :: LocationCard AlkalineRailB
-alkalineRailB = symbolLabel $ location AlkalineRailB Cards.alkalineRailB 3 (PerPlayer 3)
+alkalineRailB = location AlkalineRailB Cards.alkalineRailB 3 (PerPlayer 3)
 
 instance HasAbilities AlkalineRailB where
   getAbilities (AlkalineRailB a) =

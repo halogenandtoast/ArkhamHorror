@@ -1602,6 +1602,8 @@ getScenariosMatching matcher = do
  where
   go = \case
     TheScenario -> pure . const True
+    ScenarioWithToken tkn -> \s -> do
+      pure $ Token.countTokens tkn (scenarioTokens $ toAttrs s) > 0
     ScenarioWithModifier modifierType -> \s -> do
       modifiers' <- getModifiers (toTarget s)
       pure $ modifierType `elem` modifiers'

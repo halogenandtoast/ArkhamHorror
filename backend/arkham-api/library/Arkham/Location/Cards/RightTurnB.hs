@@ -22,7 +22,7 @@ instance HasAbilities RightTurnB where
       $ actionAbilityWithCost (ResourceCost 2)
 
 instance RunMessage RightTurnB where
-  runMessage msg (RightTurnB attrs) = runQueueT $ case msg of
+  runMessage msg l@(RightTurnB attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <- select LocationCanBeSlid
       chooseTargetM iid locations $ handleTarget iid (attrs.ability 1)

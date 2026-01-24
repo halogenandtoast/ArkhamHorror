@@ -1,16 +1,34 @@
 {
-  "tokens": {
-    "easyStandard": {
-      "skull": "-X. X is your location's column number.",
-      "cultist": "-1. Place 1 resource on this card, as a scrap.",
-      "tablet": "-2. If you fail, remove 1 scrap from this card.",
-      "elderThing": "-3. If you fail, take 1 damage."
-    },
-    "hardExpert": {
-      "skull": "-X. X is twice your location's column number.",
-      "cultist": "-3. If you succeed, place 1 resource on this card, as a scrap.",
-      "tablet": "-4. Remove 1 scrap from this card.",
-      "elderThing": "-5. Take 1 damage."
+  "act1": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is your location's column number.",
+        "cultist": "-1. Place 1 resource on this card, as a scrap.",
+        "tablet": "-2. If you fail, remove 1 scrap from this card.",
+        "elderThing": "-3. If you fail, take 1 damage."
+      },
+      "hardExpert": {
+        "skull": "-X. X is twice your location's column number.",
+        "cultist": "-3. If you succeed, place 1 resource on this card, as a scrap.",
+        "tablet": "-4. Remove 1 scrap from this card.",
+        "elderThing": "-5. Take 1 damage."
+      }
+    }
+  },
+  "act2": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is your location's column number.",
+        "cultist": "-2. Place 1 resource on this card, as a switch.",
+        "tablet": "-3. If you fail, move the Mine Cart once.",
+        "elderThing": "-4. If you fail, remove 1 switch from this card."
+      },
+      "hardExpert": {
+        "skull": "-X. X is twice your location's column number.",
+        "cultist": "-3. If you succeed, place 1 resource on this card, as a switch.",
+        "tablet": "-4. Move the Mine Cart once.",
+        "elderThing": "-5. Remove 1 switch from this card."
+      }
     }
   },
   "label": {

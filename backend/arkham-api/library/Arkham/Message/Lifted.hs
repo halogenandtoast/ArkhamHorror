@@ -3824,3 +3824,6 @@ ifEnemy
 ifEnemy enemy matcher body = do
   msgs <- capture body
   push $ IfEnemyExists (EnemyWithId (asId enemy) <> matcher) msgs
+
+clearAbilityUse :: ReverseQueue m => AbilityRef -> m ()
+clearAbilityUse = push . ClearAbilityUse

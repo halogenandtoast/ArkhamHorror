@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -12,15 +13,15 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement
-import Arkham.Projection
 import Arkham.Message.Lifted.Placement as Place
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WrittenInRock.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -28,7 +29,7 @@ import Arkham.Token
 import Arkham.Trait (Trait (Cave, Rail))
 
 newtype WrittenInRock = WrittenInRock ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 writtenInRock :: Difficulty -> WrittenInRock
@@ -36,6 +37,23 @@ writtenInRock difficulty =
   scenarioWith WrittenInRock "10501" "Written in Rock" difficulty []
     $ referenceL
     .~ if difficulty `elem` [Easy, Standard] then "10501" else "10502"
+
+instance HasModifiersFor WrittenInRock where
+  getModifiersFor (WrittenInRock a) = do
+    n <- getCurrentActStep
+    when (n == 2) do
+      selectEach Anywhere \locA -> do
+        pos <- fieldJust LocationPosition locA
+        whenMatch locA (LocationWithoutModifier CannotBeSlidOrSwapped) do
+          unlessM (null <$> getEmptyPositions locA) $ modified_ a locA [CanBeSlid]
+        defA <- field LocationCardDef locA
+        for_ (lookup "rails" (cdMeta defA)) \railsA -> do
+          for_ (toResultDefault [] railsA) \dir -> do
+            selectEach (LocationInPosition $ updatePosition pos dir) \locB -> do
+              defB <- field LocationCardDef locB
+              for_ (lookup "rails" (cdMeta defB)) \rails -> do
+                when (oppositeDirection dir `elem` toResultDefault [] rails) do
+                  modified_ a locA [ConnectedToWhen (LocationWithId locA) (LocationWithId locB)]
 
 instance HasChaosTokenValue WrittenInRock where
   getChaosTokenValue iid tokenFace (WrittenInRock attrs) = case tokenFace of

@@ -24,7 +24,7 @@ instance HasAbilities GlimpseOfTheUnderworld where
           [ InvestigatorWouldTakeDamage #when You AnySource AnyDamageType
           , InvestigatorWouldTakeHorror #when You AnySource
           ]
-    , fastAbility attrs 2 Free (InThreatAreaOf You)
+    , fastAbility attrs 2 Free OnSameLocation
     ]
 
 toDamageType :: [Window] -> DamageType

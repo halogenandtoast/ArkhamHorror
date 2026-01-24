@@ -365,6 +365,9 @@ overrideExists = CriteriaOverride . exists
 notExists :: Exists a => a -> Criterion
 notExists = not_ . exists
 
+instance Exists ScenarioMatcher where
+  exists = ScenarioExists
+
 instance Exists ConcealedCardMatcher where
   exists = ConcealedCardExists
 

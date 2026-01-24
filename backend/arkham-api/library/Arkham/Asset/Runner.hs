@@ -552,7 +552,10 @@ instance RunMessage AssetAttrs where
       pushAll [RemoveFromPlay $ toSource a, ObtainCard a.cardId]
       pure a
     Discard mInvestigator source target | a `isTarget` target -> do
-      removeFromGame <- a `hasModifier` RemoveFromGameInsteadOfDiscard
+      removeFromGame <-
+        if (toCardDef a).doubleSided
+          then pure True
+          else a `hasModifier` RemoveFromGameInsteadOfDiscard
       afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
       let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
       (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)

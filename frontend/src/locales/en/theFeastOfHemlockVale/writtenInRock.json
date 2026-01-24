@@ -22,6 +22,12 @@
       "faceWest": "Face West"
     }
   },
+  "tooltips": {
+    "theUndergroundMaze": {
+      "slide": "{'{'}action{'}'} Spend 1 {'{'}perPlayer{'}'} resources: Slide a revealed location into an empty adjacent space. (Group limit once per round.)",
+      "prismaticShard": "{'{'}action{'}'} If the Prismatic Shard story asset is at your location: Take control of it."
+    }
+  },
   "intro": {
     "title": "Scenario: Written in Rock",
     "body": "<p>The path to North Point Mine runs through a narrow ravine in the heart of Pearl Ridge. With little to go on, you asked around the Vale for more information about the mine, but all you could gather were several conflicting accounts. People have gone missing in the mines recently, although the mining operation is purportedly shut down. The lichens and moss are supposedly nutritious, but some are lethal? Nobody explained why the mine shut down in the first place, either.</p><p>The path ends at the mouth of a yawning cave. Following an old rail track in, you find heaps of abandoned equipment overgrown with bright yellow fungi. The fungus looks far from edible, and emits a putrescent stench. Eventually, the tunnel opens into a massive cavern filled with luminescent mushrooms and towering crystal formations. The ground shifts with a slight tremor, followed by an echoing cry from deeper in the mine. Steeling yourself, you trek deeper into the cave. At the very least, Dr. Marquez will want samples of the strange overgrowth on the rusted equipment.</p><p class='basic right'>Proceed to _Setup_.</p>"

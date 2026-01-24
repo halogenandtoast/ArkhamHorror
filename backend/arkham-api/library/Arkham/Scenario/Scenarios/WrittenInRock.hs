@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
+import Arkham.Ability.Types
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -14,7 +15,9 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Query (allInvestigators, getSetAsideCardsMatching)
+import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -253,5 +256,60 @@ instance RunMessage WrittenInRock where
     DoStep 3 (ScenarioSpecific "theCaveIn" _) -> do
       shuffleSetAsideEncounterSet Set.WrittenInRock
       shuffleEncounterDiscardBackIn
+      pure s
+    ScenarioSpecific "codex" v -> scope "codex" do
+      let (iid :: InvestigatorId, n :: Int) = toResult v
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      case n of
+        2 -> do
+          entry "leahAtwood"
+          controlled <- selectAny $ assetIs Assets.leahAtwoodTheValeCook <> AssetControlledBy Anyone
+          if controlled
+            then placeTokens ScenarioSource ScenarioTarget Switch 1
+            else do
+              iids <- allInvestigators
+              leah <- selectJust $ assetIs Assets.leahAtwoodTheValeCook
+              clearAbilityUse $ AbilityRef (toSource leah) 1
+              leadChooseOneM do
+                unscoped $ nameVar Assets.leahAtwoodTheValeCook $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.leahAtwoodTheValeCook
+                portraits iids (`takeControlOfAsset` leah)
+        3 -> do
+          entry "simeonAtwood"
+          controlled <-
+            selectAny $ assetIs Assets.simeonAtwoodDedicatedTroublemaker <> AssetControlledBy Anyone
+          if controlled
+            then placeTokens ScenarioSource ScenarioTarget Switch 2
+            else do
+              iids <- allInvestigators
+              simeon <- selectJust $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
+              clearAbilityUse $ AbilityRef (toSource simeon) 1
+              leadChooseOneM do
+                unscoped $ nameVar Assets.simeonAtwoodDedicatedTroublemaker $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.simeonAtwoodDedicatedTroublemaker
+                portraits iids (`takeControlOfAsset` simeon)
+        5 -> do
+          entry "riverHawthorne"
+          iids <- allInvestigators
+          river <- selectJust $ assetIs Assets.riverHawthorneBigInNewYork
+          leadChooseOneM do
+            unscoped $ nameVar Assets.riverHawthorneBigInNewYork $ questionLabeled' "takeControlOf"
+            questionLabeledCard Assets.riverHawthorneBigInNewYork
+            portraits iids (`takeControlOfAsset` river)
+        Theta -> do
+          entry "drRosaMarquez"
+          step <- getCurrentActStep
+          if step == 1
+            then placeTokens ScenarioSource ScenarioTarget Scrap 1
+            else do
+              locations <- select LocationCanBeSwapped
+              chooseTargetM iid locations $ handleTarget iid attrs
+        _ -> error "invalid codex entry"
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
+      pos <- fieldJust LocationPosition lid
+      locations <-
+        select $ mapOneOf LocationInPosition (adjacentPositions pos) <> LocationCanBeSwapped
+      chooseTargetM iid locations (swapLocations lid)
       pure s
     _ -> WrittenInRock <$> liftRunMessage msg attrs

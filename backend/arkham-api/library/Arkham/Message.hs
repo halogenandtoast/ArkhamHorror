@@ -427,6 +427,7 @@ data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | AbilityIsSkillTest AbilityRef
+  | ClearAbilityUse AbilityRef
   | SkillTestResultOption Text [Message]
   | SkillTestResultOptions [UI Message]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting

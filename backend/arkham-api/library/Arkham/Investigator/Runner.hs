@@ -447,6 +447,8 @@ runWindow attrs windows actions playableCards = do
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigatorMessage" $ runQueueT $ case msg of
+  ClearAbilityUse ref -> do
+    pure $ a & usedAbilitiesL %~ filter ((/= ref) . (.ref) . usedAbility)
   SealedChaosToken token miid (isTarget a -> True) -> do
     when (a.id `elem` miid) do
       Lifted.checkWhen (Window.ChaosTokenSealed a.id token)

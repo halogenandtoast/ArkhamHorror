@@ -46,7 +46,7 @@ glory =
   (event "60115" "Glory" 1 Guardian)
     { cdCardTraits = singleton Spirit
     , cdSkills = [#intellect, #intellect]
-    , cdFastWindow = Just $ EnemyDefeated #after You ByAny AnyEnemy
+    , cdFastWindow = Just $ IfEnemyDefeated #after You ByAny AnyEnemy
     }
 
 monsterSlayer :: CardDef

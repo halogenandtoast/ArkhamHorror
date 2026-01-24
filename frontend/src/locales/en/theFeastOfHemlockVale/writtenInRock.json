@@ -13,6 +13,15 @@
       "elderThing": "-5. Take 1 damage."
     }
   },
+  "label": {
+    "mineCart": {
+      "facing": "Choose which direction the Mine Cart is facing",
+      "faceNorth": "Face North",
+      "faceSouth": "Face South",
+      "faceEast": "Face East",
+      "faceWest": "Face West"
+    }
+  },
   "intro": {
     "title": "Scenario: Written in Rock",
     "body": "<p>The path to North Point Mine runs through a narrow ravine in the heart of Pearl Ridge. With little to go on, you asked around the Vale for more information about the mine, but all you could gather were several conflicting accounts. People have gone missing in the mines recently, although the mining operation is purportedly shut down. The lichens and moss are supposedly nutritious, but some are lethal? Nobody explained why the mine shut down in the first place, either.</p><p>The path ends at the mouth of a yawning cave. Following an old rail track in, you find heaps of abandoned equipment overgrown with bright yellow fungi. The fungus looks far from edible, and emits a putrescent stench. Eventually, the tunnel opens into a massive cavern filled with luminescent mushrooms and towering crystal formations. The ground shifts with a slight tremor, followed by an echoing cry from deeper in the mine. Steeling yourself, you trek deeper into the cave. At the very least, Dr. Marquez will want samples of the strange overgrowth on the rusted equipment.</p><p class='basic right'>Proceed to _Setup_.</p>"
@@ -33,5 +42,12 @@
     "subterraneanBeast": "If it is (_Day {'{'}day{'}'}_), remove the Subterranean Beast enemy from the game.",
     "scenarioReference": "Put the scenario reference card into play on its Act 1 side.",
     "setOutOfPlay": "Set both copies of the Crystal Parasite enemy and each other card from the *Written in Rock* encounter set aside, out of play."
-  }
+  },
+  "theCaveIn": "Scenario Interlude: The Cave-In",
+  "theCaveIn1": "<p>_The Cave-In 1_: As the rumbling subsides, you look back at the collapsed tunnel. There is no way back. With no other recourse, you follow the old rail line into the darkness. After some time, you come upon a brightly lit shed next to an old mine cart on the nearby tracks.</p><p class='basic'>Check your Campaign Log.</p>",
+  "proceedToTheCaveIn2": "If it is (_Day {'{'}day{'}'}_), proceed to _The Cave-In 2_.",
+  "skipToTheCaveIn3": "Otherwise, skip to _The Cave-In 3_.",
+  "theCaveIn2": "<p>_The Cave-In 2_: The shed is a former rail control station repurposed as a clubhouse. Hand-drawn maps and charts cover the walls and ceiling; they appear to be a young person’s handwriting. If someone was here recently, they may currently be trapped in the mine along with you.</p><p class='basic right'>Skip to _The Cave-In 4_.</p>",
+  "theCaveIn3": "<p>_The Cave-In 3_: A sharp trill echoes through the cavern, followed by a noisome clicking. Down a connecting tunnel, a stygian maw nested in writhing appendages advances. Your heart nearly stops as the monstrosity lets out another shrill staccato and charges toward you.</p><p class='basic right'>Proceed to _The Cave-In 4_.</p>",
+  "theCaveIn4": "<p>_The Cave-In 4_: With the entrance collapsed, the only way out of the mine is through. You push the mine cart forward with every ounce of your strength and jump in, hoping the rusted tracks hold up.</p><ul><li>Gather all 15 set-aside _Rail_ locations.<ul><li>Place the Rail Exit and the 7 depicted Rail Tunnel locations as shown in the Location Placement diagram.</li><li>Shuffle the remaining _Rail_ locations and place 1 in each space marked with a “?” on the Location Placement diagram.</li></ul></li><li>Place 1 resource on the scenario reference card, as a switch.</li><li>Place the set-aside Mine Cart asset at the Control Station and choose which direction it is facing (*see* _Sliding and Swapping Locations_ *and* _The Mine Cart_ *on page 11*).<ul><li>Place each investigator mini-card in the Mine Cart.</li><li>If either Simeon Atwood or Leah Atwood are set aside, place them at the topmost location in column 2.</li><li>Place the set-aside Prismatic Shard asset at the bottom location in column 4.</li></ul></li><li>If it is (_Night {'{'}night{'}'}_), place the set-aside Subterranean Beast enemy at the Control Station, exhausted.</li><li>Shuffle the remaining set-aside *Written in Rock* encounter cards and the encounter discard pile into the encounter deck.</li><li>Resume playing.</li></ul>"
 }

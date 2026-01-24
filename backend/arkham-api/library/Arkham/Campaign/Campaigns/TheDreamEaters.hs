@@ -779,7 +779,7 @@ instance RunMessage TheDreamEaters where
         iids <- select $ investigatorWithRecord WasCaptured <> not_ DefeatedInvestigator
         when (notNull iids) do
           players <- traverse getPlayer iids
-          push $ Msg.story players $ i18n "theDreamEaters.brokeTheLawOfUlthar"
+          push $ Msg.story players $ i18n "theDreamEaters.brokeThFromeLawOfUlthar"
           for_ iids $ push . InvestigatorKilled (toSource attrs)
         push GameOver
         pure c

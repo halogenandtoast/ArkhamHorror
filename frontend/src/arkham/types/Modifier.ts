@@ -224,6 +224,7 @@ type UIModifierType =
   | 'Explosion'
   | { tag: 'ImportantToScenario', contents: string }
   | { tag: 'OverlayCheckmark', top: number, left: number }
+  | { tag: 'Rotated', contents: number}
 
 export type UIModifier = {
   tag: "UIModifier"
@@ -395,7 +396,8 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
           tag: JsonDecoder.literal('OverlayCheckmark'),
           top: JsonDecoder.number(),
           left: JsonDecoder.number()
-        }, 'OverlayCheckmark')
+        }, 'OverlayCheckmark'),
+        JsonDecoder.object({ tag: JsonDecoder.literal('Rotated'), contents: JsonDecoder.number() }, 'Rotated'),
       ], 'UIModifierType')
     }, 'UIModifier'),
   JsonDecoder.object({

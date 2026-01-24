@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card.CardCode
+import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
@@ -16,8 +17,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Message.Lifted.Placement as Place
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WrittenInRock.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -167,13 +170,14 @@ instance RunMessage WrittenInRock where
       let scrap = attrs.token Scrap
       isDay <- (== Day) <$> getCampaignTime
       flavor do
+        setTitle "theCaveIn"
         p "theCaveIn1"
         ul do
           li.validate isDay "proceedToTheCaveIn2"
           li.validate (not isDay) "skipToTheCaveIn3"
 
-      flavor $ p $ if isDay then "theCaveIn2" else "theCaveIn3"
-      flavor $ p "theCaveIn4"
+      flavor $ setTitle "theCaveIn" >> p (if isDay then "theCaveIn2" else "theCaveIn3")
+      flavor $ setTitle "theCaveIn" >> p "theCaveIn4"
       controlStation <- selectJust $ locationIs Locations.controlStation
       push $ PlaceGrid (GridLocation (Pos 1 1) controlStation)
       placeLocationInGrid_ (Pos 5 5) =<< fetchCard Locations.railExit
@@ -207,6 +211,15 @@ instance RunMessage WrittenInRock where
         createSetAsideEnemyWith_ Enemies.subterraneanBeast (AtLocation controlStation) createExhausted
 
       doStep 2 msg -- ensure set aside cards are updated
+      mineCart <- createAssetAt Assets.mineCartReliableButBroken (AtLocation controlStation)
+      eachInvestigator (`Place.place` InVehicle mineCart)
+      leadChooseOneM do
+        questionLabeled' "mineCart.facing"
+        labeled' "mineCart.faceNorth" $ scenarioSpecific "rotate" North
+        labeled' "mineCart.faceEast" $ scenarioSpecific "rotate" East
+        labeled' "mineCart.faceSouth" $ scenarioSpecific "rotate" South
+        labeled' "mineCart.faceWest" $ scenarioSpecific "rotate" West
+
       doStep 3 msg -- ensure set aside cards are updated
       pure
         $ WrittenInRock

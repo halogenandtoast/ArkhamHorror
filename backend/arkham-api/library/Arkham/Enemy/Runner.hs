@@ -733,7 +733,13 @@ instance RunMessage EnemyAttrs where
               when wantsToHunt do
                 (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
                 push
-                  $ HandleGroupTarget HunterGroup (toTarget a) [Would batchId $ windowMessages <> [HunterMove (toId a)]]
+                  $ HandleGroupTarget
+                    HunterGroup
+                    (toTarget a)
+                    [ Would batchId
+                        $ windowMessages
+                        <> (HunterMove (toId a) : [HunterMove (toId a) | ResolveHunterTwice `elem` mods])
+                    ]
             _ -> pure ()
       pure a
     SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do

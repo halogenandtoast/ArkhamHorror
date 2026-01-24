@@ -63,6 +63,7 @@ import Arkham.Helpers.Window (getPassedBy, getWindowAsset)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
+import Arkham.Location.Grid (Pos, isAdjacent)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
@@ -588,7 +589,10 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
         wrapper = case mcard of
           Just (card, _) -> (Matcher.basic (not_ (Matcher.CardWithId card.id)) <>)
           Nothing -> id
-      selectAny $ wrapper $ ecMatcher <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
+      selectAny
+        $ wrapper
+        $ ecMatcher
+        <> Matcher.InDiscardOf (investigatorMatcher <> can.have.cards.leaveDiscard)
     Criteria.CanAffordCostIncrease n -> do
       let
         go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Bool
@@ -737,6 +741,13 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
     Criteria.KeyCount valueMatcher matcher -> do
       n <- selectCount matcher
       gameValueMatches n valueMatcher
+    Criteria.HasAdjacentLocations locationMatcher -> do
+      positions <- mapMaybeM (field LocationPosition) =<< select locationMatcher
+      let
+        anyAdjacent :: [Pos] -> Bool
+        anyAdjacent [] = False
+        anyAdjacent (p : ps) = any (isAdjacent p) ps || anyAdjacent ps
+      pure $ anyAdjacent positions
     Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
       targets <- select (Matcher.replaceYouMatcher iid targetMatcher)
       actual <- select (Matcher.replaceYouMatcher iid locationMatcher)

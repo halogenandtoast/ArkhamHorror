@@ -69,6 +69,8 @@ import Arkham.Matcher hiding (
   PlayCard,
   SkillCard,
  )
+import Arkham.Message.Lifted qualified as Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
@@ -273,6 +275,16 @@ payCost msg c iid skipAdditionalCosts cost = do
           . toList
           <$> field InvestigatorKeys iid
       for_ ks (push . PlaceKey ScenarioTarget)
+      pure c
+    SpendTokenCost tkn tm -> do
+      ts <-
+        select tm >>= filterM \case
+          ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . Token.countTokens tkn)
+          _ -> pure False
+      case ts of
+        [] -> error "Empty list for SpendTokenCost"
+        [x] -> runQueueT $ Lifted.removeTokens source x tkn 1
+        xs -> runQueueT $ chooseTargetM iid xs \x -> Lifted.removeTokens source x tkn 1
       pure c
     PlaceKeyCost target key -> do
       push $ PlaceKey target key
@@ -510,12 +522,12 @@ payCost msg c iid skipAdditionalCosts cost = do
         . exhaust
       pure c
     SealCost matcher -> do
-      targets <-
+      ts <-
         filterM (\t -> matchChaosToken iid t matcher)
           =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       pushAll
-        [ FocusChaosTokens targets
-        , chooseOne player $ targetLabels targets $ only . pay . SealChaosTokenCost
+        [ FocusChaosTokens ts
+        , chooseOne player $ targetLabels ts $ only . pay . SealChaosTokenCost
         , UnfocusChaosTokens
         ]
       pure c

@@ -138,6 +138,7 @@ data Cost
   | RevealCost CardId
   | Costs [Cost]
   | OrCost [Cost]
+  | SpendTokenCost Token TargetMatcher
   | PlaceKeyCost Target ArkhamKey
   | SpendKeyCost ArkhamKey
   | SpendTokenKeyCost Int ChaosTokenFace
@@ -261,6 +262,7 @@ data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  SpendTokenCost {} -> "Spend token"
   ConcealedXCost -> "Concealed X"
   XCost c -> "X " <> displayCostType c
   OneOfDistanceCost _ c -> "X " <> displayCostType c

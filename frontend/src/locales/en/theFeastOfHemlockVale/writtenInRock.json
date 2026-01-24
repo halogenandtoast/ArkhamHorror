@@ -19,7 +19,9 @@
       "faceNorth": "Face North",
       "faceSouth": "Face South",
       "faceEast": "Face East",
-      "faceWest": "Face West"
+      "faceWest": "Face West",
+      "cancelMove": "Cancel the move",
+      "moveAgain": "Move an additional time"
     }
   },
   "tooltips": {

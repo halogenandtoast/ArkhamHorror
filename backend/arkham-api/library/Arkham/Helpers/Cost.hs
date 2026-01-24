@@ -130,6 +130,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
               . toList
               <$> field InvestigatorKeys iid
           ]
+      SpendTokenCost tkn tm -> do
+        targets <- select tm
+        targets & anyM \case
+          ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . countTokens tkn)
+          _ -> pure False
       PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
       GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
       CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c

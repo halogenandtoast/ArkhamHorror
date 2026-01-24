@@ -4569,7 +4569,11 @@ instance Query KeyMatcher where
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
   select_ matcher = do
-    filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
+    filterM (`targetMatches` matcher)
+      . (ScenarioTarget :)
+      . overEntities ((: []) . toTarget)
+      . view entitiesL
+      =<< getGame
 
 instance Query SourceMatcher where
   toSomeQuery = SourceQuery

@@ -162,6 +162,7 @@ const showCardsUnderneath = (e: Event) => emits('showCards', e, cardsUnderneath,
 const keys = computed(() => props.asset.keys)
 
 const debug = useDebug()
+const dragging = ref(false)
 
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
@@ -222,6 +223,14 @@ const assetStory = computed(() => {
   const { stories } = props.game
   return Object.values(stories).find((s) => s.otherSide?.contents === props.asset.id)
 })
+
+function startDrag(event: DragEvent) {
+  dragging.value = true
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "AssetTarget", "contents": props.asset.id }))
+  }
+}
 </script>
 
 <template>
@@ -254,6 +263,8 @@ const assetStory = computed(() => {
             :class="{ exhausted }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
+            :draggable="debug.active"
+            @dragstart="startDrag"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
           />

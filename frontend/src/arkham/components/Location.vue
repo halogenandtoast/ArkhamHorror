@@ -352,6 +352,11 @@ function onDrop(event: DragEvent) {
         debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
       }
 
+      if (json.tag === "AssetTarget") {
+        //if (assets.value.some(e => e === json.contents)) return false
+        debug.send(props.game.id, {tag: 'PlaceAsset', contents: [json.contents, { tag: "AtLocation", contents: id.value}]})
+      }
+
       if (json.tag === "InvestigatorTarget") {
         if (enemies.value.some(e => e === json.contents)) return false
         debug.send(props.game.id, {tag: 'Move', contents: {moveSource: {tag:"GameSource"}, moveTarget: json, moveDestination: {tag:"ToLocation", contents: id.value}, moveMeans: "Direct", moveCancelable: false, movePayAdditionalCosts: false, moveAfter: []}})

@@ -4089,6 +4089,7 @@ instance Projection Asset where
       AssetTokens -> pure assetTokens
       AssetDriver -> pure assetDriver
       AssetMetaMap -> pure assetMetaMap
+      AssetMeta -> pure assetMeta
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
       AssetClues -> pure $ assetClues attrs

@@ -15,6 +15,8 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype MineCartReliableButBroken = MineCartReliableButBroken AssetAttrs
   deriving anyclass IsAsset
@@ -25,7 +27,13 @@ mineCartReliableButBroken = asset MineCartReliableButBroken Cards.mineCartReliab
 
 instance HasAbilities MineCartReliableButBroken where
   getAbilities (MineCartReliableButBroken a) =
-    [mkAbility a 1 $ forced $ PhaseEnds #when #enemy]
+    [ mkAbility a 1 $ forced $ PhaseEnds #when #enemy
+    , limited (GroupLimit PerPhase 2)
+        $ mkAbility a 2
+        $ triggered
+          (ScenarioEvent #when Nothing "mineCartMoved")
+          (SpendTokenCost Switch (TargetIs ScenarioTarget))
+    ]
 
 instance HasModifiersFor MineCartReliableButBroken where
   getModifiersFor (MineCartReliableButBroken a) = do
@@ -42,6 +50,19 @@ instance RunMessage MineCartReliableButBroken where
       let dir = toResultDefault East val
       pure $ MineCartReliableButBroken $ attrs & setMeta dir
     UseThisAbility _ (isSource attrs -> True) 1 -> do
+      scenarioSpecific_ "moveMineCart"
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
+      chooseOneM iid $ scenarioI18n do
+        labeled' "mineCart.cancelMove" $ cancelWindowBatch ws
+        labeled' "mineCart.moveAgain" $ do_ (ScenarioSpecific "moveMineCart" Null)
+      pure a
+    ScenarioSpecific "moveMineCart" _ -> do
+      batched \_ -> do
+        checkWhen $ Window.ScenarioEvent "mineCartMoved" Nothing Null
+        do_ msg
+      pure a
+    Do (ScenarioSpecific "moveMineCart" _) -> do
       let dir = toResultDefault East attrs.meta
       withLocationOf attrs \loc -> do
         pos <- fieldJust LocationPosition loc

@@ -159,7 +159,7 @@ instance RunMessage WrittenInRock where
     ResolveChaosToken _ Tablet _iid | isHardExpert attrs -> do
       n <- getCurrentActStep
       when (n == 1) $ removeTokens Tablet attrs Scrap 1
-      -- TODO move mine cart
+      when (n == 2) $ scenarioSpecific_ "moveMineCart"
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       n <- getCurrentActStep
@@ -179,7 +179,7 @@ instance RunMessage WrittenInRock where
         Tablet | isEasyStandard attrs -> do
           n <- getCurrentActStep
           when (n == 1) $ removeTokens Tablet attrs Scrap 1
-        -- TODO Move mine cart
+          when (n == 2) $ scenarioSpecific_ "moveMineCart"
         ElderThing | isEasyStandard attrs -> do
           n <- getCurrentActStep
           if n == 1

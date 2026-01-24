@@ -286,10 +286,17 @@ const tokenEffects = computed(() => {
   // lowercase the first letter
   const lowerFirst = (str: string) => str.charAt(0).toLowerCase() + str.slice(1)
 
+  const baseRef = scenario.reference.replace(/b$/, '')
+
+  const tokenScope =
+    baseRef === 'c10501' || baseRef === 'c10502'
+      ? (scenario.reference.endsWith('b') ? '.act2' : '.act1')
+      : ''
+
 
   return ["Skull", "Cultist", "Tablet", "ElderThing"].filter((face) => faces.includes(face)).map((face) => 
     `<img src='${chaosTokenImage(face)}' /><span>`
-          + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
+          + formatContent(t(`${scenarioToI18n(scenario)}${tokenScope}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
           )
 })
 

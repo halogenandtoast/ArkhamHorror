@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Types (Field (AgendaDoom))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Agenda
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -45,5 +46,7 @@ instance RunMessage DescentIntoTheMines where
 
       scenarioSpecific_ "theCaveIn"
       advanceActDeck attrs
+      selectEach (assetIs Assets.drRosaMarquezBestInHerField) \asset -> do
+        clearAbilityUse $ AbilityRef (toSource asset) 1
       pure a
     _ -> DescentIntoTheMines <$> liftRunMessage msg attrs

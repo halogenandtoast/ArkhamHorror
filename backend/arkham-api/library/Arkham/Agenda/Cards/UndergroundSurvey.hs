@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.Cards qualified as Locations

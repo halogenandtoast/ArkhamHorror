@@ -196,6 +196,7 @@ data instance Field Asset :: Type -> Type where
   AssetAssignedSanityDamage :: Field Asset Int
   AssetDriver :: Field Asset (Maybe InvestigatorId)
   AssetMetaMap :: Field Asset (KeyMap Value)
+  AssetMeta :: Field Asset Value
   -- virtual
   AssetClasses :: Field Asset (Set ClassSymbol)
   AssetTraits :: Field Asset (Set Trait)
@@ -256,6 +257,7 @@ instance FromJSON (SomeField Asset) where
     "AssetTokens" -> pure $ SomeField AssetTokens
     "AssetDriver" -> pure $ SomeField AssetDriver
     "AssetMetaMap" -> pure $ SomeField AssetMetaMap
+    "AssetMeta" -> pure $ SomeField AssetMeta
     _ -> error "no such field"
 
 data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses | NotifySelfOfNoUses

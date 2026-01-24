@@ -186,6 +186,7 @@ export default defineComponent({
 
 .green, :deep(.green), p.green, :deep(p.green) {
   --color: #213C35;
+  --border-color: var(--color);
   min-height: 6em;
   place-content: center;
   border: 3px solid var(--color);
@@ -665,7 +666,7 @@ ul, :deep(ul) {
 
 :deep(hr) {
   border:0;
-  border-bottom: 2px solid #60759F;
+  border-bottom: 2px solid var(--border-color, #60759F);
   margin-inline: -20px;
   margin-block: 10px;
 }

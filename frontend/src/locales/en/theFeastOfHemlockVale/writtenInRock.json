@@ -43,6 +43,12 @@
     "scenarioReference": "Put the scenario reference card into play on its Act 1 side.",
     "setOutOfPlay": "Set both copies of the Crystal Parasite enemy and each other card from the *Written in Rock* encounter set aside, out of play."
   },
+  "codex": {
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.prelude1.codex.simeonAtwood.title </h3><p>_If Simeon Atwood is not under the control of an investigator:_</p><p>As the mine cart judders over a rickety bridge, you notice a small figure dangling from the edge of a precipice. Acting on instinct, you lean down the lip of the mine cart and catch the figure by the forearm as you hurtle past. As you pull him into the cart, you recognize him as Simeon, chief mischief-maker of the Vale. He brushes himself off, cheeks white as paper. “I was looking for my stash. All part of the p—” he wheezes, then gives up. “Thanks for saving me. I don’t know what I would’ve done without you.”</p><p class='basic right'>Choose an investigator to take control of Simeon Atwood. An investigator may trigger this codex again.</p><hr><p>_Otherwise:_</p><p>“No, no, don’t do it like that.” Simeon pulls the lever on the cart. “How are you still alive? I’m surprised you even found me.” He hits a switch at the side of the tunnel and grins rakishly. “That’s how it’s done.”</p><p class='basic right'>Place 2 resources on the scenario reference card, as switches.</p>"
+    }
+  },
   "theCaveIn": "Scenario Interlude: The Cave-In",
   "theCaveIn1": "<p>_The Cave-In 1_: As the rumbling subsides, you look back at the collapsed tunnel. There is no way back. With no other recourse, you follow the old rail line into the darkness. After some time, you come upon a brightly lit shed next to an old mine cart on the nearby tracks.</p><p class='basic'>Check your Campaign Log.</p>",
   "proceedToTheCaveIn2": "If it is (_Day {'{'}day{'}'}_), proceed to _The Cave-In 2_.",

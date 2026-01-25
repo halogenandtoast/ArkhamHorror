@@ -59,25 +59,28 @@ instance RunMessage MineCartReliableButBroken where
       pure a
     ScenarioSpecific "moveMineCart" _ -> do
       batched \_ -> do
+        withLocationOf attrs \loc -> do
+          pos <- fieldJust LocationPosition loc
+          mloc <- selectOne (LocationInPosition $ updatePosition pos $ toResultDefault East attrs.meta)
+          for_ mloc $ checkWhen . Window.VehicleWouldEnter attrs.id
         checkWhen $ Window.ScenarioEvent "mineCartMoved" Nothing Null
         do_ msg
       pure a
     Do (ScenarioSpecific "moveMineCart" _) -> do
       let dir = toResultDefault East attrs.meta
       withLocationOf attrs \loc -> do
-        pos <- fieldJust LocationPosition loc
-        let newPos = updatePosition pos dir
+        pos <- (`updatePosition` dir) <$> fieldJust LocationPosition loc
         let
           movedOffTheRailLine =
             eachInvestigator \iid -> do
               sufferPhysicalTrauma iid 1
               kill (attrs.ability 1) iid
-        selectOne (LocationInPosition newPos) >>= \case
+        selectOne (LocationInPosition pos) >>= \case
           Nothing -> movedOffTheRailLine
           Just newLoc -> do
             rails <- getRails newLoc
             if oppositeDirection dir `elem` rails
-              then do
+              then batched \_ -> do
                 moveVehicle attrs loc newLoc
                 scenarioSpecific_ "mineCartMoved"
               else movedOffTheRailLine

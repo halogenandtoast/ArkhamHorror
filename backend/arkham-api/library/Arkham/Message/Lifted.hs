@@ -2375,14 +2375,24 @@ abilityModifier
   -> m ()
 abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab source target modifier
 
+batchedOrCurrent :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
+batchedOrCurrent f =
+  getCurrentBatchId >>= \case
+    Just batchId -> withBatched batchId f
+    Nothing -> batched f
+
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
   batchId <- getId
+  withBatched batchId f
+
+withBatched :: ReverseQueue m => BatchId -> (BatchId -> QueueT Message m ()) -> m ()
+withBatched batchId f = do
   msgs <- capture (f batchId)
-  push $ Would batchId $ map (updateBatch batchId) msgs
+  push $ Would batchId $ map updateBatch msgs
  where
   -- Sets the batch id for any top level window calls
-  updateBatch batchId = \case
+  updateBatch = \case
     CheckWindows ws -> CheckWindows $ map (\w -> w {windowBatchId = Just batchId}) ws
     other -> other
 

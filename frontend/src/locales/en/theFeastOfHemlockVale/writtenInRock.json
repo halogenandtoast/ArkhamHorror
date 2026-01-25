@@ -40,6 +40,10 @@
       "faceWest": "Face West",
       "cancelMove": "Cancel the move",
       "moveAgain": "Move an additional time"
+    },
+    "wildRide": {
+      "moveAgain": "Move it 2 additional times",
+      "damage": "Deal 1 direct damage and 1 direct horror to each investigator, _Ally_ asset, and _Resident_ card they control"
     }
   },
   "tooltips": {

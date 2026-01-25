@@ -237,7 +237,8 @@ instance RunMessage LocationAttrs where
             liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'
             discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
             guard (discoveredClues' > 0)
-            lift $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.id d.source discoveredClues')]
+            lift
+              $ checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid' d.id d.source discoveredClues')]
           pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
         else do
           concealed <- getConcealedAt (ForExpose $ toSource iid) lid

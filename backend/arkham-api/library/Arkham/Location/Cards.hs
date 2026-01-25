@@ -5447,8 +5447,8 @@ enchantedWoodsVillageOfZoogs =
       [Squiggle]
       ("Enchanted Woods" <:> "Village of Zoogs")
       [Woods]
-      Circle
-      [Squiggle, Star, Plus]
+      Triangle
+      [Squiggle, Square, Star]
       BeyondTheGatesOfSleep
 
 enchantedWoodsGreatStoneCircle :: CardDef

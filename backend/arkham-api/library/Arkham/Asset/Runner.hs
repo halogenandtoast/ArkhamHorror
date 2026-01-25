@@ -757,7 +757,7 @@ instance RunMessage AssetAttrs where
       pushAll
         $ RemovedFromPlay (toSource a)
         : resolve (RemoveAsset $ toId a)
-        <> [PutCardOnBottomOfDeck iid deck (toCard a)]
+          <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg

@@ -89,6 +89,7 @@ data WindowMatcher
   | IfEnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | VehicleLeaves Timing AssetMatcher LocationMatcher
   | VehicleEnters Timing AssetMatcher LocationMatcher
+  | VehicleWouldEnter Timing AssetMatcher LocationMatcher
   | FloodLevelChanged Timing LocationMatcher
   | FloodLevelIncreased Timing LocationMatcher
   | FirstTimeParleyingThisRound Timing Who

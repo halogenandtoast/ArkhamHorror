@@ -146,6 +146,7 @@ data WindowType
   | ResolvingRevelation InvestigatorId TreacheryId
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
+  | VehicleWouldEnter AssetId LocationId
   | FloodLevelChanged LocationId FloodLevel FloodLevel
   | FloodLevelIncreased LocationMatcher
   | FirstTimeParleyingThisRound InvestigatorId

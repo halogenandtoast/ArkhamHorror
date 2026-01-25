@@ -722,6 +722,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
+    Matcher.VehicleWouldEnter timing assetMatcher whereMatcher -> guardTiming timing \case
+      Window.VehicleWouldEnter aid where' -> do
+        andM
+          [ locationMatches iid source window' where' whereMatcher
+          , aid <=~> assetMatcher
+          ]
+      _ -> noMatch
     Matcher.VehicleEnters timing assetMatcher whereMatcher -> guardTiming timing \case
       Window.VehicleEnters aid where' -> do
         andM

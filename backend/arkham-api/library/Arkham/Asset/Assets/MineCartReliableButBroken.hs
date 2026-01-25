@@ -27,7 +27,7 @@ mineCartReliableButBroken = asset MineCartReliableButBroken Cards.mineCartReliab
 
 instance HasAbilities MineCartReliableButBroken where
   getAbilities (MineCartReliableButBroken a) =
-    [ mkAbility a 1 $ forced $ PhaseEnds #when #enemy
+    [ restricted a 1 (thisExists a (AssetWithoutModifier CannotMove)) $ forced $ PhaseEnds #when #enemy
     , limited (GroupLimit PerPhase 2)
         $ mkAbility a 2
         $ triggered

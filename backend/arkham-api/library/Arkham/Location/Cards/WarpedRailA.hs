@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype WarpedRailA = WarpedRailA LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,7 +20,10 @@ instance HasAbilities WarpedRailA where
       $ mkAbility a 1
       $ Objective
       $ forced
-      $ VehicleEnters #after (assetIs Assets.mineCartReliableButBroken) (be a)
+      $ VehicleEnters
+        #after
+        (assetIs Assets.mineCartReliableButBroken <> AssetWithoutModifier CannotMove)
+        (be a)
 
 instance RunMessage WarpedRailA where
   runMessage msg l@(WarpedRailA attrs) = runQueueT $ case msg of

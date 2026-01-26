@@ -90,8 +90,6 @@ data ScenarioLogKey
   | PeeredBeyond
   | SharedADeepPain
   | FoundHiddenBones
-  | -- | Written in ROck
-    YouHelpedRiver
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

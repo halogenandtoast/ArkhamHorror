@@ -92,6 +92,8 @@ h4 {
 .name {
   margin: 0;
   font-family: Wolgast, sans-serif;
+  text-box-trim: trim-both;
+  text-box-edge: text alphabetic;
 }
 
 .relationship {

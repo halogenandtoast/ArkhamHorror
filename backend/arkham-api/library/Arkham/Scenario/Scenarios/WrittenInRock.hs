@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
 import Arkham.Ability.Types
@@ -339,7 +337,7 @@ instance RunMessage WrittenInRock where
           when hasShard do
             investigators <- allInvestigators
             forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.prismaticShardAlienMeteorite
-          clues <- traceShowId . getSum <$> selectAgg Sum InvestigatorClues Anyone
+          clues <- getSum <$> selectAgg Sum InvestigatorClues Anyone
           helpedRiver <- (clues >=) <$> perPlayer 2
           if helpedRiver
             then incrementRecordCount RiverHawthorneRelationshipLevel 1

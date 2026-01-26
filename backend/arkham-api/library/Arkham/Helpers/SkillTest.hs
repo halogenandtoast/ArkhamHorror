@@ -381,12 +381,24 @@ getIsPerilous skillTest = case skillTestSource skillTest of
     pure $ Peril `elem` keywords
   _ -> pure False
 
+-- should likely only be used by `calculateSkillTestResultsData`
 getSkillTestModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getSkillTestModifiedSkillValue = do
   st <- getJustSkillTest
   currentSkillValue <- getCurrentSkillValue st
   iconCount <- skillIconCount st
   pure $ max 0 (currentSkillValue + iconCount)
+
+getModifiedSkillValue :: (HasGame m, Tracing m) => m Int
+getModifiedSkillValue = do
+  st <- getJustSkillTest
+  modifiers' <- getModifiers (SkillTestTarget st.id)
+  let cancelSkills = CancelSkills `elem` modifiers'
+  currentSkillValue <- getCurrentSkillValue st
+  iconCount <- if cancelSkills then pure 0 else skillIconCount st
+  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
+  chaosTokenValues <- totalChaosTokenValues st
+  pure $ max 0 (currentSkillValue + iconCount - subtractIconCount + chaosTokenValues)
 
 getSkillTestDifficulty :: (HasCallStack, HasGame m, Tracing m) => m (Maybe Int)
 getSkillTestDifficulty = do

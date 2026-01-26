@@ -138,7 +138,7 @@ instance RunMessage DarkSideOfTheMoon where
       case token.face of
         Cultist -> do
           alarmLevel <- getAlarmLevel iid
-          skillValue <- getSkillTestModifiedSkillValue
+          skillValue <- getModifiedSkillValue
           when (alarmLevel > skillValue) do
             afterSkillTestQuiet $ drawEncounterCard iid Cultist
         Tablet -> raiseAlarmLevel Tablet [iid]

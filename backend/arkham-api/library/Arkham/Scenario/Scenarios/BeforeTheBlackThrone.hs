@@ -211,7 +211,7 @@ instance RunMessage BeforeTheBlackThrone where
       drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ ElderThing _ -> do
-      v <- getSkillTestModifiedSkillValue
+      v <- getModifiedSkillValue
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       when (v == 0) $ placeDoom ElderThing azathoth 1
       pure s

@@ -1051,7 +1051,9 @@ payCost msg c iid skipAdditionalCosts cost = do
     EventUseCost eventMatcher uType n -> do
       events <- select eventMatcher
       push
-        $ chooseOrRunOne player [targetLabel eid [SpendUses c.source (EventTarget eid) uType n] | eid <- events]
+        $ chooseOrRunOne
+          player
+          [targetLabel eid [SpendUses c.source (EventTarget eid) uType n] | eid <- events]
       withPayment $ UsesPayment n
     DynamicUseCost assetMatcher uType costValue -> do
       n <- case costValue of
@@ -1065,7 +1067,9 @@ payCost msg c iid skipAdditionalCosts cost = do
           getDrawnCards c.windows
       assets <- select assetMatcher
       push
-        $ chooseOrRunOne player [targetLabel aid [SpendUses c.source (AssetTarget aid) uType n] | aid <- assets]
+        $ chooseOrRunOne
+          player
+          [targetLabel aid [SpendUses c.source (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher

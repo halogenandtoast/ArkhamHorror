@@ -35,7 +35,9 @@ const card = computed(() => {
 
 <template>
   <div class='resident'>
-    <img v-if="card" :src="card" class="resident-card card no-overlay" />
+    <div class="resident-card">
+      <img v-if="card" :src="card" class="card no-overlay" />
+    </div>
     <div class="resident-notes">
       <h3 class="name">{{ residentName }}</h3>
 
@@ -156,6 +158,9 @@ h4 {
 
 .resident-card {
   width: 25%;
-  border-radius: 0.5em;
+  max-width: 200px;
+  img {
+    border-radius: 0.25em;
+  }
 }
 </style>

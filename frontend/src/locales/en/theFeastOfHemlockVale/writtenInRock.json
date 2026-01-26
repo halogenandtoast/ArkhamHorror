@@ -98,9 +98,32 @@
         "leah": "Bonus Experience"
       }
     },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: The last thing you remember before you are knocked unconscious is the cart careening into a canyon of light. Your head pounds as you awaken surrounded by glowing blue fungus and extravegant crystal formations. There is a path up the rock, but it will take hours to trek back even to the beginning of the rail tunnels. You sigh, exhausted, and wade through the underground river.</p><p class='basic'>Check your Campaign Log.</p>",
+      "skipToResolution6": "If it is _Night 1_ or _Night 2_, cross out Simeon Atwood’s name and skip to _Resolution 6_.",
+      "skipToResolution3": "If it is _Day 1_ or _Day 2_, skip to _Resolution 3_.",
+      "skipToResolution4": "If it is _Day 3_, skip to _Resolution 4_."
+    },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<p>_Resolution 1_: Simeon steps out of the mine cart looking dazed. “What a ride!” he shouts, troublingly unfazed. “No matter what, you are definitely going in the Miner’s Secret Order of Mischief ’s Hall of Fame! You’re in good company with George Washington Carver and my mom.” He nearly trips as the rail line slopes upward, toward the brilliant sky. You help him to his feet and lead him outside, into the clear fresh air.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record Simeon survived.</li><li>Increase Simeon Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+      "body": "<p>_Resolution 1_: Simeon steps out of the mine cart looking dazed. “What a ride!” he shouts, troublingly unfazed. “No matter what, you are definitely going in the Miner’s Secret Order of Mischief ’s Hall of Fame! You’re in good company with George Washington Carver and my mom.” He nearly trips as the rail line slopes upward, toward the brilliant sky. You help him to his feet and lead him outside, into the clear fresh air.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record *Simeon survived*.</li><li>Increase Simeon Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Leah grips the side of the cart as you disembark. She bites her lip as she holds back tears, unseeing. As you lead her back up the tunnel, the sound of soft weeping echoes off the stone walls. As you emerge outside into the clean, fresh air, you work up the courage to ask Leah what she saw.</p><p>“He’s gone. Simeon’s gone,” she replies.</p><ul><li>Update your Campaign Log.<ul><li>In Leah Atwood’s Notes, record *Leah saw something in the mine*.</li><li>Increase Leah Atwood’s Relationship Level. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You could swear you hear Simeon Atwood’s voice calling through the empty tunnels as you disembark. Unable to shake the sound, you double back through the tunnels in hopes of finding the young man. You eventually come to a shining abyss filled with crystals. A dark humanoid shape sits hunched over the carcass of a small animal. It skitters into the dark when you call. You shout Simeon’s name until your voice is hoarse, then retrace your steps to the exit with an awful lump in your throat.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record *Simeon disappeared*.</li><li>Cross out Simeon Atwood’s name.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You could swear you hear Leah Atwood’s voice calling through the empty tunnels as you disembark. Unable to shake the sound, you double back through the tunnels in hopes of finding the Vale cook. You eventually come to a shining abyss filled with crystals. A dark humanoid shape sits hunched over Leah’s body at the bottom. It skitters into the dark when you call. You take one last look at Leah’s lifeless body, then retrace your steps to the exit with an awful lump in your throat.</p><ul><li>Update your Campaign Log.<ul><li>In Leah Atwood’s Notes, record *Leah and Simeon were reunited*.</li><li>Cross out Leah Atwood’s name.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: You hear a familiar chittering staccato as you disembark, followed by a scent of rot. More howls and shouts echo through the twisted cavern, prompting you to run to the exit. Once you emerge into the clear night air, you turn back and wonder what other terrors are written in rock beneath the island.</p><ul><li>In your Campaign Log, record *the investigators survived the horrors in the rock*.</li><li>Proceed to _Resolution 6_.</li></ul>"
     },
     "resolution6": {
       "title": "Resolution 6",

@@ -130,7 +130,7 @@ import Arkham.Investigator.Types (
   investigatorSanityDamage,
  )
 import Arkham.Key (ArkhamKey (..))
-import Arkham.Keyword (_Swarming)
+import Arkham.Keyword (_Swarming, _Concealed)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
@@ -3264,6 +3264,11 @@ enemyMatcherFilter es matcher' = do
           Nothing -> pure False
           Just discardee -> pure $ discardee `elem` iids
     EnemyWithAnyCardsUnderneath -> filterM (fieldP EnemyCardsUnderneath notNull . toId) es
+    EnemyWithConcealed -> do
+      es & filterM \enemy -> do
+        modifiers <- getModifiers (toTarget enemy)
+        keywords <- field EnemyKeywords (toId enemy)
+        pure $ Blank `notElem` modifiers && any (isJust . preview _Concealed) keywords
     EnemyWhenEvent eventMatcher -> do
       cond <- selectAny eventMatcher
       pure $ guard cond *> es

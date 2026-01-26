@@ -1,4 +1,13 @@
 {
+  "campaignLog": {
+    "residents": {
+      "relationshipLevel": "Relationship Level",
+      "notes": "Notes"
+    },
+    "areasSurveyed": {
+      "refHeader": "Ref #"
+    }
+  },
   "label": {
     "calcification": {
       "pay": "Take 1 direct damage for this test to automatically succeed"
@@ -159,6 +168,68 @@
     "riverHawthorneRelationshipLevel": "River Hawthorne Relationship Level",
     "gideonMizrahRelationshipLevel": "Gideon Mizrah Relationship Level",
     "judithParkRelationshipLevel": "Judith Park Relationship Level",
-    "theoPetersRelationshipLevel": "Theo Peters Relationship Level"
+    "theoPetersRelationshipLevel": "Theo Peters Relationship Level",
+    "sections": {
+      "motherRachelNotes": "Mother Rachel",
+      "leahAtwoodNotes": "Leah Atwood",
+      "simeonAtwoodNotes": "Simeon Atwood",
+      "williamHemlockNotes": "William Hemlock",
+      "riverHawthorneNotes": "River Hawthorne",
+      "gideonMizrahNotes": "Gideon Mizrah",
+      "judithParkNotes": "Judith Park",
+      "theoPetersNotes": "Theo Peters",
+      "areasSurveyed": "Areas Surveyed"
+    },
+    "[areasSurveyed]": {
+      "orderKey": "a",
+      "name": "Areas Surveyed",
+      "northPointMine": {
+        "name": "North Point Mine",
+        "scenarioName": "Written in Rock",
+        "ref": "p10"
+      },
+      "hemlockHarbor": {
+        "name": "Hemlock Harbor",
+        "scenarioName": "Hemlock House",
+        "ref": "p14"
+      },
+      "pearlRidge": {
+        "name": "Pearl Ridge",
+        "scenarioName": "The Silent Heath",
+        "ref": "p19"
+      },
+      "akwanShoreline": {
+        "name": "Akwan Shoreline",
+        "scenarioName": "The Lost Sister",
+        "ref": "p23"
+      },
+      "eastwickBog": {
+        "name": "Eastwick Bog",
+        "scenarioName": "The Thing in the Depths",
+        "ref": "p27"
+      },
+      "westernWoods": {
+        "name": "Western Woods",
+        "scenarioName": "The Twisted Hollow",
+        "ref": "p34"
+      },
+      "southernFields": {
+        "name": "Southern Fields",
+        "scenarioName": "The Longest Night",
+        "ref": "p46"
+      }
+    },
+    "[simeonAtwoodNotes]": {
+      "orderKey": "d",
+      "name": "Simeon Atwood",
+      "simeonSurvived": "Simeon Survived",
+      "simeonDisappeared": "Simeon Disappeared",
+      "simeonHatchedAPlan": "Simeon Hatched A Plan",
+      "thePlanIsUnderway": "The Plan Is Underway",
+      "simeonSharedADance": "Simeon Shared A Dance",
+      "simeonStoodByYou": "Simeon Stood By You",
+      "simeonAtwoodRelationshipLevel": "Simeon Atwood Relationship Level",
+      "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators"
+    }
   }
 }

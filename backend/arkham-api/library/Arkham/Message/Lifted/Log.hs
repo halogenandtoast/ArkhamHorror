@@ -55,6 +55,9 @@ recordSetReplace k v v' = push $ Msg.recordSetReplace (toCampaignLogKey k) v v'
 incrementRecordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
 incrementRecordCount key = push . IncrementRecordCount (toCampaignLogKey key)
 
+decrementRecordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
+decrementRecordCount key = push . DecrementRecordCount (toCampaignLogKey key)
+
 crossOutRecordSetEntries :: (Recordable a, ReverseQueue m, IsCampaignLogKey k) => k -> [a] -> m ()
 crossOutRecordSetEntries _ [] = pure ()
 crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs

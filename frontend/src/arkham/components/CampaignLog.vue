@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, formatKey, logContentsDecoder } from '@/arkham/types/Log'
+import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
 import { imgsrc, toCapitalizedWords } from '@/arkham/helpers'
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
@@ -18,6 +18,9 @@ import { useI18n } from 'vue-i18n'
 import { Seal } from '@/arkham/types/Seal'
 import { useDbCardStore } from '@/stores/dbCards'
 
+import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
+import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
+
 export interface Props {
   game: Arkham.Game
   cards: CardDef[]
@@ -27,6 +30,13 @@ export interface Props {
 const props = defineProps<Props>()
 const store = useDbCardStore()
 const { t } = useI18n()
+
+const sectionComponentById: Record<string, Component> = {
+  simeonAtwoodNotes: ResidentNotes,
+  leahAtwoodNotes: ResidentNotes,
+  gideonMizrahNotes: ResidentNotes,
+  areasSurveyed: AreasSurveyed,
+}
 
 
 // --- Utilities -----------------------------------------------------------------
@@ -127,17 +137,93 @@ const remembered = computed(() => {
   })
 })
 
-// --- XP breakdowns --------------------------------------------------------------
 const breakdowns =
   props.game.campaign?.xpBreakdown ||
   (props.game.scenario && props.game.scenario.xpBreakdown ? [[{ tag: 'ScenarioStep', contents: props.game.scenario.id } as any, props.game.scenario.xpBreakdown]] : undefined) ||
   []
 
-// --- Derived fields from the currently selected log -----------------------------
-const recorded = computed(() => selectedLog.value.recorded.filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag)).map(formatKey))
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null
+
+type SectionContents = { tag: string; contents: string }
+type SectionLogKey = { tag: string; contents: SectionContents }
+
+const isSection = (r: LogKey): r is SectionLogKey => {
+  if (!('contents' in r)) return false
+  if (!isRecord(r.contents)) return false
+  return typeof r.contents.tag === 'string' && typeof r.contents.contents === 'string'
+}
+
+const recorded = computed(() => {
+  return selectedLog.value.recorded.filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag)).filter((c) => !isSection(c)).map(formatKey)
+})
+
+type SectionModel = {
+  key: string
+  id: string
+  titleKey: string
+  orderKey: string
+  records: string[]
+  relationshipLevel: number
+  component?: Component
+}
+
+const lowerFirst = (s: string) => s.slice(0, 1).toLowerCase() + s.slice(1)
+
+const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
+  const m: Record<string, number> = {}
+
+  for (const [k, value] of selectedLog.value.recordedCounts) {
+    const sectionTag = k?.contents?.tag
+    const leafTag = k?.contents?.contents
+    if (!sectionTag || !leafTag) continue
+
+    const sectionId = lowerFirst(sectionTag)
+    if (!/RelationshipLevel$/.test(leafTag)) continue
+
+    const n = Math.max(0, Math.min(6, Math.floor(Number(value) || 0)))
+    m[sectionId] = n
+  }
+
+  return m
+})
+
+const sections = computed<SectionModel[]>(() => {
+  const byKey: Record<string, SectionModel> = {}
+
+  for (const record of selectedLog.value.recorded.filter(isSection)) {
+    const baseKey = lowerFirst(record.tag.replace(/Key$/, ''))
+    const sectionId = lowerFirst(record.contents.tag)
+    const leaf = lowerFirst(record.contents.contents)
+    const recordKey = `${baseKey}.key['[${sectionId}]'].${leaf}`
+
+    const titleKey = `${baseKey}.key['[${sectionId}]'].title`
+    const orderKey = `${baseKey}.key['[${sectionId}]'].order`
+    const key = `${baseKey}:${sectionId}`
+
+    const existing = byKey[key]
+    if (existing) {
+      existing.records.push(recordKey)
+      continue
+    }
+
+    byKey[key] = {
+      key,
+      id: sectionId,
+      titleKey,
+      orderKey,
+      records: [recordKey],
+      relationshipLevel: relationshipLevelBySectionId.value[sectionId] ?? 0,
+      component: sectionComponentById[sectionId],
+    }
+  }
+
+  return Object.values(byKey).sort((a, b) => a.orderKey.localeCompare(b.orderKey))
+})
+
 const recordedSets = computed(() => selectedLog.value.recordedSets)
 const recordedCounts = computed(() => selectedLog.value.recordedCounts.filter((r) => {
-  return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time')
+  return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time') && !isSection(r[0])
 }))
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
@@ -351,6 +437,29 @@ const mapData = computed(() => {
               <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{ fullName(i.name) }} {{ t(formatKey(record)) }}.</li>
             </template>
           </ul>
+        </div>
+
+        <div v-for="section in sections" :key="section.key">
+          <component
+            v-if="section.component"
+            :is="section.component"
+            :sectionId="section.id"
+            :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
+            :records="section.records"
+            :relationshipLevel="section.relationshipLevel"
+          />
+
+          <template v-else>
+            {{ t(section.titleKey) }}
+            <ul>
+              <li v-for="record in section.records" :key="record">{{ t(record) }}</li>
+              <template v-for="i in investigators" :key="i.id">
+                <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">
+                  {{ fullName(i.name) }} {{ t(formatKey(record)) }}.
+                </li>
+              </template>
+            </ul>
+          </template>
         </div>
 
         <ul>

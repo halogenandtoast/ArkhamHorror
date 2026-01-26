@@ -191,6 +191,54 @@ instance IsCampaignLogKey TheFeastOfHemlockValeKey where
     TheFeastOfHemlockValeKey k -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey SimeonAtwoodNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . SimeonAtwoodNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (SimeonAtwoodNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey LeahAtwoodNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . LeahAtwoodNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (LeahAtwoodNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheoPetersNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . TheoPetersNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (TheoPetersNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey GideonMizrahNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . GideonMizrahNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (GideonMizrahNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey JudithParkNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . JudithParkNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (JudithParkNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey WilliamHemlockNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . WilliamHemlockNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (WilliamHemlockNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey RiverHawthorneNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . RiverHawthorneNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (RiverHawthorneNotes k) -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey MotherRachelNotes where
+  toCampaignLogKey = TheFeastOfHemlockValeKey . MotherRachelNotes
+  fromCampaignLogKey = \case
+    TheFeastOfHemlockValeKey (MotherRachelNotes k) -> Just k
+    _ -> Nothing
+
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 

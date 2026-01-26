@@ -228,8 +228,11 @@
       "thePlanIsUnderway": "The Plan Is Underway",
       "simeonSharedADance": "Simeon Shared A Dance",
       "simeonStoodByYou": "Simeon Stood By You",
-      "simeonAtwoodRelationshipLevel": "Simeon Atwood Relationship Level",
       "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators"
+    },
+    "[riverHawthorneNotes]": {
+      "orderKey": "f",
+      "name": "River Hawthorne"
     }
   }
 }

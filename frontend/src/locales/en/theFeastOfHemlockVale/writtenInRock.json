@@ -91,6 +91,22 @@
       "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.drRosaMarquez.title </h3><p>_If it is Act 1:_</p><p>“I wonder where Simeon is. Leah seemed so worried last night,” Dr. Marquez says distractedly as she holds up a sample of a white and blue crystal. “These formations aren’t natural. I’m no geologist, but the formation is…warped. Some of these lack basic symmetry.”</p><p class='basic right'>Place 1 resource on the scenario reference card, as a scrap. An investigator may trigger this codex again during a different act.</p><hr><p>_If it is Act 2:_</p><p>“I’m getting too old for this!” Dr. Marquez bellows as she holds onto her hat. Rotting beams whiz by overhead as the mine cart careens forward. The professor hits a nearby switch with her cane as you zoom through the darkness. Somewhere deeper in the mine, something moves.</p><p class='basic right'>Swap 2 adjacent locations.</p>"
     }
   },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "simeon": "Bonus Experience",
+        "leah": "Bonus Experience"
+      }
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Simeon steps out of the mine cart looking dazed. “What a ride!” he shouts, troublingly unfazed. “No matter what, you are definitely going in the Miner’s Secret Order of Mischief ’s Hall of Fame! You’re in good company with George Washington Carver and my mom.” He nearly trips as the rail line slopes upward, toward the brilliant sky. You help him to his feet and lead him outside, into the clear fresh air.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record Simeon survived.</li><li>Increase Simeon Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>_Resolution 6_: Resolution 6: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. We were lucky to escape from North Point Mine with our lives. Extreme instability and seismic tremors. Findings include asymmetrical crystal formations, rodents of unusual size, and an unusually aggressive insect population.”</p><ul><li>If the Prismatic Shard story asset was under the control of an investigator when the scenario ended, choose an investigator to add it to their deck. It does not count toward their deck size.</li><li>Update your Campaign Log.<ul><li>If “you helped River,” increase River Hawthorne’s Relationship Level. Each investigator earns 1 bonus experience.</li><li>If an investigator controls River Hawthorne and the above is not true: Decrease River Hawthorne’s Relationship Level.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *North Point Mine*.</li><li>Check your Campaign Log.<ul><li>If it is Day 1, turn to _Prelude: The First Evening_ (*page 31*).</li><li>If it is Night 1, turn to _Prelude: Dawn of the Second Day_ (*page 39*).</li><li>If it is Day 2, turn to _Prelude: The Second Evening_ (*page 43*).</li><li>If it is Night 2, turn to _Prelude: Dawn of the Final Day_ (*page 51*).</li><li>If it is Day 3, turn to _Prelude: The Final Evening_ (*page 55*).</li></ul></li></ul>"
+    }
+  },
   "theCaveIn": "Scenario Interlude: The Cave-In",
   "theCaveIn1": "<p>_The Cave-In 1_: As the rumbling subsides, you look back at the collapsed tunnel. There is no way back. With no other recourse, you follow the old rail line into the darkness. After some time, you come upon a brightly lit shed next to an old mine cart on the nearby tracks.</p><p class='basic'>Check your Campaign Log.</p>",
   "proceedToTheCaveIn2": "If it is (_Day {'{'}day{'}'}_), proceed to _The Cave-In 2_.",

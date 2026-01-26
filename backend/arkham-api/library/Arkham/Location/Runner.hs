@@ -403,7 +403,8 @@ instance RunMessage LocationAttrs where
     MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s target tType n) a
-    ClearTokens (isTarget a -> True) -> pure $ a & tokensL .~ mempty
+    ClearTokens (isTarget a -> True) -> 
+      pure $ a & tokensL .~ mempty & withoutCluesL .~ locationRevealed
     RemoveTokens _ target tType n | isTarget a target -> do
       if tType == Clue
         then do

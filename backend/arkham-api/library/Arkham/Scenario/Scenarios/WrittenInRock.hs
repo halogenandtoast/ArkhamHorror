@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
 import Arkham.Ability.Types
@@ -14,12 +16,14 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardsMatching)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -30,7 +34,6 @@ import Arkham.Message.Lifted.Placement as Place
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.ScenarioLogKey
 import Arkham.Scenarios.WrittenInRock.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
@@ -332,14 +335,12 @@ instance RunMessage WrittenInRock where
             Resolution 2 -> do
               resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.leah" 2
             _ -> resolutionWithXp "resolution6" $ allGainXp' attrs
-          mShard <- selectOne $ AssetControlledBy Anyone <> assetIs Assets.prismaticShardAlienMeteorite
-          for_ mShard \shard -> do
+          hasShard <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.prismaticShardAlienMeteorite
+          when hasShard do
             investigators <- allInvestigators
-            leadChooseOneM do
-              unscoped $ nameVar Assets.prismaticShardAlienMeteorite $ questionLabeled' "takeControlOf"
-              questionLabeledCard Assets.prismaticShardAlienMeteorite
-              portraits investigators (`takeControlOfAsset` shard)
-          helpedRiver <- remembered YouHelpedRiver
+            forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.prismaticShardAlienMeteorite
+          clues <- traceShowId . getSum <$> selectAgg Sum InvestigatorClues Anyone
+          helpedRiver <- (clues >=) <$> perPlayer 2
           if helpedRiver
             then incrementRecordCount RiverHawthorneRelationshipLevel 1
             else do

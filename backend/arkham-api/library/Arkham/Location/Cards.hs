@@ -9300,7 +9300,7 @@ controlStation =
 railExit :: CardDef
 railExit =
   victory 1
-    $ location_ "10509" "Control Station" [Rail] WrittenInRock
+    $ location_ "10509" "Rail Exit" [Rail] WrittenInRock
     & railIcons [South]
 
 leftTurnA :: CardDef

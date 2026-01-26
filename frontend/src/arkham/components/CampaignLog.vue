@@ -32,9 +32,14 @@ const store = useDbCardStore()
 const { t } = useI18n()
 
 const sectionComponentById: Record<string, Component> = {
-  simeonAtwoodNotes: ResidentNotes,
+  motherRachelNotes: ResidentNotes,
   leahAtwoodNotes: ResidentNotes,
+  simeonAtwoodNotes: ResidentNotes,
+  williamHemlockNotes: ResidentNotes,
+  riverHawthorneNotes: ResidentNotes,
   gideonMizrahNotes: ResidentNotes,
+  judithParkNotes: ResidentNotes,
+  theoPetersNotes: ResidentNotes, 
   areasSurveyed: AreasSurveyed,
 }
 
@@ -169,6 +174,7 @@ type SectionModel = {
 }
 
 const lowerFirst = (s: string) => s.slice(0, 1).toLowerCase() + s.slice(1)
+const clamp6 = (n: unknown) => Math.max(0, Math.min(6, Math.floor(Number(n) || 0)))
 
 const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
   const m: Record<string, number> = {}
@@ -181,8 +187,31 @@ const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
     const sectionId = lowerFirst(sectionTag)
     if (!/RelationshipLevel$/.test(leafTag)) continue
 
-    const n = Math.max(0, Math.min(6, Math.floor(Number(value) || 0)))
-    m[sectionId] = n
+    m[sectionId] = clamp6(value)
+  }
+
+  return m
+})
+
+const sectionsFromCounts = computed<Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }>>(() => {
+  const m: Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }> = {}
+
+  for (const [k] of selectedLog.value.recordedCounts) {
+    const sectionTag = k?.contents?.tag
+    if (!sectionTag) continue
+
+    const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
+    const sectionId = lowerFirst(sectionTag)
+    const key = `${baseKey}:${sectionId}`
+
+    if (!m[key]) {
+      m[key] = {
+        baseKey,
+        id: sectionId,
+        titleKey: t(`${baseKey}.key['[${sectionId}]'].title`),
+        orderKey: t(`${baseKey}.key['[${sectionId}]'].orderKey`),
+      }
+    }
   }
 
   return m
@@ -197,8 +226,8 @@ const sections = computed<SectionModel[]>(() => {
     const leaf = lowerFirst(record.contents.contents)
     const recordKey = `${baseKey}.key['[${sectionId}]'].${leaf}`
 
-    const titleKey = `${baseKey}.key['[${sectionId}]'].title`
-    const orderKey = `${baseKey}.key['[${sectionId}]'].order`
+    const titleKey = t(`${baseKey}.key['[${sectionId}]'].title`)
+    const orderKey = t(`${baseKey}.key['[${sectionId}]'].orderKey`)
     const key = `${baseKey}:${sectionId}`
 
     const existing = byKey[key]
@@ -215,6 +244,24 @@ const sections = computed<SectionModel[]>(() => {
       records: [recordKey],
       relationshipLevel: relationshipLevelBySectionId.value[sectionId] ?? 0,
       component: sectionComponentById[sectionId],
+    }
+  }
+
+  for (const [key, meta] of Object.entries(sectionsFromCounts.value)) {
+    const existing = byKey[key]
+    if (existing) {
+      existing.relationshipLevel = relationshipLevelBySectionId.value[existing.id] ?? existing.relationshipLevel
+      continue
+    }
+
+    byKey[key] = {
+      key,
+      id: meta.id,
+      titleKey: meta.titleKey,
+      orderKey: meta.orderKey,
+      records: [],
+      relationshipLevel: relationshipLevelBySectionId.value[meta.id] ?? 0,
+      component: sectionComponentById[meta.id],
     }
   }
 

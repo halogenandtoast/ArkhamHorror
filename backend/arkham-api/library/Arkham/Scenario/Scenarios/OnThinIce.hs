@@ -171,7 +171,7 @@ instance RunMessage OnThinIce where
         NoResolution -> do
           record TheVoidChimeraEscaped
           madeADeal <- getHasRecord TheCellMadeADealWithThorne
-          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          mcontroller <- selectOne $ IncludeEliminated $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
           case mcontroller of
             Just controller | not madeADeal -> do
               setBearer Keys.theSableGlass $ KeyWithInvestigator controller
@@ -187,14 +187,14 @@ instance RunMessage OnThinIce where
           endOfScenario
         Resolution 2 -> do
           record YouHaventSeenTheLastOfThorne
-          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          mcontroller <- selectOne $ IncludeEliminated $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
           for_ mcontroller $ setBearer Keys.theSableGlass . KeyWithInvestigator
           resolutionWithXp "resolution2" $ allGainXp' attrs
           markTime 3
           endOfScenario
         Resolution 3 -> do
           record ThorneDisappeared
-          mcontroller <- selectOne $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
+          mcontroller <- selectOne $ IncludeEliminated $ InvestigatorWithScarletKey $ scarletKeyIs Keys.theSableGlass
           setBearer Keys.theSableGlass $ case mcontroller of
             Just controller -> KeyWithInvestigator controller
             _ -> keyWithEnemy Enemies.thorneOpenToNegotiation

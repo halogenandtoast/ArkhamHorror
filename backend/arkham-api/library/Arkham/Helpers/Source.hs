@@ -5,6 +5,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Field.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.FetchCard
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
@@ -19,6 +20,7 @@ import Arkham.Trait (Trait, toTraits)
 
 sourceTraits :: (HasCallStack, HasGame m, Tracing m) => Source -> m (Set Trait)
 sourceTraits = \case
+  PaymentSource s -> sourceTraits s
   UseAbilitySource _ s _ -> sourceTraits s
   AbilitySource s _ -> sourceTraits s
   DiscoverSource _ -> pure mempty
@@ -215,104 +217,9 @@ sourceMatches s = \case
         BatchSource {} -> False
         ScarletKeySource {} -> True
         ConcealedCardSource {} -> True
+        PaymentSource {} -> False
     pure $ go s
-  Matcher.SourceIsType t -> case t of
-    AssetType -> case s of
-      AssetSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == AssetType
-      _ -> pure False
-    EventType -> case s of
-      EventSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == EventType
-      _ -> pure False
-    SkillType -> case s of
-      SkillSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == SkillType
-      _ -> pure False
-    PlayerTreacheryType -> case s of
-      TreacherySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == PlayerTreacheryType
-      _ -> pure False
-    PlayerEnemyType -> case s of
-      EnemySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == PlayerEnemyType
-      _ -> pure False
-    TreacheryType -> case s of
-      TreacherySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == TreacheryType
-      _ -> pure False
-    EnemyType -> case s of
-      EnemySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == EnemyType
-      _ -> pure False
-    LocationType -> case s of
-      LocationSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == LocationType
-      _ -> pure False
-    EncounterAssetType -> case s of
-      AssetSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == EncounterAssetType
-      _ -> pure False
-    EncounterEventType -> case s of
-      EventSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == EncounterEventType
-      _ -> pure False
-    ActType -> case s of
-      ActSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == ActType
-      _ -> pure False
-    AgendaType -> case s of
-      AgendaSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == AgendaType
-      _ -> pure False
-    StoryType -> case s of
-      StorySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == StoryType
-      _ -> pure False
-    InvestigatorType -> case s of
-      InvestigatorSource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == InvestigatorType
-      _ -> pure False
-    ScenarioType -> case s of
-      ScenarioSource -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == ScenarioType
-      _ -> pure False
-    KeyType -> case s of
-      ScarletKeySource _ -> pure True
-      CardIdSource cid -> do
-        c <- getCard cid
-        pure $ c.kind == KeyType
-      _ -> pure False
+  Matcher.SourceIsType t -> member t <$> sourceTypes s
   Matcher.EncounterCardSource ->
     let
       check = \case
@@ -326,6 +233,7 @@ sourceMatches s = \case
         TreacherySource _ -> pure True
         ChaosTokenSource _ -> pure True
         ChaosTokenEffectSource _ -> pure True
+        ProxySource k _ -> check k
         _ -> pure False
      in
       check s
@@ -340,6 +248,7 @@ sourceMatches s = \case
         LocationSource _ -> True
         TreacherySource _ -> True
         StorySource _ -> True
+        ProxySource k _ -> check k
         _ -> False
      in
       pure $ check s
@@ -379,3 +288,41 @@ sourceMatches s = \case
     pure $ case mCard of
       Just c -> c `cardMatch` cardMatcher
       Nothing -> False
+
+sourceTypes :: (HasCallStack, Tracing m, HasGame m) => Source -> m (Set CardType)
+sourceTypes = \case
+  PaymentSource s -> sourceTypes s
+  UseAbilitySource _ s _ -> sourceTypes s
+  AbilitySource s _ -> sourceTypes s
+  CardIdSource c -> do
+    fetchCardMaybe_ c <&> \case
+      Just card -> singleton card.kind
+      Nothing -> mempty
+  ProxySource s _ -> sourceTypes s
+  IndexedSource _ s -> sourceTypes s
+  BothSource l r -> (<>) <$> sourceTypes l <*> sourceTypes r
+  AssetSource aid ->
+    fetchCardMaybe_ aid <&> \case
+      Just card -> singleton card.kind
+      Nothing -> setFromList [AssetType, EncounterAssetType]
+  EventSource eid ->
+    fetchCardMaybe_ eid <&> \case
+      Just card -> singleton card.kind
+      Nothing -> setFromList [EventType, EncounterEventType]
+  SkillSource _ -> pure $ singleton SkillType
+  TreacherySource tid ->
+    fetchCardMaybe_ tid <&> \case
+      Just card -> singleton card.kind
+      Nothing -> setFromList [TreacheryType, PlayerTreacheryType]
+  EnemySource eid ->
+    fetchCardMaybe_ eid <&> \case
+      Just card -> singleton card.kind
+      Nothing -> setFromList [EnemyType, PlayerEnemyType]
+  LocationSource _ -> pure $ singleton LocationType
+  ActSource _ -> pure $ singleton ActType
+  AgendaSource _ -> pure $ singleton AgendaType
+  StorySource _ -> pure $ singleton StoryType
+  InvestigatorSource _ -> pure $ singleton InvestigatorType
+  ScenarioSource -> pure $ singleton ScenarioType
+  ScarletKeySource _ -> pure $ singleton KeyType
+  _ -> pure mempty

@@ -18,6 +18,8 @@ import Data.Monoid (First (..))
 
 class Show a => FetchCard a where
   fetchCardMaybe :: (HasCallStack, Tracing m, HasGame m, CardGen m) => a -> m (Maybe Card)
+  fetchCardMaybe = fetchCardMaybe_
+  fetchCardMaybe_ :: (HasCallStack, Tracing m, HasGame m) => a -> m (Maybe Card)
 
 fetchCard :: (HasCallStack, Tracing m, HasGame m, CardGen m, FetchCard a) => a -> m Card
 fetchCard a = fromJustNote ("Card not found: " <> show a) <$> fetchCardMaybe a
@@ -27,51 +29,59 @@ instance FetchCard UniqueFetchCard where
     findCard ((== def.cardCode) . toCardCode) >>= \case
       Nothing -> Just <$> genCard def
       Just card -> pure $ Just $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
+  fetchCardMaybe_ (UniqueFetchCard def) = do
+    findCard ((== def.cardCode) . toCardCode)
+      <&> fmap (\card -> if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card)
 
 instance FetchCard CardDef where
   fetchCardMaybe def =
     if def.unique
       then fetchCardMaybe (UniqueFetchCard def)
       else maybe (Just <$> genCard def) (pure . Just) =<< maybeGetSetAsideCard def
+  fetchCardMaybe_ def =
+    if def.unique
+      then fetchCardMaybe_ (UniqueFetchCard def)
+      else maybeGetSetAsideCard def
 
 newtype SetAsideCard = SetAsideCard CardDef
   deriving newtype Show
 
 instance FetchCard SetAsideCard where
-  fetchCardMaybe (SetAsideCard def) = maybeGetSetAsideCard def
+  fetchCardMaybe_ (SetAsideCard def) = maybeGetSetAsideCard def
 
 instance FetchCard a => FetchCard [a] where
   fetchCardMaybe defs = getFirst . foldMap First <$> traverse fetchCardMaybe defs
+  fetchCardMaybe_ defs = getFirst . foldMap First <$> traverse fetchCardMaybe_ defs
 
 instance FetchCard ExtendedCardMatcher where
-  fetchCardMaybe = selectOne
+  fetchCardMaybe_ = selectOne
 
 instance FetchCard Card where
-  fetchCardMaybe = pure . Just
+  fetchCardMaybe_ = pure . Just
 
 instance FetchCard EncounterCard where
-  fetchCardMaybe = pure . Just . toCard
+  fetchCardMaybe_ = pure . Just . toCard
 
 instance FetchCard PlayerCard where
-  fetchCardMaybe = pure . Just . toCard
+  fetchCardMaybe_ = pure . Just . toCard
 
 instance FetchCard AssetId where
-  fetchCardMaybe = fieldMap Field.AssetCard Just
+  fetchCardMaybe_ = fieldMap Field.AssetCard Just
 
 instance FetchCard EventId where
-  fetchCardMaybe = fieldMap Field.EventCard Just
+  fetchCardMaybe_ = fieldMap Field.EventCard Just
 
 instance FetchCard TreacheryId where
-  fetchCardMaybe = fieldMap Field.TreacheryCard Just
+  fetchCardMaybe_ = fieldMap Field.TreacheryCard Just
 
 instance FetchCard EnemyId where
-  fetchCardMaybe = fieldMap Field.EnemyCard Just
+  fetchCardMaybe_ = fieldMap Field.EnemyCard Just
 
 instance FetchCard CardId where
-  fetchCardMaybe = fmap Just . getCard
+  fetchCardMaybe_ = fmap Just . getCard
 
 instance FetchCard Field.TreacheryAttrs where
-  fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
+  fetchCardMaybe_ = fieldMap Field.TreacheryCard Just . asId
 
 newtype UniqueFetchCard = UniqueFetchCard CardDef
   deriving newtype (Show, Eq, ToJSON, FromJSON)

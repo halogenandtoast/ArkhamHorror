@@ -64,6 +64,7 @@ data Source
   | ChaosTokenEffectSource ChaosTokenFace
   | ElderSignEffectSource InvestigatorId
   | TreacherySource TreacheryId
+  | PaymentSource Source
   | YouSource
   | CampaignSource
   | ThisCard
@@ -88,6 +89,7 @@ instance HasField "asset" Source (Maybe AssetId) where
     ProxySource s _ -> s.asset
     AbilitySource s _ -> s.asset
     UseAbilitySource _ s _ -> s.asset
+    PaymentSource s -> s.asset
     _ -> Nothing
 
 instance HasField "event" Source (Maybe EventId) where
@@ -98,6 +100,7 @@ instance HasField "event" Source (Maybe EventId) where
     ProxySource s _ -> s.event
     AbilitySource s _ -> s.event
     UseAbilitySource _ s _ -> s.event
+    PaymentSource s -> s.event
     _ -> Nothing
 
 instance HasField "location" Source (Maybe LocationId) where
@@ -108,6 +111,7 @@ instance HasField "location" Source (Maybe LocationId) where
     ProxySource s _ -> s.location
     AbilitySource s _ -> s.location
     UseAbilitySource _ s _ -> s.location
+    PaymentSource s -> s.location
     _ -> Nothing
 
 instance HasField "enemy" Source (Maybe EnemyId) where
@@ -119,6 +123,7 @@ instance HasField "enemy" Source (Maybe EnemyId) where
     AbilitySource s _ -> s.enemy
     UseAbilitySource _ s _ -> s.enemy
     EnemyAttackSource eid -> Just eid
+    PaymentSource s -> s.enemy
     _ -> Nothing
 
 instance HasField "treachery" Source (Maybe TreacheryId) where
@@ -129,6 +134,7 @@ instance HasField "treachery" Source (Maybe TreacheryId) where
     ProxySource s _ -> s.treachery
     AbilitySource s _ -> s.treachery
     UseAbilitySource _ s _ -> s.treachery
+    PaymentSource s -> s.treachery
     _ -> Nothing
 
 $(deriveToJSON defaultOptions ''Source)

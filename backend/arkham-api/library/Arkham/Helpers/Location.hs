@@ -200,6 +200,7 @@ locationMatches investigatorId source window locationId matcher' = do
           ProxySource s _ -> go s
           AbilitySource s _ -> go s
           UseAbilitySource _ s _ -> go s
+          PaymentSource s -> go s
           _ -> error $ "Invalid source for ThisLocation: " <> show source
        in
         go source

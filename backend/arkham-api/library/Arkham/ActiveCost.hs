@@ -205,7 +205,7 @@ payCost
 payCost msg c iid skipAdditionalCosts cost = do
   let acId = c.id
   let withPayment payment = pure $ c & costPaymentsL <>~ payment
-  let source = c.source
+  let source = PaymentSource c.source
   let actions = c.actions
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
@@ -333,7 +333,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     ChosenEnemyCost eid -> withPayment $ ChosenEnemyPayment eid
     CostIfCustomization customization cost1 cost2 -> do
-      case source of
+      case c.source of
         (CardIdSource cid) -> do
           getCard cid >>= \case
             PlayerCard pc ->
@@ -371,7 +371,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           ]
       pure c
     NonBlankedCost cost' -> do
-      mods <- getModifiers (sourceToTarget source)
+      mods <- getModifiers (sourceToTarget c.source)
       if Blank `elem` mods
         then pure c
         else payCost msg c iid skipAdditionalCosts cost'
@@ -427,13 +427,13 @@ payCost msg c iid skipAdditionalCosts cost = do
       -- No need to record payment... yet
       pure c
     OrCost xs -> do
-      xs' <- filterM (getCanAffordCost iid source actions c.windows) xs
+      xs' <- filterM (getCanAffordCost iid c.source actions c.windows) xs
       push
         $ chooseOrRunOne player
         $ map (\x -> Label (displayCostType x) [pay x]) xs'
       pure c
     OptionalCost x -> do
-      canAfford <- getCanAffordCost iid source actions [] x
+      canAfford <- getCanAffordCost iid c.source actions [] x
       pushWhen canAfford $ chooseOne player [Label (displayCostType x) [pay x], Label "Do not pay" []]
       pure c
     Costs xs -> do
@@ -444,7 +444,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       if n == 0
         then pure c
         else do
-          canAfford <- andM $ map (\a -> getCanAffordCost iid source [a] [] cost') actions
+          canAfford <- andM $ map (\a -> getCanAffordCost iid c.source [a] [] cost') actions
           maxUpTo <- case cost' of
             ResourceCost resources -> do
               availableResources <- getSpendableResources iid
@@ -465,7 +465,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       if n == 0
         then pure c
         else do
-          canAfford <- andM $ map (\a -> getCanAffordCost iid source [a] [] cost') actions
+          canAfford <- andM $ map (\a -> getCanAffordCost iid c.source [a] [] cost') actions
           maxUpTo <- case cost' of
             ResourceCost resources -> do
               availableResources <- getSpendableResources iid
@@ -502,8 +502,8 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> push $ pay (ActionCost n)
       pure c
     IncreaseCostOfThis cardId n -> do
-      ems <- effectModifiers source [IncreaseCostOf (basic $ CardWithId cardId) n]
-      push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems source (toTarget cardId)
+      ems <- effectModifiers c.source [IncreaseCostOf (basic $ CardWithId cardId) n]
+      push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems c.source (toTarget cardId)
       pure c
     ExhaustCost target -> do
       push $ Exhaust target
@@ -574,7 +574,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                   , UnfocusChaosTokens
                   ]
               _ -> error "Unhandled source for releasing tokens cost"
-          handleSource source
+          handleSource c.source
       pure c
     ReleaseChaosTokenCost t -> do
       push $ UnsealChaosToken t
@@ -596,17 +596,17 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ SupplyPayment supply
     DiscardCost zone target -> do
       card <- targetToCard target
-      pushAll [DiscardedCost target, toDiscardBy iid c.source target]
+      pushAll [DiscardedCost target, toDiscardBy iid source target]
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
       assets <- select (matcher <> DiscardableAsset)
       push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
-      push $ toMessage $ randomDiscard iid c.source
+      push $ toMessage $ randomDiscard iid source
       pure c
     DiscardCardCost card -> do
-      push $ toMessage $ discardCard iid c.source card
+      push $ toMessage $ discardCard iid source card
       withPayment $ DiscardCardPayment [card]
     DiscardUnderneathCardCost assetId cardMatcher -> do
       cards <- filterM (<=~> cardMatcher) =<< field AssetCardsUnderneath assetId
@@ -627,7 +627,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           (windowType -> Window.DrawCard _ card' _) -> card'
           _ -> getDrawnCard xs
         card = getDrawnCard c.windows
-      push $ toMessage $ discardCard iid c.source card
+      push $ toMessage $ discardCard iid source card
       withPayment $ DiscardCardPayment [card]
     ExileCost target -> do
       push (Exile target)
@@ -963,7 +963,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             reduceResourceCost = transform go
             lockedActions = totalActionCost nested
           canAffordNested <-
-            withAlteredGame withoutCanModifiers $ getCanAffordCost iid source actions c.windows nested
+            withAlteredGame withoutCanModifiers $ getCanAffordCost iid c.source actions c.windows nested
           if actionRemainingCount > lockedActions
             then
               push
@@ -995,7 +995,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           _ -> []
         source' = case activeCostTarget c of
           ForAbility a -> toSource a
-          _ -> source
+          _ -> c.source
       push $ SpendActions iid source' actions' modifiedActionCost
       withPayment $ ActionPayment x
     AdditionalActionCost -> do
@@ -1005,7 +1005,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           _ -> []
         source' = case activeCostTarget c of
           ForAbility a -> toSource a
-          _ -> source
+          _ -> c.source
       push $ SpendActions iid source' actions' 1
       withPayment AdditionalActionPayment
     UseCost assetMatcher uType n -> do
@@ -1025,7 +1025,7 @@ payCost msg c iid skipAdditionalCosts cost = do
               if ok
                 then do
                   when doSpend do
-                    push $ SpendUses source (AssetTarget x) uType n
+                    push $ SpendUses c.source (AssetTarget x) uType n
                   withPayment $ UsesPayment n
                 else error "Asset did not have enough tokens"
             xs -> do
@@ -1033,7 +1033,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                 $ chooseOrRunOne
                   player
                   [ targetLabel aid
-                      $ [SpendUses source (AssetTarget aid) uType 1 | doSpend]
+                      $ [SpendUses c.source (AssetTarget aid) uType 1 | doSpend]
                       <> [pay (UseCost assetMatcher uType (n - 1)) | n > 1]
                   | aid <- xs
                   ]
@@ -1046,12 +1046,12 @@ payCost msg c iid skipAdditionalCosts cost = do
       push
         $ chooseOrRunOne
           player
-          [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | (aid, n) <- assetsWithUses]
+          [targetLabel aid [SpendUses c.source (AssetTarget aid) uType n] | (aid, n) <- assetsWithUses]
       pure c
     EventUseCost eventMatcher uType n -> do
       events <- select eventMatcher
       push
-        $ chooseOrRunOne player [targetLabel eid [SpendUses source (EventTarget eid) uType n] | eid <- events]
+        $ chooseOrRunOne player [targetLabel eid [SpendUses c.source (EventTarget eid) uType n] | eid <- events]
       withPayment $ UsesPayment n
     DynamicUseCost assetMatcher uType costValue -> do
       n <- case costValue of
@@ -1065,7 +1065,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           getDrawnCards c.windows
       assets <- select assetMatcher
       push
-        $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
+        $ chooseOrRunOne player [targetLabel aid [SpendUses c.source (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher
@@ -1091,7 +1091,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         source' =
           case c.target of
             ForAbility a -> toSource a
-            _ -> source
+            _ -> c.source
       case assets of
         [] -> error "can not pay cost"
         [x] -> do
@@ -1320,7 +1320,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ ReturnToHandPayment card
     DiscardHandCost -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
-      push $ DiscardHand iid c.source
+      push $ DiscardHand iid source
       withPayment $ DiscardCardPayment $ map PlayerCard handCards
     DiscardFromCost x zone cardMatcher -> do
       let
@@ -1350,7 +1350,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           map
             ( \(n, card) ->
                 targetLabel (toCardId card)
-                  $ toMessage (discardCard iid c.source card)
+                  $ toMessage (discardCard iid source card)
                   : PaidAbilityCost iid Nothing (SkillIconPayment card.skills)
                   : [pay (SkillIconCost (x - n) skillTypes) | n < x]
             )
@@ -1367,8 +1367,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           filter ((> 0) . fst)
             $ map (toFst (count countF . cdSkills . toCardDef)) matchedCards
         handleDiscard card
-          | card `elem` handCards = toMessage (discardCard iid c.source card)
-          | otherwise = toDiscardBy iid c.source card
+          | card `elem` handCards = toMessage (discardCard iid source card)
+          | otherwise = toDiscardBy iid source card
         cardMsgs =
           map
             ( \(n, card) ->
@@ -1413,7 +1413,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           map
             ( \(n, card) ->
                 targetLabel (toCardId card)
-                  $ toMessage (discardCard iid c.source card)
+                  $ toMessage (discardCard iid source card)
                   : PaidAbilityCost iid Nothing (DiscardCardPayment [PlayerCard card])
                   : [pay $ DiscardCombinedCost (x - n) | n < x]
             )

@@ -52,6 +52,7 @@ sourceToMaybeCard (toSource -> source) = case source of
   IndexedSource _ t -> sourceToMaybeCard t
   AbilitySource src _ -> sourceToMaybeCard src
   UseAbilitySource _ src _ -> sourceToMaybeCard src
+  PaymentSource inner -> sourceToMaybeCard inner
   s -> maybe (pure Nothing) targetToMaybeCard (sourceToMaybeTarget s)
 
 sourceToTarget :: HasCallStack => Source -> Target
@@ -61,6 +62,7 @@ sourceToTarget s =
 
 sourceToMaybeTarget :: Source -> Maybe Target
 sourceToMaybeTarget = \case
+  PaymentSource inner -> sourceToMaybeTarget inner
   YouSource -> Just YouTarget
   AssetSource aid -> Just $ AssetTarget aid
   EnemySource eid -> Just $ EnemyTarget eid

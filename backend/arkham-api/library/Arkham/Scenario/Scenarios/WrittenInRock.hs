@@ -270,14 +270,14 @@ instance RunMessage WrittenInRock where
       shuffleEncounterDiscardBackIn
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
-      let (iid :: InvestigatorId, n :: Int) = toResult v
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         2 -> do
           entry "leahAtwood"
           controlled <- selectAny $ assetIs Assets.leahAtwoodTheValeCook <> AssetControlledBy Anyone
           if controlled
-            then placeTokens ScenarioSource ScenarioTarget Switch 1
+            then placeTokens source ScenarioTarget Switch 1
             else do
               iids <- allInvestigators
               leah <- selectJust $ assetIs Assets.leahAtwoodTheValeCook
@@ -291,7 +291,7 @@ instance RunMessage WrittenInRock where
           controlled <-
             selectAny $ assetIs Assets.simeonAtwoodDedicatedTroublemaker <> AssetControlledBy Anyone
           if controlled
-            then placeTokens ScenarioSource ScenarioTarget Switch 2
+            then placeTokens source ScenarioTarget Switch 2
             else do
               iids <- allInvestigators
               simeon <- selectJust $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
@@ -312,7 +312,7 @@ instance RunMessage WrittenInRock where
           entry "drRosaMarquez"
           step <- getCurrentActStep
           if step == 1
-            then placeTokens ScenarioSource ScenarioTarget Scrap 1
+            then placeTokens source ScenarioTarget Scrap 1
             else do
               locations <- select LocationCanBeSwapped
               chooseTargetM iid locations $ handleTarget iid attrs

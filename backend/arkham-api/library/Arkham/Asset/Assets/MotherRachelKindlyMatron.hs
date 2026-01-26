@@ -23,6 +23,6 @@ instance RunMessage MotherRachelKindlyMatron where
       beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      codex iid 1
+      codex iid (attrs.ability 1) 1
       pure a
     _ -> MotherRachelKindlyMatron <$> liftRunMessage msg attrs

@@ -29,7 +29,7 @@ instance HasAbilities HemlockChapelDay where
 instance RunMessage HemlockChapelDay where
   runMessage msg l@(HemlockChapelDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 11
+      codex iid (attrs.ability 1) 11
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       search iid (attrs.ability 2) iid [fromTopOfDeck 9] (basic #spell) (DrawFound iid 1)

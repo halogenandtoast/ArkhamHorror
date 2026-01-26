@@ -23,6 +23,6 @@ instance RunMessage WilliamHemlockAspiringPoet where
       beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      codex iid 4
+      codex iid (attrs.ability 1) 4
       pure a
     _ -> WilliamHemlockAspiringPoet <$> liftRunMessage msg attrs

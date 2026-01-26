@@ -21,6 +21,6 @@ instance HasAbilities TheCommonsDay where
 instance RunMessage TheCommonsDay where
   runMessage msg l@(TheCommonsDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 16
+      codex iid (attrs.ability 1) 16
       pure l
     _ -> TheCommonsDay <$> liftRunMessage msg attrs

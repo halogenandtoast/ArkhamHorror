@@ -62,6 +62,11 @@ _Patrol = prism' Patrol $ \case
   Patrol n -> Just n
   _ -> Nothing
 
+_Concealed :: Prism' Keyword (ConcealedCardKind, GameValue)
+_Concealed = prism' (uncurry Concealed) $ \case
+  Concealed k n -> Just (k, n)
+  _ -> Nothing
+
 instance IsLabel "aloof" Keyword where
   fromLabel = Aloof
 

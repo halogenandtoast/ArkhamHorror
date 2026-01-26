@@ -30,7 +30,7 @@ instance RunMessage SwiftRetreat where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       whenJustM getSkillTestTargetedEnemy \e -> do
         initiateEnemyAttack e (attrs.ability 1) iid
-        whenM (matches e (not_ $ EnemyWithPlacement InTheShadows)) do
+        whenM (matches e (EnemyWithConcealed <> not_ (EnemyWithPlacement InTheShadows))) do
           place e InTheShadows
           resolveConcealed iid e
       pure t

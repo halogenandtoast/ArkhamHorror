@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Direction
@@ -16,6 +17,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardsMatching)
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -23,9 +25,12 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement as Place
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.WrittenInRock.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
@@ -317,5 +322,71 @@ instance RunMessage WrittenInRock where
       locations <-
         select $ mapOneOf LocationInPosition (adjacentPositions pos) <> LocationCanBeSwapped
       chooseTargetM iid locations (swapLocations lid)
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      let
+        resolution6 = do
+          case r of
+            Resolution 1 -> do
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.simeon" 2
+            Resolution 2 -> do
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.leah" 2
+            _ -> resolutionWithXp "resolution6" $ allGainXp' attrs
+          mShard <- selectOne $ AssetControlledBy Anyone <> assetIs Assets.prismaticShardAlienMeteorite
+          for_ mShard \shard -> do
+            investigators <- allInvestigators
+            leadChooseOneM do
+              unscoped $ nameVar Assets.prismaticShardAlienMeteorite $ questionLabeled' "takeControlOf"
+              questionLabeledCard Assets.prismaticShardAlienMeteorite
+              portraits investigators (`takeControlOfAsset` shard)
+          helpedRiver <- remembered YouHelpedRiver
+          if helpedRiver
+            then incrementRecordCount RiverHawthorneRelationshipLevel 1
+            else do
+              ok <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.riverHawthorneBigInNewYork
+              when ok $ decrementRecordCount RiverHawthorneRelationshipLevel 1
+          record $ AreasSurveyed NorthPointMine
+          endOfScenario
+
+      case r of
+        NoResolution -> scope "noResolution" do
+          time <- getCampaignTime
+          day <- getCampaignDay
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li.validate (time == Night) "skipToResolution6"
+              li.validate (time == Day && day `elem` [Day1, Day2]) "skipToResolution3"
+              li.validate (time == Day && day == Day3) "skipToResolution4"
+
+          if
+            | time == Night -> push R6
+            | day `elem` [Day1, Day2] -> push R3
+            | otherwise -> push R4
+        Resolution 1 -> do
+          record SimeonSurvived
+          incrementRecordCount SimeonAtwoodRelationshipLevel 2
+          resolution "resolution1"
+          resolution6
+        Resolution 2 -> do
+          record LeahSawSomethingInTheMine
+          incrementRecordCount LeahAtwoodRelationshipLevel 1
+          resolution "resolution2"
+          resolution6
+        Resolution 3 -> do
+          record SimeonDisappeared
+          resolution "resolution3"
+          resolution6
+        Resolution 4 -> do
+          record LeahAndSimeonWereReunited
+          resolution "resolution4"
+          resolution6
+        Resolution 5 -> do
+          record TheInvestigatorsSurvivedTheHorrorsInTheRock
+          resolution "resolution5"
+          resolution6
+        Resolution 6 -> error "should be reached above"
+        _ -> error "invalid resolution"
       pure s
     _ -> WrittenInRock <$> liftRunMessage msg attrs

@@ -18,8 +18,10 @@ const someRecordableDecoder = JsonDecoder.object<SomeRecordable>({
   recordVal: JsonDecoder.succeed()
 }, 'SomeRecordable')
 
-export type LogKey = 
-  { tag: string, contents: string } | { tag: string }
+export type LogKey= 
+  | { tag: string, contents: string }
+  | { tag: string, contents: { tag: string, contents: string } }
+  | { tag: string }
 
 export type LogContents = {
   recorded: LogKey[];
@@ -51,6 +53,13 @@ export const logKeyDecoder = JsonDecoder.oneOf<LogKey>([
   }, 'LogKey'),
   JsonDecoder.object<LogKey>({
     tag: JsonDecoder.string(),
+    contents: JsonDecoder.object<{ tag: string, contents: string }>({
+      tag: JsonDecoder.string(),
+      contents: JsonDecoder.string().map((str) => str.replace(/'/g, '')),
+    }, 'LogKeyContents'),
+  }, 'LogKey'),
+  JsonDecoder.object<LogKey>({
+    tag: JsonDecoder.string(),
   }, 'LogKey'),
 ], 'LogKey');
 
@@ -72,6 +81,12 @@ export function baseKey(k: string): string {
 export function formatKey(key: LogKey): string {
   const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1); 
   if ('contents' in key) {
+    if ('contents' in key.contents) {
+      const prefix = format(key.tag.replace(/Key$/, ''));
+      const section = format(key.contents.tag);
+      const suffix = format(key.contents.contents);
+      return `${prefix}.key['[${section}]'].${suffix}`;
+    }
     // remove 'Key' from the end of the tag if it exists
     const prefix = format(key.tag.replace(/Key$/, ''));
     const suffix = format(key.contents);

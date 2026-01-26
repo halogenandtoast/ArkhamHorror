@@ -958,6 +958,7 @@ data Message
   | RecordForInvestigator InvestigatorId CampaignLogKey
   | RecordCount CampaignLogKey Int
   | IncrementRecordCount CampaignLogKey Int
+  | DecrementRecordCount CampaignLogKey Int
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | RecordSetReplace CampaignLogKey SomeRecorded SomeRecorded
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]

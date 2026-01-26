@@ -78,20 +78,40 @@ export function baseKey(k: string): string {
   return formatKey({ tag: k });
 }
 
+function hasContents(key: LogKey): key is Extract<LogKey, { contents: unknown }> {
+  return "contents" in key;
+}
+
+function isNestedContents(
+  contents: unknown
+): contents is { tag: string; contents: string } {
+  return (
+    typeof contents === "object" &&
+    contents !== null &&
+    "tag" in contents &&
+    "contents" in contents &&
+    typeof (contents as any).tag === "string" &&
+    typeof (contents as any).contents === "string"
+  );
+}
+
 export function formatKey(key: LogKey): string {
-  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1); 
-  if ('contents' in key) {
-    if ('contents' in key.contents) {
-      const prefix = format(key.tag.replace(/Key$/, ''));
-      const section = format(key.contents.tag);
-      const suffix = format(key.contents.contents);
-      return `${prefix}.key['[${section}]'].${suffix}`;
-    }
-    // remove 'Key' from the end of the tag if it exists
-    const prefix = format(key.tag.replace(/Key$/, ''));
-    const suffix = format(key.contents);
-    return `${prefix}.key.${suffix}`;
-  } else {
+  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1);
+
+  // remove 'Key' from the end of the tag if it exists
+  const prefix = format(key.tag.replace(/Key$/, ""));
+
+  if (!hasContents(key)) {
     return `base.key.${format(key.tag)}`;
   }
+
+  if (isNestedContents(key.contents)) {
+    const section = format(key.contents.tag);
+    const suffix = format(key.contents.contents);
+    return `${prefix}.key['[${section}]'].${suffix}`;
+  }
+
+  // here contents is the string form
+  const suffix = format(key.contents);
+  return `${prefix}.key.${suffix}`;
 }

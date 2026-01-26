@@ -10,6 +10,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Field
 import Arkham.Helpers.Location (placementLocation)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message (resolve)
 import Arkham.Placement
@@ -18,7 +20,7 @@ import Arkham.Spawn
 import Arkham.Window qualified as Window
 
 newtype FalseColorsV1 = FalseColorsV1 ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseColorsV1 :: ActCard FalseColorsV1
@@ -32,6 +34,17 @@ instance HasAbilities FalseColorsV1 where
         $ Objective
         $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
     ]
+
+isADesiderio :: EnemyMatcher
+isADesiderio = mapOneOf enemyIs [Enemies.desiderioDelgadoAlvarez106, Enemies.desiderioDelgadoAlvarez107]
+
+instance HasModifiersFor FalseColorsV1 where
+  getModifiersFor (FalseColorsV1 a) = do
+    when (onSide B a) do
+      modifySelect
+        a
+        isADesiderio
+        [RemoveConcealed, RemoveKeyword Keyword.Hunter, AddKeyword Keyword.Aloof]
 
 instance RunMessage FalseColorsV1 where
   runMessage msg a@(FalseColorsV1 attrs) = runQueueT $ case msg of

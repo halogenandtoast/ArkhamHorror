@@ -10,6 +10,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Field
 import Arkham.Helpers.Location (placementLocation)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -18,11 +20,22 @@ import Arkham.Scenarios.DancingMad.Helpers
 import Arkham.Trait (Trait (Coterie))
 
 newtype FalseColorsV2 = FalseColorsV2 ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseColorsV2 :: ActCard FalseColorsV2
 falseColorsV2 = act (2, A) FalseColorsV2 Cards.falseColorsV2 Nothing
+
+isADesiderio :: EnemyMatcher
+isADesiderio = mapOneOf enemyIs [Enemies.desiderioDelgadoAlvarez106, Enemies.desiderioDelgadoAlvarez107]
+
+instance HasModifiersFor FalseColorsV2 where
+  getModifiersFor (FalseColorsV2 a) = do
+    when (onSide B a) do
+      modifySelect
+        a
+        isADesiderio
+        [RemoveConcealed, RemoveKeyword Keyword.Hunter, AddKeyword Keyword.Aloof]
 
 instance HasAbilities FalseColorsV2 where
   getAbilities = actAbilities \a ->

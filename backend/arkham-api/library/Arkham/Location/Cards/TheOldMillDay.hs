@@ -20,6 +20,6 @@ instance HasAbilities TheOldMillDay where
 instance RunMessage TheOldMillDay where
   runMessage msg l@(TheOldMillDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 12
+      codex iid (attrs.ability 1) 12
       pure l
     _ -> TheOldMillDay <$> liftRunMessage msg attrs

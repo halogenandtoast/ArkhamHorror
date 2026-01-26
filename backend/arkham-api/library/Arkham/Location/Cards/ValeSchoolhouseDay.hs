@@ -29,7 +29,7 @@ instance HasAbilities ValeSchoolhouseDay where
 instance RunMessage ValeSchoolhouseDay where
   runMessage msg l@(ValeSchoolhouseDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 15
+      codex iid (attrs.ability 1) 15
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       search iid (attrs.ability 2) iid [fromDeck] (basic #tome) (DrawFound iid 1)

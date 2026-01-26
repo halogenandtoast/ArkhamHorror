@@ -19,6 +19,6 @@ instance HasAbilities GideonMizrahSeasonedSailor where
 instance RunMessage GideonMizrahSeasonedSailor where
   runMessage msg a@(GideonMizrahSeasonedSailor attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 6
+      codex iid (attrs.ability 1) 6
       pure a
     _ -> GideonMizrahSeasonedSailor <$> liftRunMessage msg attrs

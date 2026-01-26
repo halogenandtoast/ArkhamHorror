@@ -23,6 +23,6 @@ instance RunMessage LeahAtwoodTheValeCook where
       beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      codex iid 2
+      codex iid (attrs.ability 1) 2
       pure a
     _ -> LeahAtwoodTheValeCook <$> liftRunMessage msg attrs

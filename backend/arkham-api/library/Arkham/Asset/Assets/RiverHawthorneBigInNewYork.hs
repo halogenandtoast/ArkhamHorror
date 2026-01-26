@@ -24,6 +24,6 @@ instance RunMessage RiverHawthorneBigInNewYork where
       chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      codex iid 5
+      codex iid (attrs.ability 1) 5
       pure a
     _ -> RiverHawthorneBigInNewYork <$> liftRunMessage msg attrs

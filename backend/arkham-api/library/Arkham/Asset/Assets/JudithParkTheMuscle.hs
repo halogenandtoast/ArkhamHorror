@@ -27,6 +27,6 @@ instance RunMessage JudithParkTheMuscle where
           Day3 -> 3
       JudithParkTheMuscle <$> liftRunMessage msg (attrs & setMeta n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 7
+      codex iid (attrs.ability 1) 7
       pure a
     _ -> JudithParkTheMuscle <$> liftRunMessage msg attrs

@@ -29,7 +29,7 @@ instance HasAbilities TheCrossroadsDay where
 instance RunMessage TheCrossroadsDay where
   runMessage msg l@(TheCrossroadsDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 10
+      codex iid (attrs.ability 1) 10
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       locations <- getAccessibleLocations iid (attrs.ability 2)

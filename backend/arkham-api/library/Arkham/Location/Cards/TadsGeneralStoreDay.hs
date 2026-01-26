@@ -26,6 +26,6 @@ instance HasAbilities TadsGeneralStoreDay where
 instance RunMessage TadsGeneralStoreDay where
   runMessage msg l@(TadsGeneralStoreDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 14
+      codex iid (attrs.ability 1) 14
       pure l
     _ -> TadsGeneralStoreDay <$> liftRunMessage msg attrs

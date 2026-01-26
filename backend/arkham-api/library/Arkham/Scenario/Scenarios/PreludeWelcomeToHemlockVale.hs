@@ -119,14 +119,14 @@ instance RunMessage PreludeWelcomeToHemlockVale where
       n <- getPlayerCount
       placeDoomOnAgenda n
     ScenarioSpecific "codex" v -> scope "codex" do
-      let (iid, n :: Int) = toResult v
+      let (iid, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         1 -> do
           entry "motherRachel"
           cards <-
             getPlayableCardsMatch
-              ScenarioSource
+              source
               iid
               Cost.PaidCost
               (defaultWindows iid)
@@ -137,7 +137,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         2 -> do
           entry "leahAtwood"
           incrementRecordCount LeahAtwoodRelationshipLevel 1
-          cards <- getPlayableCardsMatch ScenarioSource iid Cost.PaidCost (defaultWindows iid) (card_ #tool)
+          cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #tool)
           chooseOrRunOneM iid do
             targets cards $ putCardIntoPlay iid
             unscoped skip_
@@ -146,7 +146,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           incrementRecordCount SimeonAtwoodRelationshipLevel 1
           search
             iid
-            ScenarioSource
+            source
             iid
             [fromTopOfDeck 9]
             (basic $ oneOf [#tactic, #trick])
@@ -156,7 +156,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           incrementRecordCount WilliamHemlockRelationshipLevel 1
           search
             iid
-            ScenarioSource
+            source
             iid
             [fromTopOfDeck 9]
             (basic $ oneOf [#tome, #talent])
@@ -164,15 +164,15 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         5 -> do
           entry "riverHawthorne"
           incrementRecordCount GideonMizrahRelationshipLevel 1
-          gainResources iid ScenarioSource 3
+          gainResources iid source 3
         6 -> do
           entry "gideonMizrah"
           incrementRecordCount GideonMizrahRelationshipLevel 1
-          drawCards iid ScenarioSource 3
+          drawCards iid source 3
         7 -> do
           entry "judithPark"
           incrementRecordCount JudithParkRelationshipLevel 1
-          cards <- getPlayableCardsMatch ScenarioSource iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
+          cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
           chooseOrRunOneM iid do
             targets cards $ putCardIntoPlay iid
             unscoped skip_
@@ -181,8 +181,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           incrementRecordCount TheoPetersRelationshipLevel 1
           chooseOneM iid $ unscoped do
             labeled' "move" do
-              locations <- getCanMoveToLocations iid ScenarioSource
-              chooseTargetM iid locations $ moveTo ScenarioSource iid
+              locations <- getCanMoveToLocations iid source
+              chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
           entry "boardingHouse"
@@ -190,8 +190,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           boardingHouse <- getJustLocationByName "Boarding House"
           createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
@@ -201,8 +201,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theCrossroads <- getJustLocationByName "The Crossroads"
           createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation theCrossroads)
@@ -212,8 +212,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           hemlockChapel <- getJustLocationByName "Hemlock Chapel"
           createAssetAt_ Assets.motherRachelKindlyMatron (AtLocation hemlockChapel)
@@ -223,8 +223,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theOldMill <- getJustLocationByName "The Old Mill"
           createAssetAt_ Assets.leahAtwoodTheValeCook (AtLocation theOldMill)
@@ -234,8 +234,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
           createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theAtwoodHouse)
@@ -245,9 +245,9 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           when (resources > 0) do
             chooseOneM iid do
               labeled' "tadsGeneralStore.item" do
-                gameModifier ScenarioSource iid (ScenarioModifier "codex14")
+                gameModifier source iid (ScenarioModifier "codex14")
                 spendResources iid 1
-                search iid ScenarioSource iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
+                search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
               unscoped skip_
           unlessM (selectAny $ assetIs Assets.judithParkTheMuscle) do
             tadsGeneralStore <- getJustLocationByName "Tad's General Store"
@@ -258,14 +258,14 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid ScenarioSource 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid ScenarioSource 1
+              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           valeSchoolhouse <- getJustLocationByName "Vale Schoolhouse"
           createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation valeSchoolhouse)
         16 -> do
           entry "theCommons"
-          search iid ScenarioSource iid [fromTopOfDeck 9] (basic #ally) (AddFoundToHand iid 1)
+          search iid source iid [fromTopOfDeck 9] (basic #ally) (AddFoundToHand iid 1)
           theCommons <- getJustLocationByName "The Commons"
           createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
         _ -> error "invalid codex entry"

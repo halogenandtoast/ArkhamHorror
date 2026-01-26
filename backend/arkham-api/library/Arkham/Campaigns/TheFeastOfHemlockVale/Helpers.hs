@@ -23,8 +23,8 @@ import Arkham.Tracing
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theFeastOfHemlockVale" a
 
-codex :: ReverseQueue m => InvestigatorId -> Int -> m ()
-codex iid n = scenarioSpecific "codex" (iid, n)
+codex :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+codex iid (toSource -> source) n = scenarioSpecific "codex" (iid, source, n)
 
 data Day = Day1 | Day2 | Day3
   deriving stock (Show, Eq, Generic)

@@ -30,7 +30,7 @@ instance HasAbilities BoardingHouseDay where
 instance RunMessage BoardingHouseDay where
   runMessage msg l@(BoardingHouseDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid 9
+      codex iid (attrs.ability 1) 9
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseHealDamageOrHorror (attrs.ability 1) iid

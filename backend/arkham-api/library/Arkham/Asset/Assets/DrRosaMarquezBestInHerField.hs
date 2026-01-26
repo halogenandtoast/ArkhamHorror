@@ -29,6 +29,6 @@ instance HasAbilities DrRosaMarquezBestInHerField where
 instance RunMessage DrRosaMarquezBestInHerField where
   runMessage msg a@(DrRosaMarquezBestInHerField attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid Theta
+      codex iid (attrs.ability 1) Theta
       pure a
     _ -> DrRosaMarquezBestInHerField <$> liftRunMessage msg attrs

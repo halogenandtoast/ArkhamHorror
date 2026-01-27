@@ -1317,6 +1317,7 @@ library
       Arkham.Asset.Assets.RemingtonModel18584
       Arkham.Asset.Assets.ResearchLibrarian
       Arkham.Asset.Assets.ResearchNotes
+      Arkham.Asset.Assets.Resilience
       Arkham.Asset.Assets.RichardUptonPickman
       Arkham.Asset.Assets.RiotWhistle
       Arkham.Asset.Assets.RiteOfSanctification
@@ -1398,6 +1399,7 @@ library
       Arkham.Asset.Assets.SixthSense4
       Arkham.Asset.Assets.SledDog
       Arkham.Asset.Assets.Sledgehammer
+      Arkham.Asset.Assets.Sledgehammer3
       Arkham.Asset.Assets.Sledgehammer4
       Arkham.Asset.Assets.Sleuth3
       Arkham.Asset.Assets.SmallRadio
@@ -1575,6 +1577,7 @@ library
       Arkham.Asset.Assets.WickedAthame
       Arkham.Asset.Assets.WilliamBainLookingForThoseLost
       Arkham.Asset.Assets.WilliamHemlockAspiringPoet
+      Arkham.Asset.Assets.WinchesterModel125
       Arkham.Asset.Assets.WishEater
       Arkham.Asset.Assets.Wither
       Arkham.Asset.Assets.Wither4
@@ -2403,6 +2406,7 @@ library
       Arkham.Event.Events.ControlVariable
       Arkham.Event.Events.CorrelateAllItsContents
       Arkham.Event.Events.CosmicRevelation1
+      Arkham.Event.Events.Counterattack1
       Arkham.Event.Events.Counterespionage1
       Arkham.Event.Events.Counterpunch
       Arkham.Event.Events.Counterpunch2
@@ -2563,6 +2567,7 @@ library
       Arkham.Event.Events.LeadingLadyFinalGirl
       Arkham.Event.Events.LeadingLadyHeroine
       Arkham.Event.Events.LeadingLadyMentor
+      Arkham.Event.Events.LessonLearned
       Arkham.Event.Events.LessonLearned2
       Arkham.Event.Events.LetGodSortThemOut
       Arkham.Event.Events.LetMeHandleThis
@@ -2660,6 +2665,7 @@ library
       Arkham.Event.Events.Reliable1
       Arkham.Event.Events.Riastrad1
       Arkham.Event.Events.RighteousHunt1
+      Arkham.Event.Events.RightToolForTheJob
       Arkham.Event.Events.RiteOfEquilibrium5
       Arkham.Event.Events.Sacrifice1
       Arkham.Event.Events.Salvage2

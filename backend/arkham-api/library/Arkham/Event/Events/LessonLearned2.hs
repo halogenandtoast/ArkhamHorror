@@ -1,11 +1,7 @@
-module Arkham.Event.Events.LessonLearned2 (lessonLearned2, LessonLearned2 (..)) where
+module Arkham.Event.Events.LessonLearned2 (lessonLearned2) where
 
-import Arkham.Classes
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Event.Import.Lifted
 
 newtype LessonLearned2 = LessonLearned2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -15,9 +11,8 @@ lessonLearned2 :: EventCard LessonLearned2
 lessonLearned2 = event LessonLearned2 Cards.lessonLearned2
 
 instance RunMessage LessonLearned2 where
-  runMessage msg e@(LessonLearned2 attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      discovery <- discoverAtYourLocation (toSource attrs) 2
-      push $ Msg.DiscoverClues iid discovery
+  runMessage msg e@(LessonLearned2 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      discoverAtYourLocation NotInvestigate iid (toSource attrs) 2
       pure e
-    _ -> LessonLearned2 <$> runMessage msg attrs
+    _ -> LessonLearned2 <$> liftRunMessage msg attrs

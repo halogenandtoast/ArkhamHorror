@@ -25,3 +25,42 @@ deadEnds =
       , cdCardTraits = setFromList [Blunder]
       , cdOutOfPlayEffects = [InHandEffect, InSearchEffect]
       }
+
+lessonLearned :: CardDef
+lessonLearned =
+  (event "12022" "Lesson Learned" 1 Guardian)
+    { cdCardTraits = setFromList [Insight, Spirit]
+    , cdSkills = [#intellect, #combat]
+    , cdFastWindow = Just $ DealtDamage #after (SourceIsEnemyAttack AnyEnemy) You
+    , cdCriteria = Just canDiscoverCluesAtYourLocation
+    }
+
+rightToolForTheJob :: CardDef
+rightToolForTheJob =
+  (event "12023" "Right Tool for the Job" 1 Guardian)
+    { cdCardTraits = setFromList [Insight]
+    , cdSkills = [#intellect]
+    , cdCriteria = Just $ Criteria.youExist can.search.deck
+    }
+
+counterattack1 :: CardDef
+counterattack1 =
+  (event "12026" "Counterattack" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spirit, Tactic]
+    , cdFastWindow =
+        Just
+          $ oneOf
+            [ EnemyAttacks
+                #when
+                (affectsOthers $ colocatedWithMatch You)
+                (CancelableEnemyAttack AnyEnemyAttack)
+                AnyEnemy
+            , EnemyAttacks
+                #when
+                (affectsOthers $ colocatedWithMatch You)
+                AnyEnemyAttack
+                (EnemyCanBeDamagedBySource ThisCard)
+            ]
+    , cdLevel = Just 1
+    }

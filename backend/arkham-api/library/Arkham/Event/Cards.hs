@@ -101,6 +101,7 @@ allPlayerEventCards =
       , correlateAllItsContents
       , cosmicRevelation1
       , coupDeGrace
+      , counterattack1
       , counterespionage1
       , counterpunch
       , counterpunch2
@@ -260,6 +261,7 @@ allPlayerEventCards =
       , leadingLadyFinalGirl
       , leadingLadyHeroine
       , leadingLadyMentor
+      , lessonLearned
       , lessonLearned2
       , letGodSortThemOut
       , letMeHandleThis
@@ -357,6 +359,7 @@ allPlayerEventCards =
       , reliable1
       , riastrad1
       , righteousHunt1
+      , rightToolForTheJob
       , riteOfEquilibrium5
       , sacrifice1
       , salvage2

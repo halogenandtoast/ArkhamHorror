@@ -360,7 +360,9 @@ instance RunMessage WrittenInRock where
               li.validate (time == Day && day == Day3) "skipToResolution4"
 
           if
-            | time == Night -> push R6
+            | time == Night -> do
+              record SimeonCrossedOut
+              push R6
             | day `elem` [Day1, Day2] -> push R3
             | otherwise -> push R4
         Resolution 1 -> do
@@ -375,10 +377,12 @@ instance RunMessage WrittenInRock where
           resolution6
         Resolution 3 -> do
           record SimeonDisappeared
+          record SimeonCrossedOut
           resolution "resolution3"
           resolution6
         Resolution 4 -> do
           record LeahAndSimeonWereReunited
+          record LeahCrossedOut
           resolution "resolution4"
           resolution6
         Resolution 5 -> do

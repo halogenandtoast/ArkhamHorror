@@ -31,10 +31,20 @@ const card = computed(() => {
     default: return null
   }
 })
+
+
+const validRecords = computed(() => {
+  return props.records.filter(rk => !rk.endsWith('CrossedOut'))
+})
+
+const crossedOut = computed(() => {
+  return props.records.some(rk => rk.endsWith('CrossedOut'))
+})
+
 </script>
 
 <template>
-  <div class='resident'>
+  <div class='resident' :class="{ 'resident-crossed-out': crossedOut }">
     <div class="resident-card">
       <img v-if="card" :src="card" class="card no-overlay" />
     </div>
@@ -44,10 +54,10 @@ const card = computed(() => {
       <div class="notes">
         <h4 class="notes-title">{{ t('theFeastOfHemlockVale.campaignLog.residents.notes') }}</h4>
         <ul class="notes-list">
-          <li v-for="rk in records" :key="rk" class="note-item">{{ t(rk) }}</li>
+          <li v-for="rk in validRecords" :key="rk" class="note-item">{{ t(rk) }}</li>
         </ul>
       </div>
-      <div class="relationship">
+      <div class="relationship" v-if="!crossedOut">
         <div class="relationship-title">{{ t('theFeastOfHemlockVale.campaignLog.residents.relationshipLevel') }}</div>
         <div class="boxes" role="img">
           <span v-for="n in 6" :key="n" class="relationship-box" :class="{ filled: n <= clampedLevel }" />
@@ -161,6 +171,13 @@ h4 {
   max-width: 200px;
   img {
     border-radius: 0.25em;
+  }
+}
+
+.resident-crossed-out {
+  opacity: 0.5;
+  .name {
+    text-decoration: line-through;
   }
 }
 </style>

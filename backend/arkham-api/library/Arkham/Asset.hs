@@ -1174,6 +1174,8 @@ allAssets =
       SomeAssetCard danielasWrenchNewAndImproved
     , SomeAssetCard covertOpsInTheShadows
     , SomeAssetCard isabellesTwin45sLoadedWithVengeance
+    , --- guardian [core2026]
+      SomeAssetCard bodyguard
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

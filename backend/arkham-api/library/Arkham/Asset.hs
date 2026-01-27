@@ -1188,6 +1188,7 @@ allAssets =
         SomeAssetCard dorothySimmonsStraightAStudent
       , SomeAssetCard localMap
       , SomeAssetCard sharpRhetoric
+      , SomeAssetCard mysteriousGrimoire2
       , --- rogue [core2026]
         SomeAssetCard silverTongue
       , --- survivor [core2026]

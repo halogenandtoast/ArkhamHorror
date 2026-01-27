@@ -598,6 +598,7 @@ allPlayerAssetCards =
       , moxie1
       , moxie3
       , mrRook
+      , mysteriousGrimoire2
       , mysteriousRaven
       , naomiOBannionRuthlessTactician
       , nauticalCharts

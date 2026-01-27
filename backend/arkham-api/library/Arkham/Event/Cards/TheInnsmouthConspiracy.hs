@@ -138,6 +138,7 @@ breakingAndEntering =
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#investigate]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdAlternateCardCodes = ["12050"]
     }
 
 radiantSmite1 :: CardDef

@@ -56,7 +56,7 @@ laboratoryAssistant =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Ally, Miskatonic, Science]
     , cdSlots = [#ally]
-    , cdAlternateCardCodes = ["60212"]
+    , cdAlternateCardCodes = ["60212", "12032"]
     }
 
 strangeSolution :: CardDef

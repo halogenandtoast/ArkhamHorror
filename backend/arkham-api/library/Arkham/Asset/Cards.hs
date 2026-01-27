@@ -132,6 +132,7 @@ allPlayerAssetCards =
       , blur1
       , blur4
       , bodyguard
+      , bodyguard2
       , bonesaw
       , bonnieWalshLoyalAssistant
       , bookOfLivingMythsChronicleOfWonders
@@ -315,6 +316,7 @@ allPlayerAssetCards =
       , enchantedBow2
       , encyclopedia
       , encyclopedia2
+      , endurance
       , engineer
       , eonChart1
       , eonChart4
@@ -339,6 +341,7 @@ allPlayerAssetCards =
       , farsight4
       , favorOfTheMoon1
       , favorOfTheSun1
+      , fedora
       , feedTheMind
       , feedTheMind3
       , fence1
@@ -515,6 +518,7 @@ allPlayerAssetCards =
       , leatherJacket
       , leoDeLuca
       , leoDeLuca1
+      , levelheaded
       , libraryDocent1
       , libraryPass1
       , libraryPass5
@@ -527,6 +531,7 @@ allPlayerAssetCards =
       , lockedAndLoaded3
       , lockpicks
       , lockpicks1
+      , loganHastingsBountyHunter
       , lolaSantiago3
       , loneWolf
       , lonnieRitter
@@ -748,6 +753,7 @@ allPlayerAssetCards =
       , sergeantMonroe
       , servantOfBrassDaemonaicVassal
       , shardsOfTheVoid3
+      , sharpRhetoric
       , sharpshooter3
       , shieldOfFaith2
       , shiningTrapezohedron4
@@ -765,6 +771,7 @@ allPlayerAssetCards =
       , signMagick3
       , signOfXelotaphSymbolOfProtection
       , silassNet
+      , silverTongue
       , sinEater3
       , sinhasMedicalKit
       , sixthSense
@@ -845,6 +852,7 @@ allPlayerAssetCards =
       , theFacePracticed
       , theFaceUnpracticed
       , theFool03
+      , theGoldBug
       , theGoldPocketWatch4
       , theGreatWorkDivideAndUnite
       , theGrifterPracticed

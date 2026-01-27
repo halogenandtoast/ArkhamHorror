@@ -197,7 +197,7 @@ luckyCigaretteCase =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#accessory]
-    , cdAlternateCardCodes = ["60308"]
+    , cdAlternateCardCodes = ["60308", "12044"]
     }
 
 fence1 :: CardDef

@@ -404,6 +404,7 @@ bandages =
     { cdCardTraits = setFromList [Item]
     , cdSkills = [#agility]
     , cdUses = uses Supply 3
+    , cdAlternateCardCodes = ["12073"]
     }
 
 bangleOfJinxes1 :: CardDef

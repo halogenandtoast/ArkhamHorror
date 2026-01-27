@@ -64,6 +64,7 @@ fingerprintKit =
     , cdSkills = [#intellect]
     , cdSlots = [#hand]
     , cdUses = uses Supply 3
+    , cdAlternateCardCodes = ["12031"]
     }
 
 deathXiii1 :: CardDef
@@ -160,6 +161,7 @@ meatCleaver =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [#hand]
+    , cdAlternateCardCodes = ["12077"]
     }
 
 fortyFiveThompson :: CardDef
@@ -493,6 +495,7 @@ studious3 =
     $ (asset "05276" "Studious" 0 Seeker)
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
+      , cdAlternateCardCodes = ["12042"]
       }
 
 anotherDayAnotherDollar3 :: CardDef
@@ -501,6 +504,7 @@ anotherDayAnotherDollar3 =
     $ (asset "05278" "Another Day, Another Dollar" 0 Rogue)
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
+      , cdAlternateCardCodes = ["12056"]
       }
 
 dayanaEsperence3 :: CardDef

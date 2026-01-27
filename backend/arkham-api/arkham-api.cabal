@@ -710,6 +710,7 @@ library
       Arkham.Asset.Assets.Blur1
       Arkham.Asset.Assets.Blur4
       Arkham.Asset.Assets.Bodyguard
+      Arkham.Asset.Assets.Bodyguard2
       Arkham.Asset.Assets.Bonesaw
       Arkham.Asset.Assets.BonnieWalshLoyalAssistant
       Arkham.Asset.Assets.BookOfLivingMythsChronicleOfWonders
@@ -904,6 +905,7 @@ library
       Arkham.Asset.Assets.EnchantedBow2
       Arkham.Asset.Assets.Encyclopedia
       Arkham.Asset.Assets.Encyclopedia2
+      Arkham.Asset.Assets.Endurance
       Arkham.Asset.Assets.Engineer
       Arkham.Asset.Assets.EonChart1
       Arkham.Asset.Assets.EonChart4
@@ -928,6 +930,7 @@ library
       Arkham.Asset.Assets.Farsight4
       Arkham.Asset.Assets.FavorOfTheMoon1
       Arkham.Asset.Assets.FavorOfTheSun1
+      Arkham.Asset.Assets.Fedora
       Arkham.Asset.Assets.FeedTheMind
       Arkham.Asset.Assets.FeedTheMind3
       Arkham.Asset.Assets.Fence1
@@ -1121,6 +1124,7 @@ library
       Arkham.Asset.Assets.LeatherJacket
       Arkham.Asset.Assets.LeoDeLuca
       Arkham.Asset.Assets.LeoDeLuca1
+      Arkham.Asset.Assets.Levelheaded
       Arkham.Asset.Assets.LibraryDocent1
       Arkham.Asset.Assets.LibraryPass1
       Arkham.Asset.Assets.LibraryPass5
@@ -1133,6 +1137,7 @@ library
       Arkham.Asset.Assets.LockedAndLoaded3
       Arkham.Asset.Assets.Lockpicks
       Arkham.Asset.Assets.Lockpicks1
+      Arkham.Asset.Assets.LoganHastingsBountyHunter
       Arkham.Asset.Assets.LolaSantiago3
       Arkham.Asset.Assets.LoneWolf
       Arkham.Asset.Assets.LonnieRitter
@@ -1365,6 +1370,7 @@ library
       Arkham.Asset.Assets.SergeantMonroe
       Arkham.Asset.Assets.ServantOfBrassDaemonaicVassal
       Arkham.Asset.Assets.ShardsOfTheVoid3
+      Arkham.Asset.Assets.SharpRhetoric
       Arkham.Asset.Assets.Sharpshooter3
       Arkham.Asset.Assets.ShieldOfFaith2
       Arkham.Asset.Assets.ShiningTrapezohedron4
@@ -1382,6 +1388,7 @@ library
       Arkham.Asset.Assets.SignMagick3
       Arkham.Asset.Assets.SignOfXelotaphSymbolOfProtection
       Arkham.Asset.Assets.SilassNet
+      Arkham.Asset.Assets.SilverTongue
       Arkham.Asset.Assets.SimeonAtwoodDedicatedTroublemaker
       Arkham.Asset.Assets.SinEater3
       Arkham.Asset.Assets.SinhasMedicalKit
@@ -1469,6 +1476,7 @@ library
       Arkham.Asset.Assets.TheFacePracticed
       Arkham.Asset.Assets.TheFaceUnpracticed
       Arkham.Asset.Assets.TheFool03
+      Arkham.Asset.Assets.TheGoldBug
       Arkham.Asset.Assets.TheGoldPocketWatch4
       Arkham.Asset.Assets.TheGreatWorkDivideAndUnite
       Arkham.Asset.Assets.TheGrifterPracticed

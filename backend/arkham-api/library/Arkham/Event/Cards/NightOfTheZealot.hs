@@ -88,7 +88,7 @@ workingAHunch =
     , cdCardTraits = setFromList [Insight]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just canDiscoverCluesAtYourLocation
-    , cdAlternateCardCodes = ["01537"]
+    , cdAlternateCardCodes = ["01537", "12038"]
     }
 
 barricade :: CardDef
@@ -181,7 +181,7 @@ wardOfProtection =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow =
         Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
-    , cdAlternateCardCodes = ["01565"]
+    , cdAlternateCardCodes = ["01565", "12065"]
     }
 
 blindingLight :: CardDef
@@ -233,7 +233,7 @@ lookWhatIFound =
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileInvestigating Anywhere) $ FailureResult $ lessThan 3
     , cdCriteria = Just canDiscoverCluesAtYourLocation
-    , cdAlternateCardCodes = ["01579", "60517"]
+    , cdAlternateCardCodes = ["01579", "60517", "12078"]
     }
 
 lucky :: CardDef
@@ -279,6 +279,6 @@ emergencyCache :: CardDef
 emergencyCache =
   (event "01088" "Emergency Cache" 0 Neutral)
     { cdCardTraits = setFromList [Supply]
-    , cdAlternateCardCodes = ["01588"]
+    , cdAlternateCardCodes = ["01588", "12089"]
     , cdCriteria = Just $ exists $ You <> can.gain.resources
     }

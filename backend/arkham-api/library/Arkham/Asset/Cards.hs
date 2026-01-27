@@ -16,6 +16,7 @@ import Arkham.Asset.Cards.TheForgottenAge as X
 import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
+import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -211,6 +212,7 @@ allPlayerAssetCards =
       , damningTestimony
       , danforthBrilliantStudent
       , danforthBrilliantStudentResolute
+      , danielasWrenchNewAndImproved
       , darioElAmin
       , darkHorse
       , darkHorse5

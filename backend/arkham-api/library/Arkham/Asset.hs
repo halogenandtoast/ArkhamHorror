@@ -1169,6 +1169,9 @@ allAssets =
     , SomeAssetCard sacredOathOathOfLoyalty5
     , SomeAssetCard sacredOathOathOfOrder5
     , SomeAssetCard sacredOathOathOfWisdom5
+    , -- The Drowned City
+      --- signature [core2026]
+      SomeAssetCard danielasWrenchNewAndImproved
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

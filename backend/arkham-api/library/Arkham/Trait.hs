@@ -300,6 +300,7 @@ data Trait
   | Witch
   | WitchHouse
   | Woods
+  | Worker
   | Yhanthlei
   | Yithian
   | Yoth

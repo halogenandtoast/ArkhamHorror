@@ -222,6 +222,8 @@ const { isMobile } = IsMobile();
 
 const slotImg = (slot: Arkham.Slot) => {
   switch (slot.tag) {
+    case 'HeadSlot':
+      return imgsrc('slots/head.png')
     case 'HandSlot':
       return imgsrc('slots/hand.png')
     case 'BodySlot':

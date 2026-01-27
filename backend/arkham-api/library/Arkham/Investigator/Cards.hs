@@ -86,6 +86,7 @@ allInvestigatorCards =
       , gloriaGoldberg
       , georgeBarnaby
       , lostHomunculus
+      , danielaReyes2
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -596,11 +597,11 @@ michaelMcGlen =
 gloriaGoldberg :: CardDef
 gloriaGoldberg =
   withAlternate "98019"
-  $ investigator
-    "11014"
-    ("Gloria Goldberg" <:> "The Writer")
-    Mystic
-    [Clairvoyant]
+    $ investigator
+      "11014"
+      ("Gloria Goldberg" <:> "The Writer")
+      Mystic
+      [Clairvoyant]
 
 georgeBarnaby :: CardDef
 georgeBarnaby =
@@ -613,10 +614,18 @@ georgeBarnaby =
 lostHomunculus :: CardDef
 lostHomunculus =
   investigator
-      "11068b"
-      ("Lost Humonculus" <:> "The Forgotten Child")
-      Mystic
-      [Construct, Scion]
+    "11068b"
+    ("Lost Humonculus" <:> "The Forgotten Child")
+    Mystic
+    [Construct, Scion]
+
+danielaReyes2 :: CardDef
+danielaReyes2 =
+  investigator
+    "12001"
+    ("Daniela Reyes" <:> "The Mechanic")
+    Guardian
+    [Warden, Worker]
 
 nathanielCho :: CardDef
 nathanielCho =

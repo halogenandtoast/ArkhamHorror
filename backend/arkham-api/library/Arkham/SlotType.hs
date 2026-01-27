@@ -14,7 +14,11 @@ data SlotType
   | AccessorySlot
   | ArcaneSlot
   | TarotSlot
+  | HeadSlot
   deriving stock (Show, Ord, Eq, Bounded, Enum, Data)
+
+instance IsLabel "head" SlotType where
+  fromLabel = HeadSlot
 
 instance IsLabel "hand" SlotType where
   fromLabel = HandSlot
@@ -42,6 +46,7 @@ slotName = \case
   AccessorySlot -> "Accessory"
   ArcaneSlot -> "Arcane"
   TarotSlot -> "Tarot"
+  HeadSlot -> "Head"
 
 allSlotTypes :: [SlotType]
 allSlotTypes = [minBound .. maxBound]

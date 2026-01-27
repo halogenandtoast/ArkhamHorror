@@ -24,7 +24,7 @@ instance HasModifiersFor RandolphCarterChainedToTheWakingWorld where
 instance HasAbilities RandolphCarterChainedToTheWakingWorld where
   getAbilities (RandolphCarterChainedToTheWakingWorld attrs) =
     [ controlled attrs 1 (DuringSkillTest SkillTestAtYourLocation)
-        $ ReactionAbility (RevealChaosToken #after Anyone #elderthing) (exhaust attrs)
+        $ triggered (RevealChaosToken #after Anyone #elderthing) (exhaust attrs)
     ]
 
 instance RunMessage RandolphCarterChainedToTheWakingWorld where

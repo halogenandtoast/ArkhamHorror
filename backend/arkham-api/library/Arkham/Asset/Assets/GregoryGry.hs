@@ -17,7 +17,7 @@ gregoryGry = ally GregoryGry Cards.gregoryGry (1, 2)
 instance HasAbilities GregoryGry where
   getAbilities (GregoryGry a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
           (UseCostUpTo (be a) Resource 1 3)
     ]

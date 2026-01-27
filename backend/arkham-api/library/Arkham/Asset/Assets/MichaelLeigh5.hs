@@ -22,7 +22,7 @@ instance HasAbilities MichaelLeigh5 where
     [ controlled a 1 cardRestriction
         $ freeReaction (SkillTestResult #after You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
     , restricted a 2 ControlsThis
-        $ ReactionAbility (PerformAction #when You #fight)
+        $ triggered (PerformAction #when You #fight)
         $ assetUseCost a Evidence 1
         <> exhaust a
     ]

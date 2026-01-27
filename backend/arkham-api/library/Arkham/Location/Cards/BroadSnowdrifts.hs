@@ -22,7 +22,7 @@ instance HasAbilities BroadSnowdrifts where
     extendRevealed1 a
       $ groupLimit PerGame
       $ restricted a 1 Here
-      $ ReactionAbility (SkillTestResult #when You (whileInvestigating a) #success) (AddFrostTokenCost 1)
+      $ triggered (SkillTestResult #when You (whileInvestigating a) #success) (AddFrostTokenCost 1)
 
 instance RunMessage BroadSnowdrifts where
   runMessage msg l@(BroadSnowdrifts attrs) = runQueueT $ case msg of

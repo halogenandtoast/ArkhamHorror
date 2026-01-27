@@ -16,7 +16,7 @@ drawingThin = asset DrawingThin Cards.drawingThin
 instance HasAbilities DrawingThin where
   getAbilities (DrawingThin a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
+        $ triggered (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
         $ exhaust a
     ]
 

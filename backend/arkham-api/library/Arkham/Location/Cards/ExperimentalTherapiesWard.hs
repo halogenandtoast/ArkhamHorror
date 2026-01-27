@@ -24,7 +24,7 @@ instance HasAbilities ExperimentalTherapiesWard where
     extendRevealed
       attrs
       [ mkAbility attrs 1
-          $ ReactionAbility
+          $ triggered
             (InitiatedSkillTest #when You #any #any (WhileInvestigating $ be attrs))
             (HorrorCost (toSource attrs) YouTarget 1)
       ]

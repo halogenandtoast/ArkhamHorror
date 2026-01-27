@@ -17,9 +17,9 @@ preciousMementoFromAFutureLife4 = assetWith PreciousMementoFromAFutureLife4 Card
 instance HasAbilities PreciousMementoFromAFutureLife4 where
   getAbilities (PreciousMementoFromAFutureLife4 a) =
     [ controlledAbility a 1 (exists $ HealableAsset (toSource a) HorrorType $ AssetWithId (toId a))
-        $ ReactionAbility (SkillTestResult #after You AnySkillTest (FailureResult $ atLeast 2)) (exhaust a)
+        $ triggered (SkillTestResult #after You AnySkillTest (FailureResult $ atLeast 2)) (exhaust a)
     , controlledAbility a 2 (exists $ HealableAsset (toSource a) DamageType $ AssetWithId (toId a))
-        $ ReactionAbility (SkillTestResult #after You AnySkillTest (SuccessResult $ atLeast 2)) (exhaust a)
+        $ triggered (SkillTestResult #after You AnySkillTest (SuccessResult $ atLeast 2)) (exhaust a)
     ]
 
 instance RunMessage PreciousMementoFromAFutureLife4 where

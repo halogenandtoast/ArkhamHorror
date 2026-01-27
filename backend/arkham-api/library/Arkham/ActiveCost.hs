@@ -172,7 +172,10 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)
-    ReactionAbility {} -> push (PayCosts activeCostId)
+    ReactionAbility  _ _ [] -> push (PayCosts activeCostId)
+    ReactionAbility  _ _ actions' -> do
+      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions']
+      pushAll [beforeWindowMsg, PayCosts activeCostId]
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
     ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
  where

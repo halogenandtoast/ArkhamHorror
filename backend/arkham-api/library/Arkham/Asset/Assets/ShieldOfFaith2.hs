@@ -21,7 +21,7 @@ instance HasAbilities ShieldOfFaith2 where
           attrs
           1
           ControlsThis
-          ( ReactionAbility
+          ( triggered
               ( EnemyAttacks
                   #when
                   (affectsOthers $ colocatedWithMatch You)

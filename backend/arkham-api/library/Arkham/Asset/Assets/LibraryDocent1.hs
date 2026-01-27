@@ -28,7 +28,7 @@ instance HasAbilities LibraryDocent1 where
             (Reduce 2)
             (HandCardWithDifferentTitleFromAtLeastOneAsset You #tome #tome)
         )
-        $ ReactionAbility (AssetEntersPlay #when (be a))
+        $ triggered (AssetEntersPlay #when (be a))
         $ ReturnMatchingAssetToHandCost
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand You (basic #tome) #tome
     ]

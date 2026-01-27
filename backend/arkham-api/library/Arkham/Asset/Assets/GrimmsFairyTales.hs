@@ -25,7 +25,7 @@ grimmsFairyTales = asset GrimmsFairyTales Cards.grimmsFairyTales
 instance HasAbilities GrimmsFairyTales where
   getAbilities (GrimmsFairyTales a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( SkillTestResult
               Timing.After
               ( HealableInvestigator

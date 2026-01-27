@@ -33,7 +33,7 @@ instance HasAbilities BaseCamp where
       a
       [ mirage a 1 mirageCards
       , mkAbility a 1
-          $ ReactionAbility
+          $ triggered
             ( WouldHaveSkillTestResult #when You (WhileInvestigating $ be a) (FailureResult $ EqualTo $ Static 1)
             )
             (HorrorCost (a.ability 2) YouTarget 1)

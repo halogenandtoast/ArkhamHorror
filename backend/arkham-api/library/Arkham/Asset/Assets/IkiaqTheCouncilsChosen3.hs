@@ -24,7 +24,7 @@ instance HasModifiersFor IkiaqTheCouncilsChosen3 where
 instance HasAbilities IkiaqTheCouncilsChosen3 where
   getAbilities (IkiaqTheCouncilsChosen3 x) =
     [ restricted x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( DrawCard
               #when
               (affectsOthers $ colocatedWithMatch You)

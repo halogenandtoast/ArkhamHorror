@@ -17,7 +17,7 @@ mindsEye2 = asset MindsEye2 Cards.mindsEye2
 instance HasAbilities MindsEye2 where
   getAbilities (MindsEye2 attrs) =
     [ restricted attrs 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InitiatedSkillTest #when You (SkillTypeOneOf [#intellect, #combat, #agility]) AnySkillTestValue #any
           )
           (assetUseCost attrs Secret 1)

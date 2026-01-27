@@ -22,7 +22,7 @@ microscope = asset Microscope Cards.microscope
 instance HasAbilities Microscope where
   getAbilities (Microscope x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( oneOf
               [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
               , EnemyEvaded #after Anyone $ EnemyAt YourLocation

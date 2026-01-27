@@ -15,7 +15,7 @@ labCoat1 = assetWith LabCoat1 Cards.labCoat1 $ (healthL ?~ 1) . (sanityL ?~ 1)
 instance HasAbilities LabCoat1 where
   getAbilities (LabCoat1 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (WouldHaveSkillTestResult #when You (SkillTestOnCard #seeker) (FailureResult $ atMost 1))
           (exhaust a)
     ]

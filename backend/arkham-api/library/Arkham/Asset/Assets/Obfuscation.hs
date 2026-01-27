@@ -17,7 +17,7 @@ obfuscation = asset Obfuscation Cards.obfuscation
 instance HasAbilities Obfuscation where
   getAbilities (Obfuscation x) =
     [ restricted x 1 ControlsThis
-        $ ReactionAbility (EnemyWouldAttack #when You AttackOfOpportunityAttack AnyEnemy)
+        $ triggered (EnemyWouldAttack #when You AttackOfOpportunityAttack AnyEnemy)
         $ assetUseCost x Charge 1
     ]
 

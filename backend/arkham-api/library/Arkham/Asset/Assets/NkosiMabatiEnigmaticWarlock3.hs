@@ -23,7 +23,7 @@ instance HasAbilities NkosiMabatiEnigmaticWarlock3 where
   getAbilities (NkosiMabatiEnigmaticWarlock3 a) =
     [ restrictedAbility a 1 ControlsThis (freeReaction $ AssetEntersPlay #when (be a))
     , controlledAbility a 2 tokenFaceCriteria
-        $ ReactionAbility
+        $ triggered
           ( RevealChaosToken
               #when
               (affectsOthers $ colocatedWithMatch You)

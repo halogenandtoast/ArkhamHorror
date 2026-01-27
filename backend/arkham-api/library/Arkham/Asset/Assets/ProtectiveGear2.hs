@@ -17,7 +17,7 @@ protectiveGear2 = assetWith ProtectiveGear2 Cards.protectiveGear2 $ (healthL ?~ 
 instance HasAbilities ProtectiveGear2 where
   getAbilities (ProtectiveGear2 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (DrawCard #when You (basic $ #treachery <> CardWithTrait Hazard) AnyDeck)
           (DamageCost (x.ability 1) (toTarget x) 1 <> HorrorCost (x.ability 1) (toTarget x) 1)
     ]

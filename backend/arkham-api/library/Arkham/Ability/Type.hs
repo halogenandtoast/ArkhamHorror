@@ -60,13 +60,16 @@ actionAbilityWithCost :: Cost -> AbilityType
 actionAbilityWithCost cost = ActionAbility [] (ActionCost 1 <> cost)
 
 freeReaction :: WindowMatcher -> AbilityType
-freeReaction window = ReactionAbility window Free
+freeReaction window = ReactionAbility window Free []
 
 triggered :: WindowMatcher -> Cost -> AbilityType
-triggered = ReactionAbility
+triggered wm cost = ReactionAbility wm cost []
+
+triggeredAction :: Action -> WindowMatcher -> Cost -> AbilityType
+triggeredAction action wm cost = ReactionAbility wm cost [action]
 
 triggered_ :: WindowMatcher -> AbilityType
-triggered_ = (`ReactionAbility` Free)
+triggered_ wm = ReactionAbility wm Free []
 
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
@@ -93,7 +96,7 @@ freeTrigger c = FastAbility' c []
 
 data AbilityType
   = FastAbility' {cost :: Cost, actions :: [Action]}
-  | ReactionAbility {window :: WindowMatcher, cost :: Cost}
+  | ReactionAbility {window :: WindowMatcher, cost :: Cost, actions :: [Action]}
   | ConstantReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | CustomizationReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | ActionAbility {actions :: [Action], cost :: Cost}
@@ -124,7 +127,7 @@ overAbilityTypeActions f = \case
   Objective abilityType -> Objective (overAbilityTypeActions f abilityType)
   DelayedAbility abilityType -> DelayedAbility (overAbilityTypeActions f abilityType)
   ForcedWhen criteria abilityType -> ForcedWhen criteria (overAbilityTypeActions f abilityType)
-  ReactionAbility window cost -> ReactionAbility window cost
+  ReactionAbility window cost actions -> ReactionAbility window cost (f actions)
   CustomizationReaction label window cost -> CustomizationReaction label window cost
   ConstantReaction label window cost -> ConstantReaction label window cost
   ServitorAbility action -> ServitorAbility action
@@ -138,7 +141,7 @@ overAbilityTypeActions f = \case
 instance HasCost AbilityType where
   overCost f = \case
     FastAbility' cost actions -> FastAbility' (f cost) actions
-    ReactionAbility window cost -> ReactionAbility window (f cost)
+    ReactionAbility window cost actions -> ReactionAbility window (f cost) actions
     CustomizationReaction label window cost -> CustomizationReaction label window (f cost)
     ConstantReaction label window cost -> ConstantReaction label window (f cost)
     ActionAbility actions cost -> ActionAbility actions (f cost)
@@ -184,7 +187,7 @@ isFastAbilityType = \case
 abilityTypeCostL :: Traversal' AbilityType Cost
 abilityTypeCostL f = \case
   FastAbility' cost action -> (`FastAbility'` action) <$> f cost
-  ReactionAbility window cost -> ReactionAbility window <$> f cost
+  ReactionAbility window cost actions -> ReactionAbility window <$> f cost <*> pure actions
   CustomizationReaction label window cost -> CustomizationReaction label window <$> f cost
   ConstantReaction label window cost -> ConstantReaction label window <$> f cost
   ActionAbility action cost -> ActionAbility action <$> f cost
@@ -209,6 +212,11 @@ instance FromJSON AbilityType where
   parseJSON = withObject "AbilityType" $ \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "ReactionAbility" -> do
+        w <- o .: "window"
+        c <- o .: "cost"
+        a <- o .:? "actions" .!= []
+        pure $ ReactionAbility {window = w, cost = c, actions = a}
       "ActionAbilityWithBefore" -> do
         a <- o .: "actions"
         c <- o .: "cost"

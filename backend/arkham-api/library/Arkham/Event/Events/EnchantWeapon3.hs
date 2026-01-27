@@ -27,7 +27,7 @@ instance HasAbilities EnchantWeapon3 where
     case x.attachedTo of
       Just (AssetTarget aid) ->
         [ mkAbility x 1
-            $ ReactionAbility
+            $ triggered
               (ActivateAbility #when You (AbilityIsAction #fight <> AssetAbility (AssetWithId aid)))
               (exhaust x)
         ]

@@ -22,7 +22,7 @@ instance HasModifiersFor CrystalPendulum where
 instance HasAbilities CrystalPendulum where
   getAbilities (CrystalPendulum a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (InitiatedSkillTest Timing.After (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
           (exhaust a)
     ]

@@ -36,11 +36,11 @@ instance HasAbilities MedicoDellaPeste where
                   ]
               )
         )
-        $ ReactionAbility
+        $ triggered
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InitiatedSkillTest
               Timing.When
               You

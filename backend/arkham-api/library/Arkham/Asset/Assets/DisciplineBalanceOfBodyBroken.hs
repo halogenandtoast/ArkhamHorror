@@ -24,7 +24,7 @@ instance HasAbilities DisciplineBalanceOfBodyBroken where
         x
         1
         (youExist (InvestigatorWithMetaKey "balanced") <> not_ (SelfHasModifier CannotBeFlipped))
-        $ ReactionAbility (RoundEnds #after) Free
+        $ triggered (RoundEnds #after) Free
     ]
 
 instance RunMessage DisciplineBalanceOfBodyBroken where

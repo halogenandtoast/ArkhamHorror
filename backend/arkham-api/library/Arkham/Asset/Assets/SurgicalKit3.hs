@@ -18,7 +18,7 @@ surgicalKit3 = asset SurgicalKit3 Cards.surgicalKit3
 instance HasAbilities SurgicalKit3 where
   getAbilities (SurgicalKit3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InvestigatorHealed #when #damage (affectsOthers Anyone) (SourceOwnedBy You <> SourceIsCardEffect)
           )
           (assetUseCost a Supply 1)

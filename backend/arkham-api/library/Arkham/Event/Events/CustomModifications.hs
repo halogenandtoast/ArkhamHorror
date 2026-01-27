@@ -69,7 +69,7 @@ instance HasAbilities CustomModifications where
                 $ #fighting
                 <> SkillTestSourceMatches (SourceIsAsset (AssetControlledBy You <> AssetWithId aid))
             )
-            $ ReactionAbility (RevealChaosToken #when You (not_ #autofail)) (exhaust a)
+            $ triggered (RevealChaosToken #when You (not_ #autofail)) (exhaust a)
         ]
           <> [ restricted a 2 (ControlsThis <> can.draw.cards You)
                  $ CustomizationReaction

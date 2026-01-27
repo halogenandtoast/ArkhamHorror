@@ -24,7 +24,7 @@ getTreachery [] = error "impossible"
 instance HasAbilities FoolMeOnce1 where
   getAbilities (FoolMeOnce1 attrs) =
     [ restricted attrs 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (DrawCard #when Anyone (basic $ mapOneOf cardIs $ eventCardsUnderneath attrs) AnyDeck)
           (discardCost attrs)
     ]

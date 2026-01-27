@@ -21,7 +21,7 @@ instance HasAbilities DisciplineQuiescenceOfThoughtBroken where
         x
         1
         (youExist (InvestigatorWithMetaKey "quiescent") <> not_ (SelfHasModifier CannotBeFlipped))
-        $ ReactionAbility (RoundEnds #after) Free
+        $ triggered (RoundEnds #after) Free
     ]
 
 instance RunMessage DisciplineQuiescenceOfThoughtBroken where

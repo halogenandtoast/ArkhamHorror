@@ -27,7 +27,7 @@ instance HasAbilities OccultEvidence where
   getAbilities (OccultEvidence x) =
     [ playerLimit (PerSearch Research)
         $ mkAbility x 1
-        $ ReactionAbility (AmongSearchedCards You) (RevealCost $ toCardId x)
+        $ triggered (AmongSearchedCards You) (RevealCost $ toCardId x)
     ]
 
 instance RunMessage OccultEvidence where

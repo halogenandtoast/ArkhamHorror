@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue) where
 
@@ -512,7 +512,7 @@ instance RunMessage SkillTest where
             _ -> id
 
       discardMessages <- forMaybeM discards $ \(iid, discard) -> do
-        mods <- map resultF <$> getModifiers (toCardId discard)
+        mods <- traceShowId . map resultF <$> getModifiers (toCardId discard)
         let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
         pure
           $ if
@@ -521,6 +521,9 @@ instance RunMessage SkillTest where
             | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
                 Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
             | ReturnToHandAfterTest `elem` mods -> Just $ AddToHand iid [toCard discard]
+            | ShuffleIntoDeckInsteadOfDiscard `elem` mods
+            , Just owner <- traceShowId discard.owner ->
+                Just $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [toCard discard]
             | otherwise -> guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
 
       pushAll

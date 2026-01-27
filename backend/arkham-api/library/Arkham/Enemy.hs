@@ -50,7 +50,8 @@ instance FromJSON Enemy where
 withEnemyCardCode
   :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
 withEnemyCardCode cCode f = case lookup cCode allEnemies of
-  Nothing -> error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack
+  Nothing ->
+    error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> f a
 
 allEnemies :: Map CardCode SomeEnemyCard
@@ -580,6 +581,9 @@ allEnemies =
     , SomeEnemyCard frenziedMiner
     , --- Horrors in the Rock [fhv]
       SomeEnemyCard crystalParasite
+    , -- Core 2026
+      --- signature [core2026]
+      SomeEnemyCard blackChamberOperative
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

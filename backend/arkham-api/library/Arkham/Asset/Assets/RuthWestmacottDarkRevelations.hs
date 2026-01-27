@@ -21,7 +21,7 @@ ruthWestmacottDarkRevelations = ally RuthWestmacottDarkRevelations Cards.ruthWes
 instance HasAbilities RuthWestmacottDarkRevelations where
   getAbilities (RuthWestmacottDarkRevelations attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InitiatedSkillTest #when (affectsOthers Anyone) #any #any
               $ oneOf [SkillTestWithAction #fight, SkillTestWithAction #evade, SkillTestOnEncounterCard]
           )

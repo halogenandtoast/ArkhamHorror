@@ -25,7 +25,7 @@ instance HasModifiersFor ToothOfEztli where
 instance HasAbilities ToothOfEztli where
   getAbilities (ToothOfEztli x) =
     [ restricted x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (SkillTestResult #after You (SkillTestOnTreachery AnyTreachery) (SuccessResult AnyValue))
           (exhaust x)
     ]

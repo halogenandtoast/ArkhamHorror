@@ -24,7 +24,7 @@ instance HasAbilities TalismanOfProtection where
         x
         1
         (exists $ oneOf [HealableInvestigator ThisCard dType You | dType <- [#damage, #horror]])
-        $ ReactionAbility
+        $ triggered
           ( InvestigatorWouldBeDefeated
               #when
               (BySource (SourceIsCancelable AnySource) <> ByAnyOf [ByHorror, ByDamage])

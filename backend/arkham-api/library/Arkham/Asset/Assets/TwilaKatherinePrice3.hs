@@ -24,7 +24,7 @@ twilaKatherinePrice3 = ally TwilaKatherinePrice3 Cards.twilaKatherinePrice3 (1, 
 instance HasAbilities TwilaKatherinePrice3 where
   getAbilities (TwilaKatherinePrice3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (SpentUses #after You AnySource Charge (AssetWithTrait Spell) (atLeast 1))
           (exhaust a)
     ]

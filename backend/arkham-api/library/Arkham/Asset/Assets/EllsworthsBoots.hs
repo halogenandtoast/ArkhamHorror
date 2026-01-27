@@ -21,7 +21,7 @@ instance HasAbilities EllsworthsBoots where
         a
         1
         (any_ [AccessibleFrom ForMovement YourLocation, RevealedLocation <> CanEnterLocation You])
-        $ ReactionAbility (DiscoveringLastClue #after You YourLocation) (exhaust a)
+        $ triggered (DiscoveringLastClue #after You YourLocation) (exhaust a)
     ]
 
 instance RunMessage EllsworthsBoots where

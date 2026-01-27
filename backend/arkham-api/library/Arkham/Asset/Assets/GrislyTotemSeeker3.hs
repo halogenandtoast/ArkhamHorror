@@ -26,7 +26,7 @@ grislyTotemSeeker3 = asset GrislyTotemSeeker3 Cards.grislyTotemSeeker3
 instance HasAbilities GrislyTotemSeeker3 where
   getAbilities (GrislyTotemSeeker3 a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility (CommittedCard #after You #any) (exhaust a)
+        $ triggered (CommittedCard #after You #any) (exhaust a)
     ]
 
 toSkillLabel :: SkillIcon -> Text

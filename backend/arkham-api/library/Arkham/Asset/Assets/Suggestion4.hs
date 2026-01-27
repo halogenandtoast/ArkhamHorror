@@ -19,7 +19,7 @@ instance HasAbilities Suggestion4 where
   getAbilities (Suggestion4 a) =
     [ evadeAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
     , restricted a 2 ControlsThis
-        $ ReactionAbility (EnemyWouldAttack #when You (CancelableEnemyAttack AnyEnemyAttack) AnyEnemy)
+        $ triggered (EnemyWouldAttack #when You (CancelableEnemyAttack AnyEnemyAttack) AnyEnemy)
         $ assetUseCost a Charge 1
     ]
 

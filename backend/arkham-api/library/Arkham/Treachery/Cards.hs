@@ -72,6 +72,7 @@ allPlayerTreacheryCards =
       , atychiphobia
       , bloodlust
       , boughtInBlood
+      , breakingPoint
       , burdenOfDestiny
       , burdenOfLeadership
       , buriedSecrets
@@ -3190,9 +3191,10 @@ empyreanBrilliance =
 
 captivatingGleam :: CardDef
 captivatingGleam =
-  surge $ (treachery "10731" "Captivating Gleam" Refractions 2)
-    { cdCardTraits = setFromList [Power, Colour]
-    }
+  surge
+    $ (treachery "10731" "Captivating Gleam" Refractions 2)
+      { cdCardTraits = setFromList [Power, Colour]
+      }
 
 illDoItMyself :: CardDef
 illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
@@ -3235,6 +3237,12 @@ inHarmsWay :: CardDef
 inHarmsWay =
   (weakness "12003" "In Harm's Way")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+breakingPoint :: CardDef
+breakingPoint =
+  (weakness "12015" "Breaking Point")
+    { cdCardTraits = setFromList [Hardship]
     }
 
 theZealotsSeal :: CardDef

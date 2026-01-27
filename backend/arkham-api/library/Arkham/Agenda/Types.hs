@@ -142,7 +142,7 @@ agendaWith
   -> CardBuilder (Int, AgendaId) a
 agendaWith (n, side) f cardDef threshold g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (deckId, aid) ->
         f
           . g
@@ -265,6 +265,6 @@ liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
 liftSomeAgendaCard f (SomeAgendaCard a) = f a
 
 someAgendaCardCode :: SomeAgendaCard -> CardCode
-someAgendaCardCode = liftSomeAgendaCard cbCardCode
+someAgendaCardCode = liftSomeAgendaCard toCardCode
 
 makeLensesWith suffixedFields ''AgendaAttrs

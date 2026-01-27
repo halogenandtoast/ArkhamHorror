@@ -198,7 +198,7 @@ skill
   :: (SkillAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, SkillId) a
 skill f cardDef =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (iid, sid) ->
         f
           $ SkillAttrs
@@ -288,7 +288,17 @@ liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
 liftSomeSkillCard f (SomeSkillCard a) = f a
 
 someSkillCardCode :: SomeSkillCard -> CardCode
-someSkillCardCode = liftSomeSkillCard cbCardCode
+someSkillCardCode = liftSomeSkillCard toCardCode
+
+someSkillCardCodes :: SomeSkillCard -> [(CardCode, SomeSkillCard)]
+someSkillCardCodes (SomeSkillCard CardBuilder {..}) =
+  [ ( code
+    , SomeSkillCard $ setCardCode code <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {skillCardCode = c})
 
 setMeta :: ToJSON a => a -> SkillAttrs -> SkillAttrs
 setMeta a = metaL .~ toJSON a

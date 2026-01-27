@@ -225,7 +225,7 @@ enemyWith
   -> CardBuilder EnemyId a
 enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId eid ->
         f
           . g
@@ -460,7 +460,17 @@ liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
 liftSomeEnemyCard f (SomeEnemyCard a) = f a
 
 someEnemyCardCode :: SomeEnemyCard -> CardCode
-someEnemyCardCode = liftSomeEnemyCard cbCardCode
+someEnemyCardCode = liftSomeEnemyCard toCardCode
+
+someEnemyCardCodes :: SomeEnemyCard -> [(CardCode, SomeEnemyCard)]
+someEnemyCardCodes (SomeEnemyCard CardBuilder {..}) =
+  [ ( code
+    , SomeEnemyCard $ setCardCode code <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {enemyCardCode = c})
 
 makeLensesWith suffixedFields ''EnemyAttrs
 

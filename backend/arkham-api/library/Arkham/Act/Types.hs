@@ -143,7 +143,7 @@ actWith
   -> CardBuilder (Int, ActId) a
 actWith (n, side) f cardDef mCost g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (deckId, aid) ->
         f
           . g
@@ -283,4 +283,4 @@ liftSomeActCard :: (forall a. ActCard a -> b) -> SomeActCard -> b
 liftSomeActCard f (SomeActCard a) = f a
 
 someActCardCode :: SomeActCard -> CardCode
-someActCardCode = liftSomeActCard cbCardCode
+someActCardCode = liftSomeActCard toCardCode

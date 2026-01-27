@@ -544,6 +544,7 @@ allPlayerAssetCards =
       , luckyPennyOmenOfMisfortune2
       , lugerP08
       , lupara3
+      , m1911
       , m1918Bar4
       , machete
       , madameLabranche

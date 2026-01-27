@@ -99,7 +99,7 @@ storyWith
   -> CardBuilder (Maybe Target, StoryId) a
 storyWith f cardDef g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (mTarget, sid) ->
         f
           . g
@@ -209,7 +209,7 @@ liftSomeStoryCard :: (forall a. StoryCard a -> b) -> SomeStoryCard -> b
 liftSomeStoryCard f (SomeStoryCard a) = f a
 
 someStoryCardCode :: SomeStoryCard -> CardCode
-someStoryCardCode = liftSomeStoryCard cbCardCode
+someStoryCardCode = liftSomeStoryCard toCardCode
 
 makeLensesWith suffixedFields ''StoryAttrs
 

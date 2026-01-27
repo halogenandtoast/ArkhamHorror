@@ -96,7 +96,7 @@ machete =
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [#hand]
-    , cdAlternateCardCodes = ["01520"]
+    , cdAlternateCardCodes = ["01520", "12020"]
     }
 
 guardDog :: CardDef

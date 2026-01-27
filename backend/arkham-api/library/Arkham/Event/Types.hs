@@ -207,7 +207,7 @@ event
   :: (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (iid, eid) ->
         f
           $ EventAttrs
@@ -346,7 +346,17 @@ liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
 liftSomeEventCard f (SomeEventCard a) = f a
 
 someEventCardCode :: SomeEventCard -> CardCode
-someEventCardCode = liftSomeEventCard cbCardCode
+someEventCardCode = liftSomeEventCard toCardCode
+
+someEventCardCodes :: SomeEventCard -> [(CardCode, SomeEventCard)]
+someEventCardCodes (SomeEventCard CardBuilder {..}) =
+  [ ( code
+    , SomeEventCard $ setCardCode code <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {eventCardCode = c})
 
 makeLensesWith suffixedFields ''EventAttrs
 

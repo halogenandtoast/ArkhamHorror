@@ -280,7 +280,7 @@ treacheryWith
   -> CardBuilder (InvestigatorId, TreacheryId) a
 treacheryWith f cardDef g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (iid, tid) ->
         f
           . g
@@ -386,7 +386,17 @@ liftSomeTreacheryCard
 liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
 
 someTreacheryCardCode :: SomeTreacheryCard -> CardCode
-someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
+someTreacheryCardCode = liftSomeTreacheryCard toCardCode
+
+someTreacheryCardCodes :: SomeTreacheryCard -> [(CardCode, SomeTreacheryCard)]
+someTreacheryCardCodes (SomeTreacheryCard CardBuilder {..}) =
+  [ ( code
+    , SomeTreacheryCard $ setCardCode code <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {treacheryCardCode = c})
 
 makeLensesWith suffixedFields ''TreacheryAttrs
 

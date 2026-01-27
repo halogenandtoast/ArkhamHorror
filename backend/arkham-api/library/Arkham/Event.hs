@@ -62,8 +62,8 @@ withEventCardCode cCode f = case lookup cCode allEvents of
 
 allEvents :: Map CardCode SomeEventCard
 allEvents =
-  mapFrom
-    someEventCardCode
+  mapFromList $ concatMap
+    someEventCardCodes
     [ -- Night of the Zealot
       --- signature [notz]
       SomeEventCard onTheLam

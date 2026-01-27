@@ -63,20 +63,20 @@ instance HasField "defs" CardDef [CardDef] where
   getField def = def : maybeToList def.flip
 
 data CardBuilder ident a = CardBuilder
-  { cbCardCode :: CardCode
+  { cbCardDef :: CardDef
   , cbCardBuilder :: CardId -> ident -> a
   }
 
 instance HasField "cardCode" (CardBuilder ident a) CardCode where
-  getField = toCardCode
+  getField = toCardCode . cbCardDef
 
 instance HasCardCode (CardBuilder ident a) where
-  toCardCode = cbCardCode
+  toCardCode = cdCardCode . cbCardDef
 
 instance Functor (CardBuilder ident) where
   fmap f CardBuilder {..} =
     CardBuilder
-      { cbCardCode = cbCardCode
+      { cbCardDef
       , cbCardBuilder = \cId -> f . cbCardBuilder cId
       }
 

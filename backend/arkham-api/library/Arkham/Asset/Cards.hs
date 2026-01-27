@@ -704,6 +704,7 @@ allPlayerAssetCards =
       , remingtonModel18584
       , researchLibrarian
       , researchNotes
+      , resilience
       , riotWhistle
       , riteOfSanctification
       , riteOfSeeking
@@ -779,6 +780,7 @@ allPlayerAssetCards =
       , sixthSense4
       , sledDog
       , sledgehammer
+      , sledgehammer3
       , sledgehammer4
       , sleuth3
       , smallRadio
@@ -943,6 +945,7 @@ allPlayerAssetCards =
       , wickedAthame
       , williamBainLookingForThoseLost
       , williamBainLookingForThoseLost
+      , winchesterModel125
       , wishEater
       , wither
       , wither4

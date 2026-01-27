@@ -1170,7 +1170,7 @@ allAssets =
       , SomeAssetCard sacredOathOathOfLoyalty5
       , SomeAssetCard sacredOathOathOfOrder5
       , SomeAssetCard sacredOathOathOfWisdom5
-      , -- The Drowned City
+      , -- Core 2026
         --- signature [core2026]
         SomeAssetCard danielasWrenchNewAndImproved
       , SomeAssetCard covertOpsInTheShadows
@@ -1180,7 +1180,10 @@ allAssets =
       , SomeAssetCard endurance
       , SomeAssetCard loganHastingsBountyHunter
       , SomeAssetCard m1911
+      , SomeAssetCard resilience
       , SomeAssetCard bodyguard2
+      , SomeAssetCard sledgehammer3
+      , SomeAssetCard winchesterModel125
       , --- seeker [core2026]
         SomeAssetCard sharpRhetoric
       , --- rogue [core2026]

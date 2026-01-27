@@ -65,6 +65,13 @@ m1911 =
     , cdSlots = [#hand]
     }
 
+resilience :: CardDef
+resilience =
+  (asset "12021" "Resilience" 3 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Talent]
+    }
+
 bodyguard2 :: CardDef
 bodyguard2 =
   (asset "12027" "Bodyguard" 3 Guardian)
@@ -72,6 +79,25 @@ bodyguard2 =
     , cdCardTraits = setFromList [Ally]
     , cdSlots = [#ally]
     , cdLevel = Just 2
+    }
+
+sledgehammer3 :: CardDef
+sledgehammer3 =
+  (asset "12028" "Sledgehammer" 3 Guardian)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+    , cdSlots = [#hand, #hand]
+    , cdLevel = Just 3
+    }
+
+winchesterModel125 :: CardDef
+winchesterModel125 =
+  (asset "12029" "Winchester Model 12" 4 Guardian)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSlots = [#hand, #hand]
+    , cdUses = uses Ammo 3
+    , cdLevel = Just 5
     }
 
 sharpRhetoric :: CardDef

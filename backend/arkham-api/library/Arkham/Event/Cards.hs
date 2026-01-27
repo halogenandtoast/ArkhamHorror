@@ -198,6 +198,7 @@ allPlayerEventCards =
       , friendsInLowPlaces
       , galvanize1
       , gangUp1
+      , gatherIntel
       , gazeOfOuraxsh2
       , getBehindMe
       , getOverHere
@@ -427,6 +428,8 @@ allPlayerEventCards =
       , thinkOnYourFeet2
       , thirdTimesACharm2
       , thoroughInquiry
+      , throughTheCracks
+      , throughTheCracks2
       , throwTheBookAtThem
       , tidesOfFate
       , timeWarp2

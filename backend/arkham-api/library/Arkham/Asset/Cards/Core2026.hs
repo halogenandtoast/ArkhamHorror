@@ -100,6 +100,24 @@ winchesterModel125 =
     , cdLevel = Just 5
     }
 
+dorothySimmonsStraightAStudent :: CardDef
+dorothySimmonsStraightAStudent =
+  (asset "12030" ("Dorothy Simmons" <:> "Straight-A Student") 3 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+localMap :: CardDef
+localMap =
+  (asset "12033" "Local Map" 3 Seeker)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 4
+    }
+
 sharpRhetoric :: CardDef
 sharpRhetoric =
   (asset "12035" "Sharp Rhetoric" 2 Seeker)

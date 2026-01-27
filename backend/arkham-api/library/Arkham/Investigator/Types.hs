@@ -619,7 +619,7 @@ data SomeInvestigatorCard where
   SomeInvestigatorCard :: IsInvestigator a => InvestigatorCard a -> SomeInvestigatorCard
 
 instance HasField "def" SomeInvestigatorCard CardDef where
-  getField = liftInvestigatorCard $ \c -> case lookup (cbCardCode c) (allInvestigatorCards <> allEncounterInvestigatorCards) of
+  getField = liftInvestigatorCard $ \c -> case lookup ((cbCardDef c).cardCode) (allInvestigatorCards <> allEncounterInvestigatorCards) of
     Nothing -> error $ "invalid card: " <> show (toCardCode c)
     Just def -> def
 
@@ -631,9 +631,7 @@ liftInvestigatorCard
 liftInvestigatorCard f (SomeInvestigatorCard a) = f a
 
 someInvestigatorCardCodes :: SomeInvestigatorCard -> [CardCode]
-someInvestigatorCardCodes = liftInvestigatorCard $ \c -> case lookup (cbCardCode c) (allInvestigatorCards <> allEncounterInvestigatorCards) of
-  Just def -> cbCardCode c : cdAlternateCardCodes def
-  Nothing -> error $ "no such investigator" <> show (cbCardCode c)
+someInvestigatorCardCodes = liftInvestigatorCard $ \c -> (cbCardDef c).cardCodes
 
 toInvestigator :: SomeInvestigatorCard -> PlayerId -> Investigator
 toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCardId

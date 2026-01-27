@@ -120,7 +120,7 @@ instance HasField "token" ScarletKeyAttrs (Token -> Int) where
 key :: (ScarletKeyAttrs -> a) -> CardDef -> CardBuilder (Target, ScarletKeyId) a
 key f cardDef =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (bearer, kid) ->
         f
           $ ScarletKeyAttrs
@@ -231,7 +231,7 @@ liftSomeScarletKeyCard :: (forall a. ScarletKeyCard a -> b) -> SomeScarletKeyCar
 liftSomeScarletKeyCard f (SomeScarletKeyCard a) = f a
 
 someScarletKeyCardCode :: SomeScarletKeyCard -> CardCode
-someScarletKeyCardCode = liftSomeScarletKeyCard cbCardCode
+someScarletKeyCardCode = liftSomeScarletKeyCard toCardCode
 
 makeLensesWith suffixedFields ''ScarletKeyAttrs
 

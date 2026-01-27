@@ -56,8 +56,8 @@ withEnemyCardCode cCode f = case lookup cCode allEnemies of
 
 allEnemies :: Map CardCode SomeEnemyCard
 allEnemies =
-  mapFrom
-    someEnemyCardCode
+  mapFromList $ concatMap
+    someEnemyCardCodes
     [ -- Night of the Zealot
       -- weakness
       SomeEnemyCard mobEnforcer

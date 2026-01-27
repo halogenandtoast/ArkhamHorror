@@ -52,8 +52,8 @@ withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
 
 allTreacheries :: Map CardCode SomeTreacheryCard
 allTreacheries =
-  mapFrom
-    someTreacheryCardCode
+  mapFromList $ concatMap
+    someTreacheryCardCodes
     [ -- Night of the Zealot
       -- signature
       SomeTreacheryCard coverUp

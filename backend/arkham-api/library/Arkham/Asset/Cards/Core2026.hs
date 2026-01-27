@@ -55,6 +55,16 @@ loganHastingsBountyHunter =
     , cdUnique = True
     }
 
+m1911 :: CardDef
+m1911 =
+  (asset "12019" "M1911" 3 Guardian)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdUnique = True
+    , cdUses = uses Ammo 4
+    , cdSlots = [#hand]
+    }
+
 bodyguard2 :: CardDef
 bodyguard2 =
   (asset "12027" "Bodyguard" 3 Guardian)

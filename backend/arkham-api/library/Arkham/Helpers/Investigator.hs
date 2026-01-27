@@ -351,7 +351,7 @@ investigator
 investigator f cardDef Stats {..} =
   let iid = InvestigatorId (cdCardCode cardDef)
    in CardBuilder
-        { cbCardCode = cdCardCode cardDef
+        { cbCardDef = cardDef
         , cbCardBuilder = \_ pid ->
             f
               $ InvestigatorAttrs

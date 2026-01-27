@@ -289,7 +289,7 @@ locationWith
   -> CardBuilder LocationId a
 locationWith f def shroud' revealClues g =
   CardBuilder
-    { cbCardCode = cdCardCode def
+    { cbCardDef = def
     , cbCardBuilder = \cardId lid ->
         (f . g)
           $ LocationAttrs
@@ -438,7 +438,7 @@ data SomeLocationCard where
   SomeLocationCard :: IsLocation a => LocationCard a -> SomeLocationCard
 
 someLocationCardCode :: SomeLocationCard -> CardCode
-someLocationCardCode (SomeLocationCard a) = cbCardCode a
+someLocationCardCode (SomeLocationCard a) = toCardCode a
 
 instance Named LocationAttrs where
   toName l =

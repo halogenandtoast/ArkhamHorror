@@ -71,9 +71,9 @@ withSkillCardCode cCode f = case lookup cCode allSkills of
   Just (SomeSkillCard a) -> f a
 
 allSkills :: Map CardCode SomeSkillCard
-allSkills =
-  mapFrom
-    someSkillCardCode
+allSkills = mapFromList $
+  concatMap
+    someSkillCardCodes
     [ -- Night of the Zealot
       --- guardian [notz]
       SomeSkillCard viciousBlow

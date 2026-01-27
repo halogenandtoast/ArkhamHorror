@@ -122,7 +122,17 @@ liftAssetCard :: (forall a. AssetCard a -> b) -> SomeAssetCard -> b
 liftAssetCard f (SomeAssetCard a) = f a
 
 someAssetCardCode :: SomeAssetCard -> CardCode
-someAssetCardCode = liftAssetCard cbCardCode
+someAssetCardCode = liftAssetCard toCardCode
+
+someAssetCardCodes :: SomeAssetCard -> [(CardCode, SomeAssetCard)]
+someAssetCardCodes (SomeAssetCard CardBuilder {..}) =
+  [ ( code
+    , SomeAssetCard $ setCardCode code <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {assetCardCode = c})
 
 instance Targetable Asset where
   toTarget = toTarget . toAttrs
@@ -466,7 +476,7 @@ assetWith
   -> CardBuilder (AssetId, Maybe InvestigatorId) a
 assetWith f cardDef g =
   CardBuilder
-    { cbCardCode = cdCardCode cardDef
+    { cbCardDef = cardDef
     , cbCardBuilder = \cardId (aid, mOwner) ->
         f
           . g
@@ -630,10 +640,11 @@ getMetaKey k attrs = case attrs.meta of
 
 getMetaKeyMaybe :: FromJSON a => Key -> AssetAttrs -> Maybe a
 getMetaKeyMaybe k attrs = case attrs.meta of
-  Object o -> KeyMap.lookup k o >>= \v ->
-    case fromJSON v of
-      Error _ -> Nothing
-      Success v' -> Just v'
+  Object o ->
+    KeyMap.lookup k o >>= \v ->
+      case fromJSON v of
+        Error _ -> Nothing
+        Success v' -> Just v'
   _ -> Nothing
 
 getMetaKeyDefault :: FromJSON a => Key -> a -> AssetAttrs -> a

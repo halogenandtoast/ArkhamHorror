@@ -125,6 +125,15 @@ sharpRhetoric =
     , cdCardTraits = setFromList [Talent]
     }
 
+mysteriousGrimoire2 :: CardDef
+mysteriousGrimoire2 =
+  (asset "12040" "Mysterious Grimoire" 3 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 4
+    }
+
 silverTongue :: CardDef
 silverTongue =
   (asset "12047" "Silver Tongue" 2 Rogue)

@@ -487,9 +487,9 @@ instance RunMessage AssetAttrs where
             player <- getPlayer iid
             push
               $ chooseN player n
-              $ replicate (a.use useType') (targetLabel a [Do msg])
+              $ replicate (a.use useType') (targetLabel a [Do $ SpendUses source target useType' 1])
               <> concat
-                [ replicate x (targetLabel otherTarget [Do $ SpendUses source otherTarget actualUseType n])
+                [ replicate x (targetLabel otherTarget [Do $ SpendUses source otherTarget actualUseType 1])
                 | (otherTarget, actualUseType, x) <- otherSourcePairs
                 ]
       pure a

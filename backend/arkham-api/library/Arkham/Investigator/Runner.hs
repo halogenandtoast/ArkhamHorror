@@ -2206,11 +2206,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 ]
               <> d.discoverThen
 
-        if notNull concealed
-          then Choose.chooseOneM iid do
-            Choose.labeled "Expose concealed" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
-            Choose.labeled "Discover normally" defaultDiscover
-          else defaultDiscover
+        if
+          | notNull concealed && clueCount > 0 ->
+              Choose.chooseOneM iid do
+                Choose.labeled "Expose concealed" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
+                Choose.labeled "Discover normally" defaultDiscover
+          | notNull concealed -> chooseExposeConcealedAt iid iid (LocationWithId lid)
+          | otherwise -> defaultDiscover
 
         send $ format a <> " discovered " <> pluralize clueCount "clue"
         pure a

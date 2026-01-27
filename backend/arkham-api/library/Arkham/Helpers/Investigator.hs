@@ -5,6 +5,7 @@ module Arkham.Helpers.Investigator where
 import Arkham.Action
 import Arkham.Asset.Types qualified as Field
 import Arkham.CampaignLog
+import Arkham.Campaigns.TheScarletKeys.Modifiers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.Settings
@@ -218,7 +219,11 @@ getCanDiscoverClues
 getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers iid
   hasClues <- fieldSome LocationClues lid
-  (&& hasClues) . not <$> anyM match modifiers
+  hasConcealed <- matches lid $ LocationWithConcealedCard <> LocationWithoutModifier NoExposeAt
+  canExpose <-
+    matches iid $ InvestigatorWithoutModifier CannotExpose
+      <> InvestigatorWithoutModifier (noExposeAt lid)
+  (&& or [hasClues, hasConcealed && canExpose]) . not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True
   match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher

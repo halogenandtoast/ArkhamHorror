@@ -11,9 +11,7 @@ newtype Hoods = Hoods EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hoods :: EnemyCard Hoods
-hoods =
-  enemyWith Hoods Cards.hoods (3, Static 3, 3) (1, 1)
-    $ \a -> a & preyL .~ BearerOf (toId a)
+hoods = enemyWith Hoods Cards.hoods (3, Static 3, 3) (1, 1) preyIsOnlyBearer
 
 instance HasAbilities Hoods where
   getAbilities (Hoods a) =

@@ -59,7 +59,7 @@ instance HasChaosTokenValue DealingsInTheDark where
           else min maxValue <$> fieldMax EnemyClues (enemy_ #cultist)
       pure $ ChaosTokenValue ElderThing (NegativeModifier x)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 5 7
-    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 

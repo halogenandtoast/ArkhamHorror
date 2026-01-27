@@ -8,12 +8,14 @@ data Trait
   = Abandoned
   | Abomination
   | Agency
+  | Alchemy
   | Alexandria
   | Allied
   | Ally
   | Altered
   | Ancient
   | AncientOne
+  | Apparel
   | Arkham
   | ArkhamAsylum
   | Armor
@@ -126,6 +128,7 @@ data Trait
   | Haunted
   | Havana
   | Hazard
+  | Headwear
   | HemlockVale
   | Hex
   | Hideout

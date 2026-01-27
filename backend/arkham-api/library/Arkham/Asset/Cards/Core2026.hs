@@ -38,3 +38,64 @@ bodyguard =
     , cdCardTraits = setFromList [Ally]
     , cdSlots = [#ally]
     }
+
+endurance :: CardDef
+endurance =
+  (asset "12017" "Endurance" 2 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Talent]
+    }
+
+loganHastingsBountyHunter :: CardDef
+loganHastingsBountyHunter =
+  (asset "12018" ("Logan Hastings" <:> "Bounty Hunter") 4 Guardian)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ally, Hunter]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
+bodyguard2 :: CardDef
+bodyguard2 =
+  (asset "12027" "Bodyguard" 3 Guardian)
+    { cdSkills = [#combat, #wild]
+    , cdCardTraits = setFromList [Ally]
+    , cdSlots = [#ally]
+    , cdLevel = Just 2
+    }
+
+sharpRhetoric :: CardDef
+sharpRhetoric =
+  (asset "12035" "Sharp Rhetoric" 2 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Talent]
+    }
+
+silverTongue :: CardDef
+silverTongue =
+  (asset "12047" "Silver Tongue" 2 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Talent]
+    }
+
+levelheaded :: CardDef
+levelheaded =
+  (asset "12076" "Levelheaded" 2 Survivor)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Talent]
+    }
+
+fedora :: CardDef
+fedora =
+  (asset "12087" "Fedora" 2 Neutral)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Apparel, Headwear]
+    , cdSlots = [#head]
+    }
+
+theGoldBug :: CardDef
+theGoldBug =
+  (basicWeakness "12098" "The Gold Bug")
+    { cdCardTraits = setFromList [Item, Relic, Alchemy, Cursed]
+    , cdSlots = [#accessory]
+    }

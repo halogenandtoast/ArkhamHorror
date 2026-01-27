@@ -168,14 +168,14 @@ viciousBlow :: CardDef
 viciousBlow =
   (skill "01025" "Vicious Blow" [#combat] Guardian)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01525", "60119"]
+    , cdAlternateCardCodes = ["01525", "60119", "12025"]
     }
 
 deduction :: CardDef
 deduction =
   (skill "01039" "Deduction" [#intellect] Seeker)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01539", "60219"]
+    , cdAlternateCardCodes = ["01539", "60219", "12039"]
     }
 
 opportunist :: CardDef
@@ -205,7 +205,7 @@ guts =
   (skill "01089" "Guts" [#willpower, #willpower] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdAlternateCardCodes = ["01589"]
+    , cdAlternateCardCodes = ["01589", "12090"]
     }
 
 perception :: CardDef
@@ -213,7 +213,7 @@ perception =
   (skill "01090" "Perception" [#intellect, #intellect] Neutral)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdAlternateCardCodes = ["01590"]
+    , cdAlternateCardCodes = ["01590", "12093"]
     }
 
 overpower :: CardDef
@@ -229,7 +229,7 @@ manualDexterity =
   (skill "01092" "Manual Dexterity" [#agility, #agility] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdAlternateCardCodes = ["01592"]
+    , cdAlternateCardCodes = ["01592", "12091"]
     }
 
 unexpectedCourage :: CardDef
@@ -237,7 +237,7 @@ unexpectedCourage =
   (skill "01093" "Unexpected Courage" [#wild, #wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdAlternateCardCodes = ["01593"]
+    , cdAlternateCardCodes = ["01593", "12094"]
     }
 
 doubleOrNothing :: CardDef
@@ -307,6 +307,7 @@ fearless2 =
   (skill "02268" "Fearless" [#willpower, #willpower] Mystic)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 2
+    , cdAlternateCardCodes = ["12069"]
     }
 
 strokeOfLuck2 :: CardDef

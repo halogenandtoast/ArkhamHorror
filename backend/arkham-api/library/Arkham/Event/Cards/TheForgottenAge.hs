@@ -108,6 +108,7 @@ sceneOfTheCrime =
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdCriteria =
         Just $ Criteria.Criteria [Criteria.FirstAction, canDiscoverCluesAtYourLocation]
+    , cdAlternateCardCodes = ["12024"]
     }
 
 marksmanship1 :: CardDef
@@ -219,6 +220,7 @@ premonition =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Augury
     , cdFastWindow = Just FastPlayerWindow
+    , cdAlternateCardCodes = ["12064"]
     }
 
 liveAndLearn :: CardDef

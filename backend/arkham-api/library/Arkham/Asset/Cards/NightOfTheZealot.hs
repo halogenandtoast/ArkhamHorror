@@ -146,7 +146,7 @@ magnifyingGlass =
       { cdSkills = [#intellect]
       , cdCardTraits = setFromList [Item, Tool]
       , cdSlots = [#hand]
-      , cdAlternateCardCodes = ["01530"]
+      , cdAlternateCardCodes = ["01530", "12034"]
       }
 
 oldBookOfLore :: CardDef

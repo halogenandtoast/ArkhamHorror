@@ -330,6 +330,7 @@ thievesKit =
     , cdCardTraits = setFromList [Item, Tool, Illicit]
     , cdUses = uses Supply 6
     , cdSlots = [#hand]
+    , cdAlternateCardCodes = ["12049"]
     }
 
 stylishCoat1 :: CardDef

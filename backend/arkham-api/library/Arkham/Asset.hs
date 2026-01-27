@@ -1176,6 +1176,19 @@ allAssets =
     , SomeAssetCard isabellesTwin45sLoadedWithVengeance
     , --- guardian [core2026]
       SomeAssetCard bodyguard
+    , SomeAssetCard endurance
+    , SomeAssetCard loganHastingsBountyHunter
+    , SomeAssetCard bodyguard2
+    , --- seeker [core2026]
+      SomeAssetCard sharpRhetoric
+    , --- rogue [core2026]
+      SomeAssetCard silverTongue
+    , --- survivor [core2026]
+      SomeAssetCard levelheaded
+    , --- neutral [core2026]
+      SomeAssetCard fedora
+    , --- basic weakness [core2026]
+      SomeAssetCard theGoldBug
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

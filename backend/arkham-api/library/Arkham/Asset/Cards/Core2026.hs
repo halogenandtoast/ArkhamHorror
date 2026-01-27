@@ -30,3 +30,11 @@ isabellesTwin45sLoadedWithVengeance =
       , cdUses = uses Ammo 6
       , cdSlots = [#hand, #hand]
       }
+
+bodyguard :: CardDef
+bodyguard =
+  (asset "12016" "Bodyguard" 3 Guardian)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ally]
+    , cdSlots = [#ally]
+    }

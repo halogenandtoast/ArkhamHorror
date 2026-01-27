@@ -131,6 +131,7 @@ allPlayerAssetCards =
       , bloodstainedDagger
       , blur1
       , blur4
+      , bodyguard
       , bonesaw
       , bonnieWalshLoyalAssistant
       , bookOfLivingMythsChronicleOfWonders

@@ -27,6 +27,7 @@ data DamageStrategy
 
 data ZoneReturnStrategy
   = PutBackInAnyOrder
+  | PutBackInAnyOrderBothTopAndBottom
   | ShuffleBackIn
   | PutBack
   | DiscardRest

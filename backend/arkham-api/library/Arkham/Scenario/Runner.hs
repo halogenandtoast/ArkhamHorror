@@ -60,6 +60,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (cardResolutionModifiers)
 import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
@@ -1146,6 +1147,23 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ mapTargetLabelWith
             toCardId
             (\c -> [AddFocusedToTopOfDeck iid t (toCardId c)])
+            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+      PutBackInAnyOrderBothTopAndBottom -> do
+        when
+          (foundKey cardSource /= Zone.FromDeck)
+          (error "Expects a deck: Investigator<PutBackInAnyOrderBothTopAndBottom>")
+        player <- getPlayer iid
+        chooseOneAtATime iid
+          $ mapTargetLabelWith
+            toCardId
+            ( \c ->
+                [ Msg.chooseOne
+                    player
+                    [ Label "Place on Top" [AddFocusedToTopOfDeck iid t (toCardId c)]
+                    , Label "Place on Bottom" [PutCardOnBottomOfDeck iid deck c]
+                    ]
+                ]
+            )
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")

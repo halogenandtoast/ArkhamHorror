@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.DrMilanChristopher where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
@@ -20,7 +21,7 @@ instance HasModifiersFor DrMilanChristopher where
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
     [ playerLimit PerTestOrAbility
-        $ restricted x 1 ControlsThis
+        $ controlled x 1 (youExist can.gain.resources)
         $ triggered
           (SuccessfulInvestigation #after You Anywhere)
           (mwhen (maybe False (> TabooList15) x.taboo) (exhaust x))

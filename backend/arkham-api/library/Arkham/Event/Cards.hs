@@ -2,6 +2,7 @@ module Arkham.Event.Cards (module Arkham.Event.Cards, module X) where
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Event.Cards.Core2026 as X
 import Arkham.Event.Cards.EdgeOfTheEarth as X
 import Arkham.Event.Cards.NightOfTheZealot as X
 import Arkham.Event.Cards.Parallel as X
@@ -119,6 +120,7 @@ allPlayerEventCards =
       , darkPact
       , darkProphecy
       , dawnStar1
+      , deadEnds
       , decipheredReality5
       , decoy
       , deepKnowledge
@@ -127,6 +129,7 @@ allPlayerEventCards =
       , delveTooDeep
       , denyExistence
       , denyExistence5
+      , detectivesIntuition
       , devilsLuck1
       , dimensionalVortex5
       , dirtyDeeds3

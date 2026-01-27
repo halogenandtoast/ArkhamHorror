@@ -87,6 +87,7 @@ allInvestigatorCards =
       , georgeBarnaby
       , lostHomunculus
       , danielaReyes2
+      , joeDiamond2
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -626,6 +627,14 @@ danielaReyes2 =
     ("Daniela Reyes" <:> "The Mechanic")
     Guardian
     [Warden, Worker]
+
+joeDiamond2 :: CardDef
+joeDiamond2 =
+  investigator
+    "12004"
+    ("Joe Diamond" <:> "The Private Investigator")
+    Seeker
+    [Detective]
 
 nathanielCho :: CardDef
 nathanielCho =

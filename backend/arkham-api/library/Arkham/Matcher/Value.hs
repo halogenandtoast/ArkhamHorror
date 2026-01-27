@@ -4,6 +4,7 @@ module Arkham.Matcher.Value where
 
 import Arkham.GameValue
 import Arkham.Prelude
+import Arkham.Matcher.Base
 import Data.Aeson.TH
 
 data ValueMatcher
@@ -16,5 +17,8 @@ data ValueMatcher
   | AnyValue
   | GameValueOneOf [ValueMatcher]
   deriving stock (Show, Eq, Ord, Data)
+
+instance OneOf ValueMatcher where
+  oneOf = GameValueOneOf
 
 $(deriveJSON defaultOptions ''ValueMatcher)

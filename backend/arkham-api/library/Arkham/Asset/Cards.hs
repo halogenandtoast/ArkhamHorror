@@ -261,6 +261,7 @@ allPlayerAssetCards =
       , dissectionTools
       , divination1
       , divination4
+      , dorothySimmonsStraightAStudent
       , doubleDouble4
       , downTheRabbitHole
       , dowsingRod
@@ -528,6 +529,7 @@ allPlayerAssetCards =
       , litaChantler
       , livingInk
       , livreDeibon
+      , localMap
       , lockedAndLoaded3
       , lockpicks
       , lockpicks1

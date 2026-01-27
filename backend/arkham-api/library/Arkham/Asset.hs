@@ -1185,7 +1185,9 @@ allAssets =
       , SomeAssetCard sledgehammer3
       , SomeAssetCard winchesterModel125
       , --- seeker [core2026]
-        SomeAssetCard sharpRhetoric
+        SomeAssetCard dorothySimmonsStraightAStudent
+      , SomeAssetCard localMap
+      , SomeAssetCard sharpRhetoric
       , --- rogue [core2026]
         SomeAssetCard silverTongue
       , --- survivor [core2026]

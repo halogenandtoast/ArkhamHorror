@@ -33,6 +33,7 @@ import Arkham.Token
 import Arkham.Trait (Trait)
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 type Where = LocationMatcher
 instance IsString LocationMatcher where
@@ -180,6 +181,12 @@ data LocationMatcher
 
 location_ :: LocationMatcher -> LocationMatcher
 location_ = id
+
+instance IsLabel "revealed" LocationMatcher where
+  fromLabel = RevealedLocation
+
+instance IsLabel "investigatable" LocationMatcher where
+  fromLabel = InvestigatableLocation
 
 newtype LocationFilter = LocationFilter {getLocationFilter :: LocationMatcher}
 

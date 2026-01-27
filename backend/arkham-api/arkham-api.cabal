@@ -846,6 +846,7 @@ library
       Arkham.Asset.Assets.Divination1
       Arkham.Asset.Assets.Divination4
       Arkham.Asset.Assets.DivingSuit
+      Arkham.Asset.Assets.DorothySimmonsStraightAStudent
       Arkham.Asset.Assets.DoubleDouble4
       Arkham.Asset.Assets.DownTheRabbitHole
       Arkham.Asset.Assets.DowsingRod
@@ -1134,6 +1135,7 @@ library
       Arkham.Asset.Assets.LitaChantler
       Arkham.Asset.Assets.LivingInk
       Arkham.Asset.Assets.LivreDeibon
+      Arkham.Asset.Assets.LocalMap
       Arkham.Asset.Assets.LockedAndLoaded3
       Arkham.Asset.Assets.Lockpicks
       Arkham.Asset.Assets.Lockpicks1

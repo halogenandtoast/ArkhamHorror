@@ -445,6 +445,7 @@ allPlayerEventCards =
       , truthFromFiction
       , truthFromFiction2
       , twentyOneOrBust
+      , unbridledKnowledge5
       , uncageTheSoul
       , uncageTheSoul3
       , uncannyGrowth

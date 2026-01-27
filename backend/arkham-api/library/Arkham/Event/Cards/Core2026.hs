@@ -88,4 +88,14 @@ throughTheCracks2 =
     { cdSkills = [#agility, #wild]
     , cdCardTraits = setFromList [Insight, Trick]
     , cdActions = [#evade]
+    , cdLevel = Just 2
+    }
+
+unbridledKnowledge5 :: CardDef
+unbridledKnowledge5 =
+  (event "12043" "Unbridled Knowledge" 1 Seeker)
+    { cdSkills = [#intellect, #intellect, #wild]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria = Just $ Criteria.youExist $ can.reveal.cards <> can.manipulate.deck
+    , cdLevel = Just 5
     }

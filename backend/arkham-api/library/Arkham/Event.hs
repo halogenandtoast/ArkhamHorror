@@ -696,6 +696,7 @@ allEvents =
         SomeEventCard gatherIntel
       , SomeEventCard throughTheCracks
       , SomeEventCard throughTheCracks2
+      , SomeEventCard unbridledKnowledge5
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Investigator.Runner (module Arkham.Investigator.Runner, module X) where
 
@@ -4079,6 +4079,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             toCardId
             (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+      PutBackInAnyOrderBothTopAndBottom -> do
+        when
+          (foundKey cardSource /= Zone.FromDeck)
+          (error "Expects a deck: Investigator<PutBackInAnyOrderBothTopAndBottom>")
+        case findWithDefault [] Zone.FromDeck $ traceShowId $ a ^. foundCardsL of
+          [] -> pure ()
+          remaining ->
+            push
+              $ chooseOneAtATime player
+              $ mapTargetLabelWith
+                toCardId
+                ( \c ->
+                    [ chooseOne
+                        player
+                        [ Label "Place on top" [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)]
+                        , Label "Place on bottom" [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') (toCard c)]
+                        ]
+                    ]
+                )
+                remaining
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
         for_ investigatorSearch \MkSearch {searchType} ->
@@ -4203,7 +4223,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             iid
             source
             (InvestigatorTarget iid')
-            _
+            searchZones
             cardMatcher
             foundStrategy
             foundCards
@@ -4297,10 +4317,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   then chooseOne player [Label "No cards found" []]
                   else chooseN player (min n (length choices)) choices
               let
+                foundKey = \case
+                  Zone.FromTopOfDeck _ -> Zone.FromDeck
+                  Zone.FromBottomOfDeck _ -> Zone.FromDeck
+                  other -> other
                 shouldShuffle = case searchType of
                   Looking -> False
-                  Revealing -> True
-                  Searching -> True
+                  Revealing -> any (\(z, zrs) -> foundKey z == FromDeck && zrs == ShuffleBackIn) searchZones
+                  Searching -> any (\(z, zrs) -> foundKey z == FromDeck && zrs == ShuffleBackIn) searchZones
               pushWhen shouldShuffle $ ShuffleDeck (Deck.InvestigatorDeck a.id)
             DrawFoundUpTo who n -> do
               let

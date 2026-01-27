@@ -1152,6 +1152,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               (Run [RemoveFromPlay (toSource skillId)], Just skillId)
           | CampaignModifier "hollowed" `elem` mods ->
               (RemoveFromGame (SkillTarget skillId), Nothing)
+          | ShuffleIntoDeckInsteadOfDiscard `elem` mods ->
+              ( ShuffleIntoDeck
+                  (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
+                  (toTarget skill)
+              , Just skillId
+              )
           | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
                 PlayerCard pc ->

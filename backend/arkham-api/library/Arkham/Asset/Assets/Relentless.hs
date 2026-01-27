@@ -23,7 +23,7 @@ relentless = asset Relentless Cards.relentless
 instance HasAbilities Relentless where
   getAbilities (Relentless a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( EnemyDealtExcessDamage Timing.When AnyDamageEffect AnyEnemy (SourceOwnedBy You)
           )
         $ ExhaustCost

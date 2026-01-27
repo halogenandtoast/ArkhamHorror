@@ -21,12 +21,12 @@ instance HasAbilities Counterespionage1 where
     [ withTooltip
         "{reaction} When you play Counterespionage, increase its cost by 2. Change \"the encounter deck\" to \"your deck\"."
         $ mkAbility a 1
-        $ ReactionAbility (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
+        $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     , withTooltip
         "{reaction} When you play Counterespionage, increase its cost by 2: Change \"you\" to \"any investigator\"."
         $ restricted a 2 (can.affect.otherPlayers You)
         $ ForcedWhen (EventWindowInvestigatorIs (not_ You))
-        $ ReactionAbility (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
+        $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     ]
 
 instance RunMessage Counterespionage1 where

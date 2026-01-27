@@ -110,7 +110,8 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
     FastAbility' _ actions -> anyM (canDoAction iid ab) actions
     CustomizationReaction {} -> pure True
     ConstantReaction {} -> pure True
-    ReactionAbility _ _ -> pure True
+    ReactionAbility _ _ [] -> pure True
+    ReactionAbility _ _ actions -> anyM (canDoAction iid ab) actions
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
@@ -324,7 +325,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     Cosmos -> pure True
     ActionAbility actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
     ActionAbilityWithSkill actions _ cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
-    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
+    ReactionAbility _ cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
@@ -397,7 +398,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
       NoLimit -> do
         let
           go = \case
-            ReactionAbility _ _ ->
+            ReactionAbility {} ->
               pure $ notElem ability (map usedAbility usedAbilities)
             CustomizationReaction {} ->
               pure $ notElem ability (map usedAbility usedAbilities)

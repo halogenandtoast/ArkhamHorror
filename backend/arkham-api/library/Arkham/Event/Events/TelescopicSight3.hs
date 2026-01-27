@@ -50,7 +50,7 @@ instance HasAbilities TelescopicSight3 where
   getAbilities (TelescopicSight3 a) = case a.placement of
     AttachedToAsset aid _ ->
       [ restricted a 1 ControlsThis
-          $ ReactionAbility
+          $ triggered
             (ActivateAbility #when (You <> UnengagedInvestigator) $ AssetAbility (AssetWithId aid) <> #fight)
             (exhaust a)
       ]

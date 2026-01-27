@@ -30,7 +30,7 @@ professorWilliamWebbFinderOfHiddenConnections2 =
 instance HasAbilities ProfessorWilliamWebbFinderOfHiddenConnections2 where
   getAbilities (ProfessorWilliamWebbFinderOfHiddenConnections2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (SuccessfulInvestigation #when You Anywhere) (exhaust a <> assetUseCost a Secret 1)
+        $ triggered (SuccessfulInvestigation #when You Anywhere) (exhaust a <> assetUseCost a Secret 1)
     ]
 
 instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where

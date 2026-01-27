@@ -20,7 +20,7 @@ instance HasModifiersFor GabrielCarilloTrustedConfidante1 where
 instance HasAbilities GabrielCarilloTrustedConfidante1 where
   getAbilities (GabrielCarilloTrustedConfidante1 x) =
     [ controlled x 1 (can.draw.cards You)
-        $ ReactionAbility (TurnBegins #when You) (AddCurseTokenCost 1)
+        $ triggered (TurnBegins #when You) (AddCurseTokenCost 1)
     ]
 
 instance RunMessage GabrielCarilloTrustedConfidante1 where

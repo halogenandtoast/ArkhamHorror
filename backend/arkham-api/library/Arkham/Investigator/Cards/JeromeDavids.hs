@@ -48,7 +48,7 @@ instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
     [ playerLimit PerRound
         $ restricted a 1 Self
-        $ ReactionAbility
+        $ triggered
           (DrawCard #when (colocatedWithMatch You) #treachery EncounterDeck)
           (SkillIconCost 2 $ singleton #intellect)
     ]

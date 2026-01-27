@@ -18,7 +18,7 @@ fleshWard = assetWith FleshWard Cards.fleshWard ((healthL ?~ 1) . (sanityL ?~ 1)
 instance HasAbilities FleshWard where
   getAbilities (FleshWard a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (DealtDamageOrHorror #when (SourceIsCancelable $ SourceIsEnemyAttack AnyEnemy) You)
           (exhaust a <> assetUseCost a Charge 1)
     ]

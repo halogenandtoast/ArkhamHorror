@@ -18,7 +18,7 @@ flashlight3 = asset Flashlight3 Cards.flashlight3
 instance HasAbilities Flashlight3 where
   getAbilities (Flashlight3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (InitiatedSkillTest #when You #any #any (oneOf [#investigating, #evading]))
           (assetUseCost a Supply 1)
     ]

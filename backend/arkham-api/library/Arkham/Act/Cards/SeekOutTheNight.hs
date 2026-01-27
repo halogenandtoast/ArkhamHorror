@@ -24,7 +24,7 @@ instance HasAbilities SeekOutTheNight where
   getAbilities (SeekOutTheNight x) =
     [ restrictedAbility x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
         $ Objective
-        $ ReactionAbility (RoundEnds #when) Free
+        $ triggered (RoundEnds #when) Free
     , restrictedAbility x 2 (HasScenarioCount SignOfTheGods $ atLeast 10)
         $ Objective
         $ ForcedAbility AnyWindow

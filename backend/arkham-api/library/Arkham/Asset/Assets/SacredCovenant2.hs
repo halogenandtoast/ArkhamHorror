@@ -19,7 +19,7 @@ sacredCovenant2 = asset SacredCovenant2 Cards.sacredCovenant2
 instance HasAbilities SacredCovenant2 where
   getAbilities (SacredCovenant2 attrs) =
     [ restrictedAbility attrs 1 (ControlsThis <> DuringSkillTest (SkillTestWithRevealedChaosToken #bless))
-        $ ReactionAbility (SkillTestStep #after RevealChaosTokenStep) (exhaust attrs)
+        $ triggered (SkillTestStep #after RevealChaosTokenStep) (exhaust attrs)
     ]
 
 instance RunMessage SacredCovenant2 where

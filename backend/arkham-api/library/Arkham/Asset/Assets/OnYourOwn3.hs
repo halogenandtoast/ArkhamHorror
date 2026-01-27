@@ -30,7 +30,7 @@ instance HasAbilities OnYourOwn3 where
    where
     onYourOwn3Reaction =
       restricted a 1 ControlsThis
-        $ ReactionAbility (PlayCard #when You $ basic $ #survivor <> #event) (exhaust a)
+        $ triggered (PlayCard #when You $ basic $ #survivor <> #event) (exhaust a)
 
 instance HasModifiersFor OnYourOwn3 where
   getModifiersFor (OnYourOwn3 (a `With` _)) =

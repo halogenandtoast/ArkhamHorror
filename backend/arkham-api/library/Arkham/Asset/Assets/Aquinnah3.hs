@@ -21,7 +21,7 @@ aquinnah3 = ally Aquinnah3 Cards.aquinnah3 (1, 4)
 instance HasAbilities Aquinnah3 where
   getAbilities (Aquinnah3 a) =
     [ controlledAbility a 1 (canDamageEnemyAt (a.ability 1) YourLocation)
-        $ ReactionAbility
+        $ triggered
           (Matcher.EnemyAttacks #when You AnyEnemyAttack AnyEnemy)
           (exhaust a <> horrorCost a 1)
     ]

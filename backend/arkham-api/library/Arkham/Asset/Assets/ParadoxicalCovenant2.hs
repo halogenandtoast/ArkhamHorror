@@ -25,7 +25,7 @@ instance HasAbilities ParadoxicalCovenant2 where
                 <> SkillTestWithRevealedChaosToken #curse
             )
         )
-        $ ReactionAbility (SkillTestStep #after RevealChaosTokenStep) (exhaust attrs)
+        $ triggered (SkillTestStep #after RevealChaosTokenStep) (exhaust attrs)
     ]
 
 instance RunMessage ParadoxicalCovenant2 where

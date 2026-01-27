@@ -16,7 +16,7 @@ claypoolsFurs = assetWith ClaypoolsFurs Cards.claypoolsFurs (healthL ?~ 3)
 instance HasAbilities ClaypoolsFurs where
   getAbilities (ClaypoolsFurs a) =
     [ restricted a 1 (ControlsThis <> DuringSkillTest (YourSkillTest AnySkillTest))
-        $ ReactionAbility (RevealChaosToken #when You #frost) (DamageCost (a.ability 1) (toTarget a) 1)
+        $ triggered (RevealChaosToken #when You #frost) (DamageCost (a.ability 1) (toTarget a) 1)
     ]
 
 instance RunMessage ClaypoolsFurs where

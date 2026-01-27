@@ -26,7 +26,7 @@ instance HasAbilities GreenManMedallionHourOfTheHuntress where
       1
       (youExist can.spend.resources)
       (FastAbility $ exhaust attrs <> UpTo (Fixed 3) (ResourceCost 1))
-      : [ restrictedAbility attrs 2 ControlsThis $ ReactionAbility (eliminationWindow controller) Free
+      : [ restrictedAbility attrs 2 ControlsThis $ triggered (eliminationWindow controller) Free
         | controller <- toList (assetController attrs)
         ]
 

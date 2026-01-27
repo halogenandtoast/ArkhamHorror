@@ -18,7 +18,7 @@ pressPass2 = asset PressPass2 Cards.pressPass2
 instance HasAbilities PressPass2 where
   getAbilities (PressPass2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( oneOf
               [ SpentClues #after You (atLeast 1)
               , PlacedToken #after (SourceOwnedBy You) (LocationTargetMatches YourLocation) Clue

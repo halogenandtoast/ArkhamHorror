@@ -25,11 +25,11 @@ bauta = asset Bauta Cards.bauta
 instance HasAbilities Bauta where
   getAbilities (Bauta a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InitiatedSkillTest
               Timing.When
               You

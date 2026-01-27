@@ -19,7 +19,7 @@ whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 instance HasAbilities WhittonGreene where
   getAbilities (WhittonGreene x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (oneOf [Matcher.RevealLocation #after You Anywhere, PutLocationIntoPlay #after You Anywhere])
           (exhaust x)
     ]

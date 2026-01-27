@@ -88,6 +88,8 @@ allInvestigatorCards =
       , lostHomunculus
       , danielaReyes2
       , joeDiamond2
+      , trishScarborough2
+      , isabelleBarnes
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -635,6 +637,22 @@ joeDiamond2 =
     ("Joe Diamond" <:> "The Private Investigator")
     Seeker
     [Detective]
+
+trishScarborough2 :: CardDef
+trishScarborough2 =
+  investigator
+    "12007"
+    ("Trish Scarborough" <:> "The Former Spy")
+    Rogue
+    [Agency, Criminal]
+
+isabelleBarnes :: CardDef
+isabelleBarnes =
+  investigator
+    "12013"
+    ("Isabelle Barnes" <:> "The Returned")
+    Survivor
+    [Chosen, Hunter]
 
 nathanielCho :: CardDef
 nathanielCho =

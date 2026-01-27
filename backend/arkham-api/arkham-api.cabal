@@ -775,6 +775,7 @@ library
       Arkham.Asset.Assets.CookiesCustom32
       Arkham.Asset.Assets.Cornered2
       Arkham.Asset.Assets.Courage
+      Arkham.Asset.Assets.CovertOpsInTheShadows
       Arkham.Asset.Assets.CowlOfSekhmetCloakOfPharaohs3
       Arkham.Asset.Assets.Crafty3
       Arkham.Asset.Assets.Crowbar
@@ -1064,6 +1065,7 @@ library
       Arkham.Asset.Assets.InTheThickOfIt
       Arkham.Asset.Assets.Intrepid
       Arkham.Asset.Assets.Investments
+      Arkham.Asset.Assets.IsabellesTwin45sLoadedWithVengeance
       Arkham.Asset.Assets.IsamaraOrdonezLoungeSingerCrew
       Arkham.Asset.Assets.IsamaraOrdonezLoungeSingerInconspicious
       Arkham.Asset.Assets.IsamaraOrdonezTheTorchSinger
@@ -1839,6 +1841,7 @@ library
       Arkham.Enemy.Cards.BenignElderThing
       Arkham.Enemy.Cards.BiancaDieKatz
       Arkham.Enemy.Cards.BillyCooper
+      Arkham.Enemy.Cards.BlackChamberOperative
       Arkham.Enemy.Cards.BoaConstrictor
       Arkham.Enemy.Cards.BogGator
       Arkham.Enemy.Cards.BoundNightgaunt
@@ -2902,6 +2905,7 @@ library
       Arkham.Investigator.Cards.GloriaGoldberg
       Arkham.Investigator.Cards.HankSamson
       Arkham.Investigator.Cards.HarveyWalters
+      Arkham.Investigator.Cards.IsabelleBarnes
       Arkham.Investigator.Cards.JacquelineFine
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JennyBarnesParallel
@@ -2948,6 +2952,7 @@ library
       Arkham.Investigator.Cards.TommyMuldoon
       Arkham.Investigator.Cards.TonyMorgan
       Arkham.Investigator.Cards.TrishScarborough
+      Arkham.Investigator.Cards.TrishScarborough2
       Arkham.Investigator.Cards.UrsulaDowns
       Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.VincentLee
@@ -4631,6 +4636,7 @@ library
       Arkham.Treachery.Cards.BoundInRed
       Arkham.Treachery.Cards.BrazierEnchantment
       Arkham.Treachery.Cards.BreakALeg
+      Arkham.Treachery.Cards.BreakingPoint
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.BumpyRide
       Arkham.Treachery.Cards.BurdenOfDestiny

@@ -20,7 +20,7 @@ instance HasAbilities TheBarrier where
   getAbilities (TheBarrier x) =
     [ mkAbility x 1
         $ Objective
-        $ ReactionAbility (RoundEnds #when)
+        $ triggered (RoundEnds #when)
         $ GroupClueCost (PerPlayer 3) "Hallway"
     ]
 

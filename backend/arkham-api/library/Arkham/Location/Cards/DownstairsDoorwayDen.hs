@@ -21,7 +21,7 @@ instance HasAbilities DownstairsDoorwayDen where
     extendRevealed
       attrs
       [ restrictedAbility attrs 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be attrs))
-          $ ReactionAbility
+          $ triggered
             (SkillTestResult #after You (whileInvestigating attrs) #success)
             (HandDiscardCost 1 #any)
       , restrictedAbility attrs 2 Here

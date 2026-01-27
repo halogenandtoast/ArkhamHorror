@@ -27,7 +27,7 @@ instance HasAbilities CanalSide where
   getAbilities (CanalSide attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-            $ ReactionAbility
+            $ triggered
               (Enters Timing.After You $ LocationWithId $ toId attrs)
               Free
         | locationRevealed attrs

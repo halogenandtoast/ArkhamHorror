@@ -18,7 +18,7 @@ tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 instance HasAbilities TryAndTryAgain3 where
   getAbilities (TryAndTryAgain3 x) =
     [ restricted x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (SkillTestResult #after Anyone (SkillTestWithSkill YourSkill) #failure)
           (exhaust x)
     ]

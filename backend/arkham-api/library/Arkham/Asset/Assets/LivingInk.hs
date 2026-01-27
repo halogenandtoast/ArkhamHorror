@@ -37,7 +37,7 @@ instance HasModifiersFor LivingInk where
 instance HasAbilities LivingInk where
   getAbilities (LivingInk a) =
     [ restrictedAbility a 1 ControlsThis
-      $ ReactionAbility (RevealChaosToken #after You IsSymbol) (exhaust a)
+      $ triggered (RevealChaosToken #after You IsSymbol) (exhaust a)
     | a `hasCustomization` MacabreDepiction
     ]
 

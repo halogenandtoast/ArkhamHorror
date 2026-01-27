@@ -24,7 +24,7 @@ instance HasAbilities SnowGraves where
     extendRevealed1 a
       $ groupLimit PerCampaign
       $ restricted a 1 (can.manipulate.deck You)
-      $ ReactionAbility (DiscoveringLastClue #after You $ be a)
+      $ triggered (DiscoveringLastClue #after You $ be a)
       $ ShuffleTopOfScenarioDeckIntoYourDeck 3 TekeliliDeck
 
 instance RunMessage SnowGraves where

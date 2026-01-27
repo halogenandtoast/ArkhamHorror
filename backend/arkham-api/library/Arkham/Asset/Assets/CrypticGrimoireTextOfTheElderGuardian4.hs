@@ -27,7 +27,7 @@ instance HasAbilities CrypticGrimoireTextOfTheElderGuardian4 where
         $ freeReaction
         $ SkillTestStep #after ResolveChaosSymbolEffectsStep
     , controlledAbility x 2 (can.draw.cards You)
-        $ ReactionAbility (WouldDrawEncounterCard #when You #any) (assetUseCost x Secret 5)
+        $ triggered (WouldDrawEncounterCard #when You #any) (assetUseCost x Secret 5)
     ]
 
 instance RunMessage CrypticGrimoireTextOfTheElderGuardian4 where

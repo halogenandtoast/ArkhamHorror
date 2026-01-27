@@ -20,7 +20,7 @@ instance HasModifiersFor TheFool03 where
 
 instance HasAbilities TheFool03 where
   getAbilities (TheFool03 a) =
-    [ restricted a 1 ControlsThis $ ReactionAbility (Matcher.PlayCard #when You #any) (exhaust a)
+    [ restricted a 1 ControlsThis $ triggered (Matcher.PlayCard #when You #any) (exhaust a)
     , restricted a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 

@@ -15,7 +15,7 @@ luckyCigaretteCase = asset LuckyCigaretteCase Cards.luckyCigaretteCase
 instance HasAbilities LuckyCigaretteCase where
   getAbilities (LuckyCigaretteCase a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (SkillTestResult #after You #any $ SuccessResult $ atLeast 2) (exhaust a)
+        $ triggered (SkillTestResult #after You #any $ SuccessResult $ atLeast 2) (exhaust a)
     ]
 
 instance RunMessage LuckyCigaretteCase where

@@ -24,11 +24,11 @@ pantalone = asset Pantalone Cards.pantalone
 instance HasAbilities Pantalone where
   getAbilities (Pantalone a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
     , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (InitiatedSkillTest Timing.When You (NotSkillType SkillIntellect) AnySkillTestValue #any)
           (DiscardCost FromPlay $ toTarget a)
     ]

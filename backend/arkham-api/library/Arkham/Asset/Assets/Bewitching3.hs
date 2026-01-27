@@ -22,7 +22,7 @@ bewitching3 = asset Bewitching3 Cards.bewitching3
 instance HasAbilities Bewitching3 where
   getAbilities (Bewitching3 a) =
     [ restricted a 1 ControlsThis $ freeReaction $ DrawingStartingHand #when You
-    , controlled a 2 criteria $ ReactionAbility (EnemyEngaged #when You AnyEnemy) (exhaust a)
+    , controlled a 2 criteria $ triggered (EnemyEngaged #when You AnyEnemy) (exhaust a)
     ]
    where
     criteria = if null a.cardsUnderneath then Never else NoRestriction

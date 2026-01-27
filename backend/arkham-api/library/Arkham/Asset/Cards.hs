@@ -1,5 +1,6 @@
 module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
+import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
 import Arkham.Asset.Cards.NightOfTheZealot as X
 import Arkham.Asset.Cards.Parallel as X
@@ -16,7 +17,6 @@ import Arkham.Asset.Cards.TheForgottenAge as X
 import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
-import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -194,6 +194,7 @@ allPlayerAssetCards =
       , combatTraining3
       , cookiesCustom32
       , cornered2
+      , covertOpsInTheShadows
       , cowlOfSekhmetCloakOfPharaohs3
       , crafty3
       , crowbar
@@ -467,6 +468,7 @@ allPlayerAssetCards =
       , inTheKnow1
       , inTheThickOfIt
       , investments
+      , isabellesTwin45sLoadedWithVengeance
       , isamaraOrdonezLoungeSingerCrew
       , isamaraOrdonezLoungeSingerInconspicious
       , isamaraOrdonezTheTorchSinger

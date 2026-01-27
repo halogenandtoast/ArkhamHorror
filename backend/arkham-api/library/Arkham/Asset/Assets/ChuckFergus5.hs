@@ -39,7 +39,7 @@ instance HasModifiersFor ChuckFergus5 where
 instance HasAbilities ChuckFergus5 where
   getAbilities (ChuckFergus5 a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility (Matcher.PlayCard #when You $ basic cardMatcher) (exhaust a)
+        $ triggered (Matcher.PlayCard #when You $ basic cardMatcher) (exhaust a)
     ]
 
 instance RunMessage ChuckFergus5 where

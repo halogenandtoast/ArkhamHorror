@@ -28,7 +28,7 @@ instance HasAbilities EvanescentAscensionTheMorningStar where
           a
           1
           ControlsThis
-          ( ReactionAbility
+          ( triggered
               (WouldHaveSkillTestResult #when (affectsOthers $ colocatedWithMatch You) #any #failure)
               (exhaust a <> assetUseCost a Wish 1)
           )

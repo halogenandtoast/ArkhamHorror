@@ -23,7 +23,7 @@ eyeOfTheDjinnVesselOfGoodAndEvil2 = asset EyeOfTheDjinnVesselOfGoodAndEvil2 Card
 instance HasAbilities EyeOfTheDjinnVesselOfGoodAndEvil2 where
   getAbilities (EyeOfTheDjinnVesselOfGoodAndEvil2 x) =
     [ controlledAbility x 1 (DuringTurn You)
-        $ ReactionAbility (InitiatedSkillTest #when You #any #any #any) (exhaust x)
+        $ triggered (InitiatedSkillTest #when You #any #any #any) (exhaust x)
     ]
 
 instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2 where

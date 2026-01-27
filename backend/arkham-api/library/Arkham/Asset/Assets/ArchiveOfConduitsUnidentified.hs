@@ -22,7 +22,7 @@ archiveOfConduitsUnidentified = asset ArchiveOfConduitsUnidentified Cards.archiv
 instance HasAbilities ArchiveOfConduitsUnidentified where
   getAbilities (ArchiveOfConduitsUnidentified attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility (SuccessfulInvestigation #after You $ LocationWithToken Leyline) (exhaust attrs)
+        $ triggered (SuccessfulInvestigation #after You $ LocationWithToken Leyline) (exhaust attrs)
     ]
 
 instance RunMessage ArchiveOfConduitsUnidentified where

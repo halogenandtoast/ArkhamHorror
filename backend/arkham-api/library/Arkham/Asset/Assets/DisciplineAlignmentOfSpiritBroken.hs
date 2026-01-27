@@ -24,7 +24,7 @@ instance HasAbilities DisciplineAlignmentOfSpiritBroken where
         x
         1
         (youExist (InvestigatorWithMetaKey "aligned") <> not_ (SelfHasModifier CannotBeFlipped))
-        $ ReactionAbility (RoundEnds #after) Free
+        $ triggered (RoundEnds #after) Free
     ]
 
 instance RunMessage DisciplineAlignmentOfSpiritBroken where

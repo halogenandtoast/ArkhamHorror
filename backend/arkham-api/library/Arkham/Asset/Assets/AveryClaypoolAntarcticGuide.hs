@@ -22,7 +22,7 @@ averyClaypoolAntarcticGuide = allyWith AveryClaypoolAntarcticGuide Cards.averyCl
 instance HasAbilities AveryClaypoolAntarcticGuide where
   getAbilities (AveryClaypoolAntarcticGuide a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (RevealChaosToken #when (affectsOthers $ colocatedWithMatch You) #frost)
           (exhaust a <> assetUseCost a Supply 1)
     ]

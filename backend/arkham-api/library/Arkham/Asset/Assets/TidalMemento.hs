@@ -23,7 +23,7 @@ tidalMemento = asset TidalMemento Cards.tidalMemento
 instance HasAbilities TidalMemento where
   getAbilities (TidalMemento a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( oneOf
               [ EnemyWouldReady #when AnyEnemy
               , WouldPlaceDoomCounter #when AnySource $ EnemyTargetMatches AnyEnemy

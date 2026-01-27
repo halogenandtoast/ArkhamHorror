@@ -20,7 +20,7 @@ grotesqueStatue2 =
 instance HasAbilities GrotesqueStatue2 where
   getAbilities (GrotesqueStatue2 x) =
     [ restricted x 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken #when You)
+        $ triggered (WouldRevealChaosToken #when You)
         $ assetUseCost x Charge 1
     ]
 

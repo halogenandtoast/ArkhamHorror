@@ -24,7 +24,7 @@ instance HasAbilities ShiningTrapezohedron4 where
   getAbilities (ShiningTrapezohedron4 a) =
     [ skillTestAbility
         $ restricted a 1 ControlsThis
-        $ ReactionAbility (WouldPayCardCost #when You #spell) (exhaust a)
+        $ triggered (WouldPayCardCost #when You #spell) (exhaust a)
     ]
 
 instance HasModifiersFor ShiningTrapezohedron4 where

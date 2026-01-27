@@ -19,7 +19,7 @@ purifyingCorruption4 = asset PurifyingCorruption4 Cards.purifyingCorruption4
 instance HasAbilities PurifyingCorruption4 where
   getAbilities (PurifyingCorruption4 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (DrawCard #when You (basic $ NonWeakness <> #treachery) AnyDeck)
           (HorrorCost (x.ability 1) YouTarget 1 <> DamageCost (x.ability 1) YouTarget 1)
     , controlledAbility

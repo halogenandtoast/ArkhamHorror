@@ -21,7 +21,7 @@ instance HasModifiersFor VaultOfKnowledge where
 instance HasAbilities VaultOfKnowledge where
   getAbilities (VaultOfKnowledge a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (SkillTestResult Timing.After You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
           (exhaust a)
     ]

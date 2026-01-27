@@ -27,7 +27,7 @@ instance HasModifiersFor CleaningKit3 where
 instance HasAbilities CleaningKit3 where
   getAbilities (CleaningKit3 x) =
     [ controlledAbility x 1 (exists $ ActiveAbility <> AbilityIsSkillTest)
-        $ ReactionAbility (SpentUses #when Anyone AnySource Supply (be x) (atLeast 1)) (exhaust x)
+        $ triggered (SpentUses #when Anyone AnySource Supply (be x) (atLeast 1)) (exhaust x)
     ]
 
 instance RunMessage CleaningKit3 where

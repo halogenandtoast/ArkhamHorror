@@ -20,7 +20,7 @@ tokenOfFaith3 = asset TokenOfFaith3 Cards.tokenOfFaith3
 instance HasAbilities TokenOfFaith3 where
   getAbilities (TokenOfFaith3 x) =
     [ restrictedAbility x 1 (ControlsThis <> HasRemainingBlessTokens)
-        $ ReactionAbility
+        $ triggered
           ( SkillTestEnded #after Anyone
               $ SkillTestWithRevealedChaosToken
               $ IncludeTokenPool

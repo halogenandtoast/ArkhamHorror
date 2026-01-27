@@ -18,7 +18,7 @@ instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
     [ skillTestAbility $ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)
     , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( InvestigatorHealed #after #horror (affectsOthers Anyone)
               $ SourceOwnedBy You
               <> NotSource (SourceIs (toSource a))

@@ -20,7 +20,7 @@ onYourOwn3_Exceptional = asset OnYourOwn3_Exceptional Cards.onYourOwn3_Exception
 instance HasAbilities OnYourOwn3_Exceptional where
   getAbilities (OnYourOwn3_Exceptional a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility (PlayCard #when You $ basic $ #survivor <> #event) (exhaust a)
+        $ triggered (PlayCard #when You $ basic $ #survivor <> #event) (exhaust a)
     ]
 
 instance HasModifiersFor OnYourOwn3_Exceptional where

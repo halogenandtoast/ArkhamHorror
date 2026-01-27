@@ -21,7 +21,7 @@ luckyDice3 = asset LuckyDice3 Cards.luckyDice3
 instance HasAbilities LuckyDice3 where
   getAbilities (LuckyDice3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (RevealChaosToken #after You $ not_ $ oneOf [#autofail, #curse])
           (AddCurseTokenCost 1)
     ]

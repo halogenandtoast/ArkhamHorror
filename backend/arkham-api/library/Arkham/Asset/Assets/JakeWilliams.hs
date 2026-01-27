@@ -28,7 +28,7 @@ instance HasModifiersFor JakeWilliams where
 instance HasAbilities JakeWilliams where
   getAbilities (JakeWilliams a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( oneOf
               [ RevealLocation #after You Anywhere
               , PutLocationIntoPlay #after You Anywhere

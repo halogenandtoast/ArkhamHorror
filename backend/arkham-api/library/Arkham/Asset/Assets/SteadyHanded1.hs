@@ -20,7 +20,7 @@ steadyHanded1 = asset SteadyHanded1 Cards.steadyHanded1
 instance HasAbilities SteadyHanded1 where
   getAbilities (SteadyHanded1 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility (WouldHaveSkillTestResult #when You #any #success) (exhaust x)
+        $ triggered (WouldHaveSkillTestResult #when You #any #success) (exhaust x)
     ]
 
 instance RunMessage SteadyHanded1 where

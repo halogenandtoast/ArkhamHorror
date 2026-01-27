@@ -19,7 +19,7 @@ sharpshooter3 = asset Sharpshooter3 Cards.sharpshooter3
 instance HasAbilities Sharpshooter3 where
   getAbilities (Sharpshooter3 a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (ActivateAbility #when You $ AssetAbility #firearm <> AbilityIsAction #fight)
           (exhaust a)
     ]

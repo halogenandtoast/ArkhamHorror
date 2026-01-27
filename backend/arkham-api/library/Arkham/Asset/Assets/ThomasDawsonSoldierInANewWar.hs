@@ -21,7 +21,7 @@ instance HasModifiersFor ThomasDawsonSoldierInANewWar where
 instance HasAbilities ThomasDawsonSoldierInANewWar where
   getAbilities (ThomasDawsonSoldierInANewWar a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( EnemyAttacksEvenIfCancelled
               #after
               (affectsOthers $ at_ YourLocation <> can.draw.cards)

@@ -26,7 +26,7 @@ instance HasAbilities AncientStoneMindsInHarmony4 where
             , exists (HealableAsset (a.ability 1) #horror $ AssetAt YourLocation)
             ]
         )
-        $ ReactionAbility (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
+        $ triggered (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
     ]
 
 instance RunMessage AncientStoneMindsInHarmony4 where

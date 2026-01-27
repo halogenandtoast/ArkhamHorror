@@ -1172,6 +1172,8 @@ allAssets =
     , -- The Drowned City
       --- signature [core2026]
       SomeAssetCard danielasWrenchNewAndImproved
+    , SomeAssetCard covertOpsInTheShadows
+    , SomeAssetCard isabellesTwin45sLoadedWithVengeance
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

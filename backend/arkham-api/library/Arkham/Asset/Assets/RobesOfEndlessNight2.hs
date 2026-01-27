@@ -22,7 +22,7 @@ instance HasModifiersFor RobesOfEndlessNight2 where
 instance HasAbilities RobesOfEndlessNight2 where
   getAbilities (RobesOfEndlessNight2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (Matcher.PlayCard #when You (basic #spell)) (exhaust a)
+        $ triggered (Matcher.PlayCard #when You (basic #spell)) (exhaust a)
     ]
 
 instance RunMessage RobesOfEndlessNight2 where

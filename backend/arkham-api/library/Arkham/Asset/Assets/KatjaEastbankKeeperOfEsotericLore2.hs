@@ -18,7 +18,7 @@ katjaEastbankKeeperOfEsotericLore2 = ally KatjaEastbankKeeperOfEsotericLore2 Car
 instance HasAbilities KatjaEastbankKeeperOfEsotericLore2 where
   getAbilities (KatjaEastbankKeeperOfEsotericLore2 x) =
     [ controlled x 1 criteria1
-        $ ReactionAbility (DrawCard #when You (basic NonWeakness) (DeckOf You)) (exhaust x)
+        $ triggered (DrawCard #when You (basic NonWeakness) (DeckOf You)) (exhaust x)
     , controlled x 2 criteria2 actionAbility
     ]
    where

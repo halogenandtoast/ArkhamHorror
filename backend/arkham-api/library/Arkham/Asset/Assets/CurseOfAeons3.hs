@@ -21,7 +21,7 @@ instance HasAbilities CurseOfAeons3 where
         attrs
         1
         (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #curse)
-        $ ReactionAbility (RevealChaosToken #when Anyone #curse) (exhaust attrs)
+        $ triggered (RevealChaosToken #when Anyone #curse) (exhaust attrs)
     ]
 
 instance RunMessage CurseOfAeons3 where

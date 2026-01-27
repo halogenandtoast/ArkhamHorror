@@ -19,7 +19,7 @@ tryAndTryAgain1 = assetWith TryAndTryAgain1 Cards.tryAndTryAgain1 (whenNoUsesL ?
 instance HasAbilities TryAndTryAgain1 where
   getAbilities (TryAndTryAgain1 a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (SkillTestResult #after Anyone (SkillTestWithSkill YourSkill) #failure)
           (exhaust a <> assetUseCost a Try 1)
     ]

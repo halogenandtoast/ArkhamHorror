@@ -18,7 +18,7 @@ oliveMcBride = ally OliveMcBride Cards.oliveMcBride (1, 3)
 instance HasAbilities OliveMcBride where
   getAbilities (OliveMcBride a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken #when You) (exhaust a)
+        $ triggered (WouldRevealChaosToken #when You) (exhaust a)
     ]
 
 toDrawSource :: [Window] -> Source

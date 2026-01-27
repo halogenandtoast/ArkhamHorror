@@ -237,7 +237,7 @@ reactionAbility
   -> Criterion
   -> Ability
 reactionAbility entity idx cost window criteria =
-  (mkAbility entity idx (ReactionAbility window cost))
+  (mkAbility entity idx (ReactionAbility window cost []))
     { abilityCriteria = criteria
     }
 
@@ -265,7 +265,7 @@ cosmos a n = mkAbility a n Cosmos
 
 reaction
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
-reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
+reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost [])
 
 uncancellable :: Ability -> Ability
 uncancellable ab = ab {abilityCanBeCancelled = False}
@@ -342,7 +342,7 @@ isTriggeredAbility =
 abilityTypeActions :: Bool -> AbilityType -> [Action]
 abilityTypeActions isBasic = \case
   FastAbility' _ actions -> actions
-  ReactionAbility {} -> []
+  ReactionAbility {actions} -> actions
   CustomizationReaction {} -> []
   ConstantReaction {} -> []
   ActionAbility actions _ -> if #play `elem` actions then actions else [#activate | not isBasic] <> actions
@@ -362,7 +362,7 @@ abilityTypeActions isBasic = \case
 abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
   FastAbility' cost _ -> cost
-  ReactionAbility _ cost -> cost
+  ReactionAbility _ cost _ -> cost
   CustomizationReaction _ _ cost -> cost
   ConstantReaction _ _ cost -> cost
   ActionAbility _ cost -> cost
@@ -382,8 +382,8 @@ abilityTypeCost = \case
 modifyCost :: (Cost -> Cost) -> AbilityType -> AbilityType
 modifyCost f = \case
   FastAbility' cost mAction -> FastAbility' (f cost) mAction
-  ReactionAbility window cost ->
-    ReactionAbility window $ f cost
+  ReactionAbility window cost actions ->
+    ReactionAbility window (f cost) actions
   CustomizationReaction label window cost ->
     CustomizationReaction label window $ f cost
   ConstantReaction label window cost ->
@@ -454,7 +454,7 @@ defaultAbilityWindow = \case
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
-  ReactionAbility window _ -> window
+  ReactionAbility window _ _ -> window
   CustomizationReaction _ window _ -> window
   ConstantReaction _ window _ -> window
   AbilityEffect {} -> AnyWindow
@@ -525,7 +525,7 @@ defaultAbilityLimit = \case
     _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
-  ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  ReactionAbility _ _ _ -> PlayerLimit PerWindow 1
   CustomizationReaction {} -> PlayerLimit PerWindow 1
   ConstantReaction {} -> PlayerLimit PerWindow 1
   FastAbility' {} -> NoLimit

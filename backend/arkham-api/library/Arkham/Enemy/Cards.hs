@@ -81,6 +81,7 @@ allPlayerEnemyCards =
       , zamacona
       , weepingYurei
       , biancaDieKatz
+      , blackChamberOperative
       , tommyMalloy
       , vengefulShade
       , sacrificialBeast
@@ -3464,6 +3465,13 @@ crystalParasite =
     { cdCardTraits = setFromList [Monster, Insect, Blight]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
+    }
+
+blackChamberOperative :: CardDef
+blackChamberOperative =
+  (weakness "12009" "Black Chamber Operative")
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 corpseHungryGhoul :: CardDef

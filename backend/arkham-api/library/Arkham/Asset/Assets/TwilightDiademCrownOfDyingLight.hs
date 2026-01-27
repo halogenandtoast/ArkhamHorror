@@ -24,7 +24,7 @@ twilightDiademCrownOfDyingLight = asset TwilightDiademCrownOfDyingLight Cards.tw
 instance HasAbilities TwilightDiademCrownOfDyingLight where
   getAbilities (TwilightDiademCrownOfDyingLight x) =
     [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
-        $ ReactionAbility
+        $ triggered
           (RevealChaosToken #when Anyone $ oneOf [#curse, #bless])
           (assetUseCost x Offering 1 <> exhaust x)
     ]

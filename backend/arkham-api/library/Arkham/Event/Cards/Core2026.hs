@@ -64,3 +64,28 @@ counterattack1 =
             ]
     , cdLevel = Just 1
     }
+
+gatherIntel :: CardDef
+gatherIntel =
+  (event "12036" "Gather Intel" 1 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria = Just $ Criteria.youExist can.draw.cards
+    , cdFastWindow = Just $ EnemyEnters #when YourLocation AnyEnemy
+    }
+
+throughTheCracks :: CardDef
+throughTheCracks =
+  (event "12037" "Through the Cracks" 3 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Trick]
+    , cdActions = [#evade]
+    }
+
+throughTheCracks2 :: CardDef
+throughTheCracks2 =
+  (event "12041" "Through the Cracks" 2 Seeker)
+    { cdSkills = [#agility, #wild]
+    , cdCardTraits = setFromList [Insight, Trick]
+    , cdActions = [#evade]
+    }

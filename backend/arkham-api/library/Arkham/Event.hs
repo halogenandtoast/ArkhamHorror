@@ -685,13 +685,17 @@ allEvents =
       , SomeEventCard motivationalSpeech4
       , SomeEventCard dimensionalVortex5
       , -- Core 2026
-        --- signature [tdc]
+        --- signature [core2026]
         SomeEventCard detectivesIntuition
       , SomeEventCard deadEnds
-      , --- guardian [tdc]
+      , --- guardian [core2026]
         SomeEventCard lessonLearned
       , SomeEventCard rightToolForTheJob
       , SomeEventCard counterattack1
+      , --- seeker [core2026]
+        SomeEventCard gatherIntel
+      , SomeEventCard throughTheCracks
+      , SomeEventCard throughTheCracks2
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

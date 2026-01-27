@@ -2506,6 +2506,7 @@ library
       Arkham.Event.Events.FriendsInLowPlaces
       Arkham.Event.Events.Galvanize1
       Arkham.Event.Events.GangUp1
+      Arkham.Event.Events.GatherIntel
       Arkham.Event.Events.GazeOfOuraxsh2
       Arkham.Event.Events.GetBehindMe
       Arkham.Event.Events.GetOverHere
@@ -2736,6 +2737,8 @@ library
       Arkham.Event.Events.ThinkOnYourFeet2
       Arkham.Event.Events.ThirdTimesACharm2
       Arkham.Event.Events.ThoroughInquiry
+      Arkham.Event.Events.ThroughTheCracks
+      Arkham.Event.Events.ThroughTheCracks2
       Arkham.Event.Events.ThrowTheBookAtThem
       Arkham.Event.Events.TidesOfFate
       Arkham.Event.Events.TimeWarp2

@@ -22,6 +22,7 @@ data SimeonAtwoodNotes
   | SimeonStoodByYou
   | SimeonAtwoodRelationshipLevel
   | SimeonSacrificedThemselvesForTheInvestigators
+  | SimeonCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -35,6 +36,7 @@ data LeahAtwoodNotes
   | LeahStoodByYou
   | LeahAtwoodRelationshipLevel
   | LeahSacrificedThemselvesForTheInvestigators
+  | LeahCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -47,6 +49,7 @@ data TheoPetersNotes
   | TheoIsHavingSecondThoughts
   | TheoPetersRelationshipLevel
   | TheoSacrificedThemselvesForTheInvestigators
+  | TheoCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -58,6 +61,7 @@ data GideonMizrahNotes
   | GideonStoodByYou
   | GideonMizrahRelationshipLevel
   | GideonSacrificedThemselvesForTheInvestigators
+  | GideonCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -69,6 +73,7 @@ data JudithParkNotes
   | YouBackedJudithUp
   | JudithParkRelationshipLevel
   | JudithSacrificedThemselvesForTheInvestigators
+  | JudithCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -80,6 +85,7 @@ data WilliamHemlockNotes
   | WilliamIsResolved
   | WilliamHemlockRelationshipLevel
   | WilliamSacrificedThemselvesForTheInvestigators
+  | WilliamCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -91,6 +97,7 @@ data RiverHawthorneNotes
   | RiverIsReclaimingTheirLegacy
   | RiverHawthorneRelationshipLevel
   | RiverSacrificedThemselvesForTheInvestigators
+  | RiverCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -98,6 +105,7 @@ data MotherRachelNotes
   = MotherRachelIntervened
   | MotherRachelSharedHerDoubts
   | MotherRachelRelationshipLevel
+  | MotherRachelCrossedOut
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -2297,6 +2297,7 @@ library
       Arkham.Event
       Arkham.Event.Cards
       Arkham.Event.Cards.Base
+      Arkham.Event.Cards.Core2026
       Arkham.Event.Cards.EdgeOfTheEarth
       Arkham.Event.Cards.Import
       Arkham.Event.Cards.NightOfTheZealot
@@ -2409,6 +2410,7 @@ library
       Arkham.Event.Events.DarkPact
       Arkham.Event.Events.DarkProphecy
       Arkham.Event.Events.DawnStar1
+      Arkham.Event.Events.DeadEnds
       Arkham.Event.Events.DecipheredReality5
       Arkham.Event.Events.Decoy
       Arkham.Event.Events.DeepKnowledge
@@ -2417,6 +2419,7 @@ library
       Arkham.Event.Events.DelveTooDeep
       Arkham.Event.Events.DenyExistence
       Arkham.Event.Events.DenyExistence5
+      Arkham.Event.Events.DetectivesIntuition
       Arkham.Event.Events.DevilsLuck1
       Arkham.Event.Events.DimensionalVortex5
       Arkham.Event.Events.DirtyDeeds3
@@ -2906,6 +2909,7 @@ library
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JimCulverParallel
       Arkham.Investigator.Cards.JoeDiamond
+      Arkham.Investigator.Cards.JoeDiamond2
       Arkham.Investigator.Cards.KateWinthrop
       Arkham.Investigator.Cards.KohakuNarukami
       Arkham.Investigator.Cards.KymaniJones

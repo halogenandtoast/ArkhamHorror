@@ -683,6 +683,10 @@ allEvents =
     , SomeEventCard bloodOfKnYan3
     , SomeEventCard motivationalSpeech4
     , SomeEventCard dimensionalVortex5
+    , -- Core 2026
+      --- signature [tdc]
+      SomeEventCard detectivesIntuition
+    , SomeEventCard deadEnds
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

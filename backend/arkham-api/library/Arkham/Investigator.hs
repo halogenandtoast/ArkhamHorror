@@ -135,6 +135,7 @@ allInvestigators =
       , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard georgeBarnaby
       , SomeInvestigatorCard lostHomunculus
+      , SomeInvestigatorCard danielaReyes2
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

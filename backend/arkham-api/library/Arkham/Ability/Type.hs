@@ -65,6 +65,9 @@ freeReaction window = ReactionAbility window Free
 triggered :: WindowMatcher -> Cost -> AbilityType
 triggered = ReactionAbility
 
+triggered_ :: WindowMatcher -> AbilityType
+triggered_ = (`ReactionAbility` Free)
+
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 

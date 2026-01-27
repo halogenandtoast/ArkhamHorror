@@ -176,9 +176,10 @@ export type Investigator = {
   handSize?: number | null;
 }
 
-type SlotType = 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
+type SlotType = 'HeadSlot' | 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
 
 export const slotTypeDecoder = JsonDecoder.oneOf<SlotType>([
+  JsonDecoder.literal('HeadSlot'),
   JsonDecoder.literal('HandSlot'),
   JsonDecoder.literal('BodySlot'),
   JsonDecoder.literal('AccessorySlot'),

@@ -659,6 +659,9 @@ allTreacheries =
     , SomeTreacheryCard morbidCuriosity
     , SomeTreacheryCard disruptivePoltergeist
     , SomeTreacheryCard frenzied
+    , -- Core 2026
+      -- signature [core2026]
+      SomeTreacheryCard inHarmsWay
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

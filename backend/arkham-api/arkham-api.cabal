@@ -793,6 +793,7 @@ library
       Arkham.Asset.Assets.DamningTestimony
       Arkham.Asset.Assets.DanforthBrilliantStudent
       Arkham.Asset.Assets.DanforthBrilliantStudentResolute
+      Arkham.Asset.Assets.DanielasWrenchNewAndImproved
       Arkham.Asset.Assets.DanielChesterfield
       Arkham.Asset.Assets.DarioElAmin
       Arkham.Asset.Assets.DarkHorse
@@ -1577,6 +1578,7 @@ library
       Arkham.Asset.Assets.ZoeysCrossAdvanced
       Arkham.Asset.Cards
       Arkham.Asset.Cards.Base
+      Arkham.Asset.Cards.Core2026
       Arkham.Asset.Cards.EdgeOfTheEarth
       Arkham.Asset.Cards.Import
       Arkham.Asset.Cards.NightOfTheZealot
@@ -2885,6 +2887,7 @@ library
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.DanielaReyes
+      Arkham.Investigator.Cards.DanielaReyes2
       Arkham.Investigator.Cards.DarrellSimmons
       Arkham.Investigator.Cards.DexterDrake
       Arkham.Investigator.Cards.DianaStanley
@@ -4825,6 +4828,7 @@ library
       Arkham.Treachery.Cards.InexplicableCold
       Arkham.Treachery.Cards.InexplicableColdTheMidwinterGala
       Arkham.Treachery.Cards.InfiniteDoorway
+      Arkham.Treachery.Cards.InHarmsWay
       Arkham.Treachery.Cards.InnsmouthLook
       Arkham.Treachery.Cards.InPlainSight
       Arkham.Treachery.Cards.InsatiableBloodlust

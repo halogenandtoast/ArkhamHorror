@@ -428,6 +428,7 @@ defaultSlots iid =
   mapFromList
     [ (AccessorySlot, [Slot (InvestigatorSource iid) []])
     , (BodySlot, [Slot (InvestigatorSource iid) []])
+    , (HeadSlot, [Slot (InvestigatorSource iid) []])
     , (AllySlot, [Slot (InvestigatorSource iid) []])
     ,
       ( HandSlot

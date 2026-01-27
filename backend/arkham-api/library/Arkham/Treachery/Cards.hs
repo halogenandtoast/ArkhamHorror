@@ -115,6 +115,7 @@ allPlayerTreacheryCards =
       , hypochondria
       , illDoItMyself
       , indebted
+      , inHarmsWay
       , internalInjury
       , legInjury
       , lostSoul
@@ -3229,6 +3230,12 @@ disruptivePoltergeist = (basicWeakness "11128" "Disruptive Poltergeist") {cdCard
 
 frenzied :: CardDef
 frenzied = (basicWeakness "11129" "Frenzied") {cdCardTraits = setFromList [Madness]}
+
+inHarmsWay :: CardDef
+inHarmsWay =
+  (weakness "12003" "In Harm's Way")
+    { cdCardTraits = setFromList [Flaw]
+    }
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

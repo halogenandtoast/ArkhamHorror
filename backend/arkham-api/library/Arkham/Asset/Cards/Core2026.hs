@@ -209,6 +209,15 @@ levelheaded =
     , cdCardTraits = setFromList [Talent]
     }
 
+oldCompass2 :: CardDef
+oldCompass2 =
+  (asset "12083" "Old Compass" 2 Survivor)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#hand]
+    , cdLevel = Just 2
+    }
+
 meatCleaver3 :: CardDef
 meatCleaver3 =
   (asset "12085" "Meat Cleaver" 2 Survivor)

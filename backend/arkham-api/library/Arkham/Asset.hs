@@ -1194,6 +1194,7 @@ allAssets =
       , SomeAssetCard olivierBishopHaughtyArtCollector
       , SomeAssetCard silverTongue
       , SomeAssetCard stickyFingers
+      , SomeAssetCard stickyFingers2
       , --- survivor [core2026]
         SomeAssetCard levelheaded
       , --- neutral [core2026]

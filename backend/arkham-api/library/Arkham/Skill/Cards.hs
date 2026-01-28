@@ -109,6 +109,8 @@ allPlayerSkillCards =
       , onTheMend
       , opportunist
       , opportunist2
+      , outOfSight
+      , outOfSight3
       , overpower
       , overpower2
       , perception
@@ -1032,6 +1034,21 @@ memoriesOfAnotherLife5 =
     { cdCardTraits = setFromList [Innate]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Believer, Dreamer, Sorcerer]]
     , cdLevel = Just 5
+    }
+
+outOfSight :: CardDef
+outOfSight =
+  (skill "12053" "Out of Sight" [#agility] Rogue)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+outOfSight3 :: CardDef
+outOfSight3 =
+  (skill "12057" "Out of Sight" [#agility, #agility, #agility] Rogue)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 3
     }
 
 riseToTheOccasion3 :: CardDef

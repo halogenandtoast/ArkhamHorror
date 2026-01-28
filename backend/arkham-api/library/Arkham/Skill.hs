@@ -307,6 +307,10 @@ allSkills = mapFromList $
     , SomeSkillCard inquisitive1
     , SomeSkillCard doubleDown2
     , SomeSkillCard memoriesOfAnotherLife5
+    , -- Core 2026
+      --- rogue [core2026]
+      SomeSkillCard outOfSight
+    , SomeSkillCard outOfSight3
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

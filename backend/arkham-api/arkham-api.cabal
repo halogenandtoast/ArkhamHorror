@@ -1435,6 +1435,7 @@ library
       Arkham.Asset.Assets.StHubertsKey
       Arkham.Asset.Assets.StickToThePlan3
       Arkham.Asset.Assets.StickyFingers
+      Arkham.Asset.Assets.StickyFingers2
       Arkham.Asset.Assets.StormRuler4
       Arkham.Asset.Assets.Straitjacket
       Arkham.Asset.Assets.StrangeSolution
@@ -4364,6 +4365,8 @@ library
       Arkham.Skill.Cards.OnTheMend
       Arkham.Skill.Cards.Opportunist
       Arkham.Skill.Cards.Opportunist2
+      Arkham.Skill.Cards.OutOfSight
+      Arkham.Skill.Cards.OutOfSight3
       Arkham.Skill.Cards.Overpower
       Arkham.Skill.Cards.Overpower2
       Arkham.Skill.Cards.Perception

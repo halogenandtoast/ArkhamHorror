@@ -99,3 +99,12 @@ unbridledKnowledge5 =
     , cdCriteria = Just $ Criteria.youExist $ can.reveal.cards <> can.manipulate.deck
     , cdLevel = Just 5
     }
+
+paintTheTownRed :: CardDef
+paintTheTownRed =
+  (event "12051" "Paint the Town Red" 0 Rogue)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Fortune, Gambit]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ Criteria.youExist can.target.encounterDeck
+    }

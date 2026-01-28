@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Cost } from '@/arkham/types/Cost';
-import type { AbilityLabel, FightLabel, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
+import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
 import type { Ability } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const props = withDefaults(defineProps<{
  game: Game
- ability: AbilityLabel | FightLabel | EvadeLabel | EngageLabel
+ ability: AbilityLabel | FightLabel | FightLabelWithSkill | EvadeLabel | EngageLabel
  tooltipIsButtonText?: boolean
  showMove?: boolean
 }>(), { tooltipIsButtonText: false, showMove: true })
@@ -78,6 +78,9 @@ const isAction = (action: Action) => {
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return action === "Fight"
   }
+  if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
+    return action === "Fight"
+  }
   if (props.ability.tag === MessageType.ENGAGE_LABEL) {
     return action === "Engage"
   }
@@ -134,6 +137,10 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
+    return t('Fight')
+  }
+
+  if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
     return t('Fight')
   }
 
@@ -200,6 +207,24 @@ const isZeroedActionAbility = computed(() => {
   return totalActionCost(cost) === 0
 })
 
+const abilitySkill = computed(() => {
+  console.log("abilitySkill", props.ability)
+
+  if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
+    return props.ability.skillType
+  }
+
+  if (!ability.value) {
+    return null
+  }
+
+  if (ability.value.type.tag === "ActionAbilityWithSkill") {
+    return ability.value.type.skillType
+  }
+
+  return null
+})
+
 const classObject = computed(() => {
   if (isButtonText.value) {
     return {}
@@ -212,6 +237,9 @@ const classObject = computed(() => {
     'delayed-ability-button': isDelayedAbility.value,
     'investigate-button': isInvestigate.value,
     'fight-button': isFight.value,
+    'fight-button--agility': isFight.value && abilitySkill.value === "SkillAgility",
+    'fight-button--intellect': isFight.value && abilitySkill.value === "SkillIntellect",
+    'fight-button--willpower': isFight.value && abilitySkill.value === "SkillWillpower",
     'evade-button': isEvade.value,
     'engage-button': isEngage.value,
     'objective-button': isObjective.value,
@@ -248,7 +276,7 @@ const classObject = computed(() => {
   background-color: #465550;
 }
 
-.investigate-button {
+.investigate-button, .fight-button--intellect {
   background-color: #40263A;
   &:before {
     font-family: "arkham";
@@ -266,7 +294,7 @@ const classObject = computed(() => {
   }
 }
 
-.evade-button {
+.evade-button, .fight-button--agility {
   background-color: #576345;
   &:before {
     font-family: "Arkham";

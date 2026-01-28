@@ -171,6 +171,7 @@ filterOutEnemyUiMessages eid = \case
   TargetLabel (EnemyTarget eid') _ | eid == eid' -> Nothing
   EvadeLabel eid' _ | eid == eid' -> Nothing
   FightLabel eid' _ | eid == eid' -> Nothing
+  FightLabelWithSkill eid' _ _ | eid == eid' -> Nothing
   other -> Just other
 
 getInvestigatorsAtSameLocation :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]

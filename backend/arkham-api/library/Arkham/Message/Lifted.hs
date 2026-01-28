@@ -1801,6 +1801,16 @@ chooseFightEnemyEdit
   -> m ()
 chooseFightEnemyEdit sid iid source f = mkChooseFight sid iid source >>= push . toMessage . f
 
+chooseFightEnemyWith
+  :: (ReverseQueue m, Sourceable source)
+  => SkillType
+  -> SkillTestId
+  -> InvestigatorId
+  -> source
+  -> m ()
+chooseFightEnemyWith stype sid iid source = do
+  chooseFightEnemyEdit sid iid source (Fight.withSkillType stype)
+
 chooseFightEnemyWithSkillChoice
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId

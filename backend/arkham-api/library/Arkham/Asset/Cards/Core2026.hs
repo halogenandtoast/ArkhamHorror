@@ -60,7 +60,6 @@ m1911 =
   (asset "12019" "M1911" 3 Guardian)
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdUnique = True
     , cdUses = uses Ammo 4
     , cdSlots = [#hand]
     }
@@ -132,6 +131,15 @@ mysteriousGrimoire2 =
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdUses = uses Secret 4
+    }
+
+m1903Hammerless :: CardDef
+m1903Hammerless =
+  (asset "12045" "M1903 Hammerless" 3 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdUses = uses Ammo 4
+    , cdSlots = [#hand]
     }
 
 silverTongue :: CardDef

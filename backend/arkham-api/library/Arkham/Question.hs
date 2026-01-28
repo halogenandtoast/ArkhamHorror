@@ -81,6 +81,7 @@ data UI msg
   | SkillLabelWithLabel {label :: Text, skillType :: SkillType, messages :: [msg]}
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
+  | FightLabelWithSkill {enemyId :: EnemyId, skillType :: SkillType, messages :: [msg]}
   | EngageLabel {enemyId :: EnemyId, messages :: [msg]}
   | GridLabel {gridLabel :: Text, messages :: [msg]}
   | TarotLabel {tarotCard :: TarotCard, messages :: [msg]}
@@ -210,6 +211,14 @@ fightLabel
   -> t msg
   -> UI msg
 fightLabel (asId -> enemy) (toList -> msgs) = FightLabel enemy msgs
+
+fightLabelWith
+  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
+  => SkillType
+  -> enemy
+  -> t msg
+  -> UI msg
+fightLabelWith sType (asId -> enemy) (toList -> msgs) = FightLabelWithSkill enemy sType msgs
 
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))

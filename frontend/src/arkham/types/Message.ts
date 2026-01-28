@@ -27,6 +27,7 @@ export enum MessageType {
   START_SKILL_TEST_BUTTON = 'StartSkillTestButton',
   SKILL_TEST_APPLY_RESULTS_BUTTON = 'SkillTestApplyResultsButton',
   FIGHT_LABEL = 'FightLabel',
+  FIGHT_LABEL_WITH_SKILL = 'FightLabelWithSkill',
   EVADE_LABEL = 'EvadeLabel',
   ENGAGE_LABEL = 'EngageLabel',
   GRID_LABEL = 'GridLabel',
@@ -39,7 +40,7 @@ export enum MessageType {
 }
 
 export type AbilityMessage = {
-  contents: AbilityLabel | FightLabel | EvadeLabel
+  contents: AbilityLabel | FightLabel | FightLabelWithSkill | EvadeLabel
   displayAsAction: boolean
   index: number
 }
@@ -184,6 +185,19 @@ export const fightLabelDecoder = JsonDecoder.object<FightLabel>(
     enemyId: JsonDecoder.string(),
   }, 'FightLabel')
 
+export type FightLabelWithSkill = {
+  tag: MessageType.FIGHT_LABEL_WITH_SKILL
+  enemyId: string
+  skillType: SkillType
+}
+
+export const fightLabelWithSkillDecoder = JsonDecoder.object<FightLabelWithSkill>(
+  {
+    tag: JsonDecoder.literal(MessageType.FIGHT_LABEL_WITH_SKILL),
+    enemyId: JsonDecoder.string(),
+    skillType: skillTypeDecoder,
+  }, 'FightLabelWithSkill')
+
 export type EvadeLabel = {
   tag: MessageType.EVADE_LABEL
   enemyId: string
@@ -326,6 +340,7 @@ export type Message =
   | StartSkillTestButton 
   | SkillTestApplyResultsButton 
   | FightLabel 
+  | FightLabelWithSkill
   | EvadeLabel 
   | EngageLabel 
   | GridLabel 
@@ -469,6 +484,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     startSkillTestButtonDecoder,
     skillTestApplyResultsButtonDecoder,
     fightLabelDecoder,
+    fightLabelWithSkillDecoder,
     evadeLabelDecoder,
     engageLabelDecoder,
     gridLabelDecoder,

@@ -1190,7 +1190,8 @@ allAssets =
       , SomeAssetCard sharpRhetoric
       , SomeAssetCard mysteriousGrimoire2
       , --- rogue [core2026]
-        SomeAssetCard silverTongue
+        SomeAssetCard m1903Hammerless
+      , SomeAssetCard silverTongue
       , --- survivor [core2026]
         SomeAssetCard levelheaded
       , --- neutral [core2026]

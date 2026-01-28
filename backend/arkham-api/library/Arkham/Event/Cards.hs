@@ -368,6 +368,7 @@ allPlayerEventCards =
       , sacrifice1
       , salvage2
       , scarletRot
+      , scrapeBy1
       , sceneOfTheCrime
       , scoutAhead
       , scroungeForSupplies

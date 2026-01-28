@@ -158,6 +158,14 @@ silverTongue =
     , cdCardTraits = setFromList [Talent]
     }
 
+stickyFingers :: CardDef
+stickyFingers =
+  (asset "12048" "Sticky Fingers" 1 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdLimits = [LimitPerInvestigator 1]
+    }
+
 levelheaded :: CardDef
 levelheaded =
   (asset "12076" "Levelheaded" 2 Survivor)

@@ -1193,6 +1193,7 @@ allAssets =
         SomeAssetCard m1903Hammerless
       , SomeAssetCard olivierBishopHaughtyArtCollector
       , SomeAssetCard silverTongue
+      , SomeAssetCard stickyFingers
       , --- survivor [core2026]
         SomeAssetCard levelheaded
       , --- neutral [core2026]

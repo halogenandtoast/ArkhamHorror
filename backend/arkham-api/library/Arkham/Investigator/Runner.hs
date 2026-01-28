@@ -3713,11 +3713,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     getSkillTest >>= traverse_ \skillTest -> do
       let iid = skillTestInvestigator skillTest
       when (iid == a.id) do
-        committedCards <- field InvestigatorCommittedCards iid
-        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
-        let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
-        actions <- getActions iid [window]
-
+        -- committedCards <- field InvestigatorCommittedCards iid
+        uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
         skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
         committableCards <-
           filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
@@ -3730,7 +3727,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             ]
           beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
         player <- getPlayer iid
-        when (notNull committableCards || notNull uncommittableCards || notNull actions) do
+        when (notNull committableCards || notNull uncommittableCards) do
           push
             $ SkillTestAsk
             $ chooseOne player
@@ -3740,17 +3737,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, AddToHand iid [card], beginMessage]
                | card <- uncommittableCards
                ]
-            <> map
-              (\action -> AbilityLabel iid action [window] [] [beginMessage])
-              actions
             <> triggerMessage
       when (iid /= a.id) do
-        committedCards <- field InvestigatorCommittedCards investigatorId
+        -- committedCards <- field InvestigatorCommittedCards investigatorId
         let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
         committableCards <-
           filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
             <$> getCommittableCards a.id
-        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
+        uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
         player <- getPlayer investigatorId
         pushWhen (notNull committableCards || notNull uncommittableCards)
           $ SkillTestAsk

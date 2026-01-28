@@ -23,6 +23,9 @@ evadeAction_ = ActionAbility [Evade] $ ActionCost 1
 instance IsLabel "evade" AbilityType where
   fromLabel = evadeAction_
 
+fightActionWith :: SkillType -> Cost -> AbilityType
+fightActionWith stype cost = ActionAbilityWithSkill [Fight] stype (ActionCost 1 <> cost)
+
 fightAction :: Cost -> AbilityType
 fightAction cost = ActionAbility [Fight] (ActionCost 1 <> cost)
 

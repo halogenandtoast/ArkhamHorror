@@ -118,6 +118,10 @@ function isAbility(v: Message): v is AbilityLabel {
     return true
   }
 
+  if (v.tag === MessageType.FIGHT_LABEL_WITH_SKILL && v.enemyId === id.value) {
+    return true
+  }
+
   if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
     return true
   }

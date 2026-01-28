@@ -1173,11 +1173,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     player <- getPlayer investigatorId
     let choices = enemyIds <> map coerce locationIds <> map coerce concealed <> map coerce assetIds
     -- we might have killed the enemy via a reaction before getting here
+    let flabel eid = if choose.skillType /= #combat then FightLabelWithSkill eid choose.skillType else FightLabel eid
     unless (null choices) do
       push
         $ chooseOne
           player
-          [ FightLabel
+          [ flabel
               eid
               $ ChoseEnemy choose.skillTest investigatorId source eid
               : [ FightEnemy eid choose

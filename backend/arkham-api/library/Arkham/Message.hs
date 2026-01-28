@@ -1515,6 +1515,7 @@ uiToRun = \case
   SkillLabelWithLabel _ _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs
+  FightLabelWithSkill _ _ msgs -> Run msgs
   EngageLabel _ msgs -> Run msgs
   AbilityLabel iid ab windows before msgs -> Run $ before <> [UseAbility iid ab windows] <> msgs
   ComponentLabel _ msgs -> Run msgs

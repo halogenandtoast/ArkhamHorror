@@ -133,15 +133,15 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {
-    return t('Evade')
+    return `${t('Evade')} (<i class='skill-icon'></i>)`
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
-    return t('Fight')
+    return `${t('Fight')} (<i class='skill-icon'></i>)`
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
-    return t('Fight')
+    return `${t('Fight')} (<i class='skill-icon'></i>)`
   }
 
   if (props.ability.tag === MessageType.ENGAGE_LABEL) {
@@ -179,8 +179,9 @@ const abilityLabel = computed(() => {
   if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
     const { actions, cost } = ability.value.type
     const total = totalActionCost(cost)
+    const skillIcon = isFight.value || isEvade.value || isInvestigate.value ? " (<i class='skill-icon'></i>)" : ""
     if (actions.length === 1) {
-      return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>`
+      return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>${skillIcon}`
     }
 
     return replaceIcons("{action}".repeat(totalActionCost(cost)))
@@ -236,11 +237,17 @@ const classObject = computed(() => {
     'forced-ability-button': isForcedAbility.value,
     'delayed-ability-button': isDelayedAbility.value,
     'investigate-button': isInvestigate.value,
+    'investigate-button--agility': isInvestigate.value && abilitySkill.value === "SkillAgility",
+    'investigate-button--combat': isInvestigate.value && abilitySkill.value === "SkillCombat",
+    'investigate-button--willpower': isInvestigate.value && abilitySkill.value === "SkillWillpower",
     'fight-button': isFight.value,
     'fight-button--agility': isFight.value && abilitySkill.value === "SkillAgility",
     'fight-button--intellect': isFight.value && abilitySkill.value === "SkillIntellect",
     'fight-button--willpower': isFight.value && abilitySkill.value === "SkillWillpower",
     'evade-button': isEvade.value,
+    'evade-button--combat': isEvade.value && abilitySkill.value === "SkillCombat",
+    'evade-button--intellect': isEvade.value && abilitySkill.value === "SkillIntellect",
+    'evade-button--willpower': isEvade.value && abilitySkill.value === "SkillWillpower",
     'engage-button': isEngage.value,
     'objective-button': isObjective.value,
   }
@@ -272,34 +279,48 @@ const classObject = computed(() => {
   min-width: max-content;
 }
 
+.button:has(.skill-icon) {
+  text-align: left;
+  display: block;
+}
+
 .objective-button {
   background-color: #465550;
 }
 
-.investigate-button, .fight-button--intellect {
+.investigate-button, :deep(.investigate-button), .fight-button--intellect, :deep(.fight-button--intellect), .evade-button--intellect, :deep(.evade-button--intellect) { 
   background-color: #40263A;
-  &:before {
+  .skill-icon:before {
     font-family: "arkham";
+    font-style: normal;
     content: "\0046";
-    margin-right: 5px;
   }
 }
 
-.fight-button {
+.fight-button, :deep(.fight-button), .evade-button--combat, :deep(.evade-button--combat) {
   background-color: #8F5B41;
-  &:before {
+  .skill-icon:before {
     font-family: "Arkham";
+    font-style: normal;
     content: "\0044";
-    margin-right: 5px;
   }
 }
 
-.evade-button, .fight-button--agility {
+.evade-button, .fight-button--agility, :deep(.evade-button), :deep(.fight-button--agility) {
   background-color: #576345;
-  &:before {
+  .skill-icon:before {
     font-family: "Arkham";
+    font-style: normal;
     content: "\0053";
-    margin-right: 5px;
+  }
+}
+
+.fight-button--willpower, :deep(.fight-button--willpower), .evade-button--willpower, :deep(.evade-button--willpower) {
+  background-color: #576345;
+  .skill-icon:before {
+    font-family: "Arkham";
+    font-style: normal;
+    content: "\0041";
   }
 }
 

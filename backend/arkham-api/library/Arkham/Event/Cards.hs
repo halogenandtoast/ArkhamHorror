@@ -123,6 +123,7 @@ allPlayerEventCards =
       , dawnStar1
       , deadEnds
       , decipheredReality5
+      , decisiveStrike2
       , decoy
       , deepKnowledge
       , delayTheInevitable

@@ -117,3 +117,11 @@ prestidigitation =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 2) $ InHandOf ForPlay You <> #item
     }
+
+decisiveStrike2 :: CardDef
+decisiveStrike2 =
+  (event "12055" "Decisive Strike" 2 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Gambit]
+    , cdActions = [#fight]
+    }

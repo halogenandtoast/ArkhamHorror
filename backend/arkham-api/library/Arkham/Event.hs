@@ -700,6 +700,7 @@ allEvents =
       , --- rogue [core2026]
         SomeEventCard paintTheTownRed
       , SomeEventCard prestidigitation
+      , SomeEventCard decisiveStrike2
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

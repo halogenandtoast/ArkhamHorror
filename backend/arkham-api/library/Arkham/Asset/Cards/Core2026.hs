@@ -168,11 +168,21 @@ stickyFingers =
 
 stickyFingers2 :: CardDef
 stickyFingers2 =
-  fast (asset "12054" "Sticky Fingers" 1 Rogue)
-    { cdSkills = [#agility, #agility]
-    , cdCardTraits = setFromList [Talent]
-    , cdLimits = [LimitPerInvestigator 1]
-    , cdLevel = Just 2
+  fast
+    (asset "12054" "Sticky Fingers" 1 Rogue)
+      { cdSkills = [#agility, #agility]
+      , cdCardTraits = setFromList [Talent]
+      , cdLimits = [LimitPerInvestigator 1]
+      , cdLevel = Just 2
+      }
+
+alekseySaburovAlwaysOnTheMend :: CardDef
+alekseySaburovAlwaysOnTheMend =
+  (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ally]
+    , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 levelheaded :: CardDef

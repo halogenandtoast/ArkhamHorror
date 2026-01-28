@@ -1200,6 +1200,7 @@ allAssets =
       , SomeAssetCard huntersInstinct
       , SomeAssetCard jumpsuit
       , SomeAssetCard levelheaded
+      , SomeAssetCard meatCleaver3
       , --- neutral [core2026]
         SomeAssetCard fedora
       , --- basic weakness [core2026]

@@ -571,6 +571,7 @@ allPlayerAssetCards =
       , mauserC962
       , mauserTankgewehrM19185
       , meatCleaver
+      , meatCleaver3
       , mechanicsWrench
       , medicalStudent
       , medicalTexts

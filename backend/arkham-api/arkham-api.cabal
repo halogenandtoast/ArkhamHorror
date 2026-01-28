@@ -2636,6 +2636,7 @@ library
       Arkham.Event.Events.Oops
       Arkham.Event.Events.Oops2
       Arkham.Event.Events.OpenGate
+      Arkham.Event.Events.PaintTheTownRed
       Arkham.Event.Events.ParallelFates
       Arkham.Event.Events.ParallelFates2
       Arkham.Event.Events.PayDay1

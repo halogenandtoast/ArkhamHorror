@@ -324,6 +324,7 @@ allPlayerEventCards =
       , oops
       , oops2
       , openGate
+      , paintTheTownRed
       , parallelFates
       , parallelFates2
       , payDay1

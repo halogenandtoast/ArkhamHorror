@@ -4899,6 +4899,7 @@ instance Query ExtendedCardMatcher where
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case
+            CanCommitAfterRevealingTokens -> pure True
             OnlySkillTestSource smatcher ->
               getSkillTestSource >>= \case
                 Just source -> sourceMatches source smatcher

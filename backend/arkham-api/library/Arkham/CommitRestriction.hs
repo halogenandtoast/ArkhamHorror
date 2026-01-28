@@ -29,6 +29,7 @@ data CommitRestriction
   | AnyCommitRestriction [CommitRestriction]
   | OnlySkillTestSource SourceMatcher
   | OnlySkillTest SkillTestMatcher
+  | CanCommitAfterRevealingTokens
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CommitRestriction)

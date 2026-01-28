@@ -311,6 +311,9 @@ allSkills = mapFromList $
       --- rogue [core2026]
       SomeSkillCard outOfSight
     , SomeSkillCard outOfSight3
+    , --- survivor [core2026]
+      SomeSkillCard slippery
+    , SomeSkillCard timelyIntervention
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

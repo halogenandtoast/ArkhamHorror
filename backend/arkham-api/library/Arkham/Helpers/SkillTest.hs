@@ -637,6 +637,7 @@ getIsCommittable a c = runValidT do
           MinSkillTestValueDifference n -> do
             x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
             pure $ x >= n
+          CanCommitAfterRevealingTokens -> pure True
         prevented = flip any modifiers' $ \case
           CanOnlyUseCardsInRole role ->
             null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Mythos, Neutral, role])

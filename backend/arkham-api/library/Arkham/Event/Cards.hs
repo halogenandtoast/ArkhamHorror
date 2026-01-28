@@ -382,6 +382,7 @@ allPlayerEventCards =
       , shortRest
       , shortcut
       , shortcut2
+      , shoveOff
       , shrineOfTheMoirai3
       , sleightOfHand
       , slipAway

@@ -699,6 +699,7 @@ allEvents =
       , SomeEventCard unbridledKnowledge5
       , --- rogue [core2026]
         SomeEventCard paintTheTownRed
+      , SomeEventCard prestidigitation
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

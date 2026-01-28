@@ -108,3 +108,12 @@ paintTheTownRed =
     , cdActions = [#parley]
     , cdCriteria = Just $ Criteria.youExist can.target.encounterDeck
     }
+
+prestidigitation :: CardDef
+prestidigitation =
+  (event "12052" "Prestidigitation" 1 Rogue)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 2) $ InHandOf ForPlay You <> #item
+    }

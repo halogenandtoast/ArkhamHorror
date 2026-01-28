@@ -134,6 +134,7 @@ import Arkham.Event.Events (
   mystifyingSongEffect,
   onTheLamAdvancedEffect,
   oneInTheChamberEffect,
+  prestidigitationEffect,
   sleightOfHandEffect,
   snipe1Effect,
   spectralRazor2Effect,
@@ -563,6 +564,7 @@ allEffects =
     , ("11018", SomeEffect grimResolveEffect)
     , ("11079", SomeEffect deliverance3Effect)
     , ("11124", SomeEffect dimensionalVortex5Effect)
+    , ("12052", SomeEffect prestidigitationEffect)
     , ("50044", SomeEffect $ noop "50044")
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)

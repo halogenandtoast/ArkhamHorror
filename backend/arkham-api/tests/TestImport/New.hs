@@ -483,6 +483,9 @@ chooseTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
 chooseTarget (toTarget -> target) =
   chooseOptionMatching "choose target" \case
     TargetLabel target' _ -> target == target'
+    FightLabelWithSkill eid _ _ -> case target of
+      EnemyTarget eid' -> eid == eid'
+      _ -> False
     FightLabel eid _ -> case target of
       EnemyTarget eid' -> eid == eid'
       _ -> False
@@ -714,6 +717,9 @@ assertTarget (toTarget -> target) = do
       FightLabel eid _ -> case target of
         EnemyTarget eid' -> eid == eid'
         _ -> False
+      FightLabelWithSkill eid _ _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
       _ -> False
 
   case find isMessageTarget choices of
@@ -734,6 +740,9 @@ assertNotTarget (toTarget -> target) = do
         _ -> []
     isMessageTarget = \case
       TargetLabel target' _ -> target == target'
+      FightLabelWithSkill eid _ _ -> case target of
+        EnemyTarget eid' -> eid == eid'
+        _ -> False
       FightLabel eid _ -> case target of
         EnemyTarget eid' -> eid == eid'
         _ -> False

@@ -630,6 +630,7 @@ allPlayerAssetCards =
       , oldShotgun2
       , oliveMcBride
       , oliveMcBride2
+      , olivierBishopHaughtyArtCollector
       , onTheirHeels5
       , onYourOwn3
       , onYourOwn3_Exceptional

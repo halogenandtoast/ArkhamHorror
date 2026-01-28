@@ -142,6 +142,15 @@ m1903Hammerless =
     , cdSlots = [#hand]
     }
 
+olivierBishopHaughtyArtCollector :: CardDef
+olivierBishopHaughtyArtCollector =
+  (asset "12046" ("Olivier Bishop" <:> "Haughty Art \"Collector\"") 4 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Ally, Criminal, Socialite]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 silverTongue :: CardDef
 silverTongue =
   (asset "12047" "Silver Tongue" 2 Rogue)

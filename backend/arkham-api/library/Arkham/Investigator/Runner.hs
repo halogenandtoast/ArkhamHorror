@@ -3730,25 +3730,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             ]
           beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
         player <- getPlayer iid
-        if notNull committableCards || notNull uncommittableCards || notNull actions
-          then
-            push
-              $ SkillTestAsk
-              $ chooseOne player
-              $ map
-                (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
-                committableCards
-              <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, AddToHand iid [card], beginMessage]
-                 | card <- uncommittableCards
-                 ]
-              <> map
-                (\action -> AbilityLabel iid action [window] [] [beginMessage])
-                actions
-              <> triggerMessage
-          else
-            pushWhen (notNull triggerMessage)
-              $ SkillTestAsk
-              $ chooseOne player triggerMessage
+        when (notNull committableCards || notNull uncommittableCards || notNull actions) do
+          push
+            $ SkillTestAsk
+            $ chooseOne player
+            $ map
+              (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
+              committableCards
+            <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, AddToHand iid [card], beginMessage]
+               | card <- uncommittableCards
+               ]
+            <> map
+              (\action -> AbilityLabel iid action [window] [] [beginMessage])
+              actions
+            <> triggerMessage
       when (iid /= a.id) do
         committedCards <- field InvestigatorCommittedCards investigatorId
         let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')

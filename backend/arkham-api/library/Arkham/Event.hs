@@ -703,6 +703,7 @@ allEvents =
       , SomeEventCard decisiveStrike2
       , --- survivor [core2026]
         SomeEventCard shoveOff
+      , SomeEventCard scrapeBy1
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

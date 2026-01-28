@@ -133,3 +133,11 @@ shoveOff =
     , cdCardTraits = setFromList [Tactic]
     , cdActions = [#evade]
     }
+
+scrapeBy1 :: CardDef
+scrapeBy1 =
+  (event "12082" "Scrape By" 1 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Fortune]
+    , cdFastWindow = Just $ WouldHaveSkillTestResult #when You (SkillTestWithRevealedChaosToken $ not_ #autofail) #failure
+    }

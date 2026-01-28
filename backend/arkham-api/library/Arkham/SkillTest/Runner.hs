@@ -353,18 +353,24 @@ instance RunMessage SkillTest where
         Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
         _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
-      pure
-        $ s
-        & (resultL .~ SucceededBy Automatic modifiedSkillValue')
-        & (originalDifficultyL .~ skillTestOriginalDifficulty)
-        & (difficultyL .~ SkillTestDifficulty (Fixed 0))
+      let
+        s' = s
+          & (resultL .~ SucceededBy Automatic modifiedSkillValue')
+          & (originalDifficultyL .~ skillTestOriginalDifficulty)
+          & (difficultyL .~ SkillTestDifficulty (Fixed 0))
+      results <- calculateSkillTestResultsData s'
+      push $ SkillTestResults results
+      pure s'
     PassSkillTestBy n -> do
       player <- getPlayer skillTestInvestigator
       removeAllMessagesMatching \case
         Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
         _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
-      pure $ s & resultL .~ SucceededBy NonAutomatic n
+      let s' = s & resultL .~ SucceededBy NonAutomatic n
+      results <- calculateSkillTestResultsData s'
+      push $ SkillTestResults results
+      pure $ s' & resultL .~ SucceededBy NonAutomatic n
     FailSkillTest -> do
       pushAll [CheckAllAdditionalCommitCosts, Do FailSkillTest]
       pure s

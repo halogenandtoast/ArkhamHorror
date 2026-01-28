@@ -73,6 +73,7 @@ import Arkham.Asset.Assets (
   lockpicksEffect,
   luckyDice2Effect,
   luckyDice3Effect,
+  meatCleaver3Effect,
   meatCleaverEffect,
   miskatonicArchaeologyFunding4Effect,
   mistsOfRlyeh2Effect,
@@ -565,6 +566,7 @@ allEffects =
     , ("11079", SomeEffect deliverance3Effect)
     , ("11124", SomeEffect dimensionalVortex5Effect)
     , ("12052", SomeEffect prestidigitationEffect)
+    , ("12085", SomeEffect meatCleaver3Effect)
     , ("50044", SomeEffect $ noop "50044")
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)

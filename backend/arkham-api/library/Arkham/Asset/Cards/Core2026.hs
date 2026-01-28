@@ -209,6 +209,15 @@ levelheaded =
     , cdCardTraits = setFromList [Talent]
     }
 
+meatCleaver3 :: CardDef
+meatCleaver3 =
+  (asset "12085" "Meat Cleaver" 2 Survivor)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSlots = [#hand]
+    , cdLevel = Just 3
+    }
+
 fedora :: CardDef
 fedora =
   (asset "12087" "Fedora" 2 Neutral)

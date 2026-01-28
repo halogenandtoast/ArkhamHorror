@@ -454,6 +454,7 @@ allPlayerAssetCards =
       , hope
       , horacioMartinez
       , huntersArmor
+      , huntersInstinct
       , huntingJacket2
       , hyperawareness
       , hyperawareness2

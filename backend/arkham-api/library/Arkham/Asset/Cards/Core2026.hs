@@ -185,6 +185,15 @@ alekseySaburovAlwaysOnTheMend =
     , cdUnique = True
     }
 
+huntersInstinct :: CardDef
+huntersInstinct =
+  (asset "12074" "Hunter's Instinct" 2 Survivor)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdUses = uses Supply 3
+    }
+
 levelheaded :: CardDef
 levelheaded =
   (asset "12076" "Levelheaded" 2 Survivor)

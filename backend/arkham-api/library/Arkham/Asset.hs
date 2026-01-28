@@ -1197,6 +1197,7 @@ allAssets =
       , SomeAssetCard stickyFingers2
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
+      , SomeAssetCard huntersInstinct
       , SomeAssetCard levelheaded
       , --- neutral [core2026]
         SomeAssetCard fedora

@@ -1191,6 +1191,7 @@ allAssets =
       , SomeAssetCard mysteriousGrimoire2
       , --- rogue [core2026]
         SomeAssetCard m1903Hammerless
+      , SomeAssetCard olivierBishopHaughtyArtCollector
       , SomeAssetCard silverTongue
       , --- survivor [core2026]
         SomeAssetCard levelheaded

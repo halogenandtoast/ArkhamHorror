@@ -21,7 +21,8 @@ instance HasAbilities DiscOfItzamna2 where
 
 instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (spawnedEnemy -> enemy) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 ws@(spawnedEnemy -> enemy) _ -> do
+      cancelWindowBatch ws
       toDiscardBy iid (attrs.ability 1) enemy
       pure a
     _ -> DiscOfItzamna2 <$> liftRunMessage msg attrs

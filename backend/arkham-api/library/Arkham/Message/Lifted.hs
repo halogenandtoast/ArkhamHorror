@@ -3267,6 +3267,9 @@ forTarget target f =
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
 
+forTarget' :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> m ()
+forTarget' target = capture >=> traverse_ (forTarget target)
+
 forTarget_ :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 forTarget_ target = push . ForTarget (toTarget target)
 

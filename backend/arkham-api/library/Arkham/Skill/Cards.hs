@@ -106,6 +106,7 @@ allPlayerSkillCards =
       , nimble
       , notWithoutAFight
       , occultTheory1
+      , onTheBrink2
       , onTheMend
       , opportunist
       , opportunist2
@@ -1064,6 +1065,13 @@ timelyIntervention =
   (skill "12081" "Timely Intervention" [#willpower, #agility, #wild] Survivor)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest, CanCommitAfterRevealingTokens]
+    }
+
+onTheBrink2 :: CardDef
+onTheBrink2 =
+  (skill "12084" "On the Brink" [#wild, #wild] Survivor)
+    { cdCardTraits = setFromList [Gambit, Desperate]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 riseToTheOccasion3 :: CardDef

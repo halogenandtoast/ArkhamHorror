@@ -314,6 +314,7 @@ allSkills = mapFromList $
     , --- survivor [core2026]
       SomeSkillCard slippery
     , SomeSkillCard timelyIntervention
+    , SomeSkillCard onTheBrink2
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

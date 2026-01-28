@@ -628,6 +628,7 @@ allPlayerAssetCards =
       , ofuda
       , oldBookOfLore
       , oldBookOfLore3
+      , oldCompass2
       , oldHuntingRifle3
       , oldKeyring
       , oldKeyring3

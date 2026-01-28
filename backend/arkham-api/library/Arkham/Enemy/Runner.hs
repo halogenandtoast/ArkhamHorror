@@ -82,6 +82,7 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (
+  batched,
   capture,
   do_,
   obtainCard,
@@ -343,10 +344,11 @@ instance RunMessage EnemyAttrs where
           do_ msg
           pure a'
         Just lid -> do
-          pushM $ checkWindows [mkWhen $ Window.EnemyWouldSpawnAt enemyId lid]
-          whenM (enemyId <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)) do
-            pushM $ checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
-          do_ msg
+          batched \_ -> do
+            Lifted.checkWhen $ Window.EnemyWouldSpawnAt enemyId lid
+            whenM (enemyId <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)) do
+              Lifted.checkWhen (Window.EnemySpawns enemyId lid)
+            do_ msg
           pure $ a' & placementL .~ AtLocation lid
     Do (EnemySpawn originalDetails) | originalDetails.enemy == enemyId && not enemyDefeated -> do
       let details = fromMaybe originalDetails enemySpawnDetails

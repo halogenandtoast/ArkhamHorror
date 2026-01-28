@@ -496,6 +496,7 @@ allPlayerAssetCards =
       , joeyTheRatVigil3
       , johnnyValoneReadyToMakeADeal
       , johnnyValoneReadyToMakeADeal
+      , jumpsuit
       , katana
       , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2

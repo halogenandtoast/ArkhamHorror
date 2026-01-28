@@ -1198,6 +1198,7 @@ allAssets =
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct
+      , SomeAssetCard jumpsuit
       , SomeAssetCard levelheaded
       , --- neutral [core2026]
         SomeAssetCard fedora

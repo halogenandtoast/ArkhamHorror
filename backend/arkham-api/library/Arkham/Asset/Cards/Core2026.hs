@@ -194,6 +194,14 @@ huntersInstinct =
     , cdUses = uses Supply 3
     }
 
+jumpsuit :: CardDef
+jumpsuit =
+  (asset "12075" "Jumpsuit" 1 Survivor)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Clothing]
+    , cdSlots = [#body]
+    }
+
 levelheaded :: CardDef
 levelheaded =
   (asset "12076" "Levelheaded" 2 Survivor)

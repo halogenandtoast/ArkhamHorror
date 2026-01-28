@@ -341,6 +341,7 @@ allPlayerEventCards =
       , preparedForTheWorst2
       , preposterousSketches
       , preposterousSketches2
+      , prestidigitation
       , primedForAction
       , protectingTheAnirniq2
       , psychicSensitivity

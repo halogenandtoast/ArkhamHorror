@@ -16,7 +16,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Message
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, skillTestModifier)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows)
@@ -228,9 +228,20 @@ instance RunMessage SkillTest where
               revealStrategy =
                 foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
             hasRun <- fromQueue (elem (RunSkillTest iid))
+            lockCommits <-
+              if RevealChaosTokensBeforeCommittingCards `notElem` modifiers''
+                then for (concat $ Map.elems skillTestCommittedCards) \card ->
+                  skillTestModifier s.id (SkillTestSource s.id) card MustBeCommitted
+                else pure []
             pushAll
               $ [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
                 ]
+              <> ( guard (RevealChaosTokensBeforeCommittingCards `notElem` modifiers'')
+                     *> ( lockCommits
+                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "Done Committing" [CheckAllAdditionalCommitCosts]))
+                               ]
+                        )
+                 )
               <> [RunSkillTest iid | not hasRun]
       pure s
     DrawAnotherChaosToken iid -> do

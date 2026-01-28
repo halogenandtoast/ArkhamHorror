@@ -138,6 +138,7 @@ allPlayerSkillCards =
       , sharpVision1
       , signumCrucis2
       , skeptic1
+      , slippery
       , steadfast
       , strengthInNumbers1
       , strokeOfLuck2
@@ -152,6 +153,7 @@ allPlayerSkillCards =
       , theEyeOfTruth5
       , theHomeFront
       , threeAces1
+      , timelyIntervention
       , torrentOfPower
       , trueUnderstanding
       , unexpectedCourage
@@ -1049,6 +1051,19 @@ outOfSight3 =
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 3
+    }
+
+slippery :: CardDef
+slippery =
+  (skill "12080" "Slippery" [#agility] Survivor)
+    { cdCardTraits = setFromList [Practiced]
+    }
+
+timelyIntervention :: CardDef
+timelyIntervention =
+  (skill "12081" "Timely Intervention" [#willpower, #agility, #wild] Survivor)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions = [MaxOnePerTest, CanCommitAfterRevealingTokens]
     }
 
 riseToTheOccasion3 :: CardDef

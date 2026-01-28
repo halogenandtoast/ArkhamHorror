@@ -3709,6 +3709,66 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
              | card <- uncommittableCards
              ]
     pure a
+  DoStep 3 (CommitToSkillTest skillTestId triggerMessage') -> do
+    getSkillTest >>= traverse_ \skillTest -> do
+      let iid = skillTestInvestigator skillTest
+      when (iid == a.id) do
+        committedCards <- field InvestigatorCommittedCards iid
+        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
+        let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
+        actions <- getActions iid [window]
+
+        skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
+        committableCards <-
+          filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
+            <$> getCommittableCards (toId a)
+        let
+          mustCommit = any (elem MustBeCommittedToYourTest . cdCommitRestrictions . toCardDef) committableCards
+          triggerMessage =
+            [ triggerMessage'
+            | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
+            ]
+          beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
+        player <- getPlayer iid
+        if notNull committableCards || notNull uncommittableCards || notNull actions
+          then
+            push
+              $ SkillTestAsk
+              $ chooseOne player
+              $ map
+                (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
+                committableCards
+              <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, AddToHand iid [card], beginMessage]
+                 | card <- uncommittableCards
+                 ]
+              <> map
+                (\action -> AbilityLabel iid action [window] [] [beginMessage])
+                actions
+              <> triggerMessage
+          else
+            pushWhen (notNull triggerMessage)
+              $ SkillTestAsk
+              $ chooseOne player triggerMessage
+      when (iid /= a.id) do
+        committedCards <- field InvestigatorCommittedCards investigatorId
+        let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
+        committableCards <-
+          filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
+            <$> getCommittableCards a.id
+        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
+        player <- getPlayer investigatorId
+        pushWhen (notNull committableCards || notNull uncommittableCards)
+          $ SkillTestAsk
+          $ chooseOne player
+          $ map
+            (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
+            committableCards
+          <> [ targetLabel
+                 (toCardId card)
+                 [SkillTestUncommitCard investigatorId card, AddToHand investigatorId [card], beginMessage]
+             | card <- uncommittableCards
+             ]
+    pure a
   CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
     pure $ a & skippedWindowL .~ False
   SkippedWindow iid | iid == investigatorId -> do
@@ -4089,7 +4149,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         when
           (foundKey cardSource /= Zone.FromDeck)
           (error "Expects a deck: Investigator<PutBackInAnyOrderBothTopAndBottom>")
-        case findWithDefault [] Zone.FromDeck $ traceShowId $ a ^. foundCardsL of
+        case findWithDefault [] Zone.FromDeck $ a ^. foundCardsL of
           [] -> pure ()
           remaining ->
             push

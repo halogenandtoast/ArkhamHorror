@@ -815,6 +815,7 @@ allPlayerAssetCards =
       , stHubertsKey
       , stickToThePlan3
       , stickyFingers
+      , stickyFingers2
       , stormRuler4
       , strangeSolution
       , strangeSolutionAcidicIchor4

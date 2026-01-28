@@ -166,6 +166,15 @@ stickyFingers =
     , cdLimits = [LimitPerInvestigator 1]
     }
 
+stickyFingers2 :: CardDef
+stickyFingers2 =
+  fast (asset "12054" "Sticky Fingers" 1 Rogue)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdLevel = Just 2
+    }
+
 levelheaded :: CardDef
 levelheaded =
   (asset "12076" "Levelheaded" 2 Survivor)

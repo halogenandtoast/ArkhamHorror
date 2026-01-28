@@ -125,3 +125,11 @@ decisiveStrike2 =
     , cdCardTraits = setFromList [Tactic, Gambit]
     , cdActions = [#fight]
     }
+
+shoveOff :: CardDef
+shoveOff =
+  (event "12079" "\"Shove off!\"" 1 Survivor)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic]
+    , cdActions = [#evade]
+    }

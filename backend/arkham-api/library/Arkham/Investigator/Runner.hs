@@ -605,6 +605,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     card <- getCard cardId
     pushAll [ObtainCard card.id, AddToHand iid [card]]
     pure a
+  ReturnToHand iid (CardMatcherTarget matcher) | iid == investigatorId -> do
+    cards <- select matcher
+    for_ cards \card ->
+      pushAll [ObtainCard card.id, AddToHand iid [card]]
+    pure a
   CheckAdditionalActionCosts iid target action msgs | iid == investigatorId -> do
     mods <- getModifiers a
     targetMods <- getModifiers target

@@ -701,6 +701,8 @@ allEvents =
         SomeEventCard paintTheTownRed
       , SomeEventCard prestidigitation
       , SomeEventCard decisiveStrike2
+      , --- survivor [core2026]
+        SomeEventCard shoveOff
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeEventCard dynamiteBlast2

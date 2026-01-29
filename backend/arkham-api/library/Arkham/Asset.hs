@@ -1202,6 +1202,7 @@ allAssets =
       , SomeAssetCard luckyCharm
       , SomeAssetCard secondSight
       , SomeAssetCard spiritualIntuition
+      , SomeAssetCard maskOfSilenusFaceOfTheVoid1
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

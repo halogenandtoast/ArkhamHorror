@@ -570,6 +570,7 @@ allPlayerAssetCards =
       , maskedCarnevaleGoer_19
       , maskedCarnevaleGoer_20
       , maskedCarnevaleGoer_21
+      , maskOfSilenusFaceOfTheVoid1
       , matchbox
       , mauserC96
       , mauserC962

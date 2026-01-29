@@ -279,7 +279,7 @@ instance RunMessage TheSearchForKadath where
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
           selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
-          moveAllTo (toSource attrs) baharna
+          placeAllAt baharna
           for_ locations removeLocation
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
             $ defer (LabeledTarget "oriab" ScenarioTarget) IsNotDraw
@@ -295,7 +295,7 @@ instance RunMessage TheSearchForKadath where
           selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
           createEnemyAt_ beingsOfIb ruinsOfIb
-          moveAllTo (toSource attrs) kadatheron
+          placeAllAt kadatheron
           for_ locations removeLocation
           pushAll [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
         ForbiddenLands -> do
@@ -310,7 +310,7 @@ instance RunMessage TheSearchForKadath where
           hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
           createEnemyAt_ stalkingManticore forbiddenLands
           createEnemyAt_ hordeOfNight zulanThek
-          moveAllTo (toSource attrs) ilekVad
+          placeAllAt ilekVad
           for_ locations removeLocation
           pushAll [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
         TimelessRealm -> do
@@ -321,7 +321,7 @@ instance RunMessage TheSearchForKadath where
           nightgauntMessages
           selectEach (InPlayEnemy $ not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
-          moveAllTo (toSource attrs) celephais
+          placeAllAt celephais
           for_ locations removeLocation
 
           shuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]

@@ -4,6 +4,8 @@ import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (whenMatch)
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Query (allInvestigators, getInvestigators)
+import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher.Enemy
@@ -20,6 +22,12 @@ import Arkham.Target
 
 moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
+
+placeAllAt :: ReverseQueue m => LocationId -> m ()
+placeAllAt lid = do
+  inResolution <- getInResolution
+  investigators <- if inResolution then allInvestigators else getInvestigators
+  for_ investigators \iid -> push $ PlaceInvestigator iid (AtLocation lid)
 
 moveTo
   :: (ReverseQueue m, Sourceable source, ToId location LocationId)

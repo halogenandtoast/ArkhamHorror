@@ -43,7 +43,7 @@ instance RunMessage BeyondDreams where
       theOnyxCastle <- selectJust $ locationIs Locations.theOnyxCastle
       reveal theOnyxCastle
 
-      moveAllTo attrs theOnyxCastle
+      placeAllAt theOnyxCastle
 
       selectEach (not_ $ locationIs Locations.theOnyxCastle) (push . RemoveLocation)
 

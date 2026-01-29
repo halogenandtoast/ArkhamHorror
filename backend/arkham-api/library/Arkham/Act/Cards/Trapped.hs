@@ -26,7 +26,7 @@ instance RunMessage Trapped where
 
       for_ enemies (toDiscard attrs)
       reveal hallway
-      moveAllTo attrs hallway
+      placeAllAt hallway
       removeLocation study
       advanceActDeck attrs
       pure a

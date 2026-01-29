@@ -22,7 +22,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Message.Lifted.Move (moveAllTo)
+import Arkham.Message.Lifted.Move (placeAllAt)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -102,7 +102,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
       -- Gate starts revealed
       theGateOfYquaa <- place Locations.theGateOfYquaa
       reveal theGateOfYquaa
-      moveAllTo attrs theGateOfYquaa
+      placeAllAt theGateOfYquaa
 
       setAgendaDeck [Agendas.theBeatingHeart, Agendas.theMiasmaBeckons, Agendas.callOfMadness]
       setActDeck [Acts.dormancy, Acts.theGreatSeal]

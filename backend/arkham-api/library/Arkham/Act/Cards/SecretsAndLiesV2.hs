@@ -51,7 +51,7 @@ instance RunMessage SecretsAndLiesV2 where
       theKnottedTower <- placeLocationCardInGrid (Pos 0 0) Locations.theKnottedTower
       placeLocationCardInGrid_ (Pos 0 1) Locations.gravityDefyingClimb
       theToweringVertex <- placeLocationCardInGrid (Pos 0 2) Locations.theToweringVertexRuinousConflux
-      moveAllTo attrs theKnottedTower
+      placeAllAt theKnottedTower
       place theRedGlovedMan theToweringVertex
       scenarioSpecific "setupOtherworld" Version2
       advanceActDeck attrs

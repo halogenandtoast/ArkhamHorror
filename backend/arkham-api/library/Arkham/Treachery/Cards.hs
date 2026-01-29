@@ -177,6 +177,7 @@ allPlayerTreacheryCards =
       , voiceOfTheMessenger
       , whatHaveYouDone
       , wheresPa
+      , wounded
       , wrackedByNightmares
       , yaztaroth
       , liberOmniumFinium
@@ -3257,6 +3258,12 @@ syndicateObligations :: CardDef
 syndicateObligations =
   (basicWeakness "12103" "Syndicate Obligations")
     { cdCardTraits = setFromList [Pact, Syndicate]
+    }
+
+wounded :: CardDef
+wounded =
+  (basicWeakness "12104" "Wounded")
+    { cdCardTraits = setFromList [Injury]
     }
 
 theZealotsSeal :: CardDef

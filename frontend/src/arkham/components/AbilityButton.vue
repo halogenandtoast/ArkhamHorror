@@ -279,6 +279,40 @@ const classObject = computed(() => {
   if (isButtonText.value) {
     return {}
   }
+  // want to take the ability skills and create a class like `skill-combat-or-agility` and the like based on the AbilitySkills, OrAbilitySkills should kebab with `or` and AndAbilitySkills should kebab with `and`
+
+  const toClass = (a: AbilitySkills): string => {
+    switch (a.tag) {
+      case "AbilitySkill": {
+        return toSkill(a.contents)
+      }
+      case "OrAbilitySkills": {
+        return a.contents.map(toClass).join("-to-")
+      }
+      case "AndAbilitySkills": {
+        return a.contents.map(toClass).join("-to-")
+      }
+      default: return ""
+    }
+  }
+
+  const toSkill = (skillType: SkillType): string => {
+    switch (skillType) {
+      case "SkillAgility":
+        return "agility"
+      case "SkillCombat":
+        return "combat"
+      case "SkillIntellect":
+        return "intellect"
+      case "SkillWillpower":
+        return "willpower"
+      default:
+        return ""
+    }
+  }
+
+  const abilitySkillClass = abilitySkills.value ? `skill-${toClass(abilitySkills.value)}` : null
+
   return {
     'zeroed-ability-button': isZeroedActionAbility.value && isNeutralAbility.value,
     'fast-ability-button': isFastActionAbility.value,
@@ -299,6 +333,7 @@ const classObject = computed(() => {
     'evade-button--willpower': isEvade.value && isSkill("SkillWillpower"),
     'engage-button': isEngage.value,
     'objective-button': isObjective.value,
+    [abilitySkillClass as string]: abilitySkillClass !== null
   }
 })
 </script>
@@ -341,12 +376,47 @@ const classObject = computed(() => {
   background-color: var(--intellect);
 }
 
-.button:has(.skill-intellect):has(.skill-agility) {
-  background: linear-gradient(90deg, var(--intellect) 0%, var(--agility) 100%);
-}
+.button {
+  &.skill-intellect-to-agility {
+    background: linear-gradient(90deg, var(--intellect) 0%, var(--agility) 100%);
+  }
+  &.skill-intellect-to-willpower {
+    background: linear-gradient(90deg, var(--intellect) 0%, var(--willpower) 100%);
+  }
+  &.skill-intellect-to-combat {
+    background: linear-gradient(90deg, var(--intellect) 0%, var(--combat) 100%);
+  }
 
-.button:has(.skill-combat):has(.skill-agility) {
-  background: linear-gradient(90deg, var(--combat) 0%, var(--agility) 100%);
+  &.skill-agility-to-intellect {
+    background: linear-gradient(90deg, var(--agility) 0%, var(--intellect) 100%);
+  }
+  &.skill-agility-to-combat {
+    background: linear-gradient(90deg, var(--agility) 0%, var(--combat) 100%);
+  }
+  &.skill-agility-to-willpower {
+    background: linear-gradient(90deg, var(--agility) 0%, var(--willpower) 100%);
+  }
+
+
+  &.skill-willpower-to-intellect {
+    background: linear-gradient(90deg, var(--willpower) 0%, var(--intellect) 100%);
+  }
+  &.skill-willpower-to-agility {
+    background: linear-gradient(90deg, var(--willpower) 0%, var(--agility) 100%);
+  }
+  &.skill-willpower-to-combat {
+    background: linear-gradient(90deg, var(--willpower) 0%, var(--combat) 100%);
+  }
+
+  &.skill-combat-to-agility {
+    background: linear-gradient(90deg, var(--combat) 0%, var(--agility) 100%);
+  }
+  &.skill-combat-to-willpower {
+    background: linear-gradient(90deg, var(--combat) 0%, var(--willpower) 100%);
+  }
+  &.skill-combat-to-intellect {
+    background: linear-gradient(90deg, var(--combat) 0%, var(--intellect) 100%);
+  }
 }
 
 .button:has(.skill-combat) {

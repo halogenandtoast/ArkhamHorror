@@ -1211,7 +1211,9 @@ allAssets =
       , SomeAssetCard oldCompass2
       , SomeAssetCard meatCleaver3
       , --- neutral [core2026]
-        SomeAssetCard fedora
+        SomeAssetCard brokenBottle
+      , SomeAssetCard fedora
+      , SomeAssetCard handCrankFlashlight
       , --- basic weakness [core2026]
         SomeAssetCard theGoldBug
       , -- Return to Night of the Zealot

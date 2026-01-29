@@ -729,6 +729,7 @@ library
       Arkham.Asset.Assets.BreathOfTheSleeper
       Arkham.Asset.Assets.BritishBullDog
       Arkham.Asset.Assets.BritishBullDog2
+      Arkham.Asset.Assets.BrokenBottle
       Arkham.Asset.Assets.BrokenDiademCrownOfDyingLight5
       Arkham.Asset.Assets.BrotherXavier1
       Arkham.Asset.Assets.Bruiser3
@@ -1018,6 +1019,7 @@ library
       Arkham.Asset.Assets.HallowedChalice
       Arkham.Asset.Assets.HallowedMirror
       Arkham.Asset.Assets.HallowedMirror3
+      Arkham.Asset.Assets.HandCrankFlashlight
       Arkham.Asset.Assets.Handcuffs
       Arkham.Asset.Assets.Handcuffs2
       Arkham.Asset.Assets.HandHook

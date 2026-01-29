@@ -138,7 +138,7 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
-    return `${t('Fight')} (<i class='skill-icon skill-fight'></i>)`
+    return `${t('Fight')} (${abilityString.value ? abilityString.value : '<i class="skill-icon skill-combat"></i>'})`
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
@@ -212,6 +212,10 @@ const isZeroedActionAbility = computed(() => {
 const abilitySkills = computed(() => {
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
     return { tag: "AbilitySkill", contents: props.ability.skillType }
+  }
+
+  if (props.ability.tag === MessageType.FIGHT_LABEL) {
+    return { tag: "AbilitySkill", contents: "SkillCombat" }
   }
 
   if (!ability.value) {

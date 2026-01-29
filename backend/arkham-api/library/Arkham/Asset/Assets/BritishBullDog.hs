@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Fight
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -28,12 +27,7 @@ instance RunMessage BritishBullDog where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-      fight <- mkChooseFight sid iid (attrs.ability 1)
-      chooseOne
-        iid
-        [ Label "Use {agility}" [toMessage $ withSkillType #agility fight]
-        , Label "Use {combat}" [toMessage fight]
-        ]
+      chooseFightEnemyWithSkillChoice sid iid (attrs.ability 1) [#combat, #agility]
       pure a
     InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs

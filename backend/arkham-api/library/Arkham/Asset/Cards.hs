@@ -765,6 +765,7 @@ allPlayerAssetCards =
       , scryingMirror
       , seaChangeHarpoon
       , sealOfTheSeventhSign5
+      , secondSight
       , segmentOfOnyx1
       , sergeantMonroe
       , servantOfBrassDaemonaicVassal

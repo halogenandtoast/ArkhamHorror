@@ -53,6 +53,12 @@ investigateAction cost = ActionAbility [Investigate] (ActionCost 1 <> cost)
 investigateAction_ :: AbilityType
 investigateAction_ = investigateAction mempty
 
+investigateActionWith :: SkillType -> Cost -> AbilityType
+investigateActionWith stype cost = ActionAbilityWithSkill [Investigate] stype (ActionCost 1 <> cost)
+
+investigateActionWith_ :: SkillType -> AbilityType
+investigateActionWith_ stype = ActionAbilityWithSkill [Investigate] stype (ActionCost 1)
+
 actionAbility :: AbilityType
 actionAbility = ActionAbility [] (ActionCost 1)
 

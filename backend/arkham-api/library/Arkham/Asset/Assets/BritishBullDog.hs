@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.BritishBullDog (britishBullDog, BritishBullDog (..)) where
+module Arkham.Asset.Assets.BritishBullDog (britishBullDog) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

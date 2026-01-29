@@ -28,7 +28,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
+import Arkham.Message.Lifted.Move (placeAllAt, moveTowardsMatching)
 import Arkham.Modifier (ModifierType (AdditionalStartingUses))
 import Arkham.Placement
 import Arkham.Projection
@@ -306,7 +306,7 @@ instance RunMessage CityOfTheElderThings where
         )
         \lid -> do
           reveal lid
-          moveAllTo attrs lid
+          placeAllAt lid
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing

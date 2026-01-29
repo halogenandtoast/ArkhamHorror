@@ -130,7 +130,7 @@ import Arkham.Investigator.Types (
   investigatorSanityDamage,
  )
 import Arkham.Key (ArkhamKey (..))
-import Arkham.Keyword (_Swarming, _Concealed)
+import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach

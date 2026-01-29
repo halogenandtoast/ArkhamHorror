@@ -85,7 +85,7 @@ instance RunMessage JourneyToTheNexus where
           Just xs -> xs
 
       newStartId <- placeLocation newStart
-      moveAllTo attrs newStartId
+      placeAllAt newStartId
 
       stepsOfYoth <- fetchCard Locations.stepsOfYoth
       setScenarioDeck ExplorationDeck =<< shuffle (stepsOfYoth : take 4 rest)

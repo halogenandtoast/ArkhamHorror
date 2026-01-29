@@ -222,7 +222,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
           $ LocationWithUnrevealedTitle "Ancient Facility"
           <> mapOneOf LocationWithLabel ["facility7", "facility8", "facility9", "facility10", "facility11"]
 
-      chooseTargetM lead ls (\l -> reveal l >> moveAllTo attrs l)
+      chooseTargetM lead ls (\l -> reveal l >> placeAllAt l)
 
       pure s
     ScenarioResolution r -> scope "resolutions" do

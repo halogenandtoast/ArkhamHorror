@@ -18,7 +18,7 @@ divination4 :: AssetCard Divination4
 divination4 = asset Divination4 Cards.divination4
 
 instance HasAbilities Divination4 where
-  getAbilities (Divination4 x) = [restricted x 1 ControlsThis investigateAction_]
+  getAbilities (Divination4 x) = [controlled_ x 1 $ investigateActionWithAlternate_ #willpower]
 
 instance RunMessage Divination4 where
   runMessage msg a@(Divination4 attrs) = runQueueT $ case msg of

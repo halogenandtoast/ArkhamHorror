@@ -20,6 +20,12 @@ evadeAction cost = ActionAbility [Evade] #agility (ActionCost 1 <> cost)
 evadeAction_ :: AbilityType
 evadeAction_ = ActionAbility [Evade] #agility $ ActionCost 1
 
+evadeActionWithAlternate :: AbilitySkills -> Cost -> AbilityType
+evadeActionWithAlternate stype cost = ActionAbility [Evade] (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1 <> cost)
+
+evadeActionWithAlternate_ :: AbilitySkills -> AbilityType
+evadeActionWithAlternate_ stype = ActionAbility [Evade] (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1)
+
 instance IsLabel "evade" AbilityType where
   fromLabel = evadeAction_
 
@@ -34,6 +40,9 @@ fightAction cost = ActionAbility [Fight] #combat (ActionCost 1 <> cost)
 
 fightActionWithAlternate :: AbilitySkills -> Cost -> AbilityType
 fightActionWithAlternate stype cost = ActionAbility [Fight] (Just $ OrAbilitySkills [#combat, stype]) (ActionCost 1 <> cost)
+
+fightActionWithAlternate_ :: AbilitySkills -> AbilityType
+fightActionWithAlternate_ stype = ActionAbility [Fight] (Just $ OrAbilitySkills [#combat, stype]) (ActionCost 1)
 
 fightAction_ :: AbilityType
 fightAction_ = fightAction mempty
@@ -61,6 +70,12 @@ investigateActionWith stype cost = ActionAbility [Investigate] (Just $ AbilitySk
 
 investigateActionWith_ :: SkillType -> AbilityType
 investigateActionWith_ stype = ActionAbility [Investigate] (Just $ AbilitySkill stype) (ActionCost 1)
+
+investigateActionWithAlternate :: AbilitySkills -> Cost -> AbilityType
+investigateActionWithAlternate stype cost = ActionAbility [Investigate] (Just $ OrAbilitySkills [#intellect, stype]) (ActionCost 1 <> cost)
+
+investigateActionWithAlternate_ :: AbilitySkills -> AbilityType
+investigateActionWithAlternate_ stype = ActionAbility [Investigate] (Just $ OrAbilitySkills [#intellect, stype]) (ActionCost 1)
 
 actionAbility :: AbilityType
 actionAbility = ActionAbility [] Nothing (ActionCost 1)

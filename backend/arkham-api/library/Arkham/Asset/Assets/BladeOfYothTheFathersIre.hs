@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.BladeOfYothTheFathersIre (
-  bladeOfYothTheFathersIre,
-  BladeOfYothTheFathersIre (..),
-)
-where
+module Arkham.Asset.Assets.BladeOfYothTheFathersIre (bladeOfYothTheFathersIre) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -21,8 +17,8 @@ bladeOfYothTheFathersIre = asset BladeOfYothTheFathersIre Cards.bladeOfYothTheFa
 
 instance HasAbilities BladeOfYothTheFathersIre where
   getAbilities (BladeOfYothTheFathersIre a) =
-    [ restrictedAbility a 1 ControlsThis $ fightAction $ UseCostUpTo (be a) Charge 1 3
-    , restrictedAbility a 2 ControlsThis $ FastAbility Free
+    [ controlled_ a 1 $ fightActionWithAlternate #willpower $ UseCostUpTo (be a) Charge 1 3
+    , controlled_ a 2 $ FastAbility Free
     ]
 
 instance RunMessage BladeOfYothTheFathersIre where

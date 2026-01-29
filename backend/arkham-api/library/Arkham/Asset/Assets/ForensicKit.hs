@@ -1,14 +1,14 @@
 module Arkham.Asset.Assets.ForensicKit (forensicKit) where
 
 import Arkham.Ability
-import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Investigate
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype ForensicKit = ForensicKit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,7 +19,7 @@ forensicKit = asset ForensicKit Cards.forensicKit
 
 instance HasAbilities ForensicKit where
   getAbilities (ForensicKit a) =
-    [investigateAbility a 1 (assetUseCost a Supply 1) ControlsThis]
+    [controlled_ a 1 $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
 
 instance RunMessage ForensicKit where
   runMessage msg a@(ForensicKit attrs) = runQueueT $ case msg of

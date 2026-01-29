@@ -79,7 +79,7 @@ toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
 toCardCodePairs c =
   (toCardCode c, c)
     : map
-      (\cardCode -> (cardCode, c {cdCardCode = cardCode, cdArt = unCardCode cardCode}))
+      (\cardCode -> (cardCode, c {cdCardCode = cardCode, cdArt = unCardCode cardCode, cdAlternateCardCodes = [c.cardCode]}))
       (cdAlternateCardCodes c)
 
 data IsRevelation

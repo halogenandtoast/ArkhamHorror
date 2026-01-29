@@ -123,7 +123,7 @@ putApiV1ArkhamGameDecksR gameId = do
             $ if investigatorId /= decklist.investigator
               then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
                 Nothing -> ReplaceInvestigator investigatorId decklist
-                Just def ->
+                Just def -> do
                   if toCardCode investigatorId `elem` def.cardCodes
                     then UpgradeDecklist investigatorId decklist
                     else ReplaceInvestigator investigatorId decklist

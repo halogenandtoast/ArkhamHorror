@@ -202,7 +202,7 @@ defaultCampaignRunner msg a = case msg of
     pure a
   UpgradeDeck iid mUrl deck -> do
     let
-      oldDeck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)
+      oldDeck = fromJustNote "No deck? (UpgradeDeck)" $ lookup iid (campaignDecks $ toAttrs a)
       deckDiff =
         foldr
           (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
@@ -237,7 +237,7 @@ defaultCampaignRunner msg a = case msg of
   DoStep 1 (UpgradeDeck iid _ oldDeck) -> do
     -- we have lost the old deck data, so we swap in the message
     let
-      deck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)
+      deck = fromJustNote "No deck? (DoStep 1 (UpgradeDeck))" $ lookup iid (campaignDecks $ toAttrs a)
       deckDiff =
         foldr
           (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))

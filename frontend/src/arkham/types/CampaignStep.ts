@@ -233,7 +233,6 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
 );
 
 export function extendWithOptions(step: ScenarioStep | ScenarioStepWithOptions | StandaloneScenarioStep, options: Partial<ScenarioOptions>): ScenarioStepWithOptions | StandaloneScenarioStepWithOptions {
-  console.log(step)
   if (step.tag === 'ScenarioStepWithOptions') {
     const mergedOptions: ScenarioOptions = {
       ...step.contents[1],

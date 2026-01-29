@@ -816,6 +816,7 @@ allPlayerAssetCards =
       , spiritOfHumanity2
       , spiritSpeaker
       , spiritualHealing4
+      , spiritualIntuition
       , spiritualResolve5
       , splitTheAngleIreOfTheVoid
       , springfieldM19034

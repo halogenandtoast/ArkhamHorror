@@ -43,6 +43,9 @@ data SourceMatcher
 instance IsLabel "spell" SourceMatcher where
   fromLabel = SourceWithTrait Spell
 
+instance IsLabel "ritual" SourceMatcher where
+  fromLabel = SourceWithTrait Ritual
+
 instance IsLabel "relic" SourceMatcher where
   fromLabel = SourceWithTrait Relic
 

@@ -1201,6 +1201,7 @@ allAssets =
       , SomeAssetCard jimCulverHauntedMusician
       , SomeAssetCard luckyCharm
       , SomeAssetCard secondSight
+      , SomeAssetCard spiritualIntuition
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

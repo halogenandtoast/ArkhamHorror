@@ -220,6 +220,13 @@ secondSight =
     , cdUses = uses Charge 3
     }
 
+spiritualIntuition :: CardDef
+spiritualIntuition =
+  (asset "12063" "Spiritual Intuition" 2 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Talent]
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

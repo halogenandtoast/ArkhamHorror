@@ -134,6 +134,7 @@ allPlayerTreacheryCards =
       , possessed
       , prophecyOfTheEnd
       , psychosis
+      , pursued
       , rationalThought
       , realityAcid5U21
       , rexsCurse
@@ -3243,6 +3244,12 @@ breakingPoint :: CardDef
 breakingPoint =
   (weakness "12015" "Breaking Point")
     { cdCardTraits = setFromList [Hardship]
+    }
+
+pursued :: CardDef
+pursued =
+  (basicWeakness "12102" "Pursued")
+    { cdCardTraits = setFromList [Terror]
     }
 
 theZealotsSeal :: CardDef

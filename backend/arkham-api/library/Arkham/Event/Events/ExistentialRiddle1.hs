@@ -1,14 +1,12 @@
 module Arkham.Event.Events.ExistentialRiddle1 (existentialRiddle1) where
 
+import Arkham.Calculation
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.SkillTest qualified as Msg
-import Arkham.Helpers.SkillTest.Target
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.SkillTest (withSkillTestTargetedEnemy)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Projection
 
 newtype ExistentialRiddle1 = ExistentialRiddle1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -27,17 +25,13 @@ instance RunMessage ExistentialRiddle1 where
       selectOneToHandle iid attrs $ enemyAtLocationWith iid <> NonEliteEnemy <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (is attrs -> True) (EnemyTarget eid) -> do
-      handLength <- fieldMap InvestigatorHand length iid
       sid <- getRandom
-      chooseOne
-        iid
-        [ SkillLabel sType [Msg.parley sid iid attrs eid sType (Fixed $ max 0 (8 - handLength))]
-        | sType <- [#willpower, #intellect]
-        ]
+      chooseBeginSkillTest sid iid attrs eid [#willpower, #intellect]
+        $ MinCalculation (Fixed 0) (SubtractCalculation (Fixed 8) (InvestigatorHandLengthCalculation iid))
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      getSkillTestTarget >>= traverse_ \case
-        EnemyTarget eid -> pushAll [EnemyEvaded iid eid, PlaceEvent attrs.id $ AttachedToEnemy eid]
-        _ -> pure ()
+      withSkillTestTargetedEnemy \eid -> do
+        automaticallyEvadeEnemy iid eid
+        place attrs $ AttachedToEnemy eid
       pure e
     _ -> ExistentialRiddle1 <$> liftRunMessage msg attrs

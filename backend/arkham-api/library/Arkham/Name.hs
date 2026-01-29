@@ -1,22 +1,26 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Name (
-  module Arkham.Name,
-) where
-
-import Arkham.Prelude
+module Arkham.Name (module Arkham.Name) where
 
 import Arkham.Classes.GameLogger
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
+import Arkham.Prelude
 import Data.Aeson.TH
+import GHC.Records
 
 data Name = Name
   { nameTitle :: Text
   , nameSubtitle :: Maybe Text
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "title" Name Text where
+  getField = nameTitle
+
+instance HasField "subtitle" Name (Maybe Text) where
+  getField = nameSubtitle
 
 class Named a where
   toName :: a -> Name
@@ -84,4 +88,3 @@ labeled (toName -> name) = Labeled name
 
 instance ToGameLoggerFormat (With EnemyId Name) where
   format (With eid name) = "{enemy:\"" <> toTitle name <> "\":\"" <> tshow eid <> "\"}"
-

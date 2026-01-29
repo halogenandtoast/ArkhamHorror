@@ -89,6 +89,7 @@ allInvestigatorCards =
       , danielaReyes2
       , joeDiamond2
       , trishScarborough2
+      , dexterDrake2
       , isabelleBarnes
       , nathanielCho
       , harveyWalters
@@ -645,6 +646,14 @@ trishScarborough2 =
     ("Trish Scarborough" <:> "The Former Spy")
     Rogue
     [Agency, Criminal]
+
+dexterDrake2 :: CardDef
+dexterDrake2 =
+  investigator
+    "12010"
+    ("Dexter Drake" <:> "The Magician")
+    Mystic
+    [Performer, Sorcerer]
 
 isabelleBarnes :: CardDef
 isabelleBarnes =

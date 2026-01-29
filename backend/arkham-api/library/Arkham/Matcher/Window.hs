@@ -252,6 +252,7 @@ data WindowMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PlayEvent Timing Who EventMatcher
+  | PlayAsset Timing Who AssetMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard CostStatus ExtendedCardMatcher

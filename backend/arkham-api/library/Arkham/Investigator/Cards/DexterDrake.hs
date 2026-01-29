@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.DexterDrake (dexterDrake, dexterDrakeEffect, DexterDrake (..)) where
+module Arkham.Investigator.Cards.DexterDrake (dexterDrake, dexterDrakeEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -26,7 +26,7 @@ dexterDrake =
 instance HasAbilities DexterDrake where
   getAbilities (DexterDrake a) =
     [ playerLimit PerRound
-        $ restrictedAbility
+        $ restricted
           a
           1
           ( Self
@@ -56,7 +56,7 @@ instance RunMessage DexterDrake where
     UseCardAbility iid (isSource attrs -> True) 1 _ (discardPayment -> Just card) -> do
       cards <-
         select
-          $ ExtendedCardWithOneOf
+          $ oneOf
             [ PlayableCardWithCostReduction
                 NoAction
                 1

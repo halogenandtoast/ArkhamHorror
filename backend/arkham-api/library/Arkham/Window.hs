@@ -286,6 +286,7 @@ data WindowType
   | PlayCard InvestigatorId CardPlay
   | PlayEventDiscarding InvestigatorId EventId
   | PlayEvent InvestigatorId EventId
+  | PlayAsset InvestigatorId AssetId
   | PutLocationIntoPlay InvestigatorId LocationId
   | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId

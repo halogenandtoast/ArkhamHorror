@@ -1174,6 +1174,7 @@ allAssets =
         --- signature [core2026]
         SomeAssetCard danielasWrenchNewAndImproved
       , SomeAssetCard covertOpsInTheShadows
+      , SomeAssetCard theNecronomiconDrakeTranslation
       , SomeAssetCard isabellesTwin45sLoadedWithVengeance
       , --- guardian [core2026]
         SomeAssetCard bodyguard

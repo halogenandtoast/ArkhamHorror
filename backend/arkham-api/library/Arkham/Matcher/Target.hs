@@ -31,6 +31,10 @@ data TargetMatcher
   | NotTarget TargetMatcher
   | TargetWithTrait Trait
   | TargetControlledBy InvestigatorMatcher
+  | TargetWithHorror
+  | TargetWithSanity
+  | TargetWithHealth
+  | TargetWithDamage
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "any" TargetMatcher where

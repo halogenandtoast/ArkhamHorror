@@ -1193,7 +1193,7 @@ selectOneToHandle
   -> matcher
   -> m ()
 selectOneToHandle iid source matcher =
-  select matcher >>= \results -> if notNull results then chooseOneToHandle iid source results else pure ()
+  select matcher >>= \results -> when (notNull results) $ chooseOneToHandle iid source results
 
 selectOneToHandleWith
   :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)

@@ -92,6 +92,38 @@ targetTraits = \case
 
 targetMatches :: forall m. (HasGame m, Tracing m) => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
+  TargetWithHorror ->
+    let
+      checkTarget = \case
+        AssetTarget aid -> matches aid AssetWithHorror
+        InvestigatorTarget iid -> matches iid InvestigatorWithAnyHorror
+        _ -> pure False
+     in
+      checkTarget s
+  TargetWithDamage ->
+    let
+      checkTarget = \case
+        AssetTarget aid -> matches aid AssetWithDamage
+        InvestigatorTarget iid -> matches iid InvestigatorWithAnyDamage
+        _ -> pure False
+     in
+      checkTarget s
+  TargetWithSanity ->
+    let
+      checkTarget = \case
+        AssetTarget aid -> matches aid AssetWithSanity
+        InvestigatorTarget _iid -> pure True
+        _ -> pure False
+     in
+      checkTarget s
+  TargetWithHealth ->
+    let
+      checkTarget = \case
+        AssetTarget aid -> matches aid AssetWithHealth
+        InvestigatorTarget _iid -> pure True
+        _ -> pure False
+     in
+      checkTarget s
   TargetControlledBy whoMatcher ->
     let
       checkTarget = \case

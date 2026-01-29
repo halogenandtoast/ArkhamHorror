@@ -202,6 +202,15 @@ jimCulverHauntedMusician =
     , cdUnique = True
     }
 
+luckyCharm :: CardDef
+luckyCharm =
+  (asset "12061" "Lucky Charm" 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdSlots = [#accessory]
+    , cdUses = uses Charge 4
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

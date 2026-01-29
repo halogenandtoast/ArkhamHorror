@@ -82,6 +82,7 @@ allPlayerEnemyCards =
       , weepingYurei
       , biancaDieKatz
       , blackChamberOperative
+      , theNamelessLurker
       , tommyMalloy
       , vengefulShade
       , sacrificialBeast
@@ -3473,6 +3474,14 @@ blackChamberOperative =
     { cdCardTraits = setFromList [Humanoid, Coterie]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
+
+theNamelessLurker :: CardDef
+theNamelessLurker =
+  unique
+    $ (basicWeakness "12099" "The Nameless Lurker")
+      { cdCardTraits = setFromList [Humanoid, Monster]
+      , cdKeywords = setFromList [Keyword.Aloof]
+      }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul =

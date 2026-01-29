@@ -198,6 +198,7 @@ allPlayerAssetCards =
       , combatTraining3
       , cookiesCustom32
       , cornered2
+      , cosmicFlame
       , covertOpsInTheShadows
       , cowlOfSekhmetCloakOfPharaohs3
       , crafty3

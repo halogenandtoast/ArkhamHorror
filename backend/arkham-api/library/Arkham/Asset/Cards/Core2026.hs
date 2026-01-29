@@ -288,12 +288,28 @@ meatCleaver3 =
     , cdLevel = Just 3
     }
 
+brokenBottle :: CardDef
+brokenBottle =
+  (asset "12086" "Broken Bottle" 1 Neutral)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee, Improvised]
+    , cdSlots = [#hand]
+    }
+
 fedora :: CardDef
 fedora =
   (asset "12087" "Fedora" 2 Neutral)
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Item, Apparel, Headwear]
     , cdSlots = [#head]
+    }
+
+handCrankFlashlight :: CardDef
+handCrankFlashlight =
+  (asset "12088" "Hand-Crank Flashlight" 1 Neutral)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#hand]
     }
 
 theGoldBug :: CardDef

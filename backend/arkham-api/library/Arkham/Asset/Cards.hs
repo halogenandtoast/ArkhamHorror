@@ -151,6 +151,7 @@ allPlayerAssetCards =
       , breathOfTheSleeper
       , britishBullDog
       , britishBullDog2
+      , brokenBottle
       , brokenDiademCrownOfDyingLight5
       , brotherXavier1
       , bruiser3
@@ -426,6 +427,7 @@ allPlayerAssetCards =
       , hallowedChalice
       , hallowedMirror
       , hallowedMirror3
+      , handCrankFlashlight
       , handcuffs
       , handcuffs2
       , handHook

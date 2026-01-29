@@ -193,6 +193,15 @@ cosmicFlame =
     , cdUses = uses Charge 3
     }
 
+jimCulverHauntedMusician :: CardDef
+jimCulverHauntedMusician =
+  (asset "12060" ("Jim Culver" <:> "Haunted Musician") 4 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ally, Performer]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

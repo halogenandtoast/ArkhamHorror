@@ -241,7 +241,6 @@ fetchDecks().then((result) => {
 })
 
 async function start() {
-  console.log(recommendedOptionState.value)
   const enabledRecommendedOptions = Object.entries(recommendedOptionState.value)
     .filter(([, enabled]) => enabled)
     .map(([tag]) => ({ tag }))

@@ -209,8 +209,6 @@ const isZeroedActionAbility = computed(() => {
 })
 
 const abilitySkill = computed(() => {
-  console.log("abilitySkill", props.ability)
-
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
     return props.ability.skillType
   }
@@ -315,7 +313,7 @@ const classObject = computed(() => {
   }
 }
 
-.fight-button--willpower, :deep(.fight-button--willpower), .evade-button--willpower, :deep(.evade-button--willpower) {
+.fight-button--willpower, :deep(.fight-button--willpower), .evade-button--willpower, :deep(.evade-button--willpower), .investigate-button--willpower, :deep(.investigate-button--willpower) {
   background-color: var(--willpower);
   .skill-icon:before {
     font-family: "Arkham";

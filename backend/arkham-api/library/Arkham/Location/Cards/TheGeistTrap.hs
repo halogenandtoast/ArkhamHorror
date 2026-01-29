@@ -28,7 +28,7 @@ instance HasAbilities TheGeistTrap where
   getAbilities (TheGeistTrap a) =
     extendRevealed
       a
-      [ restricted a 1 Here $ ActionAbility [#circle] $ ActionCost 1
+      [ restricted a 1 Here $ ActionAbility [#circle] Nothing $ ActionCost 1
       , withI18n $ numberVar "damage" 1 $ numberVar "horror" 1 $ hauntedI "takeDamageAndHorror" a 2
       ]
 

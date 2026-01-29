@@ -19,7 +19,7 @@ instance HasAbilities ChurningWaters where
   getAbilities (ChurningWaters a) =
     extendRevealed1 a
       $ restricted a 1 (Here <> youExist (InVehicleMatching $ assetIs Assets.fishingVessel))
-      $ ActionAbility [#resign] (ActionCost 1)
+      $ ActionAbility [#resign] Nothing (ActionCost 1)
 
 instance RunMessage ChurningWaters where
   runMessage msg l@(ChurningWaters attrs) = runQueueT $ case msg of

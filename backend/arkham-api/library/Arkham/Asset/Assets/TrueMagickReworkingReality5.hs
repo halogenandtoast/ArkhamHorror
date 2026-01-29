@@ -38,7 +38,7 @@ instance HasAbilities TrueMagickReworkingReality5 where
     [ withTooltip "Use True Magick"
         $ doesNotProvokeAttacksOfOpportunity
         $ controlled attrs 1 HasTrueMagick aform
-    | aform <- [ActionAbility [] mempty, FastAbility Free, freeReaction AnyWindow]
+    | aform <- [ActionAbility [] Nothing mempty, FastAbility Free, freeReaction AnyWindow]
     ]
   getAbilities (TrueMagickReworkingReality5 (With _ (Metadata (Just inner)))) = getAbilities inner
 

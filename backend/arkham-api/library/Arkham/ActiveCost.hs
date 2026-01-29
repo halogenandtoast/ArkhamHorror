@@ -176,8 +176,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ReactionAbility  _ _ actions' -> do
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions']
       pushAll [beforeWindowMsg, PayCosts activeCostId]
-    ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
-    ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
+    ActionAbility actions' _ _ -> handleActions $ Action.Activate : actions'
  where
   checkAttackOfOpportunity mods actions =
     (noAooFrom /= Just AnyEnemy)
@@ -1634,7 +1633,7 @@ instance RunMessage ActiveCost where
         ForCard isPlayAction card -> do
           let iid = c.investigator
           let actions = [#play | isPlayAction == IsPlayAction] <> card.actions
-          let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] $ ActionCost 1)
+          let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] Nothing $ ActionCost 1)
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
           afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]

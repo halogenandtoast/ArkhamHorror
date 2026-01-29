@@ -23,7 +23,7 @@ instance HasAbilities AgentsOfTheOuterGods where
     [ withTooltip
         "_Resign_. Venturing into the unknown has become too dangerous, so you return to safety with the information you've gathered."
         $ restrictedAbility x 1 (exists $ You <> at_ (withTrait Port))
-        $ ActionAbility [Action.Resign]
+        $ ActionAbility [Action.Resign] Nothing
         $ ActionCost 1
     ]
 

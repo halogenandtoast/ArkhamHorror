@@ -2,7 +2,8 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Cost } from '@/arkham/types/Cost';
-import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
+import type { AbilityLabel, AbilitySkills, FightLabel, FightLabelWithSkill, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
+import { SkillType } from '@/arkham/types/SkillType';
 import type { Ability } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
@@ -87,7 +88,7 @@ const isAction = (action: Action) => {
 
   if (ability.value) {
     const {tag} = ability.value.type
-    if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+    if (tag !== "ActionAbility") {
       return false
     }
     const actions = ability.value.type.actions
@@ -137,11 +138,11 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
-    return `${t('Fight')} (<i class='skill-icon'></i>)`
+    return `${t('Fight')} (<i class='skill-icon skill-fight'></i>)`
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
-    return `${t('Fight')} (<i class='skill-icon'></i>)`
+    return `${t('Fight')} (${abilityString.value ? abilityString.value : '<i class="skill-icon skill-fight"></i>'})`
   }
 
   if (props.ability.tag === MessageType.ENGAGE_LABEL) {
@@ -176,10 +177,10 @@ const abilityLabel = computed(() => {
     return ""
   }
 
-  if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
+  if (ability.value && ability.value.type.tag === "ActionAbility") {
     const { actions, cost } = ability.value.type
     const total = totalActionCost(cost)
-    const skillIcon = isFight.value || isEvade.value || isInvestigate.value ? " (<i class='skill-icon'></i>)" : ""
+    const skillIcon = abilityString.value ? ` (${abilityString.value})` : ""
     if (actions.length === 1) {
       return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>${skillIcon}`
     }
@@ -208,20 +209,71 @@ const isZeroedActionAbility = computed(() => {
   return totalActionCost(cost) === 0
 })
 
-const abilitySkill = computed(() => {
+const abilitySkills = computed(() => {
   if (props.ability.tag === MessageType.FIGHT_LABEL_WITH_SKILL) {
-    return props.ability.skillType
+    return { tag: "AbilitySkill", contents: props.ability.skillType }
   }
 
   if (!ability.value) {
     return null
   }
 
-  if (ability.value.type.tag === "ActionAbilityWithSkill") {
-    return ability.value.type.skillType
+  if (ability.value.type.tag === "ActionAbility") {
+    return ability.value.type.skillTypes
   }
 
   return null
+})
+
+function isSkill(skillType: string) {
+  if (!abilitySkills.value) {
+    return false
+  }
+
+  if (abilitySkills.value.tag === "AbilitySkill") {
+    return abilitySkills.value.contents === skillType
+  }
+
+  return abilitySkills.value.contents.indexOf(skillType) !== -1
+}
+
+const abilityString = computed(() => {
+  if (!abilitySkills.value) {
+    return null
+  }
+
+  const toString = (a: AbilitySkills) => {
+    switch (a.tag) {
+      case "AbilitySkill": {
+        return toSkill(a.contents)
+      }
+      case "OrAbilitySkills": {
+        return t("or", a.contents.map(toString))
+      }
+      case "AndAbilitySkills": {
+        return t("and", a.contents.map(toString))
+      }
+      default: return null
+    }
+  }
+
+  const toSkill = (skillType: SkillType) => {
+    switch (skillType) {
+      case "SkillAgility":
+        return "<i class='skill-icon skill-agility'></i>"
+      case "SkillCombat":
+        return "<i class='skill-icon skill-combat'></i>"
+      case "SkillIntellect":
+        return "<i class='skill-icon skill-intellect'></i>"
+      case "SkillWillpower":
+        return "<i class='skill-icon skill-willpower'></i>"
+      default:
+        return ""
+    }
+  }
+
+  console.log(abilitySkills.value)
+  return toString(abilitySkills.value)
 })
 
 const classObject = computed(() => {
@@ -235,17 +287,17 @@ const classObject = computed(() => {
     'forced-ability-button': isForcedAbility.value,
     'delayed-ability-button': isDelayedAbility.value,
     'investigate-button': isInvestigate.value,
-    'investigate-button--agility': isInvestigate.value && abilitySkill.value === "SkillAgility",
-    'investigate-button--combat': isInvestigate.value && abilitySkill.value === "SkillCombat",
-    'investigate-button--willpower': isInvestigate.value && abilitySkill.value === "SkillWillpower",
+    'investigate-button--agility': isInvestigate.value && isSkill("SkillAgility"),
+    'investigate-button--combat': isInvestigate.value && isSkill("SkillCombat"),
+    'investigate-button--willpower': isInvestigate.value && isSkill("SkillWillpower"),
     'fight-button': isFight.value,
-    'fight-button--agility': isFight.value && abilitySkill.value === "SkillAgility",
-    'fight-button--intellect': isFight.value && abilitySkill.value === "SkillIntellect",
-    'fight-button--willpower': isFight.value && abilitySkill.value === "SkillWillpower",
+    'fight-button--agility': isFight.value && isSkill("SkillAgility"),
+    'fight-button--intellect': isFight.value && isSkill("SkillIntellect"),
+    'fight-button--willpower': isFight.value && isSkill("SkillWillpower"),
     'evade-button': isEvade.value,
-    'evade-button--combat': isEvade.value && abilitySkill.value === "SkillCombat",
-    'evade-button--intellect': isEvade.value && abilitySkill.value === "SkillIntellect",
-    'evade-button--willpower': isEvade.value && abilitySkill.value === "SkillWillpower",
+    'evade-button--combat': isEvade.value && isSkill("SkillCombat"),
+    'evade-button--intellect': isEvade.value && isSkill("SkillIntellect"),
+    'evade-button--willpower': isEvade.value && isSkill("SkillWillpower"),
     'engage-button': isEngage.value,
     'objective-button': isObjective.value,
   }
@@ -286,41 +338,49 @@ const classObject = computed(() => {
   background-color: #465550;
 }
 
-.investigate-button, :deep(.investigate-button), .fight-button--intellect, :deep(.fight-button--intellect), .evade-button--intellect, :deep(.evade-button--intellect) { 
-  background-color: #40263A;
-  .skill-icon:before {
-    font-family: "arkham";
-    font-style: normal;
-    content: "\0046";
-  }
+.button:has(.skill-intellect) {
+  background-color: var(--intellect);
 }
 
-.fight-button, :deep(.fight-button), .evade-button--combat, :deep(.evade-button--combat) {
-  background-color: #8F5B41;
-  .skill-icon:before {
-    font-family: "Arkham";
-    font-style: normal;
-    content: "\0044";
-  }
+.button:has(.skill-intellect):has(.skill-agility) {
+  background: linear-gradient(90deg, var(--intellect) 0%, var(--agility) 100%);
 }
 
-.evade-button, .fight-button--agility, :deep(.evade-button), :deep(.fight-button--agility) {
-  background-color: #576345;
-  .skill-icon:before {
-    font-family: "Arkham";
-    font-style: normal;
-    content: "\0053";
-  }
+.button:has(.skill-combat) {
+  background-color: var(--combat);
 }
 
-.fight-button--willpower, :deep(.fight-button--willpower), .evade-button--willpower, :deep(.evade-button--willpower), .investigate-button--willpower, :deep(.investigate-button--willpower) {
-  background-color: var(--willpower);
-  .skill-icon:before {
-    font-family: "Arkham";
-    font-style: normal;
-    content: "\0041";
-  }
+.button:has(.skill-agility) {
+  background-color: var(--agility);
 }
+
+.button:has(.skill-willpower) {
+  background-color: var(--agility);
+}
+
+:deep(.skill-intellect) {
+  --skill-icon: "\0046";
+}
+
+:deep(.skill-combat) {
+  --skill-icon: "\0044";
+}
+
+:deep(.skill-agility) {
+  --skill-icon: "\0053";
+}
+
+:deep(.skill-willpower) {
+  --skill-icon: "\0041";
+}
+
+:deep(.skill-icon:before) {
+  font-family: "arkham";
+  font-style: normal;
+  content: var(--skill-icon);
+}
+
+
 
 .engage-button {
   background-color: #555;

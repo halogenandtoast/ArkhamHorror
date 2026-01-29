@@ -27,7 +27,7 @@ instance HasAbilities Microscope4 where
           [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
           , EnemyEvadedSuccessfully #after (InvestigatorAt YourLocation) AnySource AnyEnemy
           ]
-    , controlled_ x 2 $ ActionAbility [#investigate] (ActionCost 2)
+    , controlled_ x 2 $ ActionAbility [#investigate] #intellect (ActionCost 2)
     ]
 
 instance RunMessage Microscope4 where

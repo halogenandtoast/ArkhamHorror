@@ -31,7 +31,7 @@ pylonAbilities skind pylon =
   let a = toAttrs pylon
    in extendRevealed
         a
-        [ basicAbility $ restricted a AbilityAttack Here $ ActionAbility [#fight] (ActionCost 1)
+        [ basicAbility $ restricted a AbilityAttack Here $ ActionAbility [#fight] #combat (ActionCost 1)
         , restricted a 1 (Here <> youExist (InvestigatorWithActiveSeal skind)) $ FastAbility Free
         ]
 

@@ -30,7 +30,7 @@ instance HasModifiersFor KeyLocusDefensiveBarrier where
 
 instance HasAbilities KeyLocusDefensiveBarrier where
   getAbilities (KeyLocusDefensiveBarrier a) =
-    [ basicAbility $ restricted a AbilityAttack OnSameLocation $ ActionAbility [#fight] (ActionCost 1)
+    [ basicAbility $ restricted a AbilityAttack OnSameLocation $ ActionAbility [#fight] #combat (ActionCost 1)
     , restricted a 1 OnSameLocation $ actionAbilityWithCost (ClueCost $ Static 1)
     , mkAbility a 2 $ forced $ AssetDefeated #when ByAny (be a)
     ]

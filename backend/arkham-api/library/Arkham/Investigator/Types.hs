@@ -593,8 +593,8 @@ instance HasAbilities Investigator where
                  )
                  actionAbility
            ]
-        <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
-           , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
+        <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] Nothing $ ActionCost 1
+           , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] Nothing $ ActionCost 1
            ]
 
 instance Entity Investigator where

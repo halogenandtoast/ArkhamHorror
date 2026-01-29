@@ -17,7 +17,7 @@ sledgehammer = asset Sledgehammer Cards.sledgehammer
 instance HasAbilities Sledgehammer where
   getAbilities (Sledgehammer a) =
     [ restrictedAbility a 1 ControlsThis fightAction_
-    , restrictedAbility a 2 ControlsThis (ActionAbility [#fight] (ActionCost 2))
+    , restrictedAbility a 2 ControlsThis (ActionAbility [#fight] #combat (ActionCost 2))
     ]
 
 instance RunMessage Sledgehammer where

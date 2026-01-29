@@ -18,7 +18,7 @@ kadatheron = location Kadatheron Cards.kadatheron 5 (PerPlayer 1)
 
 instance HasAbilities Kadatheron where
   getAbilities (Kadatheron attrs) =
-    veiled attrs [restricted attrs 1 (Here <> can.draw.cards You) $ ActionAbility [] $ ActionCost 3]
+    veiled attrs [restricted attrs 1 (Here <> can.draw.cards You) $ ActionAbility [] Nothing $ ActionCost 3]
 
 instance RunMessage Kadatheron where
   runMessage msg l@(Kadatheron attrs) = runQueueT $ case msg of

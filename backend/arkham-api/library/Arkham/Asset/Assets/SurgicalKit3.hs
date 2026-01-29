@@ -22,7 +22,7 @@ instance HasAbilities SurgicalKit3 where
           ( InvestigatorHealed #when #damage (affectsOthers Anyone) (SourceOwnedBy You <> SourceIsCardEffect)
           )
           (assetUseCost a Supply 1)
-    , controlledAbility a 2 criteria $ ActionAbility [] (ActionCost 2)
+    , controlledAbility a 2 criteria $ ActionAbility [] Nothing (ActionCost 2)
     ]
    where
     criteria =

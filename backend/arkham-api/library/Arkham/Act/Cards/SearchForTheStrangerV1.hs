@@ -24,7 +24,7 @@ instance HasAbilities SearchForTheStrangerV1 where
   getAbilities (SearchForTheStrangerV1 a) =
     [ restricted a 1 (OnLocation $ LocationWithEnemy $ enemyIs Enemies.theManInThePallidMask)
         $ Objective
-        $ ActionAbility []
+        $ ActionAbility [] Nothing
         $ ActionCost 3
     ]
 

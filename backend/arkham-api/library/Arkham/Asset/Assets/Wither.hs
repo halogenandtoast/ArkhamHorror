@@ -21,7 +21,7 @@ wither = asset Wither Cards.wither
 
 instance HasAbilities Wither where
   getAbilities (Wither a) =
-    [restricted a 1 ControlsThis $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1)]
+    [restricted a 1 ControlsThis $ ActionAbility [#fight] #willpower (ActionCost 1)]
 
 instance RunMessage Wither where
   runMessage msg a@(Wither attrs) = runQueueT $ case msg of

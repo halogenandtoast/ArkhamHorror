@@ -276,7 +276,7 @@ getHasVengeancePoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
 getHasVengeancePoints c = isJust <$> getVengeancePoints c
 
 exploreAction :: Cost -> AbilityType
-exploreAction cost = ActionAbility [#explore] (ActionCost 1 <> cost)
+exploreAction cost = ActionAbility [#explore] Nothing (ActionCost 1 <> cost)
 
 exploreAction_ :: AbilityType
 exploreAction_ = exploreAction mempty

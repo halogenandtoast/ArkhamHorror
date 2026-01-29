@@ -42,7 +42,7 @@ instance HasModifiersFor BobJenkins where
 
 instance HasAbilities BobJenkins where
   getAbilities (BobJenkins attrs) =
-    [ selfAbility attrs 1 (PlayableCardExists (UnpaidCost NoAction) matchCards) (ActionAbility [] mempty)
+    [ selfAbility attrs 1 (PlayableCardExists (UnpaidCost NoAction) matchCards) (ActionAbility [] Nothing mempty)
     | BobJenkinsAction `notElem` map additionalActionType attrs.usedAdditionalActions
     ]
    where

@@ -35,7 +35,7 @@ instance HasAbilities ForbiddenTomeDarkKnowledge3 where
               , exists $ HealableAsset (toSource a) DamageType $ AssetAt YourLocation
               ]
         )
-        $ ActionAbility []
+        $ ActionAbility [] Nothing
         $ ActionCost 4
         <> exhaust a
     ]

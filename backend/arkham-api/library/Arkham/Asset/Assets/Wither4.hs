@@ -22,7 +22,7 @@ wither4 = asset Wither4 Cards.wither4
 instance HasAbilities Wither4 where
   getAbilities (Wither4 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1)
+        $ ActionAbility [#fight] #willpower (ActionCost 1)
     ]
 
 instance RunMessage Wither4 where

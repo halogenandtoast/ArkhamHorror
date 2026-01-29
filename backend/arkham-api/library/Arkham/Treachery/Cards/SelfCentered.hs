@@ -20,7 +20,7 @@ instance HasModifiersFor SelfCentered where
       [CannotCommitToOtherInvestigatorsSkillTests, CannotAffectOtherPlayersWithPlayerEffectsExceptDamage]
 
 instance HasAbilities SelfCentered where
-  getAbilities (SelfCentered a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (SelfCentered a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] Nothing $ ActionCost 2]
 
 instance RunMessage SelfCentered where
   runMessage msg t@(SelfCentered attrs) = runQueueT $ case msg of

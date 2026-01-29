@@ -28,7 +28,7 @@ instance HasAbilities TheLittleBookshopInTooDeep where
     extendRevealed
       a
       [ restricted a 1 (Here <> thisIs a LocationWithAdjacentBarrier)
-          $ ActionAbility [#parley] (ActionCost 2 <> DrawEncounterCardsCost 1)
+          $ ActionAbility [#parley] Nothing (ActionCost 2 <> DrawEncounterCardsCost 1)
       , groupLimit PerGame
           $ restricted a 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 5))
           $ FastAbility' Free [#parley]

@@ -16,7 +16,7 @@ ashleighClarke = asset AshleighClarke Cards.ashleighClarke
 
 instance HasAbilities AshleighClarke where
   getAbilities (AshleighClarke a) =
-    [ restricted a 1 (OnSameLocation <> CanTakeControlOfClues) $ ActionAbility [#parley] $ ActionCost 2
+    [ restricted a 1 (OnSameLocation <> CanTakeControlOfClues) $ ActionAbility [#parley] Nothing $ ActionCost 2
     , groupLimit PerGame
         $ restricted a 2 (not_ $ exists Story.sickeningReality_69)
         $ forced

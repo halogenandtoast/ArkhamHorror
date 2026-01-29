@@ -33,7 +33,7 @@ instance HasAbilities UnvisitedIsleMistyClearing where
   getAbilities (UnvisitedIsleMistyClearing attrs) =
     extendRevealed
       attrs
-      [ skillTestAbility $ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      [ skillTestAbility $ restricted attrs 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleMistyClearing.haunted1" attrs 2
       ]
 

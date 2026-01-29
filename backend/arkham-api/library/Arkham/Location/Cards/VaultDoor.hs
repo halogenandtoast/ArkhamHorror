@@ -35,7 +35,7 @@ instance HasModifiersFor VaultDoor where
 
 instance HasAbilities VaultDoor where
   getAbilities (VaultDoor a) =
-    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [#move] (ActionCost 1)
+    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [#move] Nothing (ActionCost 1)
 
 instance RunMessage VaultDoor where
   runMessage msg l@(VaultDoor attrs) = runQueueT $ case msg of

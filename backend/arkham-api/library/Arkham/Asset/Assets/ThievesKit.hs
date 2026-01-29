@@ -14,7 +14,11 @@ thievesKit :: AssetCard ThievesKit
 thievesKit = asset ThievesKit Cards.thievesKit
 
 instance HasAbilities ThievesKit where
-  getAbilities (ThievesKit a) = [restrictedAbility a 1 ControlsThis $ investigateAction $ assetUseCost a Supply 1]
+  getAbilities (ThievesKit a) =
+    [ controlled_ a 1
+        $ ActionAbility [#investigate] (Just $ OrAbilitySkills [#intellect, #agility])
+        $ assetUseCost a Supply 1
+    ]
 
 instance RunMessage ThievesKit where
   runMessage msg a@(ThievesKit attrs) = runQueueT $ case msg of

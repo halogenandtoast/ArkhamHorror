@@ -14,7 +14,7 @@ predatorOrPrey :: AgendaCard PredatorOrPrey
 predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
 instance HasAbilities PredatorOrPrey where
-  getAbilities (PredatorOrPrey attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] (ActionCost 1)]
+  getAbilities (PredatorOrPrey attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] Nothing (ActionCost 1)]
 
 instance RunMessage PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs) = runQueueT $ case msg of

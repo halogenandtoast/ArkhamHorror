@@ -337,7 +337,7 @@ locationWith f def shroud' revealClues g =
 
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs =
-  toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility [Action.Resign] (ActionCost 1))
+  toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility [Action.Resign] Nothing (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs =

@@ -21,7 +21,7 @@ instance HasAbilities RecordsOffice where
   getAbilities (RecordsOffice attrs) =
     extendRevealed1 attrs
       $ restricted attrs 1 (Here <> youExist (not_ (InvestigatorEngagedWith AnyEnemy)))
-      $ ActionAbility [] (ActionCost 3)
+      $ ActionAbility [] Nothing (ActionCost 3)
 
 instance RunMessage RecordsOffice where
   runMessage msg l@(RecordsOffice attrs) = runQueueT $ case msg of

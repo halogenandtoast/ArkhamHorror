@@ -19,7 +19,7 @@ instance HasAbilities StudyAberrantGateway where
   getAbilities (StudyAberrantGateway attrs) =
     extendRevealed
       attrs
-      [ restricted attrs 1 (Here <> youExist LeadInvestigator) $ ActionAbility [] $ ActionCost 2
+      [ restricted attrs 1 (Here <> youExist LeadInvestigator) $ ActionAbility [] Nothing $ ActionCost 2
       , mkAbility attrs 2 $ forced $ EnemyAttemptsToSpawnAt #when AnyEnemy LocationNotInPlay
       ]
 

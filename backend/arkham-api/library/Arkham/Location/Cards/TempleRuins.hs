@@ -15,7 +15,7 @@ templeRuins = symbolLabel $ location TempleRuins Cards.templeRuins 4 (Static 0)
 
 instance HasAbilities TempleRuins where
   getAbilities (TempleRuins a) =
-    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [#explore] $ ActionCost 2
+    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [#explore] Nothing $ ActionCost 2
 
 instance RunMessage TempleRuins where
   runMessage msg l@(TempleRuins attrs) = runQueueT $ case msg of

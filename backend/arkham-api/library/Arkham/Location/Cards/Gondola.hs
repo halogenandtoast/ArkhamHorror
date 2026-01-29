@@ -20,7 +20,7 @@ instance HasAbilities Gondola where
   getAbilities (Gondola x) =
     withBaseAbilities
       x
-      [ skillTestAbility $ restrictedAbility x 1 Here $ ActionAbility [] $ ActionCost 1
+      [ skillTestAbility $ restrictedAbility x 1 Here $ ActionAbility [] Nothing $ ActionCost 1
       | locationRevealed x
       ]
 

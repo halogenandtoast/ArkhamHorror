@@ -21,9 +21,9 @@ instance HasModifiersFor SledDog where
 instance HasAbilities SledDog where
   getAbilities (SledDog a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbility [#move] (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
+        $ ActionAbility [#move] Nothing (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
     , restricted a 2 ControlsThis
-        $ ActionAbility [#fight] (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
+        $ ActionAbility [#fight] #combat (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
     ]
 
 getExhaustedCount :: Payment -> Int

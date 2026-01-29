@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.HastyRepairs (hastyRepairs, HastyRepairs (..)) where
+module Arkham.Treachery.Cards.HastyRepairs (hastyRepairs) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
@@ -25,7 +25,7 @@ instance HasModifiersFor HastyRepairs where
     _ -> pure mempty
 
 instance HasAbilities HastyRepairs where
-  getAbilities (HastyRepairs a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (HastyRepairs a) = [restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage HastyRepairs where
   runMessage msg t@(HastyRepairs attrs) = runQueueT $ case msg of

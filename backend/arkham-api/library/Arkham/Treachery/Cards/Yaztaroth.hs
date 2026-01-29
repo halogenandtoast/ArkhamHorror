@@ -18,7 +18,7 @@ instance HasModifiersFor Yaztaroth where
     inThreatAreaGets attrs [CannotPlay AssetCard, CannotPutIntoPlay AssetCard]
 
 instance HasAbilities Yaztaroth where
-  getAbilities (Yaztaroth a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (Yaztaroth a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] Nothing $ ActionCost 2]
 
 instance RunMessage Yaztaroth where
   runMessage msg t@(Yaztaroth attrs) = runQueueT $ case msg of

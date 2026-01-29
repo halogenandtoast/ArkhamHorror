@@ -25,7 +25,7 @@ instance HasModifiersFor TheEnchantedPath where
 
 instance HasAbilities TheEnchantedPath where
   getAbilities (TheEnchantedPath a) =
-    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [] (ActionCost 3)
+    extendRevealed1 a $ restricted a 1 Here $ ActionAbility [] Nothing (ActionCost 3)
 
 instance RunMessage TheEnchantedPath where
   runMessage msg l@(TheEnchantedPath attrs) = runQueueT $ case msg of

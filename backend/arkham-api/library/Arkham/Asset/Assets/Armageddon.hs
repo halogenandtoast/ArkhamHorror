@@ -23,7 +23,7 @@ armageddon = asset Armageddon Cards.armageddon
 instance HasAbilities Armageddon where
   getAbilities (Armageddon a) =
     [ controlled_ a 1
-        $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1 <> assetUseCost a Charge 1)
+        $ ActionAbility [#fight] #willpower (ActionCost 1 <> assetUseCost a Charge 1)
     ]
 
 instance RunMessage Armageddon where

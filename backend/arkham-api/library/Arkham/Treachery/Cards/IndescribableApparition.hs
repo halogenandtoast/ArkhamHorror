@@ -31,7 +31,7 @@ instance HasModifiersFor IndescribableApparition where
     _ -> pure mempty
 
 instance HasAbilities IndescribableApparition where
-  getAbilities (IndescribableApparition a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (IndescribableApparition a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] Nothing $ ActionCost 2]
 
 instance RunMessage IndescribableApparition where
   runMessage msg t@(IndescribableApparition attrs) = runQueueT $ case msg of

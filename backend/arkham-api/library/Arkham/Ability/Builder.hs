@@ -68,15 +68,14 @@ instance Monad ActionAbilityBuilder where
 
 buildActionAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> ActionAbilityBuilder () -> Ability
-buildActionAbility entity idx body = snd $ runAbilityBuilder body $ mkAbility entity idx $ ActionAbility [] (ActionCost 1)
+buildActionAbility entity idx body = snd $ runAbilityBuilder body $ mkAbility entity idx $ ActionAbility [] Nothing (ActionCost 1)
 
 addAction :: Action -> ActionAbilityBuilder ()
 addAction a = ActionAbilityBuilder $ \ab ->
   let
     abilityType' =
       case abilityType ab of
-        ActionAbility as c -> ActionAbility (as <> [a]) c
-        ActionAbilityWithSkill as st c -> ActionAbilityWithSkill (as <> [a]) st c
+        abt@ActionAbility { actions } -> abt { actions = actions <> [a] }
         x -> x
    in
     ((), ab {Arkham.Ability.Types.abilityType = abilityType'})

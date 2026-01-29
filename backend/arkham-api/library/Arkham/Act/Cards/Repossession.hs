@@ -23,7 +23,7 @@ instance HasModifiersFor Repossession where
 
 instance HasAbilities Repossession where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1 $ ActionAbility [#draw] $ ClueCost (Static 1) <> ActionCost 1
+    [ mkAbility a 1 $ ActionAbility [#draw] Nothing $ ClueCost (Static 1) <> ActionCost 1
     , restricted a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ atLeast 10)
         $ Objective
         $ forced AnyWindow

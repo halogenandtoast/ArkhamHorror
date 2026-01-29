@@ -21,7 +21,7 @@ instance HasAbilities HardTimes where
     [ restrictedAbility a 1 InYourThreatArea
         $ forced
         $ DrawsCards #after You (NotCards $ HasCard $ CardWithId (toCardId a)) (atLeast 1)
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] $ ActionCost 2
+    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] Nothing $ ActionCost 2
     ]
 
 instance RunMessage HardTimes where

@@ -24,7 +24,7 @@ instance HasAbilities MemoryOfAnUnspeakableEvil where
     extend
       a
       [ restricted a 1 OnSameLocation
-          $ ActionAbility [#parley] (ActionCost 2 <> ShuffleTopOfScenarioDeckIntoYourDeck 3 TekeliliDeck)
+          $ ActionAbility [#parley] Nothing (ActionCost 2 <> ShuffleTopOfScenarioDeckIntoYourDeck 3 TekeliliDeck)
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)
       ]
 

@@ -81,15 +81,14 @@ buildActionAbility
 buildActionAbility entity idx body =
   snd
     $ runAbilityBuilder body
-    $ ScriptedAbility (mkAbility entity idx $ ActionAbility [] (ActionCost 1)) (AbilityScript $ pure ())
+    $ ScriptedAbility (mkAbility entity idx $ ActionAbility [] Nothing (ActionCost 1)) (AbilityScript $ pure ())
 
 addAction :: Action -> ActionAbilityBuilder a ()
 addAction a = ActionAbilityBuilder $ \(ScriptedAbility ab s) ->
   let
     abilityType' =
       case abilityType ab of
-        ActionAbility as c -> ActionAbility (as <> [a]) c
-        ActionAbilityWithSkill as st c -> ActionAbilityWithSkill (as <> [a]) st c
+        ActionAbility as skills c -> ActionAbility (as <> [a]) skills c
         x -> x
    in
     ((), ScriptedAbility (ab {Arkham.Ability.Types.abilityType = abilityType'}) s)

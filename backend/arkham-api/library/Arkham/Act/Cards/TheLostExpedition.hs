@@ -24,7 +24,7 @@ instance HasAbilities TheLostExpedition where
       [ mkAbility a 1
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (YourLocation <> LocationWithCardsUnderneath AnyCards)
-      , restricted a 2 atCamp $ ActionAbility [#resign] (ActionCost 1)
+      , restricted a 2 atCamp $ ActionAbility [#resign] Nothing (ActionCost 1)
       , restricted a 3 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
       ]
    where

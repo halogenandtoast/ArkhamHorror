@@ -25,7 +25,7 @@ instance HasAbilities UnderwaterCavern where
           attrs
           1
           (Here <> exists (not_ (be attrs) <> FloodedLocation <> LocationWithTrait Cave))
-          $ ActionAbility [#move] (ActionCost 1)
+          $ ActionAbility [#move] Nothing (ActionCost 1)
       , mkAbility attrs 2 $ forced $ RevealLocation #after Anyone (be attrs)
       ]
 

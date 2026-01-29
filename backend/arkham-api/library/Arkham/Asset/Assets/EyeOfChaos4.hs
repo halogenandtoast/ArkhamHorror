@@ -23,7 +23,7 @@ eyeOfChaos4 = asset EyeOfChaos4 Cards.eyeOfChaos4
 instance HasAbilities EyeOfChaos4 where
   getAbilities (EyeOfChaos4 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#investigate] #willpower
+        $ ActionAbility [#investigate] #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]

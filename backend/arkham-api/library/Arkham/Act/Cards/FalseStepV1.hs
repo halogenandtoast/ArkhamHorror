@@ -21,7 +21,7 @@ falseStepV1 = act (1, A) FalseStepV1 Cards.falseStepV1 (groupClueCost (PerPlayer
 
 instance HasAbilities FalseStepV1 where
   getAbilities = actAbilities \a ->
-    [ mkAbility a 1 $ ActionAbility [#resign] (ActionCost 1)
+    [ mkAbility a 1 $ ActionAbility [#resign] Nothing (ActionCost 1)
     , mkAbility a 2 $ forced $ AssetWouldLeavePlay #when (assetIs Assets.desiderioDelgadoAlvarez)
     ]
 

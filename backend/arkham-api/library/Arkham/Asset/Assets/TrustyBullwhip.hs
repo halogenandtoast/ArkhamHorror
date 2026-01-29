@@ -20,7 +20,7 @@ trustyBullwhip = asset TrustyBullwhip Cards.trustyBullwhip
 
 instance HasAbilities TrustyBullwhip where
   getAbilities (TrustyBullwhip a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbilityWithSkill [#fight] #agility $ ActionCost 1]
+    [restrictedAbility a 1 ControlsThis $ ActionAbility [#fight] #agility $ ActionCost 1]
 
 instance RunMessage TrustyBullwhip where
   runMessage msg a@(TrustyBullwhip attrs) = runQueueT $ case msg of

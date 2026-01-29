@@ -23,7 +23,7 @@ instance HasAbilities VelmasDiner where
     extendRevealed1 attrs
       $ playerLimit PerGame
       $ restricted attrs 1 Here
-      $ ActionAbility []
+      $ ActionAbility [] Nothing
       $ ActionCost 3
 
 instance RunMessage VelmasDiner where

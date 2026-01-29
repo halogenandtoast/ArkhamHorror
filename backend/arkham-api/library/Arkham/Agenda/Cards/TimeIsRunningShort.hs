@@ -13,7 +13,7 @@ timeIsRunningShort :: AgendaCard TimeIsRunningShort
 timeIsRunningShort = agenda (2, A) TimeIsRunningShort Cards.timeIsRunningShort (Static 8)
 
 instance HasAbilities TimeIsRunningShort where
-  getAbilities (TimeIsRunningShort a) = [mkAbility a 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
+  getAbilities (TimeIsRunningShort a) = [mkAbility a 1 $ ActionAbility [Action.Resign] Nothing (ActionCost 1)]
 
 instance RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs) = runQueueT $ case msg of

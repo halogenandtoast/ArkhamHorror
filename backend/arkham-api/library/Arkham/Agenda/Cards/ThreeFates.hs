@@ -13,7 +13,7 @@ threeFates :: AgendaCard ThreeFates
 threeFates = agenda (1, A) ThreeFates Cards.threeFates (Static 6)
 
 instance HasAbilities ThreeFates where
-  getAbilities (ThreeFates attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] (ActionCost 1)]
+  getAbilities (ThreeFates attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] Nothing (ActionCost 1)]
 
 instance RunMessage ThreeFates where
   runMessage msg a@(ThreeFates attrs) = runQueueT $ case msg of

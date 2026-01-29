@@ -17,7 +17,7 @@ instance HasAbilities CalledByTheMists where
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ forced
         $ InitiatedSkillTest #after You AnySkillType (SkillTestGameValue $ atLeast 4) #any
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] $ ActionCost 2
+    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] Nothing $ ActionCost 2
     ]
 
 instance RunMessage CalledByTheMists where

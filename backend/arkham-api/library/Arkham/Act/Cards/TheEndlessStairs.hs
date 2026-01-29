@@ -21,7 +21,7 @@ instance HasAbilities TheEndlessStairs where
       (proxied (RevealedLocation <> LocationWithLabel "mysteriousStairs5") x)
       1
       Here
-      (ActionAbility [Action.Resign] $ ActionCost 1)
+      (ActionAbility [Action.Resign] Nothing $ ActionCost 1)
       : [ restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
           $ Objective
           $ ForcedAbility AnyWindow

@@ -31,7 +31,7 @@ instance HasAbilities InnsmouthHarbourInTooDeep where
       [ restricted a 1 (exists $ locationIs Cards.theHouseOnWaterStreetInTooDeep <> CanEnterLocation You)
           $ freeReaction
           $ Enters #after You (be a)
-      , restricted a 2 Here $ ActionAbility [#parley] (ActionCost 2)
+      , restricted a 2 Here $ ActionAbility [#parley] Nothing (ActionCost 2)
       ]
 
 instance RunMessage InnsmouthHarbourInTooDeep where

@@ -18,7 +18,7 @@ sledgehammer3 = asset Sledgehammer3 Cards.sledgehammer3
 instance HasAbilities Sledgehammer3 where
   getAbilities (Sledgehammer3 a) =
     [ skillTestAbility $ controlled_ a 1 fightAction_
-    , skillTestAbility $ controlled_ a 2 $ ActionAbility [#fight] (ActionCost 2)
+    , skillTestAbility $ controlled_ a 2 $ ActionAbility [#fight] #combat (ActionCost 2)
     ]
 
 instance RunMessage Sledgehammer3 where

@@ -35,7 +35,7 @@ instance HasAbilities EmptySpace where
               <> exists
                 (You <> can.move <> noModifier (CannotEnter l.id) <> InvestigatorWithModifier CanEnterEmptySpace)
           )
-        $ ActionAbility [#move] moveCost
+        $ ActionAbility [#move] Nothing moveCost
     ]
    where
     moveCost =

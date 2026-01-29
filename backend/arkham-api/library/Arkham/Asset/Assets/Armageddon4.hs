@@ -23,7 +23,7 @@ armageddon4 = asset Armageddon4 Cards.armageddon4
 instance HasAbilities Armageddon4 where
   getAbilities (Armageddon4 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #willpower
+        $ ActionAbility [#fight] #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]

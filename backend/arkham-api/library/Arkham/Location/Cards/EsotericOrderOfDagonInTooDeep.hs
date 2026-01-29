@@ -30,7 +30,7 @@ instance HasAbilities EsotericOrderOfDagonInTooDeep where
     extendRevealed
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
-      , skillTestAbility $ restricted a 2 Here $ ActionAbility [#parley] $ ActionCost 2
+      , skillTestAbility $ restricted a 2 Here $ ActionAbility [#parley] Nothing $ ActionCost 2
       ]
 
 instance RunMessage EsotericOrderOfDagonInTooDeep where

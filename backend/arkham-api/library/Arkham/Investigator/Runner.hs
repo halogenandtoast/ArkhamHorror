@@ -3480,7 +3480,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           Lose n -> subtractTokens token n
     pure $ a & tokensL %~ f
   TakeResources iid n source True | iid == investigatorId -> do
-    let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
+    let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] Nothing $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
     afterActivateAbilityWindow <- checkAfter $ Window.ActivateAbility iid [] ability
     beforeWindowMsg <- checkWhen $ Window.PerformAction iid #resource

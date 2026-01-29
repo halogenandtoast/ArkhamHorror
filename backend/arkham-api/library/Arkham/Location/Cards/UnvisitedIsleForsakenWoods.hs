@@ -34,7 +34,7 @@ instance HasAbilities UnvisitedIsleForsakenWoods where
   getAbilities (UnvisitedIsleForsakenWoods a) =
     extendRevealed
       a
-      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleForsakenWoods.haunted" a 2
       ]
 

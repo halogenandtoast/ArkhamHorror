@@ -654,7 +654,7 @@ instance HasAbilities LocationAttrs where
               <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
           )
-        $ ActionAbility [#move] moveCost
+        $ ActionAbility [#move] Nothing moveCost
     ]
       <> [ withI18n
              $ withVar "key" (String $ keyName k)

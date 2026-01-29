@@ -18,7 +18,7 @@ instance HasAbilities OperatingRoom where
   getAbilities (OperatingRoom attrs) =
     withRevealedAbilities
       attrs
-      [skillTestAbility $ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 2]
+      [skillTestAbility $ restrictedAbility attrs 1 Here $ ActionAbility [] Nothing $ ActionCost 2]
 
 instance RunMessage OperatingRoom where
   runMessage msg l@(OperatingRoom attrs) = case msg of

@@ -28,7 +28,7 @@ instance HasModifiersFor BrazierEnchantment where
 
 instance HasAbilities BrazierEnchantment where
   getAbilities (BrazierEnchantment a) =
-    [skillTestAbility $ mkAbility a 1 $ ActionAbility [Action.Circle] (ActionCost 1)]
+    [skillTestAbility $ mkAbility a 1 $ ActionAbility [Action.Circle] Nothing (ActionCost 1)]
 
 instance RunMessage BrazierEnchantment where
   runMessage msg t@(BrazierEnchantment attrs) = runQueueT $ case msg of

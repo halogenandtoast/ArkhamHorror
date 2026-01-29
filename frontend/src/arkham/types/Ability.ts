@@ -65,41 +65,30 @@ export const constantReactionDecoder = JsonDecoder.object<ConstantReaction>({
 export type ActionAbility = {
   tag: "ActionAbility"
   actions: Action[]
+  skillTypes: AbilitySkills | null
   cost: Cost
 }
+
+export const abilitySkillsDecoder: JsonDecoder.Decoder<AbilitySkills> = JsonDecoder.oneOf<AbilitySkills>([
+  JsonDecoder.object<{ tag: "AbilitySkill", contents: SkillType }>({
+    tag: JsonDecoder.literal("AbilitySkill"),
+    contents: skillTypeDecoder
+  }, 'AbilitySkill'),
+  JsonDecoder.object<{ tag: "AndAbilitySkills", contents: AbilitySkills[] }>({
+    tag: JsonDecoder.literal("AndAbilitySkills"),
+    contents: JsonDecoder.array(JsonDecoder.lazy<AbilitySkills>(() => abilitySkillsDecoder), 'AbilitySkills[]')
+  }, 'AndAbilitySkills'),
+  JsonDecoder.object<{ tag: "OrAbilitySkills", contents: AbilitySkills[] }>({
+    tag: JsonDecoder.literal("OrAbilitySkills"),
+    contents: JsonDecoder.array(JsonDecoder.lazy<AbilitySkills>(() => abilitySkillsDecoder), 'AbilitySkills[]')
+  }, 'OrAbilitySkills'),
+], 'AbilitySkills')
 
 export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
   tag: JsonDecoder.literal("ActionAbility"),
   actions: JsonDecoder.array(actionDecoder, 'Action[]'),
+  skillTypes: JsonDecoder.nullable(JsonDecoder.lazy<AbilitySkills>(() => abilitySkillsDecoder)),
   cost: costDecoder,
-}, 'ActionAbility')
-
-export type ActionAbilityWithSkill = {
-  tag: "ActionAbilityWithSkill"
-  actions: Action[]
-  skillType: SkillType
-  cost: Cost
-}
-
-export const actionAbilityWithSkillDecoder = JsonDecoder.object<ActionAbilityWithSkill>({
-  tag: JsonDecoder.literal("ActionAbilityWithSkill"),
-  actions: JsonDecoder.array(actionDecoder, 'Actions[]'),
-  skillType: skillTypeDecoder,
-  cost: costDecoder
-}, 'ActionAbility')
-
-export type ActionAbilityWithBefore = {
-  tag: "ActionAbilityWithBefore"
-  actions: Action[]
-  actionBefore: Action
-  cost: Cost
-}
-
-export const actionAbilityWithBeforeDecoder = JsonDecoder.object<ActionAbilityWithBefore>({
-  tag: JsonDecoder.literal("ActionAbilityWithBefore"),
-  actions: JsonDecoder.array(actionDecoder, 'Action[]'),
-  actionBefore: actionDecoder,
-  cost: costDecoder
 }, 'ActionAbility')
 
 export type SilentForcedAbility = {
@@ -167,7 +156,7 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
 }, 'Haunted')
 
 
-export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ConstantReaction | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted | DelayedAbility
+export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ConstantReaction | ActionAbility | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted | DelayedAbility
 
 export type ForcedWhen = {
   tag: "ForcedWhen"
@@ -187,8 +176,6 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   customizationReactionDecoder,
   constantReactionDecoder,
   actionAbilityDecoder,
-  actionAbilityWithSkillDecoder,
-  actionAbilityWithBeforeDecoder,
   silentForcedAbilityDecoder,
   forcedAbilityDecoder,
   forcedAbilityWithCostDecoder,
@@ -200,6 +187,11 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
 ], 'AbilityType')
 
 export type DisplayAs = 'DisplayAsAction' | 'DisplayAsCard'
+
+export type AbilitySkills =
+  | { tag: "AbilitySkill", contents: SkillType }
+  | { tag: "AndAbilitySkills", contents: AbilitySkills[] }
+  | { tag: "OrAbilitySkills", contents: AbilitySkills[] }
 
 export type Ability = {
   type: AbilityType

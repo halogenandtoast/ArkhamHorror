@@ -19,7 +19,7 @@ azureFlame5 = asset AzureFlame5 Cards.azureFlame5
 instance HasAbilities AzureFlame5 where
   getAbilities (AzureFlame5 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #willpower
+        $ ActionAbility [#fight] #willpower
         $ Costs [ActionCost 1, assetUseCost a Charge 1]
     ]
 

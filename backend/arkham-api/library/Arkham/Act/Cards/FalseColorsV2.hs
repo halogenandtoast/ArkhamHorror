@@ -49,7 +49,7 @@ instance HasAbilities FalseColorsV2 where
     , scenarioI18n
         $ withI18nTooltip "falseColorsV2.resign"
         $ mkAbility a 2
-        $ ActionAbility [#resign] (ActionCost 1)
+        $ ActionAbility [#resign] Nothing (ActionCost 1)
     , restricted
         a
         3

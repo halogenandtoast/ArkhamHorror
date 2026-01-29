@@ -24,7 +24,7 @@ instance HasAbilities TheGreatWebVastWeb where
   getAbilities (TheGreatWebVastWeb a) =
     extendRevealed1 a
       $ restricted a 1 (Here <> not_ (OnAct 1) <> CluesOnThis (LessThanOrEqualTo (PerPlayer 1)))
-      $ ActionAbility [#move] (ActionCost 1)
+      $ ActionAbility [#move] Nothing (ActionCost 1)
 
 instance RunMessage TheGreatWebVastWeb where
   runMessage msg l@(TheGreatWebVastWeb attrs) = runQueueT $ case msg of

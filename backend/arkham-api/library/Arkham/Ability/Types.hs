@@ -68,7 +68,7 @@ overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityType
 
 buildFightAbility :: (Sourceable source, HasCardCode source) => source -> Int -> Ability
 buildFightAbility source idx =
-  (buildAbility source idx (ActionAbility [#fight] Free))
+  (buildAbility source idx (ActionAbility [#fight] #combat Free))
     { abilityDoesNotProvokeAttacksOfOpportunity = Just AnyEnemy
     }
 

@@ -18,7 +18,7 @@ instance HasAbilities DressingRoom where
   getAbilities (DressingRoom a) =
     extendRevealed1 a
       $ restricted a 1 (Here <> exists (HealableInvestigator (a.ability 1) #horror You))
-      $ ActionAbility [] (ActionCost 3)
+      $ ActionAbility [] Nothing (ActionCost 3)
 
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = runQueueT $ case msg of

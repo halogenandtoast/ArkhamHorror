@@ -75,7 +75,6 @@ abilityIs a = (`elem` abilityActions a)
 abilityIsActionAbility :: Ability -> Bool
 abilityIsActionAbility a = case abilityType a of
   ActionAbility {} -> True
-  ActionAbilityWithSkill {} -> True
   _ -> False
 
 abilityIsActivate :: Ability -> Bool
@@ -218,7 +217,7 @@ fightAbility entity idx cost criteria =
 
 evadeAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Cost -> Criterion -> Ability
 evadeAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility [#evade] cost))
+  (mkAbility entity idx (ActionAbility [#evade] #agility cost))
     { abilityCriteria = criteria
     }
 
@@ -345,8 +344,7 @@ abilityTypeActions isBasic = \case
   ReactionAbility {actions} -> actions
   CustomizationReaction {} -> []
   ConstantReaction {} -> []
-  ActionAbility actions _ -> if #play `elem` actions then actions else [#activate | not isBasic] <> actions
-  ActionAbilityWithSkill actions _ _ -> #activate : actions
+  ActionAbility { actions } -> if #play `elem` actions then actions else [#activate | not isBasic] <> actions
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
   ForcedAbilityWithCost _ _ -> []
@@ -365,8 +363,7 @@ abilityTypeCost = \case
   ReactionAbility _ cost _ -> cost
   CustomizationReaction _ _ cost -> cost
   ConstantReaction _ _ cost -> cost
-  ActionAbility _ cost -> cost
-  ActionAbilityWithSkill _ _ cost -> cost
+  ActionAbility { cost } -> cost
   SilentForcedAbility _ -> Free
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
@@ -388,10 +385,7 @@ modifyCost f = \case
     CustomizationReaction label window $ f cost
   ConstantReaction label window cost ->
     ConstantReaction label window $ f cost
-  ActionAbility mAction cost ->
-    ActionAbility mAction $ f cost
-  ActionAbilityWithSkill mAction skill cost ->
-    ActionAbilityWithSkill mAction skill $ f cost
+  a@ActionAbility { cost } -> a { cost = f cost }
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
@@ -450,7 +444,6 @@ defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility' {} -> FastPlayerWindow
   ActionAbility {} -> Matcher.DuringTurn You
-  ActionAbilityWithSkill {} -> Matcher.DuringTurn You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
@@ -478,7 +471,6 @@ isReactionAbilityType = \case
   CustomizationReaction {} -> False
   ConstantReaction {} -> True
   ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
   ServitorAbility {} -> False
@@ -498,7 +490,6 @@ isSilentForcedAbilityType = \case
   CustomizationReaction {} -> False
   ConstantReaction {} -> False
   ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
   ServitorAbility {} -> False
@@ -529,8 +520,7 @@ defaultAbilityLimit = \case
   CustomizationReaction {} -> PlayerLimit PerWindow 1
   ConstantReaction {} -> PlayerLimit PerWindow 1
   FastAbility' {} -> NoLimit
-  ActionAbility _ _ -> NoLimit
-  ActionAbilityWithSkill {} -> NoLimit
+  ActionAbility {} -> NoLimit
   AbilityEffect {} -> NoLimit
   Objective aType -> defaultAbilityLimit aType
   DelayedAbility aType -> defaultAbilityLimit aType

@@ -103,9 +103,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
     Objective aType -> go aType
     DelayedAbility aType -> go aType
     ForcedWhen _ aType -> go aType
-    ActionAbilityWithSkill actions _ cost -> go $ ActionAbility actions cost
-    ActionAbility [] _ -> pure True
-    ActionAbility actions _ -> anyM (canDoAction iid ab) actions
+    ActionAbility {actions} -> if null actions then pure True else anyM (canDoAction iid ab) actions
     FastAbility' _ [] -> pure True
     FastAbility' _ actions -> anyM (canDoAction iid ab) actions
     CustomizationReaction {} -> pure True
@@ -323,8 +321,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     ServitorAbility _ -> pure True
     Haunted -> pure True
     Cosmos -> pure True
-    ActionAbility actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
-    ActionAbilityWithSkill actions _ cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
+    ActionAbility actions _ cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
     ReactionAbility _ cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
@@ -410,8 +407,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
               pure $ notElem ability (map usedAbility usedAbilities)
             ForcedAbilityWithCost _ _ ->
               pure $ notElem ability (map usedAbility usedAbilities)
-            ActionAbility _ _ -> pure True
-            ActionAbilityWithSkill {} -> pure True
+            ActionAbility {} -> pure True
             FastAbility' {} -> pure True
             AbilityEffect {} -> pure True
             Objective {} -> pure True
@@ -507,7 +503,6 @@ isForcedAbilityType iid source = \case
   CustomizationReaction {} -> pure True -- TODO: Keep an eye on this
   ConstantReaction {} -> pure False
   ActionAbility {} -> pure False
-  ActionAbilityWithSkill {} -> pure False
   AbilityEffect {} -> pure False
   ServitorAbility {} -> pure False
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence

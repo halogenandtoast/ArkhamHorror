@@ -18,7 +18,7 @@ scrimshawCharmFromDistantShores = asset ScrimshawCharmFromDistantShores Cards.sc
 instance HasAbilities ScrimshawCharmFromDistantShores where
   getAbilities (ScrimshawCharmFromDistantShores x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ActionAbility []
+        $ ActionAbility [] Nothing
         $ ActionCost 1
         <> exhaust x
         <> AddCurseTokensCost 1 3

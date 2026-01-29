@@ -13,7 +13,7 @@ behindTheCurtain :: AgendaCard BehindTheCurtain
 behindTheCurtain = agenda (2, A) BehindTheCurtain Cards.behindTheCurtain (Static 6)
 
 instance HasAbilities BehindTheCurtain where
-  getAbilities (BehindTheCurtain attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] (ActionCost 1)]
+  getAbilities (BehindTheCurtain attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] Nothing (ActionCost 1)]
 
 instance RunMessage BehindTheCurtain where
   runMessage msg a@(BehindTheCurtain attrs) = runQueueT $ case msg of

@@ -16,7 +16,7 @@ returnToPredatorOrPrey = agenda (1, A) ReturnToPredatorOrPrey Cards.returnToPred
 
 instance HasAbilities ReturnToPredatorOrPrey where
   getAbilities (ReturnToPredatorOrPrey attrs) =
-    [mkAbility attrs 1 $ ActionAbility [Action.Resign] (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility [Action.Resign] Nothing (ActionCost 1)]
 
 instance RunMessage ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs) = runQueueT $ case msg of

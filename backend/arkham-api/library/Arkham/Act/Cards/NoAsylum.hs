@@ -29,7 +29,7 @@ instance HasAbilities NoAsylum where
                (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
                ResignAbility
                (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
-               (ActionAbility [Action.Resign] $ ActionCost 1)
+               (ActionAbility [Action.Resign] Nothing $ ActionCost 1)
          , restricted x 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
          ]
 

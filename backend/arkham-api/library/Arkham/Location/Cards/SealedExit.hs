@@ -22,7 +22,7 @@ instance HasAbilities SealedExit where
     extendRevealed
       attrs
       [ restrictedAbility attrs 1 (Here <> exists (investigatorAt attrs <> InvestigatorWithKey GreenKey))
-          $ ActionAbility [#resign] (ActionCost 1)
+          $ ActionAbility [#resign] Nothing (ActionCost 1)
       , mkAbility attrs 2 $ forced $ RevealLocation #after Anyone (be attrs)
       ]
 

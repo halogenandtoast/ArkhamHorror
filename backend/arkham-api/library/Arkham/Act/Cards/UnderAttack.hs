@@ -21,7 +21,7 @@ instance HasAbilities UnderAttack where
     extend
       a
       [ restricted (proxied (LocationWithModifier $ ScenarioModifier "camp") a) 1 Here
-          $ ActionAbility [#resign] (ActionCost 1 <> GroupClueCost (Static 4) YourLocation)
+          $ ActionAbility [#resign] Nothing (ActionCost 1 <> GroupClueCost (Static 4) YourLocation)
       , restricted a 1 (not_ $ exists $ InPlayEnemy $ EnemyWithTrait Eidolon)
           $ Objective
           $ forced AnyWindow

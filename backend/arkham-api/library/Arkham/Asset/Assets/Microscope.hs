@@ -29,7 +29,7 @@ instance HasAbilities Microscope where
               ]
           )
           (exhaust x)
-    , restrictedAbility x 2 ControlsThis $ ActionAbility [#investigate] (ActionCost 2)
+    , restrictedAbility x 2 ControlsThis $ ActionAbility [#investigate] #intellect (ActionCost 2)
     ]
 
 instance RunMessage Microscope where

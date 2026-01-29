@@ -22,7 +22,7 @@ instance HasAbilities SearchForACampSite where
             $ LocationWithInvestigator LeadInvestigator
             <> LocationWithoutClues
         )
-        $ ActionAbility [#resign] (ActionCost 1)
+        $ ActionAbility [#resign] Nothing (ActionCost 1)
     , restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 

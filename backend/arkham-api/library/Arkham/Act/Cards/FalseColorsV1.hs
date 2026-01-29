@@ -29,7 +29,7 @@ falseColorsV1 = act (2, A) FalseColorsV1 Cards.falseColorsV1 Nothing
 instance HasAbilities FalseColorsV1 where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1 $ triggered (ScenarioEvent #when Nothing "wouldConceal") ConcealedXCost
-    , mkAbility a 2 $ ActionAbility [#resign] (ActionCost 1)
+    , mkAbility a 2 $ ActionAbility [#resign] Nothing (ActionCost 1)
     , restricted a 3 (not_ $ exists $ EnemyWithPlacement InTheShadows)
         $ Objective
         $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)

@@ -773,7 +773,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
       actions' <- getAllAbilities
       pure $ flip any actions' \ability ->
         case abilityType ability of
-          ActionAbility [Action.Resign] _ -> True
+          ActionAbility [Action.Resign] _ _ -> True
           _ -> False
     Criteria.Remembered logKey -> do
       elem logKey <$> scenarioFieldMap ScenarioRemembered Set.toList

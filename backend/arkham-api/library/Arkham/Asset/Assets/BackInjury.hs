@@ -16,7 +16,7 @@ backInjury :: AssetCard BackInjury
 backInjury = assetWith BackInjury Cards.backInjury (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities BackInjury where
-  getAbilities (BackInjury attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
+  getAbilities (BackInjury attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] Nothing (ActionCost 2)]
 
 instance HasModifiersFor BackInjury where
   getModifiersFor (BackInjury a) = case a.placement of

@@ -26,7 +26,7 @@ instance HasAbilities GrapplingHook where
   getAbilities (GrapplingHook (With x _)) =
     [ doesNotProvokeAttacksOfOpportunity
         $ restricted x 1 ControlsThis
-        $ ActionAbility [] (exhaust x <> ActionCost 2)
+        $ ActionAbility [] Nothing (exhaust x <> ActionCost 2)
     ]
 
 instance RunMessage GrapplingHook where

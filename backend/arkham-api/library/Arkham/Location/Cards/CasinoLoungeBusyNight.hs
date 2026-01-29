@@ -22,7 +22,7 @@ instance HasAbilities CasinoLoungeBusyNight where
     extendRevealed1 a
       $ groupLimit PerGame
       $ restricted a 1 (Here <> Remembered FoundAVent)
-      $ ActionAbility [#move] (ActionCost 1 <> GroupClueCost (PerPlayer 2) (be a))
+      $ ActionAbility [#move] Nothing (ActionCost 1 <> GroupClueCost (PerPlayer 2) (be a))
 
 instance RunMessage CasinoLoungeBusyNight where
   runMessage msg l@(CasinoLoungeBusyNight attrs) = runQueueT $ case msg of

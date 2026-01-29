@@ -28,7 +28,7 @@ instance HasAbilities TheEdgeOfTheUniverse where
   getAbilities (TheEdgeOfTheUniverse attrs) = do
     let actions = getAbilities attrs
     flip map actions $ \action -> case abilityType action of
-      ActionAbility actions' _
+      ActionAbility actions' _ _
         | Action.Move `elem` actions' ->
             action & abilityCriteriaL <>~ youExist (InvestigatorWithClues (atLeast 2))
       _ -> action

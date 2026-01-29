@@ -36,10 +36,10 @@ instance HasAbilities VengefulShade where
                     <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
                     <> CanAttack
                 )
-              $ ActionAbility [#fight] (ActionCost 1)
+              $ ActionAbility [#fight] #combat (ActionCost 1)
           , basicAbility
               $ restricted a AbilityEvade (exists (You <> InvestigatorWithId iid))
-              $ ActionAbility [#evade] (ActionCost 1)
+              $ ActionAbility [#evade] #agility (ActionCost 1)
           , mkAbility a 1 $ forced NotAnyWindow -- the beyond will call this
           ]
     _ -> extend a [mkAbility a 1 $ forced NotAnyWindow] -- the beyond will call this

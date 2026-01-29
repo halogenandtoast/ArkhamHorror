@@ -12,7 +12,7 @@ hiddenEntanglements :: AgendaCard HiddenEntanglements
 hiddenEntanglements = agenda (3, A) HiddenEntanglements Cards.hiddenEntanglements (Static 6)
 
 instance HasAbilities HiddenEntanglements where
-  getAbilities (HiddenEntanglements attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] (ActionCost 1)]
+  getAbilities (HiddenEntanglements attrs) = [mkAbility attrs 1 $ ActionAbility [#resign] Nothing (ActionCost 1)]
 
 instance RunMessage HiddenEntanglements where
   runMessage msg a@(HiddenEntanglements attrs) = runQueueT $ case msg of

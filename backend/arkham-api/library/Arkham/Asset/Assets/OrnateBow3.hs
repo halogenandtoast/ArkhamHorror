@@ -19,7 +19,7 @@ ornateBow3 = asset OrnateBow3 Cards.ornateBow3
 instance HasAbilities OrnateBow3 where
   getAbilities (OrnateBow3 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #agility
+        $ ActionAbility [#fight] #agility
         $ ActionCost 1
         <> assetUseCost a Ammo 1
     , withTooltip "You nock another arrow"

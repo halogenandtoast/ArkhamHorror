@@ -17,7 +17,7 @@ buriedSecretsAdvanced :: TreacheryCard BuriedSecretsAdvanced
 buriedSecretsAdvanced = treachery BuriedSecretsAdvanced Cards.buriedSecretsAdvanced
 
 instance HasAbilities BuriedSecretsAdvanced where
-  getAbilities (BuriedSecretsAdvanced a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [#investigate] (ActionCost 2)]
+  getAbilities (BuriedSecretsAdvanced a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [#investigate] #intellect (ActionCost 2)]
 
 instance HasModifiersFor BuriedSecretsAdvanced where
   getModifiersFor (BuriedSecretsAdvanced a) = case a.placement of

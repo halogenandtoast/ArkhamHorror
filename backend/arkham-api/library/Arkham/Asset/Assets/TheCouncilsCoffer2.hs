@@ -21,9 +21,7 @@ instance HasAbilities TheCouncilsCoffer2 where
         $ restrictedAbility a 0 (if findWithDefault 0 Lock (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
     , skillTestAbility
-        $ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost 2
+        $ restricted a 1 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage TheCouncilsCoffer2 where

@@ -26,7 +26,7 @@ instance HasAbilities FalconPointGatehouse where
       a
       [ withTooltip "You head back into the woods, leaving the lighthouse and its mysteries behind."
           $ restricted a 1 Here
-          $ ActionAbility [#resign] (ActionCost 1)
+          $ ActionAbility [#resign] Nothing (ActionCost 1)
       ]
 
 instance RunMessage FalconPointGatehouse where

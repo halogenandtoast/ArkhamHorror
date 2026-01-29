@@ -9,10 +9,10 @@ import Arkham.Prelude
 import Arkham.Source
 
 resignAction :: (HasCardCode a, Sourceable a) => a -> Ability
-resignAction a = restricted a 99 Here $ ActionAbility [#resign] (ActionCost 1)
+resignAction a = restricted a 99 Here $ ActionAbility [#resign] Nothing (ActionCost 1)
 
 resignActionWithCost :: (HasCardCode a, Sourceable a) => a -> Cost -> Ability
-resignActionWithCost a cost = restricted a 99 Here $ ActionAbility [#resign] (ActionCost 1 <> cost)
+resignActionWithCost a cost = restricted a 99 Here $ ActionAbility [#resign] Nothing (ActionCost 1 <> cost)
 
 drawCardUnderneathAction :: (HasCardCode a, Sourceable a) => a -> Ability
 drawCardUnderneathAction a =

@@ -126,6 +126,13 @@ decisiveStrike2 =
     , cdActions = [#fight]
     }
 
+willOfTheCosmos :: CardDef
+willOfTheCosmos =
+  (event "12066" "Will of the Cosmos" 0 Mystic)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Insight, Augury]
+    }
+
 shoveOff :: CardDef
 shoveOff =
   (event "12079" "\"Shove off!\"" 1 Survivor)

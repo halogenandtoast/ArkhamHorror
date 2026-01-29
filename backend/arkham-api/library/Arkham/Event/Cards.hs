@@ -475,6 +475,7 @@ allPlayerEventCards =
       , wellMaintained1
       , wheresTheParty
       , whispersOfDoom
+      , willOfTheCosmos
       , willToSurvive
       , willToSurvive3
       , windsOfPower1

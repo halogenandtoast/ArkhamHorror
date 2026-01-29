@@ -1198,6 +1198,7 @@ allAssets =
       , --- mystic [core2026]
         SomeAssetCard cloakOfResonance
       , SomeAssetCard cosmicFlame
+      , SomeAssetCard jimCulverHauntedMusician
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

@@ -491,6 +491,7 @@ allPlayerAssetCards =
       , jeromeDavids
       , jessicaHyde1
       , jewelOfAureolus3
+      , jimCulverHauntedMusician
       , jimsTrumpet
       , jimsTrumpetAdvanced
       , joeSargentRattletrapBusDriver

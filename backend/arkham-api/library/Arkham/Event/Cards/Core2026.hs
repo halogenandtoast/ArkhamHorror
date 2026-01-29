@@ -21,8 +21,7 @@ deadEnds :: CardDef
 deadEnds =
   signature "12004"
     $ (event "12006" "Dead Ends" 5 Neutral)
-      { cdSkills = [#wild]
-      , cdCardTraits = setFromList [Blunder]
+      { cdCardTraits = setFromList [Blunder]
       , cdOutOfPlayEffects = [InHandEffect, InSearchEffect]
       }
 

@@ -154,6 +154,7 @@ allPlayerTreacheryCards =
       , smiteTheWickedAdvanced
       , starsOfHyades
       , stupor
+      , syndicateObligations
       , tekelili_223
       , tekelili_224
       , tekelili_225
@@ -3250,6 +3251,12 @@ pursued :: CardDef
 pursued =
   (basicWeakness "12102" "Pursued")
     { cdCardTraits = setFromList [Terror]
+    }
+
+syndicateObligations :: CardDef
+syndicateObligations =
+  (basicWeakness "12103" "Syndicate Obligations")
+    { cdCardTraits = setFromList [Pact, Syndicate]
     }
 
 theZealotsSeal :: CardDef

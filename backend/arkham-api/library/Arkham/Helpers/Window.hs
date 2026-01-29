@@ -2143,6 +2143,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
+    Matcher.SpendsResources timing whoMatcher valueMatcher -> guardTiming timing $ \case
+      Window.SpendsResources who n ->
+        andM
+          [ matchWho iid who whoMatcher
+          , gameValueMatches n valueMatcher
+          ]
+      _ -> noMatch
     Matcher.DiscoveringLastClue timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.DiscoveringLastClue who lid ->

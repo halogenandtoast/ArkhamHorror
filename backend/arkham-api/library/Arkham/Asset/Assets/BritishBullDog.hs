@@ -17,8 +17,8 @@ britishBullDog = asset BritishBullDog Cards.britishBullDog
 
 instance HasAbilities BritishBullDog where
   getAbilities (BritishBullDog a) =
-    [ restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
-    , restrictedAbility a 2 InYourHand
+    [ controlled_ a 1 $ fightActionWithAlternate #agility $ assetUseCost a Ammo 1
+    , restricted a 2 InYourHand
         $ freeReaction
         $ SkillTestResult #after You (WhileParleyingWithAnEnemy AnyEnemy) #failure
     ]

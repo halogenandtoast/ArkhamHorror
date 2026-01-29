@@ -32,6 +32,9 @@ fightActionWith_ stype = ActionAbility [Fight] (Just $ AbilitySkill stype) (Acti
 fightAction :: Cost -> AbilityType
 fightAction cost = ActionAbility [Fight] #combat (ActionCost 1 <> cost)
 
+fightActionWithAlternate :: AbilitySkills -> Cost -> AbilityType
+fightActionWithAlternate stype cost = ActionAbility [Fight] (Just $ OrAbilitySkills [#combat, stype]) (ActionCost 1 <> cost)
+
 fightAction_ :: AbilityType
 fightAction_ = fightAction mempty
 
@@ -263,9 +266,9 @@ instance FromJSON AbilityType where
         actions <- o .: "actions"
         cost <- o .: "cost"
         skillType <- o .: "skillType"
-        pure $ ActionAbility {actions, cost, skillTypes = Just (AbilitySkill skillType) }
+        pure $ ActionAbility {actions, cost, skillTypes = Just (AbilitySkill skillType)}
       "ActionAbilityWithBefore" -> do
         actions <- o .: "actions"
         cost <- o .: "cost"
-        pure $ ActionAbility {actions, cost, skillTypes = Nothing }
+        pure $ ActionAbility {actions, cost, skillTypes = Nothing}
       _ -> $(mkParseJSON defaultOptions ''AbilityType) (Object o)

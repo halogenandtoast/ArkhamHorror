@@ -272,7 +272,6 @@ const abilityString = computed(() => {
     }
   }
 
-  console.log(abilitySkills.value)
   return toString(abilitySkills.value)
 })
 
@@ -355,7 +354,7 @@ const classObject = computed(() => {
 }
 
 .button:has(.skill-willpower) {
-  background-color: var(--agility);
+  background-color: var(--willpower);
 }
 
 :deep(.skill-intellect) {

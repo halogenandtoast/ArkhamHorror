@@ -701,6 +701,8 @@ allEvents =
         SomeEventCard paintTheTownRed
       , SomeEventCard prestidigitation
       , SomeEventCard decisiveStrike2
+      , --- mystic [core2026]
+        SomeEventCard willOfTheCosmos
       , --- survivor [core2026]
         SomeEventCard shoveOff
       , SomeEventCard scrapeBy1

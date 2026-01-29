@@ -331,7 +331,7 @@ relicHunter3 =
     $ (asset "02157" "Relic Hunter" 0 Neutral)
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
-      , cdAlternateCardCodes = ["01695"]
+      , cdAlternateCardCodes = ["01695", "12096"]
       }
 
 charisma3 :: CardDef
@@ -340,7 +340,7 @@ charisma3 =
     $ (asset "02158" "Charisma" 0 Neutral)
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
-      , cdAlternateCardCodes = ["01694"]
+      , cdAlternateCardCodes = ["01694", "12095"]
       }
 
 helplessPassenger :: CardDef

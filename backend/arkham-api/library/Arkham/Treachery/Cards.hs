@@ -687,14 +687,14 @@ amnesia :: CardDef
 amnesia =
   (basicWeakness "01096" "Amnesia")
     { cdCardTraits = setFromList [Madness]
-    , cdAlternateCardCodes = ["01596"]
+    , cdAlternateCardCodes = ["01596", "12097"]
     }
 
 paranoia :: CardDef
 paranoia =
   (basicWeakness "01097" "Paranoia")
     { cdCardTraits = setFromList [Madness]
-    , cdAlternateCardCodes = ["01597"]
+    , cdAlternateCardCodes = ["01597", "12101"]
     }
 
 haunted :: CardDef
@@ -1088,7 +1088,10 @@ crisisOfIdentity =
 
 overzealous :: CardDef
 overzealous =
-  (basicWeakness "03040" "Overzealous") {cdCardTraits = singleton Flaw}
+  (basicWeakness "03040" "Overzealous")
+    { cdCardTraits = singleton Flaw
+    , cdAlternateCardCodes = ["12100"]
+    }
 
 drawingTheSign :: CardDef
 drawingTheSign =

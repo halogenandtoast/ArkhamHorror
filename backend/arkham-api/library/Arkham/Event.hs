@@ -703,6 +703,7 @@ allEvents =
       , SomeEventCard decisiveStrike2
       , --- mystic [core2026]
         SomeEventCard willOfTheCosmos
+      , SomeEventCard augurOfElokoss3
       , --- survivor [core2026]
         SomeEventCard shoveOff
       , SomeEventCard scrapeBy1

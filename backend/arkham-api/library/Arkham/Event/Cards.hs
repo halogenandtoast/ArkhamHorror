@@ -51,6 +51,7 @@ allPlayerEventCards =
       , astoundingRevelation
       , astralTravel
       , atACrossroads1
+      , augurOfElokoss3
       , backstab
       , backstab3
       , banish1

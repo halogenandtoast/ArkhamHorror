@@ -134,7 +134,7 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {
-    return `${t('Evade')} (<i class='skill-icon'></i>)`
+    return `${t('Evade')} (${abilityString.value ? abilityString.value : '<i class="skill-icon skill-combat"></i>'})`
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
@@ -216,6 +216,10 @@ const abilitySkills = computed(() => {
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return { tag: "AbilitySkill", contents: "SkillCombat" }
+  }
+
+  if (props.ability.tag === MessageType.EVADE_LABEL) {
+    return { tag: "AbilitySkill", contents: "SkillAgility" }
   }
 
   if (!ability.value) {

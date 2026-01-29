@@ -26,6 +26,7 @@ import Arkham.Prelude
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Trait (Trait (..))
+import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -91,6 +92,7 @@ data AssetMatcher
   | AssetWithCardId CardId
   | AssetCardMatch CardMatcher
   | AnyAsset
+  | PlayedAsset -- to be replaced
   | NotAsset AssetMatcher
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
@@ -113,6 +115,7 @@ data AssetMatcher
   | UniqueAsset
   | PermanentAsset
   | AssetWithDifferentTitleFromAtLeastOneCardInHand InvestigatorMatcher ExtendedCardMatcher AssetMatcher
+  | AssetWithDifferentTitleFromAtLeastOneOtherAsset AssetMatcher AssetMatcher -- first matcher is target, second is the pool to check against
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
@@ -218,5 +221,7 @@ instance Semigroup AssetMatcher where
 
 instance Monoid AssetMatcher where
   mempty = AnyAsset
+
+instance Plated AssetMatcher
 
 $(deriveJSON defaultOptions ''AssetMatcher)

@@ -195,6 +195,7 @@ allPlayerEventCards =
       , foolMeOnce1
       , foresight1
       , forewarned1
+      , forMyNextTrick
       , fortuitousDiscovery
       , fortuneOrFate2
       , friendsInLowPlaces

@@ -688,6 +688,7 @@ allEvents =
         --- signature [core2026]
         SomeEventCard detectivesIntuition
       , SomeEventCard deadEnds
+      , SomeEventCard forMyNextTrick
       , --- guardian [core2026]
         SomeEventCard lessonLearned
       , SomeEventCard rightToolForTheJob

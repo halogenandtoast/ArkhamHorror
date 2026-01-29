@@ -138,6 +138,7 @@ allInvestigators =
       , SomeInvestigatorCard danielaReyes2
       , SomeInvestigatorCard joeDiamond2
       , SomeInvestigatorCard trishScarborough2
+      , SomeInvestigatorCard dexterDrake2
       , SomeInvestigatorCard isabelleBarnes
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters

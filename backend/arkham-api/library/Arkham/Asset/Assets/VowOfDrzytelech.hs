@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.VowOfDrzytelech (vowOfDrzytelech, VowOfDrzytelech (..)) where
+module Arkham.Asset.Assets.VowOfDrzytelech (vowOfDrzytelech) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -28,7 +28,7 @@ instance RunMessage VowOfDrzytelech where
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
         labeled "Put Vow of Drzytelech into play in your threat area" do
-          putCardIntoPlay iid attrs
+          place attrs (InThreatArea iid)
           checkDefeated attrs iid
         whenM (lift $ can.shuffle.deck iid) do
           labeled "Take 1 horror and shuffle it into your deck" do

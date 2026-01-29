@@ -26,6 +26,16 @@ deadEnds =
       , cdOutOfPlayEffects = [InHandEffect, InSearchEffect]
       }
 
+forMyNextTrick :: CardDef
+forMyNextTrick =
+  signature "12010"
+    $ (event "12011" "\"For my next trick...\"" 0 Mystic)
+      { cdCardTraits = setFromList [Spell, Trick]
+      , cdSkills = [#willpower, #agility, #wild]
+      , cdCriteria = Just $ Criteria.youExist can.search.deck
+      , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+      }
+
 lessonLearned :: CardDef
 lessonLearned =
   (event "12022" "Lesson Learned" 1 Guardian)

@@ -890,6 +890,7 @@ allPlayerAssetCards =
       , theMuscleUnpracticed
       , theNecronomicon
       , theNecronomiconAdvanced
+      , theNecronomiconDrakeTranslation
       , theNecronomiconOlausWormiusTranslation
       , theNecronomiconPetrusDeDaciaTranslation5
       , thePaleLanternBeguilingAura

@@ -521,6 +521,12 @@ getEnemyMovedVia = \case
   (_ : rest) -> getEnemyMovedVia rest
   [] -> error "missing enemy moved via"
 
+getAsset :: [Window] -> AssetId
+getAsset = \case
+  ((windowType -> Window.PlayAsset _ aid) : _) -> aid
+  (_ : rest) -> getAsset rest
+  _ -> error "invalid window"
+
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
@@ -2239,6 +2245,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , case eventMatcher of
               EventWithId eid -> pure $ event == eid
               _ -> event <=~> OutOfPlayEvent eventMatcher
+          ]
+      _ -> noMatch
+    Matcher.PlayAsset timing whoMatcher assetMatcher -> guardTiming timing $ \case
+      Window.PlayAsset who asset -> do
+        let replace = \case
+              Matcher.PlayedAsset -> AssetWithId asset
+              other -> other
+        andM
+          [ matchWho iid who whoMatcher
+          , case assetMatcher of
+              AssetWithId aid -> pure $ asset == aid
+              _ -> matches asset (over biplate (transform replace) assetMatcher)
           ]
       _ -> noMatch
     Matcher.AgendaEntersPlay timing agendaMatcher -> guardTiming timing $ \case

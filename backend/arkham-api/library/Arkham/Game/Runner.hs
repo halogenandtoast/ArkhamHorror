@@ -61,7 +61,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Source
-import Arkham.Helpers.Window hiding (getEnemy, getLocation)
+import Arkham.Helpers.Window hiding (getEnemy, getLocation, getAsset)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
@@ -1450,10 +1450,14 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               <$> runMessage
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
+          whenPlayAsset <- checkWindows [mkWindow #when $ Window.PlayAsset iid aid]
+          afterPlayAsset <- checkWindows [mkWindow #after $ Window.PlayAsset iid aid]
           pushAll
             [ PaidForCardCost iid card payment
             , CardIsEnteringPlay iid card
+            , whenPlayAsset
             , InvestigatorPlayAsset iid aid
+            , afterPlayAsset
             , ResolvedCard iid card
             ]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset

@@ -1514,6 +1514,7 @@ library
       Arkham.Asset.Assets.TheMuscleUnpracticed
       Arkham.Asset.Assets.TheNecronomicon
       Arkham.Asset.Assets.TheNecronomiconAdvanced
+      Arkham.Asset.Assets.TheNecronomiconDrakeTranslation
       Arkham.Asset.Assets.TheNecronomiconOlausWormiusTranslation
       Arkham.Asset.Assets.TheNecronomiconPetrusDeDaciaTranslation5
       Arkham.Asset.Assets.TheoPetersJackOfAllTrades
@@ -2523,6 +2524,7 @@ library
       Arkham.Event.Events.FoolMeOnce1
       Arkham.Event.Events.Foresight1
       Arkham.Event.Events.Forewarned1
+      Arkham.Event.Events.ForMyNextTrick
       Arkham.Event.Events.FortuitousDiscovery
       Arkham.Event.Events.FortuneOrFate2
       Arkham.Event.Events.FriendsInLowPlaces
@@ -2945,6 +2947,7 @@ library
       Arkham.Investigator.Cards.DanielaReyes2
       Arkham.Investigator.Cards.DarrellSimmons
       Arkham.Investigator.Cards.DexterDrake
+      Arkham.Investigator.Cards.DexterDrake2
       Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
       Arkham.Investigator.Cards.FatherMateoParallel

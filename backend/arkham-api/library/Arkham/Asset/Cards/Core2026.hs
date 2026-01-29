@@ -20,6 +20,13 @@ covertOpsInTheShadows =
       , cdCardTraits = setFromList [Talent, Illicit]
       }
 
+theNecronomiconDrakeTranslation :: CardDef
+theNecronomiconDrakeTranslation =
+  (weakness "12012" ("The Necronomicon" <:> "Drake Translation"))
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    }
+
 isabellesTwin45sLoadedWithVengeance :: CardDef
 isabellesTwin45sLoadedWithVengeance =
   signature "12013"

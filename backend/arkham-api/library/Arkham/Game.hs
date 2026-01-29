@@ -2691,6 +2691,7 @@ getAssetsMatching matcher = do
         ]
   filterMatcher [] = const (pure [])
   filterMatcher as = \case
+    PlayedAsset -> error "must be replaced"
     IgnoreVisibility inner -> filterMatcher as inner
     VehicleWithInvestigator imatcher -> do
       filterM (\a -> selectAny $ imatcher <> InVehicleMatching (AssetWithId $ toId a)) as
@@ -2945,6 +2946,12 @@ getAssetsMatching matcher = do
               )
               assets
           _ -> pure assets
+    AssetWithDifferentTitleFromAtLeastOneOtherAsset assetMatcher otherAssetMatcher -> do
+      otherAssets <- select otherAssetMatcher
+      assets <- filterMatcher as assetMatcher
+      pure $ case otherAssets of
+        [x] -> filter ((/= x) . toId) assets
+        _ -> assets
     AssetWithPerformableAbility abilityMatcher modifiers' -> flip filterM as $ \asset -> do
       iid <- view activeInvestigatorIdL <$> getGame
       let adjustAbility ab = applyAbilityModifiers ab modifiers'

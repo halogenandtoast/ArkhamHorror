@@ -227,6 +227,16 @@ spiritualIntuition =
     , cdCardTraits = setFromList [Talent]
     }
 
+maskOfSilenusFaceOfTheVoid1 :: CardDef
+maskOfSilenusFaceOfTheVoid1 =
+  (asset "12068" ("Mask of Silenus" <:> "Face of the Void") 3 Mystic)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Item, Mask, Relic, Cursed]
+    , cdSlots = [#head]
+    , cdUnique = True
+    , cdUses = uses Charge 3
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

@@ -133,6 +133,15 @@ willOfTheCosmos =
     , cdCardTraits = setFromList [Insight, Augury]
     }
 
+augurOfElokoss3 :: CardDef
+augurOfElokoss3 =
+  (event "12070" "Augur of Elokoss" 2 Mystic)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Spell, Augury]
+    , cdLevel = Just 3
+    , cdActions = [#investigate]
+    }
+
 shoveOff :: CardDef
 shoveOff =
   (event "12079" "\"Shove off!\"" 1 Survivor)

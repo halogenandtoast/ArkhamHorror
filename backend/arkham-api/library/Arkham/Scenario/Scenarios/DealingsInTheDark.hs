@@ -190,8 +190,8 @@ instance RunMessage DealingsInTheDark where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          n <- getCurrentActStep
-          if n == 1 || n == 2
+          n <- getCurrentActStepMaybe
+          if n == Just 1 || n == Just 2
             then do
               markTime 1
               setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown

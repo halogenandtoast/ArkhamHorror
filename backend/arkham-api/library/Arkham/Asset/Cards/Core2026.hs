@@ -244,6 +244,16 @@ maskOfSilenusFaceOfTheVoid1 =
     , cdUses = uses Charge 3
     }
 
+cosmicFlame5 :: CardDef
+cosmicFlame5 =
+  (asset "12071" "Cosmic Flame" 3 Mystic)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Spell]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 4
+    , cdLevel = Just 5
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

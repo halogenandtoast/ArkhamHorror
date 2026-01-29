@@ -200,6 +200,7 @@ allPlayerAssetCards =
       , cookiesCustom32
       , cornered2
       , cosmicFlame
+      , cosmicFlame5
       , covertOpsInTheShadows
       , cowlOfSekhmetCloakOfPharaohs3
       , crafty3

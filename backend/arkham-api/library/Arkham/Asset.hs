@@ -1204,6 +1204,7 @@ allAssets =
       , SomeAssetCard secondSight
       , SomeAssetCard spiritualIntuition
       , SomeAssetCard maskOfSilenusFaceOfTheVoid1
+      , SomeAssetCard cosmicFlame5
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

@@ -15,8 +15,11 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Tracing
 
-getCurrentActStep :: (Tracing m, HasGame m) => m Int
+getCurrentActStep :: (HasCallStack, Tracing m, HasGame m) => m Int
 getCurrentActStep = selectJust AnyAct >>= getActStep
+
+getCurrentActStepMaybe :: (HasCallStack, Tracing m, HasGame m) => m (Maybe Int)
+getCurrentActStepMaybe = selectOne AnyAct >>= traverse getActStep
 
 getActStep :: (HasGame m, Tracing m) => ActId -> m Int
 getActStep = fieldMap ActSequence (AS.unActStep . AS.actStep)

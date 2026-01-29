@@ -345,6 +345,10 @@ const classObject = computed(() => {
   background: linear-gradient(90deg, var(--intellect) 0%, var(--agility) 100%);
 }
 
+.button:has(.skill-combat):has(.skill-agility) {
+  background: linear-gradient(90deg, var(--combat) 0%, var(--agility) 100%);
+}
+
 .button:has(.skill-combat) {
   background-color: var(--combat);
 }

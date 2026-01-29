@@ -1195,6 +1195,8 @@ allAssets =
       , SomeAssetCard silverTongue
       , SomeAssetCard stickyFingers
       , SomeAssetCard stickyFingers2
+      , --- mystic [core2026]
+        SomeAssetCard cloakOfResonance
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

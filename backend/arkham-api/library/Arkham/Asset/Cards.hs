@@ -189,6 +189,7 @@ allPlayerAssetCards =
       , cleaningKit
       , cleaningKit3
       , clintonFreemanShouldHaveStayedHome
+      , cloakOfResonance
       , closeTheCircle1
       , collectedWorksOfPoe
       , coltVestPocket

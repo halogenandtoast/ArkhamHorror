@@ -176,6 +176,14 @@ stickyFingers2 =
       , cdLevel = Just 2
       }
 
+cloakOfResonance :: CardDef
+cloakOfResonance =
+  (asset "12058" "Cloak of Resonance" 3 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Clothing, Alchemy]
+    , cdSlots = [#body]
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

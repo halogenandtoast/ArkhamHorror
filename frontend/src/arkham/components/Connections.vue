@@ -11,6 +11,12 @@ const props = defineProps<Props>()
 const locations = computed(() =>
   Object.values(props.game.locations).filter(a => a.placement === null && a.label !== 'cosmos')
 )
+
+
+const enemies = computed(() =>
+  Object.values(props.game.enemies).filter(a => a.asSelfLocation && a.placement.tag === "AtLocation")
+)
+
 const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
   const aId = a.dataset.id, bId = b.dataset.id
   if (!aId || !bId) return 0
@@ -32,7 +38,7 @@ const EPS = 0.5
 const close = (a: number, b: number) => Math.abs(a - b) < EPS
 const linesByConn = new Map<string, SVGLineElement>()
 
-function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement) {
+function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: string) {
   const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
   const leftDivId = leftDiv.dataset.id
   const rightDivId = rightDiv.dataset.id
@@ -61,6 +67,7 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement) {
     line = lineProto.cloneNode(true) as SVGLineElement
     line.classList.remove('original')
     line.classList.add('connection')
+    if (className) line.classList.add(className)
     // ensure no duplicate ids leak to the DOM
     line.removeAttribute('id')
     line.dataset.connection = connection
@@ -109,6 +116,23 @@ function handleConnections() {
       live.add(conn)
       makeOrUpdateLine(start, end)
     }
+  }
+
+  for (const enemy of enemies.value) {
+    const { id, placement } = enemy
+    if (placement.tag !== "AtLocation") continue
+
+    const start = document.querySelector<HTMLElement>(`[data-id="${id}"]`)
+    if (!start) continue
+
+    const end = document.querySelector<HTMLElement>(`[data-id="${placement.contents}"]`)
+    if (!end) continue
+
+    const conn = toConnection(start, end)
+    if (!conn) continue
+
+    live.add(conn)
+    makeOrUpdateLine(start, end, "enemy-line")
   }
 
   for (const [conn, el] of linesByConn) {
@@ -179,5 +203,10 @@ onBeforeUnmount(()=> {
 }
 .active{
   stroke: rgba(255, 255, 255, 0.7) !important;
+}
+
+.enemy-line{
+  stroke: rgba(255 0 0 / 0.4);
+  stroke-dasharray: unset;
 }
 </style>

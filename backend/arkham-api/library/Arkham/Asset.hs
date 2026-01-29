@@ -1200,6 +1200,7 @@ allAssets =
       , SomeAssetCard cosmicFlame
       , SomeAssetCard jimCulverHauntedMusician
       , SomeAssetCard luckyCharm
+      , SomeAssetCard secondSight
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

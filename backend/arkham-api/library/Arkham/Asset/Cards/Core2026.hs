@@ -211,6 +211,15 @@ luckyCharm =
     , cdUses = uses Charge 4
     }
 
+secondSight :: CardDef
+secondSight =
+  (asset "12062" "Second Sight" 4 Mystic)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Spell]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

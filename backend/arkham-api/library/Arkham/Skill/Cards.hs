@@ -140,6 +140,7 @@ allPlayerSkillCards =
       , signumCrucis2
       , skeptic1
       , slippery
+      , soulLink
       , steadfast
       , strengthInNumbers1
       , strokeOfLuck2
@@ -1052,6 +1053,12 @@ outOfSight3 =
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 3
+    }
+
+soulLink :: CardDef
+soulLink =
+  (skill "12067" "Soul Link" [#wild, #wild, #wild] Mystic)
+    { cdCardTraits = setFromList [Innate, Spell]
     }
 
 slippery :: CardDef

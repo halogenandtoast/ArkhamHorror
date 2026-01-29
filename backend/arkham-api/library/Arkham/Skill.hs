@@ -311,6 +311,8 @@ allSkills = mapFromList $
       --- rogue [core2026]
       SomeSkillCard outOfSight
     , SomeSkillCard outOfSight3
+    , --- mystic [core2026]
+      SomeSkillCard soulLink
     , --- survivor [core2026]
       SomeSkillCard slippery
     , SomeSkillCard timelyIntervention

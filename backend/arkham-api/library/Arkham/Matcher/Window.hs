@@ -178,6 +178,7 @@ data WindowMatcher
   | WouldDiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher
   | GainsResources Timing Who SourceMatcher ValueMatcher
+  | SpendsResources Timing Who ValueMatcher
   | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher

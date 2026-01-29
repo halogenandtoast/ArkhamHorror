@@ -223,6 +223,7 @@ data WindowType
   | FastPlayerWindow
   | GainsClues InvestigatorId Source Int
   | GainsResources InvestigatorId Source Int
+  | SpendsResources InvestigatorId Int
   | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window

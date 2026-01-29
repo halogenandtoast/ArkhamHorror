@@ -3458,10 +3458,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   Do (InvestigatorSpendClues iid n) | iid == investigatorId -> do
     pure $ a & tokensL %~ subtractTokens Clue n
-  SpendResources iid _ | iid == investigatorId -> do
-    push $ Do msg
+  SpendResources iid n | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows [mkWhen (Window.SpendsResources iid n)]
+    pushAll [beforeWindowMsg, Do msg]
     pure a
   Do (SpendResources iid n) | iid == investigatorId -> do
+    Lifted.checkAfter (Window.SpendsResources iid n)
     pure $ a & tokensL %~ subtractTokens Resource n
   LoseResources iid source n | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.LostResources iid source n)]

@@ -666,6 +666,7 @@ allTreacheries =
       , SomeTreacheryCard breakingPoint
       , -- basic weakness [core2026]
         SomeTreacheryCard pursued
+      , SomeTreacheryCard syndicateObligations
       , -- Return to the Night of the Zealot
         -- Return to the Gathering
         SomeTreacheryCard theZealotsSeal

@@ -17,7 +17,7 @@ divination1 :: AssetCard Divination1
 divination1 = asset Divination1 Cards.divination1
 
 instance HasAbilities Divination1 where
-  getAbilities (Divination1 x) = [restricted x 1 ControlsThis investigateAction_]
+  getAbilities (Divination1 x) = [controlled_ x 1 $ investigateActionWithAlternate_ #willpower]
 
 instance RunMessage Divination1 where
   runMessage msg a@(Divination1 attrs) = runQueueT $ case msg of

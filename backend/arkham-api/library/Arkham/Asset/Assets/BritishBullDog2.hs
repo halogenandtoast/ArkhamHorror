@@ -30,7 +30,7 @@ instance HasModifiersFor BritishBullDog2 where
 
 instance HasAbilities BritishBullDog2 where
   getAbilities (BritishBullDog2 a) =
-    [ controlled_ a 1 $ fightAction $ assetUseCost a Ammo 1
+    [ controlled_ a 1 $ fightActionWithAlternate #agility $ assetUseCost a Ammo 1
     , restricted a 2 InYourHand
         $ freeReaction
         $ SkillTestResult #after You (WhileParleyingWithAnEnemy AnyEnemy) #failure

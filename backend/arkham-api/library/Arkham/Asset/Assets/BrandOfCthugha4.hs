@@ -15,7 +15,7 @@ brandOfCthugha4 :: AssetCard BrandOfCthugha4
 brandOfCthugha4 = asset BrandOfCthugha4 Cards.brandOfCthugha4
 
 instance HasAbilities BrandOfCthugha4 where
-  getAbilities (BrandOfCthugha4 a) = [restricted a 1 ControlsThis fightAction_]
+  getAbilities (BrandOfCthugha4 a) = [controlled_ a 1 $ fightActionWithAlternate_ #willpower]
 
 instance RunMessage BrandOfCthugha4 where
   runMessage msg a@(BrandOfCthugha4 attrs) = case msg of

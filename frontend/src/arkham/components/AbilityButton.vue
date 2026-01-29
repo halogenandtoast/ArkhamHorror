@@ -256,7 +256,7 @@ const abilityString = computed(() => {
         return toSkill(a.contents)
       }
       case "OrAbilitySkills": {
-        return t("or", a.contents.map(toString))
+        return t(`or${a.contents.length}`, a.contents.map(toString))
       }
       case "AndAbilitySkills": {
         return t("and", a.contents.map(toString))
@@ -424,6 +424,10 @@ const classObject = computed(() => {
   }
   &.skill-combat-to-intellect {
     background: linear-gradient(90deg, var(--combat) 0%, var(--intellect) 100%);
+  }
+
+  &.skill-combat-to-intellect-to-willpower {
+    background: linear-gradient(90deg, var(--combat) 0%, var(--intellect) 50%, var(--willpower) 100%);
   }
 }
 

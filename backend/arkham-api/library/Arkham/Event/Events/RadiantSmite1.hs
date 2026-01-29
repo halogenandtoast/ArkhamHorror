@@ -2,7 +2,6 @@ module Arkham.Event.Events.RadiantSmite1 (radiantSmite1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Fight
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -32,10 +31,7 @@ instance RunMessage RadiantSmite1 where
           attrs
 
       sid <- getRandom
-      fight <- mkChooseFight sid iid attrs
-      chooseOneM iid do
-        labeled "Use {willpower}" $ push $ withSkillType #willpower fight
-        labeled "Use {combat}" $ push fight
+      chooseFightEnemyWithSkillChoice sid iid (toSource attrs) [#combat, #willpower]
       pure e
     ResolveAmounts iid (getChoiceAmount "Bless Tokens" -> n) (isTarget attrs -> True) -> do
       blessedTokens <- take n <$> select (ChaosTokenFaceIs #bless)

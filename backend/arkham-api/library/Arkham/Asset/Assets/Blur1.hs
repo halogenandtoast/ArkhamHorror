@@ -15,7 +15,7 @@ blur1 :: AssetCard Blur1
 blur1 = asset Blur1 Cards.blur1
 
 instance HasAbilities Blur1 where
-  getAbilities (Blur1 x) = [controlledAbility x 1 blurCriteria evadeAction_]
+  getAbilities (Blur1 x) = [controlled x 1 blurCriteria $ evadeActionWithAlternate_ #willpower]
    where
     blurCriteria = if hasUses x then NoRestriction else Never
 

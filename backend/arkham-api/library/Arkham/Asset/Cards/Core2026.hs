@@ -184,6 +184,15 @@ cloakOfResonance =
     , cdSlots = [#body]
     }
 
+cosmicFlame :: CardDef
+cosmicFlame =
+  (asset "12059" "Cosmic Flame" 3 Mystic)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Spell]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
+    }
+
 alekseySaburovAlwaysOnTheMend :: CardDef
 alekseySaburovAlwaysOnTheMend =
   (asset "12072" ("Aleksey Saburov" <:> "Always on the Mend") 3 Survivor)

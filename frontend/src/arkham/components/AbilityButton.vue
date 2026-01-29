@@ -316,7 +316,7 @@ const classObject = computed(() => {
 }
 
 .fight-button--willpower, :deep(.fight-button--willpower), .evade-button--willpower, :deep(.evade-button--willpower) {
-  background-color: #576345;
+  background-color: var(--willpower);
   .skill-icon:before {
     font-family: "Arkham";
     font-style: normal;

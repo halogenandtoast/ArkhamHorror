@@ -174,6 +174,7 @@ data Criterion
   = AssetExists AssetMatcher
   | TargetExists TargetMatcher
   | ScenarioExists ScenarioMatcher
+  | DifferentTargetsExist TargetMatcher TargetMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher
   | DifferentEnemiesExist EnemyMatcher EnemyMatcher
   | EventExists EventMatcher

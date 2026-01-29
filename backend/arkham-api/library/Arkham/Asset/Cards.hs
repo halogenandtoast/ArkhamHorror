@@ -545,6 +545,7 @@ allPlayerAssetCards =
       , lonnieRitter
       , lostArcana3
       , lucasTetlow
+      , luckyCharm
       , luckyCigaretteCase
       , luckyCigaretteCase3
       , luckyDice2

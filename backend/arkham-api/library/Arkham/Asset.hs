@@ -1199,6 +1199,7 @@ allAssets =
         SomeAssetCard cloakOfResonance
       , SomeAssetCard cosmicFlame
       , SomeAssetCard jimCulverHauntedMusician
+      , SomeAssetCard luckyCharm
       , --- survivor [core2026]
         SomeAssetCard alekseySaburovAlwaysOnTheMend
       , SomeAssetCard huntersInstinct

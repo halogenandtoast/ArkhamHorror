@@ -682,6 +682,14 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
         (_, []) -> pure False
         ([x], [y]) -> pure $ x /= y
         _ -> pure True
+    Criteria.DifferentTargetsExist matcher1 matcher2 -> do
+      m1 <- select (Matcher.replaceYouMatcher iid matcher1)
+      m2 <- select (Matcher.replaceYouMatcher iid matcher2)
+      case (m1, m2) of
+        ([], _) -> pure False
+        (_, []) -> pure False
+        ([x], [y]) -> pure $ x /= y
+        _ -> pure True
     Criteria.DifferentEnemiesExist matcher1 matcher2 -> do
       m1 <- select (Matcher.replaceYouMatcher iid matcher1)
       m2 <- select (Matcher.replaceYouMatcher iid matcher2)

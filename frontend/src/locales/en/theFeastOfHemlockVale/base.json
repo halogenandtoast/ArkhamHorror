@@ -1,4 +1,7 @@
 {
+  "headings": {
+    "preludeTheFirstEvening": "Prelude: The First Evening"
+  },
   "campaignLog": {
     "residents": {
       "relationshipLevel": "Relationship Level",
@@ -140,6 +143,38 @@
       "body": "<ul><li>Preludes in this campaign require investigators to set up a map, act and agenda deck and play much like they would a traditional scenario of *Arkham Horror: The Card Game*.</li><li>Hemlock Vale is generally a safe place. During these preludes, there is no encounter deck. This means that the investigators cannot use abilities that interact with the encounter deck in any way. (*For example, effects such as those that search the encounter deck, draw cards from the encounter deck, or look at cards in the encounter deck cannot be resolved.*)</li><li>Understanding the residents’ wants and needs, as well as where they go during the day, is key to building trust with each of them. Your relationship with each resident influences the story and will earn you rewards and experience in later preludes.</li><li>Hemlock Vale is a good place to stock up on supplies. At the end of a prelude, each investigator keeps the following: <ul><li>Cards in hand, up to their opening hand size. (*Note that investigators do not take a traditional mulligan for _(Day {'{'}day{'}'})_ scenarios.*)</li><li>Resources in play, up to their starting resources.</li><li>A single asset in their play area that does not normally start in play.</li><li>All clues they control.</li></ul></li><li>For more information on Preludes and Relationship Levels, refer to the Additional Rules and Clarifications on page 2 of this Campaign Guide.</li></ul>"
     }
   },
+  "prelude": {
+    "theFirstEvening": {
+      "xp": {
+        "bonus": "Bonus experience"
+      },
+      "label": {
+        "keepEating": "*Keep eating.*",
+        "dontEatAnymore": "*Don’t eat any more.*",
+        "theta": "Dr. Marquez, Mother Rachel, and William sit at the head of the room at a large open table. To sit with them, ({'{'}codex{'}'} Θ)",
+        "delta": "Judith’s face is pinched in frustration as she talks to River. To join them at the outer edge of the commons, ({'{'}codex{'}'} Δ)",
+        "sigma": "Leah is watching the room as Gideon talks to her. To join them in the center of the commons, ({'{'}codex{'}'} Σ)",
+        "omega": "Theo leans against the doorpost looking outside. To join him at the entrance to the commons, ({'{'}codex{'}'} Ώ) ",
+        "gamma": "Some children in animal masks eat honeyed cake in the corner. To sit with the Vale’s youth, ({'{'}codex{'}'} Γ)",
+        "pi": "To sit alone, ({'{'}codex{'}'} Π). (If there is only one investigator, this option cannot be the first choice.)",
+        "whoAreTheAtwoods": "*Who are the Atwoods?*",
+        "whoAreTheChildrenOfTheStars": "*Who are the Children of the Stars?*",
+        "whoAreTheHemlocks": "*Who are the Hemlocks?*"
+      },
+      "title": "Prelude: The First Evening",
+      "body": "<p>As you return to Hemlock Vale, a young red-headed girl in a rabbit mask introduces herself as Rebecca, Mother Rachel’s daughter, and leads you by the hand to dinner in the Commons. The long building’s large barn doors are open to let out the rich scent of roasted vegetables and savory meat. The people of the Vale sit and eat in lively conversation, each of them in their white-gold cloaks. At the head of the room, Mother Rachel stands up and calls for attention. Rebecca leads you to the now-picked-over dinner spread as the room falls silent.</p><p>“Meine lieben Freunde. What a blessing that all of us have come here, on the threshold of infinity. And what a greater blessing still that pilgrims have come here, so full of light and curiosity!” Mother Rachel gestures to Dr. Marquez to her right, and to you. “We have waited for the right moment to open our community. Our community which is truly the ‘Sanctuary of Transfiguration’ we long dreamed of. For each of us yearns to be remade as we wait to join our light with the light of the cosmos.”</p><p>The room bursts into applause as Leah Atwood and several locals place trays of honeyed cakes topped with robust red fruit in the center of each table. Your stomach grumbles as you take a bite of shriveled greens. It has a faint bitter taste, and a sharp smell.</p><ul><li>One at a time, each investigator must decide individually:<ul><li>Keep eating. In your Campaign Log, record [investigator’s name] finished their meal.</li><li>Don’t eat any more.</li></ul></li></ul>",
+      "mealChoice": "<ul><li>One at a time, each investigator must decide individually:<ul><li>Keep eating. In your Campaign Log, record [investigator’s name] finished their meal.</li><li>Don’t eat any more.</li></ul></li></ul>",
+      "codexChoice": "<p class='basic'>You may choose where to sit for the community meal. One at a time, each investigator may choose a different codex entry from the following. (If there is only one investigator, you may choose two to resolve instead). After you have read the appropriate number of sections, proceed to _Resolution 1_</p>",
+      "theHemlockLegacy1": "<div class='green'><h3>{'{'}codex{'}'} Codex Θ: The Hemlock Legacy</h3><p>_The Hemlock Legacy 1_: As you seat yourself across from William and Mother Rachel, a thin older woman with bronze skin stares morosely at you. “Mother, please,” William vainly attempts to spoonfeed her chowder as her eyes follow you, lips pursed. Mother Rachel and Dr. Marquez sip earthy tea as you seat yourself. “I have been wondering about the history of this place,” the professor says to Mother Rachel. She nods to you to speak up.<p><p class='basic'>You must decide what to say (*choose one*):</p><ul><li>*“Who are the Atwoods?”* Proceed to _The Hemlock Legacy 2_.</li><li>*“Who are the Children of the Stars?”* Skip to _The Hemlock Legacy 3_.</li><li>*“Who are the Hemlocks?”* Skip to _The Hemlock Legacy 4_.</li></ul></div>",
+      "theHemlockLegacy2": "<div class='green'><h3>{'{'}codex{'}'} Codex Θ: The Hemlock Legacy</h3><p>_The Hemlock Legacy 2_: Mother Rachel beams. “We Atwoods have been here almost as long as the Hemlocks. Our family helped build Hemlock Harbor. We planted half of Pearl Orchard, and we put our lives on the line for Wilbur Hemlock and his doomed whaling enterprise. And when whaling all but died out, we were here to pick up the pieces,” Mother Rachel says smugly. You note William’s grimace as the matron goes on.</p><p>“I suppose we are now the caretakers of the Hemlock family’s legacy.”</p><p class='basic right'>Increase Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p></div>",
+      "theHemlockLegacy3": "<div class='green'><h3>{'{'}codex{'}'} Codex Θ: The Hemlock Legacy</h3><p>_The Hemlock Legacy 3_: Mother Rachel smiles magnanimously. “We are simply quiet people of good faith. I was born on Hemlock Isle and studied abroad for many years. I attended seances with Sarah Winchester, studied mesmerism in France, and became a member of the Ghost Club in London. Everywhere I studied, I learned more and more of our connectedness. Our many-faceted oneness. And so I brought my learning home, to my family, where it always belonged.”</p><p class='basic right'>Increase Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p></div>",
+      "theHemlockLegacy4": "<div class='green'><h3>{'{'}codex{'}'} Codex Θ: The Hemlock Legacy</h3><p>_The Hemlock Legacy 4_: “The Hemlock family is the very lifeblood of Hemlock Isle,” William boasts. “In our heyday, Hemlock Harbor was a bustling hub for mariners far and wide. My grandfather Wilbur commanded dozens of whaling vessels. But his pride and joy was the Annabelle Lee.” He looks forlornly at his elderly mother. “Naturally, it sank. As did the profits from the whaling industry. My grandfather blamed it all on some kind of curse. He believed in it so strongly that he locked my poor mother in the attic of our family home for weeks at a time.”</p><p>William squeezes his mother’s hand. “I don’t think she ever quite recovered.”</p><p class='basic right'>Increase William Hemlock’s Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>In William Hemlock’s Notes, record *William shared his legacy*.</p></div>",
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<div class='resolution'><p>_Resolution 1_: The evening chatter fades as residents trickle out of the Commons. There is an uncharacteristic spring in Dr. Marquez’s step as you reconvene outside the Commons. The sunset casts the sky in shades from ochre, to lilac, to violet. The professor cracks a handful of walnuts as you share your impressions of Hemlock Isle.</p><p>“This island has the density and special variance of a jungle, but it’s far more dangerous than any jungle. I have no clue why someone would start a commune in such a hazardous environment, but I understand it wasn’t always so deadly. Something was introduced and fundamentally changed the local ecosystem,” Dr. Marquez muses.</p><p>You mention the unusually good mood shared by everyone in the village, and the professor nods. “Most everyone looks blissed out of their minds. It’s like walking into an opium den. But as far as I can tell, the food isn’t laced with anything. Though I didn’t try the bread pudding. I’ve never liked bread, and the last time I had pudding was in Oxford.”</p><p>The professor’s reference to the prestigious university brings Bertie Musgrave to mind, and you ask where he is.</p><p>“You haven’t seen him? I assumed he went back to the boarding house to rest,” she scowls. “Theo offered to lend us his truck for the evening. I thought we could observe some of the local wildlife at night, but I suppose we should find him first.”</p><p>A heavy breeze stirs the trees and grass around you, smelling of cedar and pine. Dr. Marquez grips her cane. “If you’d rather take the truck and continue the survey, I can look for Bertie on my own.”</p><ul><li>Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>The investigators must decide (choose one):<ul><li>Search for Bertie Musgrave with Dr. Marquez. Proceed to _The Twisted Hollow_</li><li>Gather more information on Hemlock Isle’s unique ecosystem at night. Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off. _If you do, add 1 {'{'}tablet{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign_.</li></ul></li></ul></div>"
+      }
+    }
+  },
   "tooltips": {
     "hemlockChapel": {
       "day": {
@@ -218,6 +253,10 @@
         "scenarioName": "The Longest Night",
         "ref": "p46"
       }
+    },
+    "[motherRachelNotes]": {
+      "orderKey": "b",
+      "name": "Mother Rachel"
     },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",

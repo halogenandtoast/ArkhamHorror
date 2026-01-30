@@ -519,6 +519,13 @@ storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ storyWithChooseOne (buildFlavor builder) choices'
 
+investigatorStoryWithChooseOneM'
+  :: ReverseQueue m => InvestigatorId -> FlavorTextBuilder () -> ChooseT m a -> m ()
+investigatorStoryWithChooseOneM' iid builder choices = do
+  (_, choices') <- runChooseT choices
+  pid <- getPlayer iid
+  playerStoryWithChooseOne pid (buildFlavor builder) choices'
+
 playerStoryWithChooseOneM'
   :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()
 playerStoryWithChooseOneM' pid builder choices = do

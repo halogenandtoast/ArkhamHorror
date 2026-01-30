@@ -18,6 +18,7 @@ export interface Props {
 
 const grunge = `url(${imgsrc('grunge.png')})`
 const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
+const resolution_fleur = `url(${imgsrc('resolution_fleur.png')})`
 const black_fleur = `url(${imgsrc('black_fleur.png')})`
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
@@ -137,6 +138,12 @@ const flippableCard = (cardCode: string) => {
   background: #DCD6D0;
   padding: 20px;
   box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
+
+
+  &:has(.resolution) {
+    box-shadow: unset;
+    background-color: #BAA597;
+  }
 }
 
 .entry {
@@ -313,6 +320,7 @@ const flippableCard = (cardCode: string) => {
     margin: 10px;
     font-style: italic;
   }
+
 }
 
 p {
@@ -449,6 +457,58 @@ a.button {
     flex: 0;
     img {
       border-radius: 4%;
+    }
+  }
+
+  &:deep(.resolution) {
+    padding: 40px;
+  }
+  &:has(.resolution) {
+    background: #BAA898;
+  }
+
+  &:has(.resolution) {
+    background-color: #BAA597;
+    box-shadow: unset;
+    overflow: auto;
+    isolation: isolate;
+    position: relative;
+    &::after {
+      border: 20px solid #D4CCC3;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      z-index: -2;
+    }
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+    &::before {
+      z-index: -1;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image-source: v-bind(resolution_fleur);
+      border-image-slice: 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
+    }
+    @media (max-width: 800px) and (orientation: portrait)  {
+      padding: 10px;
+      &::before {
+        border-image-width: 20px;
+      }
     }
   }
 

@@ -43,7 +43,20 @@ data CampaignStep
   deriving anyclass ToJSON
 
 continue :: CampaignStep -> Maybe CampaignStep
-continue ns = Just $ ContinueCampaignStep $ Continuation ns True False Nothing True
+continue ns = Just $ ContinueCampaignStep $ Continuation ns canUpgrade False Nothing canChooseSideStory
+ where
+  canUpgrade = case ns of
+    ScenarioStep {} -> True
+    ScenarioStepWithOptions {} -> True
+    StandaloneScenarioStep {} -> True
+    StandaloneScenarioStepWithOptions {} -> True
+    _ -> False
+  canChooseSideStory = case ns of
+    ScenarioStep {} -> True
+    ScenarioStepWithOptions {} -> True
+    StandaloneScenarioStep {} -> True
+    StandaloneScenarioStepWithOptions {} -> True
+    _ -> False
 
 continueEdit :: CampaignStep -> (Continuation -> Continuation) -> Maybe CampaignStep
 continueEdit ns f =
@@ -56,6 +69,12 @@ noUpgrade cs = cs {canUpgradeDecks = False}
 
 noSideStory :: Continuation -> Continuation
 noSideStory cs = cs {canChooseSideStory = False}
+
+noOptions :: Continuation -> Continuation
+noOptions cs = cs {canUpgradeDecks = False, canChooseSideStory = False}
+
+allowOptions :: Continuation -> Continuation
+allowOptions cs = cs {canUpgradeDecks = True, canChooseSideStory = True}
 
 continueNoUpgrade :: CampaignStep -> Maybe CampaignStep
 continueNoUpgrade ns = continueEdit ns noUpgrade

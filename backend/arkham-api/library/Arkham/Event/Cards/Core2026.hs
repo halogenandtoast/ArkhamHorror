@@ -23,6 +23,7 @@ deadEnds =
     $ (event "12006" "Dead Ends" 5 Neutral)
       { cdCardTraits = setFromList [Blunder]
       , cdOutOfPlayEffects = [InHandEffect, InSearchEffect]
+      , cdCardSubType = Just Weakness
       }
 
 forMyNextTrick :: CardDef

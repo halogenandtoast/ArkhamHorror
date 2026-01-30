@@ -13,6 +13,6 @@ lessonLearned = event LessonLearned Cards.lessonLearned
 instance RunMessage LessonLearned where
   runMessage msg e@(LessonLearned attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      discoverAtYourLocation NotInvestigate iid (toSource attrs) 2
+      discoverAtYourLocation NotInvestigate iid (toSource attrs) 1
       pure e
     _ -> LessonLearned <$> liftRunMessage msg attrs

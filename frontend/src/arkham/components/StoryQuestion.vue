@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
-import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
+import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel } from '@/arkham/types/Message';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
@@ -126,6 +126,40 @@ const flippableCard = (cardCode: string) => {
     otherSide: `${cardCode}b`
   }
 }
+
+const scenarioChoices = computed(() => {
+  if (!question.value) return []
+
+  if (question.value.tag === 'QuestionLabel') {
+    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
+      return []
+    }
+
+    return question.value.question.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
+      if (c.tag === MessageType.SCENARIO_LABEL) {
+        return [[c, idx]]
+      } else {
+        return []
+      }
+    })
+  }
+
+  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
+    return question.value.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
+      if (c.tag === MessageType.SCENARIO_LABEL) {
+        return [[c, idx]]
+      } else {
+        return []
+      }
+    })
+  }
+
+  return []
+})
+
+const scenarioBoxImage = (scenarioId: string) => {
+  return imgsrc(`boxes/${scenarioId}.jpg`)
+}
 </script>
 
 <template>
@@ -151,6 +185,15 @@ const flippableCard = (cardCode: string) => {
               <img class="portrait card active no-overlay active" :src="portraitLabelImage(choice.investigatorId)"/>
             </a>
           </template>
+        </template>
+      </div>
+
+      <div class="scenario-choices" v-if="scenarioChoices.length > 0">
+        <template v-for="[choice, index] in scenarioChoices" :key="index">
+          <button class="scenario-tile button" @click="choose(index)">
+            <img :src="scenarioBoxImage(choice.scenarioId)" :alt="`Scenario ${choice.scenarioId}`" />
+            <span v-html="label(choice.label)"></span>
+          </button>
         </template>
       </div>
 
@@ -386,5 +429,58 @@ button {
 
 .active {
   border: 1px solid var(--select);
+}
+
+.scenario-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.scenario-tile {
+  border: 0;
+  padding: 0;
+  background: var(--neutral-dark);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  outline: 2px solid transparent;
+  transition: outline-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  border: 1px solid rgb(255 255 255 / 10%);
+  display: flex;
+  flex-direction: column;
+  span {
+    padding: 10px;
+  }
+}
+
+.scenario-tile img {
+  width: 100%;
+  display: block;
+  transition: filter 220ms ease, transform 220ms ease;
+}
+
+.scenario-tile:hover {
+  outline-color: var(--select, #6E8644);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+  transform: scale(1.02);
+}
+
+.scenario-tile:hover img {
+  filter: none;
+  transform: scale(1.02);
+}
+
+.scenario-choices:hover:has(.scenario-tile:hover) .scenario-tile:not(:hover) img {
+  filter: grayscale(80%);
+}
+
+.scenario-tile:focus-visible {
+  outline-color: var(--select, #6E8644);
 }
 </style>

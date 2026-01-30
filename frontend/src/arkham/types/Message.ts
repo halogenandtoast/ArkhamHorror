@@ -37,6 +37,7 @@ export enum MessageType {
   TOKEN_GROUP_CHOICE = 'ChaosTokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton',
   CARD_PILE = 'CardPile',
+  SCENARIO_LABEL = 'ScenarioLabel',
 }
 
 export type AbilityMessage = {
@@ -242,6 +243,19 @@ export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
     tarotCard: tarotCardDecoder,
   }, 'TarotLabel')
 
+export type ScenarioLabel = {
+  tag: MessageType.SCENARIO_LABEL
+  label: string
+  scenarioId: string
+}
+
+export const scenarioLabelDecoder = JsonDecoder.object<ScenarioLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.SCENARIO_LABEL),
+    label: JsonDecoder.string(),
+    scenarioId: JsonDecoder.string(),
+  }, 'ScenarioLabel')
+
 export type CardLabel = {
   tag: MessageType.CARD_LABEL
   flippable: boolean
@@ -350,6 +364,7 @@ export type Message =
   | EffectActionButton 
   | SkipTriggersButton 
   | CardPile
+  | ScenarioLabel
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {
@@ -489,6 +504,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     engageLabelDecoder,
     gridLabelDecoder,
     tarotLabelDecoder,
+    scenarioLabelDecoder,
     doneDecoder,
     chaosTokenGroupChoiceDecoder,
     effectActionButtonDecoder,

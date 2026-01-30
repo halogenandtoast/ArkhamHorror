@@ -352,6 +352,11 @@ tarotLabeled tarotCard action = unterminated do
   msgs <- lift $ capture action
   tell [TarotLabel tarotCard msgs]
 
+scenarioLabeled' :: (HasI18n, ReverseQueue m) => Text -> Text -> QueueT Message m () -> ChooseT m ()
+scenarioLabeled' label scenarioId action = unterminated do
+  msgs <- lift $ capture action
+  tell [ScenarioLabel ("$" <> ikey ("label." <> label)) scenarioId msgs]
+
 cardsLabeled :: (ReverseQueue m, HasCardCode a) => [a] -> (a -> QueueT Message m ()) -> ChooseT m ()
 cardsLabeled as action = traverse_ (\a -> cardLabeled a (action a)) as
 

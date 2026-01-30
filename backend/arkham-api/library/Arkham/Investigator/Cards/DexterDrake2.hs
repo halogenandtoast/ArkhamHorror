@@ -53,7 +53,11 @@ instance RunMessage DexterDrake2 where
           <> not_ (AssetWithTitle assetName.title)
           <> assetControlledBy iid
           <> AssetCanLeavePlayByNormalMeans
-      cards <- select $ inHandOf ForPlay iid <> basic (#asset <> not_ (CardWithTitle assetName.title))
+      cards <-
+        select
+          $ PlayableCard (UnpaidCost NoAction)
+          $ inHandOf ForPlay iid
+          <> basic (#asset <> not_ (CardWithTitle assetName.title))
       chooseOneM iid do
         targets assets $ returnToHand iid
         targets cards $ playCardPayingCost iid

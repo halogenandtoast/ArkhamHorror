@@ -23,7 +23,7 @@ gnashingTeeth = agenda (1, A) GnashingTeeth Cards.gnashingTeeth (Static 8)
 
 instance HasModifiersFor GnashingTeeth where
   getModifiersFor (GnashingTeeth a) = do
-    modifySelect a AnyEnemy [ForceSpawn SpawnAtRandomLocation]
+    modifySelect a (mapOneOf EnemyWithTrait [Risen, Ghoul]) [ForceSpawn SpawnAtRandomLocation]
 
 instance RunMessage GnashingTeeth where
   runMessage msg a@(GnashingTeeth attrs) = runQueueT $ case msg of

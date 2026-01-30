@@ -11,6 +11,7 @@ import Arkham.Json
 import Arkham.Prelude
 import Arkham.Tarot
 import Data.Aeson.TH
+import Data.Aeson.KeyMap qualified
 
 newtype Tooltip = Tooltip Text
   deriving stock Data
@@ -42,7 +43,7 @@ data ListItemEntry = ListItemEntry
 data FlavorTextEntry
   = BasicEntry {text :: Text}
   | I18nEntry {key :: Text, variables :: Map Text Value}
-  | HeaderEntry {key :: Text}
+  | HeaderEntry {level :: Int, key :: Text}
   | ModifyEntry
       { modifiers :: [FlavorTextModifier]
       , entry :: FlavorTextEntry
@@ -126,7 +127,26 @@ mconcat
   , [d|
       instance FromJSON FlavorTextEntry where
         parseJSON (String s) = pure $ BasicEntry s
-        parseJSON o = $(mkParseJSON defaultOptions ''FlavorTextEntry) o
+
+        parseJSON v@(Object obj) = do
+          case Data.Aeson.KeyMap.lookup "tag" obj of
+            Just (String "HeaderEntry") ->
+              case Data.Aeson.KeyMap.lookup "contents" obj of
+                Just (Object c) ->
+                  let c' =
+                        case Data.Aeson.KeyMap.lookup "level" c of
+                          Nothing -> Data.Aeson.KeyMap.insert "level" (Number 1) c
+                          Just _  -> c
+                      obj' = Data.Aeson.KeyMap.insert "contents" (Object c') obj
+                  in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
+                _ ->
+                  $(mkParseJSON defaultOptions ''FlavorTextEntry) v
+
+            _ ->
+              $(mkParseJSON defaultOptions ''FlavorTextEntry) v
+
+        parseJSON v =
+          $(mkParseJSON defaultOptions ''FlavorTextEntry) v
       |]
   , deriveJSON (aesonOptions $ Just "flavor") ''FlavorText
   ]

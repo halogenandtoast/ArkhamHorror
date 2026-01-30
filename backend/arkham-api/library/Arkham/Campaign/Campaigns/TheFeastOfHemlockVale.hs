@@ -140,6 +140,18 @@ instance RunMessage TheFeastOfHemlockVale where
                 when searched do
                   record LeahSharedHerFrustrations
                   flavor $ setTitle "title" >> p "oldBlood4"
+          "omega" -> do
+            incrementRecordCount TheoPetersRelationshipLevel 1
+            reunited <- getHasRecord ThePetersFamilyWereReunited
+            flavor do
+              setTitle "title"
+              compose.green do
+                h3 "familyMatters.header"
+                p.validate reunited "familyMatters.reunited"
+                hr
+                p.validate (not reunited) "familyMatters.otherwise"
+            when reunited do
+              record HelenPetersJoinedTheSurvey
           _ -> error "Unknown codex"
       pure c
     _ -> lift $ defaultCampaignRunner msg c

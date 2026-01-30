@@ -304,10 +304,10 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         else do
           leadChooseOneM do
             questionLabeled' "survey"
-            labeled' "writtenInRock" $ afterPrelude WrittenInRock
-            labeled' "hemlockHouse" $ afterPrelude HemlockHouse
-            labeled' "theSilentHeath" $ afterPrelude TheSilentHeath
-            labeled' "theLostSister" $ afterPrelude TheLostSister
-            labeled' "theThingInTheDepths" $ afterPrelude TheThingInTheDepths
+            scenarioLabeled' "writtenInRock" "10501-day1" $ afterPrelude WrittenInRock
+            scenarioLabeled' "hemlockHouse" "10523-day1" $ afterPrelude HemlockHouse
+            scenarioLabeled' "theSilentHeath" "10549-day1" $ afterPrelude TheSilentHeath
+            scenarioLabeled' "theLostSister" "10569-day1" $ afterPrelude TheLostSister
+            scenarioLabeled' "theThingInTheDepths" "10588-day1" $ afterPrelude TheThingInTheDepths
       pure s
     _ -> PreludeWelcomeToHemlockVale <$> liftRunMessage msg attrs

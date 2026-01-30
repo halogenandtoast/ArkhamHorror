@@ -1528,6 +1528,7 @@ uiToRun = \case
   Done _ -> Run []
   SkipTriggersButton iid -> Run [SkippedWindow iid]
   CardPile _ msgs -> Run msgs
+  ScenarioLabel _ _ msgs -> Run msgs
 
 chooseOrRunOne :: HasCallStack => PlayerId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x

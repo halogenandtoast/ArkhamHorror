@@ -23,6 +23,7 @@ instance RunMessage HandCrankFlashlight where
   runMessage msg a@(HandCrankFlashlight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
       investigate_ sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

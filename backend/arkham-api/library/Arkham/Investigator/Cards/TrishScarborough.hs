@@ -29,11 +29,7 @@ instance HasAbilities TrishScarborough where
     [ playerLimit PerRound
         $ restricted a 1 (Self <> oneOf [exists locationWithAdditionalClues, exists evadableEnemy])
         $ freeReaction
-        $ DiscoverClues
-          #after
-          You
-          (oneOf [LocationWithEnemy AnyEnemy, LocationWithExposableConcealedCard (toSource a)])
-          (atLeast 1)
+        $ DiscoverClues #after You (LocationWithEnemy AnyEnemy) (atLeast 1)
     ]
    where
     tabooModifier = if tabooed TabooList21 a then (NonEliteEnemy <>) else id

@@ -46,6 +46,7 @@ instance RunMessage Machete where
           chooseOneM iid do
             labeled "Do not exhaust Machete" $ pure ()
             labeled "Exhaust Machete" do
+              exhaustThis attrs
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> Machete <$> liftRunMessage msg attrs

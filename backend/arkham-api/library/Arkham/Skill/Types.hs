@@ -228,6 +228,9 @@ instance Data Skill where
 instance HasField "id" Skill SkillId where
   getField = toId
 
+instance HasField "owner" Skill InvestigatorId where
+  getField = (.owner) . toAttrs
+
 instance Eq Skill where
   Skill (a :: a) == Skill (b :: b) = case eqT @a @b of
     Just Refl -> a == b

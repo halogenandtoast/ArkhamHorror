@@ -1099,7 +1099,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               mods <- getModifiers card.id
               unless (NoAdditionalCosts `elem` mods) do
                 for_ (skillAdditionalCost $ toAttrs skill) \cost -> do
-                  let ability = abilityEffect skill [] $ replaceYouMatcher iid cost
+                  let ability = abilityEffect skill [] $ replaceYouMatcher skill.owner cost
                   push $ PayForAbility ability []
               pure $ g & entitiesL . skillsL %~ insertMap skillId skill
             _ -> pure g

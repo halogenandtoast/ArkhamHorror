@@ -660,8 +660,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ PlaceDoom source target x
       withPayment $ DoomPayment x
     HorrorCost _ target x -> case target of
-      InvestigatorTarget iid' | iid' == iid -> do
-        push $ assignHorror iid source x
+      InvestigatorTarget iid' -> do
+        push $ assignHorror iid' source x
         withPayment $ HorrorPayment x
       YouTarget -> do
         push $ assignHorror iid source x

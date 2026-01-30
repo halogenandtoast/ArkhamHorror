@@ -202,17 +202,22 @@ investigatorAt :: IsLocationMatcher a => a -> InvestigatorMatcher
 investigatorAt = InvestigatorAt . IncludeEmptySpace . toLocationMatcher
 
 replaceYouMatcher :: Data a => InvestigatorId -> a -> a
-replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)
+replaceYouMatcher iid = replaceTarget (transform replaceYouTarget) . replaceInvestigatorMatcher (transform replace)
  where
   replace You = InvestigatorWithId iid
   replace NotYou = NotInvestigator (InvestigatorWithId iid)
   replace m = m
+  replaceYouTarget YouTarget = InvestigatorTarget iid
+  replaceYouTarget m = m
 
 replaceThatInvestigator :: Data a => InvestigatorId -> a -> a
 replaceThatInvestigator iid = replaceInvestigatorMatcher (transform replace)
  where
   replace ThatInvestigator = InvestigatorWithId iid
   replace m = m
+
+replaceTarget :: Data a => (Target -> Target) -> a -> a
+replaceTarget = over biplate
 
 replaceInvestigatorMatcher :: Data a => (InvestigatorMatcher -> InvestigatorMatcher) -> a -> a
 replaceInvestigatorMatcher = over biplate

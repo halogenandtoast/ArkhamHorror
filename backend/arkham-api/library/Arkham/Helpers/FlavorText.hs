@@ -64,6 +64,9 @@ h t = setTitle t >> h_ t
 h_ :: HasI18n => Scope -> FlavorTextBuilder ()
 h_ = addEntry . FT.h
 
+h3 :: HasI18n => Scope -> FlavorTextBuilder ()
+h3 = addEntry . FT.h_ 3
+
 p :: HasI18n => Scope -> FlavorTextBuilder ()
 p = addEntry . FT.p
 

@@ -62,7 +62,11 @@ function formatListEntry(t: I18n, entry: { tag: 'ListEntry', list: ListItemEntry
 function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
-    case 'HeaderEntry': return h('header', [h('h1', { class: classes, innerHTML: formatContent(t(entry.key)) })])
+    case 'HeaderEntry': if (entry.level == 1) {
+        return h('header', [h('h1', { class: classes, innerHTML: formatContent(t(entry.key)) })])
+      } else {
+        return h('h3', { class: classes, innerHTML: formatContent(t(entry.key)) })
+      }
     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': {
       // HeaderEntry is handled specially to avoid wrapping it in a div

@@ -28,7 +28,7 @@ export interface ListItemEntry {
 export type FlavorTextEntry
   = { tag: 'BasicEntry', text : string}
   | { tag: 'I18nEntry', key: string, variables: Record<string, any> }
-  | { tag: 'HeaderEntry', key: string }
+  | { tag: 'HeaderEntry', level: number, key: string }
   | { tag: 'InvalidEntry', text: string }
   | { tag: 'ValidEntry', text: string }
   | { tag: 'ModifyEntry', modifiers: FlavorTextModifier[], entry: FlavorTextEntry }
@@ -77,7 +77,7 @@ export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDeco
 export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = JsonDecoder.oneOf<FlavorTextEntry>([
   JsonDecoder.object({ tag: JsonDecoder.literal('BasicEntry'), text: JsonDecoder.string() }, 'BasicEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('I18nEntry'), key: JsonDecoder.string(), variables: JsonDecoder.succeed()}, 'I18nEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.literal('HeaderEntry'), key: JsonDecoder.string()}, 'HeaderEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('HeaderEntry'), level: JsonDecoder.number(), key: JsonDecoder.string()}, 'HeaderEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('InvalidEntry'), text: JsonDecoder.string() }, 'InvalidEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('ValidEntry'), text: JsonDecoder.string() }, 'ValidEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),

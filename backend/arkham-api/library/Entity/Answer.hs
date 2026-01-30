@@ -149,7 +149,12 @@ instance FromJSON StandaloneSetting where
           Nothing -> pure NoChooseRecord
           Just selected -> SetRecorded selected <$> o .: "recordable" <*> ((: []) . SetAsRecorded <$> o .: "key")
       "ToggleKey" -> SetKey <$> o .: "key" <*> o .: "content"
-      "ToggleOption" -> SetOption <$> o .: "key" <*> o .: "content"
+      "ToggleOption" -> do
+        keyVal <- o .: "key"
+        key <- case keyVal of
+          String s -> parseJSON (object ["tag" .= String s])
+          _ -> parseJSON keyVal
+        SetOption key <$> o .: "content"
       "PickKey" -> (`SetKey` True) <$> o .: "content"
       "ToggleCrossedOut" -> do
         k <- o .: "key"

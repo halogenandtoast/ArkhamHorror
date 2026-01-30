@@ -72,13 +72,13 @@ export type StandaloneSetting
     }
   | {
       type: "SetPartnerKilled",
-      ket: string,
+      key: string,
       content: string | null,
       ifRecorded?: SettingCondition[]
     }
   | {
       type: "SetPartnerDetails",
-      ket: string,
+      key: string,
       maxDamage: number,
       maxHorror: number,
       content: PartnerDetails,

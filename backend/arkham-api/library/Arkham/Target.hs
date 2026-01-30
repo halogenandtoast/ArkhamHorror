@@ -1,10 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Target (
-  module Arkham.Target,
-) where
-
-import Arkham.Prelude
+module Arkham.Target (module Arkham.Target) where
 
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Action
@@ -20,10 +16,12 @@ import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Getting)
+import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 import Data.Monoid (First)
 import GHC.OverloadedLabels
@@ -81,6 +79,8 @@ data Target
   | ConcealedCardTarget ConcealedCardId
   | IndexedTarget Int Target
   deriving stock (Show, Eq, Ord, Data, Generic)
+
+instance Plated Target
 
 instance HasField "asset" (Maybe Target) (Maybe AssetId) where
   getField = ((.asset) =<<)

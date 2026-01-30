@@ -42,6 +42,7 @@ instance RunMessage CosmicFlame5 where
         unless (null enemies) do
           chooseOneM iid do
             labeled "Spend 1 charge to deal 1 damage to an enemy at your location" do
+              spendUses (attrs.ability 1) attrs Charge 1
               chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
             withI18n skip_
       pure a

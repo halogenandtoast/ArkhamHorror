@@ -23,20 +23,15 @@ async function loadDeck() {
     const data = await response.json()
     model.value = {...data, url: deckUrl.value}
   } else if (matches = deck.value.match(arkhamBuildRegex)) {
-    if (/^[0-9]+$/.test(matches[4])) {
-      deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
-      const response = await fetch(deckUrl.value)
+    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[4]}`
+    const response = await fetch(deckUrl.value)
+    if (response.ok) {
       const data = await response.json()
-      model.value = {...data, url: deckUrl.value}
+      const meta = data.meta ? JSON.parse(data.meta) : {}
+      const override = meta.hidden_slots ? meta.hidden_slots : {}
+      model.value = {...data, ...override, url: deckUrl.value}
     } else {
-      deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[4]}`
-      const response = await fetch(deckUrl.value)
-      if (response.ok) {
-        const data = await response.json()
-        model.value = {...data, url: deckUrl.value}
-      } else {
-        error.value = "Could not find deck, please make sure you have created a public share."
-      }
+      error.value = "Could not find deck, please make sure you have created a public share."
     }
   }
 }

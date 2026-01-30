@@ -726,7 +726,7 @@ getCanCancelSkillTestEffects = do
     Just target -> withoutModifier target EffectsCannotBeCanceled
 
 skillTestMatches
-  :: (Tracing m, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> Source
   -> SkillTest

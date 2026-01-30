@@ -90,7 +90,7 @@ targetTraits = \case
   LabeledTarget _ t -> targetTraits t
   ThisTarget -> pure mempty
 
-targetMatches :: forall m. (HasGame m, Tracing m) => Target -> TargetMatcher -> m Bool
+targetMatches :: forall m. (HasCallStack, HasGame m, Tracing m) => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
   TargetWithHorror ->
     let
@@ -163,7 +163,7 @@ targetMatches s = \case
     let
       isLocation
         :: forall a item. (EntityId a ~ item, Projection a) => Field a (Maybe LocationId) -> item -> m Bool
-      isLocation fld item = fieldMap fld (maybe False (`elem` locations)) item
+      isLocation fld item = maybe False (`elem` locations) <$> fieldMayJoin fld item
     case s of
       AssetTarget aid -> isLocation AssetLocation aid
       InvestigatorTarget iid -> isLocation InvestigatorLocation iid

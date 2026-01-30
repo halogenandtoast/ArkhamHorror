@@ -12,7 +12,7 @@ import Arkham.Tracing
 
 getSkillTestDifficulty :: (HasCallStack, HasGame m, Tracing m) => m (Maybe Int)
 skillTestMatches
-  :: (Tracing m, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> Source
   -> SkillTest

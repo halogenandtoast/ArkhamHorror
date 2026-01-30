@@ -153,8 +153,8 @@ const minXp = computed<number>(() => {
 const canUpgrade = computed(() => {
   if (!props.campaign) return false
   if (!props.canUpgradeDecks) return false
+  if (props.step.tag === "CampaignSpecificStep" && props.canUpgradeDecks) return true
   if (!["ScenarioStep", "ScenarioStepWithOptions", "StandaloneScenarioStep"].includes(props.step.tag)) return false
-  if (props.step.tag === "ContinueCampaignStep" && !props.step.contents.canUpgradeDecks) return false
   return props.campaign.completedSteps.some((step: CampaignStep) => ['ScenarioStep', 'ScenarioStepWithOptions', 'StandaloneScenarioStep'].includes(step.tag))
 })
 

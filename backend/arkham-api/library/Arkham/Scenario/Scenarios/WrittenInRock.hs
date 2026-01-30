@@ -49,8 +49,8 @@ writtenInRock difficulty =
 
 instance HasModifiersFor WrittenInRock where
   getModifiersFor (WrittenInRock a) = do
-    n <- getCurrentActStep
-    when (n == 2) do
+    n <- getCurrentActStepMaybe
+    when (n == Just 2) do
       selectEach Anywhere \locA -> do
         pos <- fieldJust LocationPosition locA
         whenMatch locA (LocationWithoutModifier CannotBeSlidOrSwapped) do

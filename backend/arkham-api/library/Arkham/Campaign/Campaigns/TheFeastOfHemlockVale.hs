@@ -3,8 +3,12 @@ module Arkham.Campaign.Campaigns.TheFeastOfHemlockVale (theFeastOfHemlockVale) w
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Xp
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 
 newtype TheFeastOfHemlockVale = TheFeastOfHemlockVale CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -35,8 +39,17 @@ campaignChaosBag = \case
 
 instance IsCampaign TheFeastOfHemlockVale where
   campaignTokens = campaignChaosBag
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (campaignStep (toAttrs a)).normalize of
     PrologueStep -> continue PreludeWelcomeToHemlockVale
+    WrittenInRock ->
+      let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
+       in case (meta.day, meta.time) of
+            (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
+            (Day1, Night) -> Nothing
+            (Day2, Day) -> Nothing
+            (Day2, Night) -> Nothing
+            (Day3, Day) -> Nothing
+            (Day3, Night) -> Nothing
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -53,4 +66,80 @@ instance RunMessage TheFeastOfHemlockVale where
       scope "newKeywords" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON initMeta
+    CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing) -> do
+      scope "prelude.theFirstEvening" do
+        flavor $ setTitle "title" >> p "body"
+        eachInvestigator \iid -> do
+          investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "mealChoice") do
+            labeled' "keepEating" $ recordForInvestigator iid FinishedTheirMeal
+            labeled' "dontEatAnymore" nothing
+      eachInvestigator (`forInvestigator` msg)
+      doStep 1 msg
+      nextCampaignStep
+      pure c
+    DoStep 1 (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
+      scope "prelude.theFirstEvening" do
+        resolutionFlavorWithChooseOne (setTitle "resolution1.title" >> p "resolution1.body") do
+          labeled' "searchForBertie" $ setNextCampaignStep TheTwistedHollow
+          labeled' "gatherMoreInformation" nothing
+      pure c
+    ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
+      scope "prelude.theFirstEvening" do
+        let option k =
+              labeled' k
+                $ forInvestigator iid
+                $ CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just k))
+        investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
+          option "theta"
+          option "delta"
+          option "sigma"
+          option "omega"
+          option "gamma"
+          option "pi"
+      pure c
+    ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just entry))) -> do
+      scope "prelude.theFirstEvening" do
+        case entry of
+          "theta" -> do
+            investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "theHemlockLegacy1") do
+              labeled' "whoAreTheAtwoods" do
+                incrementRecordCount MotherRachelRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "theHemlockLegacy2"
+              labeled' "whoAreTheChildrenOfTheStars" do
+                incrementRecordCount MotherRachelRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "theHemlockLegacy3"
+              labeled' "whoAreTheHemlocks" do
+                incrementRecordCount WilliamHemlockRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                record WilliamSharedHisLegacy
+                flavor $ setTitle "title" >> p "theHemlockLegacy4"
+          "delta" -> do
+            investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "bestFriends1") do
+              labeled' "jazzIsDelightful" do
+                incrementRecordCount RiverHawthorneRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "bestFriends2"
+              labeled' "jazzIsHell" do
+                incrementRecordCount JudithParkRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "bestFriends3"
+          "sigma" -> do
+            searched <- getHasRecord LeahSearchedThePearlRuins
+            investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "oldBlood1") do
+              labeled' "gideon" do
+                incrementRecordCount GideonMizrahRelationshipLevel 1
+                record GideonToldTheStoryOfCaptainHemlock
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "oldBlood2"
+              labeled' "leah" do
+                incrementRecordCount JudithParkRelationshipLevel 1
+                interludeXpAll (toBonus "bonus" 1)
+                flavor $ setTitle "title" >> p "oldBlood3"
+                when searched do
+                  record LeahSharedHerFrustrations
+                  flavor $ setTitle "title" >> p "oldBlood4"
+          _ -> error "Unknown codex"
+      pure c
     _ -> lift $ defaultCampaignRunner msg c

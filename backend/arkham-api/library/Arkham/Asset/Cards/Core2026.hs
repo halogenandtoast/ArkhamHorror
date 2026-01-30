@@ -24,7 +24,7 @@ theNecronomiconDrakeTranslation :: CardDef
 theNecronomiconDrakeTranslation =
   (weakness "12012" ("The Necronomicon" <:> "Drake Translation"))
     { cdCardTraits = setFromList [Item, Tome]
-    , cdSlots = [#hand]
+    , cdSlots = [#arcane]
     }
 
 isabellesTwin45sLoadedWithVengeance :: CardDef

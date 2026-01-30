@@ -21,7 +21,7 @@ isabelleBarnes =
 instance HasAbilities IsabelleBarnes where
   getAbilities (IsabelleBarnes a) =
     [ wantsSkillTest (YourSkillTest AnySkillTest)
-        $ selfAbility a 1 (exists $ CommittableCard You $ InDiscardOf You)
+        $ selfAbility a 1 (exists $ CommittableCard You $ InDiscardOf You <> basic #skill)
         $ freeTrigger (DirectHorrorCost (a.ability 1) You 1)
     ]
 
@@ -36,7 +36,7 @@ instance RunMessage IsabelleBarnes where
       healHorror iid (ElderSignEffectSource iid) 1
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cards <- select $ CommittableCard (InvestigatorWithId iid) $ inDiscardOf iid
+      cards <- select $ CommittableCard (InvestigatorWithId iid) $ inDiscardOf iid <> basic #skill
       withSkillTest \sid -> do
         chooseTargetM iid cards \card -> do
           skillTestModifiers

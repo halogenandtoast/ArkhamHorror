@@ -39,17 +39,17 @@ const sectionComponentById: Record<string, Component> = {
   riverHawthorneNotes: ResidentNotes,
   gideonMizrahNotes: ResidentNotes,
   judithParkNotes: ResidentNotes,
-  theoPetersNotes: ResidentNotes, 
+  theoPetersNotes: ResidentNotes,
   areasSurveyed: AreasSurveyed,
 }
 
-
 // --- Utilities -----------------------------------------------------------------
-const EMPTY_LOG: LogContents = { recorded: [], recordedSets: [], recordedCounts: [], partners: {} as any }
+const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {} as any, recordedCounts: [], partners: {} as any }
 
 const fullName = (name: Name): string => (name.subtitle ? `${name.title}: ${name.subtitle}` : name.title)
 
-const isSeal = (key: string): boolean => ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
+const isSeal = (key: string): boolean =>
+  ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
 
 const sealImage = (seal: Seal): string => {
   const revealed = seal.sealActive ? 'active' : 'dormant'
@@ -62,16 +62,16 @@ const sealImage = (seal: Seal): string => {
   }
 }
 
-const time = computed(() => selectedLog.value.recordedCounts.find((r) => {
-  return (r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
-}))
+const setClass = (key: string): string => key.split('.').pop() || ''
+
+const time = computed(() =>
+  selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
+)
 
 const theta = computed(() => props.game.campaign?.meta?.theta)
 const delta = computed(() => props.game.campaign?.meta?.delta)
 const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
-
-const setClass = (key: string): string => key.split('.').pop() || ''
 
 // --- Determine available logs & titles -----------------------------------------
 const mainLog = computed<LogContents>(() => props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || EMPTY_LOG)
@@ -107,7 +107,6 @@ const logMap = computed<Record<string, LogContents>>(() => {
       [other]: otherLog.value ?? EMPTY_LOG,
     }
   }
-  // Fallback single-title mapping (label with campaign/scenario name)
   const singleTitle = props.game.name || 'Campaign Log'
   return { [singleTitle]: mainLog.value }
 })
@@ -116,13 +115,14 @@ const logTitles = computed(() => Object.keys(logMap.value).sort())
 
 // Selected title drives which log we show. We NEVER compare log objects!
 const selectedTitle = ref<string>(logTitles.value[0] ?? '')
-watch(logTitles, (titles) => { if (!titles.includes(selectedTitle.value)) selectedTitle.value = titles[0] ?? '' })
+watch(logTitles, (titles) => {
+  if (!titles.includes(selectedTitle.value)) selectedTitle.value = titles[0] ?? ''
+})
 
 const selectedLog = computed<LogContents>(() => logMap.value[selectedTitle.value] ?? mainLog.value)
 
 // --- Investigators shown depend on which half is selected -----------------------
 const investigators = computed(() => {
-  // If the selected title corresponds to the main log's title, show main investigators; else others
   const mainTitle = dreamModeTitle.value ?? logTitles.value[0]
   const showingMain = selectedTitle.value === mainTitle
   return showingMain ? Object.values(props.game.investigators) : Object.values(props.game.otherInvestigators)
@@ -136,7 +136,9 @@ const remembered = computed(() => {
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
     if (record.tag === 'RememberedName') {
-      return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, { name: simpleName(record.name) })
+      return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, {
+        name: simpleName(record.name),
+      })
     }
     return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
   })
@@ -144,11 +146,12 @@ const remembered = computed(() => {
 
 const breakdowns =
   props.game.campaign?.xpBreakdown ||
-  (props.game.scenario && props.game.scenario.xpBreakdown ? [[{ tag: 'ScenarioStep', contents: props.game.scenario.id } as any, props.game.scenario.xpBreakdown]] : undefined) ||
+  (props.game.scenario && props.game.scenario.xpBreakdown
+    ? [[{ tag: 'ScenarioStep', contents: props.game.scenario.id } as any, props.game.scenario.xpBreakdown]]
+    : undefined) ||
   []
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
 type SectionContents = { tag: string; contents: string }
 type SectionLogKey = { tag: string; contents: SectionContents }
@@ -159,8 +162,14 @@ const isSection = (r: LogKey): r is SectionLogKey => {
   return typeof r.contents.tag === 'string' && typeof r.contents.contents === 'string'
 }
 
+const lowerFirst = (s: string) => s.slice(0, 1).toLowerCase() + s.slice(1)
+const clamp6 = (n: unknown) => Math.max(0, Math.min(6, Math.floor(Number(n) || 0)))
+
 const recorded = computed(() => {
-  return selectedLog.value.recorded.filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag)).filter((c) => !isSection(c)).map(formatKey)
+  return selectedLog.value.recorded
+    .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
+    .filter((c) => !isSection(c))
+    .map(formatKey)
 })
 
 type SectionModel = {
@@ -172,9 +181,6 @@ type SectionModel = {
   relationshipLevel: number
   component?: Component
 }
-
-const lowerFirst = (s: string) => s.slice(0, 1).toLowerCase() + s.slice(1)
-const clamp6 = (n: unknown) => Math.max(0, Math.min(6, Math.floor(Number(n) || 0)))
 
 const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
   const m: Record<string, number> = {}
@@ -193,29 +199,31 @@ const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
   return m
 })
 
-const sectionsFromCounts = computed<Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }>>(() => {
-  const m: Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }> = {}
+const sectionsFromCounts = computed<Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }>>(
+  () => {
+    const m: Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }> = {}
 
-  for (const [k] of selectedLog.value.recordedCounts) {
-    const sectionTag = k?.contents?.tag
-    if (!sectionTag) continue
+    for (const [k] of selectedLog.value.recordedCounts) {
+      const sectionTag = k?.contents?.tag
+      if (!sectionTag) continue
 
-    const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
-    const sectionId = lowerFirst(sectionTag)
-    const key = `${baseKey}:${sectionId}`
+      const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
+      const sectionId = lowerFirst(sectionTag)
+      const key = `${baseKey}:${sectionId}`
 
-    if (!m[key]) {
-      m[key] = {
-        baseKey,
-        id: sectionId,
-        titleKey: t(`${baseKey}.key['[${sectionId}]'].title`),
-        orderKey: t(`${baseKey}.key['[${sectionId}]'].orderKey`),
+      if (!m[key]) {
+        m[key] = {
+          baseKey,
+          id: sectionId,
+          titleKey: t(`${baseKey}.key['[${sectionId}]'].title`),
+          orderKey: t(`${baseKey}.key['[${sectionId}]'].orderKey`),
+        }
       }
     }
-  }
 
-  return m
-})
+    return m
+  }
+)
 
 const sections = computed<SectionModel[]>(() => {
   const byKey: Record<string, SectionModel> = {}
@@ -268,12 +276,53 @@ const sections = computed<SectionModel[]>(() => {
   return Object.values(byKey).sort((a, b) => a.orderKey.localeCompare(b.orderKey))
 })
 
-const recordedSets = computed(() => selectedLog.value.recordedSets)
-const recordedCounts = computed(() => selectedLog.value.recordedCounts.filter((r) => {
-  return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time') && !isSection(r[0])
-}))
+const recordedSets = computed(() => selectedLog.value.recordedSets as any)
+const recordedCounts = computed(() =>
+  selectedLog.value.recordedCounts.filter((r) => {
+    return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time') && !isSection(r[0])
+  })
+)
+
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
+
+// --- Investigator log sections --------------------------------------------------
+const isLogEmpty = (log: LogContents | null | undefined): boolean => {
+  const l = log ?? EMPTY_LOG
+  const hasRecorded = (l.recorded?.length ?? 0) > 0
+  const hasCounts = (l.recordedCounts?.length ?? 0) > 0
+  const hasSets = Object.entries((l.recordedSets as any) ?? {}).length > 0
+  const hasPartners = Object.keys((l as any).partners ?? {}).length > 0
+  return !(hasRecorded || hasCounts || hasSets || hasPartners)
+}
+
+const investigatorRecorded = (log: LogContents) =>
+  (log.recorded ?? [])
+    .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
+    .filter(r => !isSection(r))
+    .map(formatKey)
+
+const investigatorRecordedCounts = (log: LogContents) =>
+  (log.recordedCounts ?? []).filter(([k]) => !isSection(k))
+
+const investigatorRecordedSetsEntries = (log: LogContents) =>
+  Object.entries(((log.recordedSets as any) ?? {}) as Record<string, any[]>)
+
+const investigatorLogSections = computed(() => {
+  return investigators.value
+    .map((i) => {
+      const log = i.log ?? EMPTY_LOG
+      return {
+        investigator: i,
+        log,
+        recorded: investigatorRecorded(log),
+        recordedCounts: investigatorRecordedCounts(log),
+        recordedSetsEntries: investigatorRecordedSetsEntries(log),
+        empty: isLogEmpty(log),
+      }
+    })
+    .filter(m => !m.empty)
+})
 
 // --- Card loading for recordedSets ---------------------------------------------
 const loadedCards = ref<CardDef[]>([])
@@ -288,24 +337,38 @@ const NON_CARD_KEYS = new Set([
   'edgeOfTheEarth.key.sealsRecovered',
 ])
 
-const findCard = (cardCode: string): CardDef | undefined => props.cards.find(c => c.cardCode === cardCode) || loadedCards.value.find(c => c.cardCode === cardCode)
+const findCard = (cardCode: string): CardDef | undefined =>
+  props.cards.find(c => c.cardCode === cardCode) || loadedCards.value.find(c => c.cardCode === cardCode)
 
 async function loadMissingCards() {
   const missing = new Set<string>()
-  for (const [key, setValues] of Object.entries(recordedSets.value)) {
-    if (NON_CARD_KEYS.has(key)) continue
-    for (const val of setValues as any[]) {
-      const code = (val as any).contents
-      if (code && !findCard(code)) missing.add(code)
+
+  const scanRecordedSets = (sets: any) => {
+    for (const [key, setValues] of Object.entries(sets ?? {})) {
+      if (NON_CARD_KEYS.has(key)) continue
+      for (const val of (setValues as any[]) ?? []) {
+        const code = (val as any).contents
+        if (code && typeof code === 'string' && !findCard(code)) missing.add(code)
+      }
     }
   }
+
+  // campaign-selected log
+  scanRecordedSets(recordedSets.value)
+
+  // investigator logs (whichever half is selected)
+  for (const i of investigators.value) {
+    scanRecordedSets(i.log?.recordedSets)
+  }
+
   if (missing.size === 0) return
+
   const fetched = await Promise.all(Array.from(missing).map(code => fetchCard(code.replace(/^c/, ''))))
   loadedCards.value.push(...fetched)
 }
 
 onMounted(loadMissingCards)
-watch([recordedSets, selectedTitle], loadMissingCards)
+watch([recordedSets, selectedTitle, investigators], loadMissingCards)
 
 // --- Display helpers ------------------------------------------------------------
 const displayRecordValue = (key: string, value: any): string => {
@@ -365,13 +428,26 @@ const cardCodeToTitle = (cardCode: string): string => {
   return 'unknown'
 }
 
+const logKeyKey = (k: LogKey) => formatKey(k)
+const setValueKey = (setKey: string, setValue: any, idx: number) => {
+  const tag = String(setValue?.tag ?? '')
+  const c = setValue?.contents ?? setValue?.recordVal?.contents
+  const cKey =
+    typeof c === 'string'
+      ? c
+      : (() => {
+          try { return JSON.stringify(c) } catch { return String(idx) }
+        })()
+  return `${setKey}:${tag}:${cKey}:${idx}`
+}
+
 // --- UI helpers -----------------------------------------------------------------
 const emptyLog = computed(() => {
   if (logTitles.value.length > 0) return false
   if (hasSupplies.value) return false
   if (recorded.value.length > 0) return false
   if (remembered.value.length > 0) return false
-  if (Object.entries(recordedSets.value).length > 0) return false
+  if (Object.entries(recordedSets.value ?? {}).length > 0) return false
   return true
 })
 
@@ -380,54 +456,65 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
   const unlocked = props.game.campaign?.meta?.unlockedLocations || []
-  return { current, hasTicket: false, available: unlocked, locations: [
-    ['Alexandria', { unlocked: false }],
-    ['Anchorage', { unlocked: false }],
-    ['Arkham', { unlocked: false }],
-    ['Bermuda', { unlocked: false }],
-    ['BermudaTriangle', { unlocked: false }],
-    ['Bombay', { unlocked: false }],
-    ['BuenosAires', { unlocked: false }],
-    ['Cairo', { unlocked: false }],
-    ['Constantinople', { unlocked: false }],
-    ['Havana', { unlocked: false }],
-    ['HongKong', { unlocked: false }],
-    ['Kabul', { unlocked: false }],
-    ['Kathmandu', { unlocked: false }],
-    ['KualaLumpur', { unlocked: false }],
-    ['Lagos', { unlocked: false }],
-    ['London', { unlocked: false }],
-    ['Manokwari', { unlocked: false }],
-    ['Marrakesh', { unlocked: false }],
-    ['MonteCarlo', { unlocked: false }],
-    ['Moscow', { unlocked: false }],
-    ['Nairobi', { unlocked: false }],
-    ['NewOrleans', { unlocked: false }],
-    ['Perth', { unlocked: false }],
-    ['Quito', { unlocked: false }],
-    ['Reykjavik', { unlocked: false }],
-    ['RioDeJaneiro', { unlocked: false }],
-    ['Rome', { unlocked: false }],
-    ['SanFrancisco', { unlocked: false }],
-    ['SanJuan', { unlocked: false }],
-    ['Shanghai', { unlocked: false }],
-    ['Stockholm', { unlocked: false }],
-    ['Sydney', { unlocked: false }],
-    ['Tokyo', { unlocked: false }],
-    ['Tunguska', { unlocked: false }],
-    ['Venice', { unlocked: false }],
-    ['YborCity', { unlocked: false }],
-  ]}
+  return {
+    current,
+    hasTicket: false,
+    available: unlocked,
+    locations: [
+      ['Alexandria', { unlocked: false }],
+      ['Anchorage', { unlocked: false }],
+      ['Arkham', { unlocked: false }],
+      ['Bermuda', { unlocked: false }],
+      ['BermudaTriangle', { unlocked: false }],
+      ['Bombay', { unlocked: false }],
+      ['BuenosAires', { unlocked: false }],
+      ['Cairo', { unlocked: false }],
+      ['Constantinople', { unlocked: false }],
+      ['Havana', { unlocked: false }],
+      ['HongKong', { unlocked: false }],
+      ['Kabul', { unlocked: false }],
+      ['Kathmandu', { unlocked: false }],
+      ['KualaLumpur', { unlocked: false }],
+      ['Lagos', { unlocked: false }],
+      ['London', { unlocked: false }],
+      ['Manokwari', { unlocked: false }],
+      ['Marrakesh', { unlocked: false }],
+      ['MonteCarlo', { unlocked: false }],
+      ['Moscow', { unlocked: false }],
+      ['Nairobi', { unlocked: false }],
+      ['NewOrleans', { unlocked: false }],
+      ['Perth', { unlocked: false }],
+      ['Quito', { unlocked: false }],
+      ['Reykjavik', { unlocked: false }],
+      ['RioDeJaneiro', { unlocked: false }],
+      ['Rome', { unlocked: false }],
+      ['SanFrancisco', { unlocked: false }],
+      ['SanJuan', { unlocked: false }],
+      ['Shanghai', { unlocked: false }],
+      ['Stockholm', { unlocked: false }],
+      ['Sydney', { unlocked: false }],
+      ['Tokyo', { unlocked: false }],
+      ['Tunguska', { unlocked: false }],
+      ['Venice', { unlocked: false }],
+      ['YborCity', { unlocked: false }],
+    ],
+  }
 })
 </script>
-
 
 <template>
   <LogIcons />
   <div class="content column">
     <div class="investigators-log">
-      <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
+      <InvestigatorRow
+        v-for="investigator in investigators"
+        :key="investigator.id"
+        :investigator="investigator"
+        :game="game"
+        :bonus-xp="bonusXp && bonusXp[investigator.id]"
+      />
     </div>
+
     <div v-if="time || scarletKeys" class="column">
       <div class="world-map-container">
         <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
@@ -443,7 +530,6 @@ const mapData = computed(() => {
 
       <div v-if="emptyLog" class="box">No entries yet.</div>
 
-
       <div v-if="remembered.length > 0" class="remembered box">
         <h3 class="title">Remembered</h3>
         <ul>
@@ -453,7 +539,12 @@ const mapData = computed(() => {
 
       <div class="log-categories">
         <div v-if="logTitles.length > 1" class="options">
-          <div v-for="title in logTitles" :key="title" class="log-title-option" :class="{ checked: title === selectedTitle }">
+          <div
+            v-for="title in logTitles"
+            :key="title"
+            class="log-title-option"
+            :class="{ checked: title === selectedTitle }"
+          >
             <input
               name="log"
               type="radio"
@@ -480,12 +571,11 @@ const mapData = computed(() => {
           Campaign Notes
           <ul>
             <li v-for="record in recorded" :key="record">{{ t(record) }}</li>
-            <template v-for="i in investigators" :key="i.id">
-              <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{ fullName(i.name) }} {{ t(formatKey(record)) }}.</li>
-            </template>
           </ul>
         </div>
 
+
+        <!-- Campaign sections -->
         <div v-for="section in sections" :key="section.key">
           <component
             v-if="section.component"
@@ -500,26 +590,89 @@ const mapData = computed(() => {
             {{ t(section.titleKey) }}
             <ul>
               <li v-for="record in section.records" :key="record">{{ t(record) }}</li>
-              <template v-for="i in investigators" :key="i.id">
-                <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">
-                  {{ fullName(i.name) }} {{ t(formatKey(record)) }}.
-                </li>
-              </template>
             </ul>
           </template>
         </div>
 
+        <div
+          v-for="m in investigatorLogSections"
+          :key="m.investigator.id"
+          class="box investigator-log-section"
+        >
+          <h3 class="title">{{ fullName(m.investigator.name) }}</h3>
+
+          <template v-if="m.recorded.length > 0">
+            <ul>
+              <li v-for="r in m.recorded" :key="r">{{ t(r) }}</li>
+            </ul>
+          </template>
+
+          <template v-if="m.recordedSetsEntries.length > 0">
+            <div class="subhead">Recorded Sets</div>
+            <ul>
+              <li v-for="[setKey, setValues] in m.recordedSetsEntries" :key="setKey">
+                {{ t(setKey) }}
+                <ul :class="setClass(setKey)">
+                  <li
+                    v-if="isSeal(setKey)"
+                    v-for="(setValue, idx) in setValues"
+                    :key="setValueKey(setKey, setValue, idx)"
+                  >
+                    <img :src="sealImage(setValue.contents)" class="seal" />
+                  </li>
+
+                  <li
+                    v-else
+                    v-for="(setValue, idx) in setValues"
+                    :key="setValueKey(setKey, setValue, idx)"
+                    :class="{ 'crossed-out': setValue.tag === 'CrossedOut', circled: setValue.circled }"
+                  >
+                    {{ displayRecordValue(setKey, setValue) }}
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </template>
+
+          <template v-if="m.recordedCounts.length > 0">
+            <div class="subhead">Recorded Counts</div>
+            <ul>
+              <li v-for="[k, v] in m.recordedCounts" :key="logKeyKey(k)">
+                {{ t(formatKey(k)) }}: {{ v }}.
+              </li>
+            </ul>
+          </template>
+        </div>
+
+        <!-- Campaign recorded sets -->
         <ul>
-          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{ t(setKey) }}
+          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">
+            {{ t(setKey) }}
             <ul :class="setClass(setKey)">
-              <li v-if="isSeal(setKey)" v-for="setValue in setValues"><img :src="sealImage(setValue.contents)" class="seal"/></li>
-              <li v-else v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut', 'circled': setValue.circled }">{{ displayRecordValue(setKey, setValue) }}</li>
+              <li
+                v-if="isSeal(setKey)"
+                v-for="(setValue, idx) in (setValues as any[])"
+                :key="setValueKey(setKey, setValue, idx)"
+              >
+                <img :src="sealImage((setValue as any).contents)" class="seal" />
+              </li>
+
+              <li
+                v-else
+                v-for="(setValue, idx) in (setValues as any[])"
+                :key="setValueKey(setKey, setValue, idx)"
+                :class="{ 'crossed-out': (setValue as any).tag === 'CrossedOut', circled: (setValue as any).circled }"
+              >
+                {{ displayRecordValue(setKey, setValue) }}
+              </li>
             </ul>
           </li>
         </ul>
 
         <ul>
-          <li v-for="[key, value] in recordedCounts" :key="key">{{ t(formatKey(key)) }}: {{ value }}.</li>
+          <li v-for="[key, value] in recordedCounts" :key="logKeyKey(key)">
+            {{ t(formatKey(key)) }}: {{ value }}.
+          </li>
         </ul>
 
         <div v-if="Object.values(partners).length > 0" class="partners box">
@@ -534,9 +687,18 @@ const mapData = computed(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="[cCode, partner] in Object.entries(partners)" :key="cCode" class="partner" :class="{ [partner.status]: true }">
-                  <td v-if="partner.status === 'TheEntity'" class="partner-name"><span class="name"><s>{{ cardCodeToTitle(cCode) }}</s></span><span class='name'>The Entity</span></td>
-                  <td v-else class="partner-name"><span class="name">{{ cardCodeToTitle(cCode) }}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span></td>
+                <tr
+                  v-for="[cCode, partner] in Object.entries(partners)"
+                  :key="cCode"
+                  class="partner"
+                  :class="{ [partner.status]: true }"
+                >
+                  <td v-if="partner.status === 'TheEntity'" class="partner-name">
+                    <span class="name"><s>{{ cardCodeToTitle(cCode) }}</s></span><span class="name">The Entity</span>
+                  </td>
+                  <td v-else class="partner-name">
+                    <span class="name">{{ cardCodeToTitle(cCode) }}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span>
+                  </td>
                   <td>{{ partner.damage }}</td>
                   <td>{{ partner.horror }}</td>
                 </tr>
@@ -546,7 +708,6 @@ const mapData = computed(() => {
         </div>
       </div>
     </div>
-
 
     <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
       <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="true" :investigators="investigators" />
@@ -651,6 +812,16 @@ h3.title {
   margin-bottom: 10px;
 }
 
+.subhead {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+.investigator-log-section {
+  padding-top: 14px;
+}
+
 table {
   width: 100%;
   display: grid;
@@ -734,9 +905,11 @@ tr td:not(:first-child) {
   border-radius: 10px;
   display: flex;
   gap: 10px;
+
   label {
     flex: 1;
   }
+
   &.checked {
     background-color: rgba(255, 255, 255, 0.6);
   }
@@ -748,6 +921,7 @@ tr td:not(:first-child) {
   margin: 0 auto;
   flex-direction: row;
   gap: 20px;
+
   @media (max-width: 1500px) {
     flex-direction: column;
     align-items: center;
@@ -758,5 +932,4 @@ tr td:not(:first-child) {
   margin: 0 auto;
   max-width: 60vw;
 }
-
 </style>

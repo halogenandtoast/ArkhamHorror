@@ -106,8 +106,6 @@ export function formatKey(key: LogKey): string {
   // remove 'Key' from the end of the tag if it exists
   const prefix = format(key.tag.replace(/Key$/, ""))
 
-  console.log(key, prefix)
-
   if (!hasContents(key)) {
     return `base.key.${format(key.tag)}`
   }

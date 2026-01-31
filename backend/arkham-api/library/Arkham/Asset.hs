@@ -1082,6 +1082,11 @@ allAssets =
       , --- Written in Rock [fhv]
         SomeAssetCard mineCartReliableButBroken
       , SomeAssetCard prismaticShardAlienMeteorite
+      , --- The Twisted Hollow [fhv]
+        SomeAssetCard valeLanternBeaconOfHope
+      , SomeAssetCard valeLanternExtinguishedLightBoon
+      , SomeAssetCard valeLanternAFaintHope
+      , SomeAssetCard valeLanternExtinguishedLight
       , --- Residents [fhv]
         SomeAssetCard motherRachelKindlyMatron
       , SomeAssetCard leahAtwoodTheValeCook

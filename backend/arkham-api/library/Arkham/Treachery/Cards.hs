@@ -290,6 +290,7 @@ allEncounterTreacheryCards =
       , deathApproaches
       , deceptiveMemories
       , deepDark
+      , deepShadows
       , deeperSlumber
       , deepOneAssault
       , deepOneInvasion
@@ -422,6 +423,7 @@ allEncounterTreacheryCards =
       , lostInVenice
       , lowOnSupplies
       , lunarPatrol
+      , lurkingFear
       , macabreMemento
       , maddeningDelusions
       , malfunction
@@ -546,6 +548,7 @@ allEncounterTreacheryCards =
       , spiritsTorment
       , splinteredSpace
       , stalkedInTheDark
+      , stolenLight
       , stoneBarrier
       , stowaway
       , straitjacket
@@ -3169,6 +3172,24 @@ wildRide :: CardDef
 wildRide =
   (treachery "10521" "Wild Ride" WrittenInRock 3)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+deepShadows :: CardDef
+deepShadows =
+  (treachery "10622" "Deep Shadows" TheTwistedHollow 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+lurkingFear :: CardDef
+lurkingFear =
+  (treachery "10623" "Lurking Fear" TheTwistedHollow 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+stolenLight :: CardDef
+stolenLight = peril $
+  (treachery "10624" "Stolen Light" TheTwistedHollow 1)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 swarm :: CardDef

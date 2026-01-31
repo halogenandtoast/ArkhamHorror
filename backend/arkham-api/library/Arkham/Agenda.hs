@@ -324,6 +324,9 @@ allAgendas =
       --- Written in Rock
       SomeAgendaCard undergroundSurvey
     , SomeAgendaCard dangerousRide
+    , --- The Twisted Hollow
+      SomeAgendaCard deepeningDark
+    , SomeAgendaCard backToTheVale
     , --- Day of Rest
       SomeAgendaCard welcomeToHemlockVale
     , -- Return to the Night of the Zealot

@@ -109,6 +109,7 @@ data Trait
   | Flora
   | Footwear
   | Forbidden
+  | Forest
   | Forgotten
   | Fortune
   | Future
@@ -161,6 +162,7 @@ data Trait
   | Lead
   | Leader
   | Leng
+  | Lit
   | LocusSite
   | Lodge
   | London

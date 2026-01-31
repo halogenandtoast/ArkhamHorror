@@ -18,6 +18,7 @@ data Token
   | Clue
   | Corruption
   | Damage
+  | DarknessLevel
   | Depletion
   | Depth
   | Doom

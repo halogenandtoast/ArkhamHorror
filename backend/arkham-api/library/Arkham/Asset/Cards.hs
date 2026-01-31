@@ -1032,6 +1032,10 @@ allEncounterAssetCards =
       , theRedGlovedManHeWasAlwaysThere
       , alikiZoniUperetriaTheMaidWithTheScarletSash
       , mineCartReliableButBroken
+      , valeLanternBeaconOfHope
+      , valeLanternExtinguishedLightBoon
+      , valeLanternAFaintHope
+      , valeLanternExtinguishedLight
       , motherRachelKindlyMatron
       , leahAtwoodTheValeCook
       , simeonAtwoodDedicatedTroublemaker

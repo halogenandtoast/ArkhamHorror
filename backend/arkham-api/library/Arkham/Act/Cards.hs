@@ -71,6 +71,7 @@ allActCards =
       , dawnOfTheFirstDay
       , descentIntoDark
       , descentIntoTheMines
+      , desperateSearch
       , destroyTheSource
       , discoverTheTruth
       , discoveringTheTruth
@@ -308,6 +309,7 @@ allActCards =
       , whatHaveYouDone
       , whatMustBeDone
       , whatMustBeDoneV2
+      , wheresBertie
       , witchHauntings
       , worldsBeyond
       , worshippersOfTheDeep
@@ -1072,6 +1074,12 @@ descentIntoTheMines = act "10505" "Descent into the Mines" 1 WrittenInRock
 
 theUndergroundMaze :: CardDef
 theUndergroundMaze = act "10506" "The Underground Maze" 2 WrittenInRock
+
+desperateSearch :: CardDef
+desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherSide = Just "10607b"}
+
+wheresBertie :: CardDef
+wheresBertie = act "10608" "Where's Bertie" 2 TheTwistedHollow
 
 dawnOfTheFirstDay :: CardDef
 dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest

@@ -1,13 +1,23 @@
 module Arkham.Scenario.Scenarios.TheTwistedHollow (theTwistedHollow) where
 
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
+import Arkham.I18n
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheTwistedHollow.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Token
 
 newtype TheTwistedHollow = TheTwistedHollow ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -42,20 +52,99 @@ instance RunMessage TheTwistedHollow where
       flavor $ setTitle "title" >> p "intro3"
       pure s
     Setup -> runScenarioSetup TheTwistedHollow attrs do
+      setUsesGrid
       setup $ ul do
         li "gatherSets"
         li "night"
-        li.nested "checkCampaignLog" do
-          li "showedTheWay"
-          li "lostThePath"
+        li.nested "valeLantern.checkCampaignLog" do
+          li "valeLantern.showedTheWay"
+          li "valeLantern.lostThePath"
         li.nested "removeLocations" do
           li "oneOrTwoInvestigators"
           li "threeOrFourInvestigators"
+        li.nested "glimmeringMeadow.checkCampaignLog" do
+          li "glimmeringMeadow.showedTheWay"
+          li "glimmeringMeadow.lostThePath"
+        li "woodsDeck"
+        li.nested "residents" do
+          li "theoPeters"
+          li "judithPark"
+          li "drRosaMarquez"
+          li "bertieMusgrave"
+          li "rest"
+        li "backToTheVale"
+        unscoped $ li "shuffleRemainder"
+        li "darknessLevel"
+        unscoped $ li "readyToBegin"
 
       gather Set.TheFirstDay
       gather Set.TheTwistedHollow
       gather Set.TheForest
       gather Set.Myconids
 
+      setAgendaDeck [Agendas.deepeningDark]
+      setActDeck [Acts.desperateSearch, Acts.wheresBertie]
+
       placeStory Stories.nightOne
+
+      showedTheWay <- getHasRecord MotherRachelShowedTheWay
+
+      let lanternVersion = if showedTheWay then Assets.valeLanternBeaconOfHope else Assets.valeLanternAFaintHope
+      removeEvery [if showedTheWay then Assets.valeLanternAFaintHope else Assets.valeLanternBeaconOfHope]
+
+      investigators <- allInvestigators
+      lantern <- createAsset =<< fetchCard lanternVersion
+      leadChooseOneM do
+        unscoped
+          $ nameVar lanternVersion
+          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+        questionLabeledCard lanternVersion
+        portraits investigators (`takeControlOfAsset` lantern)
+
+      setAside [Locations.theTwistedHollow, Locations.glimmeringMeadow]
+      n <- getPlayerCount
+      woods <-
+        fmap (drop $ if n >= 3 then 1 else 2) . shuffle =<< fromGathered (CardWithTitle "Western Woods")
+
+      glimmeringMeadow <- fromSetAside Locations.glimmeringMeadow
+
+      if showedTheWay
+        then do
+          startAt =<< placeCardInGrid (Pos 0 0) glimmeringMeadow
+          case woods of
+            north : east : south : west : rest -> do
+              for_
+                [(Pos 0 (-1), north), (Pos 1 0, east), (Pos 0 1, south), (Pos (-1) 0, west)]
+                (uncurry placeCardInGrid_)
+              addExtraDeck WoodsDeck rest
+            _ -> error "not enough woods"
+        else do
+          case woods of
+            start : rest -> do
+              startAt =<< placeCardInGrid (Pos 0 0) start
+              shuffle (glimmeringMeadow : rest) >>= \case
+                north : east : south : west : rest' -> do
+                  for_
+                    [(Pos 0 (-1), north), (Pos 1 0, east), (Pos 0 1, south), (Pos (-1) 0, west)]
+                    (uncurry placeCardInGrid_)
+                  addExtraDeck WoodsDeck rest'
+                _ -> error "not enough woods"
+            _ -> error "not enough woods"
+
+      theo <- getRecordCount TheoPetersRelationshipLevel
+      when (theo >= 2) $ setAside [Assets.theoPetersJackOfAllTrades]
+
+      judith <- getRecordCount JudithParkRelationshipLevel
+      when (judith >= 2) $ setAside [Assets.judithParkTheMuscle]
+
+      drRosaMarquez <- createAsset =<< fetchCard Assets.drRosaMarquezBestInHerField
+      leadChooseOneM do
+        unscoped
+          $ nameVar Assets.drRosaMarquezBestInHerField
+          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+        questionLabeledCard Assets.drRosaMarquezBestInHerField
+        portraits investigators (`takeControlOfAsset` drRosaMarquez)
+
+      setAside [Assets.bertieMusgraveATrueAesthete, Agendas.backToTheVale]
+      placeTokens ScenarioSource ScenarioTarget DarknessLevel 1
     _ -> TheTwistedHollow <$> liftRunMessage msg attrs

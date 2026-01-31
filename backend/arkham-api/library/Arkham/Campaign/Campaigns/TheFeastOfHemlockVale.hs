@@ -79,7 +79,6 @@ instance RunMessage TheFeastOfHemlockVale where
       eachInvestigator (`forInvestigator` msg)
       when (n == 1) $ eachInvestigator (`forInvestigator` msg)
       doStep 1 msg
-      nextCampaignStep
       let meta = toResultDefault initMeta attrs.meta
       let meta' = meta {chosenCodexEntries = [], time = Night}
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
@@ -90,6 +89,7 @@ instance RunMessage TheFeastOfHemlockVale where
           labeled' "gatherMoreInformation" do
             addChaosToken #tablet
             addChaosToken #elderthing
+            nextCampaignStep
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do

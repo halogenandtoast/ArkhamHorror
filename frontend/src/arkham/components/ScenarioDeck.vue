@@ -52,6 +52,8 @@ const deckImage = computed(() => {
       if (topCard) {
         return imgsrc(cardImage(topCard));
       }
+    case 'WoodsDeck':
+      return imgsrc("cards/10612b.avif");
     default:
       return imgsrc("back.png");
   }

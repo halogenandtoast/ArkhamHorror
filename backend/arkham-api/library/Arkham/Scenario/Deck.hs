@@ -21,6 +21,7 @@ data ScenarioDeckKey
   | RoadDeck -- Horror in High Gear
   | TekeliliDeck -- Edge of the Earth
   | OtherworldDeck -- Without a Trace
+  | WoodsDeck -- The Twisted Hollow
   | ReelDeck -- FilmFatale
   deriving stock (Show, Ord, Eq, Data)
 
@@ -41,6 +42,7 @@ instance ToDisplay ScenarioDeckKey where
     RoadDeck -> "Road"
     TekeliliDeck -> "Tekeli-li"
     OtherworldDeck -> "Otherworld"
+    WoodsDeck -> "Woods"
     ReelDeck -> "Reel"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

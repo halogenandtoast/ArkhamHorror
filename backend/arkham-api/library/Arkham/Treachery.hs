@@ -639,6 +639,10 @@ allTreacheries =
       , --- Written in Rock [fhv]
         SomeTreacheryCard caveIn
       , SomeTreacheryCard wildRide
+      , --- The Twisted Hollow [fhv]
+        SomeTreacheryCard deepShadows
+      , SomeTreacheryCard lurkingFear
+      , SomeTreacheryCard stolenLight
       , --- The First Day [fhv]
         SomeTreacheryCard swarm
       , --- Horrors in the Rock [fhv]

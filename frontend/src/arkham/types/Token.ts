@@ -12,6 +12,7 @@ export const TOKENS = [
   "Clue",
   "Corruption",
   "Damage",
+  "DarknessLevel",
   "Depletion",
   "Depth",
   "Doom",

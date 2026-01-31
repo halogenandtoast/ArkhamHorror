@@ -35,14 +35,22 @@ data Time = Night | Day
   deriving anyclass (FromJSON, ToJSON)
 
 initMeta :: TheFeastOfHemlockValeMeta
-initMeta = TheFeastOfHemlockValeMeta Day1 Day
+initMeta = TheFeastOfHemlockValeMeta Day1 Day []
 
 data TheFeastOfHemlockValeMeta = TheFeastOfHemlockValeMeta
   { day :: Day
   , time :: Time
+  , chosenCodexEntries :: [Text]
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON TheFeastOfHemlockValeMeta where
+  parseJSON = withObject "TheFeastOfHemlockValeMeta" $ \o -> do
+    day <- o .: "day"
+    time <- o .: "time"
+    chosenCodexEntries <- o .:? "chosenCodexEntries" .!= []
+    pure TheFeastOfHemlockValeMeta {..}
 
 getCampaignTime :: (Tracing m, HasGame m) => m Time
 getCampaignTime = withCampaignMeta @TheFeastOfHemlockValeMeta (.time)

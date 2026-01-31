@@ -1,11 +1,13 @@
 module Arkham.Campaign.Campaigns.TheFeastOfHemlockVale (theFeastOfHemlockVale) where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -73,10 +75,14 @@ instance RunMessage TheFeastOfHemlockVale where
           investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "mealChoice") do
             labeled' "keepEating" $ recordForInvestigator iid FinishedTheirMeal
             labeled' "dontEatAnymore" nothing
+      n <- getPlayerCount
       eachInvestigator (`forInvestigator` msg)
+      when (n == 1) $ eachInvestigator (`forInvestigator` msg)
       doStep 1 msg
       nextCampaignStep
-      pure c
+      let meta = toResultDefault initMeta attrs.meta
+      let meta' = meta {chosenCodexEntries = []}
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
     DoStep 1 (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do
         resolutionFlavorWithChooseOne (setTitle "resolution1.title" >> p "resolution1.body") do
@@ -85,8 +91,10 @@ instance RunMessage TheFeastOfHemlockVale where
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do
+        n <- getPlayerCount
+        let meta = toResultDefault initMeta attrs.meta
         let option k =
-              labeled' k
+              labeledValidate' (k `notElem` meta.chosenCodexEntries) k
                 $ forInvestigator iid
                 $ CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just k))
         investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
@@ -95,7 +103,11 @@ instance RunMessage TheFeastOfHemlockVale where
           option "sigma"
           option "omega"
           option "gamma"
-          option "pi"
+          labeledValidate'
+            ("pi" `notElem` meta.chosenCodexEntries && (n > 1 || notNull meta.chosenCodexEntries))
+            "pi"
+            $ forInvestigator iid
+            $ CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just "pi"))
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just entry))) -> do
       scope "prelude.theFirstEvening" do
@@ -152,6 +164,27 @@ instance RunMessage TheFeastOfHemlockVale where
                 p.validate (not reunited) "familyMatters.otherwise"
             when reunited do
               record HelenPetersJoinedTheSurvey
+              addCampaignCardToDeckChoice_ Assets.helenPetersTheEldestSister
+          "gamma" -> do
+            incrementRecordCount TheoPetersRelationshipLevel 1
+            simeonCrossedOut <- getHasRecord SimeonCrossedOut
+            unless simeonCrossedOut do
+              incrementRecordCount SimeonAtwoodRelationshipLevel 1
+              record SimeonHatchedAPlan
+
+            interludeXpAll (toBonus "bonus" 1)
+            flavor do
+              setTitle "title"
+              compose.green do
+                h3 "theRabbit.header"
+                p.validate simeonCrossedOut "theRabbit.simeonCrossedOut"
+                hr
+                p.validate (not simeonCrossedOut) "theRabbit.otherwise"
+          "pi" -> do
+            flavor $ setTitle "title" >> p "friendlyStrangers"
+            addCampaignCardToDeck iid DoNotShuffleIn Assets.worryRockTokenOfSafety
           _ -> error "Unknown codex"
-      pure c
+      let meta = toResultDefault initMeta attrs.meta
+      let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
     _ -> lift $ defaultCampaignRunner msg c

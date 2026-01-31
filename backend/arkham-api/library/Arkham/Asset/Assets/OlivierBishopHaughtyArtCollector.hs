@@ -5,16 +5,20 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Location (getConnectedMoveLocations)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
 newtype OlivierBishopHaughtyArtCollector = OlivierBishopHaughtyArtCollector AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 olivierBishopHaughtyArtCollector :: AssetCard OlivierBishopHaughtyArtCollector
 olivierBishopHaughtyArtCollector = asset OlivierBishopHaughtyArtCollector Cards.olivierBishopHaughtyArtCollector
+
+instance HasModifiersFor OlivierBishopHaughtyArtCollector where
+  getModifiersFor (OlivierBishopHaughtyArtCollector a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities OlivierBishopHaughtyArtCollector where
   getAbilities (OlivierBishopHaughtyArtCollector a) =

@@ -20,7 +20,8 @@ isabelleBarnes =
 
 instance HasAbilities IsabelleBarnes where
   getAbilities (IsabelleBarnes a) =
-    [ wantsSkillTest (YourSkillTest AnySkillTest)
+    [ playerLimit PerRound
+        $ wantsSkillTest (YourSkillTest AnySkillTest)
         $ selfAbility a 1 (exists $ CommittableCard You $ InDiscardOf You <> basic #skill)
         $ freeTrigger (DirectHorrorCost (a.ability 1) You 1)
     ]

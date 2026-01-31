@@ -1071,7 +1071,7 @@ timelyIntervention :: CardDef
 timelyIntervention =
   (skill "12081" "Timely Intervention" [#willpower, #agility, #wild] Survivor)
     { cdCardTraits = setFromList [Practiced]
-    , cdCommitRestrictions = [MaxOnePerTest, CanCommitAfterRevealingTokens]
+    , cdCommitRestrictions = [OnlyYourTest, MaxOnePerTest, CanCommitAfterRevealingTokens]
     }
 
 onTheBrink2 :: CardDef

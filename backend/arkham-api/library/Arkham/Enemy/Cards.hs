@@ -457,6 +457,7 @@ allEncounterEnemyCards =
       , specterOfDeath
       , spectralRaven
       , spiderOfLeng
+      , stalkingHybrid
       , stalkingManticore
       , stealthyByakhee
       , stealthyZoog
@@ -3458,6 +3459,13 @@ frenziedMiner =
   (enemy "10519" "Frenzied Miner" WrittenInRock 3)
     { cdCardTraits = setFromList [Humanoid]
     , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+stalkingHybrid :: CardDef
+stalkingHybrid =
+  (enemy "10625" "Stalking Hybrid" TheTwistedHollow 4)
+    { cdCardTraits = setFromList [Creature, Monster, Mutated]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
 
 crystalParasite :: CardDef

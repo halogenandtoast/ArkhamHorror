@@ -595,6 +595,38 @@ prismaticShardAlienMeteorite =
     , cdUses = uses Brilliance 4
     }
 
+valeLanternBeaconOfHope :: CardDef
+valeLanternBeaconOfHope =
+  (storyAsset "10610a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)
+    { cdCardTraits = setFromList [Item, Tool, Lit, Boon]
+    , cdSlots = [#hand]
+    , cdOtherSide = Just "10610b"
+    }
+
+valeLanternExtinguishedLightBoon :: CardDef
+valeLanternExtinguishedLightBoon =
+  (storyAsset "10610b" ("Vale Lantern" <:> "Extinguished Light") 2 TheTwistedHollow)
+    { cdCardTraits = setFromList [Item, Tool, Lit, Boon]
+    , cdSlots = [#hand]
+    , cdOtherSide = Just "10610a"
+    }
+
+valeLanternAFaintHope :: CardDef
+valeLanternAFaintHope =
+  (storyAsset "10611a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)
+    { cdCardTraits = setFromList [Item, Tool, Lit]
+    , cdSlots = [#hand]
+    , cdOtherSide = Just "10611b"
+    }
+
+valeLanternExtinguishedLight :: CardDef
+valeLanternExtinguishedLight =
+  (storyAsset "10611b" ("Vale Lantern" <:> "Extinguished Light") 2 TheTwistedHollow)
+    { cdCardTraits = setFromList [Item, Tool, Lit]
+    , cdSlots = [#hand]
+    , cdOtherSide = Just "10611a"
+    }
+
 motherRachelKindlyMatron :: CardDef
 motherRachelKindlyMatron =
   (storyAsset_ "10693" ("Mother Rachel" <:> "Kindly Matron") Residents)

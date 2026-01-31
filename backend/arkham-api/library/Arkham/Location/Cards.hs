@@ -5,7 +5,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Direction
-import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
+import Arkham.EncounterSet hiding (Blight, Dreamlands, Dunwich)
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
@@ -178,6 +178,7 @@ allLocationCards =
       , baseOfTheHillWarpedAndTwisted
       , baseOfTheSteps
       , bathroom
+      , bearDen
       , bedroom
       , bedroomTheMidwinterGala
       , bigBen
@@ -191,6 +192,7 @@ allLocationCards =
       , blastedHeath_249
       , bleakPlainsBleakDesolation
       , bleakPlainsStarsOfAldebaran
+      , blightedGlade
       , blockedPassage
       , boardingHouseDay
       , boardingHouseNight
@@ -286,6 +288,7 @@ allLocationCards =
       , congressChamberLair
       , congressChamberSanctum
       , controlStation
+      , corpseGrove
       , cosmicGate
       , cosmicIngress
       , coterieLibraryLair
@@ -298,6 +301,7 @@ allLocationCards =
       , coyoacan
       , cragOfTheGhouls
       , crashSite
+      , crookedPath
       , crumblingPrecipice
       , cryptOfTheSepulchralLamp
       , crystallineCavern
@@ -401,6 +405,7 @@ allLocationCards =
       , farAboveYourHouse
       , fathomlessLake
       , faubourgMarigny
+      , fecundThicket
       , firstNationalGrocery
       , firstNationalGroceryInTooDeep
       , fishGraveyard
@@ -448,6 +453,7 @@ allLocationCards =
       , gilmanHouse
       , gilmanHouseInTooDeep
       , glacialGrotto
+      , glimmeringMeadow
       , gondola
       , gothicSet
       , granTeatroDeLaHabana
@@ -637,6 +643,7 @@ allLocationCards =
       , montparnasse
       , moonBeastGalley
       , moonForest
+      , moonlitClearing
       , moonlitGardenPoisonedBeauty
       , morgue
       , mosaicChamber
@@ -648,6 +655,7 @@ allLocationCards =
       , mu
       , museumEntrance
       , museumHalls
+      , mushroomGrove
       , mysteriousStairs_183
       , mysteriousStairs_184
       , mysteriousStairs_185
@@ -712,6 +720,7 @@ allLocationCards =
       , plateauOfLengWhereTheGodsDwell
       , plazaHotel
       , pnakotus
+      , poisonedMarsh
       , pokerTable
       , porteDeLAvancee
       , precariousIceSheet
@@ -972,9 +981,10 @@ allLocationCards =
       , theOnyxCastle
       , thePriceManor
       , theSummit
+      , theThroneRoom
       , theTowerBridge
       , theToweringVertexRuinousConflux
-      , theThroneRoom
+      , theTwistedHollow
       , theWhiteShip
       , throneOfBloodRedAsBloodBlackAsNight
       , throneRoom
@@ -9365,6 +9375,110 @@ railBridge :: CardDef
 railBridge =
   locationWithUnrevealed_ "10516" "Rail Tunnel" [Rail] "Rail Bridge" [Rail] WrittenInRock
     & railIcons [North, South]
+
+glimmeringMeadow :: CardDef
+glimmeringMeadow =
+  locationWithUnrevealed_
+    "10612"
+    "Western Woods"
+    [Forest, Dark]
+    "Glimmering Meadow"
+    [Forest, Dark]
+    TheTwistedHollow
+
+blightedGlade :: CardDef
+blightedGlade =
+  quantity 2
+    $ locationWithUnrevealed_
+      "10613"
+      "Western Woods"
+      [Forest, Dark]
+      "Blighted Glade"
+      [Forest, Blight, Dark]
+      TheTwistedHollow
+
+poisonedMarsh :: CardDef
+poisonedMarsh =
+  quantity 2
+    $ locationWithUnrevealed_
+      "10614"
+      "Western Woods"
+      [Forest, Dark]
+      "Poisoned Marsh"
+      [Forest, Blight, Dark]
+      TheTwistedHollow
+
+fecundThicket :: CardDef
+fecundThicket =
+  locationWithUnrevealed_
+    "10615"
+    "Western Woods"
+    [Forest, Dark]
+    "Fecund Thicket"
+    [Forest, Dark]
+    TheTwistedHollow
+
+mushroomGrove :: CardDef
+mushroomGrove =
+  quantity 2
+    $ locationWithUnrevealed_
+      "10616"
+      "Western Woods"
+      [Forest, Dark]
+      "Mushroom Grove"
+      [Forest, Dark]
+      TheTwistedHollow
+
+moonlitClearing :: CardDef
+moonlitClearing =
+  locationWithUnrevealed_
+    "10617"
+    "Western Woods"
+    [Forest, Dark]
+    "Moonlit Clearing"
+    [Forest, Lair, Dark]
+    TheTwistedHollow
+
+crookedPath :: CardDef
+crookedPath =
+  quantity 3
+    $ locationWithUnrevealed_
+      "10618"
+      "Western Woods"
+      [Forest, Dark]
+      "Crooked Path"
+      [Forest, Dark]
+      TheTwistedHollow
+
+corpseGrove :: CardDef
+corpseGrove =
+  locationWithUnrevealed_
+    "10619"
+    "Western Woods"
+    [Forest, Dark]
+    "Corpse Grove"
+    [Forest, Lair, Dark]
+    TheTwistedHollow
+
+bearDen :: CardDef
+bearDen =
+  locationWithUnrevealed_
+    "10620"
+    "Western Woods"
+    [Forest, Dark]
+    "Bear Den"
+    [Forest, Lair, Dark]
+    TheTwistedHollow
+
+theTwistedHollow :: CardDef
+theTwistedHollow =
+  locationWithUnrevealed_
+    "10621"
+    "Western Woods"
+    [Forest, Dark]
+    "The Twisted Hollow"
+    [Forest, Dark]
+    TheTwistedHollow
 
 boardingHouseDay :: CardDef
 boardingHouseDay =

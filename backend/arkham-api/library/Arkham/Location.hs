@@ -911,6 +911,17 @@ allLocations =
     , SomeLocationCard sunkenRailB
     , SomeLocationCard forkedRail
     , SomeLocationCard railBridge
+    , --- The Twisted Hollow
+      SomeLocationCard glimmeringMeadow
+    , SomeLocationCard blightedGlade
+    , SomeLocationCard poisonedMarsh
+    , SomeLocationCard fecundThicket
+    , SomeLocationCard mushroomGrove
+    , SomeLocationCard moonlitClearing
+    , SomeLocationCard crookedPath
+    , SomeLocationCard corpseGrove
+    , SomeLocationCard bearDen
+    , SomeLocationCard theTwistedHollow
     , --- The Vale
       SomeLocationCard boardingHouseDay
     , SomeLocationCard boardingHouseNight

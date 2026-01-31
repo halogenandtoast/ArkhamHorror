@@ -580,6 +580,8 @@ allEnemies =
         SomeEnemyCard subterraneanBeast
       , SomeEnemyCard burrowingHybrid
       , SomeEnemyCard frenziedMiner
+      , --- The Twisted Hollow [fhv]
+        SomeEnemyCard stalkingHybrid
       , --- Horrors in the Rock [fhv]
         SomeEnemyCard crystalParasite
       , -- Core 2026

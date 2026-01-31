@@ -365,6 +365,9 @@ allActs =
       --- Written in Stone
       SomeActCard descentIntoTheMines
     , SomeActCard theUndergroundMaze
+    , --- The Twisted Hollow
+      SomeActCard desperateSearch
+    , SomeActCard wheresBertie
     , --- Day of Rest
       SomeActCard dawnOfTheFirstDay
     , -- Return to Night of the Zealot

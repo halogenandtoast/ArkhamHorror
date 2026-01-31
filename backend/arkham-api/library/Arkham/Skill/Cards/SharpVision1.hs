@@ -20,7 +20,7 @@ instance HasModifiersFor SharpVision1 where
 
 instance RunMessage SharpVision1 where
   runMessage msg s@(SharpVision1 attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       runMaybeT_ do
         liftGuardM isBasicInvestigation
         iid <- MaybeT getSkillTestInvestigator

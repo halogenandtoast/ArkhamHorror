@@ -21,6 +21,7 @@ const someRecordableDecoder = JsonDecoder.object<SomeRecordable>({
 export type LogKey= 
   | { tag: string, contents: string }
   | { tag: string, contents: { tag: string, contents: string } }
+  | { tag: string, contents: { tag: string } }
   | { tag: string }
 
 export type LogContents = {
@@ -60,6 +61,12 @@ export const logKeyDecoder = JsonDecoder.oneOf<LogKey>([
   }, 'LogKey'),
   JsonDecoder.object<LogKey>({
     tag: JsonDecoder.string(),
+    contents: JsonDecoder.object<{ tag: string }>({
+      tag: JsonDecoder.string(),
+    }, 'LogKeyContents'),
+  }, 'LogKey'),
+  JsonDecoder.object<LogKey>({
+    tag: JsonDecoder.string(),
   }, 'LogKey'),
 ], 'LogKey');
 
@@ -78,40 +85,50 @@ export function baseKey(k: string): string {
   return formatKey({ tag: k });
 }
 
-function hasContents(key: LogKey): key is Extract<LogKey, { contents: unknown }> {
-  return "contents" in key;
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null
+
+function hasContents(key: LogKey): key is LogKey & { contents: unknown } {
+  return isRecord(key) && "contents" in key
 }
 
-function isNestedContents(
-  contents: unknown
-): contents is { tag: string; contents: string } {
-  return (
-    typeof contents === "object" &&
-    contents !== null &&
-    "tag" in contents &&
-    "contents" in contents &&
-    typeof (contents as any).tag === "string" &&
-    typeof (contents as any).contents === "string"
-  );
+function isTagOnlyContents(x: unknown): x is { tag: string } {
+  return isRecord(x) && typeof x.tag === "string" && !("contents" in x)
+}
+
+function isNestedContents(x: unknown): x is { tag: string; contents: string } {
+  return isRecord(x) && typeof x.tag === "string" && "contents" in x && typeof (x as any).contents === "string"
 }
 
 export function formatKey(key: LogKey): string {
-  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1);
+  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1)
 
   // remove 'Key' from the end of the tag if it exists
-  const prefix = format(key.tag.replace(/Key$/, ""));
+  const prefix = format(key.tag.replace(/Key$/, ""))
+
+  console.log(key, prefix)
 
   if (!hasContents(key)) {
-    return `base.key.${format(key.tag)}`;
+    return `base.key.${format(key.tag)}`
   }
 
+  // Section/nested form: { tag, contents: { tag, contents } }
   if (isNestedContents(key.contents)) {
-    const section = format(key.contents.tag);
-    const suffix = format(key.contents.contents);
-    return `${prefix}.key['[${section}]'].${suffix}`;
+    const section = format(key.contents.tag)
+    const suffix = format(key.contents.contents)
+    return `${prefix}.key['[${section}]'].${suffix}`
   }
 
-  // here contents is the string form
-  const suffix = format(key.contents);
-  return `${prefix}.key.${suffix}`;
+  // Tag-only form: { tag, contents: { tag } }
+  if (isTagOnlyContents(key.contents)) {
+    return `${prefix}.key.${format(key.contents.tag)}`
+  }
+
+  // String form: { tag, contents: string }
+  if (typeof key.contents === "string") {
+    return `${prefix}.key.${format(key.contents)}`
+  }
+
+  // Last-resort fallback to help you spot bad shapes in data:
+  return `${prefix}.key.unknown`
 }

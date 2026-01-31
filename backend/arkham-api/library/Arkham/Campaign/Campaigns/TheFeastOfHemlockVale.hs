@@ -81,7 +81,7 @@ instance RunMessage TheFeastOfHemlockVale where
       doStep 1 msg
       nextCampaignStep
       let meta = toResultDefault initMeta attrs.meta
-      let meta' = meta {chosenCodexEntries = []}
+      let meta' = meta {chosenCodexEntries = [], time = Night}
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
     DoStep 1 (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do

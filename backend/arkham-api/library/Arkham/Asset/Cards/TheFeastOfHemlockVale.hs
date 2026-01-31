@@ -684,3 +684,12 @@ helenPetersTheEldestSister =
     , cdSkills = [#willpower, #combat, #wild]
     , cdSlots = [#ally]
     }
+
+worryRockTokenOfSafety :: CardDef
+worryRockTokenOfSafety =
+  fast
+    (storyAsset "10713" ("Worry Rock" <:> "Token of Safety") 1 Heirlooms)
+      { cdCardTraits = setFromList [Item, Charm, Blessed]
+      , cdSlots = [#accessory]
+      , cdOutOfPlayEffects = [InHandEffect]
+      }

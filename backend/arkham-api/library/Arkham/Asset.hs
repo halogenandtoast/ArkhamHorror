@@ -1094,6 +1094,8 @@ allAssets =
       , SomeAssetCard bertieMusgraveATrueAesthete
       , SomeAssetCard drRosaMarquezBestInHerField
       , SomeAssetCard helenPetersTheEldestSister
+      , --- Heirlooms [fhv]
+        SomeAssetCard worryRockTokenOfSafety
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook

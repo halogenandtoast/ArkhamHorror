@@ -577,6 +577,13 @@ addCampaignCardToDeckChoice choices shouldShuffleIn card = do
   card' <- fetchCard card
   push $ Msg.addCampaignCardToDeckChoice lead choices shouldShuffleIn card'
 
+addCampaignCardToDeckChoice_ :: (FetchCard card, ReverseQueue m) => card -> m ()
+addCampaignCardToDeckChoice_ card = do
+  choices <- allInvestigators
+  lead <- getLeadPlayer
+  card' <- fetchCard card
+  push $ Msg.addCampaignCardToDeckChoice lead choices DoNotShuffleIn card'
+
 addCampaignCardToDeckChoiceWith
   :: (FetchCard card, ReverseQueue m)
   => [InvestigatorId]

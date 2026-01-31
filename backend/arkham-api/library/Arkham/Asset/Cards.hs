@@ -445,6 +445,7 @@ allPlayerAssetCards =
       , heavyFurs
       , heirloomOfHyperborea
       , heirloomOfHyperboreaAdvanced
+      , helenPetersTheEldestSister
       , hemisphericMap3
       , henryDeveau
       , henryWan
@@ -974,6 +975,7 @@ allPlayerAssetCards =
       , wither4
       , wolfMaskTheMoonsSire
       , woodenSledge
+      , worryRockTokenOfSafety
       , woundedBystanderOnDeathsDoorstep
       , yaotl1
       , zeal
@@ -1040,7 +1042,6 @@ allEncounterAssetCards =
       , theoPetersJackOfAllTrades
       , bertieMusgraveATrueAesthete
       , drRosaMarquezBestInHerField
-      , helenPetersTheEldestSister
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

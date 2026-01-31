@@ -15,7 +15,7 @@ newtype OlivierBishopHaughtyArtCollector = OlivierBishopHaughtyArtCollector Asse
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 olivierBishopHaughtyArtCollector :: AssetCard OlivierBishopHaughtyArtCollector
-olivierBishopHaughtyArtCollector = asset OlivierBishopHaughtyArtCollector Cards.olivierBishopHaughtyArtCollector
+olivierBishopHaughtyArtCollector = ally OlivierBishopHaughtyArtCollector Cards.olivierBishopHaughtyArtCollector (2, 1)
 
 instance HasModifiersFor OlivierBishopHaughtyArtCollector where
   getModifiersFor (OlivierBishopHaughtyArtCollector a) = controllerGets a [SkillModifier #agility 1]

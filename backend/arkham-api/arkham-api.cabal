@@ -4205,6 +4205,7 @@ library
       Arkham.Scenario.Scenarios.ThePitOfDespair
       Arkham.Scenario.Scenarios.TheSearchForKadath
       Arkham.Scenario.Scenarios.TheSecretName
+      Arkham.Scenario.Scenarios.TheTwistedHollow
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.TheUntamedWilds
       Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper
@@ -4290,6 +4291,7 @@ library
       Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Helpers
+      Arkham.Scenarios.TheTwistedHollow.Helpers
       Arkham.Scenarios.TheUnspeakableOath.Helpers
       Arkham.Scenarios.TheUntamedWilds.Helpers
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers

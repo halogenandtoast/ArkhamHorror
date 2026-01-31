@@ -87,7 +87,9 @@ instance RunMessage TheFeastOfHemlockVale where
       scope "prelude.theFirstEvening" do
         resolutionFlavorWithChooseOne (setTitle "resolution1.title" >> p "resolution1.body") do
           labeled' "searchForBertie" $ setNextCampaignStep TheTwistedHollow
-          labeled' "gatherMoreInformation" nothing
+          labeled' "gatherMoreInformation" do
+            addChaosToken #tablet
+            addChaosToken #elderthing
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do

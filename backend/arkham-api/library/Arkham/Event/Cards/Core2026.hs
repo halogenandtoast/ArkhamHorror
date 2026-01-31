@@ -166,4 +166,5 @@ scrapeBy1 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune]
     , cdFastWindow = Just $ WouldHaveSkillTestResult #when You (SkillTestWithRevealedChaosToken $ not_ #autofail) #failure
+    , cdLevel = Just 1
     }

@@ -15,7 +15,7 @@ drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
 instance HasAbilities DrFrancisMorgan where
   getAbilities (DrFrancisMorgan x) =
-    [restricted x 1 ControlsThis $ triggered (EnemyDefeated #after You ByAny AnyEnemy) (exhaust x)]
+    [restricted x 1 ControlsThis $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust x)]
 
 instance HasModifiersFor DrFrancisMorgan where
   getModifiersFor (DrFrancisMorgan a) = controllerGets a [SkillModifier #combat 1]

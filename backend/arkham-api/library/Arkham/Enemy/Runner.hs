@@ -2073,7 +2073,7 @@ instance RunMessage EnemyAttrs where
       -- generic DoBatch handler
       liftRunMessage (Do msg') a
     ForTarget (isTarget a -> True) msg' -> liftRunMessage msg' a
-    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source || isIndexedSource a ab.source-> do
       push $ Do msg
       pure a
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do

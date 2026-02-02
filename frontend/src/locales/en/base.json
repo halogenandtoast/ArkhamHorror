@@ -32,7 +32,8 @@
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
   "tooltips": {
-    "takeControlOfKey": "Take control of {key} key"
+    "takeControlOfKey": "Take control of {key} key",
+    "name": "{name}"
   },
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",

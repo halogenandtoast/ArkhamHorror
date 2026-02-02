@@ -7,7 +7,7 @@ import { SkillType } from '@/arkham/types/SkillType';
 import type { Ability } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
-import { replaceIcons } from '@/arkham/helpers';
+import { replaceIcons, formatContent } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
@@ -117,6 +117,11 @@ const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 
+const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
+const maybeFormat = function(body: string) {
+  return body.startsWith("$") ? handleI18n(tformat(body), t) : body
+}
+
 const abilityLabel = computed(() => {
   // don't use isButtonText
   if (isButtonText.value && tooltip.value) {
@@ -129,7 +134,8 @@ const abilityLabel = computed(() => {
       return replaceIcons("{action}".repeat(totalActionCost(cost)))
     }
     if (props.ability.ability.displayAs === 'DisplayAsCard') {
-      return replaceIcons(props.ability.ability.tooltip)
+      console.log(props.ability.ability.tooltip, maybeFormat(props.ability.ability.tooltip))
+      return formatContent(maybeFormat(props.ability.ability.tooltip))
     }
   }
 

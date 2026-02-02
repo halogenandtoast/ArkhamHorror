@@ -25,6 +25,11 @@ export type ProxySource = {
   originalSource: Source
 }
 
+export type IndexedSource = {
+  sourceTag: "IndexedSource"
+  tag: "IndexedSource"
+}
+
 export type OtherSource = {
   sourceTag: "OtherSource"
   tag: string
@@ -45,6 +50,11 @@ export const proxySourceDecoder: JsonDecoder.Decoder<ProxySource> = JsonDecoder.
   source: JsonDecoder.lazy<Source>(() => sourceDecoder),
   originalSource: JsonDecoder.lazy<Source>(() => sourceDecoder),
 }, 'ProxySource')
+
+export const indexedSourceDecoder: JsonDecoder.Decoder<IndexedSource> = JsonDecoder.object<IndexedSource>({
+  tag: JsonDecoder.literal("IndexedSource"),
+  sourceTag: JsonDecoder.constant("IndexedSource"),
+}, 'IndexedSource')
 
 export const tarotSourceDecoder: JsonDecoder.Decoder<TarotSource> = JsonDecoder.object<TarotSource>({
   tag: JsonDecoder.literal("TarotSource"),
@@ -69,5 +79,6 @@ export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.
 export const sourceDecoder = JsonDecoder.oneOf<Source>([
   proxySourceDecoder,
   tarotSourceDecoder,
+  indexedSourceDecoder,
   otherSourceDecoder
 ], 'Source')

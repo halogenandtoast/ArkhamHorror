@@ -46,6 +46,7 @@ data Source
   | EmptyDeckSource
   | EncounterCardSource CardId
   | EnemyAttackSource EnemyId
+  | EnemyDefeatSource EnemyId
   | EnemySource EnemyId
   | EventSource EventId
   | GameSource
@@ -123,6 +124,7 @@ instance HasField "enemy" Source (Maybe EnemyId) where
     AbilitySource s _ -> s.enemy
     UseAbilitySource _ s _ -> s.enemy
     EnemyAttackSource eid -> Just eid
+    EnemyDefeatSource eid -> Just eid
     PaymentSource s -> s.enemy
     _ -> Nothing
 
@@ -162,6 +164,10 @@ class Sourceable a where
 isProxySource :: Sourceable a => a -> Source -> Bool
 isProxySource a (ProxySource _ source) = isSource a source
 isProxySource _ _ = False
+
+isIndexedSource :: Sourceable a => a -> Source -> Bool
+isIndexedSource a (IndexedSource _ source) = isSource a source
+isIndexedSource _ _ = False
 
 toProxySource :: Sourceable a => a -> Source -> Source
 toProxySource a source = ProxySource source (toSource a)

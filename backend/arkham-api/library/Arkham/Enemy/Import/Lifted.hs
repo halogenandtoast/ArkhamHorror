@@ -68,15 +68,19 @@ import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X
 
+import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (
   HasQueue,
  )
 import Arkham.DefeatedBy
+import Arkham.Effect.Window
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher (LocationMatcher (EmptyLocation))
+import Arkham.I18n
+import Arkham.Matcher hiding (EnemyDefeated, EnemyEvaded)
 import Arkham.Modifier
+import Arkham.Name
 import Arkham.Queue
 import Arkham.Tracing
 import Arkham.Window qualified as Window
@@ -145,3 +149,19 @@ whenBeingDefeated (asId -> enemyId) f = go . concat =<< getWindowStack
 
 spawnAtEmptyLocation :: EnemyAttrs -> EnemyAttrs
 spawnAtEmptyLocation = spawnAtL ?~ SpawnAt EmptyLocation
+
+-- Sometimes we want to trigger something after an enemy is defeated, but the
+-- IfEnemyDefeated window doesn't work on the enemy itself, to bypass this we
+-- let the enemy continue using the EnemyDefeated window but queues an effect
+-- that triggers the IfEnemyDefeated ability
+deathRattle
+  :: (ReverseQueue m, ToId a EnemyId, HasCardCode a, Named a, Sourceable a)
+  => a -> Int -> Criterion -> m ()
+deathRattle attrs n criteria =
+  createAbilityEffect (EffectDefeatWindow $ asId attrs)
+    $ withI18n
+    $ withI18nTooltip (cardNameVar attrs $ ikey "name")
+    $ (restricted attrs n criteria $ triggered_ $ IfEnemyDefeated #after You ByAny (be $ asId attrs))
+      { abilityDisplayAs = Just DisplayAsCard
+      , abilitySource = IndexedSource n (toSource attrs)
+      }

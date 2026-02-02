@@ -44,7 +44,10 @@ instance RunMessage SearchForTheManuscript where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       cultists <- select $ NonWeaknessEnemy <> #cultist <> not_ (EnemyWithPlacement InTheShadows)
       lead <- getLead
-      for_ cultists (resolveConcealed lead)
+      for_ cultists \cultist -> do
+        place cultist InTheShadows
+        resolveConcealed lead cultist
+
       shuffleSetAsideIntoEncounterDeck
         $ mapOneOf cardIs [Enemies.umbralHarbinger, Enemies.emissaryFromYuggoth]
       shuffleEncounterDiscardBackIn

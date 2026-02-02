@@ -113,6 +113,7 @@ instance RunMessage ConcealedCard where
                   AtLocation location -> enemyMoveToIfInPlay c enemy location
                   _ -> error "invalid placement for concealed card"
                 doStep 2 msg'
+          when (null enemies) $ doStep 2 msg' -- recovery
       pure $ c {concealedCardPlacement = Unplaced}
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
       removeFromGame (toTarget c)

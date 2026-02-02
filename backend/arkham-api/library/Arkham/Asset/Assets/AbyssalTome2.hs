@@ -30,7 +30,14 @@ instance HasModifiersFor AbyssalTome2 where
 instance RunMessage AbyssalTome2 where
   runMessage msg a@(AbyssalTome2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseAmounts iid "Amount of Doom to Place" (MaxAmountTarget 3) [("Doom", (0, 3))] attrs
+      let allowedDoom = 3 - attrs.doom
+      when (allowedDoom > 0) do
+        chooseAmounts
+          iid
+          "Amount of Doom to Place"
+          (MaxAmountTarget allowedDoom)
+          [("Doom", (0, allowedDoom))]
+          attrs
       sid <- getRandom
       chooseFightEnemyWithSkillChoice sid iid (attrs.ability 1) [#combat, #intellect, #willpower]
       pure a

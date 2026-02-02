@@ -57,7 +57,7 @@ instance RunMessage DeepeningDark where
           investigatorDefeated attrs iid
         else do
           selectEach (EnemyAt (LocationWithTrait Dark) <> UnengagedEnemy) (`place` PursuitZone)
-          unrevealed <- selectField LocationCard $ UnrevealedLocation <> LocationWithTrait Dark
+          unrevealed <- select $ UnrevealedLocation <> LocationWithTrait Dark
           unless (null unrevealed) do
             shuffleCardsIntoTopOfDeck WoodsDeck 2 unrevealed
           selectEach (RevealedLocation <> EmptyLocation) \loc -> do

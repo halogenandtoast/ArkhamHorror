@@ -6,10 +6,12 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Enemy (spawnAt)
+import Arkham.Helpers.Placement
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Spawn
 
@@ -37,12 +39,18 @@ instance RunMessage BreakingAndEntering where
         questionLabeled' "takeControlOfHaroldWalsted"
         questionLabeledCard haroldWalsted
         targets investigators (`takeControlOfSetAsideAsset` haroldWalsted)
-      getHuntingHorror >>= \case
+      restrictedHall <- getRestrictedHall
+      getInPlayHuntingHorror >>= \case
         Just eid -> do
-          lid <- getRestrictedHall
-          spawnAt eid Nothing (SpawnAtLocation lid)
-          readyThis eid
-        Nothing -> findEncounterCardIn lead attrs (cardIs Enemies.huntingHorror) [#deck, #discard, #void]
+          place eid InTheShadows
+          ready eid
+          place eid (AtLocation restrictedHall)
+        Nothing ->
+          getHuntingHorror >>= \case
+            Just eid -> do
+              spawnAt eid Nothing (SpawnAtLocation restrictedHall)
+              readyThis eid
+            Nothing -> findEncounterCardIn lead attrs (cardIs Enemies.huntingHorror) [#deck, #discard, #void]
       advanceActDeck attrs
       pure a
     FoundEnemyInOutOfPlay zone _ (isTarget attrs -> True) eid -> do

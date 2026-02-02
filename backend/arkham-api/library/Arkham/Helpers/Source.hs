@@ -231,9 +231,10 @@ sourceMatches s = \case
         EnemySource _ -> pure True
         LocationSource _ -> pure True
         TreacherySource _ -> pure True
+        StorySource _ -> pure True
+        ProxySource k _ -> check k
         ChaosTokenSource _ -> pure True
         ChaosTokenEffectSource _ -> pure True
-        ProxySource k _ -> check k
         _ -> pure False
      in
       check s
@@ -249,6 +250,8 @@ sourceMatches s = \case
         TreacherySource _ -> True
         StorySource _ -> True
         ProxySource k _ -> check k
+        ChaosTokenSource _ -> True
+        ChaosTokenEffectSource _ -> True
         _ -> False
      in
       pure $ check s

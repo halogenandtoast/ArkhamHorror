@@ -583,6 +583,9 @@ instance RunMessage LocationAttrs where
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
       push $ RemoveLocation (toId a)
       pure a
+    ShuffleCardsIntoTopOfDeck _ _ cards | toCard a `elem` cards -> do
+      push $ RemoveLocation (toId a)
+      pure a
     PlaceConcealedCard _ card (AtLocation lid) | a.id == lid -> do
       cards <- shuffleM $ nub $ card : locationConcealedCards
       pure $ a & concealedCardsL .~ cards

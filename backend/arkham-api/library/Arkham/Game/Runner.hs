@@ -61,7 +61,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Source
-import Arkham.Helpers.Window hiding (getEnemy, getLocation, getAsset)
+import Arkham.Helpers.Window hiding (getAsset, getEnemy, getLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
@@ -2903,7 +2903,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               <> [InvestigatorDrawEnemy iid enemyId, UnsetActiveCard]
           pure
             $ g'
-            & (entitiesL . enemiesL . at enemyId ?~ enemy)
+            & (entitiesL . enemiesL . at enemyId ?~ overAttrs (\attrs -> attrs {enemyDrawnFrom = mdeck}) enemy)
             & (activeCardL ?~ toCard card)
         TreacheryType -> do
           -- handles draw windows

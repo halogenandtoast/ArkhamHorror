@@ -3381,6 +3381,8 @@ enemyMatcherFilter es matcher' = do
           else select $ locationMatcher <> not_ (mconcat noSpawn)
 
       pure $ notNull locations
+    EnemyWithoutSpawn -> pure $ filter (isNothing . attr enemySpawnAt) es
+    EnemyDrawnFrom deckSig -> pure $ filter ((== Just deckSig) . attr enemyDrawnFrom) es
     EnemyWantsToSpawnIn locationMatcher -> pure $ flip filter es \enemy ->
       case attr enemySpawnAt enemy of
         Just (SpawnAt (LocationMatchAll inner)) -> locationMatcher `elem` inner

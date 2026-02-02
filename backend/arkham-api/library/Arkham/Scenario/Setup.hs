@@ -174,6 +174,7 @@ setAside as = do
     case findInDeck a deck of
       Just card -> do
         attrsL . encounterDeckL %= filter (/= card)
+        otherCardsL %= filter (/= toCard card)
         pure $ toCard card
       Nothing -> do
         card <- notFoundInDeck a

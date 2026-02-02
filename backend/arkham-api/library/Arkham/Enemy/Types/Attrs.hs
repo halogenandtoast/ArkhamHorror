@@ -7,6 +7,7 @@ import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.DamageEffect
+import Arkham.Deck
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
@@ -67,6 +68,7 @@ data EnemyAttrs = EnemyAttrs
   , enemySpawnDetails :: Maybe SpawnDetails
   , enemyMovement :: Maybe Movement
   , enemyAttackOfOpportunityFlagged :: Bool
+  , enemyDrawnFrom :: Maybe DeckSignifier
   }
   deriving stock (Show, Data)
 
@@ -189,4 +191,5 @@ instance FromJSON EnemyAttrs where
     enemySpawnDetails <- v .:? "spawnDetails"
     enemyMovement <- v .:? "movement"
     enemyAttackOfOpportunityFlagged <- v .:? "attackOfOpportunityFlagged" .!= False
+    enemyDrawnFrom <- v .:? "drawnFrom"
     pure EnemyAttrs {..}

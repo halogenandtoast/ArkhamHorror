@@ -274,38 +274,53 @@ const handleResult = (result: ServerResult) => {
       }
     case "GameTarot":
       if (props.spectate) return
-      if (uiLock.value) {
-        resultQueue.value.push(result)
-      } else {
-        JsonDecoder.array(tarotCardDecoder, 'tarotCards').decodePromise(result.contents).then((r) => {
-          uiLock.value = true
-          tarotCards.value = r
+      if (uiLock.value) { qPush(result); return }
+
+      uiLock.value = true
+      JsonDecoder.array(tarotCardDecoder, 'tarotCards')
+        .decodePromise(result.contents)
+        .then((r) => { tarotCards.value = r })
+        .catch((e) => {
+          console.error(e)
+          uiLock.value = false
         })
-      }
       return
+
     case "GameCard":
       if (props.spectate) return
-      if (uiLock.value) {
-        resultQueue.value.push(result)
-      } else {
-        gameCardDecoder.decodePromise(result).then((r) => {
-          uiLock.value = true
-          gameCard.value = r
+      if (uiLock.value) { qPush(result); return }
+
+      uiLock.value = true
+      gameCardDecoder
+        .decodePromise(result as any)
+        .then((r) => { gameCard.value = r })
+        .catch((e) => {
+          console.error(e)
+          uiLock.value = false
         })
-      }
       return
+
     case "GameCardOnly":
       if (props.spectate) return
-      if (uiLock.value) {
-        resultQueue.value.push(result)
-      } else {
-        gameCardOnlyDecoder.decodePromise(result).then((r) => {
-          if (solo.value === true || r.player == playerId.value) {
-            uiLock.value = true
-            gameCard.value = r
+      console.log(uiLock.value, result)
+
+      if (uiLock.value) { qPush(result); return }
+
+      uiLock.value = true
+      gameCardOnlyDecoder
+        .decodePromise(result as any)
+        .then((r) => {
+          // if it isn't for us, immediately unlock and continue draining
+          if (!(solo.value === true || r.player === playerId.value)) {
+            uiLock.value = false
+            return
           }
+          gameCard.value = r
         })
-      }
+        .catch((e) => {
+          console.error(e)
+          uiLock.value = false
+        })
       return
     case "GameUpdate":
       if (uiLock.value) {

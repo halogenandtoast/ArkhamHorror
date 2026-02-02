@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
@@ -113,7 +114,10 @@ instance RunMessage TheTwistedHollow where
       setAside [Locations.theTwistedHollow, Locations.glimmeringMeadow]
       n <- getPlayerCount
       woods <-
-        fmap (drop $ if n >= 3 then 1 else 2) . shuffle =<< fromGathered (CardWithTitle "Western Woods")
+        fmap (drop $ if n >= 3 then 1 else 2)
+          . shuffle
+          . filterCards (not_ $ mapOneOf cardIs [Locations.theTwistedHollow, Locations.glimmeringMeadow])
+          =<< fromGathered (CardWithTitle "Western Woods")
 
       glimmeringMeadow <- fromSetAside Locations.glimmeringMeadow
 

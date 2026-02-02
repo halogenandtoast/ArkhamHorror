@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.Criteria.Override
+import Arkham.Deck
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
 import Arkham.GameValue
@@ -60,6 +61,8 @@ data EnemyMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanSpawnIn LocationMatcher
   | EnemyWantsToSpawnIn LocationMatcher
+  | EnemyWithoutSpawn
+  | EnemyDrawnFrom DeckSignifier
   | EnemyCanMove
   | EnemyWillMoveWith InvestigatorMatcher
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher

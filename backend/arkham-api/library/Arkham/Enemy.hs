@@ -569,6 +569,7 @@ allEnemies =
       , SomeEnemyCard thorneOpenToNegotiation
       , SomeEnemyCard desiderioDelgadoAlvarezRedInHisLedger
       , SomeEnemyCard amaranthScarletScorn
+      , SomeEnemyCard tzuSanNiangAWhisperInYourEar
       , SomeEnemyCard alikiZoniUperetriaSpeaksInDeath
       , -- The Feast of Hemloch Vale
         --- signature [fhv]

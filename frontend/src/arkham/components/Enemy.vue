@@ -356,13 +356,14 @@ function onDrop(event: DragEvent) {
         @choose="$emit('choose', $event)"
       />
       <ScarletKey
-        v-for="skId in enemy.scarletKeys"
+        v-for="(skId, idx) in enemy.scarletKeys"
         :scarletKey="game.scarletKeys[skId]"
         :game="game"
         :playerId="playerId"
         :key="skId"
         @choose="choose"
         :attached="true"
+        :style="{ 'z-index': enemy.scarletKeys.length - idx }"
       />
       <Story
         v-for="storyId in enemy.stories"

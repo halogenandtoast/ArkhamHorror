@@ -5,9 +5,12 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.EncounterSet qualified as Set
+import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -16,6 +19,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Spawn
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 
@@ -28,11 +32,19 @@ theTwistedHollow difficulty = scenario TheTwistedHollow "10605" "The Twisted Hol
 
 instance HasChaosTokenValue TheTwistedHollow where
   getChaosTokenValue iid tokenFace (TheTwistedHollow attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      let darknessLevel = attrs.token DarknessLevel
+      pure $ toChaosTokenValue attrs Skull darknessLevel (darknessLevel * 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+tabletEffect :: ReverseQueue m => InvestigatorId -> m ()
+tabletEffect iid = do
+  withLocationOf iid \loc -> do
+    validEnemies <- pursuitEnemiesWithHighestEvade
+    chooseTargetM iid validEnemies \enemy -> spawnAt enemy Nothing (SpawnAtLocation loc)
 
 instance RunMessage TheTwistedHollow where
   runMessage msg s@(TheTwistedHollow attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -82,9 +94,6 @@ instance RunMessage TheTwistedHollow where
       gather Set.TheForest
       gather Set.Myconids
 
-      setAgendaDeck [Agendas.deepeningDark]
-      setActDeck [Acts.desperateSearch, Acts.wheresBertie]
-
       placeStory Stories.nightOne
 
       showedTheWay <- getHasRecord MotherRachelShowedTheWay
@@ -131,6 +140,10 @@ instance RunMessage TheTwistedHollow where
                 _ -> error "not enough woods"
             _ -> error "not enough woods"
 
+      -- do this after locations so the reveal does not trigger
+      setAgendaDeck [Agendas.deepeningDark]
+      setActDeck [Acts.desperateSearch, Acts.wheresBertie]
+
       theo <- getRecordCount TheoPetersRelationshipLevel
       when (theo >= 2) $ setAside [Assets.theoPetersJackOfAllTrades]
 
@@ -147,4 +160,25 @@ instance RunMessage TheTwistedHollow where
 
       setAside [Assets.bertieMusgraveATrueAesthete, Agendas.backToTheVale]
       placeTokens ScenarioSource ScenarioTarget DarknessLevel 1
+    ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
+      healDamage iid Cultist 1
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      tabletEffect iid
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      assignHorror iid ElderThing 1
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isHardExpert attrs -> do
+          healDamage iid Cultist 1
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> tabletEffect iid
+        ElderThing | isEasyStandard attrs -> assignHorror iid ElderThing 1
+        _ -> pure ()
+      pure s
     _ -> TheTwistedHollow <$> liftRunMessage msg attrs

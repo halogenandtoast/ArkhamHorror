@@ -576,6 +576,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
       & (decksL . at deckKey ?~ deck')
+  ShuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey deckKey) n cards -> do
+    let (cards', rest) = splitAt n $ fromMaybe [] $ view (decksL . at deckKey) a
+    shuffled <- shuffle (cards <> cards')
+    pure $ a & decksL . at deckKey ?~ shuffled <> rest
   PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card -> do
     let
       deck = fromMaybe [] $ view (decksL . at deckKey) a

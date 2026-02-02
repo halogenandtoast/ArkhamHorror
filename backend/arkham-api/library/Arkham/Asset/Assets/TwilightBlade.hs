@@ -33,11 +33,7 @@ instance RunMessage TwilightBlade where
       sid <- getRandom
       chooseFightEnemyWithSkillChoice sid iid source [#combat, #willpower]
       pure a
-    InitiatePlayCard iid card _ _ ws _ | controlledBy attrs iid -> do
-      underDiana <- field InvestigatorCardsUnderneath iid
-      when (card `elem` underDiana) do
-        costModifier attrs iid (AsIfInHandFor ForPlay card.id)
-        cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
-        playCardPayingCostWithWindows iid card ws
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid -> do
+      priority $ cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
       pure a
     _ -> TwilightBlade <$> liftRunMessage msg attrs

@@ -511,6 +511,7 @@ instance RunMessage CongressOfTheKeys where
                   | youHaventSeenTheLastOfAlikiZoniUperetria -> EerilySilent
                   | otherwise -> Yea
               )
+            , (Ece, if eceDoesNotTrustTheCell then Abstained else Nay)
             ]
 
       pure $ CongressOfTheKeys $ attrs & setMetaKey "votes" votes
@@ -674,7 +675,7 @@ instance RunMessage CongressOfTheKeys where
       setAside $ coterieEnemies attrs (== Nay)
 
       investigators <- allInvestigators
-      for_ (conspiratorAssets attrs (== Yea)) \card -> do
+      for_ (conspiratorAssets attrs (== Nay)) \card -> do
         leadChooseOneM do
           questionLabeledCard card
           portraits investigators $ createAssetAt_ card . InPlayArea

@@ -650,7 +650,8 @@ engageEnemy
   => investigator
   -> enemy
   -> m ()
-engageEnemy investigator enemy = push $ EngageEnemy (asId investigator) (asId enemy) Nothing False
+engageEnemy investigator enemy = unlessM (matches (asId enemy) $ enemyEngagedWith $ asId investigator) do
+  push $ EngageEnemy (asId investigator) (asId enemy) Nothing False
 
 createEnemyAt_
   :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId)

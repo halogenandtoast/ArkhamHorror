@@ -1968,14 +1968,17 @@ instance RunMessage EnemyAttrs where
       case placement of
         AtLocation lid -> do
           let details = mkSpawnDetails enemyId (X.SpawnAtLocation lid)
-          pushAll
-            [ Will (EnemySpawn details)
-            , When (EnemySpawn details)
-            , EnemySpawn details
-            , After (EnemySpawn details)
-            ]
-          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
-          pure a
+          if isInPlayPlacement a.placement
+            then handlePlacement placement
+            else do
+              pushAll
+                [ Will (EnemySpawn details)
+                , When (EnemySpawn details)
+                , EnemySpawn details
+                , After (EnemySpawn details)
+                ]
+              pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
+              pure a
         InThreatArea iid | iid `elem` cannotEngage -> do
           getLocationOf iid >>= \case
             Just lid -> handlePlacement (AtLocation lid)

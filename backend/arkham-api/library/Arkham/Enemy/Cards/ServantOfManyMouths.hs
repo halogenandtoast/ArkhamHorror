@@ -20,13 +20,16 @@ instance HasAbilities ServantOfManyMouths where
   getAbilities (ServantOfManyMouths a) =
     extend1 a
       $ restricted a 1 (exists $ LocationWithDiscoverableCluesBy You)
-      $ freeReaction
+      $ SilentForcedAbility
       $ EnemyDefeated #after You ByAny (be a)
 
 instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (IndexedSource 1 (isSource attrs -> True)) 1 -> do
       locationsWithClues <- select $ locationWithDiscoverableCluesBy iid
       chooseTargetM iid locationsWithClues $ discoverAt NotInvestigate iid (attrs.ability 1) 1
+      pure e
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      deathRattle attrs 1 (exists $ LocationWithDiscoverableCluesBy You)
       pure e
     _ -> ServantOfManyMouths <$> liftRunMessage msg attrs

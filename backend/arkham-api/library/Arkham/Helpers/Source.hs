@@ -47,6 +47,7 @@ sourceTraits = \case
   EmptyDeckSource -> pure mempty
   EncounterCardSource _ -> pure mempty
   EnemyAttackSource _ -> pure mempty
+  EnemyDefeatSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
   EnemySource eid -> field EnemyTraits eid
   EventSource eid -> field EventTraits eid
@@ -191,6 +192,7 @@ sourceMatches s = \case
         EmptyDeckSource {} -> False
         EncounterCardSource {} -> False
         EnemyAttackSource {} -> True
+        EnemyDefeatSource {} -> False -- not sure here but should only be used for effect triggers
         EnemySource {} -> True
         EventSource {} -> True
         GameSource -> False

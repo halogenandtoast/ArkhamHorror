@@ -100,6 +100,7 @@ sourceToMaybeTarget = \case
   LocationMatcherSource {} -> Nothing
   EnemyMatcherSource {} -> Nothing
   EnemyAttackSource a -> Just $ EnemyTarget a
+  EnemyDefeatSource a -> Just $ EnemyTarget a
   StorySource code -> Just $ StoryTarget code
   CampaignSource -> Just $ CampaignTarget
   TarotSource arcana -> Just $ TarotTarget arcana

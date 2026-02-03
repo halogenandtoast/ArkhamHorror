@@ -42,7 +42,7 @@ export type TarotSource = {
   contents: TarotCard
 }
 
-export type Source = ProxySource | TarotSource | OtherSource
+export type Source = ProxySource | TarotSource | IndexedSource | OtherSource
 
 export const proxySourceDecoder: JsonDecoder.Decoder<ProxySource> = JsonDecoder.object<ProxySource>({
   tag: JsonDecoder.literal("ProxySource"),

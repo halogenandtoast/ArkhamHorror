@@ -6,7 +6,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
@@ -19,7 +19,10 @@ theCaveOfDarknessTunnelsInTheDark =
 
 instance HasAbilities TheCaveOfDarknessTunnelsInTheDark where
   getAbilities (TheCaveOfDarknessTunnelsInTheDark attrs) =
-    [ restricted attrs 999 (exists $ LocationWithTitle "Black Cave" <> LocationWithoutClues)
+    [ restricted
+        attrs
+        999
+        (exists (LocationWithTitle "Black Cave" <> LocationWithoutClues) <> DuringTurn Anyone)
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2)

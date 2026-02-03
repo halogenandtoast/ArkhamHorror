@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Trait
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
@@ -25,7 +25,7 @@ instance HasAbilities FacultyOfficesTheNightIsStillYoung where
     extendRevealed
       x
       [ mkAbility x 1 $ forced $ RevealLocation #after Anyone (be x)
-      , restricted x 2 Here
+      , restricted x 2 (Here <> DuringTurn Anyone)
           $ Objective
           $ FastAbility
           $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Faculty Offices")

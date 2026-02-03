@@ -8,7 +8,7 @@ import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query (inTurnOrder)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -25,8 +25,10 @@ instance HasAbilities TheChase where
         a
         1
         ( exists
-            $ scarletKeyIs ScarletKeys.theTwistedAntiprism
-            <> ScarletKeyWithInvestigator (InvestigatorAt (locationIs Locations.galataDocks))
+            ( scarletKeyIs ScarletKeys.theTwistedAntiprism
+                <> ScarletKeyWithInvestigator (InvestigatorAt (locationIs Locations.galataDocks))
+            )
+            <> DuringTurn Anyone
         )
         $ Objective
         $ FastAbility Free

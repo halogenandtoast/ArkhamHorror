@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (dormitories)
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype Dormitories = Dormitories LocationAttrs
   deriving anyclass IsLocation
@@ -20,7 +20,7 @@ instance HasModifiersFor Dormitories where
 instance HasAbilities Dormitories where
   getAbilities (Dormitories attrs) =
     extendRevealed1 attrs
-      $ restricted attrs 1 Here
+      $ restricted attrs 1 (Here <> DuringTurn Anyone)
       $ Objective
       $ FastAbility
       $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Dormitories")

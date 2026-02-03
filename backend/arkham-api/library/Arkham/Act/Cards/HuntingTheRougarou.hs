@@ -11,7 +11,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -42,14 +42,10 @@ instance HasAbilities HuntingTheRougarou where
         $ EnemyDefeated Timing.When Anyone ByAny
         $ enemyIs Cards.theRougarou
     , limitedAbility (PlayerLimit PerPhase 1)
-        $ restrictedAbility
+        $ restricted
           a
           3
-          ( InvestigatorExists
-              $ You
-              <> InvestigatorEngagedWith
-                (enemyIs Cards.theRougarou)
-          )
+          (youExist (InvestigatorEngagedWith $ enemyIs Cards.theRougarou) <> DuringTurn Anyone)
           (Objective $ FastAbility Free)
     ]
 

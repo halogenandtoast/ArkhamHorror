@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
 
 newtype WitchHauntings = WitchHauntings ActAttrs
@@ -17,7 +17,7 @@ witchHauntings = act (2, A) WitchHauntings Cards.witchHauntings Nothing
 
 instance HasAbilities WitchHauntings where
   getAbilities (WitchHauntings a) =
-    [ mkAbility a 1 $ Objective $ FastAbility $ ClueCost (PerPlayer 1)
+    [ restricted a 1 (DuringTurn Anyone) $ Objective $ FastAbility $ ClueCost (PerPlayer 1)
     | onSide A a
     ]
 

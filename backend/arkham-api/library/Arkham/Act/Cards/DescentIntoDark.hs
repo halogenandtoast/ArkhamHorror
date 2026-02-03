@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype DescentIntoDark = DescentIntoDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -21,6 +21,7 @@ instance HasAbilities DescentIntoDark where
         1
         ( notExists (InvestigatorAt $ not_ $ locationIs Locations.descentToYoth)
             <> exists (locationIs Locations.descentToYoth <> LocationWithoutDoom)
+            <> DuringTurn Anyone
         )
         $ Objective
         $ FastAbility Free

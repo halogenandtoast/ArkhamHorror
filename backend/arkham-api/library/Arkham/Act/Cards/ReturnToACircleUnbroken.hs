@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ReturnToACircleUnbroken (returnToACircleUnbroken) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Trait (Trait (Witch))
 
 newtype ReturnToACircleUnbroken = ReturnToACircleUnbroken ActAttrs
@@ -21,6 +21,7 @@ instance HasAbilities ReturnToACircleUnbroken where
       ( EnemyCount
           (GreaterThan (PerPlayer 1))
           (EnemyWithTrait Witch <> ExhaustedEnemy <> EnemyAt "Witches' Circle")
+          <> DuringTurn Anyone
       )
       $ Objective
       $ FastAbility (GroupClueCost (PerPlayer 2) "Witches' Circle")

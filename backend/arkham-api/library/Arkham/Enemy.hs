@@ -582,7 +582,8 @@ allEnemies =
       , SomeEnemyCard burrowingHybrid
       , SomeEnemyCard frenziedMiner
       , --- The Twisted Hollow [fhv]
-        SomeEnemyCard stalkingHybrid
+        SomeEnemyCard ursineHybridGlowingAbomination
+      , SomeEnemyCard stalkingHybrid
       , --- Horrors in the Rock [fhv]
         SomeEnemyCard crystalParasite
       , -- Core 2026

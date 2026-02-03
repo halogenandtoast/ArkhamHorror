@@ -9,7 +9,7 @@ import Arkham.Helpers.Query
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype BackIntoTheDepths = BackIntoTheDepths ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -27,6 +27,7 @@ instance HasAbilities BackIntoTheDepths where
           1
           ( EachUndefeatedInvestigator (at_ $ locationIs Locations.gatewayToYhanthlei)
               <> foldMap (exists . InvestigatorWithKey) [BlueKey, RedKey, YellowKey, GreenKey]
+              <> DuringTurn Anyone
           )
           $ Objective
           $ FastAbility Free

@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.SkillType
 import Arkham.SlotType
@@ -47,6 +47,7 @@ instance HasAbilities MeetAndGreet where
         3
         ( EachUndefeatedInvestigator (ControlsAsset $ AssetWithTrait Guest)
             <> exists (mapOneOf (AgendaWithSequence . (`AS.Sequence` AS.A)) [2, 3])
+            <> DuringTurn Anyone
         )
         $ Objective
         $ FastAbility (GroupClueCost (PerPlayer 3) Anywhere)

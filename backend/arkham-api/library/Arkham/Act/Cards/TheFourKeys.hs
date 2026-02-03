@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Key
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype TheFourKeys = TheFourKeys ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -19,7 +19,7 @@ theFourKeys = act (3, A) TheFourKeys Cards.theFourKeys Nothing
 instance HasAbilities TheFourKeys where
   getAbilities = actAbilities \a ->
     [ base a (not_ IsReturnTo) $ forced AnyWindow
-    , base a IsReturnTo $ FastAbility Free
+    , base a (IsReturnTo <> DuringTurn Anyone) $ FastAbility Free
     ]
    where
     base a c action = restricted a 1 (c <> criteria) $ Objective action

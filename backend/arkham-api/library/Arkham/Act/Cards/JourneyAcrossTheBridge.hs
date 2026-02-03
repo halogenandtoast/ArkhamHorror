@@ -12,7 +12,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
@@ -30,7 +30,7 @@ instance HasAbilities JourneyAcrossTheBridge where
     [ restricted
         attrs
         1
-        (EachUndefeatedInvestigator $ at_ (LocationWithLabel "theGreatWeb4"))
+        (EachUndefeatedInvestigator (at_ (LocationWithLabel "theGreatWeb4")) <> DuringTurn Anyone)
         (Objective $ FastAbility $ GroupClueCost (PerPlayer 3) (LocationWithLabel "theGreatWeb4"))
     | onSide A attrs
     ]

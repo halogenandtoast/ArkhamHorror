@@ -59,7 +59,7 @@ instance RunMessage TheUnsealing where
       pure s
     UseCardAbility _ (isSource attrs -> True) 1 ws@(getEnemy -> x) _ -> do
       cancelWindowBatch ws
-      push $ HunterMove x
+      sendMessage x HuntersMove
       temporaryModifier x attrs DoNotExhaust do
         push $ ForTarget (toTarget x) (Do EnemiesAttack)
       pure s

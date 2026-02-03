@@ -28,6 +28,7 @@ instance HasModifiersFor TheToweringVertexRuinousConflux where
       mods <- getModifiers a
       unless (ScenarioModifier "canEnter" `elem` mods) do
         modifySelf a [Blocked]
+      modifySelect a (enemyIs Enemies.theRedGlovedManPurposeUnknown) [CannotBeDefeated]
     when a.revealed do
       modifySelect
         a

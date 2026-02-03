@@ -12,7 +12,7 @@ import Arkham.Field
 import Arkham.Helpers.Location (placementLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message (resolve)
 import Arkham.Placement
 import Arkham.Projection
@@ -30,7 +30,7 @@ instance HasAbilities FalseColorsV1 where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1 $ triggered (ScenarioEvent #when Nothing "wouldConceal") ConcealedXCost
     , mkAbility a 2 $ ActionAbility [#resign] Nothing (ActionCost 1)
-    , restricted a 3 (not_ $ exists $ EnemyWithPlacement InTheShadows)
+    , restricted a 3 (not_ (exists $ EnemyWithPlacement InTheShadows) <> DuringTurn Anyone)
         $ Objective
         $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
     ]

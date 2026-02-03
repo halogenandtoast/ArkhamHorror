@@ -6,7 +6,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait
 
@@ -16,7 +16,7 @@ newtype TheCaveOfDarknessEmbroiledInBattle = TheCaveOfDarknessEmbroiledInBattle 
 
 instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
   getAbilities (TheCaveOfDarknessEmbroiledInBattle attrs) =
-    [ restrictedAbility attrs 999 (exists $ "Black Cave" <> LocationWithoutClues)
+    [ restrictedAbility attrs 999 (exists ("Black Cave" <> LocationWithoutClues) <> DuringTurn Anyone)
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2) "Black Cave"

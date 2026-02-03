@@ -2799,12 +2799,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         pure a
       _ -> liftRunMessage (RemoveTokens s (toTarget a) tType amount) a
   ForInvestigator iid (MoveTokens s source@(isSource a -> True) target Clue amount) | amount > 0 && iid == investigatorId -> do
+    includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
+    let storyWrapper = if includeStory then id else (<> AssetNonStory)
     let
       wrapper = case target.asset of
         Just aid -> (<> not_ (AssetWithId aid))
         Nothing -> id
     assetsWithClues <-
-      selectWithField AssetClues $ wrapper $ assetControlledBy a.id <> AssetWithAnyClues
+      selectWithField AssetClues $ storyWrapper $ wrapper $ assetControlledBy a.id <> AssetWithAnyClues
     let total = sum (map snd assetsWithClues) + investigatorClues a
     if total == amount
       then do
@@ -3427,7 +3429,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (discardL %~ cardFilter)
       & (bondedCardsL %~ cardFilter)
   InvestigatorSpendClues iid n | iid == investigatorId -> do
-    assetsWithClues <- select $ assetControlledBy iid <> AssetWithAnyClues
+    includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
+    let storyWrapper = if includeStory then id else (<> AssetNonStory)
+    assetsWithClues <- select $ storyWrapper $ assetControlledBy iid <> AssetWithAnyClues
     if null assetsWithClues
       then push $ Do msg
       else push $ DoStep n msg

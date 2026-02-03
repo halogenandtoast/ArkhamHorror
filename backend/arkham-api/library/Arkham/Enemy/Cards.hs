@@ -518,6 +518,7 @@ allEncounterEnemyCards =
       , uncannyShadowPlayfulShadows
       , uncannyShadowTimorousShadows
       , unsealedPhantasm
+      , ursineHybridGlowingAbomination
       , valentinoRivas
       , vampireThrall
       , vassalOfTheLurker
@@ -3460,6 +3461,15 @@ frenziedMiner =
     { cdCardTraits = setFromList [Humanoid]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
+
+ursineHybridGlowingAbomination :: CardDef
+ursineHybridGlowingAbomination =
+  doubleSided "10607a"
+    $ (enemy "10607b" ("Ursine Hybrid" <:> "Glowing Abomination") TheTwistedHollow 1)
+      { cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+      , cdUnique = True
+      }
 
 stalkingHybrid :: CardDef
 stalkingHybrid =

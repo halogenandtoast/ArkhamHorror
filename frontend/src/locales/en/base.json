@@ -132,5 +132,6 @@
   "lead": "Lead",
   "or2": "{0} or {1}",
   "or3": "{0} or {1} or {2}",
-  "and": "{0} or {1}"
+  "and": "{0} or {1}",
+  "cardsUnderneath": "1 Card Underneath | {count} Cards Underneath"
 }

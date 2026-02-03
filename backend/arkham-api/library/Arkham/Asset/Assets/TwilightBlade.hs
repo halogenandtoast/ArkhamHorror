@@ -34,6 +34,11 @@ instance RunMessage TwilightBlade where
       chooseFightEnemyWithSkillChoice sid iid source [#combat, #willpower]
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid -> do
-      priority $ cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
+      underDiana <- field InvestigatorCardsUnderneath iid
+      when (card `elem` underDiana) do
+        priority
+          $ cardResolutionModifier card attrs iid
+          $ CannotTriggerAbilityMatching
+          $ AbilityIs (toSource iid) 1
       pure a
     _ -> TwilightBlade <$> liftRunMessage msg attrs

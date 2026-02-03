@@ -2,6 +2,7 @@
 import { TokenType } from '@/arkham/types/Token';
 import { ComputedRef, computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
+import { useI18n } from 'vue-i18n';
 import { imgsrc, groupBy } from '@/arkham/helpers';
 import { type Game } from '@/arkham/types/Game';
 import { type Card, cardImage } from '@/arkham/types/Card'
@@ -29,6 +30,17 @@ const emit = defineEmits<{
 }>()
 
 const id = computed(() => props.agenda.id)
+const debug = useDebug()
+
+const canViewUnder = computed(() => {
+  if (debug.active) return true
+  const { scenario } = props.game
+  if (!scenario) return true
+  if (scenario.id === 'c02195') return false
+  return true
+})
+
+const { t } = useI18n()
 
 const image = computed(() => {
   if (props.agenda.flipped) {
@@ -43,7 +55,7 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const viewingUnder = ref(false)
-const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
+const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : t('cardsUnderneath', { count: props.cardsUnder.length }))
 
 function canInteract(c: Message): boolean {
   return c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value
@@ -99,7 +111,6 @@ const attachedEnemies = computed(() => Object.values(props.game.enemies).
 
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
-const debug = useDebug()
 const isVertical = computed(() => {
   const cardCode = props.agenda.flipped ? id.value.replace(/a?$/, 'b') : id.value
   return ["c01121b", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
@@ -179,7 +190,8 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
       </div>
     </div>
 
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0 && canViewUnder" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
+    <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>{{viewUnderLabel}}</button>
   </div>
 </template>
 

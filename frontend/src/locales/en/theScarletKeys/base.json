@@ -237,6 +237,10 @@
       "stable": "Flip each _Stable_ key you control to its _Unstable_ side.",
       "unstable": "Immediately shift an _Unstable_ key you control."
     },
+    "theMirroringBlade": {
+      "single": "Deal 2 damage to an enemy at your location.",
+      "all": "Deal 1 damage to all enemies at your location."
+    },
     "doNotExposeConcealed": "Do not expose Concealed Card",
     "doNotRevealConcealed": "Do not reveal Concealed Card"
   },

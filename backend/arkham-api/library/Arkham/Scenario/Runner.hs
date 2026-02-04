@@ -1273,6 +1273,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
+  ShuffleBackIntoEncounterDeck (TreacheryTarget tid) -> do
+    fetchCard tid >>= \case
+      EncounterCard card -> do
+        if null scenarioEncounterDeck
+          then pure a
+          else do
+            removeTreachery tid
+            encounterDeck <- withDeckM (shuffle . (card :)) scenarioEncounterDeck
+            pure $ a & encounterDeckL .~ encounterDeck
+      _ -> pure a
   DiscardUntilFirst iid source Deck.EncounterDeck matcher -> do
     push $ DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a

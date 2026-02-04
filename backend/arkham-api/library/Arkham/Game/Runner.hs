@@ -1513,8 +1513,12 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
     investigator <- getInvestigator iid
-    send $ format investigator <> " drew " <> format card
-    sendEnemy (toTitle investigator <> " drew Enemy") (toJSON card)
+    if Keyword.Peril `elem` cdKeywords (toCardDef card)
+      then do
+        pid <- getPlayer iid
+        sendEnemyOnly pid (format investigator <> " drew " <> format card) (toJSON $ toCard card)
+      else sendEnemy (format investigator <> " drew " <> format card) (toJSON $ toCard card)
+
     enemyId <- getRandom
     let enemy = overAttrs (\e -> e {enemyBearer = card.owner}) (createEnemy card enemyId)
     pushAll
@@ -2844,7 +2848,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           checkWindows [mkWhen (Window.DrawCard iid (toCard card) $ fromMaybe Deck.EncounterDeck mdeck)]
         let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
         case toCardType card of
-          EnemyType -> sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
+          EnemyType -> do
+            let hasPeril = (DrawGainsPeril `elem` mods) || (Keyword.Peril `elem` cdKeywords (toCardDef card))
+            if hasPeril
+              then do
+                pid <- getPlayer iid
+                sendEnemyOnly pid (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
+              else sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
           TreacheryType -> uiRevelation
           EncounterAssetType -> uiRevelation
           EncounterEventType -> uiRevelation

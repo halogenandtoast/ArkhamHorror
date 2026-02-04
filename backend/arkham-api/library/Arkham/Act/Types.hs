@@ -97,6 +97,11 @@ data ActAttrs = ActAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance IsCard ActAttrs where
+  toCardId = actCardId
+  toCard a = lookupCard (unActId $ actId a) (actCardId a)
+  toCardOwner _ = Nothing
+
 instance AsId ActAttrs where
   type IdOf ActAttrs = ActId
   asId = actId

@@ -3,26 +3,41 @@ module Arkham.Scenario.Scenarios.TheTwistedHollow (theTwistedHollow) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
+import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Query (allInvestigators, getPlayerCount)
+import Arkham.Helpers.Query (
+  allInvestigators,
+  getInvestigators,
+  getPlayerCount,
+  getSetAsideCard,
+  getSetAsideCardMaybe,
+ )
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
-import Arkham.Matcher
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Placement qualified as Placement
+import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheTwistedHollow.Helpers
 import Arkham.Spawn
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
+import Arkham.Trait (Trait (Dark))
+import Arkham.Zone
 
 newtype TheTwistedHollow = TheTwistedHollow ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -183,6 +198,90 @@ instance RunMessage TheTwistedHollow where
       case token.face of
         Tablet | isEasyStandard attrs -> tabletEffect iid
         ElderThing | isEasyStandard attrs -> assignHorror iid ElderThing 1
+        _ -> pure ()
+      pure s
+    ScenarioSpecific "codex" v -> scope "codex" do
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      case n of
+        7 -> do
+          selectEach (assetIs Assets.judithParkTheMuscle) \aid ->
+            dealAssetDamage aid ScenarioSource 2
+          record JudithSavedYourAss
+          entry "judithPark"
+        8 -> do
+          selectEach (assetIs Assets.theoPetersJackOfAllTrades) \aid ->
+            dealAssetHorror aid ScenarioSource 2
+          record TheoDistractedTheBear
+          entry "theoPeters"
+        Sigma -> scope "sigma" do
+          mjudith <- getSetAsideCardMaybe Assets.judithParkTheMuscle
+          mtheo <- getSetAsideCardMaybe Assets.theoPetersJackOfAllTrades
+          flavor $ setTitle "title" >> p.green "theBear1"
+          case (mjudith, mtheo) of
+            (Just judith, Just theo) -> do
+              chooseOneM iid do
+                cardLabeled Assets.judithParkTheMuscle do
+                  takeControlOfSetAsideAsset iid judith
+                  codex iid source 7
+                cardLabeled Assets.theoPetersJackOfAllTrades do
+                  takeControlOfSetAsideAsset iid theo
+                  codex iid source 8
+            (Just judith, Nothing) -> do
+              takeControlOfSetAsideAsset iid judith
+              codex iid source 7
+            (Nothing, Just theo) -> do
+              takeControlOfSetAsideAsset iid theo
+              codex iid source 8
+            (Nothing, Nothing) -> do
+              record MotherRachelIntervened
+              investigatorStoryWithChooseOneM' iid (setTitle "title" >> p.green "theBear2") do
+                labeled' "physical" do
+                  sufferPhysicalTrauma iid 1
+                  directDamage iid ScenarioSource 1
+                labeled' "mental" do
+                  sufferMentalTrauma iid 1
+                  directHorror iid ScenarioSource 1
+          flavor $ setTitle "title" >> p.green "theBear3"
+          selectEach UnengagedEnemy (`Placement.place` OutOfPlay PursuitZone)
+          withLocationOf iid \loc -> do
+            bearCard <- genCard Enemies.ursineHybridGlowingAbomination
+            createEnemyWith_ bearCard loc createExhausted
+          selectEach (AssetWithTitle "Vale Lantern" <> not_ (AssetControlledBy Anyone)) \lantern -> do
+            investigators <- getInvestigators
+            card <- fetchCard lantern
+            let def = toCardDef card
+            chooseOneM iid do
+              unscoped
+                $ nameVar def
+                $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+              questionLabeledCard def
+              portraits investigators (`takeControlOfAsset` lantern)
+
+          emptyWoods <- selectWithField LocationCard $ EmptyLocation <> LocationWithTrait Dark
+          woodsDeck <- getScenarioDeck WoodsDeck
+          for_ emptyWoods (removeLocation . fst)
+          (bottom, top) <- splitAt 3 <$> shuffle (map snd emptyWoods <> woodsDeck)
+          theTwistedHollowWoods <- getSetAsideCard Locations.theTwistedHollow
+          bottom' <- shuffle (theTwistedHollowWoods : bottom)
+          push $ SetScenarioDeck WoodsDeck (top <> bottom')
+          doStep 1 msg
+        _ -> pure ()
+      pure s
+    DoStep 1 (ScenarioSpecific "codex" v) -> do
+      let (iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
+      case n of
+        Sigma -> do
+          bear <- selectJust $ enemyIs Enemies.ursineHybridGlowingAbomination
+          nonAttackEnemyDamage Nothing ScenarioSource 1 bear
+          withLocationOf iid \loc -> do
+            grid <- getGrid
+            woodsDeck <- getScenarioDeck WoodsDeck
+            let
+              locationPositions = case findInGrid loc grid of
+                Nothing -> []
+                Just pos -> emptyPositionsInDirections grid pos [GridUp ..]
+            for_ (zip locationPositions woodsDeck) (uncurry placeLocationInGrid)
         _ -> pure ()
       pure s
     _ -> TheTwistedHollow <$> liftRunMessage msg attrs

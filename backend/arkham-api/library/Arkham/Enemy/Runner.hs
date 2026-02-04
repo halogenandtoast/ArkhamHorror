@@ -725,13 +725,18 @@ instance RunMessage EnemyAttrs where
               pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
             Keyword.Hunter -> do
               wantsToHunt <-
-                andM
-                  [ selectNone (InvestigatorAt $ locationWithEnemy enemyId)
-                  , selectNone
-                      (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
-                  , selectNone
-                      $ EnemyAt (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
-                  ]
+                getPreyMatcher a >>= \case
+                  OnlyPrey _ -> do
+                    prey <- getAvailablePrey a
+                    selectNone (InvestigatorAt (locationWithEnemy enemyId) <> mapOneOf InvestigatorWithId prey)
+                  _ ->
+                    andM
+                      [ selectNone (InvestigatorAt (locationWithEnemy enemyId))
+                      , selectNone
+                          (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+                      , selectNone
+                          $ EnemyAt (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
+                      ]
 
               when wantsToHunt do
                 (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
@@ -2073,7 +2078,7 @@ instance RunMessage EnemyAttrs where
       -- generic DoBatch handler
       liftRunMessage (Do msg') a
     ForTarget (isTarget a -> True) msg' -> liftRunMessage msg' a
-    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source || isIndexedSource a ab.source-> do
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source || isIndexedSource a ab.source -> do
       push $ Do msg
       pure a
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do

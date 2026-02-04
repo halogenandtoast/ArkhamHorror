@@ -75,6 +75,11 @@ sendEnemy title msg = do
   f <- getLogger
   liftIO $ f (ClientCard title msg)
 
+sendEnemyOnly :: HasGameLogger m => PlayerId -> Text -> Value -> m ()
+sendEnemyOnly pid title msg = do
+  f <- getLogger
+  liftIO $ f (ClientCardOnly pid title msg)
+
 sendTarot :: HasGameLogger m => Value -> m ()
 sendTarot msg = do
   f <- getLogger

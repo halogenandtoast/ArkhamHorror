@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.IcePick3 (icePick3, IcePick3 (..)) where
+module Arkham.Asset.Assets.IcePick3 (icePick3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -36,10 +37,11 @@ instance RunMessage IcePick3 where
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
             labeled "Do not Discard" nothing
         when (action == #investigate) do
-          chooseOneM iid do
-            labeled "Discard Ice Pick (3) to discover 1 additional clue" do
-              toDiscardBy iid (attrs.ability 1) attrs
-              skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-            labeled "Do not Discard" nothing
+          withLocationOf iid \loc -> do
+            chooseOneM iid do
+              labeled "Discard Ice Pick (3) to discover 1 additional clue at your location" do
+                toDiscardBy iid (attrs.ability 1) attrs
+                skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
+              labeled "Do not Discard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

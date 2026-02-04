@@ -38,7 +38,7 @@ const cardCode = computed(() => {
   const side = props.act.sequence.side.toLowerCase().replace('a', '')
   const sidePart = id.value.endsWith(side) ? "" : side
 
-  let newId = id.value.replace(/^c/, '')
+  let newId = side == 'b' && id.value === 'c10607a' ? '10607' : id.value.replace(/^c/, '')
 
   if (sidePart == 'd') {
     newId = newId.replace(/c$/, '')

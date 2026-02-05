@@ -19,9 +19,11 @@ esotericFormula = asset EsotericFormula Cards.esotericFormula
 
 instance HasAbilities EsotericFormula where
   getAbilities (EsotericFormula x) =
-    [ fightAbility x 1 mempty
-        $ ControlsThis
-        <> exists (CanFightEnemy (x.ability 1) <> EnemyWithTrait Abomination)
+    [ controlled
+        x
+        1
+        (exists $ CanFightEnemy (x.ability 1) <> EnemyWithTrait Abomination)
+        $ fightActionWith_ #willpower
     ]
 
 instance RunMessage EsotericFormula where

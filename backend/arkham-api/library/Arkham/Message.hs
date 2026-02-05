@@ -1545,15 +1545,15 @@ asWindowChoose ws (Ask pid q) = WindowAsk ws pid q
 asWindowChoose _ _ = error "asWindowChoose: expected Ask"
 
 chooseOne :: HasCallStack => PlayerId -> [UI Message] -> Message
-chooseOne _ [] = error "No messages for chooseOne"
+chooseOne _ [] = error $ "No messages for chooseOne: " <> prettyCallStack callStack
 chooseOne pid msgs = Ask pid (ChooseOne msgs)
 
 chooseOneFromEach :: HasCallStack => PlayerId -> [[UI Message]] -> Message
-chooseOneFromEach _ [] = error "No messages for chooseOne"
+chooseOneFromEach _ [] = error $ "No messages for chooseOneFromEach: " <> prettyCallStack callStack
 chooseOneFromEach pid msgs = Ask pid (ChooseOneFromEach msgs)
 
 chooseOneDropDown :: PlayerId -> [(Text, Message)] -> Message
-chooseOneDropDown _ [] = throw $ InvalidState "No messages for chooseOne"
+chooseOneDropDown _ [] = throw $ InvalidState "No messages for chooseOneDropDown"
 chooseOneDropDown pid msgs = Ask pid (DropDown msgs)
 
 chooseOneAtATime :: PlayerId -> [UI Message] -> Message
@@ -1561,7 +1561,7 @@ chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 
 chooseOrRunOneAtATime :: PlayerId -> [UI Message] -> Message
-chooseOrRunOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
+chooseOrRunOneAtATime _ [] = throw $ InvalidState "No messages for chooseOrRunOneAtATime"
 chooseOrRunOneAtATime _ [x] = uiToRun x
 chooseOrRunOneAtATime pid msgs = Ask pid (ChooseOneAtATime msgs)
 

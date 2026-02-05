@@ -112,6 +112,11 @@ activeCostSource ac = case activeCostTarget ac of
 instance HasField "source" ActiveCost Source where
   getField = activeCostSource
 
+instance HasField "canModify" ActiveCost Bool where
+  getField c = case c.target of
+    ForCard {} -> False
+    _ -> True
+
 costsL :: Lens' ActiveCost Cost
 costsL = lens activeCostCosts $ \m x -> m {activeCostCosts = x}
 
@@ -429,7 +434,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       -- No need to record payment... yet
       pure c
     OrCost xs -> do
-      xs' <- filterM (getCanAffordCost iid c.source actions c.windows) xs
+      xs' <- filterM (getCanAffordCost_ iid c.source actions c.windows c.canModify) xs
       push
         $ chooseOrRunOne player
         $ map (\x -> Label (displayCostType x) [pay x]) xs'
@@ -1553,12 +1558,6 @@ instance RunMessage ActiveCost where
               _ -> pure 0
         _ -> pure 0
 
-      let
-        canModify =
-          case c.target of
-            ForCard {} -> False
-            _ -> True
-
       mods <- case activeCostTarget c of
         ForCard _ card -> getModifiers card
         _ -> pure []
@@ -1578,7 +1577,7 @@ instance RunMessage ActiveCost where
 
       canStillAfford <-
         withModifiers iid (toModifiers source [ExtraResources extraResources])
-          $ getCanAffordCost_ iid source actions c.windows canModify
+          $ getCanAffordCost_ iid source actions c.windows c.canModify
           $ over biplate (transform updateCost) cost
       if canStillAfford
         then payCost msg c iid skipAdditionalCosts cost
@@ -1594,7 +1593,7 @@ instance RunMessage ActiveCost where
                   let cost' = decreaseResourceCost cost 2
                   canStillAfford' <-
                     withModifiers iid (toModifiers source [ExtraResources extraResources])
-                      $ getCanAffordCost_ iid source actions c.windows canModify cost'
+                      $ getCanAffordCost_ iid source actions c.windows c.canModify cost'
                   if canStillAfford'
                     then payCost msg c iid skipAdditionalCosts cost'
                     else throw $ InvalidState $ "Can't afford cost (a): " <> tshow cost'

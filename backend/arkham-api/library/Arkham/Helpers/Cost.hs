@@ -79,7 +79,6 @@ getCanAffordCost_
   -> source
   -> [Action]
   -> [Window]
-
   -> Bool
   -> Cost
   -> m Bool
@@ -219,7 +218,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         if hasTreachery then getCanAffordCost_ iid source actions windows' canModify c else pure True
       CostWhenTreacheryElse mtchr c1 c2 -> do
         hasTreachery <- selectAny mtchr
-        getCanAffordCost_ iid source actions windows' canModify $ Matcher.replaceYouMatcher iid $ if hasTreachery then c1 else c2
+        getCanAffordCost_ iid source actions windows' canModify
+          $ Matcher.replaceYouMatcher iid
+          $ if hasTreachery then c1 else c2
       CostIfRemembered skey c1 c2 -> do
         ok <- remembered skey
         getCanAffordCost_ iid source actions windows' canModify $ if ok then c1 else c2

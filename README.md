@@ -49,9 +49,11 @@ please file a bug.
 
 ## I just want to try this out on my computer
 
-You will need to install [Docker][docker].
+First, install [Docker][docker].
 
-Afterwards you can run:
+Next, create a strong password (https://www.random.org/passwords/) and put it in a text file at /config/postgres_password.txt
+
+Finally, you can run:
 
 ```
 docker compose up

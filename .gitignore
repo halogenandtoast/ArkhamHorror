@@ -37,3 +37,4 @@ logfile
 *.hp
 
 .kamal/secrets
+postgres_password.txt

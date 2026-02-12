@@ -7,17 +7,25 @@ services:
   #   volumes:
   #     - redis-data:/data
   db:
-    image: postgres:14.1
+    image: postgres:14.6-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=arkham_pg_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
       - POSTGRES_DB=arkham-horror-backend
     ports:
-      - "5433:5432"
+      # Bind to localhost only to prevent external access
+      - "127.0.0.1:5433:5432"
+    user: postgres
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    cpus: 0.5
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - pgdata:/var/lib/postgresql/data:rw
+      - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+    secrets:
+      - postgres_password
   web:
     image: "halogenandtoast/arkham-horror:latest"
     build:
@@ -25,15 +33,24 @@ services:
       args:
         - GHC_VERSION=9.12.2
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/arkham-horror-backend
       - ASSET_HOST=""
       # - REDIS_CONN=redis://redis:6379
+    entrypoint: ["/web-entrypoint.sh"]
+    command: ["/start.sh"]
+    secrets:
+      - postgres_password
     ports:
       - "3000:3000"
     depends_on:
       - db
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+      - ./web-entrypoint.sh:/web-entrypoint.sh:ro
+      - ./start.sh:/start.sh:ro
 volumes:
  pgdata:
+# Docker secret for Postgres password
+secrets:
+  postgres_password:
+    file: ./config/postgres_password.txt
  # redis-data:

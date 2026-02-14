@@ -26,8 +26,7 @@ instance HasModifiersFor StickToThePlan3 where
     modifyEach a a.cardsUnderneath [AdditionalCost $ exhaust a]
 
 instance HasAbilities StickToThePlan3 where
-  getAbilities (StickToThePlan3 attrs) =
-    [restricted attrs 1 ControlsThis $ freeReaction $ DrawingStartingHand #when You]
+  getAbilities (StickToThePlan3 attrs) = [controlled_ attrs 1 $ freeReaction $ DrawingStartingHand #when You]
 
 instance RunMessage StickToThePlan3 where
   runMessage msg a@(StickToThePlan3 attrs) = runQueueT $ case msg of
@@ -39,14 +38,21 @@ instance RunMessage StickToThePlan3 where
         tacticsAndSupplies =
           nubBy ((==) `on` toCardCode)
             $ filterCards (#event <> mapOneOf CardWithTrait [Trait.Tactic, Trait.Supply]) cards
-      focusCards cards do
-        if null tacticsAndSupplies
-          then withI18n $ prompt_ iid "noCardsFound"
-          else do
-            totalTargets <- getTotalSearchTargets iid tacticsAndSupplies 3
-            chooseUpToNM iid totalTargets "Choose no more events" do
-              targets tacticsAndSupplies \card -> do
-                push $ RemoveCardFromSearch iid (toCardId card)
-                placeUnderneath attrs [card]
+      if null tacticsAndSupplies
+        then withI18n $ prompt_ iid "noCardsFound"
+        else getTotalSearchTargets iid tacticsAndSupplies 3 >>= (`doStep` msg)
+      pure a
+    DoStep n (SearchFound iid t@(isTarget attrs -> True) deck cards) | notNull cards && n > 0 -> do
+      let
+        tacticsAndSupplies =
+          nubBy ((==) `on` toCardCode)
+            $ filterCards (#event <> mapOneOf CardWithTrait [Trait.Tactic, Trait.Supply]) cards
+
+      chooseUpToNM iid 1 "Choose no more events" do
+        targets tacticsAndSupplies \card -> do
+          let remaining = filterCards (not_ (CardWithId card.id) <> not_ (CardWithTitle card.title)) tacticsAndSupplies
+          push $ RemoveCardFromSearch iid (toCardId card)
+          placeUnderneath attrs [card]
+          doStep (n - 1) $ SearchFound iid t deck remaining
       pure a
     _ -> StickToThePlan3 <$> liftRunMessage msg attrs

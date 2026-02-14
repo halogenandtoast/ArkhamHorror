@@ -5,7 +5,8 @@ export interface SiteSettings {
   assetHost: string
 }
 
-export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
+const cdnUrl = "https://assets.arkhamhorror.app"
+export const baseUrl = import.meta.env.VITE_ASSET_HOST !== undefined ? import.meta.env.VITE_ASSET_HOST : cdnUrl
 
 export const useSiteSettingsStore = defineStore("site_settings", {
   state: () => ({

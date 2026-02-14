@@ -95,6 +95,39 @@ Run `stack setup` in the `backend` directory, then run `stack build --fast` (not
 
 Run `npm install` in the `frontend` directory
 
+#### Images
+
+Image assets (~2.9 GB) are **not stored in the git repository**. They are hosted
+on CloudFront and the app loads them from the CDN by default in both development
+and production — no extra setup needed.
+
+If you need local copies (e.g. for offline development), the fetch script
+downloads directly from the public CDN using `curl` (no AWS credentials needed):
+
+```
+make fetch-images     # Download all images (~2.9 GB)
+make fetch-cards      # Download only English card images (~755 MB)
+
+# Or use the script directly for specific languages:
+./scripts/fetch-assets.sh fr    # French only
+./scripts/fetch-assets.sh en    # All English images
+```
+
+To use local images instead of CDN, create `frontend/.env.development.local`:
+```
+VITE_ASSET_HOST=
+```
+
+If you add new images, sync them to S3 and regenerate the manifest:
+```
+make sync-and-manifest
+```
+
+To install a git hook that warns if you forget to update the manifest:
+```
+make install-hooks
+```
+
 #### Database
 Create the local database:
 

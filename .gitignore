@@ -37,3 +37,21 @@ logfile
 *.hp
 
 .kamal/secrets
+
+# Large image assets (served from CloudFront CDN in both dev and prod)
+# Run `make fetch-images` to download locally if needed
+frontend/public/img/arkham/cards/
+frontend/public/img/arkham/es/
+frontend/public/img/arkham/fr/
+frontend/public/img/arkham/ita/
+frontend/public/img/arkham/ko/
+frontend/public/img/arkham/zh/
+frontend/public/img/arkham/boxes/
+frontend/public/img/arkham/portraits/
+frontend/public/img/arkham/tarot/
+frontend/public/img/arkham/encounter-sets/
+frontend/public/img/arkham/mini-cards/
+frontend/public/img/arkham/sets/
+frontend/public/img/arkham/customizations/
+frontend/public/img/arkham/seals/
+frontend/public/img/arkham/playing-cards/

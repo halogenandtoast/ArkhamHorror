@@ -36,6 +36,33 @@ sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"
 .PHONY: sync-images
 
+## Fetch images from CDN for local development
+fetch-images:
+	./scripts/fetch-assets.sh all
+.PHONY: fetch-images
+
+## Fetch only English card images from CDN
+fetch-cards:
+	./scripts/fetch-assets.sh cards
+.PHONY: fetch-cards
+
+## Regenerate image manifest (run after adding new images, before committing)
+generate-manifest:
+	node scripts/generate-manifest.cjs
+.PHONY: generate-manifest
+
+## Sync images to S3 and regenerate manifest
+sync-and-manifest:
+	./scripts/sync-and-manifest.sh
+.PHONY: sync-and-manifest
+
+## Install git hooks
+install-hooks:
+	cp scripts/check-manifest.sh .git/hooks/pre-commit
+	chmod +x .git/hooks/pre-commit
+	@echo "Pre-commit hook installed."
+.PHONY: install-hooks
+
 ## Count lines of code
 count:
 	cloc . --include-lang=Haskell,TypeScript,Vue --exclude-dir=node_modules,dist,.stack-work --timeout=0

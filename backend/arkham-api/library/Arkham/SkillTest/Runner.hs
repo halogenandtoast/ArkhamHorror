@@ -570,14 +570,14 @@ instance RunMessage SkillTest where
           SucceededBy _ n -> do
             let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
             pushAll
-              $ [After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
-              <> [After $ passed (SkillTestInitiatorTarget skillTestTarget)]
+              $ [Do $ After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [Do $ After $ passed (SkillTestInitiatorTarget skillTestTarget)]
           FailedBy _ n -> do
             let resolver = skillTestResolveFailureInvestigator
             let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
             pushAll
-              $ [After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
-              <> [After $ failed (SkillTestInitiatorTarget skillTestTarget)]
+              $ [Do $ After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [Do $ After $ failed (SkillTestInitiatorTarget skillTestTarget)]
           Unrun -> pure ()
 
         pushAll
@@ -777,6 +777,8 @@ instance RunMessage SkillTest where
           pushAll
             $ [When (passed target) | target <- skillTestSubscribers <> tokenSubscribers]
             <> [When (passed (SkillTestInitiatorTarget skillTestTarget))]
+            <> [After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
+            <> [After $ passed (SkillTestInitiatorTarget skillTestTarget)]
         FailedBy _ n -> do
           hauntedAbilities <- case (skillTestTarget, skillTestAction) of
             (LocationTarget lid, Just Action.Investigate) -> select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
@@ -795,6 +797,8 @@ instance RunMessage SkillTest where
                     <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] [] | ab <- hauntedAbilities]
                        | notNull hauntedAbilities
                        ]
+                    <> [After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
+                    <> [After $ failed (SkillTestInitiatorTarget skillTestTarget)]
 
           if needsChoice
             then do

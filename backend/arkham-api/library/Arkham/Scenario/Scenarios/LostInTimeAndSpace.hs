@@ -131,7 +131,7 @@ instance RunMessage LostInTimeAndSpace where
         , Agendas.breakingThrough
         , Agendas.theEndOfAllThings
         ]
-    After (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+    Do (After (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _)) -> do
       case (isHardExpert attrs, chaosTokenFace token) of
         (True, Cultist) -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
         (_, Tablet) -> do
@@ -139,7 +139,7 @@ instance RunMessage LostInTimeAndSpace where
           for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
         _ -> pure ()
       pure s
-    After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+    Do (After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _)) -> do
       case token.face of
         Cultist -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
         Tablet -> do

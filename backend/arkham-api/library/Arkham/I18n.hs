@@ -60,6 +60,11 @@ nameVar val a = withVar "name" (String $ toTitle val) a
 cardNameVar :: (HasCardCode c, Named c, HasI18n) => c -> (HasI18n => a) -> a
 cardNameVar val a = withVar "name" (String $ toTitle val) $ withVar "__name" (String $ unCardCode $ toCardCode val) a
 
+-- __iname will be used to override to locale
+investigatorNameVar :: (HasCardCode c, Named c, HasI18n) => c -> (HasI18n => a) -> a
+investigatorNameVar val a = withVar "iname" (String $ toTitle val) $ withVar "__iname" (String $ unCardCode $ toCardCode val) a
+
+
 keyVar :: HasI18n => Text -> Text -> (HasI18n => a) -> a
 keyVar k val a = withVar k (String val) a
 

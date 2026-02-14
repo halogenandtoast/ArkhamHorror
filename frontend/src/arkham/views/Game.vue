@@ -30,6 +30,7 @@ import { useMenu } from '@/composeable/menu'
 import useEmitter from '@/composeable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { imgsrc } from '@/arkham/helpers'
+import { handleI18n } from '@/arkham/i18n'
 import * as Arkham from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
@@ -111,6 +112,13 @@ const showSettings = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const { t } = useI18n();
+
+const format = (str: string) => {
+  if (str.startsWith("$")) {
+    return handleI18n(str.slice(1), t)
+  }
+  return str
+}
 
 addEntry({
   id: "viewSettings",
@@ -882,7 +890,7 @@ onUnmounted(() => {
       <div v-else class="game-main">
         <div v-if="gameCard" class="revelation">
           <div class="revelation-container">
-            <h2>{{gameCard.title}}</h2>
+            <h2>{{format(gameCard.title)}}</h2>
             <div class="revelation-card-container">
               <div class="revelation-card">
                 <CardView :game="game" :card="gameCard.card" :playerId="playerId" />

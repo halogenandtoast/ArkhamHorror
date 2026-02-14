@@ -63,6 +63,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.Source
 import Arkham.Helpers.Window hiding (getAsset, getEnemy, getLocation)
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator (
   InvestigatorForm (..),
@@ -1513,11 +1514,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       VengeanceCard _ -> error "Vengeance card"
   DrewPlayerEnemy iid card -> do
     investigator <- getInvestigator iid
-    if Keyword.Peril `elem` cdKeywords (toCardDef card)
-      then do
-        pid <- getPlayer iid
-        sendEnemyOnly pid (format investigator <> " drew " <> format card) (toJSON $ toCard card)
-      else sendEnemy (format investigator <> " drew " <> format card) (toJSON $ toCard card)
+    withI18n $ cardNameVar card $ investigatorNameVar investigator do
+      if Keyword.Peril `elem` cdKeywords (toCardDef card)
+        then do
+          pid <- getPlayer iid
+          sendEnemyOnly pid (ikey' "drew") (toJSON $ toCard card)
+        else
+          sendEnemy (ikey' "drew") (toJSON $ toCard card)
 
     enemyId <- getRandom
     let enemy = overAttrs (\e -> e {enemyBearer = card.owner}) (createEnemy card enemyId)

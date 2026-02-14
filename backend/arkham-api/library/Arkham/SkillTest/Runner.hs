@@ -354,10 +354,11 @@ instance RunMessage SkillTest where
         _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
       let
-        s' = s
-          & (resultL .~ SucceededBy Automatic modifiedSkillValue')
-          & (originalDifficultyL .~ skillTestOriginalDifficulty)
-          & (difficultyL .~ SkillTestDifficulty (Fixed 0))
+        s' =
+          s
+            & (resultL .~ SucceededBy Automatic modifiedSkillValue')
+            & (originalDifficultyL .~ skillTestOriginalDifficulty)
+            & (difficultyL .~ SkillTestDifficulty (Fixed 0))
       results <- calculateSkillTestResultsData s'
       push $ SkillTestResults results
       pure s'
@@ -543,14 +544,48 @@ instance RunMessage SkillTest where
                 Just $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [toCard discard]
             | otherwise -> guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
 
-      pushAll
-        $ ResetChaosTokens (toSource s)
-        : discardMessages
-          <> windows [Window.SkillTestEnded s]
+      modifiers' <- getModifiers (toTarget s)
+      let
+        modifiedSkillTestResult =
+          foldl' modifySkillTestResult skillTestResult modifiers'
+        modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+          Unrun -> Unrun
+          SucceededBy b m -> SucceededBy b (max 0 (m + n))
+          FailedBy b m -> FailedBy b (max 0 (m + n))
+        modifySkillTestResult r _ = r
+
+      tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
+        faces <- getModifiedChaosTokenFaces [token]
+        pure
+          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          | face <- faces
+          ]
+
+      runQueueT do
+        pushAll
+          $ ResetChaosTokens (toSource s)
+          : discardMessages
+
+        case modifiedSkillTestResult of
+          SucceededBy _ n -> do
+            let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+            pushAll
+              $ [After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [After $ passed (SkillTestInitiatorTarget skillTestTarget)]
+          FailedBy _ n -> do
+            let resolver = skillTestResolveFailureInvestigator
+            let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
+            pushAll
+              $ [After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [After $ failed (SkillTestInitiatorTarget skillTestTarget)]
+          Unrun -> pure ()
+
+        pushAll
+          $ windows [Window.SkillTestEnded s]
           <> [ AfterSkillTestEnds skillTestSource skillTestTarget skillTestResult
              , Msg.SkillTestEnded skillTestId
              ]
-      pure s
+      pure $ s & stepL .~ SkillTestEndsStep
     ReturnToHand _ (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
       pure
@@ -742,8 +777,6 @@ instance RunMessage SkillTest where
           pushAll
             $ [When (passed target) | target <- skillTestSubscribers <> tokenSubscribers]
             <> [When (passed (SkillTestInitiatorTarget skillTestTarget))]
-            <> [After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
-            <> [After $ passed (SkillTestInitiatorTarget skillTestTarget)]
         FailedBy _ n -> do
           hauntedAbilities <- case (skillTestTarget, skillTestAction) of
             (LocationTarget lid, Just Action.Investigate) -> select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
@@ -762,8 +795,6 @@ instance RunMessage SkillTest where
                     <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] [] | ab <- hauntedAbilities]
                        | notNull hauntedAbilities
                        ]
-                    <> [After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
-                    <> [After $ failed (SkillTestInitiatorTarget skillTestTarget)]
 
           if needsChoice
             then do

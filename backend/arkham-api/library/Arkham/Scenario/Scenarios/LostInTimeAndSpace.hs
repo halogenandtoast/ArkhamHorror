@@ -19,6 +19,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
@@ -131,20 +132,20 @@ instance RunMessage LostInTimeAndSpace where
         , Agendas.breakingThrough
         , Agendas.theEndOfAllThings
         ]
-    Do (After (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _)) -> do
-      case (isHardExpert attrs, chaosTokenFace token) of
+    AfterSkillTest (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      case (isHardExpert attrs, token.face) of
         (True, Cultist) -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
-        (_, Tablet) -> do
-          mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
+        (_, Tablet) -> selectEach (EnemyWithTitle "Yog-Sothoth") \eid -> initiateEnemyAttack eid attrs iid
         _ -> pure ()
       pure s
-    Do (After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _)) -> do
+    AfterSkillTest (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
       case token.face of
         Cultist -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
-        Tablet -> do
-          mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
+        Tablet -> selectEach (EnemyWithTitle "Yog-Sothoth") \eid -> initiateEnemyAttack eid attrs iid
+        _ -> pure ()
+      pure s
+    After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      case token.face of
         ElderThing -> withLocationOf iid \lid -> do
           whenM (lid <=~> LocationWithTrait Extradimensional) $ toDiscardBy iid ElderThing lid
         _ -> pure ()

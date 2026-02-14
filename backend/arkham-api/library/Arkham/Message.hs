@@ -200,6 +200,11 @@ instance Sourceable a => Is a Source where
 instance Targetable a => Is a Target where
   is = isTarget
 
+pattern AfterSkillTest :: Message -> Message
+pattern AfterSkillTest msg <- Do (After msg)
+  where
+    AfterSkillTest msg = Do (After msg)
+
 pattern LoseAll :: InvestigatorId -> Source -> Token -> Message
 pattern LoseAll iid source token <- LoseTokens iid source token AllLost
   where

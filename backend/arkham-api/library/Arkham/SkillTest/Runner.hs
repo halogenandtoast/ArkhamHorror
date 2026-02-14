@@ -570,14 +570,14 @@ instance RunMessage SkillTest where
           SucceededBy _ n -> do
             let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
             pushAll
-              $ [Do $ After $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
-              <> [Do $ After $ passed (SkillTestInitiatorTarget skillTestTarget)]
+              $ [AfterSkillTest $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [AfterSkillTest $ passed (SkillTestInitiatorTarget skillTestTarget)]
           FailedBy _ n -> do
             let resolver = skillTestResolveFailureInvestigator
             let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
             pushAll
-              $ [Do $ After $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
-              <> [Do $ After $ failed (SkillTestInitiatorTarget skillTestTarget)]
+              $ [AfterSkillTest $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
+              <> [AfterSkillTest $ failed (SkillTestInitiatorTarget skillTestTarget)]
           Unrun -> pure ()
 
         pushAll

@@ -227,7 +227,7 @@ overpower =
   (skill "01091" "Overpower" [#combat, #combat] Neutral)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdAlternateCardCodes = ["01591"]
+    , cdAlternateCardCodes = ["01591", "12092"]
     }
 
 manualDexterity :: CardDef

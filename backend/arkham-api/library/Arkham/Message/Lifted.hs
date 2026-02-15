@@ -2440,14 +2440,44 @@ oncePerAbility attrs n f = do
       >> f
 
 insertAfterMatching
-  :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
-insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
+  :: (HasCallStack, MonadTrans t, HasQueue Message m) => [Message] -> (Message -> Bool) -> t m ()
+insertAfterMatching msgs p = lift $ withQueue_ \queue ->
+  let (before, rest) = break p queue
+   in case rest of
+        (x : xs) -> before <> (x : msgs <> xs)
+        _ -> go [] queue
+ where
+  go _acc [] = error $ "no matching message:\n" <> prettyCallStack callStack
+  go acc (x : xs) = case x of
+    MoveWithSkillTest inner ->
+      case inner of
+        Run innerMsgs
+          | not (null afterInner)
+          , (y : ys) <- afterInner ->
+              reverse acc <> (MoveWithSkillTest (Run (beforeInner <> (y : msgs <> ys))) : xs)
+         where
+          (beforeInner, afterInner) = break p innerMsgs
+        _ -> go (x : acc) xs
+    Run innerMsgs
+      | not (null afterInner)
+      , (y : ys) <- afterInner ->
+          reverse acc <> (Run (beforeInner <> (y : msgs <> ys)) : xs)
+     where
+      (beforeInner, afterInner) = break p innerMsgs
+    _ -> go (x : acc) xs
 
 afterMove
   :: (WithEffect m, ReverseQueue m, Sourceable a) => a -> InvestigatorId -> QueueT Message m () -> m ()
 afterMove a iid body = withSource a $ effect iid do
   removeOn #move
   onDisable body
+
+afterEvent
+  :: (MonadTrans t, HasQueue Message m, ToId event EventId, ReverseQueue (t m))
+  => event -> QueueT Message (t m) () -> t m ()
+afterEvent event body = do
+  msgs <- capture body
+  insertAfterMatching msgs (== FinishedEvent (asId event))
 
 atEndOfTurn
   :: (Sourceable a, HasQueue Message m)

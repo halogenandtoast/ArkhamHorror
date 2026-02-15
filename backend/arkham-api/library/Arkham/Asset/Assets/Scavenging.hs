@@ -23,6 +23,6 @@ instance HasAbilities Scavenging where
 instance RunMessage Scavenging where
   runMessage msg a@(Scavenging attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromDiscard] #item (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromDiscard] #item (AddFoundToHand iid 1)
       pure a
     _ -> Scavenging <$> liftRunMessage msg attrs

@@ -47,7 +47,7 @@ instance RunMessage FalseLight where
       lookAtRevealed iid (attrs.ability 1) eid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      inPlay <- selectOne isADesiderio
+      inPlay <- selectOne $ InPlayEnemy isADesiderio
       case inPlay of
         Just enemy -> do
           card <- field EnemyCard enemy

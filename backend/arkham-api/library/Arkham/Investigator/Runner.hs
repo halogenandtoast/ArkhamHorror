@@ -3744,25 +3744,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                | card <- uncommittableCards
                ]
             <> triggerMessage
-      when (iid /= a.id) do
-        -- committedCards <- field InvestigatorCommittedCards investigatorId
-        let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
-        committableCards <-
-          filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
-            <$> getCommittableCards a.id
-        uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
-        player <- getPlayer investigatorId
-        pushWhen (notNull committableCards || notNull uncommittableCards)
-          $ SkillTestAsk
-          $ chooseOne player
-          $ map
-            (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
-            committableCards
-          <> [ targetLabel
-                 (toCardId card)
-                 [SkillTestUncommitCard investigatorId card, AddToHand investigatorId [card], beginMessage]
-             | card <- uncommittableCards
-             ]
+      -- NOTE: Currently not possible to commit after revealing tokens when not your test
+      -- when (iid /= a.id) do
+      --   -- committedCards <- field InvestigatorCommittedCards investigatorId
+      --   let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
+      --   committableCards <-
+      --     filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
+      --       <$> getCommittableCards a.id
+      --   uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
+      --   player <- getPlayer investigatorId
+      --   pushWhen (notNull committableCards || notNull uncommittableCards)
+      --     $ SkillTestAsk
+      --     $ chooseOne player
+      --     $ map
+      --       (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
+      --       committableCards
+      --     <> [ targetLabel
+      --            (toCardId card)
+      --            [SkillTestUncommitCard investigatorId card, AddToHand investigatorId [card], beginMessage]
+      --        | card <- uncommittableCards
+      --        ]
     pure a
   CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
     pure $ a & skippedWindowL .~ False

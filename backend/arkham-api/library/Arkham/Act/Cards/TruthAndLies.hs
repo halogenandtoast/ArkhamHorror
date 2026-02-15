@@ -38,6 +38,7 @@ instance RunMessage TruthAndLies where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       knowsTheTruth <- getHasRecord TheBlackCatKnowsTheTruth
       possessTheSilverKey <- getHasRecord TheInvestigatorsPossessTheSilverKey
+      eachInvestigator (`loseAllClues` attrs)
 
       if knowsTheTruth && possessTheSilverKey
         then do

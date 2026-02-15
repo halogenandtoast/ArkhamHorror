@@ -37,6 +37,8 @@ instance RunMessage MistsFromBeyond where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.attached.location $ \loc -> do
         locations <- select $ NearestLocationToLocation loc LocationWithAnyClues
-        chooseTargetM iid locations $ attachTreachery attrs
+        chooseTargetM iid locations \loc' -> do
+          paths <- select $ ClosestPathLocation loc loc'
+          chooseOrRunOneM iid $ targets paths $ attachTreachery attrs
       pure t
     _ -> MistsFromBeyond <$> liftRunMessage msg attrs

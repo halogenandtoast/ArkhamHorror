@@ -23,7 +23,7 @@ newtype LaChicaRojaYourWatchfulShadow = LaChicaRojaYourWatchfulShadow AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laChicaRojaYourWatchfulShadow :: AssetCard LaChicaRojaYourWatchfulShadow
-laChicaRojaYourWatchfulShadow = asset LaChicaRojaYourWatchfulShadow Cards.laChicaRojaYourWatchfulShadow
+laChicaRojaYourWatchfulShadow = allyWith LaChicaRojaYourWatchfulShadow Cards.laChicaRojaYourWatchfulShadow (3, 3) noSlots
 
 instance HasAbilities LaChicaRojaYourWatchfulShadow where
   getAbilities (LaChicaRojaYourWatchfulShadow a) =

@@ -24,7 +24,7 @@ instance RunMessage TheEyeOfChaos where
     AdvanceAgenda (isSide B attrs -> True) -> do
       n <- getCurrentActStep
       when (n == 4) do
-        towers <- select $ LocationWithTitle "Forsaken Tower"
+        towers <- select $ LocationWithTitle "Forsaken Tower" <> RevealedLocation
         for_ towers \tower -> do
           x <- fieldMapM LocationRevealClues getGameValue tower
           push $ PlaceCluesUpToClueValue tower (toSource attrs) x

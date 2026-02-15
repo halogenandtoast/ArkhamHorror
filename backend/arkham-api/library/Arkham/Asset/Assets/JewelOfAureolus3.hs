@@ -19,7 +19,7 @@ jewelOfAureolus3 = asset JewelOfAureolus3 Cards.jewelOfAureolus3
 
 instance HasAbilities JewelOfAureolus3 where
   getAbilities (JewelOfAureolus3 x) =
-    [ restricted x 1 ControlsThis
+    [ controlled x 1 (DuringSkillTest SkillTestAtYourLocation)
         $ triggered
           ( RevealChaosToken #when (colocatedWithMatch You)
               $ if tabooed TabooList20 x

@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.RestlessJourneyHardship (
   restlessJourneyHardship,
   restlessJourneyHardshipEffect,
-  RestlessJourneyHardship (..),
 )
 where
 
@@ -48,8 +47,9 @@ instance RunMessage RestlessJourneyHardship where
       pure t
     EndRound -> pure $ RestlessJourneyHardship $ setMeta @Bool False attrs
     SkillTestEnds {} -> do
+      let alreadyCommitted = toResult @Bool attrs.meta
       case attrs.placement of
-        HiddenInHand iid -> do
+        HiddenInHand iid | not alreadyCommitted -> do
           commitedCardsCount <- fieldMap InvestigatorCommittedCards length iid
           pure $ RestlessJourneyHardship $ setMeta @Bool (commitedCardsCount > 0) attrs
         _ -> pure t

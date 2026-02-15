@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.RestlessJourneyFallacy (
-  restlessJourneyFallacy,
-  restlessJourneyFallacyEffect,
-  RestlessJourneyFallacy (..),
-)
-where
+module Arkham.Treachery.Cards.RestlessJourneyFallacy (restlessJourneyFallacy, restlessJourneyFallacyEffect) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -47,8 +42,9 @@ instance RunMessage RestlessJourneyFallacy where
       pure t
     EndRound -> pure $ RestlessJourneyFallacy $ setMeta @Bool False attrs
     SkillTestEnds {} -> do
+      let alreadyCommitted = toResult @Bool attrs.meta
       case attrs.placement of
-        HiddenInHand iid -> do
+        HiddenInHand iid | not alreadyCommitted -> do
           commitedCardsCount <- fieldMap InvestigatorCommittedCards length iid
           pure $ RestlessJourneyFallacy $ setMeta @Bool (commitedCardsCount > 0) attrs
         _ -> pure t

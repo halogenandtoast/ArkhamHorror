@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.RestlessJourneyLies (
-  restlessJourneyLies,
-  restlessJourneyLiesEffect,
-  RestlessJourneyLies (..),
-)
-where
+module Arkham.Treachery.Cards.RestlessJourneyLies (restlessJourneyLies, restlessJourneyLiesEffect) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -31,7 +26,7 @@ instance HasModifiersFor RestlessJourneyLies where
       modified_ attrs iid
         $ guard (alreadyCommitted || commitedCardsCount >= 1)
         *> [CannotCommitCards AnyCard]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities RestlessJourneyLies where
   getAbilities (RestlessJourneyLies a) = [skillTestAbility $ restrictedAbility a 1 InYourHand $ FastAbility Free]
@@ -47,8 +42,9 @@ instance RunMessage RestlessJourneyLies where
       pure t
     EndRound -> pure $ RestlessJourneyLies $ setMeta @Bool False attrs
     SkillTestEnds {} -> do
+      let alreadyCommitted = toResult @Bool attrs.meta
       case attrs.placement of
-        HiddenInHand iid -> do
+        HiddenInHand iid | not alreadyCommitted -> do
           commitedCardsCount <- fieldMap InvestigatorCommittedCards length iid
           pure $ RestlessJourneyLies $ setMeta @Bool (commitedCardsCount > 0) attrs
         _ -> pure t

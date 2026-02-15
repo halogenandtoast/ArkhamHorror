@@ -291,7 +291,7 @@ instance RunMessage CongressOfTheKeys where
 
       let
         nay5 = nay4 + if alikiIsOnYourSide then 1 else 0
-        yea5 = yea4 + if youHaventSeenTheLastOfAlikiZoniUperetria then 1 else 0
+        yea5 = yea4 + if youHaventSeenTheLastOfAlikiZoniUperetria then 0 else 1
 
       flavor do
         showVotes nay5 yea5

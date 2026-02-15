@@ -3,12 +3,12 @@ module Arkham.Event.Events.BindMonster2 (bindMonster2, bindMonster2Effect) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
-import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Effect.Import
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Import.Lifted
 import Arkham.Exception
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 
 newtype BindMonster2 = BindMonster2 EventAttrs
@@ -41,9 +41,7 @@ instance RunMessage BindMonster2 where
         Nothing -> throwIO $ InvalidState "must be attached"
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      case attrs.attachedTo of
-        Just target@(EnemyTarget _) -> lift $ withQueue_ (filter (/= Ready target))
-        _ -> error "invalid target"
+      getCurrentBatchId >>= traverse_ cancelBatch
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

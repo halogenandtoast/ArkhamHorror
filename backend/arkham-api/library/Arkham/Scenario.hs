@@ -573,7 +573,7 @@ allScenarioCards =
     (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
 
 duplicatedScenarios :: [CardCode]
-duplicatedScenarios = ["08501c"]
+duplicatedScenarios = ["04205a", "04205b", "08501c"]
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =

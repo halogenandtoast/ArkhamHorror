@@ -22,7 +22,8 @@ instance HasAbilities DarkYoungHost where
   getAbilities (DarkYoungHost a) =
     extend
       a
-      [ restricted a 1 (prohibit $ getEnemyMetaDefault False a)
+      [ groupLimit PerDepthLevel
+          $ restricted a 1 (prohibit $ getEnemyMetaDefault False a)
           $ forced
           $ PlacedCounterOnLocation #when (locationWithEnemy a) AnySource #clue (atLeast 1)
       , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
@@ -30,7 +31,7 @@ instance HasAbilities DarkYoungHost where
 
 instance RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlacedClues _ target n)] _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 [windowType -> Window.PlacedClues _ target n] _ -> do
       removeClues (attrs.ability 1) target n
       placeClues (attrs.ability 1) attrs n
       pure e

@@ -259,6 +259,7 @@ data ModifierType
   | DoNotRemoveDoom
   | DoNotRevealAnotherChaosToken -- see: Ancient Covenant (2)
   | DoNotTakeUpSlot SlotType
+  | DoNotTakeUpSlots
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts

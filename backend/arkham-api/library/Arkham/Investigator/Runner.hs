@@ -880,6 +880,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       InThreatArea iid | iid == investigatorId -> do
         push $ InvestigatorPlayAsset iid aid
         pure a
+      AttachedToAsset _ (Just (InPlayArea iid)) | iid == investigatorId -> do
+        push $ InvestigatorPlayAsset iid aid
+        pure a
       AtLocation _ -> do
         isServitor <- aid <=~> assetIs Assets.summonedServitor
         if isServitor
@@ -2406,8 +2409,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   cardId <- field AssetCardId aid
                   orM
                     [ fieldMap AssetSlots (notElem slotType) aid
-                    , hasModifier aid (DoNotTakeUpSlot slotType)
-                    , hasModifier cardId (DoNotTakeUpSlot slotType)
+                    , hasAnyModifier aid [DoNotTakeUpSlots, DoNotTakeUpSlot slotType]
+                    , hasAnyModifier cardId [DoNotTakeUpSlots, DoNotTakeUpSlot slotType]
                     ]
               assetsToRemove :: [[AssetId]] <-
                 forMaybeM assets \aid -> runMaybeT do
@@ -2983,12 +2986,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     push $ RefillSlots a.id []
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
   RefillSlots iid xs | iid == investigatorId && not investigatorEliminated -> do
-    assetIds <- select $ mapOneOf AssetWithPlacement [InPlayArea iid, InThreatArea iid]
+    assetIds <-
+      select
+        $ oneOf [AssetInPlayAreaOf (InvestigatorWithId iid), AssetInThreatAreaOf (InvestigatorWithId iid)]
     mods <- getModifiers a
     requirements <- concatForM assetIds \assetId -> do
       assetCard <- field AssetCard assetId
       amods <- getCombinedModifiers [toTarget assetId, toTarget assetCard]
-      let slotFilter sType = DoNotTakeUpSlot sType `notElem` amods
+      let slotFilter sType = all (`notElem` amods) [DoNotTakeUpSlot sType, DoNotTakeUpSlots]
       slots <- field AssetSlots assetId
       pure $ (assetId,assetCard,) <$> filter slotFilter slots
 
@@ -3744,26 +3749,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                | card <- uncommittableCards
                ]
             <> triggerMessage
-      -- NOTE: Currently not possible to commit after revealing tokens when not your test
-      -- when (iid /= a.id) do
-      --   -- committedCards <- field InvestigatorCommittedCards investigatorId
-      --   let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
-      --   committableCards <-
-      --     filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
-      --       <$> getCommittableCards a.id
-      --   uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
-      --   player <- getPlayer investigatorId
-      --   pushWhen (notNull committableCards || notNull uncommittableCards)
-      --     $ SkillTestAsk
-      --     $ chooseOne player
-      --     $ map
-      --       (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
-      --       committableCards
-      --     <> [ targetLabel
-      --            (toCardId card)
-      --            [SkillTestUncommitCard investigatorId card, AddToHand investigatorId [card], beginMessage]
-      --        | card <- uncommittableCards
-      --        ]
+    -- NOTE: Currently not possible to commit after revealing tokens when not your test
+    -- when (iid /= a.id) do
+    --   -- committedCards <- field InvestigatorCommittedCards investigatorId
+    --   let beginMessage = DoStep 3 (CommitToSkillTest skillTestId triggerMessage')
+    --   committableCards <-
+    --     filter (\c -> CanCommitAfterRevealingTokens `elem` cdCommitRestrictions (toCardDef c))
+    --       <$> getCommittableCards a.id
+    --   uncommittableCards <- pure [] -- filterM (`withoutModifier` MustBeCommitted) committedCards
+    --   player <- getPlayer investigatorId
+    --   pushWhen (notNull committableCards || notNull uncommittableCards)
+    --     $ SkillTestAsk
+    --     $ chooseOne player
+    --     $ map
+    --       (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
+    --       committableCards
+    --     <> [ targetLabel
+    --            (toCardId card)
+    --            [SkillTestUncommitCard investigatorId card, AddToHand investigatorId [card], beginMessage]
+    --        | card <- uncommittableCards
+    --        ]
     pure a
   CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
     pure $ a & skippedWindowL .~ False

@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.ElleRubashPurifyingPurpose2 (
-  elleRubashPurifyingPurpose2,
-  ElleRubashPurifyingPurpose2 (..),
-)
-where
+module Arkham.Asset.Assets.ElleRubashPurifyingPurpose2 (elleRubashPurifyingPurpose2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -10,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelect)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 
 newtype ElleRubashPurifyingPurpose2 = ElleRubashPurifyingPurpose2 AssetAttrs
@@ -20,20 +17,17 @@ elleRubashPurifyingPurpose2 :: AssetCard ElleRubashPurifyingPurpose2
 elleRubashPurifyingPurpose2 = ally ElleRubashPurifyingPurpose2 Cards.elleRubashPurifyingPurpose2 (1, 2)
 
 instance HasModifiersFor ElleRubashPurifyingPurpose2 where
-  getModifiersFor (ElleRubashPurifyingPurpose2 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      controller <- maybeModified_ a iid do
-        source <- MaybeT getSkillTestSource
-        skillTestAsset <- hoistMaybe source.asset
-        liftGuardM $ skillTestAsset <=~> AssetAttachedToAsset (be a)
-        pure [AnySkillValue 1]
-      assets <- modifySelect a (AssetAttachedToAsset (be a)) [IgnoreDoomOnThis 1]
-      pure $ controller <> assets
+  getModifiersFor (ElleRubashPurifyingPurpose2 a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
+      source <- MaybeT getSkillTestSource
+      skillTestAsset <- hoistMaybe source.asset
+      liftGuardM $ skillTestAsset <=~> AssetAttachedToAsset (be a)
+      pure [AnySkillValue 1]
+    modifySelect a (AssetAttachedToAsset (be a)) [IgnoreDoomOnThis 1]
 
 instance HasAbilities ElleRubashPurifyingPurpose2 where
   getAbilities (ElleRubashPurifyingPurpose2 x) =
-    [ controlledAbility x 1 (exists $ AssetWithAnyDoom <> AssetInPlayAreaOf You <> not_ (be x))
+    [ controlled x 1 (exists $ AssetWithAnyDoom <> AssetInPlayAreaOf You <> not_ (be x))
         $ FastAbility (exhaust x)
     ]
 
@@ -47,9 +41,11 @@ instance RunMessage ElleRubashPurifyingPurpose2 where
       attached <- select $ assetAttachedToAsset attrs.id
       let mustSwap = length attached >= 2
       let placeAsset = PlaceAsset aid (AttachedToAsset attrs.id (Just $ InPlayArea iid))
-      chooseOrRunOne iid
-        $ [Label "Attach without swapping" [placeAsset] | not mustSwap]
-        <> [ targetLabel otherAsset [placeAsset, PlaceAsset otherAsset (InPlayArea iid)] | otherAsset <- attached
-           ]
+      chooseOrRunOneM iid do
+        unless mustSwap do
+          labeled "Attach without swapping" $ push placeAsset
+        targets attached \otherAsset -> do
+          push placeAsset
+          push $ PlaceAsset otherAsset (InPlayArea iid)
       pure a
     _ -> ElleRubashPurifyingPurpose2 <$> liftRunMessage msg attrs

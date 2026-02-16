@@ -24,12 +24,11 @@ drElliHorowitz :: AssetCard DrElliHorowitz
 drElliHorowitz = ally DrElliHorowitz Cards.drElliHorowitz (1, 2)
 
 instance HasModifiersFor DrElliHorowitz where
-  getModifiersFor (DrElliHorowitz a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid]
+  getModifiersFor (DrElliHorowitz a) = modifySelect a (AssetAttachedToAsset (be a)) [DoNotTakeUpSlots]
 
 instance HasAbilities DrElliHorowitz where
-  getAbilities (DrElliHorowitz a) = [controlledAbility a 1 CanManipulateDeck $ freeReaction (AssetEntersPlay #when $ be a)]
+  getAbilities (DrElliHorowitz a) =
+    [controlled a 1 CanManipulateDeck $ triggered_ (AssetEntersPlay #when $ be a)]
 
 instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = runQueueT $ case msg of

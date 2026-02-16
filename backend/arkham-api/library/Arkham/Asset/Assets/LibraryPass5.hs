@@ -4,16 +4,21 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Cost
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 
 newtype LibraryPass5 = LibraryPass5 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 libraryPass5 :: AssetCard LibraryPass5
 libraryPass5 = asset LibraryPass5 Cards.libraryPass5
+
+instance HasModifiersFor LibraryPass5 where
+  getModifiersFor (LibraryPass5 a) =
+    modifySelect a (AssetAttachedToAsset (be a)) [DoNotTakeUpSlots]
 
 instance HasAbilities LibraryPass5 where
   getAbilities (LibraryPass5 x) =

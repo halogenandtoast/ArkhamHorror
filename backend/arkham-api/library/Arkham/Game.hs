@@ -2778,6 +2778,14 @@ getAssetsMatching matcher = do
           AttachedToAsset _ (Just inner) -> inPlayArea inner
           _ -> False
       filterM (fieldP AssetPlacement inPlayArea . toId) as
+    AssetInThreatAreaOf investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      let
+        inThreatArea = \case
+          InThreatArea iid' -> iid' `elem` iids
+          AttachedToAsset _ (Just inner) -> inThreatArea inner
+          _ -> False
+      filterM (fieldP AssetPlacement inThreatArea . toId) as
     AssetAttachedTo targetMatcher -> do
       let
         isValid a = case (assetPlacement (toAttrs a)).attachedTo of
@@ -4156,7 +4164,7 @@ instance Projection Asset where
         -- with Hunter's Armor duplicating its slots
         mods <- getModifiers aid
         let isSpirit = notNull [() | IsSpirit _ <- mods]
-        if isSpirit
+        if isSpirit || DoNotTakeUpSlots `elem` mods
           then pure []
           else do
             let slotsToRemove = concat [replicate n s | TakeUpFewerSlots s n <- mods]

@@ -16,8 +16,8 @@ toolBelt :: AssetCard ToolBelt
 toolBelt = asset ToolBelt Cards.toolBelt
 
 instance HasModifiersFor ToolBelt where
-  getModifiersFor (ToolBelt a) = for_ a.controller \iid -> do
-    modifySelect a (AssetAttachedToAsset (be a)) [Blank, AsIfUnderControlOf iid]
+  getModifiersFor (ToolBelt a) =
+    modifySelect a (AssetAttachedToAsset (be a)) [Blank, DoNotTakeUpSlots]
 
 instance HasAbilities ToolBelt where
   getAbilities (ToolBelt a) = [controlled a 1 beltCriteria $ FastAbility (exhaust a)]

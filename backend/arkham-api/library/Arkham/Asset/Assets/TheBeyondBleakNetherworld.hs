@@ -35,7 +35,7 @@ instance HasAbilities TheBeyondBleakNetherworld where
 
 instance HasModifiersFor TheBeyondBleakNetherworld where
   getModifiersFor (TheBeyondBleakNetherworld (With a _)) = for_ a.controller \iid -> do
-    modifySelect a (AssetAttachedToAsset $ be a) [AsIfUnderControlOf iid, IsSpirit iid]
+    modifySelect a (AssetAttachedToAsset $ be a) [AsIfUnderControlOf iid, IsSpirit iid, DoNotTakeUpSlots]
 
 instance RunMessage TheBeyondBleakNetherworld where
   runMessage msg a@(TheBeyondBleakNetherworld (With attrs meta)) = runQueueT $ case msg of

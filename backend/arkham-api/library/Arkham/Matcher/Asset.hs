@@ -57,6 +57,7 @@ data AssetMatcher
   | AssetAttachedTo TargetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
+  | AssetInThreatAreaOf InvestigatorMatcher
   | InPlayAsset AssetMatcher
   | AssetOwnedBy InvestigatorMatcher
   | AssetWithMetaKeyValue Key Value

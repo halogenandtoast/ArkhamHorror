@@ -49,7 +49,7 @@ sourceTraits = \case
   EnemyAttackSource _ -> pure mempty
   EnemyDefeatSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
-  EnemySource eid -> field EnemyTraits eid
+  EnemySource eid -> fromMaybe mempty <$> fieldMay EnemyTraits eid
   EventSource eid -> field EventTraits eid
   GameSource -> pure mempty
   InvestigatorSource iid -> field InvestigatorTraits iid

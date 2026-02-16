@@ -29,7 +29,6 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 const label = function(body: string) {
-  console.log("Label body:", body)
   if (body.startsWith("$")) {
     return formatContent(handleI18n(body.slice(1), t))
   }

@@ -134,7 +134,6 @@ const abilityLabel = computed(() => {
       return replaceIcons("{action}".repeat(totalActionCost(cost)))
     }
     if (props.ability.ability.displayAs === 'DisplayAsCard') {
-      console.log(props.ability.ability.tooltip, maybeFormat(props.ability.ability.tooltip))
       return formatContent(maybeFormat(props.ability.ability.tooltip))
     }
   }

@@ -125,6 +125,8 @@ instance RunMessage LukeRobinson where
       lukePlayable <- getLukePlayable attrs windows'
       let mCardId = maybeResult attrs.meta
 
+      engaged <- select $ enemyEngagedWith attrs.id
+
       if card `elem` concatMap snd lukePlayable && Just card.id /= mCardId
         then do
           let lids = map fst $ filter (elem card . snd) lukePlayable
@@ -139,7 +141,7 @@ instance RunMessage LukeRobinson where
                 chooseOrRunOneM iid do
                   targets lids \lid -> do
                     enemies <- select $ enemyAt lid
-                    cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies
+                    cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies <> map AsIfNotEngagedWith engaged
                     playCard
         else runQueueT playCard
       -- we unset the tracked card here, it will have entered play and should be available again

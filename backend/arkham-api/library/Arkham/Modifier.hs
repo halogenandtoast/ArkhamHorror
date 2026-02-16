@@ -89,6 +89,7 @@ data ModifierType
   | CanBeAttackedAsIfEnemy
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
+  | AsIfNotEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfInHandFor ForPlay CardId
   | AsIfUnderControlOf InvestigatorId

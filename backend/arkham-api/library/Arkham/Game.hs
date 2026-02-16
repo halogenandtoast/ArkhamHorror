@@ -1224,8 +1224,14 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         asIfEngagedWith = flip mapMaybe mods $ \case
           AsIfEngagedWith eid -> Just eid
           _ -> Nothing
+        asIfNotEngagedWith = flip mapMaybe mods $ \case
+          AsIfNotEngagedWith eid -> Just eid
+          _ -> Nothing
 
-      selectAny $ enemyMatcher <> oneOf (enemyEngagedWith (toId i) : map EnemyWithId asIfEngagedWith)
+      selectAny
+        $ enemyMatcher
+        <> oneOf (enemyEngagedWith (toId i) : map EnemyWithId asIfEngagedWith)
+        <> not_ (mapOneOf EnemyWithId asIfNotEngagedWith)
     TopCardOfDeckIs cardMatcher -> flip runMatchesM as $ \i ->
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False

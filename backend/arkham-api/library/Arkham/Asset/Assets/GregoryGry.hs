@@ -5,7 +5,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Matcher
+import Arkham.SkillTestResult
 
 newtype GregoryGry = GregoryGry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -43,14 +45,17 @@ gregoryGryEffect = cardEffect GregoryGryEffect Cards.gregoryGry
 
 instance RunMessage GregoryGryEffect where
   runMessage msg e@(GregoryGryEffect attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ _ _ x -> do
-      case attrs.metaInt of
-        Just n -> do
-          when (x >= n) do
-            let iid = fromJustNote "Wrong Type" $ preview _InvestigatorTarget attrs.target
-            gainResourcesIfCan iid attrs.source n
-          disable attrs
-        _ -> error "Wrong metadata"
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      let iid = fromJustNote "Wrong Type" $ preview _InvestigatorTarget attrs.target
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId) do
+          case (attrs.metaInt, st.result) of
+            (Just n, SucceededBy _ x) | x >= n -> do
+              provideSkillTestResultOption attrs exclusions "Gregory Gry: Gain Resources" do
+                gainResourcesIfCan iid attrs.source n
+                disable attrs
+            _ -> pure ()
       pure e
     SkillTestEnds _ _ _ -> disableReturn e
     _ -> GregoryGryEffect <$> liftRunMessage msg attrs

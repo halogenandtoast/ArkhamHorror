@@ -2091,6 +2091,21 @@ skillTestResultOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 skillTestResultOption label body = do
   msgs <- capture body
   push $ SkillTestResultOption label msgs
+{-# DEPRECATED skillTestResultOption "Use provideSkillTestResultOption with CheckSkillTestResultOptions pattern" #-}
+
+-- | Provide a skill test result option during the gathering phase
+-- Use this in handlers for CheckSkillTestResultOptions
+provideSkillTestResultOption
+  :: (ReverseQueue m, Sourceable source)
+  => source -- ^ Entity providing the option (usually attrs)
+  -> [Source] -- ^ Exclusions from CheckSkillTestResultOptions
+  -> Text -- ^ Label for the option
+  -> QueueT Message m () -- ^ Messages to execute if chosen
+  -> m ()
+provideSkillTestResultOption source exclusions label body = do
+  when (toSource source `notElem` exclusions) do
+    msgs <- capture body
+    push $ ProvideSkillTestResultOption (toSource source) label msgs
 
 -- Use @SearchFound@ with this
 search

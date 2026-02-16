@@ -1,9 +1,11 @@
 module Arkham.Skill.Cards.Purified (purified) where
 
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 
 newtype Purified = Purified SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -14,8 +16,15 @@ purified = skill Purified Cards.purified
 
 instance RunMessage Purified where
   runMessage msg s@(Purified attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ (min 5 -> n) | n > 0 -> do
-      skillTestResultOption "Purified" $ doStep n msg
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy _ (min 5 -> n) | n > 0 -> do
+              let passedMsg = PassedSkillTest st.investigator st.action st.source st.target st.kind n
+              provideSkillTestResultOption attrs exclusions "Purified" $ doStep n passedMsg
+            _ -> pure ()
       pure s
     DoStep n (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
       curse <- selectCount $ ChaosTokenFaceIs #curse
@@ -28,7 +37,7 @@ instance RunMessage Purified where
         | bless + curse == n -> do
             repeated curse $ removeChaosToken #curse
             repeated bless $ addChaosToken #bless
-        | otherwise -> skillTestResultOption "Purified" do
+        | otherwise -> do
             chooseAmounts
               iid
               "Add Bless Tokens or Remove Curse Tokens"

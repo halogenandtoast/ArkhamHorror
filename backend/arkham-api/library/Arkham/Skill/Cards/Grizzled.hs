@@ -2,9 +2,10 @@ module Arkham.Skill.Cards.Grizzled (grizzled) where
 
 import Arkham.Ability
 import Arkham.Enemy.Types (Field (EnemyTraits))
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource, getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
 import Arkham.Matcher
@@ -13,6 +14,7 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted hiding (EncounterCardSource)
+import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Treachery.Types (Field (TreacheryTraits))
 
@@ -70,29 +72,35 @@ instance HasAbilities Grizzled where
 
 instance RunMessage Grizzled where
   runMessage msg s@(Grizzled attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
-      getSkillTestTarget >>= traverse_ \case
-        EnemyTarget eid -> do
-          when (attrs `hasCustomization` Nemesis) do
-            enemyTraits <- field EnemyTraits eid
-            when (any (`elem` traits) enemyTraits) do
-              skillTestResultOption "Grizzled" do
-                chooseOneM iid do
-                  labeled "Attach to enemy (Nemesis)" do
-                    place attrs $ AttachedToEnemy eid
-                  labeled "Do not attach to enemy" nothing
-        TreacheryTarget tid -> do
-          when (attrs `hasCustomization` MythosHardened) do
-            treacheryTraits <- field TreacheryTraits tid
-            when (any (`elem` traits) treacheryTraits) do
-              skillTestResultOption "Grizzled" do
-                chooseOneM iid do
-                  labeled "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)" do
-                    addToVictory iid attrs
-                    addToVictory iid tid
-                  labeled "Do not add to victory" nothing
-        _ -> pure ()
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy {} -> do
+              let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
+              getSkillTestTarget >>= traverse_ \case
+                EnemyTarget eid -> do
+                  when (attrs `hasCustomization` Nemesis) do
+                    enemyTraits <- field EnemyTraits eid
+                    when (any (`elem` traits) enemyTraits) do
+                      provideSkillTestResultOption attrs exclusions "Grizzled" do
+                        chooseOneM st.investigator do
+                          labeled "Attach to enemy (Nemesis)" do
+                            place attrs $ AttachedToEnemy eid
+                          labeled "Do not attach to enemy" nothing
+                TreacheryTarget tid -> do
+                  when (attrs `hasCustomization` MythosHardened) do
+                    treacheryTraits <- field TreacheryTraits tid
+                    when (any (`elem` traits) treacheryTraits) do
+                      provideSkillTestResultOption attrs exclusions "Grizzled" do
+                        chooseOneM st.investigator do
+                          labeled "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)" do
+                            addToVictory st.investigator attrs
+                            addToVictory st.investigator tid
+                          labeled "Do not add to victory" nothing
+                _ -> pure ()
+            _ -> pure ()
       pure s
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       addToHand iid (only attrs)

@@ -1,8 +1,10 @@
 module Arkham.Skill.Cards.EsotericMethod1 (esotericMethod1) where
 
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 
 newtype EsotericMethod1 = EsotericMethod1 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -13,14 +15,19 @@ esotericMethod1 = skill EsotericMethod1 Cards.esotericMethod1
 
 instance RunMessage EsotericMethod1 where
   runMessage msg s@(EsotericMethod1 attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n > 0 -> do
-      x <- getRemainingCurseTokens
-      skillTestResultOption "Esoteric Method (1)" do
-        addCurseTokens (Just iid) (min x n)
-      pure s
-    FailedSkillTest iid _ _ (isTarget attrs -> True) _ n | n > 0 -> do
-      x <- getRemainingCurseTokens
-      skillTestResultOption "Esoteric Method (1)" do
-        addCurseTokens (Just iid) (min x n)
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy _ n | n > 0 -> do
+              x <- getRemainingCurseTokens
+              provideSkillTestResultOption attrs exclusions "Esoteric Method (1)" do
+                addCurseTokens (Just st.investigator) (min x n)
+            FailedBy _ n | n > 0 -> do
+              x <- getRemainingCurseTokens
+              provideSkillTestResultOption attrs exclusions "Esoteric Method (1)" do
+                addCurseTokens (Just st.investigator) (min x n)
+            _ -> pure ()
       pure s
     _ -> EsotericMethod1 <$> liftRunMessage msg attrs

@@ -580,6 +580,10 @@ instance RunMessage SkillTest where
               <> [AfterSkillTest $ failed (SkillTestInitiatorTarget skillTestTarget)]
           Unrun -> pure ()
 
+        -- Trigger dynamic skill test result options gathering
+        unless (modifiedSkillTestResult == Unrun) do
+          push $ ProcessSkillTestResultOptions skillTestId []
+
         pushAll
           $ windows [Window.SkillTestEnded s]
           <> [ AfterSkillTestEnds skillTestSource skillTestTarget skillTestResult

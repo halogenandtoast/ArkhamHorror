@@ -2,11 +2,13 @@ module Arkham.Skill.Cards.MemoriesOfAnotherLife5 (memoriesOfAnotherLife5) where
 
 import Arkham.Card
 import Arkham.Cost.Status
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.Playable
 import Arkham.Message.Lifted.Choose
 import Arkham.PlayerCard
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted hiding (PaidCost)
+import Arkham.SkillTestResult
 import Arkham.Window (defaultWindows)
 
 newtype MemoriesOfAnotherLife5 = MemoriesOfAnotherLife5 SkillAttrs
@@ -18,11 +20,18 @@ memoriesOfAnotherLife5 = skill MemoriesOfAnotherLife5 Cards.memoriesOfAnotherLif
 
 instance RunMessage MemoriesOfAnotherLife5 where
   runMessage msg s@(MemoriesOfAnotherLife5 attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      skillTestResultOption "Memories of Another Life (5)" do
-        chooseOneM attrs.owner do
-          labeled "Remove Memories of Another Life from the game" (doStep 1 msg)
-          labeled "Do not remove Memories of Another Lift" nothing
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy _ n -> do
+              let passedMsg = PassedSkillTest st.investigator st.action st.source st.target st.kind n
+              provideSkillTestResultOption attrs exclusions "Memories of Another Life (5)" do
+                chooseOneM attrs.owner do
+                  labeled "Remove Memories of Another Life from the game" (doStep 1 passedMsg)
+                  labeled "Do not remove Memories of Another Lift" nothing
+            _ -> pure ()
       pure s
     DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       let iid = attrs.owner

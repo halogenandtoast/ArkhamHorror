@@ -433,8 +433,12 @@ data Message
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | AbilityIsSkillTest AbilityRef
   | ClearAbilityUse AbilityRef
-  | SkillTestResultOption Text [Message]
-  | SkillTestResultOptions [UI Message]
+  | SkillTestResultOption Text [Message] -- DEPRECATED: use CheckSkillTestResultOptions flow
+  | SkillTestResultOptions [UI Message] -- DEPRECATED: use ProcessSkillTestResultOptions flow
+  | -- Dynamic skill test result options (re-gathers after each choice)
+    CheckSkillTestResultOptions SkillTestId [Source] -- query entities for options
+  | ProvideSkillTestResultOption Source Text [Message] -- entity provides option
+  | ProcessSkillTestResultOptions SkillTestId [Source] -- trigger gathering loop
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetGameState GameState

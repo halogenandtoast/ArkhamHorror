@@ -6,7 +6,7 @@ where
 
 import Arkham.Card
 import Arkham.Effect.Import
-import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest, getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestSource, withSkillTest)
 import Arkham.Matcher
@@ -14,6 +14,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 import Arkham.Treachery.Types (Field (..))
 
 newtype TheEyeOfTruth5 = TheEyeOfTruth5 SkillAttrs
@@ -25,13 +26,19 @@ theEyeOfTruth5 = skill TheEyeOfTruth5 Cards.theEyeOfTruth5
 
 instance RunMessage TheEyeOfTruth5 where
   runMessage msg s@(TheEyeOfTruth5 attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      source <- fromJustNote "must be a skill test" <$> getSkillTestSource
-      for_ source.treachery \tid -> skillTestResultOption "The Eye of Truth (5)" do
-        addToVictory iid tid
-        addToVictory iid attrs
-        card <- field TreacheryCard tid
-        createCardEffect Cards.theEyeOfTruth5 Nothing attrs (toCardId card)
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy {} -> do
+              for_ st.source.treachery \tid ->
+                provideSkillTestResultOption attrs exclusions "The Eye of Truth (5)" do
+                  addToVictory st.investigator tid
+                  addToVictory st.investigator attrs
+                  card <- field TreacheryCard tid
+                  createCardEffect Cards.theEyeOfTruth5 Nothing attrs (toCardId card)
+            _ -> pure ()
       pure s
     _ -> TheEyeOfTruth5 <$> liftRunMessage msg attrs
 

@@ -1931,6 +1931,42 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 push $ Ask pid $ ChooseOneAtATime opts
           Nothing -> error "missing skill test"
     pure g
+  -- New dynamic skill test result options flow
+  ProcessSkillTestResultOptions skillTestId exclusions -> do
+    push $ CheckSkillTestResultOptions skillTestId exclusions
+    pure g
+  CheckSkillTestResultOptions skillTestId exclusions -> do
+    -- Collect all ProvideSkillTestResultOption responses
+    let
+      collectOptions acc = peekMessage >>= \case
+        Just (ProvideSkillTestResultOption source label msgs) -> do
+          _ <- popMessage
+          collectOptions ((source, label, msgs) : acc)
+        _ -> pure $ reverse acc
+
+    options <- collectOptions []
+
+    case options of
+      [] -> pure () -- No options, done
+      [(source, _label, msgs)] -> do
+        -- Only one option, execute it automatically and continue loop
+        pushAll msgs
+        push $ ProcessSkillTestResultOptions skillTestId (source : exclusions)
+      _ -> do
+        -- Multiple options, ask user to choose
+        mst <- getSkillTest
+        case mst of
+          Just st | st.id == skillTestId -> do
+            pid <- getPlayer st.investigator
+            let
+              makeChoice (source, label, msgs) =
+                Label label (msgs <> [ProcessSkillTestResultOptions skillTestId (source : exclusions)])
+            push $ Ask pid $ ChooseOneAtATime (map makeChoice options)
+          _ -> error $ "missing skill test: " <> show skillTestId
+    pure g
+  ProvideSkillTestResultOption {} -> do
+    -- This should always be consumed by CheckSkillTestResultOptions
+    error "Unexpected ProvideSkillTestResultOption without CheckSkillTestResultOptions"
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card
     runMessage (RemoveAsset aid) g

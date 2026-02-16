@@ -1,9 +1,11 @@
 module Arkham.Skill.Cards.AllIn5 (allIn5) where
 
 import Arkham.Draw.Types
+import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 import Arkham.Taboo
 
 newtype AllIn5 = AllIn5 SkillAttrs
@@ -21,8 +23,14 @@ instance RunMessage AllIn5 where
         $ AllIn5
         $ attrs'
         & if tabooed TabooList18 attrs' then afterPlayL .~ RemoveThisFromGame else id
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ n -> do
-      skillTestResultOption "All In" do
-        drawCardsEdit iid attrs (min 5 n) shuffleBackInEachWeakness
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy _ n -> do
+              provideSkillTestResultOption attrs exclusions "All In" do
+                drawCardsEdit st.investigator attrs (min 5 n) shuffleBackInEachWeakness
+            _ -> pure ()
       pure s
     _ -> AllIn5 <$> liftRunMessage msg attrs

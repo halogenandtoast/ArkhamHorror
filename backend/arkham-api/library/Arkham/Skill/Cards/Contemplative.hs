@@ -5,6 +5,7 @@ import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 
 newtype Contemplative = Contemplative SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -23,9 +24,15 @@ instance HasModifiersFor Contemplative where
 
 instance RunMessage Contemplative where
   runMessage msg s@(Contemplative attrs) = runQueueT $ case msg of
-    PassedSkillTest _iid _ _ (isTarget attrs -> True) _ _ -> do
-      withSkillTestInvestigator \iid -> do
-        skillTestResultOption "Contemplative" do
-          discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy {} -> do
+              withSkillTestInvestigator \iid -> do
+                provideSkillTestResultOption attrs exclusions "Contemplative" do
+                  discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
+            _ -> pure ()
       pure s
     _ -> Contemplative <$> liftRunMessage msg attrs

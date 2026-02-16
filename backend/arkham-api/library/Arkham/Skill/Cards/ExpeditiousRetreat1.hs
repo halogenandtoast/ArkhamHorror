@@ -10,6 +10,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTestResult
 
 newtype ExpeditiousRetreat1 = ExpeditiousRetreat1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -25,19 +26,25 @@ instance HasModifiersFor ExpeditiousRetreat1 where
 
 instance RunMessage ExpeditiousRetreat1 where
   runMessage msg s@(ExpeditiousRetreat1 attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      void $ runMaybeT do
-        Action.Evade <- MaybeT getSkillTestAction
-        AbilitySource (EnemySource eid) AbilityEvade <- MaybeT getSkillTestAbilitySource
-        iid <- MaybeT getSkillTestInvestigator
-        enemies <-
-          select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
-        concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
-        unless (null enemies && null concealed) do
-          lift $ skillTestResultOption "Expeditious Retreat (1)" do
-            chooseOneM iid $ withI18n do
-              labeled' "skip" nothing
-              targets enemies $ automaticallyEvadeEnemy iid
-              targets concealed $ exposeConcealed iid attrs
+    CheckSkillTestResultOptions skillTestId exclusions -> do
+      mst <- getSkillTest
+      for_ mst \st -> do
+        when (st.id == skillTestId && isTarget attrs st.target) do
+          case st.result of
+            SucceededBy {} -> do
+              void $ runMaybeT do
+                Action.Evade <- MaybeT getSkillTestAction
+                AbilitySource (EnemySource eid) AbilityEvade <- MaybeT getSkillTestAbilitySource
+                iid <- MaybeT getSkillTestInvestigator
+                enemies <-
+                  select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
+                concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
+                unless (null enemies && null concealed) do
+                  lift $ provideSkillTestResultOption attrs exclusions "Expeditious Retreat (1)" do
+                    chooseOneM iid $ withI18n do
+                      labeled' "skip" nothing
+                      targets enemies $ automaticallyEvadeEnemy iid
+                      targets concealed $ exposeConcealed iid attrs
+            _ -> pure ()
       pure s
     _ -> ExpeditiousRetreat1 <$> liftRunMessage msg attrs

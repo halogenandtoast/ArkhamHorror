@@ -17,7 +17,7 @@ extensiveResearch = event ExtensiveResearch Cards.extensiveResearch
 
 instance HasModifiersFor ExtensiveResearch where
   getModifiersFor (ExtensiveResearch a) = do
-    n <- fieldMap InvestigatorHand length a.owner
+    n <- fieldMap InvestigatorHand (count ((/= a.cardId) . toCardId)) a.owner
     modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
 
 instance RunMessage ExtensiveResearch where

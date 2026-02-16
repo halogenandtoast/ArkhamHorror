@@ -15,7 +15,7 @@ instance RunMessage Overpower2 where
   runMessage msg s@(Overpower2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId attrs -> do
       let amount = if n >= 2 then 2 else 1
-      skillTestResultOption "Overpower (2)" do
+      additionalSkillTestOption "Overpower (2)" do
         drawCards (skillOwner attrs) attrs amount
       pure s
     _ -> Overpower2 <$> liftRunMessage msg attrs

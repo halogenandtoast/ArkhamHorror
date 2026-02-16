@@ -20,7 +20,7 @@ instance RunMessage Intrepid where
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       intrepidAsset <- genPlayerCardWith Assets.intrepid (setOriginalCardCode attrs)
       let assetId = AssetId $ unSkillId $ toId attrs
-      skillTestResultOption "Intrepid" do
+      additionalSkillTestOption "Intrepid" do
         removeSkill attrs
         createAssetWithIdAt assetId intrepidAsset (InPlayArea iid)
       pure s

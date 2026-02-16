@@ -19,7 +19,7 @@ instance RunMessage Enraptured where
     PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
       chargeAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Charge
       secretAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Secret
-      skillTestResultOption "Enraptured" do
+      additionalSkillTestOption "Enraptured" do
         chooseTargetM attrs.owner (nub $ chargeAssets <> secretAssets) \aid -> do
           chooseOrRunOneM attrs.owner do
             when (aid `elem` chargeAssets) do

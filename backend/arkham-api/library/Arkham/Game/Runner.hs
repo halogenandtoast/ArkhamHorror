@@ -1907,14 +1907,14 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 _ -> pure Nothing
             push $ AskMap askMap
     pure g
-  SkillTestResultOption txt msgs -> do
-    push $ SkillTestResultOptions [Label txt msgs]
+  SkillTestResultOption opt -> do
+    push $ SkillTestResultOptions [opt]
     pure g
   SkillTestResultOptions opts -> do
     peekMessage >>= \case
-      Just (SkillTestResultOption txt msgs) -> do
+      Just (SkillTestResultOption opt) -> do
         _ <- popMessage
-        push $ SkillTestResultOptions (Label txt msgs : opts)
+        push $ SkillTestResultOptions (opt : opts)
       Just (SkillTestResultOptions opts') -> do
         _ <- popMessage
         push $ SkillTestResultOptions (opts <> opts')
@@ -1928,10 +1928,19 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         getSkillTest >>= \case
           Just st -> do
             case opts of
-              [Label _ msgs] -> pushAll msgs
+              [opt] -> push $ uiToRun opt.option
               _ -> do
+                opts' <- opts & mapMaybeM \opt -> do
+                  case opt.criteria of
+                    Nothing -> pure $ Just opt
+                    Just c -> do
+                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                      pure $ if ok then Just opt else Nothing
+                let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
                 pid <- getPlayer st.investigator
-                push $ Ask pid $ ChooseOneAtATime opts
+                push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->
+                  guard (elem opt opts' && (not blocked || opt.kind /= OriginalOptionKind))
+                    $> uiAnd opt.option (SkillTestResultOptions rest)
           Nothing -> error "missing skill test"
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do

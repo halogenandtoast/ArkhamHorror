@@ -14,7 +14,7 @@ opportunist = skill Opportunist Cards.opportunist
 instance RunMessage Opportunist where
   runMessage msg s@(Opportunist attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 3 -> do
-      skillTestResultOption "Opportunist" do
+      additionalSkillTestOption "Opportunist" do
         returnToHand iid attrs
       pure s
     _ -> Opportunist <$> liftRunMessage msg attrs

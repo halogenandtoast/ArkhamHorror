@@ -22,7 +22,7 @@ instance RunMessage SurvivalInstinct where
       canDisengage <- iid <=~> InvestigatorCanDisengage
 
       when (notNull enemies && canDisengage) do
-        skillTestResultOption "Survival Instinct" do
+        additionalSkillTestOption "Survival Instinct" do
           chooseOneM iid do
             labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
             labeled "Skip" nothing

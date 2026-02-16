@@ -45,7 +45,7 @@ instance RunMessage GregoryGryEffect where
           when (x >= n) do
             let iid = fromJustNote "Wrong Type" attrs.target.investigator
             whenMatch iid (investigator_ can.gain.resources) do
-              skillTestResultOption "Gregory Gry" $ gainResources iid attrs.source n
+              additionalSkillTestOption "Gregory Gry" $ gainResources iid attrs.source n
           disable attrs
         _ -> error "Wrong metadata"
       pure e

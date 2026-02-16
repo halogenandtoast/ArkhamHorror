@@ -27,14 +27,14 @@ instance RunMessage LongShot where
     PassedSkillTest _iid (Just Fight) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
         EnemyTarget eid -> 
-          skillTestResultOption "Long Shot" do
+          additionalSkillTestOption "Long Shot" do
             nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s
     PassedSkillTest _iid (Just Evade) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
         EnemyTarget eid -> 
-          skillTestResultOption "Long Shot" do
+          additionalSkillTestOption "Long Shot" do
             nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s

@@ -13,9 +13,9 @@ asYouWish = skill AsYouWish Cards.asYouWish
 instance RunMessage AsYouWish where
   runMessage msg s@(AsYouWish attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      skillTestResultOption "AsYouWish" $ drawCardsIfCan iid attrs 1
+      additionalSkillTestOption "AsYouWish" $ drawCardsIfCan iid attrs 1
       pure s
     FailedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      skillTestResultOption "AsYouWish" $ drawCardsIfCan attrs.owner attrs 1
+      additionalSkillTestOption "AsYouWish" $ drawCardsIfCan attrs.owner attrs 1
       pure s
     _ -> AsYouWish <$> liftRunMessage msg attrs

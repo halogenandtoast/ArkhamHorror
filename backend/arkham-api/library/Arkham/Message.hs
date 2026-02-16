@@ -33,6 +33,7 @@ import Arkham.ChaosToken.Types
 import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Cost
+import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Deck
@@ -428,13 +429,26 @@ data TokenLoss = AllLost | AllLostBut Int | Lose Int
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data SkillTestOptionKind
+  = OriginalOptionKind -- the original option
+  | AdditionalOptionKind -- an additional option added by an effect
+  | BlockingOptionKind -- an option that blocks the original option (e.g. Mariner's Compass should happen before original)
+  deriving stock (Show, Ord, Eq, Generic, Data)
+
+data SkillTestOption = SkillTestOption
+  { option :: UI Message
+  , kind :: SkillTestOptionKind
+  , criteria :: Maybe Criterion
+  }
+  deriving stock (Show, Ord, Eq, Generic, Data)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | AbilityIsSkillTest AbilityRef
   | ClearAbilityUse AbilityRef
-  | SkillTestResultOption Text [Message]
-  | SkillTestResultOptions [UI Message]
+  | SkillTestResultOption SkillTestOption -- Text [Message]
+  | SkillTestResultOptions [SkillTestOption]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetGameState GameState
@@ -1261,243 +1275,270 @@ data Message
   | CreateCard CardId CardCode
   deriving stock (Show, Eq, Ord, Data)
 
-$(deriveToJSON defaultOptions ''Message)
-
-instance FromJSON Message where
-  parseJSON = withObject "Message" \o -> do
-    t :: Text <- o .: "tag"
-    case t of
-      "LoseAll" -> do
-        (iid, source, tkn) <- o .: "contents"
-        pure $ LoseTokens iid source tkn AllLost
-      "SetRole" -> do
-        (iid, role :: ClassSymbol) <- o .: "contents"
-        pure $ InvestigatorSpecific iid "setRole" (toJSON role)
-      "AddToHandQuiet" -> do
-        contents <- o .: "contents"
-        pure $ uncurry AddToHand contents
-      "PlayerWindow" -> do
-        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
-        case contents of
-          Right (a, b, c, d) -> pure $ PlayerWindow a b c d
-          Left (a, b, c) -> pure $ PlayerWindow a b c True
-      "AddToVictory" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ AddToVictory a b
-          Left a -> pure $ AddToVictory Nothing a
-      "DefeatedAddToVictory" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ AddToVictory a b
-          Left a -> pure $ AddToVictory Nothing a
-      "StartScenrio" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ StartScenario a b
-          Left a -> pure $ StartScenario a Nothing
-      "AssignedDamage" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b, c) -> pure $ AssignedDamage a b c
-          Left a -> pure $ AssignedDamage a 0 0
-      "RemoveCampaignCard" -> RemoveCampaignCardFromDeck "00000" <$> o .: "contents"
-      "ResolvedMovement" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ ResolvedMovement a b
-          Left a -> pure $ ResolvedMovement a (MovementId UUID.nil)
-      "CheckAttackOfOpportunity" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b, c) -> pure $ CheckAttackOfOpportunity a b c
-          Left (a, b) -> pure $ CheckAttackOfOpportunity a b Nothing
-      "AddCardEntity" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ AddCardEntity a b
-          Left b -> pure $ AddCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
-      "RemoveCardEntity" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ RemoveCardEntity a b
-          Left b -> pure $ RemoveCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
-      "LoseAllResources" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left i -> pure $ LoseAll i GameSource Token.Resource
-          Right (i, s) -> pure $ LoseAll i s Token.Resource
-      "DrawEnded" -> do
-        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
-        case contents of
-          Right (a, b) -> pure $ DrawEnded a b
-          Left a -> pure $ DrawEnded (CardDrawId UUID.nil) a
-      "PreSearchFound" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b, c, d) -> pure $ PreSearchFound a b c d
-          Left (a, b, c, d) -> pure $ PreSearchFound a (Just b) c d
-      "CancelEachNext" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b, c) -> pure $ CancelEachNext a b c
-          Left (b, c) -> pure $ CancelEachNext Nothing b c
-      "HandleGroupTargets" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (a, b, c) -> pure $ HandleGroupTargets a b c
-          Left (b, c) -> pure $ HandleGroupTargets Manual b c
-      "RefillSlots" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (iid, xs) -> pure $ RefillSlots iid xs
-          Left iid -> pure $ RefillSlots iid []
-      "InvestigatorClearUnusedAssetSlots" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right (iid, xs) -> pure $ InvestigatorClearUnusedAssetSlots iid xs
-          Left iid -> pure $ InvestigatorClearUnusedAssetSlots iid []
-      "EnemySpawn" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Right details -> pure $ EnemySpawn details
-          Left (miid, lid, eid) ->
-            pure
-              $ EnemySpawn
-              $ (mkSpawnDetails eid (Arkham.Spawn.SpawnAtLocation lid)) {spawnDetailsInvestigator = miid}
-      "FightEnemy" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (sid, iid, eid, src, mTarget, sType, isAction) ->
-            pure
-              $ FightEnemy eid
-              $ ChooseFight
-                iid
-                (EnemyWithId eid)
-                src
-                mTarget
-                sType
-                isAction
-                False
-                False
-                sid
-                DefaultChooseFightDifficulty
-          Right (eid, cf) -> pure $ FightEnemy eid cf
-      "AttackEnemy" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (sid, iid, eid, src, mTarget, sType) ->
-            pure
-              $ AttackEnemy eid
-              $ ChooseFight
-                iid
-                (EnemyWithId eid)
-                src
-                mTarget
-                sType
-                False
-                False
-                False
-                sid
-                DefaultChooseFightDifficulty
-          Right (eid, cf) -> pure $ AttackEnemy eid cf
-      "ObtainCard" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (card :: Card) -> pure $ ObtainCard (toCardId card)
-          Right cardId -> pure $ ObtainCard cardId
-      "BeforeSkillTest" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left st -> pure $ BeforeSkillTest (skillTestId st)
-          Right stId -> pure $ BeforeSkillTest stId
-      "RepeatSkillTest" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (stId, st) -> pure $ RepeatSkillTest stId (skillTestId st)
-          Right (stId, stId') -> pure $ RepeatSkillTest stId stId'
-      "CommitToSkillTest" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (st, uim) -> pure $ CommitToSkillTest (skillTestId st) uim
-          Right (stId, uim) -> pure $ CommitToSkillTest stId uim
-      "AddCampaignCardToDeck" -> do
-        contents <-
-          (Left <$> o .: "contents")
-            <|> (Right . Left <$> o .: "contents")
-            <|> (Right . Right <$> o .: "contents")
-            <|> fail ("Invalid AddCampaignCardToDeck: " <> show o)
-        case contents of
-          Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid ShuffleIn card
-          Right (Left (iid, cardDef :: CardDef)) -> pure $ AddCampaignCardToDeck iid ShuffleIn (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
-          Right (Right (iid, shouldShuffleIn, card :: Card)) -> pure $ AddCampaignCardToDeck iid shouldShuffleIn card
-      "SealedChaosToken" -> do
-        contents <-
-          (Left <$> o .: "contents")
-            <|> (Right . Left <$> o .: "contents")
-            <|> (Right . Right <$> o .: "contents")
-        case contents of
-          Left (token, card :: Card) -> pure $ SealedChaosToken token Nothing (toTarget card)
-          Right (Left (token, target)) -> pure $ SealedChaosToken token Nothing target
-          Right (Right (token, miid, target)) -> pure $ SealedChaosToken token miid target
-      "ExcessHealHorror" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (i, n) -> pure $ ExcessHealHorror i GameSource n
-          Right (i, s, n) -> pure $ ExcessHealHorror i s n
-      "ExcessHealDamage" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left (i, n) -> pure $ ExcessHealDamage i GameSource n
-          Right (i, s, n) -> pure $ ExcessHealDamage i s n
-      "RunWindow" -> do
-        (_a :: Value, b) <- o .: "contents"
-        pure $ CheckWindows b
-      "CheckWindow" -> do
-        (_a :: Value, b) <- o .: "contents"
-        pure $ CheckWindows b
-      "AssetDamageWithCheck" -> do
-        (a, b, c, d, e) <- o .: "contents"
-        pure $ DealAssetDamageWithCheck a b c d e
-      "InvestigatorDrewPlayerCard" -> do
-        (a, b) <- o .: "contents"
-        pure $ InvestigatorDrewPlayerCardFrom a b Nothing
-      "ReportXp" -> do
-        ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
-      "ReadStoryWithPlacement" -> do
-        (a, b, c, d, e) <- o .: "contents"
-        pure $ StoryMessage $ ReadStoryWithPlacement a b c d e
-      "ReadStory" -> do
-        (a, b, c, d) <- o .: "contents"
-        pure $ StoryMessage $ ReadStory a b c d
-      "ResolveStory" -> do
-        (a, b, c) <- o .: "contents"
-        pure $ StoryMessage $ ResolveStory a b c
-      "ResolvedStory" -> do
-        (a, b) <- o .: "contents"
-        pure $ StoryMessage $ ResolvedStory a b
-      "PlaceStory" -> do
-        (a, b) <- o .: "contents"
-        pure $ StoryMessage $ PlaceStory a b
-      "RemoveStory" -> do
-        a <- o .: "contents"
-        pure $ StoryMessage $ RemoveStory a
-      "ResolveSearch" -> do
-        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case ea of
-          Left a -> pure $ ResolveSearch (InvestigatorTarget a)
-          Right a -> pure $ ResolveSearch a
-      "SearchEnded" -> do
-        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case ea of
-          Left a -> pure $ SearchEnded (InvestigatorTarget a)
-          Right a -> pure $ SearchEnded a
-      "CancelSearch" -> do
-        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case ea of
-          Left a -> pure $ CancelSearch (InvestigatorTarget a)
-          Right a -> pure $ CancelSearch a
-      _ -> defaultParseMessage (Object o)
+mconcat
+  [ deriveToJSON defaultOptions ''Message
+  , deriveJSON defaultOptions ''SkillTestOption
+  , deriveJSON defaultOptions ''SkillTestOptionKind
+  , [d|
+      instance FromJSON Message where
+        parseJSON = withObject "Message" \o -> do
+          t :: Text <- o .: "tag"
+          case t of
+            "SkillTestResultOption" -> do
+              econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case econtents of
+                Right a -> SkillTestResultOption a
+                Left (a, b) ->
+                  SkillTestResultOption
+                    $ SkillTestOption
+                      { option = Label a b
+                      , kind = OriginalOptionKind
+                      , criteria = Nothing
+                      }
+            "SkillTestResultOptions" -> do
+              econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case econtents of
+                Right as -> SkillTestResultOptions as
+                Left as ->
+                  SkillTestResultOptions $ as & map \a ->
+                    SkillTestOption
+                      { option = a
+                      , kind = OriginalOptionKind
+                      , criteria = Nothing
+                      }
+            "LoseAll" -> do
+              (iid, source, tkn) <- o .: "contents"
+              pure $ LoseTokens iid source tkn AllLost
+            "SetRole" -> do
+              (iid, role :: ClassSymbol) <- o .: "contents"
+              pure $ InvestigatorSpecific iid "setRole" (toJSON role)
+            "AddToHandQuiet" -> do
+              contents <- o .: "contents"
+              pure $ uncurry AddToHand contents
+            "PlayerWindow" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (a, b, c, d) -> pure $ PlayerWindow a b c d
+                Left (a, b, c) -> pure $ PlayerWindow a b c True
+            "AddToVictory" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ AddToVictory a b
+                Left a -> pure $ AddToVictory Nothing a
+            "DefeatedAddToVictory" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ AddToVictory a b
+                Left a -> pure $ AddToVictory Nothing a
+            "StartScenrio" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ StartScenario a b
+                Left a -> pure $ StartScenario a Nothing
+            "AssignedDamage" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b, c) -> pure $ AssignedDamage a b c
+                Left a -> pure $ AssignedDamage a 0 0
+            "RemoveCampaignCard" -> RemoveCampaignCardFromDeck "00000" <$> o .: "contents"
+            "ResolvedMovement" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ ResolvedMovement a b
+                Left a -> pure $ ResolvedMovement a (MovementId UUID.nil)
+            "CheckAttackOfOpportunity" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b, c) -> pure $ CheckAttackOfOpportunity a b c
+                Left (a, b) -> pure $ CheckAttackOfOpportunity a b Nothing
+            "AddCardEntity" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ AddCardEntity a b
+                Left b -> pure $ AddCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+            "RemoveCardEntity" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ RemoveCardEntity a b
+                Left b -> pure $ RemoveCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+            "LoseAllResources" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left i -> pure $ LoseAll i GameSource Token.Resource
+                Right (i, s) -> pure $ LoseAll i s Token.Resource
+            "DrawEnded" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (a, b) -> pure $ DrawEnded a b
+                Left a -> pure $ DrawEnded (CardDrawId UUID.nil) a
+            "PreSearchFound" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b, c, d) -> pure $ PreSearchFound a b c d
+                Left (a, b, c, d) -> pure $ PreSearchFound a (Just b) c d
+            "CancelEachNext" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b, c) -> pure $ CancelEachNext a b c
+                Left (b, c) -> pure $ CancelEachNext Nothing b c
+            "HandleGroupTargets" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (a, b, c) -> pure $ HandleGroupTargets a b c
+                Left (b, c) -> pure $ HandleGroupTargets Manual b c
+            "RefillSlots" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (iid, xs) -> pure $ RefillSlots iid xs
+                Left iid -> pure $ RefillSlots iid []
+            "InvestigatorClearUnusedAssetSlots" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right (iid, xs) -> pure $ InvestigatorClearUnusedAssetSlots iid xs
+                Left iid -> pure $ InvestigatorClearUnusedAssetSlots iid []
+            "EnemySpawn" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Right details -> pure $ EnemySpawn details
+                Left (miid, lid, eid) ->
+                  pure
+                    $ EnemySpawn
+                    $ (mkSpawnDetails eid (Arkham.Spawn.SpawnAtLocation lid)) {spawnDetailsInvestigator = miid}
+            "FightEnemy" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (sid, iid, eid, src, mTarget, sType, isAction) ->
+                  pure
+                    $ FightEnemy eid
+                    $ ChooseFight
+                      iid
+                      (EnemyWithId eid)
+                      src
+                      mTarget
+                      sType
+                      isAction
+                      False
+                      False
+                      sid
+                      DefaultChooseFightDifficulty
+                Right (eid, cf) -> pure $ FightEnemy eid cf
+            "AttackEnemy" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (sid, iid, eid, src, mTarget, sType) ->
+                  pure
+                    $ AttackEnemy eid
+                    $ ChooseFight
+                      iid
+                      (EnemyWithId eid)
+                      src
+                      mTarget
+                      sType
+                      False
+                      False
+                      False
+                      sid
+                      DefaultChooseFightDifficulty
+                Right (eid, cf) -> pure $ AttackEnemy eid cf
+            "ObtainCard" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (card :: Card) -> pure $ ObtainCard (toCardId card)
+                Right cardId -> pure $ ObtainCard cardId
+            "BeforeSkillTest" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left st -> pure $ BeforeSkillTest (skillTestId st)
+                Right stId -> pure $ BeforeSkillTest stId
+            "RepeatSkillTest" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (stId, st) -> pure $ RepeatSkillTest stId (skillTestId st)
+                Right (stId, stId') -> pure $ RepeatSkillTest stId stId'
+            "CommitToSkillTest" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (st, uim) -> pure $ CommitToSkillTest (skillTestId st) uim
+                Right (stId, uim) -> pure $ CommitToSkillTest stId uim
+            "AddCampaignCardToDeck" -> do
+              contents <-
+                (Left <$> o .: "contents")
+                  <|> (Right . Left <$> o .: "contents")
+                  <|> (Right . Right <$> o .: "contents")
+                  <|> fail ("Invalid AddCampaignCardToDeck: " <> show o)
+              case contents of
+                Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid ShuffleIn card
+                Right (Left (iid, cardDef :: CardDef)) -> pure $ AddCampaignCardToDeck iid ShuffleIn (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
+                Right (Right (iid, shouldShuffleIn, card :: Card)) -> pure $ AddCampaignCardToDeck iid shouldShuffleIn card
+            "SealedChaosToken" -> do
+              contents <-
+                (Left <$> o .: "contents")
+                  <|> (Right . Left <$> o .: "contents")
+                  <|> (Right . Right <$> o .: "contents")
+              case contents of
+                Left (token, card :: Card) -> pure $ SealedChaosToken token Nothing (toTarget card)
+                Right (Left (token, target)) -> pure $ SealedChaosToken token Nothing target
+                Right (Right (token, miid, target)) -> pure $ SealedChaosToken token miid target
+            "ExcessHealHorror" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, n) -> pure $ ExcessHealHorror i GameSource n
+                Right (i, s, n) -> pure $ ExcessHealHorror i s n
+            "ExcessHealDamage" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, n) -> pure $ ExcessHealDamage i GameSource n
+                Right (i, s, n) -> pure $ ExcessHealDamage i s n
+            "RunWindow" -> do
+              (_a :: Value, b) <- o .: "contents"
+              pure $ CheckWindows b
+            "CheckWindow" -> do
+              (_a :: Value, b) <- o .: "contents"
+              pure $ CheckWindows b
+            "AssetDamageWithCheck" -> do
+              (a, b, c, d, e) <- o .: "contents"
+              pure $ DealAssetDamageWithCheck a b c d e
+            "InvestigatorDrewPlayerCard" -> do
+              (a, b) <- o .: "contents"
+              pure $ InvestigatorDrewPlayerCardFrom a b Nothing
+            "ReportXp" -> do
+              ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
+            "ReadStoryWithPlacement" -> do
+              (a, b, c, d, e) <- o .: "contents"
+              pure $ StoryMessage $ ReadStoryWithPlacement a b c d e
+            "ReadStory" -> do
+              (a, b, c, d) <- o .: "contents"
+              pure $ StoryMessage $ ReadStory a b c d
+            "ResolveStory" -> do
+              (a, b, c) <- o .: "contents"
+              pure $ StoryMessage $ ResolveStory a b c
+            "ResolvedStory" -> do
+              (a, b) <- o .: "contents"
+              pure $ StoryMessage $ ResolvedStory a b
+            "PlaceStory" -> do
+              (a, b) <- o .: "contents"
+              pure $ StoryMessage $ PlaceStory a b
+            "RemoveStory" -> do
+              a <- o .: "contents"
+              pure $ StoryMessage $ RemoveStory a
+            "ResolveSearch" -> do
+              ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case ea of
+                Left a -> pure $ ResolveSearch (InvestigatorTarget a)
+                Right a -> pure $ ResolveSearch a
+            "SearchEnded" -> do
+              ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case ea of
+                Left a -> pure $ SearchEnded (InvestigatorTarget a)
+                Right a -> pure $ SearchEnded a
+            "CancelSearch" -> do
+              ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case ea of
+                Left a -> pure $ CancelSearch (InvestigatorTarget a)
+                Right a -> pure $ CancelSearch a
+            _ -> defaultParseMessage (Object o)
+      |]
+  ]
 
 defaultParseMessage :: Value -> Parser Message
 defaultParseMessage = $(mkParseJSON defaultOptions ''Message)

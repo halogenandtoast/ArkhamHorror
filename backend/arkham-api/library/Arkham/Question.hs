@@ -106,6 +106,39 @@ data UI msg
   | ScenarioLabel {label :: Text, scenarioId :: Text, messages :: [msg]}
   deriving stock (Show, Ord, Eq, Data)
 
+uiAnd :: UI msg -> msg -> UI msg
+uiAnd ui msg = case ui of
+  Label l msgs -> Label l (msgs <> [msg])
+  InvalidLabel l -> InvalidLabel l
+  TooltipLabel l t msgs -> TooltipLabel l t (msgs <> [msg])
+  CardLabel c f msgs -> CardLabel c f (msgs <> [msg])
+  ChaosTokenLabel face msgs -> ChaosTokenLabel face (msgs <> [msg])
+  KeyLabel k msgs -> KeyLabel k (msgs <> [msg])
+  PortraitLabel iid msgs -> PortraitLabel iid (msgs <> [msg])
+  TargetLabel target msgs -> TargetLabel target (msgs <> [msg])
+  SkillLabel sType msgs -> SkillLabel sType (msgs <> [msg])
+  SkillLabelWithLabel l sType msgs -> SkillLabelWithLabel l sType (msgs <> [msg])
+  EvadeLabel enemyId msgs -> EvadeLabel enemyId (msgs <> [msg])
+  FightLabel enemyId msgs -> FightLabel enemyId (msgs <> [msg])
+  FightLabelWithSkill enemyId sType msgs -> FightLabelWithSkill enemyId sType (msgs <> [msg])
+  EngageLabel enemyId msgs -> EngageLabel enemyId (msgs <> [msg])
+  GridLabel gridLabel msgs -> GridLabel gridLabel (msgs <> [msg])
+  TarotLabel tarotCard msgs -> TarotLabel tarotCard (msgs <> [msg])
+  AbilityLabel iid ability windows before msgs -> AbilityLabel iid ability windows (before <> [msg]) msgs
+  ComponentLabel component msgs -> ComponentLabel component (msgs <> [msg])
+  AuxiliaryComponentLabel component msgs -> AuxiliaryComponentLabel component (msgs <> [msg])
+  EndTurnButton iid msgs -> EndTurnButton iid (msgs <> [msg])
+  StartSkillTestButton iid -> StartSkillTestButton iid
+  SkillTestApplyResultsButton -> SkillTestApplyResultsButton
+  ChaosTokenGroupChoice source iid step -> ChaosTokenGroupChoice source iid step
+  EffectActionButton tooltip effectId msgs -> EffectActionButton tooltip effectId (msgs <> [msg])
+  Done label -> Done label
+  SkipTriggersButton iid -> SkipTriggersButton iid
+  CardPile pile msgs -> CardPile pile (msgs <> [msg])
+  Info flavor -> Info flavor
+  ScenarioLabel label scenarioId msgs -> ScenarioLabel label scenarioId (msgs <> [msg])
+
+
 data PileCard = PileCard
   { cardId :: CardId
   , cardOwner :: Maybe InvestigatorId

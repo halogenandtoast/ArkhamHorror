@@ -25,7 +25,7 @@ instance RunMessage Contemplative where
   runMessage msg s@(Contemplative attrs) = runQueueT $ case msg of
     PassedSkillTest _iid _ _ (isTarget attrs -> True) _ _ -> do
       withSkillTestInvestigator \iid -> do
-        skillTestResultOption "Contemplative" do
+        additionalSkillTestOption "Contemplative" do
           discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure s
     _ -> Contemplative <$> liftRunMessage msg attrs

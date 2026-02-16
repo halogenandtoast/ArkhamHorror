@@ -20,7 +20,7 @@ instance RunMessage Providential2 where
       d <- field InvestigatorDamage attrs.owner
       h <- field InvestigatorHorror attrs.owner
       let x = min n (min d h)
-      skillTestResultOption "Providential (2)" do
+      additionalSkillTestOption "Providential (2)" do
         repeated x $ addChaosToken #bless
       pure s
     _ -> Providential2 <$> liftRunMessage msg attrs

@@ -63,7 +63,7 @@ instance RunMessage GhastlyPossession1 where
               pure $ (uType, min (n - current) half)
 
             when (hasDoom || isJust mAddAmount) do
-              skillTestResultOption "Ghastly Possession (1)" do
+              additionalSkillTestOption "Ghastly Possession (1)" do
                 chooseOneM iid do
                   when hasDoom do
                     labeled "Remove 1 doom from that asset" do

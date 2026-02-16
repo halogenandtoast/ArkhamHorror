@@ -2087,10 +2087,41 @@ checkWhen = Msg.pushM . Msg.checkWhen
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 
-skillTestResultOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
-skillTestResultOption label body = do
+skillTestResultOption
+  :: ReverseQueue m => SkillTestOptionKind -> Text -> QueueT Message m () -> m ()
+skillTestResultOption kind label body = do
   msgs <- capture body
-  push $ SkillTestResultOption label msgs
+  push
+    $ SkillTestResultOption
+    $ SkillTestOption {option = Label label msgs, kind, criteria = Nothing}
+
+skillTestResultOptionEdit
+  :: ReverseQueue m
+  => SkillTestOptionKind -> (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
+skillTestResultOptionEdit kind f label body = do
+  msgs <- capture body
+  push
+    $ SkillTestResultOption
+    $ f
+    $ SkillTestOption {option = Label label msgs, kind, criteria = Nothing}
+
+additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
+additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
+
+originalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
+originalSkillTestOption = skillTestResultOptionEdit OriginalOptionKind id
+
+blockingSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
+blockingSkillTestOption = skillTestResultOptionEdit BlockingOptionKind id
+
+blockingSkillTestOptionEdit
+  :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
+blockingSkillTestOptionEdit = skillTestResultOptionEdit BlockingOptionKind
+
+blockingSkillTestOptionWithCriteria
+  :: ReverseQueue m => Criterion -> Text -> QueueT Message m () -> m ()
+blockingSkillTestOptionWithCriteria c =
+  skillTestResultOptionEdit BlockingOptionKind (\opt -> opt {Arkham.Message.criteria = Just c})
 
 -- Use @SearchFound@ with this
 search

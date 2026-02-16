@@ -3,11 +3,10 @@ module Arkham.Asset.Assets.MarinersCompass (marinersCompass) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.GameValue
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype MarinersCompass = MarinersCompass AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -33,12 +32,11 @@ instance RunMessage MarinersCompass where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
-    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      skillTestResultOption "Mariner's Compass" $ doStep 1 msg
-      pure a
-    DoStep 1 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
-      noResources <- fieldNone InvestigatorResources iid
-      when noResources do
-        withSkillTest \sid -> skillTestModifier sid attrs iid (DiscoveredClues 1)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      withSkillTest \sid -> do
+        blockingSkillTestOptionWithCriteria
+          (exists $ InvestigatorWithId iid <> InvestigatorWithResources (EqualTo $ Static 0))
+          "Mariner's Compass"
+          $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure a
     _ -> MarinersCompass <$> liftRunMessage msg attrs

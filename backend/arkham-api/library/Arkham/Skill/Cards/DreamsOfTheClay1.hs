@@ -25,7 +25,7 @@ instance HasAbilities DreamsOfTheClay1 where
 instance RunMessage DreamsOfTheClay1 where
   runMessage msg s@(DreamsOfTheClay1 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      skillTestResultOption "Dreams of the Clay (1)" do
+      additionalSkillTestOption "Dreams of the Clay (1)" do
         place attrs (InPlayArea attrs.owner)
       pure s
     UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do

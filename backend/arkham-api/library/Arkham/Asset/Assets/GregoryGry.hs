@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.GregoryGry (gregoryGry, gregoryGryEffect, GregoryGry (..)) where
+module Arkham.Asset.Assets.GregoryGry (gregoryGry, gregoryGryEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Capability
 import Arkham.Effect.Import
 import Arkham.Matcher
 
@@ -16,20 +17,15 @@ gregoryGry = ally GregoryGry Cards.gregoryGry (1, 2)
 
 instance HasAbilities GregoryGry where
   getAbilities (GregoryGry a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
           (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
           (UseCostUpTo (be a) Resource 1 3)
     ]
 
-totalUses :: Payment -> Int
-totalUses (Payments ps) = sum $ map totalUses ps
-totalUses (UsesPayment n) = n
-totalUses _ = 0
-
 instance RunMessage GregoryGry where
   runMessage msg a@(GregoryGry attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (totalUses -> uses) -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> uses) -> do
       createCardEffect Cards.gregoryGry (effectInt uses) (attrs.ability 1) iid
       pure a
     _ -> GregoryGry <$> liftRunMessage msg attrs
@@ -47,10 +43,11 @@ instance RunMessage GregoryGryEffect where
       case attrs.metaInt of
         Just n -> do
           when (x >= n) do
-            let iid = fromJustNote "Wrong Type" $ preview _InvestigatorTarget attrs.target
-            gainResourcesIfCan iid attrs.source n
+            let iid = fromJustNote "Wrong Type" attrs.target.investigator
+            whenMatch iid (investigator_ can.gain.resources) do
+              skillTestResultOption "Gregory Gry" $ gainResources iid attrs.source n
           disable attrs
         _ -> error "Wrong metadata"
       pure e
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
     _ -> GregoryGryEffect <$> liftRunMessage msg attrs

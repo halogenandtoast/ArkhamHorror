@@ -2,12 +2,11 @@ module Arkham.Asset.Assets.MarinersCompass (marinersCompass) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Projection
 
 newtype MarinersCompass = MarinersCompass AssetAttrs
@@ -19,25 +18,27 @@ marinersCompass = asset MarinersCompass Cards.marinersCompass
 
 instance HasAbilities MarinersCompass where
   getAbilities (MarinersCompass x) =
-    [ restrictedAbility x 1 ControlsThis $ investigateAction (exhaust x)
-    , limitedAbility (PlayerLimit PerTestOrAbility 3)
-        $ controlledAbility x 2 (DuringSkillTest UsingThis)
-        $ FastAbility (ResourceCost 1)
+    [ controlled_ x 1 $ investigateAction (exhaust x)
+    , limited (PlayerLimit PerTestOrAbility 3)
+        $ controlled x 2 (DuringSkillTest UsingThis)
+        $ freeTrigger (ResourceCost 1)
     ]
 
 instance RunMessage MarinersCompass where
-  runMessage msg a@(MarinersCompass attrs) = case msg of
+  runMessage msg a@(MarinersCompass attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (attrs.ability 1)
+      investigate sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
-    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
+      skillTestResultOption "Mariner's Compass" $ doStep 1 msg
+      pure a
+    DoStep 1 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       noResources <- fieldNone InvestigatorResources iid
-      withSkillTest \sid ->
-        when noResources $ pushM $ skillTestModifier sid attrs iid (DiscoveredClues 1)
+      when noResources do
+        withSkillTest \sid -> skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure a
-    _ -> MarinersCompass <$> runMessage msg attrs
+    _ -> MarinersCompass <$> liftRunMessage msg attrs

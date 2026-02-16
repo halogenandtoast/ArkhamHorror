@@ -1921,6 +1921,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       Just msg'@(PassedSkillTest {}) -> do
         _ <- popMessage
         pushAll [msg', msg]
+      Just msg'@(DisableEffect {}) -> do
+        _ <- popMessage
+        pushAll [msg', msg]
       _ ->
         getSkillTest >>= \case
           Just st -> do

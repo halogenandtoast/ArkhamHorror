@@ -3002,6 +3002,11 @@ shouldMoveWithSkillTest _sid f = do
   msgs <- capture f
   push $ MoveWithSkillTest $ Run msgs
 
+shouldMoveWithSkillTest_ :: ReverseQueue m => QueueT Message m () -> m ()
+shouldMoveWithSkillTest_ f = do
+  msgs <- capture f
+  push $ MoveWithSkillTest $ Run msgs
+
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg
 

@@ -4,12 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
-import Arkham.Modifier
-import Arkham.Investigate
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted (provideSkillTestResultOption)
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillTestResult
 
@@ -25,7 +23,7 @@ instance HasAbilities MarinersCompass where
     [ controlled_ x 1 $ investigateAction (exhaust x)
     , limited (PlayerLimit PerTestOrAbility 3)
         $ controlled x 2 (DuringSkillTest UsingThis)
-        $ FastAbility (ResourceCost 1)
+        $ freeTrigger (ResourceCost 1)
     ]
 
 instance RunMessage MarinersCompass where
@@ -38,7 +36,7 @@ instance RunMessage MarinersCompass where
       withSkillTest \sid ->
         skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
-    CheckSkillTestResultOptions skillTestId exclusions -> do
+    CheckSkillTestResultOptions _skillTestId exclusions -> do
       mst <- getSkillTest
       for_ mst \st -> do
         when (isAbilitySource attrs 1 st.source) do
@@ -47,7 +45,7 @@ instance RunMessage MarinersCompass where
               noResources <- fieldNone InvestigatorResources st.investigator
               when noResources do
                 provideSkillTestResultOption attrs exclusions "Mariner's Compass: Discover Additional Clue" do
-                  discoverAtYourLocation st.investigator attrs 1
+                  discoverAtYourLocation IsInvestigate st.investigator attrs 1
             _ -> pure ()
       pure a
     _ -> MarinersCompass <$> liftRunMessage msg attrs

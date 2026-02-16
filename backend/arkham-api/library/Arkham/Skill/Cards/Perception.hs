@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Skill.Cards.Perception (perception) where
 
 import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
@@ -15,10 +17,10 @@ perception = skill Perception Cards.perception
 instance RunMessage Perception where
   runMessage msg s@(Perception attrs) = runQueueT $ case msg of
     CheckSkillTestResultOptions skillTestId exclusions -> do
-      mst <- getSkillTest
+      mst <- traceShowId <$> getSkillTest
       for_ mst \st -> do
         when (st.id == skillTestId && isTarget attrs st.target) do
-          case st.result of
+          case traceShowId st.result of
             SucceededBy {} -> do
               provideSkillTestResultOption attrs exclusions "Perception" do
                 drawCards attrs.owner attrs 1

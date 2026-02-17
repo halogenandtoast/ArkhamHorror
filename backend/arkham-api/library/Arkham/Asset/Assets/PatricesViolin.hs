@@ -1,16 +1,11 @@
-module Arkham.Asset.Assets.PatricesViolin (
-  patricesViolin,
-  PatricesViolin (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.PatricesViolin (patricesViolin) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype PatricesViolin = PatricesViolin AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,31 +16,27 @@ patricesViolin = asset PatricesViolin Cards.patricesViolin
 
 instance HasAbilities PatricesViolin where
   getAbilities (PatricesViolin x) =
-    [ controlledAbility x 1 (atYourLocation $ affectsOthers $ oneOf [can.gain.resources, can.draw.cards])
-        $ FastAbility (exhaust x <> HandDiscardCost 1 #any)
+    [ controlled x 1 (atYourLocation $ affectsOthers $ oneOf [can.gain.resources, can.draw.cards])
+        $ freeTrigger (exhaust x <> HandDiscardCost 1 #any)
     ]
 
 instance RunMessage PatricesViolin where
-  runMessage msg a@(PatricesViolin attrs) = case msg of
+  runMessage msg a@(PatricesViolin attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <-
         select $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ targetLabels investigators (only . HandleTargetChoice iid (toAbilitySource attrs 1) . toTarget)
+      chooseOrRunOneM iid $ targets investigators $ handleTarget iid (attrs.ability 1)
       pure a
-    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
-      let source = toAbilitySource attrs 1
+    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
+      let source = attrs.ability 1
       canGainResources <- can.gain.resources iid'
       canDrawCards <- can.draw.cards iid'
-      let drawing = drawCards iid' source 1
-      player <- getPlayer iid
 
-      push
-        $ chooseOne player
-        $ [Label "Gain resource" [takeResources iid' source 1] | canGainResources]
-        <> [Label "Draw card" [drawing] | canDrawCards]
+      chooseOneM iid' do
+        when canGainResources do
+          labeled "Gain resource" $ gainResources iid' source 1
+        when canDrawCards do
+          labeled "Draw card" $ drawCards iid' source 1
 
       pure a
-    _ -> PatricesViolin <$> runMessage msg attrs
+    _ -> PatricesViolin <$> liftRunMessage msg attrs

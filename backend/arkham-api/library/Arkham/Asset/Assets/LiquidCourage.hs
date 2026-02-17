@@ -17,14 +17,14 @@ liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasAbilities LiquidCourage where
   getAbilities (LiquidCourage x) =
-    [ controlled x 1 (exists (HealableInvestigator (toSource x) #horror $ colocatedWithMatch You))
+    [ controlled x 1 (exists (HealableInvestigator (x.ability 1) #horror $ colocatedWithMatch You))
         $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iids <- select $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
+      iids <- select $ HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid
       sid <- getRandom
       chooseOrRunOneM iid do
         targets iids \iid' -> do
@@ -32,10 +32,10 @@ instance RunMessage LiquidCourage where
           beginSkillTest sid iid' (attrs.ability 1) iid' #willpower (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
+      push $ AdditionalHealHorror (toTarget iid) (attrs.ability 1) 1
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
+      push $ AdditionalHealHorror (toTarget iid) (attrs.ability 1) 0
       randomDiscard iid (toSource attrs)
       pure a
     _ -> LiquidCourage <$> liftRunMessage msg attrs

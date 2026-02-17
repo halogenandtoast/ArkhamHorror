@@ -2699,17 +2699,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     if cannotHealDamage
       then pure a
       else pure $ a & assignedHealthHealL %~ insertWith (+) source n
-  HealHorrorWithAdditional (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+  HealHorrorWithAdditional (InvestigatorTarget iid) _source amount | iid == investigatorId -> do
     -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    if cannotHealHorror
-      then pure a
-      else do
-        let totalHealed = min amount (a.sanityDamage + a.assignedSanityDamage)
-        let a' = a & (horrorHealedL .~ amount)
-        if totalHealed > 0
-          then liftRunMessage (RemoveTokens source (toTarget a) #horror totalHealed) a'
-          else pure a'
+    pure $ a & (horrorHealedL .~ amount)
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     -- TODO: HERE  MAYBE
@@ -2717,7 +2709,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
       else do
-        push $ HealHorror (toTarget iid) source additional
+        let totalHealed = additional + investigatorHorrorHealed
+        when (totalHealed > 0) do
+          push $ HealHorror (toTarget iid) source totalHealed
         pure a
   HealHorror (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a

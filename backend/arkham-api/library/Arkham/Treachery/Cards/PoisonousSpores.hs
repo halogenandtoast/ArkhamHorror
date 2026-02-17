@@ -32,9 +32,7 @@ instance RunMessage PoisonousSpores where
 
           selectEach
             (investigatorAt lid <> not_ (HasMatchingTreachery $ treacheryIs Treacheries.poisoned))
-            \iid -> do
-              poisoned <- getSetAsidePoisoned
-              createWeaknessInThreatArea poisoned iid
+            becomePoisoned
           toDiscard (attrs.ability 1) attrs
           pure t
         _ -> error "invalid attachment of treachery, expected location"

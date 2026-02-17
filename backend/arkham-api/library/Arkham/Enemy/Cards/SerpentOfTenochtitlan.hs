@@ -35,7 +35,6 @@ instance HasAbilities SerpentOfTenochtitlan where
 instance RunMessage SerpentOfTenochtitlan where
   runMessage msg e@(SerpentOfTenochtitlan attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      poisoned <- getSetAsidePoisoned
-      createWeaknessInThreatArea poisoned iid
+      becomePoisoned iid
       pure e
     _ -> SerpentOfTenochtitlan <$> liftRunMessage msg attrs

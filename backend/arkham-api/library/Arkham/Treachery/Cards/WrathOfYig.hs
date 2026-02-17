@@ -18,11 +18,6 @@ instance RunMessage WrathOfYig where
       revelationSkillTest sid iid attrs #willpower (SumCalculation [Fixed 2, VengeanceCalculation])
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      isPoisoned <- getIsPoisoned iid
-      if isPoisoned
-        then assignDamage iid attrs 2
-        else do
-          poisoned <- getSetAsidePoisoned
-          createWeaknessInThreatArea poisoned iid
+      becomePoisonedOr iid $ assignDamage iid attrs 2
       pure t
     _ -> WrathOfYig <$> liftRunMessage msg attrs

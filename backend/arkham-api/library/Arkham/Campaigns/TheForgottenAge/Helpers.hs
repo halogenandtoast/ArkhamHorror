@@ -28,6 +28,7 @@ import Arkham.Matcher
 import Arkham.Message (
   Message (..),
   ReplaceStrategy (..),
+  ShuffleIn (..),
   pattern BeginSkillTest,
   pattern CancelNext,
  )
@@ -151,6 +152,19 @@ getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)
     <$> scenarioField ScenarioSetAsideCards
+
+becomePoisoned :: ReverseQueue m => InvestigatorId -> m ()
+becomePoisoned iid = do
+  poisoned <- getSetAsidePoisoned
+  createWeaknessInThreatArea poisoned iid
+  addCampaignCardToDeck iid DoNotShuffleIn poisoned
+
+becomePoisonedOr :: ReverseQueue m => InvestigatorId -> m () -> m ()
+becomePoisonedOr iid notPoisoned = do
+  isPoisoned <- getIsPoisoned iid
+  if isPoisoned
+    then notPoisoned
+    else becomePoisoned iid
 
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock Eq

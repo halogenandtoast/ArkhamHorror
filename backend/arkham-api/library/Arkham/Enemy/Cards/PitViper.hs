@@ -24,7 +24,6 @@ instance HasAbilities PitViper where
 instance RunMessage PitViper where
   runMessage msg e@(PitViper attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      poisoned <- getSetAsidePoisoned
-      createWeaknessInThreatArea poisoned iid
+      becomePoisoned iid
       pure e
     _ -> PitViper <$> liftRunMessage msg attrs

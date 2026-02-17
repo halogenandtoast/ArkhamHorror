@@ -145,9 +145,7 @@ instance RunMessage TheUntamedWilds where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         ElderThing | isHardExpert attrs -> do
-          unlessM (getIsPoisoned iid) do
-            poisoned <- getSetAsidePoisoned
-            createWeaknessInThreatArea poisoned iid
+          unlessM (getIsPoisoned iid) $ becomePoisoned iid
         _ -> pure ()
       pure s
     Explore iid source _ -> do

@@ -18,9 +18,8 @@ instance RunMessage SerpentsCall where
       getIsPoisoned iid >>= \case
         True -> drawEncounterCards iid attrs 2
         False -> do
-          poisoned <- getSetAsidePoisoned
           chooseOneM iid $ campaignI18n do
-            labeled' "serpentsCall.poisoned" $ createWeaknessInThreatArea poisoned iid
+            labeled' "serpentsCall.poisoned" $ becomePoisoned iid
             labeled' "serpentsCall.drawEncounterCards" $ drawEncounterCards iid attrs 2
       pure t
     _ -> SerpentsCall <$> liftRunMessage msg attrs

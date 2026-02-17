@@ -31,9 +31,6 @@ instance RunMessage ExpeditionIntoTheWild where
       advanceAgendaDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      isPoisoned <- getIsPoisoned iid
-      if isPoisoned
-        then assignDamageAndHorror iid attrs 1 1
-        else createWeaknessInThreatArea Treacheries.poisoned iid
+      becomePoisonedOr iid $ assignDamageAndHorror iid attrs 1 1
       pure a
     _ -> ExpeditionIntoTheWild <$> liftRunMessage msg attrs

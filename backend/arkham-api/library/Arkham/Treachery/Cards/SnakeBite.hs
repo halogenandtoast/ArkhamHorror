@@ -26,8 +26,6 @@ instance RunMessage SnakeBite where
           labeled' "snakeBite.damageAlly" $ chooseTargetM iid allies \ally -> dealAssetDamage ally attrs 5
         labeled' "snakeBite.damageSelf" do
           directDamage iid attrs 1
-          unlessM (getIsPoisoned iid) do
-            poisoned <- getSetAsidePoisoned
-            createWeaknessInThreatArea poisoned iid
+          unlessM (getIsPoisoned iid) $ becomePoisoned iid
       pure t
     _ -> SnakeBite <$> liftRunMessage msg attrs

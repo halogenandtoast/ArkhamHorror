@@ -24,7 +24,7 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Scenario qualified as Scenario
@@ -454,7 +454,8 @@ instance RunMessage HeartOfTheElders where
       runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs
         $ setupHeartOfTheElders metadata attrs
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

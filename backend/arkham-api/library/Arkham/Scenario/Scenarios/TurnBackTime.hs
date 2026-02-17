@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
@@ -200,7 +201,8 @@ instance RunMessage TurnBackTime where
         _ -> error "Unknown Resolution"
       pure s
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

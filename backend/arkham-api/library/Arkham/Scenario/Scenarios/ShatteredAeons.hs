@@ -17,6 +17,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
@@ -281,7 +282,8 @@ instance RunMessage ShatteredAeons where
       when (RevealAnotherChaosToken `elem` modifiers) $ drawAnotherChaosToken iid
       ShatteredAeons <$> liftRunMessage msg attrs
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

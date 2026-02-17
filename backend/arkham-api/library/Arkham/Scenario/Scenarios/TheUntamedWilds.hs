@@ -12,6 +12,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -150,7 +151,8 @@ instance RunMessage TheUntamedWilds where
         _ -> pure ()
       pure s
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       do_ msg
       pure s
     Do (Explore iid source locationMatcher) -> do

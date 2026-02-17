@@ -201,7 +201,8 @@ instance RunMessage TheDoomOfEztli where
       pure . TheDoomOfEztli $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup TheDoomOfEztli attrs $ setupTheDoomOfEztli attrs
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

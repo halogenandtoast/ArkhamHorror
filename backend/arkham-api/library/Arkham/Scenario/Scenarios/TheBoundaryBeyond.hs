@@ -14,7 +14,7 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (getLocationGlobalMeta)
+import Arkham.Helpers.Location (getLocationGlobalMeta, getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
@@ -232,7 +232,8 @@ instance RunMessage TheBoundaryBeyond where
       pure s
     Setup -> runScenarioSetup TheBoundaryBeyond attrs $ setupTheBoundaryBeyond attrs
     Explore iid source _ -> do
-      checkWhen $ Window.AttemptExplore iid source.location
+      mloc <- runMaybeT $ asum [hoistMaybe source.location, MaybeT $ getLocationOf iid]
+      checkWhen $ Window.AttemptExplore iid mloc
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do

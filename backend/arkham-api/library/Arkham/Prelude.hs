@@ -227,6 +227,11 @@ orElse Nothing a = a
 orElse (Just a) _ = a
 {-# INLINE orElse #-}
 
+orElseM :: Applicative m => Maybe a -> m a -> m a
+orElseM Nothing a = a
+orElseM (Just a) _ = pure a
+{-# INLINE orElseM #-}
+
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a
 (!!?) xs i

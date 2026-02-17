@@ -69,7 +69,7 @@ allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =
   mapFromList
     $ concatMap
-      (\c -> (,c) <$> someInvestigatorCardCodes c)
+      someInvestigatorCardCodes
       [ SomeInvestigatorCard rolandBanks
       , SomeInvestigatorCard daisyWalker
       , SomeInvestigatorCard skidsOToole

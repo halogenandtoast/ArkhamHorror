@@ -630,8 +630,17 @@ liftInvestigatorCard
   :: (forall a. InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
 liftInvestigatorCard f (SomeInvestigatorCard a) = f a
 
-someInvestigatorCardCodes :: SomeInvestigatorCard -> [CardCode]
-someInvestigatorCardCodes = liftInvestigatorCard $ \c -> (cbCardDef c).cardCodes
+someInvestigatorCardCodes :: SomeInvestigatorCard -> [(CardCode, SomeInvestigatorCard)]
+someInvestigatorCardCodes (SomeInvestigatorCard CardBuilder {..}) =
+  [ ( code
+    , SomeInvestigatorCard
+        $ setCardCode code
+        <$> CardBuilder (cbCardDef {cdCardCode = code}) cbCardBuilder
+    )
+  | code <- cbCardDef.cardCodes
+  ]
+ where
+  setCardCode c = overAttrs (\a -> a {investigatorId = coerce c, investigatorCardCode = c})
 
 toInvestigator :: SomeInvestigatorCard -> PlayerId -> Investigator
 toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCardId

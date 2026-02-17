@@ -64,11 +64,12 @@ instance RunMessage FriendsInLowPlaces where
                 handleTarget iid attrs card
                 doStep 0 $ SearchFound iid (toTarget attrs) x cards'
         else doStep 0 msg
-      when (attrs `hasCustomization` Clever) do
-        chooseOneM iid do
+      if attrs `hasCustomization` Clever
+        then chooseOneM iid do
           labeled "Shuffle Cards Back In" $ shuffleDeck iid
           labeled "Place on the top of your deck, in any order" do
             push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
+        else shuffleDeck iid
       pushWhen (attrs `hasCustomization` Swift) $ Do msg
       pure e
     DoStep _ (SearchFound iid (isTarget attrs -> True) x cards) | notNull cards -> do

@@ -55,7 +55,8 @@ theMidnightMasks difficulty =
 instance HasChaosTokenValue TheMidnightMasks where
   getChaosTokenValue iid chaosTokenFace (TheMidnightMasks attrs) = case chaosTokenFace of
     Skull -> do
-      value <- byDifficulty attrs (fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)) getDoomCount
+      value <-
+        byDifficulty attrs (fieldMax EnemyDoom (InPlayEnemy $ EnemyWithTrait Trait.Cultist)) getDoomCount
       pure $ ChaosTokenValue Skull (NegativeModifier value)
     Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4

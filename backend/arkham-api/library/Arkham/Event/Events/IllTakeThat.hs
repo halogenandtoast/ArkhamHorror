@@ -34,7 +34,7 @@ instance RunMessage IllTakeThat where
         chooseTargetM iid items \item -> do
           unfocusCards
           reduceCostOf attrs item n
-          payCardCost iid item
+          playCardPayingCost iid item
           handleTarget iid attrs item
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do

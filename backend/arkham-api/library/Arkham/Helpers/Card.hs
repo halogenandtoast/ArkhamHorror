@@ -233,13 +233,31 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     LimitPerInvestigator m -> case toCardType c of
       AssetType -> do
-        n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
-        pure $ m > n
+        mods <- getModifiers iid
+        let othersMatchers = [imatch | CanModify (CanPlayUnderControlOf cmatch imatch) <- mods, cardMatch c cmatch]
+        if null othersMatchers
+          then do
+            n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
+            pure $ m > n
+          else do
+            iids <- select (investigator_ $ oneOf othersMatchers)
+            (iid : iids) & nub & anyM \iid' -> do
+              n <- selectCount $ Matcher.assetControlledBy iid' <> Matcher.AssetWithTitle (nameTitle $ toName c)
+              pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     LimitPerTrait t m -> case toCardType c of
       AssetType -> do
-        n <- selectCount (Matcher.assetControlledBy iid <> Matcher.AssetWithTrait t)
-        pure $ m > n
+        mods <- getModifiers iid
+        let othersMatchers = [imatch | CanModify (CanPlayUnderControlOf cmatch imatch) <- mods, cardMatch c cmatch]
+        if null othersMatchers
+          then do
+            n <- selectCount (Matcher.assetControlledBy iid <> Matcher.AssetWithTrait t)
+            pure $ m > n
+          else do
+            iids <- select (investigator_ $ oneOf othersMatchers)
+            (iid : iids) & nub & anyM \iid' -> do
+              n <- selectCount (Matcher.assetControlledBy iid' <> Matcher.AssetWithTrait t)
+              pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     MaxPerAttack m -> case toCardType c of
       EventType -> do

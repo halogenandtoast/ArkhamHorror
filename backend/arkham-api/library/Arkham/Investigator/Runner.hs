@@ -318,6 +318,7 @@ getWindowSkippable
         $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost $ max 0 $ cost - additionalResources)
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
+      liftGuardM $ withAlteredGame withoutCanModifiers $ passesLimits iid card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []

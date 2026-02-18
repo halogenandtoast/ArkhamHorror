@@ -1,6 +1,7 @@
-module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings, ShrewdDealings (..)) where
+module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings) where
 
 import Arkham.Ability
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Helpers.Card (passesLimits)
@@ -17,21 +18,24 @@ shrewdDealings :: AssetCard ShrewdDealings
 shrewdDealings = asset ShrewdDealings Cards.shrewdDealings
 
 instance HasModifiersFor ShrewdDealings where
-  getModifiersFor (ShrewdDealings a) = controllerGets a [ReduceCostOf (#asset <> #item) 1]
+  getModifiersFor (ShrewdDealings a) =
+    controllerGets
+      a
+      [ ReduceCostOf (#asset <> #item) 1
+      , CanModify $ CanPlayUnderControlOf (#asset <> #item) (affectsColocatedMatch You)
+      ]
 
 instance HasAbilities ShrewdDealings where
   getAbilities (ShrewdDealings x) =
-    [ restrictedAbility
-        x
-        1
-        (ControlsThis <> exists (affectsOthers $ colocatedWithMatch You <> NotYou))
+    [ controlled x 1 (exists (affectsOthers $ colocatedWithMatch You <> NotYou))
         $ freeReaction (PlayCard #when You $ basic $ #asset <> #item <> NonSignature)
     ]
 
 instance RunMessage ShrewdDealings where
   runMessage msg a@(ShrewdDealings attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
-      investigators <- filterM (`passesLimits` card) =<< select (affectsOthers $ colocatedWith iid)
+      investigators <- withoutModifiersOf attrs do
+        filterM (`passesLimits` card) =<< select (affectsOthers $ colocatedWith iid)
       -- need to ensure card would not exceed limit
       chooseOneM iid do
         targets investigators \investigator -> do

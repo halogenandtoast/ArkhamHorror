@@ -1387,16 +1387,18 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   PlayCard iid card mtarget payment windows' False -> do
     investigator' <- getInvestigator iid
     let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
+    cardMods <- getModifiers (CardIdTarget $ toCardId card)
+    let playSource = fromMaybe (toSource iid) $ asum [ Just source | PlaySource source <- cardMods]
     isPlayable <-
       if ignoreSelfModifiers
-        then withoutModifiersFrom iid $ getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
-        else getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
+        then withoutModifiersFrom iid $ getIsPlayable iid playSource Cost.PaidCost windows' card
+        else getIsPlayable iid playSource Cost.PaidCost windows' card
     if isPlayable
       then do
         mods <- getModifiers iid
-        cardMods <- getModifiers (CardIdTarget $ toCardId card)
         let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
         let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
+
         send $ format investigator' <> " played " <> format card
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let

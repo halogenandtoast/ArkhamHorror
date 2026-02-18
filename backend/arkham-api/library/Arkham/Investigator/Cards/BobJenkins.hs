@@ -42,7 +42,11 @@ instance HasModifiersFor BobJenkins where
 
 instance HasAbilities BobJenkins where
   getAbilities (BobJenkins attrs) =
-    [ selfAbility attrs 1 (PlayableCardExists (UnpaidCost NoAction) matchCards) (ActionAbility [] Nothing mempty)
+    [ selfAbility
+        attrs
+        1
+        (PlayableCardExists (UnpaidCost NoAction) matchCards)
+        (ActionAbility [] Nothing mempty)
     | BobJenkinsAction `notElem` map additionalActionType attrs.usedAdditionalActions
     ]
    where
@@ -82,6 +86,7 @@ instance RunMessage BobJenkins where
         cardResolutionModifier c (attrs.ability 1) owner
           $ CanSpendResourcesOnCardFromInvestigator (be iid) AnyCard
         cardResolutionModifier c (attrs.ability 1) attrs (PlayableCardOf owner c)
+        cardResolutionModifier c (attrs.ability 1) c.id (PlaySource $ attrs.ability 1)
         playCardPayingCost iid c
       pure i
     ResetGame -> BobJenkins <$> liftRunMessage msg (attrs & setMeta Null)

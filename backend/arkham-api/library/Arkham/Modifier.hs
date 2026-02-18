@@ -87,6 +87,7 @@ data ModifierType
   | AnySkillValueCalculated GameCalculation
   | AsIfAt LocationId
   | CanBeAttackedAsIfEnemy
+  | CanPlayUnderControlOf CardMatcher InvestigatorMatcher
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfNotEngagedWith EnemyId
@@ -378,6 +379,7 @@ data ModifierType
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | OtherDoomSubtracts
   | PlaceOnBottomOfDeckInsteadOfDiscard
+  | PlaySource Source
   | PlayUnderControlOf InvestigatorId
   | PlayableCardOf InvestigatorId Card
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]

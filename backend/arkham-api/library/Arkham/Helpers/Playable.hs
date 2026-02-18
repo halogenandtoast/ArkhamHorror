@@ -1,6 +1,5 @@
 module Arkham.Helpers.Playable where
 
-import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
 import Arkham.Calculation
 import Arkham.Card
@@ -226,9 +225,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
           Just owner ->
             andM
               [ pure $ c `cardMatch` card_ (#asset <> #item)
-              , pure
-                  $ BobJenkinsAction
-                  `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
               , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
               ]
           Nothing -> pure False
@@ -237,9 +233,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
           Just owner ->
             andM
               [ pure $ c `cardMatch` card_ (#asset <> #item)
-              , pure
-                  $ BobJenkinsAction
-                  `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
               , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
               ]
           Nothing -> pure False
@@ -378,7 +371,9 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         _ -> False
       doAsIfTurn = any isDuringTurnWindow windows'
 
-    liftGuardM $ passesLimits iid c
+    liftGuardM
+      $ passesLimits (if isBobJenkins then fromMaybe iid c.owner else iid) c
+
     unless (null (cdSlots pcDef)) do
       liftGuardM do
         possibleSlots <- getPotentialSlots c iid

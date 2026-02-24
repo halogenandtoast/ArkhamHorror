@@ -36,12 +36,10 @@ instance RunMessage StirThePot where
       chooseOrRunOneM iid $ withI18n do
         labeled' "doNotDisengage" nothing
         unless (null engaged) do
-          whenMatch iid InvestigatorCanDisengage $ labeled' "disengageAll" $ for_ engaged (disengageEnemy iid)
-
-      locations <- getAccessibleLocations iid attrs
-      when (notNull locations) do
-        chooseOrRunOneM iid $ withI18n do
-          labeled' "doNotMove" nothing
-          targets locations (moveTo attrs iid)
+          whenMatch iid InvestigatorCanDisengage $ labeled' "disengageAll" do
+            for_ engaged (disengageEnemy iid)
+            locations <- getAccessibleLocations iid attrs
+            chooseTargetM iid locations (moveTo attrs iid)
+            for_ engaged enemyCheckEngagement
       pure e
     _ -> StirThePot <$> liftRunMessage msg attrs

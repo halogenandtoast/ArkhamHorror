@@ -19,6 +19,7 @@ import Arkham.Asset.Runner as X (
   discardWhenNoUses,
   driverL,
   flippedL,
+  getAssetMeta,
   getAssetMetaDefault,
   getMetaKey,
   getMetaKeyDefault,

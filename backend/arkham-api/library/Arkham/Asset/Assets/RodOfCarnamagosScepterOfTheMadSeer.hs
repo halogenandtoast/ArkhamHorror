@@ -1,54 +1,38 @@
-module Arkham.Asset.Assets.RodOfCarnamagosScepterOfTheMadSeer (
-  rodOfCarnamagosScepterOfTheMadSeer,
-  RodOfCarnamagosScepterOfTheMadSeer (..),
-)
-where
+module Arkham.Asset.Assets.RodOfCarnamagosScepterOfTheMadSeer (rodOfCarnamagosScepterOfTheMadSeer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.Helpers.Investigator (searchBondedFor)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.RequestedChaosTokenStrategy
 import Arkham.Trait (Trait (Rot))
 
-newtype Meta = Meta {chosenEnemy :: Maybe EnemyId}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype RodOfCarnamagosScepterOfTheMadSeer = RodOfCarnamagosScepterOfTheMadSeer (AssetAttrs `With` Meta)
+newtype RodOfCarnamagosScepterOfTheMadSeer = RodOfCarnamagosScepterOfTheMadSeer AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rodOfCarnamagosScepterOfTheMadSeer :: AssetCard RodOfCarnamagosScepterOfTheMadSeer
 rodOfCarnamagosScepterOfTheMadSeer =
-  asset
-    (RodOfCarnamagosScepterOfTheMadSeer . (`with` Meta Nothing))
-    Cards.rodOfCarnamagosScepterOfTheMadSeer
+  asset RodOfCarnamagosScepterOfTheMadSeer Cards.rodOfCarnamagosScepterOfTheMadSeer
 
 instance HasAbilities RodOfCarnamagosScepterOfTheMadSeer where
-  getAbilities (RodOfCarnamagosScepterOfTheMadSeer (With attrs _)) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ FastAbility (ChooseEnemyCost (NonEliteEnemy <> EnemyAt Anywhere) <> exhaust attrs)
-    ]
+  getAbilities (RodOfCarnamagosScepterOfTheMadSeer a) =
+    [controlled_ a 1 $ freeTrigger $ ChooseEnemyCost (NonEliteEnemy <> at_ Anywhere) <> exhaust a]
 
 instance RunMessage RodOfCarnamagosScepterOfTheMadSeer where
-  runMessage msg a@(RodOfCarnamagosScepterOfTheMadSeer (With attrs meta)) = runQueueT $ case msg of
+  runMessage msg a@(RodOfCarnamagosScepterOfTheMadSeer attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (chosenEnemyPayment -> eid) -> do
-      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 5) SetAside
-      pure . RodOfCarnamagosScepterOfTheMadSeer $ With attrs (meta {chosenEnemy = eid})
-    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
-      for_ (chosenEnemy meta) \eid -> do
+      requestChaosTokens iid (attrs.ability 1) 5
+      pure . RodOfCarnamagosScepterOfTheMadSeer $ attrs & setMeta eid
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
+      continue_ iid
+      for_ (getAssetMeta attrs) \eid -> do
         when (any ((== #curse) . (.face)) tokens) do
           rots <- searchBondedFor iid (CardWithTrait Rot)
-          case nonEmpty rots of
-            Just rots' -> do
-              rot <- sample rots'
-              obtainCard rot
-              push $ CreateEventAt iid rot (AttachedToEnemy eid)
-            _ -> pure ()
-      push $ ResetChaosTokens source
+          for_ (nonEmpty rots) \rots' -> do
+            rot <- sample rots'
+            obtainCard rot
+            push $ CreateEventAt iid rot (AttachedToEnemy eid)
       pure a
-    _ -> RodOfCarnamagosScepterOfTheMadSeer . (`with` meta) <$> liftRunMessage msg attrs
+    _ -> RodOfCarnamagosScepterOfTheMadSeer <$> liftRunMessage msg attrs

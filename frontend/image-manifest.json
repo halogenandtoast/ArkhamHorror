@@ -7664,6 +7664,16 @@
     "img/arkham/portraits/01004b.jpg",
     "img/arkham/portraits/01005.jpg",
     "img/arkham/portraits/01005b.jpg",
+    "img/arkham/portraits/01501.jpg",
+    "img/arkham/portraits/01501b.jpg",
+    "img/arkham/portraits/01502.jpg",
+    "img/arkham/portraits/01502b.jpg",
+    "img/arkham/portraits/01503.jpg",
+    "img/arkham/portraits/01503b.jpg",
+    "img/arkham/portraits/01504.jpg",
+    "img/arkham/portraits/01504b.jpg",
+    "img/arkham/portraits/01505.jpg",
+    "img/arkham/portraits/01505b.jpg",
     "img/arkham/portraits/02001.jpg",
     "img/arkham/portraits/02002.jpg",
     "img/arkham/portraits/02003.jpg",
@@ -21727,9 +21737,6 @@
     "img/arkham/ita/cards/84052.avif",
     "img/arkham/ita/cards/84052b.avif"
   ],
-  "img/arkham/ko": [
-    "img/arkham/ko/cards/.gitkeep"
-  ],
   "img/arkham/zh": [
     "img/arkham/zh/cards/01001.avif",
     "img/arkham/zh/cards/01001b.avif",
@@ -22309,7 +22316,6 @@
     "img/arkham/zh/cards/02169b.avif",
     "img/arkham/zh/cards/02170.avif",
     "img/arkham/zh/cards/02170b.avif",
-    "img/arkham/zh/cards/02171.avif",
     "img/arkham/zh/cards/02171b.avif",
     "img/arkham/zh/cards/02172.avif",
     "img/arkham/zh/cards/02172b.avif",

@@ -136,6 +136,18 @@ parley
   -> m ()
 parley sid iid source target sType n = push $ Msg.parley sid iid source target sType n
 
+parley_
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> GameCalculation
+  -> m ()
+parley_ iid source target sType n = do
+  sid <- getRandom
+  push $ Msg.parley sid iid source target sType n
+
 fight
   :: (Sourceable source, Targetable target, ReverseQueue m)
   => SkillTestId

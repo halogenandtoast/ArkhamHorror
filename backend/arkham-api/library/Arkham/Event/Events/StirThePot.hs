@@ -20,14 +20,13 @@ stirThePot = event StirThePot Cards.stirThePot
 instance RunMessage StirThePot where
   runMessage msg e@(StirThePot attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> CanParleyEnemy (be iid)
+      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      sid <- getRandom
-      parley sid iid attrs eid #intellect $ sumFieldsOf eid [EnemyHealthDamage, EnemySanityDamage]
+      parley_ iid attrs eid #intellect $ sumFieldsOf eid [EnemyHealthDamage, EnemySanityDamage]
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
+      enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy attrs
       chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs 2
       when (n >= 2) $ doStep 1 msg
       pure e

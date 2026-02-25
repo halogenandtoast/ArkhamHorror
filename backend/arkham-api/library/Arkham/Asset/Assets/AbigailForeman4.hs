@@ -18,7 +18,7 @@ abigailForeman4 = ally AbigailForeman4 Cards.abigailForeman4 (1, 2)
 
 instance HasModifiersFor AbigailForeman4 where
   getModifiersFor (AbigailForeman4 a) = for_ a.controller \iid -> do
-    modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid]
+    modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid, DoNotTakeUpSlot #hand]
 
 instance HasAbilities AbigailForeman4 where
   getAbilities (AbigailForeman4 a) =

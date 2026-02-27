@@ -197,12 +197,13 @@ ashleighClarke =
 
 combatTraining1 :: CardDef
 combatTraining1 =
-  (asset "03107" "Combat Training" 1 Guardian)
-    { cdSkills = [#combat, #agility]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 1
-    }
+  fast
+    $ (asset "03107" "Combat Training" 1 Guardian)
+      { cdSkills = [#combat, #agility]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 1
+      }
 
 scientificTheory1 :: CardDef
 scientificTheory1 =

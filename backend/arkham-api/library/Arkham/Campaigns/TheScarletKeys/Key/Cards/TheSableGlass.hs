@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Campaigns.TheScarletKeys.Key.Cards.TheSableGlass (theSableGlass) where
 
 import Arkham.Ability
@@ -43,7 +44,7 @@ instance RunMessage TheSableGlass where
           when ok $ withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do
           withInvestigatorBearer attrs \iid -> do
-            concealedCards <- select $ ConcealedCardAt (locationWithInvestigator iid)
+            concealedCards <- traceShowId <$> select (ConcealedCardAt (locationWithInvestigator iid))
             chooseOneAtATimeM iid $ targets concealedCards $ revealConcealed iid attrs . toId
             handleUnstableFlip iid attrs
       pure k

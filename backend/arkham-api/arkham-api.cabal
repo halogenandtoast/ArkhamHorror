@@ -5262,6 +5262,7 @@ library
       Arkham.Xp
       Arkham.Zone
       Auth.JWT
+      Base.Api.Handler.Account
       Base.Api.Handler.Authentication
       Base.Api.Handler.CurrentUser
       Base.Api.Handler.Notifications

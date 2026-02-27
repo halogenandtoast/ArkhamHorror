@@ -90,6 +90,7 @@ import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
+import Base.Api.Handler.Account
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.Notifications

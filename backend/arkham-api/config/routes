@@ -9,6 +9,7 @@
       /#PasswordResetId ApiV1PasswordResetR PUT
     /whoami ApiV1CurrentUserR GET
     /settings ApiV1SettingsR PUT
+    /account ApiV1AccountR DELETE
     /site-settings ApiV1SiteSettingsR GET
     /notifications ApiV1NotificationsR GET
     /arkham ApiV1ArkhamP:

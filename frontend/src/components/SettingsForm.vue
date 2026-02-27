@@ -7,10 +7,12 @@ import { checkImageExists } from '@/arkham/helpers'
 const props = defineProps<{
   user: User
   updateBeta: (setting: boolean) => void
+  deleteAccount: () => void
 }>()
 
 const store = useDbCardStore()
 const beta = ref(props.user.beta ? "On" : "Off")
+const showDeleteConfirm = ref(false)
 
 const betaUpdate = async () => props.updateBeta(beta.value == "On")
 
@@ -53,6 +55,21 @@ const updateLanguage = async (a: Event) => {
           <label>Off <input type="radio" name="beta" value="Off" v-model="beta" @change="betaUpdate" /></label>
         </div>
       </fieldset>
+
+      <fieldset class="box column danger-zone">
+        <legend>Danger Zone</legend>
+        <p>Permanently delete your account and all associated data, including games and decks. <strong>This cannot be undone.</strong></p>
+        <div v-if="!showDeleteConfirm">
+          <button class="btn-danger" @click="showDeleteConfirm = true">Delete Account</button>
+        </div>
+        <div v-else class="column">
+          <p class="warning">Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.</p>
+          <div class="row">
+            <button class="btn-danger" @click="props.deleteAccount()">Yes, permanently delete my account</button>
+            <button @click="showDeleteConfirm = false">Cancel</button>
+          </div>
+        </div>
+      </fieldset>
     </div>
   </div>
 </template>
@@ -65,5 +82,31 @@ input[type="radio"] {
 legend {
  font-size: 1.1em;
  font-weight: bolder;
+}
+
+.danger-zone {
+  border-color: #c0392b;
+}
+
+.danger-zone legend {
+  color: #c0392b;
+}
+
+.btn-danger {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-danger:hover {
+  background-color: #a93226;
+}
+
+.warning {
+  color: #c0392b;
+  font-weight: bold;
 }
 </style>

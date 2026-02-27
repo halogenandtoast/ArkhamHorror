@@ -50,6 +50,11 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  async function deleteAccount() {
+    await api.delete('account')
+    logout()
+  }
+
   async function loadUserFromStorage() {
     if (currentUser.value) return
     const tokenFromStorage = localStorage.getItem('arkham-token');
@@ -64,5 +69,5 @@ export const useUserStore = defineStore("user", () => {
     token.value = null
   }
 
-  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register, logout }
+  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register, logout, deleteAccount }
 })

@@ -3176,7 +3176,8 @@ getConcealedCardsMatching matcher = do
       pure $ filter (`notElem` matches') as
     ConcealedCardAt locationMatcher -> do
       placements <- selectMap AtLocation locationMatcher
-      positions <- ordNub . concatMap adjacentPositions . catMaybes <$> selectField LocationPosition locationMatcher
+      positions <-
+        ordNub . concatMap adjacentPositions . catMaybes <$> selectField LocationPosition locationMatcher
       let placements' = placements <> map InPosition positions
       pure $ filter ((`elem` placements') . attr concealedCardPlacement) as
     ConcealedCardIs k -> pure $ filter ((== k) . attr concealedCardKind) as

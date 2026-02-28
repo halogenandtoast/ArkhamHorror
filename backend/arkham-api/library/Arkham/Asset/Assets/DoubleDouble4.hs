@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Helpers.Window (allWindows, cardPlayed)
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Window (duringTurnWindow)
 
 newtype DoubleDouble4 = DoubleDouble4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,6 +30,8 @@ instance HasAbilities DoubleDouble4 where
 instance RunMessage DoubleDouble4 where
   runMessage msg a@(DoubleDouble4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
-      playCardPayingCostWithWindows iid card =<< allWindows
+      isTurn <- matches iid TurnInvestigator
+      let setWindows = if isTurn then (duringTurnWindow iid :) else id
+      playCardPayingCostWithWindows iid card . setWindows =<< allWindows
       pure a
     _ -> DoubleDouble4 <$> liftRunMessage msg attrs

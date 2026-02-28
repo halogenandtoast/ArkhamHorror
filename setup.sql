@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.13 (Homebrew)
--- Dumped by pg_dump version 14.13 (Homebrew)
+-- Dumped from database version 14.15 (Homebrew)
+-- Dumped by pg_dump version 14.15 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -56,56 +56,6 @@ BEGIN
     END IF;
     
     RETURN OLD;
-END;
-$$;
-
-
---
--- Name: check_step_before_delete(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.check_step_before_delete() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    -- Your logic here
-    RETURN OLD;
-END;
-$$;
-
-
---
--- Name: enforce_chronological_order_per_game(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.enforce_chronological_order_per_game() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    violating_step RECORD;
-BEGIN
-    -- Only proceed if this is an AFTER DELETE statement-level trigger
-    IF (TG_OP = 'DELETE') AND (TG_LEVEL = 'STATEMENT') THEN
-        -- Check for any steps that now violate the chronological order
-        WITH affected_games AS (
-            SELECT DISTINCT arkham_game_id FROM oldtab
-        ), violating_steps AS (
-            SELECT s.arkham_game_id, s.step
-            FROM arkham_steps s
-            LEFT JOIN arkham_steps prev_s ON
-                prev_s.arkham_game_id = s.arkham_game_id AND
-                prev_s.step = s.step - 1
-            WHERE s.step > 0 AND prev_s.step IS NULL AND
-                s.arkham_game_id IN (SELECT arkham_game_id FROM affected_games)
-        )
-        SELECT * INTO violating_step FROM violating_steps LIMIT 1;
-
-        IF FOUND THEN
-            RAISE EXCEPTION 'Step % for game % exists without previous step', violating_step.step, violating_step.arkham_game_id;
-        END IF;
-    END IF;
-
-    RETURN NULL;
 END;
 $$;
 
@@ -266,6 +216,37 @@ CREATE TABLE public.arkham_steps (
 
 
 --
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notifications (
+    id integer NOT NULL,
+    body text,
+    created_at timestamp without time zone
+);
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.notifications_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
+
+
+--
 -- Name: password_resets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -305,7 +286,7 @@ CREATE TABLE public.users (
     email character varying NOT NULL,
     password_digest character varying NOT NULL,
     beta boolean DEFAULT false NOT NULL,
-    admin boolean DEFAULT false NOT NULL
+    admin boolean DEFAULT false
 );
 
 
@@ -350,6 +331,13 @@ ALTER TABLE ONLY public.arkham_players ALTER COLUMN user_id SET DEFAULT nextval(
 
 
 --
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
+
+
+--
 -- Name: password_resets user_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -388,6 +376,14 @@ ALTER TABLE ONLY public.arkham_log_entries
 
 
 --
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: password_resets password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -420,6 +416,13 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: arkham_decks_user_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arkham_decks_user_id_idx ON public.arkham_decks USING btree (user_id);
+
+
+--
 -- Name: log_entries_game_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -434,24 +437,10 @@ CREATE UNIQUE INDEX steps_game_step_idx ON public.arkham_steps USING btree (arkh
 
 
 --
--- Name: arkham_steps enforce_chronological_order_per_game; Type: TRIGGER; Schema: public; Owner: -
---
-
--- CREATE TRIGGER enforce_chronological_order_per_game AFTER DELETE ON public.arkham_steps REFERENCING OLD TABLE AS oldtab FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_chronological_order_per_game();
-
-
---
 -- Name: arkham_steps enforce_step_order_per_game; Type: TRIGGER; Schema: public; Owner: -
 --
 
--- CREATE TRIGGER enforce_step_order_per_game BEFORE INSERT ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.enforce_step_order_per_game();
-
-
---
--- Name: arkham_steps prevent_invalid_step_deletion; Type: TRIGGER; Schema: public; Owner: -
---
-
--- CREATE TRIGGER prevent_invalid_step_deletion BEFORE DELETE ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.check_step_before_delete();
+CREATE TRIGGER enforce_step_order_per_game BEFORE INSERT ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.enforce_step_order_per_game();
 
 
 --
@@ -459,7 +448,7 @@ CREATE UNIQUE INDEX steps_game_step_idx ON public.arkham_steps USING btree (arkh
 --
 
 ALTER TABLE ONLY public.arkham_decks
-    ADD CONSTRAINT arkham_decks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT arkham_decks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -506,4 +495,3 @@ ALTER TABLE ONLY public.password_resets
 -- PostgreSQL database dump complete
 --
 
-create table public.notifications (id serial primary key, body text, created_at timestamp);

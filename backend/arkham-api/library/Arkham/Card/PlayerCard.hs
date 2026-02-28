@@ -119,7 +119,7 @@ tabooMutated' = \case
   Just TabooList23 -> tabooMutated23
   Just TabooList24 -> tabooMutated24
   Just TabooList25 -> tabooMutated25
-  _ -> \_ -> Nothing
+  _ -> const Nothing
 
 tabooMutated15 :: CardCode -> Maybe Text
 tabooMutated15 = \case

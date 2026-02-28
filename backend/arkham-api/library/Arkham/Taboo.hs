@@ -20,6 +20,7 @@ tabooListModify = \case
   TabooList22 -> tabooList22Modify
   TabooList23 -> tabooList23Modify
   TabooList24 -> tabooList24Modify
+  TabooList25 -> tabooList25Modify
 
 tabooList15Modify :: CardDef -> CardDef
 tabooList15Modify cdef = case toCardCode cdef of
@@ -75,6 +76,10 @@ tabooList24Modify :: CardDef -> CardDef
 tabooList24Modify cdef = case toCardCode cdef of
   "05156" -> cdef {cdLimits = [LimitPerRound 2]} -- Swift Reflexes
   _ -> tabooList23Modify cdef
+
+tabooList25Modify :: CardDef -> CardDef
+tabooList25Modify cdef = case toCardCode cdef of
+  _ -> tabooList24Modify cdef
 
 tabooed :: HasField "taboo" a (Maybe TabooList) => TabooList -> a -> Bool
 tabooed tbl = maybe False (>= tbl) . getField @"taboo"

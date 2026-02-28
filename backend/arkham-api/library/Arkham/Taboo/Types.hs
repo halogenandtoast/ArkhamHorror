@@ -15,6 +15,7 @@ data TabooList
   | TabooList22
   | TabooList23
   | TabooList24
+  | TabooList25
   deriving stock (Show, Eq, Ord, Data)
 
 fromTabooId :: Maybe Int -> Maybe TabooList
@@ -28,6 +29,7 @@ fromTabooId = \case
   Just 7 -> Just TabooList22
   Just 8 -> Just TabooList23
   Just 9 -> Just TabooList24
+  Just 10 -> Just TabooList25
   _ -> Nothing
 
 displayTabooList :: TabooList -> Text
@@ -41,5 +43,6 @@ displayTabooList = \case
   TabooList22 -> "2.2 (Feb 20, 2024)"
   TabooList23 -> "2.3 (Oct 24, 2024)"
   TabooList24 -> "2.4 (Jul 11, 2025)"
+  TabooList25 -> "2.5 (Feb 21, 2026)"
 
 $(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''TabooList)

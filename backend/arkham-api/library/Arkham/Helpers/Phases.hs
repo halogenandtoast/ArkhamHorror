@@ -28,7 +28,8 @@ runEnemyPhase endMsg = do
     [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
     , phaseStep HunterEnemiesMoveStep [Msg.HuntersMove, afterHuntersMoveWindow]
     , phaseStep ResolveAttacksWindow [fastWindow, enemiesAttackWindow]
-    , phaseStep ResolveAttacksStep [Msg.EnemiesAttack, fastWindow]
+    , phaseStep ResolveAttacksStep [Msg.EnemiesAttack]
+    , phaseStep AfterResolveAttacksWindow [fastWindow]
     , phaseStep EnemyPhaseEndsStep [endMsg]
     ]
 

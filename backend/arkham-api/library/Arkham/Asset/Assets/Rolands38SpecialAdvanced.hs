@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Rolands38SpecialAdvanced (Rolands38SpecialAdvanced (..), rolands38SpecialAdvanced) where
+module Arkham.Asset.Assets.Rolands38SpecialAdvanced (rolands38SpecialAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -16,17 +16,21 @@ rolands38SpecialAdvanced = asset Rolands38SpecialAdvanced Cards.rolands38Special
 
 instance HasAbilities Rolands38SpecialAdvanced where
   getAbilities (Rolands38SpecialAdvanced x) =
-    [restrictedAbility x 1 ControlsThis $ fightAction $ assetUseCost x Ammo 1]
+    [controlled_ x 1 $ fightAction $ assetUseCost x Ammo 1]
 
 instance RunMessage Rolands38SpecialAdvanced where
   runMessage msg a@(Rolands38SpecialAdvanced attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
-      let source = attrs.ability 1
-      let n = if anyClues then 4 else 2
       sid <- getRandom
-      skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat n]
-      chooseFightEnemy sid iid source
+      skillTestModifiers
+        sid
+        (attrs.ability 1)
+        iid
+        [ DamageDealt 1
+        , CalculatedSkillModifier #combat
+            $ IfLocationExistsCalculation (locationWithInvestigator iid <> LocationWithAnyClues) (Fixed 4) (Fixed 2)
+        ]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do

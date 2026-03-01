@@ -11,6 +11,7 @@ export function displayTabooList(taboo: TabooList): string {
     case "TabooList22": return "2.2 (Feb 20, 2024)"
     case "TabooList23": return "2.3 (Oct 24, 2024)"
     case "TabooList24": return "2.4 (Jul 11, 2025)"
+    case "TabooList25": return "2.5 (Feb 21, 2026)"
     default: return "Unknown Taboo List"
   }
 }
@@ -26,6 +27,7 @@ function tabooListIdToTabooList(tabooId: number): TabooList | null {
     case 7: return "TabooList22"
     case 8: return "TabooList23"
     case 9: return "TabooList24"
+    case 10: return "TabooList25"
     default: return null
   }
 }

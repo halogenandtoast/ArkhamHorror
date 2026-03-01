@@ -10,6 +10,7 @@ export type TabooList =
   | "TabooList22"
   | "TabooList23"
   | "TabooList24"
+  | "TabooList25"
 
 export const tabooListDecoder = JsonDecoder.oneOf<TabooList>([
   JsonDecoder.literal("TabooList15"),
@@ -21,4 +22,5 @@ export const tabooListDecoder = JsonDecoder.oneOf<TabooList>([
   JsonDecoder.literal("TabooList22"),
   JsonDecoder.literal("TabooList23"),
   JsonDecoder.literal("TabooList24"),
+  JsonDecoder.literal("TabooList25"),
 ], 'TabooList')

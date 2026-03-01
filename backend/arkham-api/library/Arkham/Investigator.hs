@@ -209,6 +209,7 @@ returnToBody = flip handleInvestigator \(BodyOfAYithian (attrs `With` meta)) ->
       a
         { investigatorSettings = investigatorSettings attrs <> investigatorSettings a
         , investigatorXp = investigatorXp attrs
+        , investigatorSpentXp = investigatorSpentXp attrs
         , investigatorPhysicalTrauma = investigatorPhysicalTrauma attrs
         , investigatorMentalTrauma = investigatorMentalTrauma attrs
         , investigatorTokens = investigatorTokens attrs

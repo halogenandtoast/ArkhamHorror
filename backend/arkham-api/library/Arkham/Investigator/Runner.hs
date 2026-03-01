@@ -499,6 +499,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
         { Attrs.investigatorId = investigatorId
         , investigatorXp = investigatorXp
+        , investigatorSpentXp = investigatorSpentXp
         , investigatorPhysicalTrauma = investigatorPhysicalTrauma
         , investigatorMentalTrauma = investigatorMentalTrauma
         , investigatorTokens =
@@ -2313,7 +2314,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   InitDeck iid murl _ | iid == investigatorId -> do
     pure $ a & deckUrlL .~ murl
   UpgradeDeck iid murl _ | iid == investigatorId -> do
-    pure $ a & deckUrlL .~ murl
+    pure $ a & deckUrlL .~ murl & spentXpL .~ investigatorXp
   ObtainCard cardId -> do
     pure
       $ a

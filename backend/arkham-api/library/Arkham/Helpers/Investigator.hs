@@ -390,6 +390,7 @@ investigator f cardDef Stats {..} =
                 , investigatorEliminated = False
                 , investigatorSlots = defaultSlots iid
                 , investigatorXp = 0
+                , investigatorSpentXp = 0
                 , investigatorPhysicalTrauma = 0
                 , investigatorMentalTrauma = 0
                 , investigatorStartsWith = []

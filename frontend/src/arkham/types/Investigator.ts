@@ -158,6 +158,7 @@ export type Investigator = {
   sealedChaosTokens: ChaosToken[];
   foundCards: Record<string, Card[]>;
   xp: number;
+  spentXp: number;
   physicalTrauma: number;
   mentalTrauma: number;
   supplies: string[];
@@ -268,6 +269,7 @@ export const investigatorDecoder = JsonDecoder.object({
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   search: JsonDecoder.nullable(searchDecoder).map((search) => search?.searchFoundCards || {}),
   xp: JsonDecoder.number(),
+  spentXp: JsonDecoder.fallback(0, JsonDecoder.number()),
   physicalTrauma: JsonDecoder.number(),
   mentalTrauma: JsonDecoder.number(),
   supplies: JsonDecoder.array<string>(JsonDecoder.string(), 'supplies'),

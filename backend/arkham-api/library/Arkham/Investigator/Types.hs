@@ -306,6 +306,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorEliminated :: Bool
   , investigatorSlots :: Map SlotType [Slot]
   , investigatorXp :: Int
+  , investigatorSpentXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   , investigatorStartsWith :: [CardDef]
@@ -689,6 +690,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorEliminated <- o .:? "eliminated" .!= False
     investigatorSlots <- o .: "slots"
     investigatorXp <- o .: "xp"
+    investigatorSpentXp <- o .:? "spentXp" .!= 0
     investigatorPhysicalTrauma <- o .: "physicalTrauma"
     investigatorMentalTrauma <- o .: "mentalTrauma"
     investigatorStartsWith <- o .: "startsWith"

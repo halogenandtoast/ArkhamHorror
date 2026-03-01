@@ -39,7 +39,11 @@ const investigator = computed(() => {
 const investigatorId = computed(() => !solo && deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
 const investigators = computed(() => Object.values(props.game.investigators))
 const originalInvestigatorId = computed(() => investigator.value?.id)
-const xp = computed(() => investigator.value?.xp)
+const xp = computed(() => {
+  const inv = investigator.value
+  if (!inv) return undefined
+  return inv.xp - inv.spentXp
+})
 const skipping = ref(false)
 
 const killedInvestigators = computed(() => {

@@ -2677,8 +2677,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       <$> [#when, #after]
     pure g
   InvestigatorAssignDamage iid' source _ n 0 | n > 0 -> do
-    miid <- getSourceController source
-    case miid of
+    getSourceController source >>= \case
       Nothing -> pure g
       Just iid -> do
         let

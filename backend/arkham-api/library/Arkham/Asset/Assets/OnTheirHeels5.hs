@@ -9,6 +9,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Taboo
 
 newtype OnTheirHeels5 = OnTheirHeels5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,7 +20,7 @@ onTheirHeels5 = asset OnTheirHeels5 Cards.onTheirHeels5
 
 instance HasAbilities OnTheirHeels5 where
   getAbilities (OnTheirHeels5 a) =
-    [ restricted a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
           ( Enters
               #after
@@ -34,6 +35,10 @@ instance HasAbilities OnTheirHeels5 where
 
 instance RunMessage OnTheirHeels5 where
   runMessage msg a@(OnTheirHeels5 attrs) = runQueueT $ case msg of
+    CardEnteredPlay _iid card | card.id == attrs.cardId -> do
+      if tabooed TabooList25 attrs
+        then pure $ OnTheirHeels5 $ attrs & whenNoUsesL ?~ DiscardWhenNoUses
+        else pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         enemies <- select $ at_ (be lid) <> EnemyCanBeDamagedBySource (attrs.ability 1)

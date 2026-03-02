@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.RavenousMyconidSentientStrain4 (
-  ravenousMyconidSentientStrain4,
-  RavenousMyconidSentientStrain4 (..),
-)
-where
+module Arkham.Asset.Assets.RavenousMyconidSentientStrain4 (ravenousMyconidSentientStrain4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +7,7 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBondedJust)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
+import Arkham.Taboo
 import Arkham.Token
 
 newtype RavenousMyconidSentientStrain4 = RavenousMyconidSentientStrain4 AssetAttrs
@@ -27,25 +24,18 @@ ravenousMyconidSentientStrain4 =
 instance HasAbilities RavenousMyconidSentientStrain4 where
   getAbilities (RavenousMyconidSentientStrain4 a) =
     [ playerLimit PerRound
-        $ controlledAbility
-          a
-          1
-          (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth)
+        $ controlled a 1 (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth)
         $ FastAbility Free
-    , restrictedAbility a 2 ControlsThis
+    , controlled_ a 2
         $ freeReaction
         $ oneOf
-          [ DrawCard
-              #when
-              (You <> at_ (LocationWithShroud $ atMost $ a.use Growth))
-              (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
-              EncounterDeck
-          , DrawCard
-              #when
-              (affectsOthers $ not_ You <> at_ (LocationWithShroud $ atMost $ a.use Growth))
-              (CanCancelRevelationEffect You $ basic $ NonWeaknessTreachery <> NonPeril)
-              EncounterDeck
-          ]
+        $ [((You <>), id), (affectsOthers . (not_ You <>), (NonPeril <>))]
+        & map \(f, g) ->
+          DrawCard
+            #when
+            (f $ at_ (LocationWithShroud $ (if tabooed TabooList25 a then lessThan else atMost) $ a.use Growth))
+            (CanCancelRevelationEffect You $ basic $ g NonWeaknessTreachery)
+            EncounterDeck
     ]
 
 instance RunMessage RavenousMyconidSentientStrain4 where

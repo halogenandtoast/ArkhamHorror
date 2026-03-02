@@ -1,13 +1,14 @@
 module Arkham.Event.Events.SpectralShield (spectralShield) where
 
 import Arkham.Ability
-import Arkham.Asset.Types (Field(..))
+import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Healing
 import Arkham.Helpers.Window (getDamageOrHorrorSource, getTotalDamageAmounts)
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Taboo
 import Arkham.Token
 
 newtype SpectralShield = SpectralShield EventAttrs
@@ -20,16 +21,20 @@ spectralShield = event SpectralShield Cards.spectralShield
 instance HasAbilities SpectralShield where
   getAbilities (SpectralShield a) = case a.placement of
     AttachedToInvestigator iid ->
-      [ restricted a 1 ControlsThis
+      [ handleTaboo
+          $ controlled_ a 1
           $ forced
           $ DealtDamageOrHorror #when (SourceIsCancelable AnySource) (be iid)
       ]
     AttachedToAsset aid _ ->
-      [ restricted a 1 ControlsThis
+      [ handleTaboo
+          $ controlled_ a 1
           $ forced
           $ AssetDealtDamageOrHorror #when (SourceIsCancelable AnySource) (AssetWithId aid)
       ]
     _ -> []
+   where
+    handleTaboo = if tabooed TabooList25 a then playerLimit PerRound else id
 
 instance RunMessage SpectralShield where
   runMessage msg e@(SpectralShield attrs) = runQueueT $ case msg of

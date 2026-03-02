@@ -79,6 +79,7 @@ tabooList24Modify cdef = case toCardCode cdef of
 
 tabooList25Modify :: CardDef -> CardDef
 tabooList25Modify cdef = case toCardCode cdef of
+  "11075" -> cdef {cdFastWindow = Just  $ DuringTurn You} -- Spiritual Echo
   _ -> tabooList24Modify cdef
 
 tabooed :: HasField "taboo" a (Maybe TabooList) => TabooList -> a -> Bool

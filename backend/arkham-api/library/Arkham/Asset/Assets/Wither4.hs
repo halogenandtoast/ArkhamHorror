@@ -1,15 +1,20 @@
-module Arkham.Asset.Assets.Wither4 (wither4, wither4Effect, Wither4 (..)) where
+module Arkham.Asset.Assets.Wither4 (wither4, wither4Effect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
+import Arkham.Effect.Window
 import Arkham.Fight
 import Arkham.Helpers.Modifiers (effectModifiers)
+import Arkham.Helpers.SkillTest (getAttackedEnemy, withSkillTest)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher (InvestigatorMatcher (TurnInvestigator))
 import Arkham.Modifier
+import Arkham.Projection
+import Arkham.Taboo
 import Arkham.Window qualified as Window
 
 newtype Wither4 = Wither4 AssetAttrs
@@ -20,10 +25,7 @@ wither4 :: AssetCard Wither4
 wither4 = asset Wither4 Cards.wither4
 
 instance HasAbilities Wither4 where
-  getAbilities (Wither4 a) =
-    [ restricted a 1 ControlsThis
-        $ ActionAbility [#fight] #willpower (ActionCost 1)
-    ]
+  getAbilities (Wither4 a) = [controlled_ a 1 $ ActionAbility [#fight] #willpower (ActionCost 1)]
 
 instance RunMessage Wither4 where
   runMessage msg a@(Wither4 attrs) = runQueueT $ case msg of
@@ -45,12 +47,16 @@ wither4Effect = cardEffect Wither4Effect Cards.wither4
 
 instance RunMessage Wither4Effect where
   runMessage msg e@(Wither4Effect attrs) = runQueueT $ case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
+    RevealChaosToken _ iid token | isTarget iid attrs.target -> do
       withSkillTest \sid -> do
         enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
+        isTaboo <- maybe False (>= TabooList25) <$> field InvestigatorTaboo iid
+        let checkToken =
+              if isTaboo
+                then isSymbolChaosToken
+                else (`elem` [Skull, Cultist, Tablet, ElderThing])
         let triggers =
-              token.face
-                `elem` [Skull, Cultist, Tablet, ElderThing]
+              checkToken token.face
                 && maybe False (isTarget sid) attrs.metaTarget
         when triggers do
           iid' <- selectJust TurnInvestigator
@@ -58,14 +64,17 @@ instance RunMessage Wither4Effect where
             effectModifiers
               attrs
               [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
-          pushAll
-            [ If
-                (Window.RevealChaosTokenEffect iid token attrs.id)
-                [ CreateWindowModifierEffect (EffectTurnWindow iid') ems attrs.source (toTarget enemyId)
-                ]
-            , disable attrs
-            ]
+          push
+            $ If
+              (Window.RevealChaosTokenEffect iid token attrs.id)
+              [ CreateWindowModifierEffect
+                  (if isTaboo then EffectPhaseWindow else EffectTurnWindow iid')
+                  ems
+                  attrs.source
+                  (toTarget enemyId)
+              ]
+          disable attrs
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      e <$ push (disable attrs)
+      disableReturn e
     _ -> Wither4Effect <$> liftRunMessage msg attrs

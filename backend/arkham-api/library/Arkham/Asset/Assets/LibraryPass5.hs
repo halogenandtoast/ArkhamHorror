@@ -8,6 +8,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Taboo
 
 newtype LibraryPass5 = LibraryPass5 AssetAttrs
   deriving anyclass IsAsset
@@ -33,7 +34,10 @@ instance HasAbilities LibraryPass5 where
     , controlled
         x
         2
-        (oneOf [youExist (InvestigatorWithResources $ atLeast 1), exists (AssetAttachedToAsset (be x))])
+        ( if tabooed TabooList25 x
+            then exists (AssetAttachedToAsset (be x))
+            else oneOf [youExist (InvestigatorWithResources $ atLeast 1), exists (AssetAttachedToAsset (be x))]
+        )
         $ forced
         $ TurnEnds #when You
     ]

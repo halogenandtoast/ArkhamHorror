@@ -23,7 +23,7 @@ instance RunMessage Shotgun4 where
       skillTestModifiers sid (attrs.ability 1) iid [NoStandardDamage, SkillModifier #combat 3]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+    When (FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n) -> do
       withSkillTest \sid -> do
         let val = max 1 (min 5 n)
         -- sort of annoying but we need to handle oops here, but also the investigator damage

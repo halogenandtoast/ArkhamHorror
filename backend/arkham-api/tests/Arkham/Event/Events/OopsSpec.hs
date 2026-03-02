@@ -106,7 +106,7 @@ spec = describe "Oops!" $ do
       _ -> False
     chooseOnlyOption "apply results"
     chooseOptionMatching "play oops!" \case
-      TargetLabel {} -> True
-      _ -> False
+       TargetLabel {} -> True
+       _ -> False
     fieldAssert EnemyDamage (== 0) enemy
     fieldAssert EnemyDamage (== 1) enemy2

@@ -1041,13 +1041,15 @@ instance RunMessage EnemyAttrs where
       pure a
     After (FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
       pushAll
-        [ FailedAttackEnemy iid enemyId
-        , CheckWindows [mkAfter $ Window.FailAttackEnemy iid enemyId n]
+        [ CheckWindows [mkAfter $ Window.FailAttackEnemy iid enemyId n]
         , CheckWindows [mkAfter $ Window.EnemyAttacked iid source enemyId]
         ]
       pure a
     FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
-      push $ Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
+      pushAll
+        [ FailedAttackEnemy iid enemyId
+        , Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
+        ]
       pure a
     Failed (Action.Fight, target) iid _source _ _ | isTarget a target -> do
       mods <- getCombinedModifiers [toTarget iid, toTarget a]

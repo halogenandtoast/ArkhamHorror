@@ -1019,14 +1019,16 @@ instance RunMessage EnemyAttrs where
         whenM (eid <=~> ReadyEnemy) do
           push $ Exhaust (toTarget a)
       pure a
+    When (PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]
+      pure a
+    After (PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid source enemyId n)]
+      pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
-      whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]
-      afterSuccessfulWindow <- checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid source enemyId n)]
       pushAll
-        [ whenWindow
-        , UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
+        [ UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
         , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
-        , afterSuccessfulWindow
         ]
 
       pure a
@@ -1037,13 +1039,15 @@ instance RunMessage EnemyAttrs where
         push $ Successful (Action.Fight, toTarget a) iid source target' n
       pushWhen (null alternateSuccess) $ InvestigatorDamageEnemy iid enemyId source
       pure a
-    FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
+    After (FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
       pushAll
         [ FailedAttackEnemy iid enemyId
         , CheckWindows [mkAfter $ Window.FailAttackEnemy iid enemyId n]
         , CheckWindows [mkAfter $ Window.EnemyAttacked iid source enemyId]
-        , Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
         ]
+      pure a
+    FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
+      push $ Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
       pure a
     Failed (Action.Fight, target) iid _source _ _ | isTarget a target -> do
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
@@ -1131,14 +1135,16 @@ instance RunMessage EnemyAttrs where
               (EnemyMaybeFieldCalculation eid EnemyEvade)
         Nothing -> error "No evade value"
       pure a
+    When (PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkWhen $ Window.SuccessfulEvadeEnemy iid source enemyId n]
+      pure a
+    After (PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid source enemyId n]
+      pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
-      whenWindow <- checkWindows [mkWhen $ Window.SuccessfulEvadeEnemy iid source enemyId n]
-      afterWindow <- checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid source enemyId n]
       pushAll
-        [ whenWindow
-        , UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
+        [ UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
         , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
-        , afterWindow
         ]
       pure a
     Successful (Action.Evade, _) iid source target n | isTarget a target -> do
@@ -1148,14 +1154,14 @@ instance RunMessage EnemyAttrs where
         push $ Successful (Action.Evade, toTarget a) iid source target' n
       pushWhen (null alternateSuccess) $ EnemyEvaded iid enemyId
       pure a
+    When (FailedSkillTest iid (Just Action.Evade) _source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]
+      pure a
+    After (FailedSkillTest iid (Just Action.Evade) _source (Initiator target) _ n) | isActionTarget a target -> do
+      pushM $ checkWindows [mkAfter $ Window.FailEvadeEnemy iid enemyId n]
+      pure a
     FailedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
-      whenWindow <- checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]
-      afterWindow <- checkWindows [mkAfter $ Window.FailEvadeEnemy iid enemyId n]
-      pushAll
-        [ whenWindow
-        , Failed (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
-        , afterWindow
-        ]
+      push $ Failed (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
       pure a
     Failed (Action.Evade, target) iid _ _ _ | isTarget a target -> do
       mods <- getModifiers iid

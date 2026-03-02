@@ -3,7 +3,7 @@ set -e
 
 # Read Postgres password from Docker secret
 if [ -f /run/secrets/postgres_password ]; then
-  export POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password)
+  export POSTGRES_PASSWORD=$(tr -d '\n\r' < /run/secrets/postgres_password)
 else
   echo "Postgres password secret not found!" >&2
   exit 1

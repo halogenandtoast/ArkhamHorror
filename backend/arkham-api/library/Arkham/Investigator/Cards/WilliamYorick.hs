@@ -33,7 +33,7 @@ instance HasAbilities WilliamYorick where
   getAbilities (WilliamYorick attrs) =
     [ playerLimit PerRound
         $ restricted attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) #asset)
-        $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
+        $ freeReaction (Matcher.IfEnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance RunMessage WilliamYorick where

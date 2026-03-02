@@ -51,7 +51,7 @@ please file a bug.
 
 First, install [Docker][docker].
 
-Next, create a strong password (https://www.random.org/passwords/) and put it in a text file at /config/postgres_password.txt
+Next, create a strong password (https://www.random.org/passwords/) and put it in a text file at `./config/postgres_password.txt`
 
 Finally, you can run:
 

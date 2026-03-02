@@ -19,8 +19,11 @@ services:
     user: postgres
     cap_drop:
       - ALL
-    mem_limit: 512m
-    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
     volumes:
       - pgdata:/var/lib/postgresql/data:rw
       - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro

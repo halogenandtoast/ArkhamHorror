@@ -38,8 +38,6 @@ services:
     environment:
       - ASSET_HOST=""
       # - REDIS_CONN=redis://redis:6379
-    entrypoint: ["/web-entrypoint.sh"]
-    command: ["/start.sh"]
     secrets:
       - postgres_password
     ports:
@@ -48,8 +46,6 @@ services:
       - db
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
-      - ./web-entrypoint.sh:/web-entrypoint.sh:ro
-      - ./start.sh:/start.sh:ro
 volumes:
  pgdata:
 # Docker secret for Postgres password

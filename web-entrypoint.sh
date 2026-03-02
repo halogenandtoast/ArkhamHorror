@@ -18,8 +18,5 @@ export POSTGRES_DB=arkham-horror-backend
 # Construct DATABASE_URL
 export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
-# Optionally print for debug (remove in production)
-echo "DATABASE_URL set for web container."
-
 # Execute the main container command
 exec "$@"

@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.BaseballBat2 (BaseballBat2 (..), baseballBat2) where
+module Arkham.Asset.Assets.BaseballBat2 (baseballBat2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestSource)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -28,7 +29,7 @@ instance RunMessage BaseballBat2 where
     SkillTestEnds sid iid _ -> do
       whenJustM getSkillTestSource \source ->
         when (isAbilitySource attrs 1 source) do
-          tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+          tokens <- getModifiedChaosTokenFaces =<< getSkillTestRevealedChaosTokens
           when (any (`elem` [Skull, AutoFail]) tokens) do
             afterSkillTest iid "Baseball Bat (2)" do
               chooseOneM iid do

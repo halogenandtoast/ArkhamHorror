@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestSource)
 import Arkham.Modifier
 
@@ -28,7 +29,7 @@ instance RunMessage BaseballBat where
     SkillTestEnds _ iid _ -> do
       whenJustM getSkillTestSource \source ->
         when (isAbilitySource attrs 1 source) do
-          tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+          tokens <- getModifiedChaosTokenFaces =<< getSkillTestRevealedChaosTokens
           when (any (`elem` [Skull, AutoFail]) tokens) do
             afterSkillTest iid "Baseball Bat" $ toDiscardBy iid (attrs.ability 1) attrs
       pure a

@@ -18,11 +18,11 @@ instance HasAbilities SharpRhetoric where
   getAbilities (SharpRhetoric a) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {intellect} for this skill test. (+2 {intellect} instead if this is an investigation or parley)."
-        $ wantsSkillTest (YourSkillTest #intellect)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {willpower} for this skill test. (+2 {willpower} instead if this is an investigation or parley)."
-        $ wantsSkillTest (YourSkillTest #willpower)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 

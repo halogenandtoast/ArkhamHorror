@@ -17,7 +17,7 @@ scientificTheory3 = assetWith ScientificTheory3 Cards.scientificTheory3 $ (healt
 
 instance HasAbilities ScientificTheory3 where
   getAbilities (ScientificTheory3 x) =
-    [ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #combat])
+    [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#intellect, #combat])
         $ controlled x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 

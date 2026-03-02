@@ -17,7 +17,7 @@ hyperawareness4 = asset Hyperawareness4 Cards.hyperawareness4
 
 instance HasAbilities Hyperawareness4 where
   getAbilities (Hyperawareness4 a) =
-    [ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #agility])
+    [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#intellect, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]

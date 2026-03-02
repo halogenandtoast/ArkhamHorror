@@ -21,7 +21,7 @@ foxMaskTheWiseTrickster = asset FoxMaskTheWiseTrickster Cards.foxMaskTheWiseTric
 instance HasAbilities FoxMaskTheWiseTrickster where
   getAbilities (FoxMaskTheWiseTrickster a) =
     [ playerLimit PerTestOrAbility
-        $ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #agility])
+        $ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#intellect, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ assetUseCost a Offering 1

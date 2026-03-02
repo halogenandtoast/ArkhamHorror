@@ -17,10 +17,10 @@ scrapper = asset Scrapper Cards.scrapper
 instance HasAbilities Scrapper where
   getAbilities (Scrapper a) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ wantsSkillTest (YourSkillTest #combat)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-        $ wantsSkillTest (YourSkillTest #agility)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 

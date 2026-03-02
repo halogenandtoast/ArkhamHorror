@@ -20,11 +20,11 @@ instance HasAbilities SpiritualIntuition where
   getAbilities (SpiritualIntuition a) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {willpower} for this skill test. (+2 {willpower} instead if this test is on a a _Spell_ or _Ritual_ card)."
-        $ wantsSkillTest (YourSkillTest #willpower)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {combat} for this skill test. (+2 {combat} instead if this test is on a _Spell_ or _Ritual_ card)."
-        $ wantsSkillTest (YourSkillTest #combat)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 

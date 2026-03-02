@@ -17,10 +17,10 @@ hyperawareness = asset Hyperawareness Cards.hyperawareness
 instance HasAbilities Hyperawareness where
   getAbilities (Hyperawareness a) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
-        $ wantsSkillTest (YourSkillTest #intellect)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-        $ wantsSkillTest (YourSkillTest #agility)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 

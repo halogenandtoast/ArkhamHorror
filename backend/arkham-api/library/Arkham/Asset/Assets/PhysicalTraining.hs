@@ -16,10 +16,10 @@ physicalTraining = asset PhysicalTraining Cards.physicalTraining
 instance HasAbilities PhysicalTraining where
   getAbilities (PhysicalTraining a) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-        $ wantsSkillTest (YourSkillTest #willpower)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ wantsSkillTest (YourSkillTest #combat)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 

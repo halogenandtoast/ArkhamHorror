@@ -17,7 +17,7 @@ hardKnocks4 = asset HardKnocks4 Cards.hardKnocks4
 
 instance HasAbilities HardKnocks4 where
   getAbilities (HardKnocks4 a) =
-    [ wantsSkillTest (YourSkillTest $ oneOf [#combat, #agility])
+    [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#combat, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]

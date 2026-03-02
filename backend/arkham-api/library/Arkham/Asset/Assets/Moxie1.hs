@@ -17,10 +17,10 @@ moxie1 = assetWith Moxie1 Cards.moxie1 (sanityL ?~ 1)
 instance HasAbilities Moxie1 where
   getAbilities (Moxie1 x) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-        $ wantsSkillTest (YourSkillTest #willpower)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-        $ wantsSkillTest (YourSkillTest #agility)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 

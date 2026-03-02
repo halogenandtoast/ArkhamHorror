@@ -18,10 +18,10 @@ scientificTheory1 =
 instance HasAbilities ScientificTheory1 where
   getAbilities (ScientificTheory1 x) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
-        $ wantsSkillTest (YourSkillTest #intellect)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ wantsSkillTest (YourSkillTest #combat)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 

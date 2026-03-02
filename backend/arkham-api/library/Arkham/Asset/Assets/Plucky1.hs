@@ -17,10 +17,10 @@ plucky1 = assetWith Plucky1 Cards.plucky1 (sanityL ?~ 1)
 instance HasAbilities Plucky1 where
   getAbilities (Plucky1 x) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-        $ wantsSkillTest (YourSkillTest #willpower)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
-        $ wantsSkillTest (YourSkillTest #intellect)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 

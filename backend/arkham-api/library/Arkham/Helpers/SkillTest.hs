@@ -837,6 +837,14 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
     AndSkillTest types -> sType `elem` types
     ResourceSkillTest -> False
     BaseValueSkillTest _ _ -> False
+  Matcher.SkillTestWants sType ->
+    orM
+      $ map
+        (skillTestMatches iid source st)
+        [ Matcher.SkillTestWithSkillType sType
+        , Matcher.SkillTestOfInvestigator $ mapOneOf InvestigatorWithModifier $ AddSkillValue sType
+            : map (AddSkillToOtherSkill sType) (skillTestSkillTypes st)
+        ]
   Matcher.SkillTestAtYourLocation -> do
     canAffectOthers <- withoutModifier iid CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
     mlid1 <- field InvestigatorLocation iid
@@ -849,6 +857,13 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
   Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms
+
+skillTestSkillTypes :: SkillTest -> [SkillType]
+skillTestSkillTypes st = case skillTestType st of
+  SkillSkillTest sType -> [sType]
+  AndSkillTest types -> types
+  ResourceSkillTest -> []
+  BaseValueSkillTest {} -> []
 
 skillTestValueMatches
   :: (HasGame m, Tracing m)

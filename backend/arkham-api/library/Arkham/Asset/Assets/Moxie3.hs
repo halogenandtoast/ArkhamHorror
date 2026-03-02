@@ -17,7 +17,7 @@ moxie3 = assetWith Moxie3 Cards.moxie3 $ (healthL ?~ 3) . (sanityL ?~ 1)
 
 instance HasAbilities Moxie3 where
   getAbilities (Moxie3 x) =
-    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #agility])
+    [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #agility])
         $ controlled x 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (ResourceCost 1)
     ]

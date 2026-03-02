@@ -18,11 +18,11 @@ instance HasAbilities Endurance where
   getAbilities (Endurance a) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {combat} for this skill test. (+2 {combat} instead if this is an attack or evasion)."
-        $ wantsSkillTest (YourSkillTest #combat)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {agility} for this skill test. (+2 {agility} instead if this is an attack or evasion)."
-        $ wantsSkillTest (YourSkillTest #agility)
+        $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 

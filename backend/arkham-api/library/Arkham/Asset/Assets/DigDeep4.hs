@@ -17,7 +17,7 @@ digDeep4 = asset DigDeep4 Cards.digDeep4
 
 instance HasAbilities DigDeep4 where
   getAbilities (DigDeep4 a) =
-    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #agility])
+    [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]

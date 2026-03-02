@@ -30,6 +30,7 @@ data SkillTestMatcher
   | SkillTestWithAction ActionMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
+  | SkillTestWants SkillType
   | AnySkillTest
   | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher

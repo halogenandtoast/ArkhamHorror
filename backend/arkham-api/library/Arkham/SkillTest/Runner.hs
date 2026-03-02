@@ -756,7 +756,7 @@ instance RunMessage SkillTest where
 
       pure $ s & stepL .~ ApplySkillTestResultsStep
     SkillTestApplyResults -> do
-      -- ST.6 Determin Success
+      -- ST.6 Determine Success
       push SkillTestApplyResultsAfter
       modifiers' <- getModifiers (toTarget s)
       let

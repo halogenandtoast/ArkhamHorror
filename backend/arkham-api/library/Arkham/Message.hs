@@ -1275,6 +1275,11 @@ data Message
   | CreateCard CardId CardCode
   deriving stock (Show, Eq, Ord, Data)
 
+deblank :: Message -> Message
+deblank = \case
+  Blanked msg -> msg
+  msg -> msg
+
 mconcat
   [ deriveToJSON defaultOptions ''Message
   , deriveJSON defaultOptions ''SkillTestOption

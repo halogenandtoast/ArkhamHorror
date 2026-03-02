@@ -6,6 +6,7 @@ import Arkham.Enemy.Types (Field (EnemyAttacking))
 import Arkham.Helpers.History (hasHistory)
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Message (deblank)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -54,7 +55,7 @@ instance RunMessage DanielaReyes where
         when canEvade $ labeled "Automatically evade the enemy" $ automaticallyEvadeEnemy attrs.id enemy
 
       pure i
-    PerformEnemyAttack eid -> do
+    (deblank -> PerformEnemyAttack eid) -> do
       attrs' <- liftRunMessage msg attrs
       fieldMay EnemyAttacking eid >>= \case
         Just (Just details) | any (isTarget attrs') details.targets -> do
@@ -64,7 +65,7 @@ instance RunMessage DanielaReyes where
             $ attrs'
             & setMeta (Metadata (eid : enemiesThatAttackedYouSinceTheEndOfYourLastTurn meta))
         _ -> pure $ DanielaReyes attrs'
-    EndTurn iid | iid == attrs.id -> do
+    (deblank -> EndTurn iid) | iid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
       let meta = toResultDefault (Metadata []) attrs.meta
       pure . DanielaReyes $ attrs' & setMeta (meta {enemiesThatAttackedYouSinceTheEndOfYourLastTurn = []})

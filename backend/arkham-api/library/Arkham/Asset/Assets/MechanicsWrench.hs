@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.MechanicsWrench (mechanicsWrench, MechanicsWrench (..)) where
+module Arkham.Asset.Assets.MechanicsWrench (mechanicsWrench) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,9 +18,9 @@ instance HasAbilities MechanicsWrench where
   getAbilities (MechanicsWrench attrs) =
     [ wantsSkillTest
         (maybe (NotSkillTest AnySkillTest) (SkillTestOfInvestigator . InvestigatorWithId) attrs.owner)
-        $ controlledAbility attrs 1 (exists $ EnemyAt YourLocation <> EnemyCanAttack You)
+        $ controlled attrs 1 (exists $ EnemyAt YourLocation <> EnemyCanAttack You)
         $ FastAbility (exhaust attrs)
-    , controlledAbility
+    , controlled
         attrs
         2
         (exists $ CanFightEnemy (attrs.ability 1) <> AttackedYouSinceTheEndOfYourLastTurn)

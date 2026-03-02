@@ -56,4 +56,4 @@ frontend/public/img/arkham/customizations/
 frontend/public/img/arkham/seals/
 frontend/public/img/arkham/playing-cards/
 
-postgres_password.txt
+**/postgres_password.txt

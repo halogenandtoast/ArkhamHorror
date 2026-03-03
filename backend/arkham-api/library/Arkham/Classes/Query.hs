@@ -479,7 +479,7 @@ class (Ord (QueryElement a), Eq (QueryElement a), Typeable (QueryElement a)) => 
   toSomeQuery :: a -> SomeQuery (QueryElement a)
   select_ :: (HasCallStack, Tracing m, HasGame m) => a -> m [QueryElement a]
   selectExists :: (HasCallStack, Tracing m, HasGame m) => a -> m Bool
-  selectExists q = cached (ExistKey $ toSomeQuery q) $ notNull <$> select_ q
+  selectExists q = cached (ExistKey $ toSomeQuery q) $ notNull <$> select q
   select :: (HasCallStack, Tracing m, HasGame m) => a -> m [QueryElement a]
   select q = cached (SelectKey $ toSomeQuery q) (select_ q)
 

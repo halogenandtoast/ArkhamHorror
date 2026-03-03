@@ -2034,7 +2034,7 @@ getLocationsMatching lmatcher = do
       investigators <- select whoMatcher
       flip filterM ls $ \l -> do
         lmInvestigators <- select $ investigatorAt $ toId l
-        pure . notNull $ List.intersect investigators lmInvestigators
+        pure $ any (`elem` investigators) lmInvestigators
     RevealedLocation -> pure $ filter isRevealed ls
     UnrevealedLocation -> pure $ filter (not . isRevealed) ls
     LocationWithAnyKeys -> filterM (fieldMap LocationKeys notNull . toId) ls
@@ -2414,7 +2414,7 @@ getLocationsMatching lmatcher = do
     LocationMatchAll ms -> foldM go ls ms
     LocationMatchAny ms -> do
       as <- traverse (go ls) ms
-      pure $ nub $ concat as
+      pure $ nubOrdOn toId $ concat as
     InvestigatableLocation -> do
       flip filterM ls \l ->
         andM
@@ -2719,14 +2719,18 @@ getAssetsMatching matcher = do
       pure $ filter ((== cardId) . toCardId) as
     AssetWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef) as
-    AssetWithHealth -> flip filterM as \a -> do
-      mods <- getModifiers (toId a)
-      let isSpirit = notNull [() | IsSpirit _ <- mods]
-      pure $ not isSpirit && isJust (attr assetHealth a)
-    AssetWithSanity -> flip filterM as \a -> do
-      mods <- getModifiers (toId a)
-      let isSpirit = notNull [() | IsSpirit _ <- mods]
-      pure $ not isSpirit && isJust (attr assetSanity a)
+    AssetWithHealth -> do
+      allMods <- getAllModifiers
+      flip filterM as \a -> do
+        let mods = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods
+            isSpirit = notNull [() | IsSpirit _ <- mods]
+        pure $ not isSpirit && isJust (attr assetHealth a)
+    AssetWithSanity -> do
+      allMods <- getAllModifiers
+      flip filterM as \a -> do
+        let mods = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods
+            isSpirit = notNull [() | IsSpirit _ <- mods]
+        pure $ not isSpirit && isJust (attr assetSanity a)
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
@@ -2734,17 +2738,19 @@ getAssetsMatching matcher = do
       filterM ((`gameValueMatches` valueMatcher) . attr assetClues) as
     AssetWithTokens valueMatcher tokenType ->
       filterM ((`gameValueMatches` valueMatcher) . Token.countTokens tokenType . attr assetTokens) as
-    AssetWithSpendableUses valueMatcher tokenType -> flip filterM as \a -> do
-      let n = Token.countTokens tokenType $ attr assetTokens a
-      mods <- getModifiers (toId a)
-      fromOtherSources <-
-        sum <$> for mods \case
-          ProvidesUses uType' (AssetSource s)
-            | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 tokenType) s
-          ProvidesProxyUses pType uType' (AssetSource s)
-            | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 pType) s
-          _ -> pure 0
-      gameValueMatches (n + fromOtherSources) valueMatcher
+    AssetWithSpendableUses valueMatcher tokenType -> do
+      allMods <- getAllModifiers
+      flip filterM as \a -> do
+        let n = Token.countTokens tokenType $ attr assetTokens a
+            mods = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods
+        fromOtherSources <-
+          sum <$> for mods \case
+            ProvidesUses uType' (AssetSource s)
+              | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 tokenType) s
+            ProvidesProxyUses pType uType' (AssetSource s)
+              | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 pType) s
+            _ -> pure 0
+        gameValueMatches (n + fromOtherSources) valueMatcher
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetWithKeyword k -> pure $ filter (member k . cdKeywords . toCardDef) as
@@ -2824,7 +2830,7 @@ getAssetsMatching matcher = do
       pure $ filter ((`elem` aids) . toId) as
     AssetAtLocation lid -> flip filterM as $ \a ->
       (== Just lid) <$> field AssetLocation a.id
-    AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    AssetOneOf ms -> nubOrdOn toId . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . attr assetIsStory) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     AssetWithMatchingSkillTestIcon -> do
@@ -3086,7 +3092,7 @@ getEventsMatching matcher = case matcher of
     EventWithToken tkn -> filterM (fieldMap EventTokens (Token.hasToken tkn) . toId) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
-    EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    EventOneOf ms -> nubOrdOn toId . concat <$> traverse (filterMatcher as) ms
     AnyEvent -> pure as
     EventAt locationMatcher -> do
       lids <- select locationMatcher
@@ -3168,7 +3174,7 @@ getConcealedCardsMatching matcher = do
     ConcealedCardMatchAll ms -> foldM filterMatcher as ms
     ConcealedCardWithPlacement placement -> pure $ filter ((== placement) . attr concealedCardPlacement) as
     ConcealedCardAny -> pure as
-    ConcealedCardOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    ConcealedCardOneOf ms -> nubOrdOn toId . concat <$> traverse (filterMatcher as) ms
     ExposedConcealedCard -> pure $ filter (attr concealedCardFlipped) as
     ExposableConcealedCard source -> filterMatcher as (ConcealedCardAt $ LocationWithExposableConcealedCard source)
     NotConcealedCard m -> do
@@ -3207,7 +3213,7 @@ getScarletKeysMatching matcher = do
       eids <- selectMap toTarget em
       pure $ filter ((`elem` eids) . attr keyBearer) as
     ScarletKeyWithStability s -> pure $ filter ((== s) . attr keyStability) as
-    ScarletKeyOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    ScarletKeyOneOf ms -> nubOrdOn toId . concat <$> traverse (filterMatcher as) ms
 
 getStoriesMatching :: (Tracing m, HasGame m) => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
@@ -3289,8 +3295,9 @@ enemyMatcherFilter es matcher' = do
           Just discardee -> pure $ discardee `elem` iids
     EnemyWithAnyCardsUnderneath -> filterM (fieldP EnemyCardsUnderneath notNull . toId) es
     EnemyWithConcealed -> do
+      allMods <- getAllModifiers
       es & filterM \enemy -> do
-        modifiers <- getModifiers (toTarget enemy)
+        let modifiers = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget enemy) allMods
         keywords <- field EnemyKeywords (toId enemy)
         pure $ Blank `notElem` modifiers && any (isJust . preview _Concealed) keywords
     EnemyWhenEvent eventMatcher -> do
@@ -3316,9 +3323,10 @@ enemyMatcherFilter es matcher' = do
       cannotBeAttacked <-
         enemyMatcherFilter es (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
       pure $ filter (`notElem` cannotBeAttacked) es
-    SwarmingEnemy ->
+    SwarmingEnemy -> do
+      allMods <- getAllModifiers
       flip filterM es \enemy -> do
-        modifiers <- getModifiers (toTarget enemy)
+        let modifiers = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget enemy) allMods
         keywords <- field EnemyKeywords (toId enemy)
         pure $ Blank `notElem` modifiers && any (isJust . preview _Swarming) keywords
     SwarmOf eid -> do
@@ -3551,19 +3559,21 @@ enemyMatcherFilter es matcher' = do
     EnemyWithId enemyId -> pure $ filter ((== enemyId) . toId) es
     NonEliteEnemy -> filterM (fmap (maybe False (notElem Elite)) . fieldMay EnemyTraits . toId) es
     EnemyMatchAll ms -> foldM enemyMatcherFilter es ms
-    EnemyOneOf ms -> nub . concat <$> traverse (enemyMatcherFilter es) ms
+    EnemyOneOf ms -> nubOrdOn toId . concat <$> traverse (enemyMatcherFilter es) ms
     EnemyWithTrait t -> filterM (fmap (maybe False (member t)) . fieldMay EnemyTraits . toId) es
     EnemyWithoutTrait t -> filterM (fmap (maybe False (notMember t)) . fieldMay EnemyTraits . toId) es
     EnemyWithAnyKey -> pure $ filter (notNull . attr enemyKeys) es
-    EnemyWithKeyword k -> flip filterM es \enemy -> do
-      keywords <- setToList <$> field EnemyKeywords (toId enemy)
-      mods <- getModifiers (toId enemy)
-      let
-        filteredKeywords = flip filter keywords \case
-          Keyword.Aloof -> IgnoreAloof `notElem` mods && RemoveKeyword Keyword.Aloof `notElem` mods
-          Keyword.Retaliate -> IgnoreRetaliate `notElem` mods && RemoveKeyword Keyword.Retaliate `notElem` mods
-          _ -> True
-      pure $ k `elem` filteredKeywords
+    EnemyWithKeyword k -> do
+      allMods <- getAllModifiers
+      flip filterM es \enemy -> do
+        keywords <- setToList <$> field EnemyKeywords (toId enemy)
+        let
+          mods = map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget enemy) allMods
+          filteredKeywords = flip filter keywords \case
+            Keyword.Aloof -> IgnoreAloof `notElem` mods && RemoveKeyword Keyword.Aloof `notElem` mods
+            Keyword.Retaliate -> IgnoreRetaliate `notElem` mods && RemoveKeyword Keyword.Retaliate `notElem` mods
+            _ -> True
+        pure $ k `elem` filteredKeywords
     PatrolEnemy ->
       let
         isPatrol = \case

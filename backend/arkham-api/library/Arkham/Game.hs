@@ -5901,23 +5901,31 @@ runMessages gameId mLogger = do
               let
                 shouldPreloadModifiers = \case
                   Ask {} -> False
+                  AddToDiscard {} -> False
                   BeginAction {} -> False
                   CheckAttackOfOpportunity {} -> False
                   CheckEnemyEngagement {} -> False
+                  CheckHandSize {} -> False
                   CheckWindows {} -> False
-                  Do (CheckWindows {}) -> False
                   ClearUI {} -> False
                   CreatedCost {} -> False
+                  DiscardCard {} -> False
+                  DiscardedCard {} -> False
+                  Do (CheckHandSize {}) -> False
+                  Do (CheckWindows {}) -> False
+                  Do (DiscardCard {}) -> False
                   EndCheckWindow {} -> False
                   BeginSkillTestAfterFast -> False
                   Do BeginSkillTestAfterFast -> False
                   EndSkillTestWindow -> False
+                  ObtainCard {} -> False
                   Msg.PhaseStep {} -> False
                   PaidAllCosts {} -> False
                   PayForAbility {} -> False
                   PayCost {} -> False
                   PayCosts {} -> False
                   Run {} -> False
+                  SetActiveInvestigator {} -> False
                   UseAbility {} -> False
                   Do (UseAbility {}) -> False
                   When {} -> False

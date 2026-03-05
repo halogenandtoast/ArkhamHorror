@@ -5904,10 +5904,15 @@ runMessages gameId mLogger = do
                   BeginAction {} -> False
                   CheckAttackOfOpportunity {} -> False
                   CheckEnemyEngagement {} -> False
+                  CheckWindows {} -> False
                   Do (CheckWindows {}) -> False
                   ClearUI {} -> False
                   CreatedCost {} -> False
                   EndCheckWindow {} -> False
+                  BeginSkillTestAfterFast -> False
+                  Do BeginSkillTestAfterFast -> False
+                  EndSkillTestWindow -> False
+                  Msg.PhaseStep {} -> False
                   PaidAllCosts {} -> False
                   PayForAbility {} -> False
                   PayCost {} -> False
@@ -5922,12 +5927,13 @@ runMessages gameId mLogger = do
 
               runWithEnv $ withSpan' "Root" \currentSpan -> do
                 addAttribute currentSpan "gameId" gameId
-                overGameM preloadEntities
+                clearCache
+                overGameM $ withSpan_ "preloadEntities" . preloadEntities
                 overGameM $ runPreGameMessage msg
                 if shouldPreloadModifiers msg
                   then do
                     overGameM
-                      $ runMessage msg
+                      $ withSpan_ "runMessage" . runMessage msg
                       >=> withSpan_ "preloadModifiers"
                       . preloadModifiers
                     overGameM
@@ -5936,7 +5942,7 @@ runMessages gameId mLogger = do
                       >=> withSpan_ "handleTraitRestrictedModifiers"
                       . handleTraitRestrictedModifiers
                       >=> handleBlanked
-                  else overGameM $ runMessage msg
+                  else overGameM $ withSpan_ "runMessage" . runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages gameId mLogger
         go msg

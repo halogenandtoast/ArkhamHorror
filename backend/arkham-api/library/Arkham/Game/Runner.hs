@@ -140,6 +140,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
 import Data.Aeson (Result (..))
+import Data.Data (constrName, toConstr)
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -3348,7 +3349,7 @@ preloadEntities g = do
 instance RunMessage Game where
   runMessage msg g =
     withSpan' "Game.runMessage" \currentSpan -> do
-      addAttribute currentSpan "message" (tshow msg)
+      addAttribute currentSpan "message" (pack $ constrName $ toConstr msg)
       ( (modeL . here) (runMessage msg) g
           >>= (modeL . there) (runMessage msg)
           >>= entitiesL (runMessage msg)

@@ -1,23 +1,26 @@
 #!/bin/sh
 set -e
 
-# Read Postgres password from Docker secret
-if [ -f /run/secrets/postgres_password ]; then
-  export POSTGRES_PASSWORD=$(tr -d '\n\r' < /run/secrets/postgres_password)
-else
-  echo "Postgres password secret not found!" >&2
-  exit 1
+# Only construct DATABASE_URL from Docker secrets if not already provided
+if [ -z "${DATABASE_URL}" ]; then
+  # Read Postgres password from Docker secret
+  if [ -f /run/secrets/postgres_password ]; then
+    export POSTGRES_PASSWORD=$(tr -d '\n\r' < /run/secrets/postgres_password)
+  else
+    echo "Postgres password secret not found!" >&2
+    exit 1
+  fi
+
+  # Set fixed values for user, host, db
+  export POSTGRES_USER=arkham_pg_user
+  export POSTGRES_HOST=db
+  export POSTGRES_PORT=5432
+  export POSTGRES_DB=arkham-horror-backend
+
+  # Construct DATABASE_URL
+  export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+  unset POSTGRES_PASSWORD
 fi
-
-# Set fixed values for user, host, db
-export POSTGRES_USER=arkham_pg_user
-export POSTGRES_HOST=db
-export POSTGRES_PORT=5432
-export POSTGRES_DB=arkham-horror-backend
-
-# Construct DATABASE_URL
-export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
-unset POSTGRES_PASSWORD
 
 # Execute the main container command
 exec "$@"

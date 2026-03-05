@@ -1203,14 +1203,12 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         . attr investigatorDeck
     InvestigatorWithTrait t -> flip runMatchesM as $ fieldMap InvestigatorTraits (member t) . toId
     InvestigatorWithClass t -> flip runMatchesM as $ fieldMap InvestigatorClass (== t) . toId
-    InvestigatorWithoutModifier modifierType ->
-      as & runMatchesM \i -> do
-        modifiers' <- getModifiers (toTarget i)
-        pure $ modifierType `notElem` modifiers'
-    InvestigatorWithModifier modifierType ->
-      as & runMatchesM \i -> do
-        modifiers' <- getModifiers (toTarget i)
-        pure $ modifierType `elem` modifiers'
+    InvestigatorWithoutModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ runMatches (\i -> mt `notElem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget i) allMods)) as
+    InvestigatorWithModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ runMatches (\i -> mt `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget i) allMods)) as
     UneliminatedInvestigator ->
       flip runMatchesM as
         $ pure
@@ -1406,8 +1404,10 @@ actAsAgenda act =
 getAgendasMatching :: (HasGame m, Tracing m) => AgendaMatcher -> m [Agenda]
 getAgendasMatching matcher = do
   allGameAgendas <- toList . view (entitiesL . agendasL) <$> getGame
+  allMods <- getAllModifiers
   actAgendas <-
-    filterM (\act -> elem ActIsAgenda <$> getModifiers act)
+    pure
+      . filter (\act -> ActIsAgenda `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget act) allMods))
       . toList
       . view (entitiesL . actsL)
       =<< getGame
@@ -1995,10 +1995,12 @@ getLocationsMatching lmatcher = do
       filterM (\l -> selectAny (HauntedAbility <> AbilityOnLocation (LocationWithId $ toId l))) ls
     LocationWithoutInvestigators -> filterM (selectNone . investigatorAt . toId) ls
     LocationWithoutEnemies -> filterM (selectNone . enemyAt . toId) ls
-    LocationWithoutModifier modifier' ->
-      filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
-    LocationWithModifier modifier' ->
-      filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
+    LocationWithoutModifier modifier' -> do
+      allMods <- getAllModifiers
+      pure $ filter (\l -> modifier' `notElem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget l) allMods)) ls
+    LocationWithModifier modifier' -> do
+      allMods <- getAllModifiers
+      pure $ filter (\l -> modifier' `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget l) allMods)) ls
     LocationWithEnemy enemyMatcher -> do
       locationIds <- mapMaybe snd <$> selectWithField EnemyLocation enemyMatcher
       pure $ filter ((`elem` locationIds) . toId) ls
@@ -2853,12 +2855,12 @@ getAssetsMatching matcher = do
       filterM (fieldP AssetLocation (maybe False (`elem` locations)) . toId) as
     AssetReady -> pure $ filter (not . attr assetExhausted) as
     M.AssetExhausted -> pure $ filter (attr assetExhausted) as
-    AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
-      modifiers' <- getModifiers (toTarget a)
-      pure $ modifierType `notElem` modifiers'
-    AssetWithModifier modifierType -> flip filterM as $ \a -> do
-      modifiers' <- getModifiers (toTarget a)
-      pure $ modifierType `elem` modifiers'
+    AssetWithoutModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ filter (\a -> mt `notElem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods)) as
+    AssetWithModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ filter (\a -> mt `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods)) as
     AssetMatches ms -> foldM filterMatcher as ms
     AssetNotAtUseLimit -> flip filterM as $ \a -> do
       starting <- field AssetStartingUses (toId a)
@@ -3086,8 +3088,12 @@ getEventsMatching matcher = case matcher of
     EventOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
-    EventWithoutModifier modifierType -> filterM (fmap (notElem modifierType) . getModifiers . toId) as
-    EventWithModifier modifierType -> filterM (fmap (elem modifierType) . getModifiers . toId) as
+    EventWithoutModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ filter (\a -> mt `notElem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods)) as
+    EventWithModifier mt -> do
+      allMods <- getAllModifiers
+      pure $ filter (\a -> mt `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget a) allMods)) as
     EventWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
     EventWithToken tkn -> filterM (fieldMap EventTokens (Token.hasToken tkn) . toId) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
@@ -3224,7 +3230,9 @@ getStoriesMatching matcher = do
     StoryWithTitle title -> pure $ filter (`hasTitle` title) as
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement -> pure $ filter ((== placement) . attr storyPlacement) as
-    StoryWithModifier modifier -> as & filterM \s -> elem modifier <$> getModifiers (toTarget s)
+    StoryWithModifier modifier -> do
+      allMods <- getAllModifiers
+      pure $ filter (\s -> modifier `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget s) allMods)) as
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     StoryWithCardId cardId -> pure $ filter ((== cardId) . attr storyCardId) as
     EnemyStory eid -> filterM (fieldP StoryPlacement (== AttachedToEnemy eid) . toId) as
@@ -3317,8 +3325,9 @@ enemyMatcherFilter es matcher' = do
     EnemyWithHealth -> filterM (fieldMap EnemyHealth isJust . toId) es
     CanBeAttackedBy matcher -> do
       iids <- select matcher
-      modifiers' <- concatMapM (getModifiers . InvestigatorTarget) iids
-      let enemyFilters = mapMaybe (preview _CannotFight) modifiers'
+      allMods <- getAllModifiers
+      let modifiers' = concatMap (\iid -> map modifierType $ findWithDefault [] ThisTarget allMods <> findWithDefault [] (InvestigatorTarget iid) allMods) iids
+          enemyFilters = mapMaybe (preview _CannotFight) modifiers'
 
       cannotBeAttacked <-
         enemyMatcherFilter es (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
@@ -3685,9 +3694,12 @@ enemyMatcherFilter es matcher' = do
             Nothing -> pure False
             Just v -> gameValueMatches v valueMatcher
       filterM (fieldMapM EnemyRemainingHealth hasRemainingHealth . toId) es
-    EnemyWithoutModifier modifier -> filterM (`withoutModifier` modifier) es
+    EnemyWithoutModifier modifier -> do
+      allMods <- getAllModifiers
+      pure $ filter (\enemy -> modifier `notElem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget enemy) allMods)) es
     EnemyWithModifier modifier -> do
-      flip filterM es \enemy -> elem modifier <$> getModifiers (toTarget enemy)
+      allMods <- getAllModifiers
+      pure $ filter (\enemy -> modifier `elem` map modifierType (findWithDefault [] ThisTarget allMods <> findWithDefault [] (toTarget enemy) allMods)) es
     EnemyWithEvade -> filterM (fieldP EnemyEvade isJust . toId) es
     EnemyWithFight -> filterM (fieldP EnemyFight isJust . toId) es
     EnemyWithPlacement p -> filterM (fieldP EnemyPlacement (== p) . toId) es
@@ -6029,14 +6041,15 @@ handleTraitRestrictedModifiers g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
-      for_ targetModifiers \case
-        Modifier source (TraitRestrictedModifier t mt) isSetup mcard -> do
-          traits <- runReaderT (targetTraits target) g
-          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
-        Modifier source (NonTraitRestrictedModifier t mt) isSetup mcard -> do
-          traits <- runReaderT (targetTraits target) g
-          when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
-        _ -> pure ()
+      let restricted = filter (\case Modifier _ (TraitRestrictedModifier {}) _ _ -> True; Modifier _ (NonTraitRestrictedModifier {}) _ _ -> True; _ -> False) targetModifiers
+      unless (null restricted) $ do
+        traits <- runReaderT (targetTraits target) g
+        for_ restricted \case
+          Modifier source (TraitRestrictedModifier t mt) isSetup mcard ->
+            when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
+          Modifier source (NonTraitRestrictedModifier t mt) isSetup mcard ->
+            when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
+          _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
 handleBlanked :: Monad m => Game -> m Game

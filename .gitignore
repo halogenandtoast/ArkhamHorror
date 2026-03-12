@@ -57,3 +57,4 @@ frontend/public/img/arkham/seals/
 frontend/public/img/arkham/playing-cards/
 
 **/postgres_password.txt
+k8s/

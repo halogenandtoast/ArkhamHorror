@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Enemy (insteadOfDamage)
 import Arkham.Helpers.Window (damagedEnemyAmount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -33,8 +34,9 @@ instance HasAbilities MimeticNemesisOtherworldlySubjugator where
 instance RunMessage MimeticNemesisOtherworldlySubjugator where
   runMessage msg e@(MimeticNemesisOtherworldlySubjugator attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (damagedEnemyAmount -> n) _ -> do
-      hollows <- select $ HollowedCard <> basic (not_ $ cardIs Assets.theRedGlovedManHeWasAlwaysThere)
-      chooseNM iid n $ targets hollows $ discardCard iid (attrs.ability 1)
+      insteadOfDamage attrs \_ -> do
+        hollows <- select $ HollowedCard <> basic (not_ $ cardIs Assets.theRedGlovedManHeWasAlwaysThere)
+        chooseNM iid n $ targets hollows $ discardCard iid (attrs.ability 1)
       pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       selectEach (InvestigatorAt $ locationWithEnemy attrs) \iid -> do

@@ -188,11 +188,11 @@ resource "aws_security_group" "rds" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "Postgres from EKS nodes"
+    description     = "Postgres from EKS workers"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
+    security_groups = [aws_security_group.worker_shared.id]
   }
 
   egress {
@@ -289,13 +289,20 @@ resource "aws_eks_node_group" "main" {
   node_group_name = "${local.name}-ng"
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = aws_subnet.private[*].id
-  instance_types  = var.node_instance_types
-  ami_type        = "AL2_x86_64"
+
+  instance_types = ["t4g.medium"]
+  ami_type       = "AL2023_ARM_64_STANDARD"
+  capacity_type  = "ON_DEMAND"
+
+  launch_template {
+    id      = aws_launch_template.eks_nodes.id
+    version = "$Latest"
+  }
 
   scaling_config {
     desired_size = var.desired_size
-    max_size     = var.max_size
     min_size     = var.min_size
+    max_size     = var.max_size
   }
 
   update_config {
@@ -349,4 +356,47 @@ resource "aws_ecr_repository" "app" {
   }
 
   tags = local.common_tags
+}
+
+resource "aws_security_group" "worker_shared" {
+  name        = "${local.name}-worker-shared-sg"
+  description = "Stable SG attached to EKS worker nodes"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "Node to node"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
+
+  egress {
+    description = "Outbound anywhere"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(local.common_tags, {
+    Name = "${local.name}-worker-shared-sg"
+  })
+}
+
+resource "aws_launch_template" "eks_nodes" {
+  name_prefix = "${local.name}-eks-ng-"
+
+  vpc_security_group_ids = [
+    aws_security_group.worker_shared.id,
+    aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
+  ]
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge(local.common_tags, {
+      Name = "${local.name}-eks-node"
+    })
+  }
 }

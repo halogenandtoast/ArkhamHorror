@@ -40,7 +40,7 @@ variable "db_password" {
 
 variable "node_instance_types" {
   type    = list(string)
-  default = ["t3.medium"]
+  default = ["t4g.medium"]
 }
 
 variable "desired_size" {

@@ -1,25 +1,29 @@
 #!/bin/sh
 set -e
 
-if [ -n "${PGPASSWORD}" ]; then
-  POSTGRES_PASSWORD="${PGPASSWORD}"
-elif [ -f /run/secrets/postgres_password ]; then
-  POSTGRES_PASSWORD=$(tr -d '\n\r' < /run/secrets/postgres_password)
-else
-  echo "Postgres password secret not found!" >&2
-  exit 1
-fi
-
-export PGUSER="${PGUSER:-arkham_pg_user}"
-export PGHOST="${PGHOST:-db}"
-export PGPORT="${PGPORT:-5432}"
-export PGDATABASE="${PGDATABASE:-arkham-horror-backend}"
-export PGPASSWORD="${POSTGRES_PASSWORD}"
-
+# If the app already got a full DATABASE_URL, leave it alone.
 if [ -z "${DATABASE_URL}" ]; then
-  export DATABASE_URL="postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
-fi
+  # Prefer env-injected password first (good for Kamal), then Docker secret file.
+  if [ -n "${PGPASSWORD}" ]; then
+    DB_PASSWORD="${PGPASSWORD}"
+  elif [ -n "${POSTGRES_PASSWORD}" ]; then
+    DB_PASSWORD="${POSTGRES_PASSWORD}"
+  elif [ -f /run/secrets/postgres_password ]; then
+    DB_PASSWORD=$(tr -d '\n\r' < /run/secrets/postgres_password)
+  else
+    echo "No database password found. Set DATABASE_URL, PGPASSWORD, POSTGRES_PASSWORD, or mount /run/secrets/postgres_password." >&2
+    exit 1
+  fi
 
-unset POSTGRES_PASSWORD
+  export PGUSER="${PGUSER:-arkham_pg_user}"
+  export PGHOST="${PGHOST:-db}"
+  export PGPORT="${PGPORT:-5432}"
+  export PGDATABASE="${PGDATABASE:-arkham-horror-backend}"
+  export PGPASSWORD="${DB_PASSWORD}"
+
+  export DATABASE_URL="postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
+
+  unset DB_PASSWORD
+fi
 
 exec "$@"

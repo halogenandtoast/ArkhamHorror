@@ -58,3 +58,27 @@ frontend/public/img/arkham/playing-cards/
 
 **/postgres_password.txt
 k8s/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# Variable files with real values
+terraform.tfvars
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Plans
+*.tfplan
+
+# Local env / secrets
+secrets.*
+kubeconfig*

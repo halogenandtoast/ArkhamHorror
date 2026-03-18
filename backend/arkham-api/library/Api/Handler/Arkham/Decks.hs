@@ -11,6 +11,7 @@ module Api.Handler.Arkham.Decks (
 import Import hiding (delete, on, update, (=.), (==.))
 
 import Api.Arkham.Helpers
+import Api.Handler.Arkham.Games.Shared (publishToRoom)
 import Arkham.Card.CardCode
 import Arkham.Classes.HasQueue
 import Arkham.Decklist

@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
-
 module Api.Handler.Arkham.PendingGames (
   getApiV1ArkhamPendingGameR,
   putApiV1ArkhamPendingGameR,
@@ -8,6 +6,7 @@ module Api.Handler.Arkham.PendingGames (
 import Import hiding (on, (==.))
 
 import Api.Arkham.Helpers
+import Api.Handler.Arkham.Games.Shared (publishToRoom)
 import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Game.State
@@ -74,7 +73,7 @@ putApiV1ArkhamPendingGameR gameId = do
                 (arkhamGameStep + 1)
                 (ActionDiff $ view actionDiffL updatedGame)
 
-            pure game' 
+            pure game'
       _ -> pure original
 
   publishToRoom gameId

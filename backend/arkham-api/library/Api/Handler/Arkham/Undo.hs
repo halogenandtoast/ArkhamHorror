@@ -2,6 +2,7 @@ module Api.Handler.Arkham.Undo (putApiV1ArkhamGameUndoR, putApiV1ArkhamGameUndoS
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Api.Handler.Arkham.Games.Shared (publishToRoom)
 import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Game.Diff

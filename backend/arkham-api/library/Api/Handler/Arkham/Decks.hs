@@ -152,11 +152,9 @@ putApiV1ArkhamGameDecksR gameId = do
         (ActionDiff $ view actionDiffL ge)
     pure g'
 
-  writeChannel <- (.channel) <$> getRoom gameId
-  atomically
-    $ writeTChan
-      writeChannel
-      (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty arkhamGameCurrentData)
+  publishToRoom gameId
+    $ GameUpdate
+    $ PublicGame gameId arkhamGameName mempty arkhamGameCurrentData
 
 fromPostData :: UserId -> CreateDeckPost -> ArkhamDeck
 fromPostData userId CreateDeckPost {..} = do

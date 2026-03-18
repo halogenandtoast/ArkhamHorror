@@ -119,10 +119,7 @@ putApiV1ArkhamGameUndoR gameId = do
     runDB (stepBack isDebug userId gameId) >>= \case
       Left err -> sendStatusJSON Status.status400 err
       Right (ArkhamGame {..}) -> do
-        writeChannel <- socketChannel <$> getRoom gameId
-        atomically
-          $ writeTChan writeChannel
-          $ encode
+        publishToRoom gameId
           $ GameUpdate
           $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
 
@@ -158,11 +155,7 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
   case eResult of
     Left err -> sendStatusJSON Status.status400 err
     Right (ArkhamGame {..}, gameLog) -> do
-      writeChannel <- socketChannel <$> getRoom gameId
-
-      atomically
-        $ writeTChan writeChannel
-        $ encode
+      publishToRoom gameId
         $ GameUpdate
         $ PublicGame gameId arkhamGameName gameLog arkhamGameCurrentData
 

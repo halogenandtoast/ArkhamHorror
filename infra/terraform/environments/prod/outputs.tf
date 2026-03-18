@@ -29,3 +29,7 @@ output "db_username" {
 output "vpc_id" {
   value = aws_vpc.main.id
 }
+
+output "redis_primary_endpoint" {
+  value = aws_elasticache_replication_group.redis.primary_endpoint_address
+}

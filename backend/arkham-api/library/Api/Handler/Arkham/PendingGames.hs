@@ -77,10 +77,7 @@ putApiV1ArkhamPendingGameR gameId = do
             pure game' 
       _ -> pure original
 
-  writeChannel <- (.channel) <$> getRoom gameId
-  atomically
-    $ writeTChan writeChannel
-    $ encode
+  publishToRoom gameId
     $ GameUpdate
     $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
   pure $ toPublicGame (Entity gameId game) mempty

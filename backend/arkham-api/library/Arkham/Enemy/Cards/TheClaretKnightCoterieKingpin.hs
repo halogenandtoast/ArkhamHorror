@@ -21,7 +21,7 @@ theClaretKnightCoterieKingpin =
 instance HasAbilities TheClaretKnightCoterieKingpin where
   getAbilities (TheClaretKnightCoterieKingpin a) =
     extend1 a
-      $ restricted a 1 (thisExists a $ EnemyWithScarletKey ScarletKeyAny)
+      $ restricted a 1 (thisExists a $ EnemyWithScarletKey ScarletKeyAny <> EnemyAt YourLocation)
       $ forced
       $ SkillTestResult #after You (SkillTestAt $ locationWithEnemy a) #failure
 

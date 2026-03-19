@@ -28,7 +28,7 @@ instance RunMessage TindalosAlpha where
       chooseTargetM iid assets \asset -> do
         moveAllTokens (attrs.ability 1) asset iid #damage
         moveAllTokens (attrs.ability 1) asset iid #horror
-        toDiscard (attrs.ability 1) asset
+        shuffleIntoDeck iid asset
 
       toDiscard (attrs.ability 1) attrs
       pure e

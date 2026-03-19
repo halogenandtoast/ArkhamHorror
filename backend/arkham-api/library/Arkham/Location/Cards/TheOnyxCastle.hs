@@ -25,7 +25,8 @@ instance HasAbilities TheOnyxCastle where
       $ restricted
         a
         1
-        ( exists (NotYou <> at_ (be a))
+        ( Here
+            <> exists (NotYou <> at_ (be a))
             <> oneOf
               [ exists (TreacheryInHandOf You <> not_ SignatureTreachery)
               , exists (EnemyInHandOf You <> not_ SignatureEnemy)
@@ -41,10 +42,8 @@ instance RunMessage TheOnyxCastle where
       enemies <- select $ enemyInHandOf iid <> not_ SignatureEnemy
       chooseOrRunOneM iid do
         targets treacheries \treachery ->
-          chooseOneM iid do
-            targets investigators $ place treachery . Placement.HiddenInHand
+          chooseTargetM iid investigators $ place treachery . Placement.HiddenInHand
         targets enemies \enemy ->
-          chooseOneM iid do
-            targets investigators $ place enemy . Placement.HiddenInHand
+          chooseTargetM iid investigators $ place enemy . Placement.HiddenInHand
       pure l
     _ -> TheOnyxCastle <$> liftRunMessage msg attrs

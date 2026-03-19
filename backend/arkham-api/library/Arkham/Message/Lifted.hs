@@ -152,6 +152,9 @@ selectOrPlaceSetAsideLocation def = maybe (placeSetAsideLocation def) pure =<< s
 placeSetAsideLocation_ :: ReverseQueue m => CardDef -> m ()
 placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
 
+placeSetAsideLocationWith_ :: ReverseQueue m => CardDef -> Update Location -> m ()
+placeSetAsideLocationWith_ def = push <=< Msg.placeSetAsideLocationWith_ def
+
 placeSetAsideLocations_ :: ReverseQueue m => [CardDef] -> m ()
 placeSetAsideLocations_ = pushAll <=< Msg.placeSetAsideLocations
 
@@ -203,23 +206,19 @@ placeLocationIfNotInPlay def =
         Nothing -> error $ "Location not found in play or set aside: " <> show def
         Just card -> placeLocation card
 
-placeRandomLocationGroupCards
-  :: ReverseQueue m => Text -> [CardDef] -> m ()
+placeRandomLocationGroupCards :: ReverseQueue m => Text -> [CardDef] -> m ()
 placeRandomLocationGroupCards groupName = traverse fetchCard >=> placeRandomLocationGroup groupName
 
-placeRandomLocationGroupCardsCapture
-  :: ReverseQueue m => Text -> [CardDef] -> m [LocationId]
+placeRandomLocationGroupCardsCapture :: ReverseQueue m => Text -> [CardDef] -> m [LocationId]
 placeRandomLocationGroupCardsCapture groupName = genCards >=> placeRandomLocationGroupCapture groupName
 
-placeRandomLocationGroup
-  :: ReverseQueue m => Text -> [Card] -> m ()
+placeRandomLocationGroup :: ReverseQueue m => Text -> [Card] -> m ()
 placeRandomLocationGroup groupName cards = do
   shuffled <- shuffleM cards
   msgs <- Msg.placeLabeledLocations_ groupName shuffled
   pushAll msgs
 
-placeRandomLocationGroupCapture
-  :: ReverseQueue m => Text -> [Card] -> m [LocationId]
+placeRandomLocationGroupCapture :: ReverseQueue m => Text -> [Card] -> m [LocationId]
 placeRandomLocationGroupCapture groupName cards = do
   shuffled <- shuffleM cards
   (lids, msgs) <- Msg.placeLabeledLocations groupName shuffled
@@ -238,31 +237,27 @@ placeLabeledLocation_ lbl card = Msg.placeLabeledLocation lbl card >>= \(_, msg)
 placeLabeledLocation :: ReverseQueue m => Text -> Card -> m LocationId
 placeLabeledLocation lbl card = Msg.placeLabeledLocation lbl card >>= \(lid, msg) -> push msg >> pure lid
 
-placeLabeledLocationsFrom
-  :: ReverseQueue m => Text -> Int -> [Card] -> m [LocationId]
+placeLabeledLocationsFrom :: ReverseQueue m => Text -> Int -> [Card] -> m [LocationId]
 placeLabeledLocationsFrom lbl n cards = Msg.placeLabeledLocationsFrom lbl n cards >>= \(lids, msgs) -> pushAll msgs $> lids
 
-placeLocationCards
-  :: ReverseQueue m => [CardDef] -> m ()
+placeLocationCards :: ReverseQueue m => [CardDef] -> m ()
 placeLocationCards defs = for_ defs placeLocationCard
 
-placeOneLocationCard
-  :: ReverseQueue m => NonEmpty CardDef -> m LocationId
+placeOneLocationCard :: ReverseQueue m => NonEmpty CardDef -> m LocationId
 placeOneLocationCard = sample >=> placeLocationCard
 
-placeLocationCardM
-  :: ReverseQueue m
-  => m CardDef
-  -> m LocationId
+placeLocationCardM :: ReverseQueue m => m CardDef -> m LocationId
 placeLocationCardM = (>>= placeLocationCard)
 
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal (asId -> lid) = do
   inSetup <- getInSetup
   if inSetup
-    then push $ Msg.RevealLocation Nothing lid
-    else whenMatch lid UnrevealedLocation do
-      push $ Msg.RevealLocation Nothing lid
+    then unsafeReveal lid
+    else whenMatch lid UnrevealedLocation $ unsafeReveal lid
+
+unsafeReveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
+unsafeReveal (asId -> lid) = push $ Msg.RevealLocation Nothing lid
 
 revealMatching :: ReverseQueue m => LocationMatcher -> m ()
 revealMatching matcher = selectEach matcher (push . Msg.RevealLocation Nothing)

@@ -77,7 +77,7 @@ import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
-import Arkham.Location.Types (Field (..), LocationAttrs (..))
+import Arkham.Location.Types (Field (..), LocationAttrs (..), updateLocation)
 import Arkham.Matcher hiding (
   AssetCard,
   AssetDefeated,
@@ -809,6 +809,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         push (PlacedLocation (toName location) (toCardCode card) lid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
+  PlaceLocationWith lid card update ->
+    if isNothing $ g ^. entitiesL . locationsL . at lid
+      then do
+        let location = overAttrs (updateLocation [update]) (lookupLocation (toCardCode card) lid (toCardId card))
+        push (PlacedLocation (toName location) (toCardCode card) lid)
+        pure $ g & entitiesL . locationsL . at lid ?~ location
+      else pure g
   ReplaceLocation lid card replaceStrategy -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
@@ -1388,7 +1395,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     investigator' <- getInvestigator iid
     let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
     cardMods <- getModifiers (CardIdTarget $ toCardId card)
-    let playSource = fromMaybe (toSource iid) $ asum [ Just source | PlaySource source <- cardMods]
+    let playSource = fromMaybe (toSource iid) $ asum [Just source | PlaySource source <- cardMods]
     isPlayable <-
       if ignoreSelfModifiers
         then withoutModifiersFrom iid $ getIsPlayable iid playSource Cost.PaidCost windows' card
@@ -1932,12 +1939,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             case opts of
               [opt] -> push $ uiToRun opt.option
               _ -> do
-                opts' <- opts & mapMaybeM \opt -> do
-                  case opt.criteria of
-                    Nothing -> pure $ Just opt
-                    Just c -> do
-                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                      pure $ if ok then Just opt else Nothing
+                opts' <-
+                  opts & mapMaybeM \opt -> do
+                    case opt.criteria of
+                      Nothing -> pure $ Just opt
+                      Just c -> do
+                        ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                        pure $ if ok then Just opt else Nothing
                 let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
                 pid <- getPlayer st.investigator
                 push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->

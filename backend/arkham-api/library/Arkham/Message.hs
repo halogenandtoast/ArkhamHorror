@@ -944,6 +944,7 @@ data Message
   | PlaceEnemyOutOfPlay OutOfPlayZone EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
+  | PlaceLocationWith LocationId Card (Update Location)
   | PlaceLocationMatching CardMatcher
   | PlaceTokens Source Target Token Int
   | RemoveTokens Source Target Token Int

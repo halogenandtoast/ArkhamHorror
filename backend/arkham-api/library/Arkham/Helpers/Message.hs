@@ -18,12 +18,14 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
 import Arkham.Exception
+import Arkham.Field
 import Arkham.Helpers.Investigator ()
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
+import Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
@@ -263,6 +265,11 @@ placeLocation c = do
   locationId <- getRandom
   pure (locationId, PlaceLocation locationId c)
 
+placeLocationWith :: MonadRandom m => Card -> Update Location -> m (LocationId, Message)
+placeLocationWith c update = do
+  locationId <- getRandom
+  pure (locationId, PlaceLocationWith locationId c update)
+
 placeLocationInGrid :: MonadRandom m => Pos -> Card -> m (LocationId, Message)
 placeLocationInGrid pos c = do
   locationId <- getRandom
@@ -271,12 +278,19 @@ placeLocationInGrid pos c = do
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
+placeLocationWith_ :: MonadRandom m => Card -> Update Location -> m Message
+placeLocationWith_ card update = snd <$> placeLocationWith card update
+
 placeSetAsideLocation
   :: (HasCallStack, MonadRandom m, HasGame m, Tracing m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
 placeSetAsideLocation_ :: (MonadRandom m, HasGame m, Tracing m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
+
+placeSetAsideLocationWith_
+  :: (MonadRandom m, HasGame m, Tracing m) => CardDef -> Update Location -> m Message
+placeSetAsideLocationWith_ def update = (`placeLocationWith_` update) =<< getSetAsideCard def
 
 placeSetAsideLocations :: (MonadRandom m, HasGame m, Tracing m) => [CardDef] -> m [Message]
 placeSetAsideLocations = traverse placeSetAsideLocation_
@@ -585,7 +599,8 @@ placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target 
 placeHorror :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeHorror (toSource -> source) (toTarget -> target) n = PlaceHorror source target n
 
-addToVictory :: (ToId investigator InvestigatorId, Targetable target) => investigator -> target -> Message
+addToVictory
+  :: (ToId investigator InvestigatorId, Targetable target) => investigator -> target -> Message
 addToVictory (asId -> iid) (toTarget -> target) = AddToVictory (Just iid) target
 
 addToVictory_ :: Targetable target => target -> Message

@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.AnotherPath (anotherPath) where
 
 import Arkham.Campaigns.TheDreamEaters.Key
+import Arkham.Field
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Log
@@ -17,8 +18,7 @@ anotherPath = story AnotherPath Cards.anotherPath
 instance RunMessage AnotherPath where
   runMessage msg s@(AnotherPath attrs) = runQueueT $ case msg of
     ResolveThisStory _ (is attrs -> True) -> do
-      ewst <- placeSetAsideLocation Locations.enchantedWoodsStoneTrapdoor
-      updateLocation ewst LocationRevealed True
+      placeSetAsideLocationWith_ Locations.enchantedWoodsStoneTrapdoor (LocationRevealed =. True)
       record TheInvestigatorsFoundAWayOutOfTheUnderworld
       pure s
     _ -> AnotherPath <$> liftRunMessage msg attrs

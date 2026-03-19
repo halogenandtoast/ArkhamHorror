@@ -145,6 +145,7 @@ allInvestigators =
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard stellaClark
       , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard andrePatel
       , SomeInvestigatorCard subject5U21
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel

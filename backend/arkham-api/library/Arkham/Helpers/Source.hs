@@ -2,6 +2,7 @@ module Arkham.Helpers.Source where
 
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Classes.Query
 import Arkham.Field.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
@@ -245,6 +246,23 @@ sourceMatches s = \case
       check = \case
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
+        ActSource _ -> True
+        AgendaSource _ -> True
+        EnemySource _ -> True
+        LocationSource _ -> True
+        TreacherySource _ -> True
+        StorySource _ -> True
+        ProxySource k _ -> check k
+        ChaosTokenSource _ -> True
+        ChaosTokenEffectSource _ -> True
+        _ -> False
+     in
+      pure $ check s
+  Matcher.ScenarioCardSource ->
+    let
+      check = \case
+        AbilitySource source' n | notPlayerAbilityIndex n -> check source'
+        UseAbilitySource _ source' n | notPlayerAbilityIndex n -> check source'
         ActSource _ -> True
         AgendaSource _ -> True
         EnemySource _ -> True

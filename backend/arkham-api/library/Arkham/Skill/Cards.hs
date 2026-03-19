@@ -37,6 +37,9 @@ allPlayerSkillCards =
       , allIn5
       , analysis
       , anythingYouCanDoBetter
+      , knowTheExit
+      , knowTheLine
+      , knowTheScene
       , arrogance
       , asYouWish
       , beloved
@@ -1121,6 +1124,27 @@ anythingYouCanDoBetter =
       )
       { cdCardTraits = setFromList [Innate, Developed]
       , cdCommitRestrictions = [OnlyYourTest]
+      }
+
+knowTheExit :: CardDef
+knowTheExit =
+  signature "60351"
+    $ (skill "60352" "Know the Exit" [#wild] Rogue)
+      { cdCardTraits = singleton Practiced
+      }
+
+knowTheLine :: CardDef
+knowTheLine =
+  signature "60351"
+    $ (skill "60353" "Know the Line" [#wild] Rogue)
+      { cdCardTraits = singleton Practiced
+      }
+
+knowTheScene :: CardDef
+knowTheScene =
+  signature "60351"
+    $ (skill "60354" "Know the Scene" [#wild] Rogue)
+      { cdCardTraits = singleton Practiced
       }
 
 arrogance :: CardDef

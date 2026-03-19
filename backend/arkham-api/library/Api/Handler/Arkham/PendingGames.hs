@@ -14,7 +14,6 @@ import Arkham.Id
 import Arkham.Queue
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
-import Data.Aeson
 import Data.Time.Clock
 import Database.Persist ((==.))
 import Entity.Arkham.Step

@@ -70,6 +70,7 @@ allPlayerTreacheryCards =
       , angeredSpirits
       , armInjury
       , atychiphobia
+      , weightOfTheWorld
       , bloodlust
       , boughtInBlood
       , breakingPoint
@@ -3779,6 +3780,12 @@ atychiphobia :: CardDef
 atychiphobia =
   (basicWeakness "60504" "Atychiphobia")
     { cdCardTraits = setFromList [Madness]
+    }
+
+weightOfTheWorld :: CardDef
+weightOfTheWorld =
+  (weakness "60355" "Weight of the World")
+    { cdCardTraits = singleton Terror
     }
 
 cursedSwamp :: CardDef

@@ -94,6 +94,7 @@ allInvestigatorCards =
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
+      , andrePatel
       , jacquelineFine
       , stellaClark
       , subject5U21
@@ -686,6 +687,14 @@ winifredHabbamock =
     ("Winifred Habbamock" <:> "The Aviatrix")
     Rogue
     [Criminal]
+
+andrePatel :: CardDef
+andrePatel =
+  investigator
+    "60351"
+    ("André Patel" <:> "The Film Star")
+    Rogue
+    [Performer]
 
 jacquelineFine :: CardDef
 jacquelineFine =

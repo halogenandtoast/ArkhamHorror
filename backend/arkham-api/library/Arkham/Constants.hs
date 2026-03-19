@@ -66,3 +66,6 @@ pattern NonActivateAbility :: Int
 pattern NonActivateAbility <- 2001
   where
     NonActivateAbility = 2001
+
+notPlayerAbilityIndex :: Int -> Bool
+notPlayerAbilityIndex n = n `notElem` [AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove, AbilityAttack]

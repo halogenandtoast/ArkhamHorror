@@ -38,6 +38,7 @@ data SourceMatcher
   | SourceWithCard CardMatcher
   | SourceIsCardEffect
   | SourceIsScenarioCardEffect
+  | ScenarioCardSource
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "spell" SourceMatcher where

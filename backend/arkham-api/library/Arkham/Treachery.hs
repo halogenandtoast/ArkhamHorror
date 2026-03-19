@@ -796,6 +796,8 @@ allTreacheries =
       , -- Stella Clark
         SomeTreacheryCard calledByTheMists
       , SomeTreacheryCard atychiphobia
+      , -- André Patel
+        SomeTreacheryCard weightOfTheWorld
       , -- Side Stories
         --- Curse of the Rougarou
         SomeTreacheryCard cursedSwamp

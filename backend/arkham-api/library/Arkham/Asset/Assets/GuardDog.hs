@@ -17,7 +17,7 @@ instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
     [ controlled x 1 CanDealDamage
         $ freeReaction
-        $ AssetDealtDamage #when (SourceIsEnemyAttack AnyEnemy) (be x)
+        $ AssetDealtDamage #when (SourceIsEnemyAttack $ EnemyCanBeDamagedBySource (x.ability 1)) (be x)
     ]
 
 instance RunMessage GuardDog where

@@ -16,11 +16,14 @@ guardDog2 = ally GuardDog2 Cards.guardDog2 (4, 2)
 
 instance HasAbilities GuardDog2 where
   getAbilities (GuardDog2 x) =
-    [ controlledAbility x 1 (exists (at_ YourLocation <> CanEngageEnemy (x.ability 1)))
+    [ controlled x 1 (exists (at_ YourLocation <> CanEngageEnemy (x.ability 1)))
         $ FastAbility (exhaust x)
-    , controlledAbility x 2 CanDealDamage
+    , controlled x 2 CanDealDamage
         $ freeReaction
-        $ AssetDealtDamageOrHorror #when (SourceIsEnemyAttack AnyEnemy) (be x)
+        $ AssetDealtDamageOrHorror
+          #when
+          (SourceIsEnemyAttack $ EnemyCanBeDamagedBySource (x.ability 2))
+          (be x)
     ]
 
 instance RunMessage GuardDog2 where

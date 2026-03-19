@@ -3408,13 +3408,14 @@ enemyMatcherFilter es matcher' = do
     EnemyCanBeDamagedBySource source -> flip filterM es \enemy -> do
       modifiers <- getModifiers (toTarget enemy)
       let inShadows = attr enemyPlacement enemy == InTheShadows
-      flip allM modifiers $ \case
+      let adjust = if inShadows then (CannotBeDamagedByPlayerSources AnySource :) else id
+      adjust modifiers & allM \case
         CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
           sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
         CannotBeDamagedByPlayerSources sourceMatcher ->
           not <$> sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
         CannotBeDamaged -> pure False
-        _ -> pure $ not inShadows
+        _ -> pure True
     EnemyWithAsset assetMatcher -> do
       assets <- select assetMatcher
       flip filterM es \enemy -> do

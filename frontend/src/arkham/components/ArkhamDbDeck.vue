@@ -29,7 +29,13 @@ async function loadDeck() {
       const data = await response.json()
       const meta = data.meta ? JSON.parse(data.meta) : {}
       const override = meta.hidden_slots ? meta.hidden_slots : {}
-      model.value = {...data, ...override, url: deckUrl.value}
+      const cleanOverride = Object.fromEntries(Object.entries(override).filter(([_, value]) => value && (typeof value === 'object' ? Object.keys(value).length > 0 : true)))
+      const deckData = {...data, ...cleanOverride, url: deckUrl.value}
+      if (Object.keys(deckData.slots).length === 0) {
+        error.value = "Is this deck empty?"
+      } else{
+        model.value = deckData
+      }
     } else {
       error.value = "Could not find deck, please make sure you have created a public share."
     }

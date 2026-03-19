@@ -709,13 +709,10 @@ instance RunMessage EnemyAttrs where
           _ -> pure ()
       pure a
     HuntersMove | not enemyExhausted && not (isSwarm a) && isInPlayPlacement a.placement -> do
-      -- TODO: unengaged or not engaged with only prey
-      --
       let isAttached = isJust a.placement.attachedTo
       unless isAttached do
         mods <- getModifiers enemyId
         keywords <- getModifiedKeywords a
-
         -- We should never have a case where an enemy has both patrol and
         -- hunter and should only have one patrol keyword
         unless (CannotMove `elem` mods) do
@@ -723,7 +720,7 @@ instance RunMessage EnemyAttrs where
             Keyword.Patrol lMatcher -> do
               wantsToPatrol <- matches enemyId (UnengagedEnemy <> not_ (EnemyAt lMatcher))
               pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
-            Keyword.Hunter -> do
+            Keyword.Hunter -> whenM (matches enemyId UnengagedEnemy) do
               wantsToHunt <-
                 getPreyMatcher a >>= \case
                   OnlyPrey _ -> do

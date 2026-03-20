@@ -17,7 +17,7 @@ falseCovenant2 = asset FalseCovenant2 Cards.falseCovenant2
 
 instance HasAbilities FalseCovenant2 where
   getAbilities (FalseCovenant2 a) =
-    [ restricted a 1 ControlsThis
+    [ controlled a 1 (DuringSkillTest AnySkillTest)
         $ triggered
           (RevealChaosToken #when (affectsOthers $ colocatedWithMatch You) #curse)
           (exhaust a)

@@ -2,11 +2,11 @@ module Arkham.Asset.Assets.FalseCovenant2 (falseCovenant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.ChaosToken
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Helpers.ChaosToken ()
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype FalseCovenant2 = FalseCovenant2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,16 +24,12 @@ instance HasAbilities FalseCovenant2 where
     ]
 
 instance RunMessage FalseCovenant2 where
-  runMessage msg a@(FalseCovenant2 attrs) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      let source = toAbilitySource attrs 1
-      iid <- fromJustNote "missing investigator" <$> getSkillTestInvestigator
-      cancelChaosToken token
-      pushAll
-        [ CancelEachNext Nothing source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokensToPool [token]
-        , UnfocusChaosTokens
-        , DrawAnotherChaosToken iid
-        ]
+  runMessage msg a@(FalseCovenant2 attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
+      iid' <- fromJustNote "missing investigator" <$> getSkillTestInvestigator
+      cancelChaosToken (attrs.ability 1) iid token
+      push $ ReturnChaosTokensToPool [token]
+      unfocusChaosTokens
+      drawAnotherChaosToken iid'
       pure a
-    _ -> FalseCovenant2 <$> runMessage msg attrs
+    _ -> FalseCovenant2 <$> liftRunMessage msg attrs

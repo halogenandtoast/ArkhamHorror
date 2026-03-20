@@ -37,5 +37,9 @@
   },
   "xp": {
     "resolution2": "Stopped Nyarlathotep’s scheme once and for all."
+  },
+  "remembered": {
+    "maneuveredThePriestCloser": "Maneuvered the high priest closer.",
+    "stunnedThePriest": "Stunned the priest."
   }
 }

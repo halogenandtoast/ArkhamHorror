@@ -67,6 +67,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation (GameCalculation (LocationMaybeFieldCalculation), calculate)
+import Arkham.Helpers.Campaign (getCurrentDeck)
 import Arkham.Helpers.Card (
   cardListMatches,
   extendedCardMatch,
@@ -1196,11 +1197,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         . map PlayerCard
         . attr investigatorDiscard
     DeckWith cardListMatcher ->
-      flip runMatchesM as
-        $ (`cardListMatches` cardListMatcher)
-        . map PlayerCard
-        . unDeck
-        . attr investigatorDeck
+      let getDeck i = map PlayerCard . unDeck <$> getCurrentDeck i
+       in flip runMatchesM as $ getDeck >=> (`cardListMatches` cardListMatcher)
     InvestigatorWithTrait t -> flip runMatchesM as $ fieldMap InvestigatorTraits (member t) . toId
     InvestigatorWithClass t -> flip runMatchesM as $ fieldMap InvestigatorClass (== t) . toId
     InvestigatorWithoutModifier modifierType ->
@@ -5053,7 +5051,7 @@ instance Query ExtendedCardMatcher where
         pure $ filter (`elem` cards) cs
       InDeckOf who -> do
         iids <- select who
-        cards <- concatMapM (fieldMap InvestigatorDeck (map PlayerCard . unDeck)) iids
+        cards <- concatMapM (fmap (map PlayerCard . unDeck) . getCurrentDeck) iids
         pure $ filter (`elem` cards) cs
       TopOfDeckOf who -> do
         iids <- select who

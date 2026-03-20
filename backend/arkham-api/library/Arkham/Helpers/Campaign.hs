@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
@@ -131,3 +132,19 @@ forceAddCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
       [ PortraitLabel investigator [AddCampaignCardToDeck investigator shouldShuffleIn card]
       | investigator <- investigators
       ]
+
+getCurrentDeck
+  :: (HasGame m, Tracing m, ToId investigator InvestigatorId) => investigator -> m (Deck PlayerCard)
+getCurrentDeck (asId -> iid) =
+  field InvestigatorDeck iid >>= \case
+    Deck [] -> do
+      decks <- campaignField CampaignDecks
+      case Map.lookup iid decks of
+        Nothing -> pure $ Deck []
+        Just deck -> do
+          allStoryCards <- campaignField CampaignStoryCards
+          let storyCards = findWithDefault [] iid allStoryCards
+          let storyCardCodes = map toCardCode storyCards
+          let deck' = filter (\card -> card.cardCode `notElem` storyCardCodes) (unDeck deck)
+          pure $ Deck $ deck' <> mapMaybe (preview _PlayerCard) storyCards
+    deck -> pure deck

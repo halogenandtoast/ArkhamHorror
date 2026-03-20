@@ -4829,14 +4829,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   Do (UseAbility iid ability windows) | iid == investigatorId -> do
     activeInvestigator <- selectOne ActiveInvestigator
-    mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
+    mods <- filter (\m -> m.kind == MayIgnoreLocationEffectsAndKeywords) <$> getFullModifiers iid
+    -- mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
     let
-      mayIgnore =
+      mayIgnoreMods =
         case abilitySource ability of
-          LocationSource _ -> mayIgnoreLocationEffectsAndKeywords
-          IndexedSource _ (LocationSource _) -> mayIgnoreLocationEffectsAndKeywords
-          ProxySource (LocationSource _) _ -> mayIgnoreLocationEffectsAndKeywords
-          _ -> False
+          LocationSource _ -> mods
+          IndexedSource _ (LocationSource _) -> mods
+          ProxySource (LocationSource _) _ -> mods
+          _ -> []
       resolveAbility =
         [SetActiveInvestigator iid | x <- maybeToList activeInvestigator, iid /= x]
           <> [PayForAbility ability windows, MoveWithSkillTest (ResolvedAbility ability)]
@@ -4849,9 +4850,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           Just PerSpawn -> Just $ toTarget $ Helpers.spawnedEnemy windows
           _ -> Nothing
 
-    if mayIgnore
-      then push $ chooseOne player [Label "Ignore effect" [], Label "Do not ignore effect" resolveAbility]
-      else pushAll resolveAbility
+    case mayIgnoreMods of
+      [] -> pushAll resolveAbility
+      [x] -> do
+        after <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect x.source (toCardId <$> x.card)
+        push $ chooseOne player [Label "Ignore effect" [after], Label "Do not ignore effect" resolveAbility]
+      _ -> error "Multiple may ignore modifiers, not sure which one to use"
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth

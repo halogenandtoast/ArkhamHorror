@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.CarolynFern (carolynFern, CarolynFern (..)) where
+module Arkham.Investigator.Cards.CarolynFern (carolynFern) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
@@ -23,7 +23,7 @@ carolynFern =
 
 instance HasAbilities CarolynFern where
   getAbilities (CarolynFern a) =
-    [ restrictedAbility a 1 (Self <> not_ (exists $ treacheryIs Treacheries.rationalThought))
+    [ restricted a 1 (Self <> not_ (exists $ treacheryIs Treacheries.rationalThought))
         $ freeReaction
         $ OrWindowMatcher
           [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceOwnedBy You)

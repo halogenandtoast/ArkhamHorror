@@ -386,7 +386,7 @@ instance RunMessage AssetAttrs where
         pushM
           $ checkWindows
           $ [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source health) | health > 0]
-          <> [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source sanity) | sanity > 0]
+          <> [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
       pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
     HealDamage (isTarget a -> True) source amount -> do
       mods <- getModifiers a

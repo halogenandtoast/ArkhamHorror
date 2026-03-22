@@ -16,7 +16,8 @@ correlateAllItsContents = event CorrelateAllItsContents Cards.correlateAllItsCon
 
 instance HasAbilities CorrelateAllItsContents where
   getAbilities (CorrelateAllItsContents a) =
-    [ restricted a 1 ControlsThis
+    [ displayAsAction
+        $ restricted a 1 OwnsThis
         $ ConstantReaction
           "Cancel Token"
           (RevealChaosToken #after You FirstChaosTokenRevealedThisSkillTest)

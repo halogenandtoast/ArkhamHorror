@@ -155,15 +155,16 @@ const image = computed(() => {
 })
 
 const portraitImage = computed(() => {
+  const suffix = props.investigator.endedTurn ? 'b' : ''
   if (props.investigator.form.tag === "YithianForm") {
-    return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
+    return imgsrc(`portraits/${id.value.replace('c', '')}${suffix}.jpg`)
   }
 
   if (props.investigator.form.tag === "HomunculusForm") {
-    return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
+    return imgsrc(`portraits/${id.value.replace('c', '')}${suffix}.jpg`)
   }
 
-  return imgsrc(`portraits/${props.investigator.cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`portraits/${props.investigator.cardCode.replace('c', '')}${suffix}.jpg`)
 })
 
 const emitter = useEmitter()

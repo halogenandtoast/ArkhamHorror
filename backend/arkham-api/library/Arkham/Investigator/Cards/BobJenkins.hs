@@ -89,7 +89,7 @@ instance RunMessage BobJenkins where
         cardResolutionModifier c (attrs.ability 1) c.id (PlaySource $ attrs.ability 1)
         playCardPayingCost iid c
       pure i
-    ResetGame -> BobJenkins <$> liftRunMessage msg (attrs & setMeta Null)
+    ForInvestigators _ ResetGame -> BobJenkins <$> liftRunMessage msg (attrs & setMeta Null)
     _ -> do
       let revealedCards = getRevealedCards attrs.meta
       -- remove any cards no longer in hand

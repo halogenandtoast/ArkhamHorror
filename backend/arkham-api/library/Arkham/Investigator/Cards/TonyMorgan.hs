@@ -106,5 +106,5 @@ instance RunMessage TonyMorgan where
       for_ mBountyContracts \bountyContracts ->
         placeTokens ElderSign bountyContracts Bounty 1
       pure i
-    ResetGame -> TonyMorgan . (`with` Meta False) <$> liftRunMessage msg attrs
+    ForInvestigators _ ResetGame -> TonyMorgan . (`with` Meta False) <$> liftRunMessage msg attrs
     _ -> TonyMorgan . (`with` meta) <$> liftRunMessage msg attrs

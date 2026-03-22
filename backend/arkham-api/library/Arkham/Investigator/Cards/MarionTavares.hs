@@ -47,7 +47,7 @@ instance RunMessage MarionTavares where
     ElderSignEffect iid | iid == attrs.id -> do
       search iid ElderSign iid [fromTopOfDeck 3] (basic #event) (DrawFound iid 1)
       pure i
-    ResetGame -> MarionTavares . setSlots <$> liftRunMessage msg attrs
+    ForInvestigators _ ResetGame -> MarionTavares . setSlots <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawCardsEdit iid (attrs.ability 1) 1 \c -> c {cardDrawAndThen = Just (DoStep 1 msg)}
       pure i

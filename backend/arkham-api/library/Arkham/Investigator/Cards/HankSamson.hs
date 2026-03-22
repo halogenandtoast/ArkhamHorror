@@ -121,7 +121,7 @@ instance RunMessage HankSamson where
               ]
         _ -> pure ()
       pure i
-    ResetGame -> do
+    ForInvestigators _ ResetGame -> do
       HankSamson
         <$> liftRunMessage
           msg

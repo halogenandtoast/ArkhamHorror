@@ -90,7 +90,7 @@ instance RunMessage JennyBarnesParallel where
     PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
       gainResourcesIfCan iid attrs 3
       pure i
-    ResetGame -> do
+    ForInvestigators _ ResetGame -> do
       attrs' <- liftRunMessage msg attrs
       pure $ JennyBarnesParallel $ attrs' `with` Meta Nothing 0
     _ -> JennyBarnesParallel . (`with` meta) <$> liftRunMessage msg attrs

@@ -136,5 +136,5 @@ instance RunMessage RexMurphyParallel where
             push $ Would batchId $ would : map AddChaosToken remainingTokens
         _ -> pure ()
       pure i
-    ResetGame -> RexMurphyParallel <$> liftRunMessage msg (deleteMetaKey "forced" attrs)
+    ForInvestigators _ ResetGame -> RexMurphyParallel <$> liftRunMessage msg (deleteMetaKey "forced" attrs)
     _ -> RexMurphyParallel <$> liftRunMessage msg attrs

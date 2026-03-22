@@ -60,7 +60,7 @@ instance RunMessage UrsulaDowns where
           labeled "Move to a connecting location" do
             chooseTargetM attrs.id xs (moveTo attrs attrs.id)
       pure $ UrsulaDowns $ attrs `with` Metadata False
-    ResetGame -> do
+    ForInvestigators _ ResetGame -> do
       attrs' <- liftRunMessage msg attrs
       pure $ UrsulaDowns $ attrs' `with` Metadata False
     _ -> UrsulaDowns . (`with` metadata) <$> liftRunMessage msg attrs

@@ -767,7 +767,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     -- TODO: This is wrong but history is the way we track if enemies were
     -- defeated for cards like Kerosene (1), we need a history independent of
     -- the iid for cases where we aren't looking at a specific investigator
-    enemyHealth <- fieldJust EnemyHealth eid
+    mEnemyHealth <- fieldMayJoin EnemyHealth eid
     let
       iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid
@@ -776,7 +776,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           HistoryEnemiesDefeated
           [ DefeatedEnemyAttrs
               { defeatedEnemyAttrs = attrs {enemyPlacement = placement'}
-              , defeatedEnemyHealth = enemyHealth
+              , defeatedEnemyHealth = fromMaybe 0 mEnemyHealth
               }
           ]
       turn = isJust $ view turnPlayerInvestigatorIdL g

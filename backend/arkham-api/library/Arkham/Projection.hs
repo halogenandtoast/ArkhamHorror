@@ -44,7 +44,7 @@ fieldJust
   -> m typ
 fieldJust fld (asId -> entityId) = fromJustNote missingField <$> field fld entityId
  where
-  missingField = "Maybe field " <> show fld <> " was Nothing"
+  missingField = "Maybe field " <> show fld <> " was Nothing: " <> prettyCallStack callStack
 
 fieldP
   :: (HasCallStack, HasGame m, Tracing m, Projection a)

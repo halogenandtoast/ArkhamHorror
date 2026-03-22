@@ -1538,9 +1538,9 @@ instance RunMessage EnemyAttrs where
         push $ Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
       pure a
     Arkham.Message.EnemyDefeated eid _ source _ | eid == toId a -> do
-      modifiedHealth <- fieldJust EnemyHealth (toId a)
+      mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
       let
-        defeatedByDamage = enemyDamage a >= modifiedHealth
+        defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
@@ -1562,9 +1562,9 @@ instance RunMessage EnemyAttrs where
         & (keysL .~ mempty)
         & (lastKnownLocationL %~ (mloc <|>))
     Do (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
-      modifiedHealth <- fieldJust EnemyHealth (toId a)
+      mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
       let
-        defeatedByDamage = enemyDamage a >= modifiedHealth
+        defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       victory <- getVictoryPoints eid

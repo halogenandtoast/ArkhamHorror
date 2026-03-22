@@ -16,7 +16,7 @@ instance RunMessage MarkOfTheOrder where
   runMessage msg t@(MarkOfTheOrder attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
       selectEach (InvestigatorWithTokenKey #elderthing) \i -> loseResources i attrs 3
-      selectEach (InvestigatorWithTokenKey #tablet) (`randomDiscard` attrs)
+      selectEach (InvestigatorWithTokenKey #tablet) \i -> randomDiscardN i attrs 2
       selectEach (InvestigatorWithTokenKey #cultist) \i -> assignHorror i attrs 1
       selectEach (InvestigatorWithTokenKey #skull) \i -> assignDamage i attrs 1
       pure t

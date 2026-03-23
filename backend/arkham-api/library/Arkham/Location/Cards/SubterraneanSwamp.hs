@@ -32,6 +32,7 @@ instance HasAbilities SubterraneanSwamp where
 instance RunMessage SubterraneanSwamp where
   runMessage msg l@(SubterraneanSwamp attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pickSupply iid StickyGoop
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

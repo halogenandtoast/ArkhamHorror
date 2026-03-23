@@ -1,6 +1,7 @@
 module Arkham.Classes.GameLogger where
 
 import Arkham.Id
+import Arkham.Card.Id
 import Arkham.Prelude
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -44,6 +45,7 @@ data ClientMessage
   | ClientShowDiscard InvestigatorId
   | ClientShowUnder InvestigatorId
   | ClientUI Text
+  | ClientPlayabilityReport CardId Text [(Text, Maybe Text)]
 
 send :: HasGameLogger m => Text -> m ()
 send msg = do
@@ -94,3 +96,8 @@ sendShowUnder :: HasGameLogger m => InvestigatorId -> m ()
 sendShowUnder iid = do
   f <- getLogger
   liftIO $ f (ClientShowUnder iid)
+
+sendPlayabilityReport :: HasGameLogger m => CardId -> Text -> [(Text, Maybe Text)] -> m ()
+sendPlayabilityReport cid cardCode checks = do
+  f <- getLogger
+  liftIO $ f (ClientPlayabilityReport cid cardCode checks)

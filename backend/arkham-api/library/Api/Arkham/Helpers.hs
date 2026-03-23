@@ -68,6 +68,7 @@ data ApiResponse
   | GameTarot Aeson.Value
   | GameShowDiscard InvestigatorId
   | GameShowUnder InvestigatorId
+  | GamePlayabilityInfo {cardId :: CardId, cardCode :: Text, checks :: [(Text, Maybe Text)]}
   deriving stock Generic
   deriving anyclass ToJSON
 

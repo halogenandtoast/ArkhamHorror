@@ -149,6 +149,17 @@ export const deleteGame = (gameId: string): Promise<void> =>
 export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> =>
   api.put(`arkham/games/${gameId}/raw`, { gameMessage })
 
+export interface PlayabilityResponse {
+  cardId: string
+  cardCode: string
+  checks: [string, string | null][]
+}
+
+export const fetchPlayability = async (gameId: string, investigatorId: string, cardId: string): Promise<PlayabilityResponse> => {
+  const { data } = await api.post(`arkham/games/${gameId}/playability`, { investigatorId, cardId })
+  return data
+}
+
 export const newGame = async (
   deckIds: (string | null)[],
   playerCount: number,

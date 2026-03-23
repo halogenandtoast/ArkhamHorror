@@ -248,6 +248,7 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
     ClientTarot v -> GameTarot v
     ClientShowDiscard v -> GameShowDiscard v
     ClientShowUnder v -> GameShowUnder v
+    ClientPlayabilityReport cid cc chks -> GamePlayabilityInfo cid cc chks
   toClientText = \case
     ClientText txt -> Just txt
     ClientError {} -> Nothing
@@ -257,6 +258,7 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
     ClientTarot {} -> Nothing
     ClientShowDiscard {} -> Nothing
     ClientShowUnder {} -> Nothing
+    ClientPlayabilityReport {} -> Nothing
 
 publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
 publishToRoom gameId a = do

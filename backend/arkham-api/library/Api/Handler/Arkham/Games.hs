@@ -11,18 +11,26 @@ module Api.Handler.Arkham.Games (
   putApiV1ArkhamGameR,
   deleteApiV1ArkhamGameR,
   putApiV1ArkhamGameRawR,
+  postApiV1ArkhamGamePlayabilityR,
 ) where
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Campaign.Option
+import Arkham.Card
 import Arkham.Classes.HasQueue
+import Arkham.Cost.Status
 import Arkham.Difficulty
 import Arkham.Game
+import Arkham.GameEnv (getCard)
+import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
 import Arkham.Message (Message (HandleOption))
 import Arkham.Queue
+import Arkham.Source
+import Arkham.Window (mkWhen)
+import Arkham.Window qualified as Window
 import Conduit
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
@@ -160,3 +168,39 @@ deleteApiV1ArkhamGameR gameId = do
       where_ $ players.arkhamGameId ==. games.id
       where_ $ players.userId ==. val userId
   deleteRoom gameId
+
+data PlayabilityRequest = PlayabilityRequest
+  { investigatorId :: InvestigatorId
+  , cardId :: CardId
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass FromJSON
+
+data PlayabilityResponse = PlayabilityResponse
+  { cardId :: CardId
+  , cardCode :: Text
+  , checks :: [(Text, Maybe Text)]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+postApiV1ArkhamGamePlayabilityR :: ArkhamGameId -> Handler PlayabilityResponse
+postApiV1ArkhamGamePlayabilityR gameId = do
+  userId <- getRequestUserId
+  void $ runDB $ getBy404 (UniquePlayer userId gameId)
+  PlayabilityRequest {investigatorId = iid, cardId = cid} <- requireCheckJsonBody
+  g <- runDB $ get404 gameId
+  let gameJson = g.currentData
+  gameRef <- newIORef gameJson
+  queueRef <- newQueue []
+  genRef <- newIORef $ mkStdGen gameJson.gameSeed
+  tracer <- getTracer
+  runGameApp (GameApp gameRef queueRef genRef (const $ pure ()) tracer) do
+    card <- getCard cid
+    let duringTurnWindows = [mkWhen (Window.DuringTurn iid)]
+    checks <- getPlayabilityChecks iid (toSource iid) (UnpaidCost NeedsAction) duringTurnWindows card
+    pure PlayabilityResponse
+      { cardId = cid
+      , cardCode = unCardCode (toCardCode card)
+      , checks
+      }

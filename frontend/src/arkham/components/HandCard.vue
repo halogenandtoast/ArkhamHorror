@@ -7,7 +7,10 @@ import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
-import { IsMobile } from '@/arkham/isMobile';
+import { IsMobile } from '@/arkham/isMobile'
+import { useDebug } from '@/arkham/debug'
+import { fetchPlayability } from '@/arkham/api'
+import useEmitter from '@/composeable/useEmitter'
 
 export interface Props {
   game: Game
@@ -19,6 +22,8 @@ export interface Props {
 const props = defineProps<Props>()
 
 const { isMobile } = IsMobile();
+const debug = useDebug()
+const emitter = useEmitter()
 const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
 const investigatorId = computed(() => investigator.value?.id)
 
@@ -104,6 +109,14 @@ const image = computed(() => {
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return imgsrc(`cards/${cardCode.replace('c', '')}${mutatedSuffix}.avif`);
 })
+
+const handleDblClick = async () => {
+  if (!debug.active) return
+  if (cardAction.value !== -1) return
+  if (!investigatorId.value) return
+  const result = await fetchPlayability(props.game.id, investigatorId.value, id.value)
+  emitter.emit('playabilityResult', result)
+}
 
 /*
 const painted = computed(() => {
@@ -244,6 +257,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :src="image"
       :data-customizations="JSON.stringify(card.contents.customizations)"
       @click="$emit('choose', cardAction)"
+      @dblclick.stop="handleDblClick"
     />
 
     <AbilityButton

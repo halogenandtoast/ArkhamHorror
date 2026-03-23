@@ -42,6 +42,7 @@
           /full-export ApiV1ArkhamGameFullExportR GET
           /scenario-export ApiV1ArkhamGameScenarioExportR GET
           /reload ApiV1ArkhamGameReloadR GET
+          /playability ApiV1ArkhamGamePlayabilityR POST
     /admin AdminP:
       / ApiV1AdminR GET
       /rooms ApiV1AdminRoomsP:

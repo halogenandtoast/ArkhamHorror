@@ -27,7 +27,7 @@ instance RunMessage OnTheTrail3 where
       withLocationOf eid \lid -> do
         moveToEdit attrs iid lid \m -> m {moveMeans = TowardsN 2}
       pure e
-    MoveTo movement | moveSource movement == toSource attrs -> do
+    Move movement | moveSource movement == toSource attrs -> do
       case moveDestination movement of
         ToLocation lid -> pure . OnTheTrail3 $ attrs & setMeta (lid : toResultDefault [] attrs.meta)
         _ -> pure e

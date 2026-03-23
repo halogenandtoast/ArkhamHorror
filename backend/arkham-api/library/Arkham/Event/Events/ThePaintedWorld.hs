@@ -14,6 +14,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
 import Arkham.Strategy
 import Arkham.Window
+import Arkham.Window qualified as Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -47,6 +48,7 @@ instance RunMessage ThePaintedWorld where
             , pcOwner = Just iid
             }
       replaceCard (toCardId attrs) (PlayerCard choiceAsCard)
+      checkWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay (PlayerCard choiceAsCard) True)]
       pure e
     _ -> ThePaintedWorld <$> liftRunMessage msg attrs
 

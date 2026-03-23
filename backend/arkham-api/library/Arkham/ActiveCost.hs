@@ -1609,7 +1609,7 @@ instance RunMessage ActiveCost where
             then push $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
             else do
               let
-                isAction = isActionAbility ability && ability.index > 0
+                isAction = isActionAbility ability && ability.index > 0 && not (isFastAbility ability)
                 actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
                 iid = c.investigator
               whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]

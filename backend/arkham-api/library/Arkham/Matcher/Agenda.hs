@@ -34,6 +34,7 @@ data AgendaMatcher
   | AgendaCanWheelOfFortuneX
   | FinalAgenda
   | AgendaWantsToAdvance
+  | UnflippedAgenda
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsMatcher AgendaMatcher

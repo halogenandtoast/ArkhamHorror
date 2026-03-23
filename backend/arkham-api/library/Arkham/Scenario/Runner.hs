@@ -248,7 +248,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       (card : _) -> push (PlaceLocation locationId card)
     pure a
   PlaceDoomOnAgenda n canAdvance -> do
-    select Matcher.AnyAgenda >>= \case
+    select Matcher.UnflippedAgenda >>= \case
       [] -> pure ()
       [x] -> push (PlaceTokens (toSource a) (AgendaTarget x) Doom n)
       _ -> error "multiple agendas should be handled by the scenario"

@@ -1428,6 +1428,7 @@ getAgendasMatching matcher = do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AgendaCanWheelOfFortuneX -> pure . not . attr agendaUsedWheelOfFortuneX
+    UnflippedAgenda -> pure . not . attr agendaFlipped
     AgendaWantsToAdvance -> \a -> do
       cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
       if cannotBeAdvanced

@@ -17,8 +17,9 @@ returnToTheCityOfArchives difficulty =
     difficulty
     [ ".                yithianOrrery                   laboratoryOfTheGreatRace         deconstructionRoom              ."
     , ".                .                               hallsOfPnakotusNorthernCorridors .                               interviewRoom1"
-    , "towersOfPnakotus hallsOfPnakotusWesternCorridors alienConservatory                hallsOfPnakotusEasternCorridors interviewRoom2"
-    , ".                greatLibrary                    hallsOfPnakotusSouthernCorridors cyclopeanVaults                  interviewRoom3"
+    , "towersOfPnakotus hallsOfPnakotusWesternCorridors .                                hallsOfPnakotusEasternCorridors interviewRoom2"
+    , ".                greatLibrary                    hallsOfPnakotusSouthernCorridors cyclopeanVaults                 interviewRoom3"
+    , ".                .                               alienConservatory                .                               ."
     ]
     (referenceL .~ "04237")
 

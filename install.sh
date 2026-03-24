@@ -45,6 +45,11 @@ curl -fsSL "$REPO_RAW/docker-compose.yml" -o docker-compose.yml
 info "Downloading setup.sql"
 curl -fsSL "$REPO_RAW/setup.sql" -o setup.sql
 
+info "Downloading fetch-assets.sh"
+mkdir -p scripts
+curl -fsSL "$REPO_RAW/scripts/fetch-assets.sh" -o scripts/fetch-assets.sh
+chmod +x scripts/fetch-assets.sh
+
 # ── Generate Postgres password ────────────────────────────────────────────────
 
 if [ ! -f config/postgres_password.txt ]; then

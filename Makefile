@@ -53,7 +53,7 @@ fetch-images-docker:
 
 ## Fetch only English card images via Docker
 fetch-cards-docker:
-	docker compose --profile fetch-images run --rm fetch-images s3 sync s3://arkham-horror-assets/img/arkham/cards/ /workspace/img/arkham/cards/ --no-sign-request --exclude "*.DS_Store"
+	docker compose --profile fetch-images run --rm fetch-images cards
 .PHONY: fetch-cards-docker
 
 ## Regenerate image manifest (run after adding new images, before committing)

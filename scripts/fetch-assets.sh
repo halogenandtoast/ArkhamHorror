@@ -1,36 +1,35 @@
 #!/usr/bin/env bash
 #
-# Downloads image assets from the public S3 bucket.
-# No AWS credentials required — uses public bucket listing.
+# Downloads image assets using S3 for listing and CloudFront for delivery.
+# Listing via S3 (no credentials required — public bucket).
+# Download via CloudFront for faster edge delivery.
+#
+# Differential sync: skips files that already exist with the correct size.
+# New/changed files are downloaded to a .tmp file, size-verified, then
+# atomically renamed into place — interrupted downloads are always caught.
 #
 # Usage:
-#   ./scripts/fetch-assets.sh cards   # English card images only
-#   ./scripts/fetch-assets.sh en      # All English/static images (no translations)
-#   ./scripts/fetch-assets.sh fr      # French card translations
-#   ./scripts/fetch-assets.sh all     # Everything
+#   ./scripts/fetch-assets.sh cards   # English card images only (~755 MB)
+#   ./scripts/fetch-assets.sh en      # All English/static images (~1.3 GB)
+#   ./scripts/fetch-assets.sh fr      # French translated card images
+#   ./scripts/fetch-assets.sh all     # Everything (~2.9 GB)
 #
 # Environment variables:
-#   FETCH_S3_BUCKET  — override the S3 bucket (default: s3://arkham-horror-assets)
+#   FETCH_S3_BUCKET   S3 bucket name for listing (default: arkham-horror-assets)
+#   FETCH_CDN_BASE    CloudFront base URL (default: https://assets.arkhamhorror.app)
+#   FETCH_PARALLEL    Parallel download count (default: 8)
 #
 set -euo pipefail
 
-S3_BUCKET="${FETCH_S3_BUCKET:-s3://arkham-horror-assets}"
+S3_BUCKET="${FETCH_S3_BUCKET:-arkham-horror-assets}"
+CDN_BASE="${FETCH_CDN_BASE:-https://assets.arkhamhorror.app}"
+PARALLEL="${FETCH_PARALLEL:-8}"
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PUBLIC_DIR="$ROOT_DIR/frontend/public"
 
-BASE_ARGS=(--no-sign-request --exclude "*.DS_Store")
-
-# Language-specific subdirectories to exclude from English/static syncs
-LANG_EXCLUDES=(
-  --exclude "arkham/es/*"
-  --exclude "arkham/fr/*"
-  --exclude "arkham/ita/*"
-  --exclude "arkham/ko/*"
-  --exclude "arkham/zh/*"
-)
-
-# ── Helpers ──────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
 die() { echo "Error: $*" >&2; exit 1; }
 
@@ -39,49 +38,133 @@ usage() {
 Usage: $(basename "$0") <target>
 
 Targets:
-  cards   English card images only
-  en      All English/static images (cards, portraits, tokens, icons, etc.)
+  cards   English card images only (~755 MB)
+  en      All English/static images (~1.3 GB)
   fr      French translated card images
   es      Spanish translated card images
   ita     Italian translated card images
   ko      Korean translated card images
   zh      Chinese translated card images
-  all     Everything
+  all     Everything (~2.9 GB)
 
 Options (via env):
-  FETCH_S3_BUCKET=s3://...   S3 bucket URL (default: s3://arkham-horror-assets)
+  FETCH_S3_BUCKET=...         S3 bucket name for listing (default: arkham-horror-assets)
+  FETCH_CDN_BASE=https://...  CloudFront base URL (default: https://assets.arkhamhorror.app)
+  FETCH_PARALLEL=N            Parallel downloads (default: 8)
 EOF
   exit 1
 }
 
-s3_sync() {
-  local s3_path="$1"; shift
-  aws s3 sync "$S3_BUCKET/$s3_path" "$PUBLIC_DIR/$s3_path" "${BASE_ARGS[@]}" "$@"
+# Cross-platform file size (Linux: stat -c%s, macOS: stat -f%z)
+_file_size() { stat -c%s "$1" 2>/dev/null || stat -f%z "$1"; }
+export -f _file_size
+
+# Download a single file from CloudFront, called in parallel via xargs.
+# Args: <expected_size> <key>
+_fetch_one() {
+  local expected_size="$1"
+  local key="$2"
+  local dest="$PUBLIC_DIR/$key"
+  local tmp="$dest.tmp"
+
+  # Skip if the file already exists with the correct size
+  if [ -f "$dest" ] && [ "$(_file_size "$dest")" = "$expected_size" ]; then
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$dest")"
+
+  if ! curl -fsSL "$CDN_BASE/$key" -o "$tmp"; then
+    rm -f "$tmp"
+    echo "FAIL (download error): $key" >&2
+    return 1
+  fi
+
+  local actual_size
+  actual_size=$(_file_size "$tmp")
+
+  if [ "$actual_size" != "$expected_size" ]; then
+    rm -f "$tmp"
+    echo "FAIL (size mismatch): $key (expected $expected_size, got $actual_size)" >&2
+    return 1
+  fi
+
+  mv "$tmp" "$dest"
+}
+export -f _fetch_one
+export PUBLIC_DIR CDN_BASE
+
+# List all objects under an S3 prefix.
+# AWS CLI v2 auto-paginates list-objects-v2, so this returns all objects
+# even when there are more than 1000.
+# Output: SIZE<TAB>KEY per line.
+_list_objects() {
+  aws s3api list-objects-v2 \
+    --bucket "$S3_BUCKET" \
+    --prefix "$1" \
+    --no-sign-request \
+    --output text \
+    --query 'Contents[].[Size,Key]' \
+    | grep -v '^None$' || true
 }
 
-# ── Main ─────────────────────────────────────────────────────────────────
+# Sync all files under a prefix. Optional grep arguments are passed directly
+# to filter the listing (e.g. -vE 'img/arkham/(es|fr)/' to exclude languages).
+_sync_prefix() {
+  local prefix="$1"; shift
+  local filter_args=("$@")
 
-command -v aws >/dev/null 2>&1 \
-  || die "aws CLI not found. Install it from https://aws.amazon.com/cli/ or use 'make fetch-images-docker'."
+  echo "Listing ${prefix}..."
+  local listing
+  listing=$(_list_objects "$prefix")
+
+  if [ ${#filter_args[@]} -gt 0 ]; then
+    listing=$(echo "$listing" | grep "${filter_args[@]}" || true)
+  fi
+
+  local total
+  total=$(echo "$listing" | grep -c . || true)
+  echo "Syncing $total files (parallel: $PARALLEL)..."
+
+  local errors=0
+  # Each listing line is "SIZE<TAB>KEY". xargs splits on whitespace,
+  # so -n 2 passes SIZE and KEY as $1 and $2 to _fetch_one.
+  echo "$listing" | xargs -P "$PARALLEL" -n 2 bash -c '_fetch_one "$@"' _ \
+    || errors=$?
+
+  if [ "$errors" -ne 0 ]; then
+    echo "WARNING: some files failed to download — check stderr above" >&2
+    return 1
+  fi
+
+  echo "Done."
+}
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+command -v aws  >/dev/null 2>&1 || die "aws CLI not found. Install from https://aws.amazon.com/cli/ or use 'make fetch-images-docker'."
+command -v curl >/dev/null 2>&1 || die "curl not found."
 
 [ $# -ge 1 ] || usage
+
+LANG_PATTERN="img/arkham/(es|fr|ita|ko|zh)/"
 
 case "$1" in
   cards)
     echo "=== Fetching English card images ==="
-    s3_sync "img/arkham/cards/"
+    _sync_prefix "img/arkham/cards/"
     ;;
   en)
     echo "=== Fetching all English/static images ==="
-    s3_sync "img/" "${LANG_EXCLUDES[@]}"
+    _sync_prefix "img/" -vE "$LANG_PATTERN"
     ;;
   fr|es|ita|ko|zh)
     echo "=== Fetching $1 translated images ==="
-    s3_sync "img/arkham/$1/"
+    _sync_prefix "img/arkham/$1/"
     ;;
   all)
     echo "=== Fetching all images ==="
-    s3_sync "img/"
+    _sync_prefix "img/"
     ;;
   *)
     usage

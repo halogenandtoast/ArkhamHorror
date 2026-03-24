@@ -48,7 +48,7 @@ services:
     image: amazon/aws-cli
     volumes:
       - ./frontend/public/img:/workspace/frontend/public/img
-      - ./scripts/fetch-assets.sh:/workspace/scripts/fetch-assets.sh:ro
+      - ./scripts:/workspace/scripts:ro
     entrypoint: ["/bin/bash", "/workspace/scripts/fetch-assets.sh"]
     command: all
 volumes:

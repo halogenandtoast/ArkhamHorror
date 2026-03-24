@@ -55,12 +55,13 @@ chmod +x scripts/fetch-assets.sh
 if [ ! -f config/postgres_password.txt ]; then
   info "Generating Postgres password"
   # Use openssl if available, otherwise fall back to /dev/urandom
+  # Use hex to guarantee URL-safe characters (base64 produces +/= which break DATABASE_URL)
   if command -v openssl >/dev/null 2>&1; then
-    openssl rand -base64 32 | tr -d '\n' > config/postgres_password.txt
+    openssl rand -hex 32 > config/postgres_password.txt
   else
-    head -c 32 /dev/urandom | base64 | tr -d '\n/+=' | head -c 32 > config/postgres_password.txt
+    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > config/postgres_password.txt
+    echo "" >> config/postgres_password.txt
   fi
-  echo "" >> config/postgres_password.txt
   info "Password saved to config/postgres_password.txt"
 else
   info "config/postgres_password.txt already exists, skipping"

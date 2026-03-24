@@ -87,10 +87,11 @@ if is_interactive; then
   read -r fetch_target </dev/tty
 else
   warn "Non-interactive mode (curl | bash): skipping image download."
-  warn "To fetch English images after install:"
-  warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images"
+  warn "Images will load from the CDN automatically until you fetch them locally."
+  warn "To fetch English images and switch to local serving:"
+  warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images && docker compose restart web"
   warn "To fetch English + a language (e.g. French):"
-  warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images en+fr"
+  warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images en+fr && docker compose restart web"
 fi
 
 if [ -n "$fetch_target" ]; then

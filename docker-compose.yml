@@ -32,13 +32,13 @@ services:
       context: .
       args:
         - GHC_VERSION=9.12.2
-    environment:
-      # ASSET_HOST is auto-detected by web-entrypoint.sh:
-      #   - unset (default): uses local images if present, CDN otherwise
-      #   - ASSET_HOST=                                 → force local images
-      #   - ASSET_HOST=https://assets.arkhamhorror.app → force CDN
-      # - ASSET_HOST=
-      # - REDIS_CONN=redis://redis:6379
+    # ASSET_HOST is auto-detected by web-entrypoint.sh:
+    #   unset (default): uses local images if present, CDN otherwise
+    # To override, uncomment one of the lines below:
+    # environment:
+    #   - ASSET_HOST=                                 # force local images
+    #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
+    #   - REDIS_CONN=redis://redis:6379
     secrets:
       - postgres_password
     ports:

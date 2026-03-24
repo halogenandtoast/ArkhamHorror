@@ -75,8 +75,12 @@ openssl rand -base64 32 > config/postgres_password.txt
 docker compose up -d
 ```
 
-To fetch images locally (optional), use the `fetch-images` Docker service.
-By default the app loads images from the CDN, so this is only needed for offline use.
+The app automatically detects whether local images are present:
+- **No local images** (default after install) → images load from the CDN automatically
+- **Local images present** (after running the fetch service) → images served locally
+
+To fetch images locally, use the `fetch-images` Docker service.
+Once fetched, restart with `docker compose restart web` and the app will switch to local images.
 
 ```
 # English only (~1.3 GB) — portraits, tokens, icons, card images
@@ -97,6 +101,14 @@ docker compose --profile fetch-images run --rm fetch-images all
 ```
 
 Images are stored in `frontend/public/img/` and mounted into the container.
+After fetching, run `docker compose restart web` to pick them up.
+
+To switch back to CDN at any time, add this to the `web` service environment in `docker-compose.yml`:
+
+```yaml
+    environment:
+      - ASSET_HOST=https://assets.arkhamhorror.app
+```
 
 ### Updating
 
@@ -168,10 +180,12 @@ docker compose --profile fetch-images run --rm fetch-images en+fr
 docker compose --profile fetch-images run --rm fetch-images fr
 ```
 
-To use local images instead of CDN, create `frontend/.env.development.local`:
+To use local images instead of CDN in local dev, create `frontend/.env.development.local`:
 ```
 VITE_ASSET_HOST=
 ```
+
+To revert to CDN, remove the file or set `VITE_ASSET_HOST=https://assets.arkhamhorror.app`.
 
 If you add new images, sync them to S3 and regenerate the manifest:
 ```

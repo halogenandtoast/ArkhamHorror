@@ -58,6 +58,9 @@ curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/i
 This creates an `arkham-horror/` directory, downloads the required files, generates
 a database password, and starts the app. Open http://localhost:3000 when it's done.
 
+> **Windows users:** Run the command above inside a [WSL2][wsl2] terminal.
+> Docker Desktop integrates with WSL2 so `docker compose` will work from there.
+
 The script will ask if you want to download game images (~2.9 GB). If you skip
 this step, the app loads images from the CDN automatically — no extra setup needed.
 
@@ -223,3 +226,4 @@ All artwork and illustrations are the intellectual property of their respective 
 
 [arkham]: https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/
 [docker]: https://www.docker.com/
+[wsl2]: https://learn.microsoft.com/en-us/windows/wsl/install

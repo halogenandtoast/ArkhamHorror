@@ -205,6 +205,7 @@ _sync_prefix() {
   if $_tty; then
     # Background monitor: redraws progress line every 100ms
     (
+      trap - INT TERM  # don't inherit parent's signal trap
       local i=0
       while true; do
         local ok skip fail completed now elapsed pct rate eta rem
@@ -244,7 +245,10 @@ _sync_prefix() {
 
   # ── Summary ───────────────────────────────────────────────────────────────
 
-  [ -n "$monitor_pid" ] && { kill "$monitor_pid" 2>/dev/null; wait "$monitor_pid" 2>/dev/null; }
+  if [ -n "$monitor_pid" ]; then
+    kill "$monitor_pid" 2>/dev/null
+    wait "$monitor_pid" 2>/dev/null || true
+  fi
 
   local ok skip fail end_t elapsed
   ok=$(wc -c   < "$progress_dir/ok"   | tr -d ' \t'); ok=${ok:-0}
@@ -253,7 +257,15 @@ _sync_prefix() {
   end_t=$(date +%s); elapsed=$(( end_t - start ))
 
   if $_tty; then
-    printf '\r\033[K%s' "$_SHOW"   # clear progress line, restore cursor
+    # Draw one final bar at the true completed count before clearing
+    local completed=$(( ok + skip + fail ))
+    printf '\r  ✓  ['
+    _bar "$completed" "$total" 28
+    printf ']  %s100%%%s  %d/%d' "$_BOLD" "$_RESET" "$completed" "$total"
+    [ "$ok"   -gt 0 ] && printf '  %s↓ %d%s' "$_GREEN" "$ok"   "$_RESET"
+    [ "$skip" -gt 0 ] && printf '  %s↷ %d%s' "$_DIM"   "$skip" "$_RESET"
+    [ "$fail" -gt 0 ] && printf '  %s✗ %d%s' "$_RED"   "$fail" "$_RESET"
+    printf '\n%s' "$_SHOW"
   fi
 
   if [ -s "$progress_dir/errors" ]; then

@@ -9,10 +9,11 @@
 # atomically renamed into place — interrupted downloads are always caught.
 #
 # Usage:
-#   ./scripts/fetch-assets.sh cards   # English card images only (~755 MB)
-#   ./scripts/fetch-assets.sh en      # All English/static images (~1.3 GB)
-#   ./scripts/fetch-assets.sh fr      # French translated card images
-#   ./scripts/fetch-assets.sh all     # Everything (~2.9 GB)
+#   ./scripts/fetch-assets.sh cards      # English card images only (~755 MB)
+#   ./scripts/fetch-assets.sh en         # All English/static images (~1.3 GB)
+#   ./scripts/fetch-assets.sh fr         # French translated card images only
+#   ./scripts/fetch-assets.sh en+fr      # English/static + French translations
+#   ./scripts/fetch-assets.sh all        # Everything (~2.9 GB)
 #
 # Environment variables:
 #   FETCH_S3_BUCKET   S3 bucket name for listing (default: arkham-horror-assets)
@@ -38,14 +39,19 @@ usage() {
 Usage: $(basename "$0") <target>
 
 Targets:
-  cards   English card images only (~755 MB)
-  en      All English/static images (~1.3 GB)
-  fr      French translated card images
-  es      Spanish translated card images
-  ita     Italian translated card images
-  ko      Korean translated card images
-  zh      Chinese translated card images
-  all     Everything (~2.9 GB)
+  cards       English card images only (~755 MB)
+  en          All English/static images (~1.3 GB)
+  en+fr       English/static + French translations
+  en+es       English/static + Spanish translations
+  en+ita      English/static + Italian translations
+  en+ko       English/static + Korean translations
+  en+zh       English/static + Chinese translations
+  fr          French translated card images only
+  es          Spanish translated card images only
+  ita         Italian translated card images only
+  ko          Korean translated card images only
+  zh          Chinese translated card images only
+  all         Everything (~2.9 GB)
 
 Options (via env):
   FETCH_S3_BUCKET=...         S3 bucket name for listing (default: arkham-horror-assets)
@@ -147,7 +153,20 @@ command -v curl >/dev/null 2>&1 || die "curl not found."
 
 [ $# -ge 1 ] || usage
 
-LANG_PATTERN="img/arkham/(es|fr|ita|ko|zh)/"
+ALL_LANGS=(es fr ita ko zh)
+
+# Build a regex that excludes all language dirs except the one given.
+# e.g. _other_langs_pattern fr -> "img/arkham/(es|ita|ko|zh)/"
+_other_langs_pattern() {
+  local keep="$1"
+  local others=()
+  for lang in "${ALL_LANGS[@]}"; do
+    [ "$lang" != "$keep" ] && others+=("$lang")
+  done
+  local joined
+  printf -v joined '%s|' "${others[@]}"
+  echo "img/arkham/(${joined%|})/"
+}
 
 case "$1" in
   cards)
@@ -156,10 +175,15 @@ case "$1" in
     ;;
   en)
     echo "=== Fetching all English/static images ==="
-    _sync_prefix "img/" -vE "$LANG_PATTERN"
+    _sync_prefix "img/" -vE "img/arkham/($(IFS='|'; echo "${ALL_LANGS[*]}"))/"
+    ;;
+  en+fr|en+es|en+ita|en+ko|en+zh)
+    lang="${1#en+}"
+    echo "=== Fetching English/static + $lang translations ==="
+    _sync_prefix "img/" -vE "$(_other_langs_pattern "$lang")"
     ;;
   fr|es|ita|ko|zh)
-    echo "=== Fetching $1 translated images ==="
+    echo "=== Fetching $1 translated images only ==="
     _sync_prefix "img/arkham/$1/"
     ;;
   all)

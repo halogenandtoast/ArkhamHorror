@@ -36,12 +36,12 @@ sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"
 .PHONY: sync-images
 
-## Fetch all images from S3 (requires aws CLI)
+## Fetch all images via CloudFront (requires aws + curl)
 fetch-images:
 	./scripts/fetch-assets.sh all
 .PHONY: fetch-images
 
-## Fetch only English card images from S3 (requires aws CLI)
+## Fetch only English card images via CloudFront (requires aws + curl)
 fetch-cards:
 	./scripts/fetch-assets.sh cards
 .PHONY: fetch-cards

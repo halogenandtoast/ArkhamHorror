@@ -75,10 +75,25 @@ openssl rand -base64 32 > config/postgres_password.txt
 docker compose up -d
 ```
 
-To fetch images locally (optional, ~2.9 GB):
+To fetch images locally (optional), use the `fetch-images` Docker service.
+By default the app loads images from the CDN, so this is only needed for offline use.
 
 ```
-docker compose --profile fetch-images run --rm fetch-images
+# English only (~1.3 GB) — portraits, tokens, icons, card images
+docker compose --profile fetch-images run --rm fetch-images en
+
+# English + a specific language (recommended for non-English play)
+docker compose --profile fetch-images run --rm fetch-images en+fr   # French
+docker compose --profile fetch-images run --rm fetch-images en+es   # Spanish
+docker compose --profile fetch-images run --rm fetch-images en+ita  # Italian
+docker compose --profile fetch-images run --rm fetch-images en+ko   # Korean
+docker compose --profile fetch-images run --rm fetch-images en+zh   # Chinese
+
+# A single language's card translations only (English assets still load from CDN)
+docker compose --profile fetch-images run --rm fetch-images fr
+
+# Everything (~2.9 GB)
+docker compose --profile fetch-images run --rm fetch-images all
 ```
 
 Images are stored in `frontend/public/img/` and mounted into the container.
@@ -124,29 +139,33 @@ Image assets (~2.9 GB) are **not stored in the git repository**. They are hosted
 on CloudFront and the app loads them from the CDN by default in both development
 and production — no extra setup needed.
 
-If you need local copies (e.g. for offline development), use the fetch script.
-It syncs directly from the public S3 bucket using the AWS CLI (no credentials
-required):
+If you need local copies (e.g. for offline development), use the fetch script
+(requires `aws` CLI and `curl`):
 
 ```
-make fetch-images     # Download all images (~2.9 GB)
-make fetch-cards      # Download only English card images (~755 MB)
+make fetch-images     # Everything (~2.9 GB)
+make fetch-cards      # English card images only (~755 MB)
 
-# Or use the script directly for specific languages:
-./scripts/fetch-assets.sh fr    # French only
-./scripts/fetch-assets.sh en    # All English/static images
+# Or use the script directly:
+./scripts/fetch-assets.sh en        # All English/static images (~1.3 GB)
+./scripts/fetch-assets.sh en+fr     # English + French (recommended for French play)
+./scripts/fetch-assets.sh en+es     # English + Spanish
+./scripts/fetch-assets.sh en+ita    # English + Italian
+./scripts/fetch-assets.sh en+ko     # English + Korean
+./scripts/fetch-assets.sh en+zh     # English + Chinese
+./scripts/fetch-assets.sh fr        # French card translations only
 ```
 
 If you only have Docker (no local AWS CLI), use the Docker-based targets instead:
 
 ```
-make fetch-images-docker    # Download all images via Docker (~2.9 GB)
-make fetch-cards-docker     # Download only English card images via Docker
+make fetch-images-docker    # Everything via Docker (~2.9 GB)
+make fetch-cards-docker     # English card images only via Docker
 
-# Or run directly:
-docker compose --profile fetch-images run --rm fetch-images          # all
-docker compose --profile fetch-images run --rm fetch-images cards    # English only
-docker compose --profile fetch-images run --rm fetch-images fr       # French only
+# Or run directly with the same targets as above:
+docker compose --profile fetch-images run --rm fetch-images en
+docker compose --profile fetch-images run --rm fetch-images en+fr
+docker compose --profile fetch-images run --rm fetch-images fr
 ```
 
 To use local images instead of CDN, create `frontend/.env.development.local`:

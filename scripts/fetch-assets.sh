@@ -7,18 +7,19 @@
 # Differential sync: skips files that already exist with the correct size.
 # New/changed files are downloaded to a .tmp file, size-verified, then
 # atomically renamed into place — interrupted downloads are always caught.
+# Failed downloads are retried with exponential backoff.
 #
 # Usage:
-#   ./scripts/fetch-assets.sh cards      # English card images only (~755 MB)
-#   ./scripts/fetch-assets.sh en         # All English/static images (~1.3 GB)
-#   ./scripts/fetch-assets.sh fr         # French translated card images only
-#   ./scripts/fetch-assets.sh en+fr      # English/static + French translations
-#   ./scripts/fetch-assets.sh all        # Everything (~2.9 GB)
+#   ./scripts/fetch-assets.sh en        # All English/static images (~1.3 GB)
+#   ./scripts/fetch-assets.sh en+fr     # English/static + French translations
+#   ./scripts/fetch-assets.sh cards     # English card images only (~755 MB)
+#   ./scripts/fetch-assets.sh all       # Everything (~2.9 GB)
 #
 # Environment variables:
 #   FETCH_S3_BUCKET   S3 bucket name for listing (default: arkham-horror-assets)
 #   FETCH_CDN_BASE    CloudFront base URL (default: https://assets.arkhamhorror.app)
-#   FETCH_PARALLEL    Parallel download count (default: 8)
+#   FETCH_PARALLEL    Concurrent downloads (default: 8)
+#   FETCH_RETRIES     Retries per file on failure (default: 3)
 #
 set -euo pipefail
 
@@ -30,9 +31,46 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PUBLIC_DIR="$ROOT_DIR/frontend/public"
 
+# ── Terminal ──────────────────────────────────────────────────────────────────
+
+_tty=false; [ -t 1 ] && _tty=true
+
+_tc() { tput "$@" 2>/dev/null || true; }
+
+if $_tty; then
+  _RED=$(_tc setaf 1); _GREEN=$(_tc setaf 2); _CYAN=$(_tc setaf 6)
+  _BOLD=$(_tc bold);   _DIM=$(_tc dim);       _RESET=$(_tc sgr0)
+  _HIDE=$(_tc civis);  _SHOW=$(_tc cnorm)
+else
+  _RED='' _GREEN='' _CYAN='' _BOLD='' _DIM='' _RESET='' _HIDE='' _SHOW=''
+fi
+
+# Restore cursor on exit/interrupt
+trap 'printf "%s" "${_SHOW}" 2>/dev/null; exit' INT TERM
+
+_fmt_time() {
+  local s=$1
+  if   [ "$s" -ge 3600 ]; then printf '%dh %dm'  $((s/3600)) $(( (s%3600)/60 ))
+  elif [ "$s" -ge    60 ]; then printf '%dm %ds'  $((s/60))   $((s%60))
+  else                          printf '%ds'       "$s"
+  fi
+}
+
+_bar() {
+  local done=$1 total=$2 width=$3
+  local filled=$(( total > 0 ? done * width / total : 0 ))
+  local empty=$(( width - filled ))
+  local i f='' e=''
+  for ((i=0; i<filled; i++)); do f="${f}█"; done
+  for ((i=0; i<empty;  i++)); do e="${e}░"; done
+  printf '%s%s%s%s%s' "$_CYAN" "$f" "$_DIM" "$e" "$_RESET"
+}
+
+_SPIN=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-die() { echo "Error: $*" >&2; exit 1; }
+die() { printf '\n%sError: %s%s\n' "$_RED" "$*" "$_RESET" >&2; exit 1; }
 
 usage() {
   cat <<EOF
@@ -53,57 +91,60 @@ Targets:
   zh          Chinese translated card images only
   all         Everything (~2.9 GB)
 
-Options (via env):
-  FETCH_S3_BUCKET=...         S3 bucket name for listing (default: arkham-horror-assets)
+Env vars:
+  FETCH_S3_BUCKET=...         S3 bucket for listing (default: arkham-horror-assets)
   FETCH_CDN_BASE=https://...  CloudFront base URL (default: https://assets.arkhamhorror.app)
-  FETCH_PARALLEL=N            Parallel downloads (default: 8)
+  FETCH_PARALLEL=N            Concurrent downloads (default: 8)
+  FETCH_RETRIES=N             Retries per file on failure (default: 3)
 EOF
   exit 1
 }
 
-# Cross-platform file size (Linux: stat -c%s, macOS: stat -f%z)
 _file_size() { stat -c%s "$1" 2>/dev/null || stat -f%z "$1"; }
 export -f _file_size
 
-# Download a single file from CloudFront, called in parallel via xargs.
-# Args: <expected_size> <key>
+# Called in parallel by xargs. Args: <expected_size> <key>
 _fetch_one() {
-  local expected_size="$1"
-  local key="$2"
-  local dest="$PUBLIC_DIR/$key"
-  local tmp="$dest.tmp"
+  local expected_size="$1" key="$2"
+  local dest="$PUBLIC_DIR/$key" tmp="$PUBLIC_DIR/$key.tmp"
+  local retries="${FETCH_RETRIES:-3}"
 
   # Skip if the file already exists with the correct size
   if [ -f "$dest" ] && [ "$(_file_size "$dest")" = "$expected_size" ]; then
+    printf 'k' >> "$FETCH_PROGRESS_DIR/skip"
     return 0
   fi
 
   mkdir -p "$(dirname "$dest")"
 
-  if ! curl -fsSL "$CDN_BASE/$key" -o "$tmp"; then
+  local attempt=1
+  while [ "$attempt" -le "$retries" ]; do
+    if curl -fsSL --retry 0 "$CDN_BASE/$key" -o "$tmp" 2>/dev/null; then
+      local actual; actual=$(_file_size "$tmp")
+      if [ "$actual" = "$expected_size" ]; then
+        mv "$tmp" "$dest"
+        printf 'o' >> "$FETCH_PROGRESS_DIR/ok"
+        return 0
+      fi
+      printf 'size mismatch (attempt %d/%d): %s — expected %s got %s\n' \
+        "$attempt" "$retries" "$key" "$expected_size" "$actual" \
+        >> "$FETCH_PROGRESS_DIR/errors"
+    else
+      printf 'download failed (attempt %d/%d): %s\n' \
+        "$attempt" "$retries" "$key" \
+        >> "$FETCH_PROGRESS_DIR/errors"
+    fi
     rm -f "$tmp"
-    echo "FAIL (download error): $key" >&2
-    return 1
-  fi
+    attempt=$((attempt + 1))
+    [ "$attempt" -le "$retries" ] && sleep $((attempt * 2))
+  done
 
-  local actual_size
-  actual_size=$(_file_size "$tmp")
-
-  if [ "$actual_size" != "$expected_size" ]; then
-    rm -f "$tmp"
-    echo "FAIL (size mismatch): $key (expected $expected_size, got $actual_size)" >&2
-    return 1
-  fi
-
-  mv "$tmp" "$dest"
+  printf 'x' >> "$FETCH_PROGRESS_DIR/fail"
+  return 1
 }
 export -f _fetch_one
 export PUBLIC_DIR CDN_BASE
 
-# List all objects under an S3 prefix.
-# AWS CLI v2 auto-paginates list-objects-v2, so this returns all objects
-# even when there are more than 1000.
-# Output: SIZE<TAB>KEY per line.
 _list_objects() {
   aws s3api list-objects-v2 \
     --bucket "$S3_BUCKET" \
@@ -114,36 +155,124 @@ _list_objects() {
     | grep -v '^None$' || true
 }
 
-# Sync all files under a prefix. Optional grep arguments are passed directly
-# to filter the listing (e.g. -vE 'img/arkham/(es|fr)/' to exclude languages).
 _sync_prefix() {
   local prefix="$1"; shift
   local filter_args=("$@")
 
-  echo "Listing ${prefix}..."
-  local listing
-  listing=$(_list_objects "$prefix")
+  # ── Listing phase ─────────────────────────────────────────────────────────
+
+  local listing_tmp; listing_tmp=$(mktemp)
+
+  if $_tty; then
+    printf '%s' "$_HIDE"
+    _list_objects "$prefix" > "$listing_tmp" &
+    local list_pid=$! i=0
+    while kill -0 "$list_pid" 2>/dev/null; do
+      printf '\r  %s  Listing %s...' "${_SPIN[$((i % 10))]}" "$prefix"
+      i=$((i+1)); sleep 0.1
+    done
+    wait "$list_pid"
+  else
+    printf 'Listing %s...' "$prefix"
+    _list_objects "$prefix" > "$listing_tmp"
+  fi
+
+  local listing; listing=$(cat "$listing_tmp"); rm -f "$listing_tmp"
 
   if [ ${#filter_args[@]} -gt 0 ]; then
-    listing=$(echo "$listing" | grep "${filter_args[@]}" || true)
+    listing=$(printf '%s\n' "$listing" | grep "${filter_args[@]}" || true)
   fi
 
-  local total
-  total=$(echo "$listing" | grep -c . || true)
-  echo "Syncing $total files (parallel: $PARALLEL)..."
+  local total; total=$(printf '%s\n' "$listing" | grep -c . || true)
 
-  local errors=0
-  # Each listing line is "SIZE<TAB>KEY". xargs splits on whitespace,
-  # so -n 2 passes SIZE and KEY as $1 and $2 to _fetch_one.
-  echo "$listing" | xargs -P "$PARALLEL" -n 2 bash -c '_fetch_one "$@"' _ \
-    || errors=$?
-
-  if [ "$errors" -ne 0 ]; then
-    echo "WARNING: some files failed to download — check stderr above" >&2
-    return 1
+  if $_tty; then
+    printf '\r\033[K  %s✓%s  Found %s%d%s files\n' \
+      "$_GREEN" "$_RESET" "$_BOLD" "$total" "$_RESET"
+  else
+    printf ' %d files\n' "$total"
   fi
 
-  echo "Done."
+  [ "$total" -eq 0 ] && return 0
+
+  # ── Download phase ────────────────────────────────────────────────────────
+
+  local progress_dir; progress_dir=$(mktemp -d)
+  touch "$progress_dir/ok" "$progress_dir/skip" "$progress_dir/fail" "$progress_dir/errors"
+  export FETCH_PROGRESS_DIR="$progress_dir"
+
+  local start; start=$(date +%s)
+  local monitor_pid=''
+
+  if $_tty; then
+    # Background monitor: redraws progress line every 100ms
+    (
+      local i=0
+      while true; do
+        local ok skip fail completed now elapsed pct rate eta rem
+        ok=$(wc -c   < "$progress_dir/ok"   2>/dev/null | tr -d ' \t'); ok=${ok:-0}
+        skip=$(wc -c < "$progress_dir/skip" 2>/dev/null | tr -d ' \t'); skip=${skip:-0}
+        fail=$(wc -c < "$progress_dir/fail" 2>/dev/null | tr -d ' \t'); fail=${fail:-0}
+        completed=$(( ok + skip + fail ))
+        now=$(date +%s); elapsed=$(( now - start ))
+        pct=$(( total > 0 ? completed * 100 / total : 0 ))
+
+        if [ "$elapsed" -gt 0 ] && [ "$completed" -gt 0 ]; then
+          rate=$(( completed / elapsed ))
+          rem=$(( total - completed ))
+          eta=$(( rate > 0 ? rem / rate : 0 ))
+        else
+          rate=0; eta=0
+        fi
+
+        printf '\r  %s  [' "${_SPIN[$((i % 10))]}"
+        _bar "$completed" "$total" 28
+        printf ']  %s%3d%%%s  %d/%d' "$_BOLD" "$pct" "$_RESET" "$completed" "$total"
+        [ "$ok"   -gt 0 ] && printf '  %s↓ %d%s'  "$_GREEN" "$ok"   "$_RESET"
+        [ "$skip" -gt 0 ] && printf '  %s↷ %d%s'  "$_DIM"   "$skip" "$_RESET"
+        [ "$fail" -gt 0 ] && printf '  %s✗ %d%s'  "$_RED"   "$fail" "$_RESET"
+        printf '  %d/s  ETA %s  ' "$rate" "$(_fmt_time "$eta")"
+
+        i=$((i+1)); sleep 0.1
+      done
+    ) &
+    monitor_pid=$!
+  fi
+
+  local xargs_rc=0
+  printf '%s\n' "$listing" \
+    | xargs -P "$PARALLEL" -n 2 bash -c '_fetch_one "$@"' _ \
+    || xargs_rc=$?
+
+  # ── Summary ───────────────────────────────────────────────────────────────
+
+  [ -n "$monitor_pid" ] && { kill "$monitor_pid" 2>/dev/null; wait "$monitor_pid" 2>/dev/null; }
+
+  local ok skip fail end_t elapsed
+  ok=$(wc -c   < "$progress_dir/ok"   | tr -d ' \t'); ok=${ok:-0}
+  skip=$(wc -c < "$progress_dir/skip" | tr -d ' \t'); skip=${skip:-0}
+  fail=$(wc -c < "$progress_dir/fail" | tr -d ' \t'); fail=${fail:-0}
+  end_t=$(date +%s); elapsed=$(( end_t - start ))
+
+  if $_tty; then
+    printf '\r\033[K%s' "$_SHOW"   # clear progress line, restore cursor
+  fi
+
+  if [ -s "$progress_dir/errors" ]; then
+    printf '\n%sErrors:%s\n' "$_RED" "$_RESET" >&2
+    sort -u "$progress_dir/errors" | while IFS= read -r line; do
+      printf '  %s\n' "$line" >&2
+    done
+  fi
+
+  printf '\n'
+  [ "$ok"   -gt 0 ] && printf '  %s↓%s  %d downloaded\n'        "$_GREEN" "$_RESET" "$ok"
+  [ "$skip" -gt 0 ] && printf '  %s↷%s  %d already up to date\n' "$_DIM"   "$_RESET" "$skip"
+  [ "$fail" -gt 0 ] && printf '  %s✗%s  %d failed\n'             "$_RED"   "$_RESET" "$fail"
+  printf '  %s⏱%s  %s\n\n' "$_DIM" "$_RESET" "$(_fmt_time "$elapsed")"
+
+  rm -rf "$progress_dir"
+
+  [ "$fail" -eq 0 ] && [ "$xargs_rc" -eq 0 ]
 }
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -155,39 +284,40 @@ command -v curl >/dev/null 2>&1 || die "curl not found."
 
 ALL_LANGS=(es fr ita ko zh)
 
-# Build a regex that excludes all language dirs except the one given.
-# e.g. _other_langs_pattern fr -> "img/arkham/(es|ita|ko|zh)/"
 _other_langs_pattern() {
-  local keep="$1"
-  local others=()
+  local keep="$1" lang others=()
   for lang in "${ALL_LANGS[@]}"; do
     [ "$lang" != "$keep" ] && others+=("$lang")
   done
-  local joined
-  printf -v joined '%s|' "${others[@]}"
-  echo "img/arkham/(${joined%|})/"
+  local joined; printf -v joined '%s|' "${others[@]}"
+  printf 'img/arkham/(%s)/' "${joined%|}"
 }
+
+ALL_LANG_PATTERN="img/arkham/($(IFS='|'; printf '%s' "${ALL_LANGS[*]}")/)"
+
+printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
+  "$(case "$1" in
+    cards)             echo 'Fetching English card images' ;;
+    en)                echo 'Fetching all English/static images' ;;
+    en+*)              echo "Fetching English/static + ${1#en+} translations" ;;
+    fr|es|ita|ko|zh)   echo "Fetching $1 translated images only" ;;
+    all)               echo 'Fetching all images' ;;
+  esac)" "$_RESET"
 
 case "$1" in
   cards)
-    echo "=== Fetching English card images ==="
     _sync_prefix "img/arkham/cards/"
     ;;
   en)
-    echo "=== Fetching all English/static images ==="
-    _sync_prefix "img/" -vE "img/arkham/($(IFS='|'; echo "${ALL_LANGS[*]}"))/"
+    _sync_prefix "img/" -vE "$ALL_LANG_PATTERN"
     ;;
   en+fr|en+es|en+ita|en+ko|en+zh)
-    lang="${1#en+}"
-    echo "=== Fetching English/static + $lang translations ==="
-    _sync_prefix "img/" -vE "$(_other_langs_pattern "$lang")"
+    _sync_prefix "img/" -vE "$(_other_langs_pattern "${1#en+}")"
     ;;
   fr|es|ita|ko|zh)
-    echo "=== Fetching $1 translated images only ==="
     _sync_prefix "img/arkham/$1/"
     ;;
   all)
-    echo "=== Fetching all images ==="
     _sync_prefix "img/"
     ;;
   *)

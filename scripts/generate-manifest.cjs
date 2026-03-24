@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 //
 // Generates a manifest of all image asset paths (relative to frontend/public/).
-// This manifest is committed to the repo so that contributors can download
-// images from the CDN without needing AWS credentials.
+// This manifest is committed to the repo so that contributors and Docker Compose
+// users can download images from the CDN without needing AWS credentials.
 //
 // Usage: node scripts/generate-manifest.cjs
 //
@@ -10,26 +10,8 @@ const fs = require('fs');
 const path = require('path');
 
 const publicDir = path.join(__dirname, '../frontend/public');
+const imgDir = path.join(publicDir, 'img');
 const outputFile = path.join(__dirname, '../frontend/image-manifest.json');
-
-// Directories containing image assets that are gitignored
-const assetDirs = [
-  'img/arkham/cards',
-  'img/arkham/boxes',
-  'img/arkham/portraits',
-  'img/arkham/tarot',
-  'img/arkham/encounter-sets',
-  'img/arkham/mini-cards',
-  'img/arkham/sets',
-  'img/arkham/customizations',
-  'img/arkham/seals',
-  'img/arkham/playing-cards',
-  'img/arkham/es',
-  'img/arkham/fr',
-  'img/arkham/ita',
-  'img/arkham/ko',
-  'img/arkham/zh',
-];
 
 function walkDir(dir) {
   const results = [];
@@ -48,21 +30,26 @@ function walkDir(dir) {
   return results;
 }
 
-// Group files by top-level asset directory for structured output
+// Walk all files under img/ and group by their immediate parent directory.
+// This covers both gitignored assets (cards, portraits, …) and git-tracked
+// UI assets (tokens, slots, icons, …) so the full set can be fetched from
+// the CDN without a git clone.
 const manifest = {};
-let totalCount = 0;
 
-for (const dir of assetDirs) {
-  const absDir = path.join(publicDir, dir);
-  const files = walkDir(absDir)
-    .map(f => path.relative(publicDir, f))
-    .sort();
-
-  if (files.length > 0) {
-    manifest[dir] = files;
-    totalCount += files.length;
-  }
+for (const absPath of walkDir(imgDir)) {
+  const relPath = path.relative(publicDir, absPath);
+  const dirKey = path.relative(publicDir, path.dirname(absPath));
+  if (!manifest[dirKey]) manifest[dirKey] = [];
+  manifest[dirKey].push(relPath);
 }
 
-fs.writeFileSync(outputFile, JSON.stringify(manifest, null, 2) + '\n');
-console.log(`Wrote ${totalCount} files across ${Object.keys(manifest).length} directories to ${outputFile}`);
+// Stable sort: keys alphabetically, files within each key alphabetically
+const sortedManifest = {};
+let totalCount = 0;
+for (const key of Object.keys(manifest).sort()) {
+  sortedManifest[key] = manifest[key].sort();
+  totalCount += sortedManifest[key].length;
+}
+
+fs.writeFileSync(outputFile, JSON.stringify(sortedManifest, null, 2) + '\n');
+console.log(`Wrote ${totalCount} files across ${Object.keys(sortedManifest).length} directories to ${outputFile}`);

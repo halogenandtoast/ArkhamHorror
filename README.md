@@ -61,6 +61,17 @@ docker compose up
 
 And launch http://localhost:3000
 
+By default the app loads images from the CDN. To serve images locally instead,
+first fetch them (only needs to be done once):
+
+```
+docker compose --profile fetch-images run --rm fetch-images
+```
+
+Then set `ASSET_HOST` to empty in `docker-compose.yml` (it is already empty by
+default) and restart with `docker compose up`. Images are stored in
+`frontend/public/img/` and mounted into the container automatically.
+
 If you pull updates in the future make sure to run
 
 ```
@@ -103,8 +114,9 @@ Image assets (~2.9 GB) are **not stored in the git repository**. They are hosted
 on CloudFront and the app loads them from the CDN by default in both development
 and production — no extra setup needed.
 
-If you need local copies (e.g. for offline development), the fetch script
-downloads directly from the public CDN using `curl` (no AWS credentials needed):
+If you need local copies (e.g. for offline development), use the fetch script.
+It syncs directly from the public S3 bucket using the AWS CLI (no credentials
+required):
 
 ```
 make fetch-images     # Download all images (~2.9 GB)
@@ -112,7 +124,19 @@ make fetch-cards      # Download only English card images (~755 MB)
 
 # Or use the script directly for specific languages:
 ./scripts/fetch-assets.sh fr    # French only
-./scripts/fetch-assets.sh en    # All English images
+./scripts/fetch-assets.sh en    # All English/static images
+```
+
+If you only have Docker (no local AWS CLI), use the Docker-based targets instead:
+
+```
+make fetch-images-docker    # Download all images via Docker (~2.9 GB)
+make fetch-cards-docker     # Download only English card images via Docker
+
+# Or run directly:
+docker compose --profile fetch-images run --rm fetch-images          # all
+docker compose --profile fetch-images run --rm fetch-images cards    # English only
+docker compose --profile fetch-images run --rm fetch-images fr       # French only
 ```
 
 To use local images instead of CDN, create `frontend/.env.development.local`:

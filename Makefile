@@ -36,15 +36,25 @@ sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"
 .PHONY: sync-images
 
-## Fetch images from CDN for local development
+## Fetch all images from S3 (requires aws CLI)
 fetch-images:
 	./scripts/fetch-assets.sh all
 .PHONY: fetch-images
 
-## Fetch only English card images from CDN
+## Fetch only English card images from S3 (requires aws CLI)
 fetch-cards:
 	./scripts/fetch-assets.sh cards
 .PHONY: fetch-cards
+
+## Fetch all images via Docker (no local aws CLI required)
+fetch-images-docker:
+	docker compose --profile fetch-images run --rm fetch-images all
+.PHONY: fetch-images-docker
+
+## Fetch only English card images via Docker
+fetch-cards-docker:
+	docker compose --profile fetch-images run --rm fetch-images cards
+.PHONY: fetch-cards-docker
 
 ## Regenerate image manifest (run after adding new images, before committing)
 generate-manifest:

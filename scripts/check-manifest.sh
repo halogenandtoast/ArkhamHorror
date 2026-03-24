@@ -24,33 +24,12 @@ fi
 MANIFEST="$ROOT_DIR/frontend/image-manifest.json"
 GENERATE_SCRIPT="$ROOT_DIR/scripts/generate-manifest.cjs"
 
-# Only check if there are staged changes touching image directories
-IMAGE_DIRS=(
-  "frontend/public/img/arkham/cards"
-  "frontend/public/img/arkham/boxes"
-  "frontend/public/img/arkham/portraits"
-  "frontend/public/img/arkham/tarot"
-  "frontend/public/img/arkham/encounter-sets"
-  "frontend/public/img/arkham/mini-cards"
-  "frontend/public/img/arkham/sets"
-  "frontend/public/img/arkham/customizations"
-  "frontend/public/img/arkham/seals"
-  "frontend/public/img/arkham/playing-cards"
-  "frontend/public/img/arkham/es"
-  "frontend/public/img/arkham/fr"
-  "frontend/public/img/arkham/ita"
-  "frontend/public/img/arkham/ko"
-  "frontend/public/img/arkham/zh"
-)
-
-# Check if any staged files are under the image asset directories
+# Check if any staged files are under the image directory (catches all
+# subdirectories automatically, including newly added ones)
 has_image_changes=false
-for dir in "${IMAGE_DIRS[@]}"; do
-  if git diff --cached --name-only -- "$dir" 2>/dev/null | grep -q .; then
-    has_image_changes=true
-    break
-  fi
-done
+if git diff --cached --name-only -- "frontend/public/img/" 2>/dev/null | grep -q .; then
+  has_image_changes=true
+fi
 
 # If no image files are staged, nothing to check
 if [ "$has_image_changes" = false ]; then

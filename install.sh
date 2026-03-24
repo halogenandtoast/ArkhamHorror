@@ -68,25 +68,33 @@ fi
 
 # ── Optionally fetch images ───────────────────────────────────────────────────
 
-fetch_images=false
+fetch_target=""
 
 if is_interactive; then
   echo ""
-  echo "Game images are ~2.9 GB and fetched from S3 via Docker."
-  printf "Download images now? (y/N) "
-  read -r answer </dev/tty
-  case "$answer" in
-    [Yy]*) fetch_images=true ;;
-  esac
+  echo "Images are served from the CDN by default — local download is optional."
+  echo ""
+  echo "  en       English only (~1.3 GB)  ← recommended"
+  echo "  en+fr    English + French"
+  echo "  en+es    English + Spanish"
+  echo "  en+ita   English + Italian"
+  echo "  en+ko    English + Korean"
+  echo "  en+zh    English + Chinese"
+  echo "  all      Everything (~2.9 GB)"
+  echo ""
+  printf "Download images now? Enter a target above, or press Enter to skip: "
+  read -r fetch_target </dev/tty
 else
-  warn "Non-interactive mode detected (curl | bash). Skipping image download."
-  warn "Run the following after installation to fetch images:"
+  warn "Non-interactive mode (curl | bash): skipping image download."
+  warn "To fetch English images after install:"
   warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images"
+  warn "To fetch English + a language (e.g. French):"
+  warn "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images en+fr"
 fi
 
-if [ "$fetch_images" = true ]; then
-  info "Fetching images (this may take a while)..."
-  docker compose --profile fetch-images run --rm fetch-images
+if [ -n "$fetch_target" ]; then
+  info "Fetching images: $fetch_target (this may take a while)..."
+  docker compose --profile fetch-images run --rm fetch-images "$fetch_target"
 fi
 
 # ── Start the app ─────────────────────────────────────────────────────────────
@@ -102,8 +110,11 @@ echo ""
 echo "To stop:  cd $INSTALL_DIR && docker compose down"
 echo "To update: cd $INSTALL_DIR && docker compose pull && docker compose up -d"
 echo ""
-if [ "$fetch_images" = false ]; then
-  echo "To fetch images later:"
+if [ -z "$fetch_target" ]; then
+  echo "To fetch images later (English only, ~1.3 GB):"
   echo "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images"
+  echo ""
+  echo "To include a language (e.g. French):"
+  echo "  cd $INSTALL_DIR && docker compose --profile fetch-images run --rm fetch-images en+fr"
   echo ""
 fi

@@ -50,7 +50,7 @@ services:
       - ./frontend/public/img:/workspace/frontend/public/img
       - ./scripts/fetch-assets.sh:/workspace/scripts/fetch-assets.sh:ro
     entrypoint: ["/bin/bash", "/workspace/scripts/fetch-assets.sh"]
-    command: all
+    command: en
 volumes:
  pgdata:
 # Docker secret for Postgres password

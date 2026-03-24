@@ -46,7 +46,7 @@ fetch-cards:
 	./scripts/fetch-assets.sh cards
 .PHONY: fetch-cards
 
-## Fetch all images via Docker (no local aws CLI required)
+## Fetch English images via Docker (no local aws CLI required)
 fetch-images-docker:
 	docker compose --profile fetch-images run --rm fetch-images
 .PHONY: fetch-images-docker

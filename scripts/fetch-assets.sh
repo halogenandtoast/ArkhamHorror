@@ -35,12 +35,11 @@ PUBLIC_DIR="$ROOT_DIR/frontend/public"
 
 _tty=false; [ -t 1 ] && _tty=true
 
-_tc() { tput "$@" 2>/dev/null || true; }
-
+# Hardcoded ANSI codes — no tput/TERM dependency, works in Docker and CI alike
 if $_tty; then
-  _RED=$(_tc setaf 1); _GREEN=$(_tc setaf 2); _CYAN=$(_tc setaf 6)
-  _BOLD=$(_tc bold);   _DIM=$(_tc dim);       _RESET=$(_tc sgr0)
-  _HIDE=$(_tc civis);  _SHOW=$(_tc cnorm)
+  _RED=$'\033[31m'; _GREEN=$'\033[32m'; _CYAN=$'\033[36m'
+  _BOLD=$'\033[1m'; _DIM=$'\033[2m';   _RESET=$'\033[0m'
+  _HIDE=$'\033[?25l'; _SHOW=$'\033[?25h'
 else
   _RED='' _GREEN='' _CYAN='' _BOLD='' _DIM='' _RESET='' _HIDE='' _SHOW=''
 fi

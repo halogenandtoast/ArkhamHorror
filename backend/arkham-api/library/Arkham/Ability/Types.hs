@@ -291,4 +291,7 @@ instance Eq DifferentAbility where
       InvestigatorSource _ -> case b.source of
         InvestigatorSource _ -> True
         _ -> False
+      ConcealedCardSource _ -> case b.source of
+        ConcealedCardSource _ -> True
+        _ -> False
       _ -> error $ "Unhandled samesource in DifferentAbility: " <> show (a.source, b.source)

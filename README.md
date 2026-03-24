@@ -49,35 +49,45 @@ please file a bug.
 
 ## I just want to try this out on my computer
 
-First, install [Docker][docker].
-
-Next, create a strong password (https://www.random.org/passwords/) and put it in a text file at `./config/postgres_password.txt`
-
-Finally, you can run:
+Install [Docker][docker], then run:
 
 ```
-docker compose up
+curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash
 ```
 
-And launch http://localhost:3000
+This creates an `arkham-horror/` directory, downloads the required files, generates
+a database password, and starts the app. Open http://localhost:3000 when it's done.
 
-By default the app loads images from the CDN. To serve images locally instead,
-first fetch them (only needs to be done once):
+The script will ask if you want to download game images (~2.9 GB). If you skip
+this step, the app loads images from the CDN automatically — no extra setup needed.
+
+### Manual setup (alternative)
+
+If you prefer not to use the install script, you'll need four files:
+
+```
+mkdir -p arkham-horror/config arkham-horror/frontend/public/img
+cd arkham-horror
+curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/docker-compose.yml -o docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/setup.sql -o setup.sql
+# Generate a strong password
+openssl rand -base64 32 > config/postgres_password.txt
+docker compose up -d
+```
+
+To fetch images locally (optional, ~2.9 GB):
 
 ```
 docker compose --profile fetch-images run --rm fetch-images
 ```
 
-Then set `ASSET_HOST` to empty in `docker-compose.yml` (it is already empty by
-default) and restart with `docker compose up`. Images are stored in
-`frontend/public/img/` and mounted into the container automatically.
+Images are stored in `frontend/public/img/` and mounted into the container.
 
-If you pull updates in the future make sure to run
+### Updating
 
 ```
-docker compose down
-docker compose build
-docker compose up
+docker compose pull
+docker compose up -d
 ```
 
 ## Local dev

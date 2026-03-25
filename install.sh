@@ -101,6 +101,9 @@ fi
 
 # ── Start the app ─────────────────────────────────────────────────────────────
 
+info "Pulling latest images..."
+docker compose pull
+
 info "Starting Arkham Horror LCG..."
 docker compose up -d
 

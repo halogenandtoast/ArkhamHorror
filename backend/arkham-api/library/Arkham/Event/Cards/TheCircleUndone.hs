@@ -72,7 +72,12 @@ interrogate =
   (event "05020" "Interrogate" 2 Guardian)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = setFromList [Tactic, Insight]
-    , cdCriteria = Just $ exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You
+    , cdCriteria =
+        Just
+          $ Criteria.TabooCriteria
+            TabooList21
+            (exists $ NonEliteEnemy <> EnemyAt YourLocation <> CanParleyEnemy You)
+            (exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
     , cdActions = [#parley]
     }
 

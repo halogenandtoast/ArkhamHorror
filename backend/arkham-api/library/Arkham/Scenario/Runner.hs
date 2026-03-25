@@ -138,6 +138,7 @@ filterOutCards cs a =
     & (setAsideCardsL %~ filterOut)
     & (victoryDisplayL %~ filterOut)
     & (encounterDeckL %~ withDeck filterOut)
+    & (discardL %~ filterOut)
     & (encounterDecksL . each . _2 %~ filterOut)
     & (encounterDecksL . each . _1 %~ withDeck filterOut)
     & (decksL . each %~ filterOut)

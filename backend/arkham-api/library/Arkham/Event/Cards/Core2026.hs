@@ -87,7 +87,7 @@ gatherIntel =
 throughTheCracks :: CardDef
 throughTheCracks =
   (event "12037" "Through the Cracks" 3 Seeker)
-    { cdSkills = [#intellect, #agility]
+    { cdSkills = [#agility]
     , cdCardTraits = setFromList [Insight, Trick]
     , cdActions = [#evade]
     }

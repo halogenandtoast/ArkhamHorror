@@ -352,15 +352,16 @@ getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
     Just (StaticCost n) -> pure $ Just n
     Just DynamicCost -> pure $ Just 0
     Just (MaxDynamicCost _) -> pure $ Just 0
+    Just DeferredCost -> pure $ Just 0
     Just (AnyMatchingCardCost ecMatcher) -> do
       cards <- select ecMatcher
       pure $ case minsBy getCost cards of
         [] -> Nothing
         (x : _) -> Just $ getCost x
     Just DiscardAmountCost -> fieldMap Field.InvestigatorDiscard (Just . count ((== toCardCode c) . toCardCode)) iid
-    Nothing -> pure $ Just 0
-  -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
-  applyModifier n _ | isNothing (cdCost pcDef) = pure n
+    Nothing -> pure Nothing
+  -- A card like The Painted World which has a deferred cost, but can be "played", should not have it's cost modified
+  applyModifier n _ | cdCost pcDef == Just DeferredCost = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then n - m else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do

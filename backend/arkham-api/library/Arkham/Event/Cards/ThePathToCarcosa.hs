@@ -17,7 +17,7 @@ thePaintedWorld =
             $ PlayerHasPlayableCard (UnpaidCost NeedsAction)
             $ CardIsBeneathInvestigator You
             <> basic (NonExceptional <> #event)
-      , cdCost = Nothing
+      , cdCost = Just DeferredCost
       }
 
 buryThemDeep :: CardDef
@@ -440,7 +440,7 @@ eideticMemory3 =
           $ InDiscardOf Anyone
           <> basic (CardWithTrait Insight <> #event)
     , cdLevel = Just 3
-    , cdCost = Nothing
+    , cdCost = Just DeferredCost
     }
 
 noStoneUnturned5 :: CardDef

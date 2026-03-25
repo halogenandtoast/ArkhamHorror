@@ -13,6 +13,7 @@ toPrintedCost DynamicCost = 0
 toPrintedCost (MaxDynamicCost _) = 0
 toPrintedCost DiscardAmountCost = 0
 toPrintedCost AnyMatchingCardCost{} = 0
+toPrintedCost DeferredCost = 0
 
 data CardCost
   = StaticCost Int
@@ -20,6 +21,7 @@ data CardCost
   | DiscardAmountCost
   | MaxDynamicCost GameCalculation
   | AnyMatchingCardCost ExtendedCardMatcher
+  | DeferredCost
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CardCost)

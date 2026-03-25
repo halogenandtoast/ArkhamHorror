@@ -66,6 +66,7 @@ instance HasCost PlayerCard where
     Just (MaxDynamicCost _) -> 0
     Just DiscardAmountCost -> 0
     Just (AnyMatchingCardCost{}) -> 0
+    Just DeferredCost -> 0
     Nothing -> 0
 
 instance HasField "skills" PlayerCard [SkillIcon] where

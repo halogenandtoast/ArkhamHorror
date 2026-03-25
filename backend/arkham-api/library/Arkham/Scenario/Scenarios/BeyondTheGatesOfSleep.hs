@@ -128,7 +128,7 @@ dreamEffect iid = \case
     search iid GameSource iid [fromDeck] (basic $ oneOf $ withTrait <$> [Tactic, Supply])
       $ defer (LabeledTarget "Veteran" ScenarioTarget) IsNotDraw
   WayfarerDream ->
-    search iid GameSource iid [fromDeck] (basic $ oneOf $ withTrait <$> [Wayfarer, Relic])
+    search iid GameSource iid [fromDeck] (basic $ oneOf (withTrait <$> [Wayfarer, Relic]))
       $ PlayFound iid 1
   NeutralDream1 -> gainResourcesIfCan iid ScenarioSource 2
   NeutralDream2 -> setupModifier ScenarioSource iid $ StartingHand 1

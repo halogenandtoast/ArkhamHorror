@@ -6,6 +6,7 @@ type CardCost
   | { tag: "DynamicCost" }
   | { tag: "DiscardAmountCost" }
   | { tag: "AnyMatchingCardCost" }
+  | { tag: "DeferredCost" }
 
 type SkillIcon
   = { contents: string, tag: "SkillIcon" }
@@ -31,7 +32,8 @@ const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ tag: JsonDecoder.literal("DynamicCost") }, 'DynamicCost'),
   JsonDecoder.object({ tag: JsonDecoder.literal("MaxDynamicCost") }, 'MaxDynamicCost').map(() => ({ tag: "DynamicCost"})),
   JsonDecoder.object({ tag: JsonDecoder.literal("DiscardAmountCost") }, 'DiscardAmountCost'),
-  JsonDecoder.object({ tag: JsonDecoder.literal("AnyMatchingCardCost") }, 'AnyMatchingCardCost')
+  JsonDecoder.object({ tag: JsonDecoder.literal("AnyMatchingCardCost") }, 'AnyMatchingCardCost'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("DeferredCost") }, 'DeferredCost')
 ], 'CardCost')
 
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([

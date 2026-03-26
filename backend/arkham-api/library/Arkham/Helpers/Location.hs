@@ -139,6 +139,11 @@ onSameLocation a b = do
     (Just l1, Just l2) -> l1 == l2
     _ -> False
 
+isDiscoveringLastClue :: (HasGame m, Tracing m) => LocationId -> Int -> m Bool
+isDiscoveringLastClue lid n = do
+  clues <- field LocationClues lid
+  pure $ clues - n <= 0 && clues /= 0
+
 locationMatches
   :: (HasGame m, Tracing m, HasCallStack)
   => InvestigatorId

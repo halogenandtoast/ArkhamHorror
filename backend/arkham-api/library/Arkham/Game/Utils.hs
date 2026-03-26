@@ -13,7 +13,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query (select, (<=~>))
 import Arkham.Cost qualified as Cost
 import Arkham.Effect.Types (Effect)
-import Arkham.Enemy.Types (Enemy)
+import Arkham.Enemy.Types (Enemy, Field (EnemyRemainingHealth))
 import Arkham.Entities
 import Arkham.Event.Types (Event)
 import Arkham.Game.Base
@@ -39,6 +39,7 @@ import Arkham.Tracing
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
 import Control.Lens (each)
+import Data.List.Extra (nubOrd)
 import Data.Text qualified as T
 
 newtype MissingEntity = MissingEntity Text
@@ -280,6 +281,12 @@ getCostForCard iid card isPlayAction = do
           Just (AnyMatchingCardCost ecMatcher) -> do
             cards <- select ecMatcher
             pure $ Cost.OrCost $ map (Cost.ResourceCost . getCost) cards
+          Just (MatchingEnemyFieldCost enemyMatcher enemyCostField) -> do
+            enemies <- select enemyMatcher
+            let enemyField = case enemyCostField of
+                  EnemyRemainingHealthField -> EnemyRemainingHealth
+            values <- mapMaybeM (field enemyField) enemies
+            pure $ Cost.OrCost $ map Cost.ResourceCost $ nubOrd values
           _ ->
             pure
               $ if resources == 0

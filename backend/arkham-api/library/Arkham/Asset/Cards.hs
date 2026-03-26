@@ -1,5 +1,6 @@
 module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
+import Arkham.Asset.Cards.AndrePatel as X
 import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
 import Arkham.Asset.Cards.NightOfTheZealot as X
@@ -54,6 +55,15 @@ allPlayerAssetCards =
       , ancientStoneMindsInHarmony4
       , ancientStoneTransientThoughts4
       , andrePatelMadeForTheSpotlight
+      , centerStage
+      , extravagantRing
+      , fame
+      , marcusSengstacke
+      , marcusSengstacke2
+      , polishedCane
+      , silverTongue3
+      , theGrapevine
+      , theGrapevine2
       , annaKaslow4
       , anotherDayAnotherDollar3
       , antikytheraPropheticTimepiece5

@@ -241,6 +241,7 @@ lockpicks =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tool, Illicit]
     , cdSlots = [#hand]
+    , cdAlternateCardCodes = ["60361"]
     }
 
 mauserC96 :: CardDef

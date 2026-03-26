@@ -352,6 +352,11 @@ allSkills = mapFromList $
       SomeSkillCard knowTheExit
     , SomeSkillCard knowTheLine
     , SomeSkillCard knowTheScene
+    , --- rogue [and]
+      SomeSkillCard easyStreet
+    , SomeSkillCard outTheDoor
+    , SomeSkillCard outTheDoor1
+    , SomeSkillCard contingency3
     , -- The Deep Gate
       --- signature [tdg]
       SomeSkillCard nauticalProwess

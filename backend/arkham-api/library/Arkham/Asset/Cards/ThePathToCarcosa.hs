@@ -103,7 +103,7 @@ lockpicks1 =
     , cdUses = uses Supply 3
     , cdLevel = Just 1
     , cdSlots = [#hand]
-    , cdAlternateCardCodes = ["01687"]
+    , cdAlternateCardCodes = ["01687", "60372"]
     }
 
 alchemicalTransmutation :: CardDef

@@ -73,6 +73,8 @@
   { "name": "Jacqueline Fine", "min": 60401, "max": 60432, "playerCards": 32, "code": "jac", "cycle": 60 },
   { "name": "Stella Clark", "min": 60501, "max": 60531, "playerCards": 31, "code": "ste", "cycle": 60 },
 
+  { "name": "André Patel", "min": 60351, "max": 60384, "playerCards": 34, "code": "and", "cycle": 61 },
+
   { "name": "Curse of the Rougarou", "min": 81001, "max": 81036, "playerCards": 0, "code": "cotr", "cycle": 70 },
   { "name": "Carnevale of Horrors", "min": 82001, "max": 82037, "playerCards": 0, "code": "coh", "cycle": 70 },
   { "name": "The Labyrinths of Lunacy", "min": 70001, "max": 70061, "playerCards": 0, "code": "lol", "cycle": 70 },

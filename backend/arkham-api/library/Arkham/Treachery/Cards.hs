@@ -172,6 +172,7 @@ allPlayerTreacheryCards =
       , thriceDamnedCuriosity
       , throughTheGates
       , toFightTheBlackWind
+      , unaware
       , unspeakableOathBloodthirst
       , unspeakableOathCowardice
       , unspeakableOathCuriosity
@@ -4208,6 +4209,12 @@ liberOmniumFinium =
   (weakness "98021" "Liber Omnium Finium")
     { cdCardTraits = setFromList [Endtimes]
     , cdKeywords = setFromList [Keyword.Replacement]
+    }
+
+unaware :: CardDef
+unaware =
+  (basicWeakness "60356" "Unaware")
+    { cdCardTraits = singleton Flaw
     }
 
 confusion :: CardDef

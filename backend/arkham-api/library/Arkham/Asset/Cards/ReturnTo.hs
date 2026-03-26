@@ -316,6 +316,7 @@ wellConnected3 =
     , cdSkills = [#intellect, #agility]
     , cdLimits = [LimitPerInvestigator 1]
     , cdLevel = Just 3
+    , cdAlternateCardCodes = ["60381"]
     }
 
 theHierophantV3 :: CardDef

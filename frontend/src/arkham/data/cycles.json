@@ -13,6 +13,7 @@
   { "name": "Core 2026", "cycle": 12, "code": "core2026" },
   { "name": "Return to...", "cycle": 50, "code": "return" },
   { "name": "Investigator Starter Decks", "cycle": 60, "code": "investigator" },
+  { "name": "Investigator Starter Decks (Chapter 2)", "cycle": 61, "code": "investigator2" },
   { "name": "Side Stories", "cycle": 70, "code": "side_stories" },
   { "name": "Promotional", "cycle": 80, "code": "promotional" },
   { "name": "Parallel", "cycle": 90, "code": "parallel" }

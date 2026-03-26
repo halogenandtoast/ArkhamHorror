@@ -831,6 +831,10 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       Just eid -> andM [isParley, elem eid <$> select enemyMatcher]
       _ -> pure False
   Matcher.WhileParleying -> isParley
+  Matcher.WhileTargetingEnemy enemyMatcher ->
+    case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
   Matcher.SkillTestWithSkill sk -> selectAny sk
   Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
     SkillSkillTest sType' -> sType' == sType

@@ -32,6 +32,7 @@ instance HasModifiersFor AgnesBakerParallel where
         Just DeferredCost -> pure 0
         Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== card.cardCode) . toCardCode)) a.id
         Just (AnyMatchingCardCost {}) -> pure 0
+        Just (MatchingEnemyFieldCost {}) -> pure 0
         Nothing -> pure 0
       pure
         [ AdditionalCost

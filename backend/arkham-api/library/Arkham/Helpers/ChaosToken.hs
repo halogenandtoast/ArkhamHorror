@@ -26,6 +26,8 @@ cancelChaosToken token = withQueue_ $ mapMaybe \case
   When (RevealChaosToken _ _ token') | token == token' -> Nothing
   RevealChaosToken _ _ token' | token == token' -> Nothing
   After (RevealChaosToken _ _ token') | token == token' -> Nothing
+  Will (ResolveChaosToken drawnToken _ _) | drawnToken == token -> Nothing
+  ResolveChaosToken drawnToken _ _ | drawnToken == token -> Nothing
   CheckWindows ws -> case filter (not . isRevealChaosToken) ws of
     [] -> Nothing
     ws' -> Just $ CheckWindows ws'

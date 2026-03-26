@@ -171,6 +171,10 @@ allPlayerSkillCards =
       , wellDressed
       , wellFunded
       , whispersFromTheDeep
+      , easyStreet
+      , outTheDoor
+      , outTheDoor1
+      , contingency3
       ]
 
 viciousBlow :: CardDef
@@ -404,6 +408,7 @@ watchThis =
   (skill "03233" "\"Watch this!\"" [#willpower, #combat, #agility] Rogue)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyYourTest]
+    , cdAlternateCardCodes = ["60371"]
     }
 
 torrentOfPower :: CardDef
@@ -1237,4 +1242,31 @@ dreamsOfTheDeepTheDeepGate =
     , cdLevel = Nothing
     , cdCardSubType = Just Weakness
     , cdOutOfPlayEffects = [InHandEffect]
+    }
+
+easyStreet :: CardDef
+easyStreet =
+  (skill "60369" "Easy Street" [#wild] Rogue)
+    { cdCardTraits = singleton Favor
+    , cdCommitRestrictions = [OnlyYourTest, MaxOnePerTest]
+    }
+
+outTheDoor :: CardDef
+outTheDoor =
+  (skill "60370" "Out the Door" [#agility, #wild] Rogue)
+    { cdCardTraits = singleton Gambit
+    }
+
+outTheDoor1 :: CardDef
+outTheDoor1 =
+  (skill "60373" "Out the Door" [#agility, #wild] Rogue)
+    { cdCardTraits = singleton Gambit
+    , cdLevel = Just 1
+    }
+
+contingency3 :: CardDef
+contingency3 =
+  (skill "60383" "Contingency" [#wild, #wild] Rogue)
+    { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = Just 3
     }

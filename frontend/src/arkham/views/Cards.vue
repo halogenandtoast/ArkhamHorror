@@ -315,6 +315,10 @@ const cardCost = (card: Arkham.CardDef) => {
     return -2
   }
 
+  if (card.cost?.tag === "DeferredCost") {
+    return -2
+  }
+
   if (card.cost?.tag === "DiscardAmountCost") {
     return -2
   }

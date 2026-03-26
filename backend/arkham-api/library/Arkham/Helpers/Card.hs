@@ -353,6 +353,15 @@ getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
     Just DynamicCost -> pure $ Just 0
     Just (MaxDynamicCost _) -> pure $ Just 0
     Just DeferredCost -> pure $ Just 0
+    Just (MatchingEnemyFieldCost matcher fld) -> do
+      let
+        fld' =
+          case fld of
+            EnemyRemainingHealthField -> EnemyRemainingHealth
+      vals <- catMaybes <$> selectField fld' matcher
+      pure $ case sort vals of
+        [] -> Nothing
+        (x : _) -> Just x
     Just (AnyMatchingCardCost ecMatcher) -> do
       cards <- select ecMatcher
       pure $ case minsBy getCost cards of

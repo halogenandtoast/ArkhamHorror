@@ -2,6 +2,7 @@ module Arkham.Event.Cards (module Arkham.Event.Cards, module X) where
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Event.Cards.AndrePatel as X
 import Arkham.Event.Cards.Core2026 as X
 import Arkham.Event.Cards.EdgeOfTheEarth as X
 import Arkham.Event.Cards.NightOfTheZealot as X
@@ -30,6 +31,8 @@ allPlayerEventCards =
       , aChanceEncounter2
       , aGlimmerOfHope
       , aGlimmerOfHope2
+      , aSuddenFall
+      , aSuddenFall2
       , aTestOfWill
       , aTestOfWill1
       , aTestOfWill2
@@ -92,6 +95,8 @@ allPlayerEventCards =
       , cheatDeath5
       , cheatTheSystem1
       , cleanSneak4
+      , cleanSweep
+      , cleanSweep2
       , cleanThemOut
       , closeCall2
       , confound3
@@ -332,6 +337,7 @@ allPlayerEventCards =
       , parallelFates2
       , payDay1
       , payYourDue
+      , payYourDues
       , perseverance
       , persuasion
       , pilfer
@@ -352,6 +358,8 @@ allPlayerEventCards =
       , putrescentRot
       , quantumFlux
       , quantumParadox
+      , quickExit
+      , quickExit2
       , quickGetaway
       , quickShot3
       , radiantSmite1
@@ -366,6 +374,8 @@ allPlayerEventCards =
       , riastrad1
       , righteousHunt1
       , rightToolForTheJob
+      , rightUnderTheirNoses
+      , rightUnderTheirNoses3
       , riteOfEquilibrium5
       , sacrifice1
       , salvage2

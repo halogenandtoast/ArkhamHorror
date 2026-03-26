@@ -1507,6 +1507,16 @@ allAssets =
       , SomeAssetCard accursedCapeShroudOfChaos
       , SomeAssetCard andrePatelMadeForTheSpotlight
       , SomeAssetCard rocketShipRattlingWithEnergy
+      , -- André Patel
+        SomeAssetCard centerStage
+      , SomeAssetCard fame
+      , SomeAssetCard theGrapevine
+      , SomeAssetCard extravagantRing
+      , SomeAssetCard marcusSengstacke
+      , SomeAssetCard polishedCane
+      , SomeAssetCard theGrapevine2
+      , SomeAssetCard marcusSengstacke2
+      , SomeAssetCard silverTongue3
       , -- Misc
         SomeAssetCard courage
       ]

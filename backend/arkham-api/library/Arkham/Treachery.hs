@@ -797,7 +797,8 @@ allTreacheries =
         SomeTreacheryCard calledByTheMists
       , SomeTreacheryCard atychiphobia
       , -- André Patel
-        SomeTreacheryCard weightOfTheWorld
+        SomeTreacheryCard unaware
+      , SomeTreacheryCard weightOfTheWorld
       , -- Side Stories
         --- Curse of the Rougarou
         SomeTreacheryCard cursedSwamp

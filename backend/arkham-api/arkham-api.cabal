@@ -750,6 +750,7 @@ library
       Arkham.Asset.Assets.CatBurglar1
       Arkham.Asset.Assets.CatMaskTheCapriciousMeddler
       Arkham.Asset.Assets.CelaenoFragments
+      Arkham.Asset.Assets.CenterStage
       Arkham.Asset.Assets.CeremonialSickle
       Arkham.Asset.Assets.CeremonialSickle4
       Arkham.Asset.Assets.Chainsaw4
@@ -926,6 +927,7 @@ library
       Arkham.Asset.Assets.EvanescentAscensionTheMorningStar
       Arkham.Asset.Assets.ExpeditedTicket
       Arkham.Asset.Assets.ExpeditionJournal
+      Arkham.Asset.Assets.ExtravagantRing
       Arkham.Asset.Assets.EyeOfChaos
       Arkham.Asset.Assets.EyeOfChaos4
       Arkham.Asset.Assets.EyeOfGhatanothoaArtifactOfTheDarkGod2
@@ -935,6 +937,7 @@ library
       Arkham.Asset.Assets.FakeCredentials
       Arkham.Asset.Assets.FakeCredentials4
       Arkham.Asset.Assets.FalseCovenant2
+      Arkham.Asset.Assets.Fame
       Arkham.Asset.Assets.FamiliarSpirit
       Arkham.Asset.Assets.FamilyInheritance
       Arkham.Asset.Assets.Farsight4
@@ -1175,6 +1178,8 @@ library
       Arkham.Asset.Assets.MagnifyingGlass1
       Arkham.Asset.Assets.MaimedHand
       Arkham.Asset.Assets.ManagersKey
+      Arkham.Asset.Assets.MarcusSengstacke
+      Arkham.Asset.Assets.MarcusSengstacke2
       Arkham.Asset.Assets.MariaDeSilva
       Arkham.Asset.Assets.MarinersCompass
       Arkham.Asset.Assets.MarinersCompass2
@@ -1293,6 +1298,7 @@ library
       Arkham.Asset.Assets.PocketMultiTool
       Arkham.Asset.Assets.PocketTelescope
       Arkham.Asset.Assets.PoliceBadge2
+      Arkham.Asset.Assets.PolishedCane
       Arkham.Asset.Assets.PowderOfIbnGhazi
       Arkham.Asset.Assets.PreciousMementoFromAFormerLife4
       Arkham.Asset.Assets.PreciousMementoFromAFutureLife4
@@ -1414,6 +1420,7 @@ library
       Arkham.Asset.Assets.SignOfXelotaphSymbolOfProtection
       Arkham.Asset.Assets.SilassNet
       Arkham.Asset.Assets.SilverTongue
+      Arkham.Asset.Assets.SilverTongue3
       Arkham.Asset.Assets.SimeonAtwoodDedicatedTroublemaker
       Arkham.Asset.Assets.SinEater3
       Arkham.Asset.Assets.SinhasMedicalKit
@@ -1507,6 +1514,8 @@ library
       Arkham.Asset.Assets.TheFool03
       Arkham.Asset.Assets.TheGoldBug
       Arkham.Asset.Assets.TheGoldPocketWatch4
+      Arkham.Asset.Assets.TheGrapevine
+      Arkham.Asset.Assets.TheGrapevine2
       Arkham.Asset.Assets.TheGreatWorkDivideAndUnite
       Arkham.Asset.Assets.TheGrifterPracticed
       Arkham.Asset.Assets.TheGrifterUnpracticed
@@ -1624,6 +1633,7 @@ library
       Arkham.Asset.Assets.ZoeysCross
       Arkham.Asset.Assets.ZoeysCrossAdvanced
       Arkham.Asset.Cards
+      Arkham.Asset.Cards.AndrePatel
       Arkham.Asset.Cards.Base
       Arkham.Asset.Cards.Core2026
       Arkham.Asset.Cards.EdgeOfTheEarth
@@ -2347,6 +2357,7 @@ library
       Arkham.Evade.Types
       Arkham.Event
       Arkham.Event.Cards
+      Arkham.Event.Cards.AndrePatel
       Arkham.Event.Cards.Base
       Arkham.Event.Cards.Core2026
       Arkham.Event.Cards.EdgeOfTheEarth
@@ -2387,6 +2398,8 @@ library
       Arkham.Event.Events.AntediluvianHymn
       Arkham.Event.Events.AstoundingRevelation
       Arkham.Event.Events.AstralTravel
+      Arkham.Event.Events.ASuddenFall
+      Arkham.Event.Events.ASuddenFall2
       Arkham.Event.Events.AtACrossroads1
       Arkham.Event.Events.ATestOfWill
       Arkham.Event.Events.ATestOfWill1
@@ -2433,6 +2446,8 @@ library
       Arkham.Event.Events.CheatDeath5
       Arkham.Event.Events.CheatTheSystem1
       Arkham.Event.Events.CleanSneak4
+      Arkham.Event.Events.CleanSweep
+      Arkham.Event.Events.CleanSweep2
       Arkham.Event.Events.CleanThemOut
       Arkham.Event.Events.CloseCall2
       Arkham.Event.Events.Confound3
@@ -2673,6 +2688,7 @@ library
       Arkham.Event.Events.ParallelFates2
       Arkham.Event.Events.PayDay1
       Arkham.Event.Events.PayYourDue
+      Arkham.Event.Events.PayYourDues
       Arkham.Event.Events.Perseverance
       Arkham.Event.Events.Persuasion
       Arkham.Event.Events.Pilfer
@@ -2693,6 +2709,8 @@ library
       Arkham.Event.Events.PutrescentRot
       Arkham.Event.Events.QuantumFlux
       Arkham.Event.Events.QuantumParadox
+      Arkham.Event.Events.QuickExit
+      Arkham.Event.Events.QuickExit2
       Arkham.Event.Events.QuickGetaway
       Arkham.Event.Events.QuickShot3
       Arkham.Event.Events.RadiantSmite1
@@ -2707,6 +2725,8 @@ library
       Arkham.Event.Events.Riastrad1
       Arkham.Event.Events.RighteousHunt1
       Arkham.Event.Events.RightToolForTheJob
+      Arkham.Event.Events.RightUnderTheirNoses
+      Arkham.Event.Events.RightUnderTheirNoses3
       Arkham.Event.Events.RiteOfEquilibrium5
       Arkham.Event.Events.Sacrifice1
       Arkham.Event.Events.Salvage2
@@ -4348,6 +4368,7 @@ library
       Arkham.Skill.Cards.CalculatedRisk
       Arkham.Skill.Cards.Confidence
       Arkham.Skill.Cards.Contemplative
+      Arkham.Skill.Cards.Contingency3
       Arkham.Skill.Cards.Copycat3
       Arkham.Skill.Cards.CrackShot
       Arkham.Skill.Cards.Cunning
@@ -4369,6 +4390,7 @@ library
       Arkham.Skill.Cards.DreamParasite
       Arkham.Skill.Cards.DreamsOfTheClay1
       Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
+      Arkham.Skill.Cards.EasyStreet
       Arkham.Skill.Cards.Enraptured
       Arkham.Skill.Cards.Enraptured2
       Arkham.Skill.Cards.EsotericMethod1
@@ -4419,6 +4441,8 @@ library
       Arkham.Skill.Cards.Opportunist2
       Arkham.Skill.Cards.OutOfSight
       Arkham.Skill.Cards.OutOfSight3
+      Arkham.Skill.Cards.OutTheDoor
+      Arkham.Skill.Cards.OutTheDoor1
       Arkham.Skill.Cards.Overpower
       Arkham.Skill.Cards.Overpower2
       Arkham.Skill.Cards.Perception
@@ -5188,6 +5212,7 @@ library
       Arkham.Treachery.Cards.UmordhothsHunger
       Arkham.Treachery.Cards.UmordhothsWrath
       Arkham.Treachery.Cards.UnavoidableDemise
+      Arkham.Treachery.Cards.Unaware
       Arkham.Treachery.Cards.Undercover
       Arkham.Treachery.Cards.Undertow
       Arkham.Treachery.Cards.UnexpectedAmbush

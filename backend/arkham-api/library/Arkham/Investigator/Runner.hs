@@ -82,7 +82,7 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, withLocationOf)
+import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, isDiscoveringLastClue, withLocationOf)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
@@ -151,6 +151,7 @@ import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
+import Arkham.Keyword (Keyword (Starting))
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
@@ -689,12 +690,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     for_ startsWithInHandCards \card -> push $ ReplaceCard card.id card
     let additionalHandCards = additionalStartingCards <> startsWithInHandCards
 
+    -- need the virtual hand to get correct length
+    hand' <- field InvestigatorHand iid
+    let moreMulligans = (a ^. mulligansTakenL + 1) < allowedMulligans && startingHandAmount - length hand' > 0
+
+    -- Starting keyword: offer search before mulligan cards are shuffled back in
+    unless moreMulligans do
+      let handIds :: Set CardId = setFromList $ map toCardId (hand <> additionalHandCards)
+      let startingCardsInDeck =
+            filter
+              (\card -> Starting `member` cdKeywords (toCardDef card) && toCardId card `notElem` handIds)
+              deck
+      unless (null startingCardsInDeck) do
+        Lifted.focusCards startingCardsInDeck do
+          Choose.chooseOneM iid do
+            Choose.labeled "Do not add a Starting card to hand" Choose.nothing
+            for_ startingCardsInDeck \card ->
+              Choose.targeting card do
+                Lifted.drawToHand iid [PlayerCard card]
+
     Lifted.shuffleDiscardBackIn iid
     Lifted.checkAfter (Window.DrawingStartingHand iid)
 
-    -- need the virtual hand to get correct length
-    hand' <- field InvestigatorHand iid
-    when ((a ^. mulligansTakenL + 1) < allowedMulligans && startingHandAmount - length hand' > 0) do
+    when moreMulligans do
       push $ InvestigatorMulligan iid
 
     pure
@@ -2193,7 +2211,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     if canDiscoverClues
       then do
         locationClues <- field LocationClues lid
-        let lastClue = locationClues - d.count <= 0 && locationClues /= 0
+        lastClue <- isDiscoveringLastClue lid d.count
         let clueCount = min locationClues d.count
         locationWindowsBefore <-
           checkWindows $ mkWhen (Window.DiscoverClues iid lid d.source clueCount)
@@ -2889,6 +2907,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         , movePayAdditionalCosts = False
         , moveCancelable = False
         }
+    pure a
+  MoveToward target locationMatcher | isTarget a target -> do
+    mods <- getModifiers investigatorId
+    unless (CannotMove `elem` mods) do
+      withLocationOf investigatorId \loc -> do
+        mlid <- selectOne locationMatcher
+        for_ mlid \lid -> when (lid /= loc) do
+          closestLocationIds <- select $ ClosestPathLocation loc lid
+          when (notNull closestLocationIds) do
+            Choose.chooseTargetM investigatorId closestLocationIds $ moveTo GameSource investigatorId
+    pure a
+  MoveUntil lid target | isTarget a target -> do
+    mods <- getModifiers investigatorId
+    unless (CannotMove `elem` mods) do
+      withLocationOf investigatorId \loc ->
+        when (lid /= loc) do
+          closestLocationIds <- select $ ClosestPathLocation loc lid
+          when (notNull closestLocationIds) do
+            Choose.chooseTargetM investigatorId closestLocationIds \nextLid -> do
+              moveTo GameSource investigatorId nextLid
+              push $ MoveUntil lid target
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
     pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId movement.id]

@@ -73,6 +73,7 @@ const cardName = (card: Arkham.CardDef) => {
 const cardCost = (card: Arkham.CardDef) => {
   if (card.cost?.tag === "StaticCost") return card.cost.contents
   if (card.cost?.tag === "DynamicCost") return -2
+  if (card.cost?.tag === "DeferredCost") return -2
   if (card.cost?.tag === "DiscardAmountCost") return -2
 
   return null

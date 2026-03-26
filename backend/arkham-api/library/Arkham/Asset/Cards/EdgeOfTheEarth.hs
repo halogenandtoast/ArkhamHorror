@@ -302,6 +302,7 @@ theBlackFan3 =
     , cdUnique = True
     , cdExceptional = True
     , cdLevel = Just 3
+    , cdAlternateCardCodes = ["60379"]
     }
 
 theRedClockBrokenButReliable5 :: CardDef
@@ -314,6 +315,7 @@ theRedClockBrokenButReliable5 =
     , cdExceptional = True
     , cdLevel = Just 5
     , cdUses = uses Charge 0
+    , cdAlternateCardCodes = ["60384"]
     }
 
 downTheRabbitHole :: CardDef

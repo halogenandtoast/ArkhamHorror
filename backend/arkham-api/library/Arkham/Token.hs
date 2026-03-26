@@ -37,7 +37,9 @@ data Token
   | Offering
   | Pillar
   | Portent
+  | Renown
   | Resource
+  | Rumor
   | ScoutingReport
   | Scrap
   | Seal
@@ -99,6 +101,12 @@ instance IsLabel "antiquity" Token where
 
 instance IsLabel "portent" Token where
   fromLabel = Portent
+
+instance IsLabel "renown" Token where
+  fromLabel = Renown
+
+instance IsLabel "rumor" Token where
+  fromLabel = Rumor
 
 instance IsLabel "warning" Token where
   fromLabel = Warning

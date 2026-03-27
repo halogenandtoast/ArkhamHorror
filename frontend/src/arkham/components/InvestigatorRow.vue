@@ -22,11 +22,10 @@ const props = withDefaults(defineProps<Props>(), {
 const expanded = ref(false)
 
 const storyCards = computed(() => {
-  const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id] 
+  const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id]
   if (fromMeta) {
     return fromMeta.map((c) => ({tag: 'CardContents', ...c} as CardContents))
   }
-
 
   return props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || []
 })
@@ -39,7 +38,6 @@ function getInvestigatorName(cardTitle: string): string {
 const deck = computed(() => {
   const deck = props.game.campaign?.decks[props.investigator.id] || props.game.campaign?.meta?.otherCampaignAttrs?.decks[props.investigator.id]
 
-    // || props.game.scenario?.decks[props.investigator.id]
   if (!deck) return null
   const slots = deck.reduce((acc, { cardCode }) => {
       acc[cardCode] = (acc[cardCode] ?? 0) + 1;
@@ -60,177 +58,236 @@ const deck = computed(() => {
 </script>
 
 <template>
-  <div class="investigator" :class="{[investigator.class.toLowerCase()]: true}">
+  <div class="investigator" :class="investigator.class.toLowerCase()">
     <div class="basic">
-      <div :class="`investigator-portrait-container ${investigator.class.toLowerCase()}`">
-        <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+      <div class="basic-top">
+        <div class="portrait-wrap" :class="investigator.class.toLowerCase()">
+          <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+        </div>
+        <span class="name">{{ getInvestigatorName(investigator.name.title) }}</span>
+        <slot name="back" :investigator="props.investigator">
+          <button class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? 'Collapse' : 'Expand'">
+            <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
+          </button>
+        </slot>
       </div>
-      <div class="name">{{getInvestigatorName(investigator.name.title)}}</div>
-      <section class="details">
-        <svg v-tooltip="'Physical Trauma'" v-for="n in investigator.physicalTrauma" :key="n" class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
-        <svg v-tooltip="'Mental Trauma'" v-for="n in investigator.mentalTrauma" :key="n" class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>
-      </section>
-      <slot name="back" :investigator="props.investigator">
-        <section class="expand" @click="expanded = !expanded">
-          <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
-        </section>
-      </slot>
+      <div class="basic-bottom">
+        <div class="stat-chip stat-xp">
+          <span class="stat-label">XP</span>
+          <span class="stat-value">{{ investigator.xp }}<span v-if="bonusXp" class="bonus-xp"> +{{ bonusXp }}</span></span>
+        </div>
+        <div class="stat-chip stat-health">
+          <svg class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
+          <span class="stat-label">Physical</span>
+          <span class="stat-value">{{ investigator.physicalTrauma }}</span>
+        </div>
+        <div class="stat-chip stat-sanity">
+          <svg class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>
+          <span class="stat-label">Mental</span>
+          <span class="stat-value">{{ investigator.mentalTrauma }}</span>
+        </div>
+      </div>
     </div>
+
     <div v-if="expanded" class="expanded-details">
-      <div><strong>Total XP:</strong> {{investigator.xp}}<span v-if="bonusXp" class="bonus-xp"> ({{bonusXp}} unspendable)</span></div>
-      <div><strong>Physical Trauma:</strong> {{investigator.physicalTrauma}}</div>
-      <div><strong>Mental Trauma:</strong> {{investigator.mentalTrauma}}</div>
       <section v-if="storyCards.length > 0" class="inner-section">
         <h2>Earned Cards</h2>
-        <section class='earned-cards'>
+        <div class="earned-cards">
           <div v-for="card in storyCards">
             <Card :game="game" :card="card" :playerId="investigator.id" />
           </div>
-        </section>
+        </div>
       </section>
-      <DeckList v-if="deck" :deck="deck" />
+
+      <div v-if="deck" class="deck-section">
+        <DeckList :deck="deck" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* ── Container ───────────────────────────────────────────── */
+
 .investigator {
   width: 80%;
-  border-radius: 15px;
-  &.guardian {
-    background: var(--guardian-extra-dark);
-  }
-
-  &.seeker {
-    background: var(--seeker-extra-dark);
-  }
-
-  &.rogue {
-    background: var(--rogue-extra-dark);
-  }
-
-  &.mystic {
-    background: var(--mystic-extra-dark);
-  }
-
-  &.survivor {
-    background: var(--survivor-extra-dark);
-  }
-
-  &.neutral {
-    background: var(--neutral-extra-dark);
-  }
-}
-.basic {
-  font-size: 1em;
-  align-items: center;
-  min-width: 200px;
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  flex: 1;
-  color: white;
-  padding: 10px;
-
-  .name {
-    font-size: 1.5em;
-    font-family: serif;
-  }
-  .portrait {
-    width: 25%;
-    max-width: 150px;
-    border-radius: 10px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
-  }
-
-}
-.investigator-portrait-container {
-  width: 50px;
-  height:50px;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 5px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
-  &.survivor {
-    border: 3px solid var(--survivor);
-  }
+  &.guardian { background: var(--guardian-extra-dark); }
+  &.seeker   { background: var(--seeker-extra-dark); }
+  &.rogue    { background: var(--rogue-extra-dark); }
+  &.mystic   { background: var(--mystic-extra-dark); }
+  &.survivor { background: var(--survivor-extra-dark); }
+  &.neutral  { background: var(--neutral-extra-dark); }
+}
 
-  &.guardian {
-    border: 3px solid var(--guardian);
-  }
+/* ── Basic row ───────────────────────────────────────────── */
 
-  &.mystic {
-    border: 3px solid var(--mystic);
-  }
+.basic {
+  display: flex;
+  flex-direction: column;
+  color: #f0f0f0;
+}
 
-  &.seeker {
-    border: 3px solid var(--seeker);
-  }
+.basic-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+}
 
-  &.rogue {
-    border: 3px solid var(--rogue);
-  }
+.basic-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
 
-  &.neutral {
-    border: 3px solid var(--neutral);
-  }
+/* ── Portrait ────────────────────────────────────────────── */
+
+.portrait-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  border: 2px solid transparent;
+
+  &.guardian { border-color: var(--guardian); }
+  &.seeker   { border-color: var(--seeker); }
+  &.rogue    { border-color: var(--rogue); }
+  &.mystic   { border-color: var(--mystic); }
+  &.survivor { border-color: var(--survivor); }
+  &.neutral  { border-color: var(--neutral); }
 }
 
 .investigator-portrait {
   width: 150px;
+  display: block;
 }
 
-.details {
+/* ── Name ────────────────────────────────────────────────── */
+
+.name {
   flex: 1;
-  text-align: right;
+
+  font-family: teutonic, sans-serif;
+  font-size: 1.4em;
+  color: #f0f0f0;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ── Expand button ───────────────────────────────────────── */
+
+.expand-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+
+  &:hover { color: #fff; background: rgba(255,255,255,0.08); }
 }
 
 .icon {
   display: inline-block;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.2em;
+  height: 1.2em;
   stroke-width: 0;
   stroke: currentColor;
   fill: currentColor;
 }
 
-.expand {
-  cursor: pointer;
+.expand-btn .icon {
+  width: 1.8em;
+  height: 1.8em;
 }
 
-svg {
+.icon-expand {
   transform: rotate(0deg);
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
+  &.expanded { transform: rotate(90deg); }
 }
 
-svg.expanded {
-  transform: rotate(90deg);
-}
+/* ── Expanded details ────────────────────────────────────── */
 
 .expanded-details {
-  padding: 10px;
-  color: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid rgba(255,255,255,0.08);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  strong {
-    text-transform: uppercase;
-  }
-
-  h2 {
-    font-family: "Teutonic", sans-serif;
-    font-size: 1.8em;
-  }
+  gap: 0;
+  padding: 12px 0;
 }
 
-.inner-section {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 10px;
+/* ── Stat chips ──────────────────────────────────────────── */
 
-  :deep(.card) {
-    width: 10vw;
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  .icon { width: 1em; height: 1em; }
+}
+
+.stat-label {
+  font-size: 0.72em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.45);
+}
+
+.stat-value {
+  font-size: 0.9em;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+
+.stat-xp .stat-value { color: #a8d080; }
+.stat-health .icon   { color: #f88; }
+.stat-sanity .icon   { color: #8af; }
+
+.bonus-xp {
+  font-size: 0.8em;
+  color: rgba(168, 208, 128, 0.6);
+}
+
+/* ── Earned cards ────────────────────────────────────────── */
+
+.inner-section {
+  margin: 0 14px 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 14px;
+  border-radius: 8px;
+
+  h2 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.2em;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 10px;
   }
+
+  :deep(.card) { width: 10vw; }
 }
 
 .earned-cards {
@@ -240,7 +297,30 @@ svg.expanded {
   gap: 10px;
 }
 
-.bonus-xp {
-  font-size: 0.8em;
+/* ── Deck section ────────────────────────────────────────── */
+
+.deck-section {
+  border-top: 1px solid rgba(255,255,255,0.06);
+
+  :deep(.deck) {
+    background: rgba(0,0,0,0.25);
+    box-shadow: none;
+
+    &.is-pinned {
+      background: rgba(0,0,0,0.75) !important;
+    }
+  }
+
+  :deep(.card-table thead th) {
+    background: rgba(0,0,0,0.65);
+    color: rgba(255,255,255,0.8);
+    border-bottom-color: rgba(255,255,255,0.08);
+  }
+
+  :deep(.card-table tbody tr) {
+    border-bottom-color: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.75);
+    &:hover { background: rgba(0,0,0,0.15); }
+  }
 }
 </style>

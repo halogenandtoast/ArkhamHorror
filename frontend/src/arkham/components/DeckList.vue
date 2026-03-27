@@ -3,7 +3,6 @@ import { watch, ref, computed, onMounted } from 'vue';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type { Deck} from '@/arkham/types/Deck';
-import * as DeckHelpers from '@/arkham/types/Deck';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
@@ -40,15 +39,15 @@ const allCards = computed(() => {
     if (key === "c01000") {
       return Array(value).fill({ cardCode: key, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null })
     }
-    
+
     const result: Arkham.CardDef | undefined = cards.value.find((c) => `c${c.art}` === key)
     const language = localStorage.getItem('language') || 'en'
     if (language === 'en') return Array(value).fill(result)
-    
+
     if (!result) return
     const match: ArkhamDBCard | null = store.getDbCard(result.art)
     if (!match) return Array(value).fill(result)
-    
+
     result.name.title = match.name
     if (match.subname) result.name.subtitle = match.subname
     if (match.faction_name && result.classSymbols.length > 0) result.classSymbols[0] = match.faction_name
@@ -56,10 +55,10 @@ const allCards = computed(() => {
       result.classSymbols[1] = match.faction2_name
       if (match.faction3_name && result.classSymbols.length > 2) result.classSymbols[2] = match.faction3_name
     }
-    
+
     result.cardType = match.type_name
     if (match.traits) result.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
-    
+
     return Array(value).fill(result)
   })
 })
@@ -129,27 +128,22 @@ const cardSetText = (card: Arkham.CardDef) => {
   const setNumber = parseInt(card.art.slice(2,))
   const language = localStorage.getItem('language') || 'en'
   var setName = ''
-  
+
   if (language !== 'en') {
     const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (match) setName = match.pack_name
   }
-  
+
   if (!setName) {
     const set = cardSet(card)
     if (set !== null && set !== undefined) setName = set.name
   }
-  
+
   if (setName) return `${setName} ${setNumber % 500}`
   else return "Unknown"
 }
 
 const deckUrlToPage = (url: string): string => {
-  // converts https://arkhamdb.com/api/public/decklist/25027
-  // to https://arkhamdb.com/decklist/view/25027
-  // OR
-  // converts https://arkhamdb.com/api/public/deck/25027
-  // to https://arkhamdb.com/deck/view/25027
   return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
@@ -169,10 +163,6 @@ const deckInvestigator = computed(() => {
   return null
 })
 
-const deckClass = computed(() => {
-  if (props.deck) return DeckHelpers.deckClass(props.deck)
-  return {}
-})
 
 
 watch(deckRef, (el) => {
@@ -191,24 +181,21 @@ watch(deckRef, (el) => {
 <template>
   <div class="container">
     <div class="results">
-      <header class="deck" v-show="deck" ref="deckRef" :class="deckClass">
+      <header class="deck" v-show="deck" ref="deckRef">
         <template v-if="deck">
-          <div class="deck--details">
-            <h1 class="deck-title">{{deck.name}}</h1>
-            <div class="deck--actions">
-              <div class="deck--view-options">
-                <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
-                  <font-awesome-icon icon="list" />
-                </button>
-                <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }">
-                  <font-awesome-icon icon="image" />
-                </button>
-              </div>
-              <div class="deck--non-view-options">
-                <div class="open-deck">
-                  <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
-                </div>
-              </div>
+          <div class="deck--actions">
+            <div class="deck--view-options">
+              <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
+                <font-awesome-icon icon="list" />
+              </button>
+              <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }">
+                <font-awesome-icon icon="image" />
+              </button>
+            </div>
+            <div class="deck-actions">
+              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB">
+                <font-awesome-icon icon="external-link" />
+              </a>
             </div>
           </div>
         </template>
@@ -216,7 +203,7 @@ watch(deckRef, (el) => {
       <div class="cards" v-if="view == View.Image">
         <img class="card" v-for="(card, idx) in allCards" :key="idx" :src="image(card)" />
       </div>
-      <table class="box" v-if="view == View.List">
+      <table class="card-table" v-if="view == View.List">
         <thead>
           <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
         </thead>
@@ -239,8 +226,127 @@ watch(deckRef, (el) => {
 </template>
 
 <style scoped>
-.container { display: flex; }
-.results { flex: 1; display: flex; flex-direction: column; gap: 10px;}
+/* ── Layout ─────────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  height: calc(100vh - 40px);
+  max-width: unset;
+  margin: 0;
+  overflow: hidden;
+}
+
+.results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Deck header ─────────────────────────────────────────── */
+
+.deck {
+  display: flex;
+  padding: 12px 20px;
+  color: #f0f0f0;
+  background: #1a1a1a;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  position: sticky;
+  position: -webkit-sticky;
+  top: -1px;
+  flex-shrink: 0;
+}
+
+.deck--actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.deck--view-options {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 2px;
+  width: fit-content;
+
+  button {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 9px;
+    color: #777;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover { color: #ccc; }
+    &.pressed { background: rgba(255,255,255,0.12); color: #eee; }
+  }
+}
+
+.deck-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.action-btn {
+  color: #8a93a8;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover { color: #fff; }
+}
+
+/* ── Card table ──────────────────────────────────────────── */
+
+.card-table {
+  display: block;
+  overflow-y: auto;
+  flex: 1;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+      background: var(--box-background);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+
+      &:first-child { padding-left: 20px; }
+    }
+  }
+
+  tbody tr {
+    color: #cecece;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.1s;
+
+    &:hover { background: rgba(255,255,255,0.04); }
+
+    td {
+      padding: 6px 10px;
+      &:first-child { padding-left: 20px; }
+    }
+  }
+}
+
+/* ── Image view ──────────────────────────────────────────── */
 
 .card {
   width: calc(100% - 20px);
@@ -256,248 +362,13 @@ watch(deckRef, (el) => {
   padding: 10px;
 }
 
-table.box {
-  padding: 0;
-  border-radius: 10px;
-  border-spacing: 0;
-  background-color: rgba(255,255,255,0.05);
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
+/* ── Skill icons ─────────────────────────────────────────── */
 
-th {
-  text-align: left;
-}
+i { font-style: normal; }
 
-tr td:nth-child(1){
-  padding-left: 20px;
-}
-
-tr th:nth-child(1){
-  padding-left: 20px;
-}
-
-tbody td {
-  padding: 5px;
-}
-
-thead tr th {
-  color: #aaa;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 5px 5px;
-
-  &:nth-child(1) {
-    border-top-left-radius: 10px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 10px;
-  }
-}
-
-tr {
-  color: #cecece;
-}
-
-tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.willpower {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--willpower);
-}
-
-.intellect {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--intellect);
-}
-
-.combat {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--combat);
-}
-
-.agility {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--agility);
-}
-
-.wild {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--wild);
-}
-
-a {
-  font-weight: bold;
-  color: var(--spooky-green);
-  text-decoration: none;
-  &:hover {
-    color: var(--spooky-green)-light;
-  }
-}
-
-.cycles {
-  color: #999;
-  overflow-y: auto;
-}
-
-button {
-  border: 0;
-}
-
-i {
-  font-style: normal;
-}
-
-.pressed {
-  background-color: #333;
-  color: white;
-}
-
-/* deck header */
-
-.open-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.sync-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.deck-delete {
-  justify-self: flex-end;
-  align-self: flex-start;
-  a {
-    color: var(--title);
-    &:hover {
-      color: #990000;
-    }
-  }
-}
-
-.portrait--decklist {
-  width: 200px;
-  margin-right: 10px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
-
-.deck-title {
-  font-weight: 800;
-  font-size: 2em;
-  margin: 0;
-  padding: 0;
-  flex: 1;
-}
-
-.deck {
-  background-color: #15192C;
-  color: #f0f0f0;
-  padding: 20px;
-
-  &.guardian {
-    background-color: var(--guardian-dark);
-    background: linear-gradient(30deg, var(--guardian-extra-dark), var(--guardian-dark));
-  }
-
-  &.seeker {
-    background: linear-gradient(30deg, var(--seeker-extra-dark), var(--seeker-dark));
-  }
-
-  &.rogue {
-    background: linear-gradient(30deg, var(--rogue-extra-dark), var(--rogue-dark));
-  }
-
-  &.mystic {
-    background: linear-gradient(30deg, var(--mystic-extra-dark), var(--mystic-dark));
-  }
-
-  &.survivor {
-    background: linear-gradient(30deg, var(--survivor-extra-dark), var(--survivor-dark));
-  }
-
-  &.neutral {
-    background-color: var(--neutral-dark);
-    background-image: linear-gradient(30deg, var(--neutral-extra-dark), var(--neutral-dark));
-  }
-
-  /*&.survivor::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    background: #0000000d;
-    mask-position: left top;
-    mask-size: cover;
-    -webkit-mask-image: url(/img/arkham/masks/survivor.svg);
-    mask-image: url(/img/arkham/masks/survivor.svg);
-    z-index: -1;
-  }*/
-  a {
-    color: var(--title);
-    font-weight: bolder;
-    &:hover {
-      color: rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  display: flex;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  border-radius: 10px;
-  &.is-pinned {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    opacity: 0.98;
-  }
-  background-color: rgba(0,0,0,0.3);
-
-  color: white;
-
-  input {
-    margin-right: 10px;
-  }
-
-  button {
-    padding: 5px;
-  }
-
-  position: sticky;
-  position: -webkit-sticky;
-  top: -1px;
-
-  &.is-pinned {
-    background-color: rgba(28, 28, 41, 1) !important;
-  }
-}
-
-.deck--details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.deck--actions {
-  display: flex;
-}
-
-.deck--view-options {
-  display: flex;
-  flex: 1;
-}
-
-.deck--non-view-options {
-  display: flex;
-  align-self: flex-end;
-}
+.willpower { font-size: 1.3em; margin: 0 1px; color: var(--willpower); }
+.intellect { font-size: 1.3em; margin: 0 1px; color: var(--intellect); }
+.combat    { font-size: 1.3em; margin: 0 1px; color: var(--combat); }
+.agility   { font-size: 1.3em; margin: 0 1px; color: var(--agility); }
+.wild      { font-size: 1.3em; margin: 0 1px; color: var(--wild); }
 </style>

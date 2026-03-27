@@ -17,28 +17,6 @@ enum View {
 
 const CHAPTER_2_CYCLES = new Set([12, 61])
 
-// Maps set codes to ArkhamEncounters font codepoints (alphabetical order of original encounter-set PNGs).
-// Sets not listed here fall back to PNG images.
-
-// const SET_FONT_CHARS: Record<string, string> = {
-//   lif:       '\uE900', apot:      '\uEA4F', tsh:       '\uE902', bbt:       '\uE92A',
-//   blbe:      '\uE933', blob:      '\uE935', bota:      '\uEA70', bsr:       '\uEA51',
-//   coh:       '\uE943', core:      '\uEA9F', rcode:     '\uEA9F', cotr:      '\uE95C',
-//   dca:       '\uE973', def:       '\uE972', dsm:       '\uE961', dwl:       '\u0049',
-//   eoec:      '\uEA05', eoep:      '\uEA04', eotp:      '\uEA4D', faf:       '\uE999',
-//   fgg:       '\uE995', fhvc:      '\uE98E', fhvp:      '\uE98F', guardians: '\uE9A0',
-//   har:       '\uE9A3', hhg:       '\uE9AF', hote:      '\uE9A9', hotel:     '\uE9E2',
-//   icc:       '\uE9B3', itd:       '\uE9B5', itm:       '\uE9BA', jac:       '\uE9BC',
-//   litas:     '\uEA73', lod:       '\uE9C3', lol:       '\uE9C9', mtt:       '\uE9E1',
-//   nat:       '\uE9EB', pnr:       '\uE9FE', ptc:       '\u0047',
-//   rtdwl:     '\uEA27', rtnotz:    '\uEA4B', rtptc:     '\uEA32', rttcu:     '\uEA4D',
-//   rttfa:     '\uEA29', sfk:       '\uEAA0', sha:       '\uEA5E', ste:       '\uEA70',
-//   tbb:       '\uEA83', tcoa:      '\uE946', tcu:       '\uEA84', tde:       '\uE92F',
-//   tdoy:      '\uEA86', tece:      '\uEA6F', tfa:       '\uEA95', tmg:       '\uEA9D',
-//   tmm:       '\uEA6E', tof:       '\uEAAE', tpm:       '\uEA50', tsn:       '\uEAA2',
-//   tuo:       '\uEA4E', wos:       '\uEAAB', uau:       '\uEA71', wda:       '\uEA72',
-// }
-
 const SET_FONT_CHARS: Record<string, string> = {
   // CHAPTER 1
   // Cycle 1 — Core

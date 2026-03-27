@@ -11,6 +11,8 @@ import {
 } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
+import { useDebug } from '@/arkham/debug'
+import { fetchPlayability, type PlayabilityResponse } from '@/arkham/api'
 import KeyToken from '@/arkham/components/Key.vue'
 import { type ArkhamKey, keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -43,10 +45,32 @@ type Pct = { top: number; left: number }
  * ========================================================================== */
 
 const store = useDbCardStore()
+const debug = useDebug()
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 const isMobile = ref(false)
+
+const playabilityData = ref<PlayabilityResponse | null>(null)
+let playabilityTimer: number | null = null
+
+watch(hoveredElement, (el) => {
+  playabilityData.value = null
+  if (playabilityTimer !== null) { clearTimeout(playabilityTimer); playabilityTimer = null }
+  if (!debug.active || !el) return
+  const gameId = el.dataset.playabilityGameId
+  const investigatorId = el.dataset.playabilityInvestigatorId
+  const cardId = el.dataset.playabilityCardId
+  if (!gameId || !investigatorId || !cardId) return
+  const code = cardCode.value
+  if (code && store.getDbCard(code)?.type_code === 'skill') return
+  playabilityTimer = window.setTimeout(async () => {
+    try {
+      const result = await fetchPlayability(gameId, investigatorId, cardId)
+      if (hoveredElement.value === el) playabilityData.value = result
+    } catch { /* ignore */ }
+  }, 300)
+})
 
 onMounted(() => {
   const mq = window.matchMedia('(hover: none) and (pointer: coarse)')
@@ -970,6 +994,22 @@ watchEffect(() => {
       <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
     </div>
+
+    <div v-if="playabilityData && debug.active" class="playability-panel">
+      <ul class="playability-checks">
+        <li
+          v-for="[name, detail] in playabilityData.checks"
+          :key="name"
+          :class="detail === null ? 'check-passed' : 'check-failed'"
+        >
+          <span class="check-icon">{{ detail === null ? '✓' : '✗' }}</span>
+          <span class="check-body">
+            <span class="check-name">{{ name }}</span>
+            <span v-if="detail !== null" class="check-detail">{{ detail }}</span>
+          </span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -1137,4 +1177,38 @@ watchEffect(() => {
   justify-content: center;
   width: fit-content;
 }
+
+.playability-panel {
+  position: relative;
+  width: 240px;
+  margin-left: 2px;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: rgba(20, 20, 30, 0.9);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
+  align-self: flex-start;
+}
+
+.playability-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  font-size: 0.75em;
+}
+
+.playability-checks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.check-passed { color: #4caf50; }
+.check-failed { color: #f44336; }
+
+.check-icon { flex-shrink: 0; font-weight: bold; }
+.check-body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.check-name { word-break: break-word; }
+.check-detail { font-style: italic; color: #ffb74d; word-break: break-word; }
 </style>

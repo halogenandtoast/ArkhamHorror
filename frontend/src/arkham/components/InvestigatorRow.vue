@@ -322,5 +322,9 @@ const deck = computed(() => {
     color: rgba(255,255,255,0.75);
     &:hover { background: rgba(0,0,0,0.15); }
   }
+
+  :deep(.cards) {
+    grid-template-columns: repeat(auto-fill, minmax(min(200px, calc(33.333% - 8px)), 1fr));
+  }
 }
 </style>

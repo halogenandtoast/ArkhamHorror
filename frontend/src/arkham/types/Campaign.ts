@@ -5,6 +5,7 @@ import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { XpBreakdown, xpBreakdownDecoder} from '@/arkham/types/Xp';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
 import { CardContents, Card, cardDecoder, cardContentsDecoder} from '@/arkham/types/Card';
+import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 
 export type CampaignDetails = {
   id: string;
@@ -23,6 +24,7 @@ export type Campaign = {
   xpBreakdown: XpBreakdown;
   storyCards: { [key: string]: Card[] };
   decks: { [key: string]: CardContents[]  };
+  chaosBag: TokenFace[];
 }
 
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
@@ -42,4 +44,5 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   xpBreakdown: xpBreakdownDecoder,
   storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
   decks: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]'),
+  chaosBag: JsonDecoder.array(tokenFaceDecoder, 'TokenFace[]'),
 }, 'Campaign');

@@ -18,6 +18,7 @@ import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
+import CampaignLogChaosBag from '@/arkham/components/CampaignLogChaosBag.vue'
 import { useI18n } from 'vue-i18n'
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -272,6 +273,7 @@ const recordedCounts = computed(() =>
 )
 
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
+const chaosBag = computed(() => props.game.campaign?.chaosBag ?? [])
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
 // --- Investigator log sections --------------------------------------------------
@@ -545,6 +547,11 @@ const mapData = computed(() => {
               </Supplies>
             </div>
           </div>
+
+          <CampaignLogChaosBag
+            v-if="chaosBag.length > 0"
+            :chaosBag="chaosBag"
+          />
 
           <CampaignLogSection
             v-if="recorded.length > 0"

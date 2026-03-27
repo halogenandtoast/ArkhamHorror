@@ -24,6 +24,7 @@ export interface ArkhamDBCard {
   type_code: string
   is_unique: boolean
   double_sided: boolean
+  encounter_code?: string
 }
 
 export interface DbCardsState {

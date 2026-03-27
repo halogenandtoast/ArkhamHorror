@@ -146,6 +146,11 @@ button {
 }
 
 @font-face {
+  font-family: "ArkhamEncounters";
+  src: url("/fonts/encounters.woff2") format("woff2");
+}
+
+@font-face {
   font-family: "ArkhamSlim";
   src: url("/fonts/arkhamslim.ttf");
 }

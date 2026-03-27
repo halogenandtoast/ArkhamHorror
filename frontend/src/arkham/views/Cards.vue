@@ -15,6 +15,85 @@ enum View {
   List = "LIST",
 }
 
+const CHAPTER_2_CYCLES = new Set([12, 61])
+
+// Maps set codes to ArkhamEncounters font codepoints (alphabetical order of original encounter-set PNGs).
+// Sets not listed here fall back to PNG images.
+
+// const SET_FONT_CHARS: Record<string, string> = {
+//   lif:       '\uE900', apot:      '\uEA4F', tsh:       '\uE902', bbt:       '\uE92A',
+//   blbe:      '\uE933', blob:      '\uE935', bota:      '\uEA70', bsr:       '\uEA51',
+//   coh:       '\uE943', core:      '\uEA9F', rcode:     '\uEA9F', cotr:      '\uE95C',
+//   dca:       '\uE973', def:       '\uE972', dsm:       '\uE961', dwl:       '\u0049',
+//   eoec:      '\uEA05', eoep:      '\uEA04', eotp:      '\uEA4D', faf:       '\uE999',
+//   fgg:       '\uE995', fhvc:      '\uE98E', fhvp:      '\uE98F', guardians: '\uE9A0',
+//   har:       '\uE9A3', hhg:       '\uE9AF', hote:      '\uE9A9', hotel:     '\uE9E2',
+//   icc:       '\uE9B3', itd:       '\uE9B5', itm:       '\uE9BA', jac:       '\uE9BC',
+//   litas:     '\uEA73', lod:       '\uE9C3', lol:       '\uE9C9', mtt:       '\uE9E1',
+//   nat:       '\uE9EB', pnr:       '\uE9FE', ptc:       '\u0047',
+//   rtdwl:     '\uEA27', rtnotz:    '\uEA4B', rtptc:     '\uEA32', rttcu:     '\uEA4D',
+//   rttfa:     '\uEA29', sfk:       '\uEAA0', sha:       '\uEA5E', ste:       '\uEA70',
+//   tbb:       '\uEA83', tcoa:      '\uE946', tcu:       '\uEA84', tde:       '\uE92F',
+//   tdoy:      '\uEA86', tece:      '\uEA6F', tfa:       '\uEA95', tmg:       '\uEA9D',
+//   tmm:       '\uEA6E', tof:       '\uEAAE', tpm:       '\uEA50', tsn:       '\uEAA2',
+//   tuo:       '\uEA4E', wos:       '\uEAAB', uau:       '\uEA71', wda:       '\uEA72',
+// }
+
+const SET_FONT_CHARS: Record<string, string> = {
+  // CHAPTER 1
+  // Cycle 1 — Core
+  core:      '\uEA9F', rcode:     '\uEA9F',
+  // Cycle 2 — The Dunwich Legacy
+  dwl:       '\u0049', tmm:       '\uEA6E', tece:      '\uEA6F',
+  bota:      '\uEA70', uau:       '\uEA71', wda:       '\uEA72', litas:     '\uEA73',
+  // Cycle 3 — The Path to Carcosa
+  ptc:       '\u0047', eotp:      '\uEA4D', tuo:       '\uEA4E',
+  apot:      '\uEA4F', tpm:       '\uEA50', bsr:       '\uEA51', dca:       '\uEA54',
+  // Cycle 4 — The Forgotten Age
+  tfa:       '\u0045', tof:       '\uE9FA', tbb:       '\uE9FB',
+  hote:      '\uE9FE', tcoa:      '\uE9FF', tdoy:      '\uEA00', sha:       '\uEA01',
+  // Cycle 5 — The Circle Undone
+  tcu:       '\u0043', tsn:       '\uE9D6', wos:       '\uE9D7',
+  fgg:       '\uE9D8', uad:       '\uE9D9', icc:       '\uE9DA', bbt:       '\uE9DB',
+  // Cycle 6 — The Dream-Eaters
+  tde:       '\u0042', sfk:       '\uE9A4', tsh:       '\uE9A5',
+  dsm:       '\uE9A6', pnr:       '\uE9A7', wgd:       '\uE9A8', woc:       '\uE9A9',
+  // Cycle 7 — The Innsmouth Conspiracy
+  tic:       '\u0041', itd:       '\uE99D', def:       '\uE99E',
+  hhg:       '\uE99F', lif:       '\uE9A0', lod:       '\uE9A1', itm:       '\uE9A2',
+  // Cycle 8 — The Edge of the Earth
+  eoep:      '\uE977', eoec:      '\uE978',
+  // Cycle 9 — The Scarlet Keys
+  tskp:      '\uE937', tskc:      '\uE938',
+  // Cycle 10 — The Feast of Hemloch Vale
+  fhvp:      '\uE9B9', fhvc:      '\uE9BA',
+  // Cycle 11 — The Drowned City
+  tdcp:      '\uE936', tdcc:      '\uE92E',
+  // Cycle 12 — Core 2026
+  core2026:  '\uE900',
+  // Cycle 50 — Return to...
+  rtnotz:    '\u0058', rtdwl:     '\u0053', rtptc:     '\u0048',
+  rttfa:     '\u0046', rttcu:     '\u0044',
+  // Cycle 60 — Investigator Starter Decks
+  nat:       '\u004B', har:       '\u004D', win:       '\u004F',
+  jac:       '\u004E', ste:       '\u0050',
+  // Cycle 61 — Investigator Starter Decks (Chapter 2)
+  and:       '\uE91B',
+  // Cycle 70 — Side Stories
+  cotr:      '\u0051', coh:       '\uEA24', lol:       '\u0053',
+  guardians: '\u0054', hotel:     '\u0055', blob:      '\u0056',
+  wog:       '\uEA3B', mtt:       '\uEA47', faf:       '\uEA42',
+  blbe:      '\uEA4A', tmg:       '\uEA1F', ff:        '\uEA8B',
+  // Cycle 80 — Promotional
+  hoth:      '\uEA20', tdor:      '\uEA20', iotv:      '\uEA20', tftbw:     '\uEA20',
+  tdg:       '\uEA20', bob:       '\uEA20', dre:       '\uEA20', promo:     '\uEA20',
+  // Cycle 90 — Parallel
+  rod:       '\uEA36', aon:       '\uEA37', bad:       '\uEA38', btb:       '\uEA39',
+  rtr:       '\uEA3A', otr:       '\uEA1E', ltr:       '\uEA48', ptr:       '\uEA1E',
+  rop:       '\uEA49', hfa:       '\uEA1E', aof:       '\uEA1E', pap:       '\uEA1E',
+  ee:        '\uEA8E',
+}
+
 const toView = (view: string | LocationQueryValue[]): View => {
   if (view === "IMAGE") return View.Image
   return View.List
@@ -31,17 +110,44 @@ const queryText = route.query.q ? route.query.q.toString() : "e:core"
 const allCards = shallowRef<Arkham.CardDef[] | null>(null)
 const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
+const activeChapter = ref<number>(route.query.chapter ? parseInt(route.query.chapter.toString()) : 1)
 
 const includeEncounter = computed(() => route.query.includeEncounter === "true")
 const store = useDbCardStore()
 
+const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
+const CACHE_VERSION = 'v1'
+
+const getCachedCards = (withEncounter: boolean): Arkham.CardDef[] | null => {
+  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
+  try {
+    const cached = sessionStorage.getItem(key)
+    if (cached) return JSON.parse(cached)
+  } catch { /* ignore */ }
+  return null
+}
+
+const setCachedCards = (cards: Arkham.CardDef[], withEncounter: boolean) => {
+  const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
+  try {
+    sessionStorage.setItem(key, JSON.stringify(cards))
+  } catch { /* ignore quota errors */ }
+}
+
 const fetchData = async () => {
+  const cached = getCachedCards(includeEncounter.value)
+  if (cached) {
+    allCards.value = cached
+    return
+  }
   fetchCards(includeEncounter.value).then(async (response) => {
-    allCards.value = response.sort((a, b) => {
+    const sorted = response.sort((a, b) => {
       if (a.art < b.art) return -1
       if (a.art > b.art) return 1
       return 0
     })
+    setCachedCards(sorted, includeEncounter.value)
+    allCards.value = sorted
   })
 }
 
@@ -85,33 +191,41 @@ watch(() => view.value, (newView) => {
   router.push({ name: 'Cards', query: { ...route.query, view: fromView(newView) }})
 })
 
+watch(() => activeChapter.value, (newChapter) => {
+  router.push({ name: 'Cards', query: { ...route.query, chapter: newChapter === 1 ? undefined : String(newChapter) }})
+})
+
 watch(() => allCards.value, () => {
   const language = localStorage.getItem('language') || 'en'
   if (language === 'en') return
   if (!allCards.value) return
-  
+
   for (const card of allCards.value) {
     const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (!match) continue
-    
+
     // Name
     card.name.title = match.name
     if (match.subname) card.name.subtitle = match.subname
-    
+
     // Class
     if (match.faction_name && card.classSymbols.length > 0) card.classSymbols[0] = match.faction_name
     if (match.faction2_name && card.classSymbols.length > 1) {
       card.classSymbols[1] = match.faction2_name
       if (match.faction3_name && card.classSymbols.length > 2) card.classSymbols[2] = match.faction3_name
     }
-    
+
     // Type
     card.cardType = match.type_name
-    
+
     // Traits
     if (match.traits) card.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
   }
 })
+
+const chapter1Cycles = computed(() => cycles.filter((c) => !CHAPTER_2_CYCLES.has(c.cycle)))
+const chapter2Cycles = computed(() => cycles.filter((c) => CHAPTER_2_CYCLES.has(c.cycle)))
+const displayedCycles = computed(() => activeChapter.value === 2 ? chapter2Cycles.value : chapter1Cycles.value)
 
 const cycleCount = (cycle: CardCycle) => {
   if (!allCards.value) return 0
@@ -180,7 +294,7 @@ const cards = computed(() => {
     if (encounterSets.length > 0) {
       const match: ArkhamDBCard | null = store.getDbCard(c.art)
       if (!match) return false
-      return encounterSets.includes(match.encounter_code)
+      return match.encounter_code !== undefined && encounterSets.includes(match.encounter_code)
     }
 
     if (text.length > 0) {
@@ -377,23 +491,36 @@ const cardSetText = (card: Arkham.CardDef) => {
   const setNumber = parseInt(card.art.slice(2,))
   const language = localStorage.getItem('language') || 'en'
   var setName = ''
-  
+
   if (language !== 'en') {
     const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (match) setName = match.pack_name
   }
-  
+
   if (!setName) {
     const set = cardSet(card)
     if (set !== null && set !== undefined) setName = set.name
   }
-  
+
   if (setName) return `${setName} ${setNumber % 500}`
   else return "Unknown"
 }
 
 const cycleSets = (cycle: CardCycle) => {
   return sets.filter((s) => s.cycle == cycle.cycle)
+}
+
+const CYCLE_ICON_OVERRIDES: Record<number, string> = {
+  50: 'core',  // Return to...
+  60: 'core',  // Investigator Starter Decks
+  61: 'core',  // Investigator Starter Decks (Chapter 2)
+  70: 'core',  // Side Stories
+  90: 'otr',   // Parallel — On the Road Again
+}
+
+const cycleIconCode = (cycle: CardCycle): string => {
+  if (CYCLE_ICON_OVERRIDES[cycle.cycle]) return CYCLE_ICON_OVERRIDES[cycle.cycle]
+  return cycleSets(cycle)[0]?.code ?? ''
 }
 
 const setCycle = (cycle: CardCycle) => {
@@ -414,41 +541,71 @@ const toggleIncludeEncounter = () => {
 
 <template>
   <div class="container">
-    <div class="cycles">
-      <ol>
-        <li v-for="cycle in cycles" :key="cycle.code">
-          <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>{{cycleCountText(cycle)}}
-          <ol>
-            <li v-for="set in cycleSets(cycle)" :key="set.code">
-              <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>{{setCountText(set)}}
-            </li>
-          </ol>
-        </li>
-      </ol>
+    <div class="sidebar">
+      <div class="chapter-tabs">
+        <button
+          :class="['chapter-tab', { active: activeChapter === 1 }]"
+          @click="activeChapter = 1"
+        >Chapter 1</button>
+        <button
+          :class="['chapter-tab', { active: activeChapter === 2 }]"
+          @click="activeChapter = 2"
+        >Chapter 2</button>
+      </div>
+      <nav class="cycles">
+        <ol>
+          <li v-for="cycle in displayedCycles" :key="cycle.code">
+            <div class="nav-row">
+              <i v-if="SET_FONT_CHARS[cycleIconCode(cycle)]" class="set-icon-font">{{ SET_FONT_CHARS[cycleIconCode(cycle)] }}</i>
+              <img v-else-if="cycleIconCode(cycle)" class="set-icon" :src="`/img/arkham/encounter-sets/${cycleIconCode(cycle)}.png`" :alt="cycle.name" />
+              <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
+              <span class="count">{{cycleCountText(cycle)}}</span>
+            </div>
+            <ol>
+              <li v-for="set in cycleSets(cycle)" :key="set.code">
+                <div class="nav-row nav-row--sub">
+                  <i v-if="SET_FONT_CHARS[set.code]" class="set-icon-font">{{ SET_FONT_CHARS[set.code] }}</i>
+                  <img v-else class="set-icon" :src="`/img/arkham/encounter-sets/${set.code}.png`" :alt="set.name" />
+                  <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
+                  <span class="count">{{setCountText(set)}}</span>
+                </div>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </nav>
     </div>
     <div class="results">
       <header>
         <form @submit.prevent="setFilter">
-          <input v-model="query" />
+          <input v-model="query" placeholder="Search cards..." />
           <button type="submit"><font-awesome-icon icon="search" /></button>
         </form>
-        <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }"><font-awesome-icon icon="list" /></button>
-        <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
-        <div>
-          <label for="include-encounter">
-            <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
-            Include Encounter
-          </label>
+        <div class="view-controls">
+          <button @click.prevent="view = View.List" :class="{ active: view == View.List }" title="List view"><font-awesome-icon icon="list" /></button>
+          <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" title="Image view"><font-awesome-icon icon="image" /></button>
         </div>
+        <label class="encounter-toggle">
+          <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
+          <span>Include Encounter</span>
+        </label>
       </header>
       <div class="cards" v-if="view == View.Image">
         <a v-for="card in cards" :key="card.art" target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
           <CardImage :card="card" />
         </a>
       </div>
-      <table class="box" v-if="view == View.List">
+      <table class="card-table" v-if="view == View.List">
         <thead>
-          <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
+          <tr>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Cost</th>
+            <th>Type</th>
+            <th>Icons</th>
+            <th>Traits</th>
+            <th>Set</th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="card in cards" :key="card.art">
@@ -471,196 +628,312 @@ const toggleIncludeEncounter = () => {
 <style scoped>
 .container {
   display: flex;
-  height: calc(100% - 40px);
+  height: calc(100vh - 40px);
   max-width: unset;
   margin: 0;
+  overflow: hidden;
 }
 
-.results {
+/* ── Sidebar ────────────────────────────────────────────── */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: clamp(200px, 18vw, 320px);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.chapter-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.chapter-tab {
   flex: 1;
-  overflow-y: auto;
-}
-.card {
-  margin: 10px;
-  border-radius: 10px;
-}
+  padding: 10px 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #888;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
 
-.cards {
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
-  padding: 10px;
-
-  &:deep(.card-container) {
-    width: unset;
-    max-width: 300px;
-  }
-}
-
-.willpower {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--willpower);
-}
-
-.intellect {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--intellect);
-}
-
-.combat {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--combat);
-}
-
-.agility {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--agility);
-}
-
-.wild {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--wild);
-}
-
-a {
-  font-weight: bold;
-  color: var(--spooky-green);
-  text-decoration: none;
   &:hover {
-    color: var(--spooky-green)-light;
+    color: #ccc;
+  }
+
+  &.active {
+    color: var(--spooky-green);
+    border-bottom-color: var(--spooky-green);
   }
 }
 
 .cycles {
-  color: #CECECE;
+  flex: 1;
   overflow-y: auto;
+  padding: 8px 0 16px;
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  > ol > li + li {
+    margin-top: 5px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 10px 0 14px;
+
+  a {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 4px 5px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #ccc;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.12s;
+
+    &:hover { color: var(--spooky-green); }
+  }
+
+  .count {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    color: #555;
+    white-space: nowrap;
+  }
+}
+
+.set-icon-font {
+  display: inline-block;
+  text-align: center;
+  font-family: "ArkhamEncounters";
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1;
+  width: 16px;
+  flex-shrink: 0;
+  margin-right: 4px;
+  color: #ccc;
+}
+
+.set-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-right: 4px;
+  filter: brightness(0) invert(0.8);
+}
+
+.nav-row--sub {
+  padding-left: 26px;
+
+  a {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #999;
+  }
+}
+
+/* ── Results panel ──────────────────────────────────────── */
+
+.results {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-block: 10px;
-}
-
-button {
-  border: 0;
-}
-
-i {
-  font-style: normal;
-}
-
-.pressed {
-  background-color: #777;
-  color: white;
+  overflow: hidden;
 }
 
 header {
-  z-index: 1;
-  position: sticky;
-  position: -webkit-sticky;
-  width: 100%;
-  top: -1px;
-  background: color-mix(in srgb, var(--background) 90%, transparent);
   display: flex;
   align-items: center;
-  color: white;
-  padding: 10px 20px 15px 20px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-
-  input {
-    margin-right: 10px;
-  }
-
-  input[type=checkbox] {
-    margin-left: 20px;
-  }
-
-  button {
-    padding: 5px;
-  }
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(6px);
+  z-index: 1;
 
   form {
-    margin-right: 20px;
-  }
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    flex: 1;
+    max-width: 360px;
 
-  form button {
-    border: 0;
-    height: 100%;
-    padding: 5px;
-  }
+    input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 6px 10px;
+      color: #ddd;
+      font-size: 0.88rem;
 
-  form input {
-    outline: none;
-    padding: 5px;
-    border: 0;
-    height: 100%;
-    margin: 0;
+      &::placeholder { color: #555; }
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      padding: 6px 10px;
+      color: #777;
+      cursor: pointer;
+      transition: color 0.12s;
+
+      &:hover { color: var(--spooky-green); }
+    }
   }
 }
 
-#include-encounter {
-  display: inline;
+.view-controls {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 2px;
+
+  button {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 9px;
+    color: #777;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover { color: #ccc; }
+    &.active {
+      background: rgba(255,255,255,0.12);
+      color: #eee;
+    }
+  }
 }
 
-table.box {
-  width: calc(100% - 40px);
-  padding: 0;
-  margin: 20px;
-  margin-top: 0;
-  border-radius: 10px;
-  border-spacing: 0;
-  background-color: rgba(255,255,255,0.05);
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+.encounter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #999;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  input[type=checkbox] {
+    accent-color: var(--spooky-green);
+    cursor: pointer;
+  }
 }
 
-th {
+/* ── Card grid ──────────────────────────────────────────── */
+
+.cards {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  align-content: start;
+
+  > a {
+    display: flex;
+    justify-content: center;
+  }
+
+  &:deep(.card-container) {
+    width: 100%;
+    max-width: 240px;
+  }
+}
+
+/* ── Card table ─────────────────────────────────────────── */
+
+.card-table {
+  display: block;
+  overflow-y: auto;
+  flex: 1;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.card-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.card-table th {
   text-align: left;
+  padding: 8px 10px;
+  color: #888;
+  background: color-mix(in srgb, var(--background) 96%, transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:first-child { padding-left: 20px; }
 }
 
-tr td:nth-child(1){
-  padding-left: 20px;
-}
-
-tr th:nth-child(1){
-  padding-left: 20px;
-}
-
-tbody td {
-  padding: 5px;
-}
-
-thead tr th {
-  color: #aaa;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 5px 5px;
-
-  &:nth-child(1) {
-    border-top-left-radius: 10px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 10px;
-  }
-}
-
-tr {
+.card-table td {
+  padding: 6px 10px;
   color: #cecece;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+
+  &:first-child { padding-left: 20px; }
 }
 
-tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.1);
+.card-table tbody tr {
+  transition: background 0.1s;
+  &:hover { background: rgba(255,255,255,0.04); }
 }
 
-ol {
-  list-style-position: inside;
-  margin-left: 10px;
-  > li ol {
-    margin-left: 40px;
-  }
+/* ── Icons ──────────────────────────────────────────────── */
+
+i { font-style: normal; }
+
+.willpower { font-size: 1.3em; margin: 0 1px; color: var(--willpower); }
+.intellect { font-size: 1.3em; margin: 0 1px; color: var(--intellect); }
+.combat    { font-size: 1.3em; margin: 0 1px; color: var(--combat); }
+.agility   { font-size: 1.3em; margin: 0 1px; color: var(--agility); }
+.wild      { font-size: 1.3em; margin: 0 1px; color: var(--wild); }
+
+/* ── Links ──────────────────────────────────────────────── */
+
+a {
+  color: var(--spooky-green);
+  text-decoration: none;
+  font-weight: 500;
+  &:hover { opacity: 0.8; }
 }
 </style>

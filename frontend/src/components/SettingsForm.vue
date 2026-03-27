@@ -29,8 +29,8 @@ const updateLanguage = async (a: Event) => {
     <div class="page-content column">
       <h2 class="title">{{$t('settings')}}</h2>
 
-      <fieldset class="box column">
-        <legend>{{$t('language')}}</legend>
+      <section class="box column">
+        <h3>{{$t('language')}}</h3>
         <p>This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.</p>
         <select v-model="$i18n.locale" @change="updateLanguage">
           <option value="de">Deutsch/German</option>
@@ -45,19 +45,25 @@ const updateLanguage = async (a: Event) => {
           <option value="uk">українська/Ukrainian</option>
           <option value="zh">中文/Chinese</option>
         </select>
-      </fieldset>
+      </section>
 
-      <fieldset class="box column">
-        <legend>Enroll in beta</legend>
+      <section class="box column">
+        <h3>Enroll in beta</h3>
         <p>Beta features are likely very broken and games may be unrecoverable, please only enable this if you are willing to provide feedback.</p>
         <div class="row">
-          <label>On <input type="radio" name="beta" value="On" v-model="beta" @change="betaUpdate" /></label>
-          <label>Off <input type="radio" name="beta" value="Off" v-model="beta" @change="betaUpdate" /></label>
+          <label class="radio-label">
+            <input type="radio" name="beta" value="On" v-model="beta" @change="betaUpdate" />
+            On
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="beta" value="Off" v-model="beta" @change="betaUpdate" />
+            Off
+          </label>
         </div>
-      </fieldset>
+      </section>
 
-      <fieldset class="box column danger-zone">
-        <legend>Danger Zone</legend>
+      <section class="box column danger-zone">
+        <h3 class="danger-title">Danger Zone</h3>
         <p>Permanently delete your account and all associated data, including games and decks. <strong>This cannot be undone.</strong></p>
         <div v-if="!showDeleteConfirm">
           <button class="btn-danger" @click="showDeleteConfirm = true">Delete Account</button>
@@ -69,44 +75,74 @@ const updateLanguage = async (a: Event) => {
             <button @click="showDeleteConfirm = false">Cancel</button>
           </div>
         </div>
-      </fieldset>
+      </section>
     </div>
   </div>
 </template>
 
 <style scoped>
-input[type="radio"] {
-  display: unset;
+h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: var(--title);
+  text-transform: uppercase;
+  font-family: teutonic, sans-serif;
+  font-size: 1.4em;
 }
 
-legend {
- font-size: 1.1em;
- font-weight: bolder;
+p {
+  color: var(--title);
+  opacity: 0.8;
+}
+
+select {
+  background-color: var(--background-dark);
+  color: var(--title);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 1em;
+  width: fit-content;
+}
+
+input[type="radio"] {
+  display: unset;
+  accent-color: var(--spooky-green);
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--title);
+  cursor: pointer;
 }
 
 .danger-zone {
-  border-color: #c0392b;
+  border-color: var(--delete);
 }
 
-.danger-zone legend {
-  color: #c0392b;
+.danger-title {
+  color: var(--delete);
 }
 
 .btn-danger {
-  background-color: #c0392b;
+  background-color: var(--delete);
   color: white;
   border: none;
-  padding: 0.5em 1em;
+  padding: 8px 16px;
   cursor: pointer;
   border-radius: 4px;
+  font-size: 1em;
+  text-transform: uppercase;
 }
 
 .btn-danger:hover {
-  background-color: #a93226;
+  background-color: #a32929;
 }
 
 .warning {
-  color: #c0392b;
+  color: var(--delete);
   font-weight: bold;
 }
 </style>

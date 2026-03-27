@@ -23,7 +23,5 @@ const deleteAccount = async () => {
 </script>
 
 <template>
-  <div>
-    <SettingsForm v-if="currentUser" :user="currentUser" :updateBeta="updateBeta" :deleteAccount="deleteAccount" />
-  </div>
+  <SettingsForm v-if="currentUser" :user="currentUser" :updateBeta="updateBeta" :deleteAccount="deleteAccount" />
 </template>

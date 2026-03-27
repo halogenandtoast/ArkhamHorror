@@ -100,7 +100,7 @@ const deck = computed(() => {
       </section>
 
       <div v-if="deck" class="deck-section">
-        <DeckList :deck="deck" />
+        <DeckList :deck="deck" embedded />
       </div>
     </div>
   </div>

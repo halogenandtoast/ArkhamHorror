@@ -8,7 +8,7 @@ import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import sets from '@/arkham/data/sets.json'
 
-const props = defineProps<{ deck: Deck }>()
+const props = withDefaults(defineProps<{ deck: Deck; embedded?: boolean }>(), { embedded: false })
 const deckRef = ref(null)
 const store = useDbCardStore()
 const cardStore = useCardStore()
@@ -179,7 +179,7 @@ watch(deckRef, (el) => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" :class="{ embedded }">
     <div class="results">
       <header class="deck" v-show="deck" ref="deckRef">
         <template v-if="deck">
@@ -234,6 +234,12 @@ watch(deckRef, (el) => {
   max-width: unset;
   margin: 0;
   overflow: hidden;
+  width: 100%;
+
+  &.embedded {
+    height: auto;
+    overflow: visible;
+  }
 }
 
 .results {
@@ -241,6 +247,17 @@ watch(deckRef, (el) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
+
+  .embedded & {
+    overflow: visible;
+  }
+}
+
+.embedded .card-table {
+  display: table;
+  overflow-y: visible;
+  height: auto;
 }
 
 /* ── Deck header ─────────────────────────────────────────── */

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
-import { imgsrc, toCapitalizedWords } from '@/arkham/helpers'
+import { toCapitalizedWords } from '@/arkham/helpers'
 import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
@@ -14,8 +14,11 @@ import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue'
 import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
+import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
+import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
+import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
 import { useI18n } from 'vue-i18n'
-import { Seal } from '@/arkham/types/Seal'
 import { useDbCardStore } from '@/stores/dbCards'
 
 import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
@@ -48,21 +51,6 @@ const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {} as any, recorded
 
 const fullName = (name: Name): string => (name.subtitle ? `${name.title}: ${name.subtitle}` : name.title)
 
-const isSeal = (key: string): boolean =>
-  ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
-
-const sealImage = (seal: Seal): string => {
-  const revealed = seal.sealActive ? 'active' : 'dormant'
-  switch (seal.sealKind) {
-    case 'SealA': return imgsrc(`seals/seal-a-${revealed}.png`)
-    case 'SealB': return imgsrc(`seals/seal-b-${revealed}.png`)
-    case 'SealC': return imgsrc(`seals/seal-c-${revealed}.png`)
-    case 'SealD': return imgsrc(`seals/seal-d-${revealed}.png`)
-    case 'SealE': return imgsrc(`seals/seal-e-${revealed}.png`)
-  }
-}
-
-const setClass = (key: string): string => key.split('.').pop() || ''
 
 const time = computed(() =>
   selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
@@ -428,18 +416,6 @@ const cardCodeToTitle = (cardCode: string): string => {
   return 'unknown'
 }
 
-const logKeyKey = (k: LogKey) => formatKey(k)
-const setValueKey = (setKey: string, setValue: any, idx: number) => {
-  const tag = String(setValue?.tag ?? '')
-  const c = setValue?.contents ?? setValue?.recordVal?.contents
-  const cKey =
-    typeof c === 'string'
-      ? c
-      : (() => {
-          try { return JSON.stringify(c) } catch { return String(idx) }
-        })()
-  return `${setKey}:${tag}:${cKey}:${idx}`
-}
 
 // --- UI helpers -----------------------------------------------------------------
 const emptyLog = computed(() => {
@@ -530,12 +506,11 @@ const mapData = computed(() => {
 
       <div v-if="emptyLog" class="box">No entries yet.</div>
 
-      <div v-if="remembered.length > 0" class="remembered box">
-        <h3 class="title">Remembered</h3>
-        <ul>
-          <li v-for="record in remembered" :key="record">{{ record }}</li>
-        </ul>
-      </div>
+      <CampaignLogSection
+        v-if="remembered.length > 0"
+        title="Remembered"
+        :items="remembered"
+      />
 
       <div class="log-categories">
         <div v-if="logTitles.length > 1" class="options">
@@ -567,16 +542,14 @@ const mapData = computed(() => {
           </div>
         </div>
 
-        <div v-if="recorded.length > 0" class="box">
-          Campaign Notes
-          <ul>
-            <li v-for="record in recorded" :key="record">{{ t(record) }}</li>
-          </ul>
-        </div>
-
+        <CampaignLogSection
+          v-if="recorded.length > 0"
+          title="Campaign Notes"
+          :items="recorded.map(r => t(r))"
+        />
 
         <!-- Campaign sections -->
-        <div v-for="section in sections" :key="section.key">
+        <template v-for="section in sections" :key="section.key">
           <component
             v-if="section.component"
             :is="section.component"
@@ -585,127 +558,35 @@ const mapData = computed(() => {
             :records="section.records"
             :relationshipLevel="section.relationshipLevel"
           />
+          <CampaignLogSection
+            v-else
+            :title="t(section.titleKey)"
+            :items="section.records.map(r => t(r))"
+          />
+        </template>
 
-          <template v-else>
-            {{ t(section.titleKey) }}
-            <ul>
-              <li v-for="record in section.records" :key="record">{{ t(record) }}</li>
-            </ul>
-          </template>
-        </div>
-
-        <div
+        <CampaignLogInvestigatorSection
           v-for="m in investigatorLogSections"
           :key="m.investigator.id"
-          class="box investigator-log-section"
-        >
-          <h3 class="title">{{ fullName(m.investigator.name) }}</h3>
+          :name="fullName(m.investigator.name)"
+          :recorded="m.recorded"
+          :recordedCounts="m.recordedCounts"
+          :recordedSetsEntries="m.recordedSetsEntries"
+          :displayRecordValue="displayRecordValue"
+        />
 
-          <template v-if="m.recorded.length > 0">
-            <ul>
-              <li v-for="r in m.recorded" :key="r">{{ t(r) }}</li>
-            </ul>
-          </template>
+        <!-- Campaign recorded sets + counts -->
+        <CampaignLogRecordedSets
+          :entries="Object.entries(recordedSets)"
+          :counts="recordedCounts"
+          :displayRecordValue="displayRecordValue"
+        />
 
-          <template v-if="m.recordedSetsEntries.length > 0">
-            <div class="subhead">Recorded Sets</div>
-            <ul>
-              <li v-for="[setKey, setValues] in m.recordedSetsEntries" :key="setKey">
-                {{ t(setKey) }}
-                <ul :class="setClass(setKey)">
-                  <li
-                    v-if="isSeal(setKey)"
-                    v-for="(setValue, idx) in setValues"
-                    :key="setValueKey(setKey, setValue, idx)"
-                  >
-                    <img :src="sealImage(setValue.contents)" class="seal" />
-                  </li>
-
-                  <li
-                    v-else
-                    v-for="(setValue, idx) in setValues"
-                    :key="setValueKey(setKey, setValue, idx)"
-                    :class="{ 'crossed-out': setValue.tag === 'CrossedOut', circled: setValue.circled }"
-                  >
-                    {{ displayRecordValue(setKey, setValue) }}
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </template>
-
-          <template v-if="m.recordedCounts.length > 0">
-            <div class="subhead">Recorded Counts</div>
-            <ul>
-              <li v-for="[k, v] in m.recordedCounts" :key="logKeyKey(k)">
-                {{ t(formatKey(k)) }}: {{ v }}.
-              </li>
-            </ul>
-          </template>
-        </div>
-
-        <!-- Campaign recorded sets -->
-        <ul>
-          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">
-            {{ t(setKey) }}
-            <ul :class="setClass(setKey)">
-              <li
-                v-if="isSeal(setKey)"
-                v-for="(setValue, idx) in (setValues as any[])"
-                :key="setValueKey(setKey, setValue, idx)"
-              >
-                <img :src="sealImage((setValue as any).contents)" class="seal" />
-              </li>
-
-              <li
-                v-else
-                v-for="(setValue, idx) in (setValues as any[])"
-                :key="setValueKey(setKey, setValue, idx)"
-                :class="{ 'crossed-out': (setValue as any).tag === 'CrossedOut', circled: (setValue as any).circled }"
-              >
-                {{ displayRecordValue(setKey, setValue) }}
-              </li>
-            </ul>
-          </li>
-        </ul>
-
-        <ul>
-          <li v-for="[key, value] in recordedCounts" :key="logKeyKey(key)">
-            {{ t(formatKey(key)) }}: {{ value }}.
-          </li>
-        </ul>
-
-        <div v-if="Object.values(partners).length > 0" class="partners box">
-          <h3 class="title">Expedition Team</h3>
-          <div class="partners-content">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Damage</th>
-                  <th>Horror</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="[cCode, partner] in Object.entries(partners)"
-                  :key="cCode"
-                  class="partner"
-                  :class="{ [partner.status]: true }"
-                >
-                  <td v-if="partner.status === 'TheEntity'" class="partner-name">
-                    <span class="name"><s>{{ cardCodeToTitle(cCode) }}</s></span><span class="name">The Entity</span>
-                  </td>
-                  <td v-else class="partner-name">
-                    <span class="name">{{ cardCodeToTitle(cCode) }}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span>
-                  </td>
-                  <td>{{ partner.damage }}</td>
-                  <td>{{ partner.horror }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <CampaignLogPartners
+          v-if="Object.values(partners).length > 0"
+          :partners="partners"
+          :cardCodeToTitle="cardCodeToTitle"
+        />
       </div>
     </div>
 
@@ -716,167 +597,23 @@ const mapData = computed(() => {
 </template>
 
 <style scoped>
-h1 {
-  font-family: teutonic, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: var(--title);
-  margin-bottom: 10px;
-}
-
-.campaign-log {
-  width: 80%;
-  margin-inline: auto;
-  margin-block: 20px;
-  font-size: 1.8em;
-}
-
-.breakdowns {
-  width: 80%;
-  margin: 0 auto;
-}
-
-.crossed-out {
-  text-decoration: line-through;
-}
-
-.options {
-  display: flex;
-  justify-content: space-around;
-}
-
-.log-categories {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-}
-
-ul {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-}
-
-li {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--title);
-  margin: 0;
-
-  & ul li {
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.box {
-  & ul li {
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
 .content {
   overflow: auto;
   width: 100%;
   padding-bottom: 50px;
 }
 
-.supplies-container {
-  display: flex;
-  flex-direction: column;
+.campaign-log {
+  width: 80%;
+  margin-inline: auto;
+  margin-block: 20px;
+  font-size: 1rem;
   color: var(--title);
 }
 
-.supplies-content {
-  color: var(--title);
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-
-.circled {
-  background: var(--rogue-dark);
-}
-
-h3.title {
-  color: var(--title);
-  font-family: teutonic, sans-serif;
-  margin-bottom: 10px;
-}
-
-.subhead {
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  opacity: 0.9;
-}
-
-.investigator-log-section {
-  padding-top: 14px;
-}
-
-table {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 5px;
-
-  thead, tbody, tr {
-    display: contents;
-  }
-}
-
-.partner td {
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--title);
-}
-
-tr td:not(:first-child) {
-  text-align: right;
-}
-
-.Eliminated td {
-  text-decoration: line-through;
-  background: darkred;
-}
-
-.Mia td {
-  background: darkgoldenrod;
-}
-
-.partner-name {
-  display: flex;
-  gap: 10px;
-
-  .name {
-    flex: 1;
-  }
-}
-
-.status-mia {
-  background: rgba(0, 0, 0, 0.5);
-  padding-inline: 5px;
-  border-radius: 2px;
-}
-
-.seal {
-  max-width: 45px;
-}
-
-.sealsPlaced, .sealsRecovered {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+.breakdowns {
+  width: 80%;
+  margin: 0 auto;
 }
 
 .investigators-log {
@@ -887,33 +624,83 @@ tr td:not(:first-child) {
   margin: 20px;
 }
 
-.hidden {
-  display: none;
+h1 {
+  font-family: teutonic, sans-serif;
+  font-size: 2em;
+  margin: 0 0 16px;
+  padding: 0;
+  color: var(--title);
+  letter-spacing: 0.04em;
 }
 
 .log-categories {
-  .options {
-    gap: 10px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.options {
+  display: flex;
+  gap: 8px;
 }
 
 .log-title-option {
-  color: white;
-  background-color: rgba(255, 255, 255, 0.3);
-  padding: 10px;
   flex: 1;
-  border-radius: 10px;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  input[type="radio"] { accent-color: var(--spooky-green); }
 
   label {
     flex: 1;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.6);
   }
 
   &.checked {
-    background-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+    label { color: #f0f0f0; }
+  }
+
+  &:hover:not(.checked) { background: rgba(255,255,255,0.09); }
+}
+
+.supplies-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  h2 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.1em;
+    font-weight: normal;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
   }
 }
+
+.supplies-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hidden { display: none; }
 
 .scarlet-keys {
   display: flex;

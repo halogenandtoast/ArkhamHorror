@@ -291,73 +291,74 @@ async function start() {
 </script>
 
 <template>
-  <div key="new-game" v-if="ready">
+  <div class="new-campaign-content">
     <header class="main-header">
       <h2>{{ $t('newGame') }}</h2>
       <slot name="cancel" />
     </header>
 
-    <form id="new-campaign" @submit.prevent="goNext">
+    <form v-if="ready" id="new-campaign" @submit.prevent="goNext">
       <ChooseMode
-        v-if="step === 'ChooseMode'"
-        v-model:gameMode="gameMode"
-        v-model:selectedCampaign="selectedCampaign"
-        v-model:selectedScenario="selectedScenario"
-        :campaigns="campaigns"
-        :sideStories="sideStories"
-        :campaign="campaign"
-        :scenario="scenario"
-        @go="goNext"
-      />
+          v-if="step === 'ChooseMode'"
+          v-model:gameMode="gameMode"
+          v-model:selectedCampaign="selectedCampaign"
+          v-model:selectedScenario="selectedScenario"
+          :campaigns="campaigns"
+          :sideStories="sideStories"
+          :campaign="campaign"
+          :scenario="scenario"
+          @go="goNext"
+        />
 
-      <GameOptions
-        v-else
-        v-model:playerCount="playerCount"
-        v-model:multiplayerVariant="multiplayerVariant"
-        v-model:returnTo="returnTo"
-        v-model:fullCampaign="fullCampaign"
-        v-model:selectedScenario="selectedScenario"
-        v-model:selectedDifficulty="selectedDifficulty"
-        v-model:includeTarotReadings="includeTarotReadings"
-        v-model:campaignName="campaignName"
-        v-model:fullCampaignOptionKey="fullCampaignOptionKey"
-        v-model:recommendedOptionState="recommendedOptionState"
-        :gameMode="gameMode"
-        :campaign="campaign"
-        :scenario="scenario"
-        :canStandalone="canStandalone"
-        :selectedCampaign="selectedCampaign"
-        :selectedCampaignReturnTo="selectedCampaignReturnTo"
-        :campaignScenarios="campaignScenarios"
-        :difficulties="difficulties"
-        :currentCampaignName="currentCampaignName"
-        :chosenCampaignId="selectedCampaign"
-        :chosenSideStoryId="gameMode === 'SideStory' ? selectedScenario : null"
-      />
+        <GameOptions
+          v-else
+          v-model:playerCount="playerCount"
+          v-model:multiplayerVariant="multiplayerVariant"
+          v-model:returnTo="returnTo"
+          v-model:fullCampaign="fullCampaign"
+          v-model:selectedScenario="selectedScenario"
+          v-model:selectedDifficulty="selectedDifficulty"
+          v-model:includeTarotReadings="includeTarotReadings"
+          v-model:campaignName="campaignName"
+          v-model:fullCampaignOptionKey="fullCampaignOptionKey"
+          v-model:recommendedOptionState="recommendedOptionState"
+          :gameMode="gameMode"
+          :campaign="campaign"
+          :scenario="scenario"
+          :canStandalone="canStandalone"
+          :selectedCampaign="selectedCampaign"
+          :selectedCampaignReturnTo="selectedCampaignReturnTo"
+          :campaignScenarios="campaignScenarios"
+          :difficulties="difficulties"
+          :currentCampaignName="currentCampaignName"
+          :chosenCampaignId="selectedCampaign"
+          :chosenSideStoryId="gameMode === 'SideStory' ? selectedScenario : null"
+        />
 
-      <div class="wizard-actions buttons">
-        <button
-          v-if="step === 'GameOptions'"
-          type="button"
-          class="action secondary"
-          @click="goBack"
-        >
-          {{ $t('Back') ?? 'Back' }}
-        </button>
+        <div class="wizard-actions buttons">
+          <button
+            v-if="step === 'GameOptions'"
+            type="button"
+            class="action secondary"
+            @click="goBack"
+          >
+            {{ $t('Back') ?? 'Back' }}
+          </button>
 
-        <button v-if="step === 'GameOptions'" class="primary-action" type="submit" :disabled="nextDisabled">
-          {{ $t('create.create') }}
-        </button>
-      </div>
-    </form>
+          <button v-if="step === 'GameOptions'" class="primary-action" type="submit" :disabled="nextDisabled">
+            {{ $t('create.create') }}
+          </button>
+        </div>
+      </form>
   </div>
 </template>
 
 <style scoped>
-.container {
+.new-campaign-content {
+  width: 70vw;
+  max-width: 98vw;
   min-width: 60vw;
   margin: 0 auto;
-  margin-top: 20px;
 }
 
 #new-campaign {
@@ -423,6 +424,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 header h2 {

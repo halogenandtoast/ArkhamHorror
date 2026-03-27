@@ -74,23 +74,21 @@ const dismissNotification = (notification) => {
 
 <template>
   <div class="page-container">
-    <div class="home page-content">
+    <NewGame v-if="currentUser && newGame" @close="toggleNewGame">
+      <template #cancel>
+        <button @click="toggleNewGame" class="cancel-new-game-button">
+          <span>Cancel</span>
+        </button>
+      </template>
+    </NewGame>
+
+    <div v-if="!newGame" class="home page-content">
       <div class="notification" v-for="notification in notifications" :key="notification.id">
         <p v-html="notification.body"></p>
         <a @click.prevent="dismissNotification(notification)" href="#">Dismiss</a>
       </div>
 
-      <div v-if="currentUser" class="container">
-        <NewGame v-if="newGame" @close="toggleNewGame">
-          <template #cancel>
-            <button @click="toggleNewGame" class="cancel-new-game-button">
-              <span>Cancel</span>
-            </button>
-          </template>
-        </NewGame>
-      </div>
-
-      <div v-if="!newGame" class="container">
+      <div class="container">
         <section>
           <header class="main-header">
             <h2>{{$t('activeGames')}}</h2>
@@ -180,7 +178,6 @@ button.cancel-new-game-button {
   font-weight: bolder;
   width: fit-content;
   background-color: var(--survivor);
-  margin-block: 10px;
   &:hover {
     background-color: var(--survivor-extra-dark);
   }

@@ -115,9 +115,11 @@ async function sync(deck: Arkham.Deck) {
 
 <style scoped>
 #decks {
-  max-width: 1200px;
+  width: 70vw;
+  max-width: 98vw;
+  min-width: 60vw;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 0 20px;
 }
 
 .decks-header {

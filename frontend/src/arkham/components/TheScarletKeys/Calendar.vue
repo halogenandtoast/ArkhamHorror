@@ -36,6 +36,7 @@ function symbolForDay(day: number): string | null {
   text-align: center;
   --time-bg: #FCF5E2;
   background-color: var(--time-bg);
+  color: #333;
   margin: 20px auto;
   font-family: "Arno", serif;
   border: 4px solid #333;

@@ -486,29 +486,29 @@ const mapData = computed(() => {
 <template>
   <LogIcons />
   <div class="content column">
-    <div class="investigators-log">
-      <InvestigatorRow
-        v-for="investigator in investigators"
-        :key="investigator.id"
-        :investigator="investigator"
-        :game="game"
-        :bonus-xp="bonusXp && bonusXp[investigator.id]"
-      />
-    </div>
-
-    <div v-if="time || scarletKeys" class="column">
-      <div class="world-map-container">
-        <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
-      </div>
-      <div class="scarlet-keys">
-        <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
-        <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
-      </div>
-    </div>
-
     <div class="log-column">
       <div class="campaign-log column">
         <h1>Campaign Log: {{ game.name }}</h1>
+
+        <div class="investigators-log">
+          <InvestigatorRow
+            v-for="investigator in investigators"
+            :key="investigator.id"
+            :investigator="investigator"
+            :game="game"
+            :bonus-xp="bonusXp && bonusXp[investigator.id]"
+          />
+        </div>
+
+        <div v-if="time || scarletKeys" class="column">
+          <div class="world-map-container">
+            <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
+          </div>
+          <div class="scarlet-keys">
+            <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
+            <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
+          </div>
+        </div>
 
         <div v-if="emptyLog" class="empty-state">No entries yet.</div>
 

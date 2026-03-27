@@ -10,6 +10,7 @@ import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
+import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
@@ -19,6 +20,51 @@ const createdPortrait = ref<string | null>(null)
 
 type DeckType = "UseExistingDeck" | "LoadNewDeck" | "UnsavedDeck"
 const deckType = ref<DeckType>("UseExistingDeck")
+
+const searchText = ref('')
+const filterClasses = ref<string[]>([])
+const sortBy = ref<'name' | 'class'>('name')
+const CLASS_ORDER: Record<string, number> = {
+  guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
+}
+const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
+
+function deckInvestigatorCode(deck: Arkham.Deck): string {
+  if (deck.list.meta) {
+    try {
+      const result = JSON.parse(deck.list.meta)
+      if (result?.alternate_front) return result.alternate_front.replace('c', '')
+    } catch (e) {}
+  }
+  return deck.list.investigator_code.replace('c', '')
+}
+
+function deckTaboo(deck: Arkham.Deck): string | null {
+  return deck.list.taboo_id ? displayTabooId(deck.list.taboo_id) : null
+}
+
+const filteredDecks = computed(() => {
+  let result = decks.value.filter((deck) => {
+    const cls = deckClass(deck)
+    const matchesClass = filterClasses.value.length === 0 ||
+      filterClasses.value.some((k) => cls[k])
+    const matchesSearch = !searchText.value ||
+      deck.name.toLowerCase().includes(searchText.value.toLowerCase())
+    return matchesClass && matchesSearch
+  })
+
+  if (sortBy.value === 'name') {
+    result = [...result].sort((a, b) => a.name.localeCompare(b.name))
+  } else if (sortBy.value === 'class') {
+    result = [...result].sort((a, b) => {
+      const ca = allClasses.find(k => (deckClass(a) as any)[k]) ?? 'neutral'
+      const cb = allClasses.find(k => (deckClass(b) as any)[k]) ?? 'neutral'
+      return (CLASS_ORDER[ca] ?? 5) - (CLASS_ORDER[cb] ?? 5)
+    })
+  }
+
+  return result
+})
 
 const props = defineProps<{
   game: Game
@@ -80,12 +126,6 @@ const error = computed(() => {
   return null
 })
 
-const disabled = computed(() => {
-  if (unsavedDeckList.value) return false
-  if (!deckId.value) return true
-  return error.value !== null
-})
-
 const investigators = computed(() => props.game.investigators)
 
 fetchDecks().then((result) => {
@@ -108,6 +148,12 @@ async function choose() {
       await chooseDeck(deckId.value)
     }
   }
+}
+
+async function selectAndChoose(deck: Arkham.Deck) {
+  deckId.value = deck.id
+  if (error.value !== null) return
+  await choose()
 }
 
 type Player = { tag: "EmptyPlayer", id: string } | { tag: "Chosen", contents: Investigator, id: string }
@@ -140,38 +186,7 @@ const needsReply = computed(() => {
   return question.tag === 'ChooseDeck' || (question.tag === 'QuestionLabel' && question.question.tag === 'ChooseDeck')
 })
 
-const chosenImage = computed(() => {
-  if(!deckId.value) {
-    return null
-  }
 
-  const deck = decks.value.find((d) => d.id === deckId.value)
-  if (!deck) {
-    return null
-  }
-  
-  if (deck.list.meta) {
-    try {
-      const result = JSON.parse(deck.list.meta)
-      if (result && result.alternate_front) {
-        return imgsrc(`portraits/${result.alternate_front}.jpg`)
-      }
-    } catch (e) { console.log("No parse") }
-  }
-
-  return imgsrc(`portraits/${deck.list.investigator_code.replace('c', '')}.jpg`)
-})
-
-const chosenDeckTabooList = computed(() => {
-  if(!deckId.value) {
-    return null
-  }
-
-  const deck = decks.value.find((d) => d.id === deckId.value)
-  if (!deck) return null
-
-  return deck.list.taboo_id ? displayTabooId(deck.list.taboo_id) : null
-})
 
 </script>
 
@@ -196,15 +211,6 @@ const chosenDeckTabooList = computed(() => {
             </div>
           </template>
           <template v-else>
-            <div v-if="chosenImage && player.id == playerId" class="portrait">
-              <img :src="chosenImage" />
-            </div>
-            <div v-else-if="createdPortrait && (deckType == 'LoadNewDeck' || deckType == 'UnsavedDeck')" class="portrait">
-              <img :src="createdPortrait" />
-            </div>
-            <div v-else class="portrait-empty">
-              <img :src="imgsrc('slots/ally.png')" />
-            </div>
             <div v-if="needsReply && player.id == playerId" class="deck-main">
               <div class="deck-tabs">
                 <button @click.prevent="deckType = 'UseExistingDeck'" :class="{ current: deckType == 'UseExistingDeck'}" :disabled="decks.length == 0">
@@ -214,26 +220,54 @@ const chosenDeckTabooList = computed(() => {
                   {{$t('create.loadNewDeck')}}
                 </button>
               </div>
-              <form v-if="deckType == 'UseExistingDeck'" class="deck-form" @submit.prevent="choose">
-                <div class="select-wrapper">
-                  <select v-model="deckId">
-                    <option disabled :value="null">{{$t('create.selectADeck')}}</option>
-                    <option v-for="deck in decks" :key="deck.id" :value="deck.id" :class="deckClass(deck)">{{deck.name}}</option>
-                  </select>
-                  <svg class="select-chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div v-if="deckType == 'UseExistingDeck'" class="deck-picker">
+                <DeckToolbar
+                  compact
+                  search-placeholder="Search…"
+                  v-model:search="searchText"
+                  v-model:filterClasses="filterClasses"
+                  v-model:sortBy="sortBy"
+                />
+                <div class="deck-list">
+                  <div v-if="filteredDecks.length === 0" class="deck-list-empty">No decks match your filters</div>
+                  <div
+                    v-for="deck in filteredDecks"
+                    :key="deck.id"
+                    class="deck-item"
+                    :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
+                    @click.prevent="deckId = deck.id"
+                  >
+                    <img class="deck-item-portrait" :src="imgsrc(`cards/${deckInvestigatorCode(deck)}.avif`)" />
+                    <div class="deck-item-info">
+                      <span class="deck-item-name">{{ deck.name }}</span>
+                      <span v-if="deckTaboo(deck)" class="deck-item-taboo">
+                        <font-awesome-icon icon="book" /> {{ deckTaboo(deck) }}
+                      </span>
+                      <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
+                    </div>
+                    <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" title="Use this deck">
+                      <font-awesome-icon icon="chevron-right" />
+                    </button>
+                  </div>
                 </div>
-                <p class="error" v-if="error">{{error}}</p>
-                <div v-if="chosenDeckTabooList" class="taboo-badge">
-                  <font-awesome-icon icon="shield-halved" />
-                  {{chosenDeckTabooList}}
+              </div>
+              <div v-else class="load-deck-layout">
+                <div class="load-deck-portrait">
+                  <div v-if="createdPortrait" class="portrait">
+                    <img :src="createdPortrait" />
+                  </div>
+                  <div v-else class="portrait-empty">
+                    <img :src="imgsrc('slots/ally.png')" />
+                  </div>
                 </div>
-                <button type="submit" class="primary-action" :disabled="disabled">{{$t('create.choose')}}</button>
-              </form>
-              <form v-else-if="deckType == 'UnsavedDeck'" class="deck-form" @submit.prevent="choose">
-                <p class="unsaved-deck-name">{{ unsavedDeckList?.name }}</p>
-                <button type="submit" class="primary-action">{{$t('create.choose')}}</button>
-              </form>
-              <NewDeck v-else @new-deck="addDeck" @new-deck-list="addUnsavedDeck" :no-portrait="true" :set-portrait="setPortrait" />
+                <div class="load-deck-content">
+                  <form v-if="deckType == 'UnsavedDeck'" class="deck-form" @submit.prevent="choose">
+                    <p class="unsaved-deck-name">{{ unsavedDeckList?.name }}</p>
+                    <button type="submit" class="primary-action">{{$t('create.choose')}}</button>
+                  </form>
+                  <NewDeck v-else @new-deck="addDeck" @new-deck-list="addUnsavedDeck" :no-portrait="true" :set-portrait="setPortrait" />
+                </div>
+              </div>
             </div>
           </template>
         </div>
@@ -353,46 +387,188 @@ const chosenDeckTabooList = computed(() => {
   gap: 10px;
 }
 
-/* Tab buttons */
+/* Tab buttons — segmented control */
 .deck-tabs {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: 8px;
+  gap: 3px;
+  padding: 3px;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
 
   button {
-    height: 42px;
-    border-radius: 5px;
-    border: 1px solid rgba(255,255,255,0.10);
-    background: rgba(0,0,0,0.22);
-    color: rgba(255,255,255,0.75);
+    height: 36px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.50);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 0.78em;
+    font-size: 0.74em;
     cursor: pointer;
-    transition: transform 120ms ease, background 160ms ease, color 120ms ease;
+    transition: background 160ms ease, color 120ms ease, box-shadow 160ms ease;
     outline: none;
 
-    &:hover:not(:disabled) {
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.95);
-      transform: translateY(-1px);
+    &:hover:not(:disabled):not(.current) {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.80);
     }
 
     &.current {
-      background: rgba(110, 134, 64, 0.95);
-      border-color: rgba(255,255,255,0.10);
+      background: rgba(110, 134, 64, 0.88);
       color: white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
     }
 
     &:disabled {
-      opacity: 0.35;
+      opacity: 0.30;
       cursor: not-allowed;
     }
   }
 }
 
-/* Deck selection form */
+/* Deck picker (UseExistingDeck) */
+.deck-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: calc(100dvh - 380px);
+  min-height: 120px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.deck-list-empty {
+  padding: 24px;
+  text-align: center;
+  color: #555;
+  font-size: 0.85em;
+}
+
+.deck-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  color: #e0e0e0;
+
+  &:hover { background: rgba(255,255,255,0.08); }
+
+  &.guardian { border-left-color: var(--guardian-dark); &:hover { background: var(--guardian-extra-dark); } }
+  &.seeker   { border-left-color: var(--seeker-dark);   &:hover { background: var(--seeker-extra-dark); } }
+  &.rogue    { border-left-color: var(--rogue-dark);    &:hover { background: var(--rogue-extra-dark); } }
+  &.mystic   { border-left-color: var(--mystic-dark);   &:hover { background: var(--mystic-extra-dark); } }
+  &.survivor { border-left-color: var(--survivor-dark); &:hover { background: var(--survivor-extra-dark); } }
+  &.neutral  { border-left-color: var(--neutral-dark);  &:hover { background: var(--neutral-extra-dark); } }
+
+  &.selected {
+    border-color: rgba(110, 134, 64, 0.4);
+    border-left-color: rgba(110, 134, 64, 0.9);
+    background: rgba(110, 134, 64, 0.10);
+  }
+
+  &.has-error {
+    border-color: rgba(200, 50, 50, 0.5);
+    border-left-color: rgba(200, 50, 50, 0.9);
+    background: rgba(160, 25, 25, 0.15);
+  }
+}
+
+.deck-item-portrait {
+  width: 60px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+
+.deck-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.deck-item-name {
+  font-size: 0.94em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deck-item-taboo {
+  font-size: 0.72em;
+  font-weight: 600;
+  color: #c8a96e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deck-item-error {
+  font-size: 0.75em;
+  color: #ff8080;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deck-item-use {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(110, 134, 64, 0.85);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+  transition: background 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+  outline: none;
+
+  &:hover {
+    background: rgba(110, 134, 64, 1);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  }
+
+  &:active { transform: scale(1.0); }
+}
+
+/* Load New Deck layout: portrait left, form right */
+.load-deck-layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.load-deck-portrait {
+  flex-shrink: 0;
+}
+
+.load-deck-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* UnsavedDeck form */
 .deck-form {
   display: flex;
   flex-direction: column;
@@ -404,61 +580,15 @@ const chosenDeckTabooList = computed(() => {
   }
 
   p.unsaved-deck-name {
-    color: white;
+    color: #e0e0e0;
     padding: 12px 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
     border-radius: 6px;
     text-align: center;
     font-weight: 600;
     letter-spacing: 0.04em;
-  }
-
-  p.error {
-    color: white;
-    background-color: rgba(180, 30, 30, 0.85);
-    border: 1px solid rgba(255,80,80,0.3);
-    border-radius: 5px;
-    padding: 10px 14px;
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 0.82em;
-    letter-spacing: 0.04em;
-  }
-}
-
-/* Select wrapper with SVG chevron */
-.select-wrapper {
-  position: relative;
-
-  select {
-    appearance: none;
-    -webkit-appearance: none;
-    outline: 0;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 5px;
-    padding: 12px 40px 12px 14px;
-    background: var(--background-dark);
-    color: #e0e0e0;
-    width: 100%;
     font-size: 0.92em;
-    cursor: pointer;
-    transition: border-color 120ms ease;
-
-    &:focus {
-      border-color: rgba(110, 134, 64, 0.7);
-    }
-  }
-
-  .select-chevron {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 8px;
-    color: #888;
-    pointer-events: none;
   }
 }
 
@@ -496,23 +626,6 @@ const chosenDeckTabooList = computed(() => {
   }
 }
 
-/* Taboo badge */
-.taboo-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.72em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #A8A749;
-  background: rgba(168, 167, 73, 0.12);
-  border: 1px solid rgba(168, 167, 73, 0.3);
-  border-radius: 4px;
-  padding: 4px 10px;
-  align-self: flex-start;
-}
-
 /* Taboo shown on chosen investigator rows */
 .taboo-list {
   color: #A8A749;
@@ -521,13 +634,5 @@ const chosenDeckTabooList = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 4px 0;
-}
-
-option.guardian {
-  background-color: var(--guardian-dark);
-}
-
-option.mystic {
-  background-color: var(--mystic-dark);
 }
 </style>

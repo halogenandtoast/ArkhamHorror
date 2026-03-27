@@ -209,30 +209,65 @@ async function createDeck() {
 
 <style scoped>
 .new-deck {
+  :deep(input[type=url]) {
+    margin-bottom: 0;
+  }
   :deep(input) {
     outline: 0;
-    border: 1px solid var(--background);
-    padding: 15px;
-    color: #F2F2F2;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 5px;
+    padding: 12px 14px;
+    color: #e0e0e0;
     background: var(--background-dark);
     width: 100%;
-    margin-bottom: 10px;
+    font-size: 0.92em;
+    transition: border-color 120ms ease;
+
+    &:focus {
+      border-color: rgba(110, 134, 64, 0.7);
+    }
+  }
+  :deep(input[type=file]) {
+    padding: 8px 12px;
+    color: #888;
+    cursor: pointer;
+
+    &::file-selector-button {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      color: #ccc;
+      padding: 5px 12px;
+      font-size: 0.82em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 150ms ease;
+
+      &:hover {
+        background: rgba(255,255,255,0.14);
+      }
+    }
   }
   .portrait {
     margin-right: 10px;
     height: 170px;
+    border-radius: 5px;
   }
   .fields {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
   }
   .errors {
-    background-color: #660000;
+    background-color: rgba(100, 0, 0, 0.85);
+    border: 1px solid rgba(255,80,80,0.2);
+    border-radius: 6px;
     width: 100%;
     margin-top: 10px;
-    padding: 15px;
+    padding: 14px 16px;
   }
   /* Save option toggle card */
   .save-option {
@@ -247,7 +282,6 @@ async function createDeck() {
     user-select: none;
     transition: background 150ms ease, border-color 150ms ease;
     width: 100%;
-    margin-bottom: 4px;
 
     &:hover {
       background: rgba(255,255,255,0.08);
@@ -317,6 +351,7 @@ async function createDeck() {
     width: 100%;
     height: 48px;
     border-radius: 5px;
+    margin-top: 8px;
     border: 1px solid rgba(255,255,255,0.10);
     background: rgba(110, 134, 64, 0.95);
     color: white;

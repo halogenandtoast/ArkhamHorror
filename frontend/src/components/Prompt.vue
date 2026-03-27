@@ -34,7 +34,7 @@ function handleCancel() {
 </script>
 
 <template>
-  <dialog ref="dialogRef" @cancel.prevent="handleCancel">
+  <dialog ref="dialogRef" @cancel.prevent="handleCancel" @keydown.enter.prevent="handleYes">
     <button class="close-btn" @click.prevent="handleCancel" aria-label="Close">
       <font-awesome-icon icon="times" />
     </button>

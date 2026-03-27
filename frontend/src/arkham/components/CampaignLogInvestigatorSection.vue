@@ -78,8 +78,13 @@ const { t } = useI18n()
   gap: 4px;
   margin: 0 0 6px;
   padding: 0;
+  list-style: none;
 
   li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
     padding: 7px 10px;
     border-radius: 5px;
     background: rgba(255,255,255,0.04);
@@ -87,6 +92,12 @@ const { t } = useI18n()
     font-size: 0.92rem;
     line-height: 1.4;
     list-style: none;
+
+    &::before {
+      content: '–';
+      color: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
   }
 }
 </style>

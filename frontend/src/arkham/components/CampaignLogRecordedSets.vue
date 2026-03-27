@@ -41,57 +41,94 @@ const setValueKey = (setKey: string, setValue: any, idx: number): string => {
 
 <template>
   <template v-if="entries.length > 0">
-    <ul>
-      <li v-for="[setKey, setValues] in entries" :key="setKey">
-        {{ t(setKey) }}
-        <ul :class="setClass(setKey)">
-          <li
-            v-if="isSeal(setKey)"
-            v-for="(setValue, idx) in setValues"
-            :key="setValueKey(setKey, setValue, idx)"
-          >
-            <img :src="sealImage(setValue.contents)" class="seal" />
-          </li>
-          <li
-            v-else
-            v-for="(setValue, idx) in setValues"
-            :key="setValueKey(setKey, setValue, idx)"
-            :class="{ 'crossed-out': setValue.tag === 'CrossedOut', circled: setValue.circled }"
-          >
-            {{ displayRecordValue(setKey, setValue) }}
-          </li>
-        </ul>
-      </li>
-    </ul>
+    <div v-for="[setKey, setValues] in entries" :key="setKey" class="log-section">
+      <h3 class="section-title">{{ t(setKey) }}</h3>
+      <ul :class="['log-list', setClass(setKey)]">
+        <li
+          v-if="isSeal(setKey)"
+          v-for="(setValue, idx) in setValues"
+          :key="setValueKey(setKey, setValue, idx)"
+          class="seal-item"
+        >
+          <img :src="sealImage(setValue.contents)" class="seal" />
+        </li>
+        <li
+          v-else
+          v-for="(setValue, idx) in setValues"
+          :key="setValueKey(setKey, setValue, idx)"
+          :class="{ 'crossed-out': setValue.tag === 'CrossedOut', circled: setValue.circled }"
+        >
+          {{ displayRecordValue(setKey, setValue) }}
+        </li>
+      </ul>
+    </div>
   </template>
   <template v-if="counts.length > 0">
-    <ul>
-      <li v-for="[k, v] in counts" :key="formatKey(k)">
-        {{ t(formatKey(k)) }}: {{ v }}.
-      </li>
-    </ul>
+    <div v-for="[k, v] in counts" :key="formatKey(k)" class="log-section">
+      <h3 class="section-title">{{ t(formatKey(k)) }}</h3>
+      <div class="count-value">{{ v }}</div>
+    </div>
   </template>
 </template>
 
 <style scoped>
-ul {
+.log-section {
+  background: var(--box-background);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.section-title {
+  font-family: teutonic, sans-serif;
+  font-size: 1.1em;
+  font-weight: normal;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.log-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin: 0;
   padding: 0;
-}
-
-li {
-  padding: 7px 10px;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.04);
-  color: var(--title);
-  font-size: 0.92rem;
-  line-height: 1.4;
   list-style: none;
 
-  ul li { background: rgba(255,255,255,0.06); }
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    padding: 7px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.04);
+    color: var(--title);
+    font-size: 0.92rem;
+    line-height: 1.4;
+    list-style: none;
+
+    &::before {
+      content: '–';
+      color: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
+  }
+}
+
+.seal-item {
+  &::before { content: none !important; }
+}
+
+.count-value {
+  font-size: 1.6em;
+  font-family: teutonic, sans-serif;
+  color: var(--title);
+  letter-spacing: 0.04em;
 }
 
 .crossed-out { text-decoration: line-through; }
@@ -99,8 +136,7 @@ li {
 .seal { max-width: 45px; }
 
 .sealsPlaced, .sealsRecovered {
-  display: flex;
   flex-direction: row;
-  gap: 10px;
+  flex-wrap: wrap;
 }
 </style>

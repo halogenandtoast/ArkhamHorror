@@ -231,12 +231,12 @@ watch(deckRef, (el) => {
   top: -1px;
   flex-shrink: 0;
 
-  &.guardian { border-left-color: var(--guardian-dark); background: linear-gradient(30deg, var(--guardian-extra-dark), var(--guardian-dark)); }
-  &.seeker   { border-left-color: var(--seeker-dark);   background: linear-gradient(30deg, var(--seeker-extra-dark), var(--seeker-dark)); }
-  &.rogue    { border-left-color: var(--rogue-dark);    background: linear-gradient(30deg, var(--rogue-extra-dark), var(--rogue-dark)); }
-  &.mystic   { border-left-color: var(--mystic-dark);   background: linear-gradient(30deg, var(--mystic-extra-dark), var(--mystic-dark)); }
-  &.survivor { border-left-color: var(--survivor-dark); background: linear-gradient(30deg, var(--survivor-extra-dark), var(--survivor-dark)); }
-  &.neutral  { border-left-color: var(--neutral-dark);  background: linear-gradient(30deg, var(--neutral-extra-dark), var(--neutral-dark)); }
+  &.guardian { border-left-color: var(--guardian-dark); }
+  &.seeker   { border-left-color: var(--seeker-dark); }
+  &.rogue    { border-left-color: var(--rogue-dark); }
+  &.mystic   { border-left-color: var(--mystic-dark); }
+  &.survivor { border-left-color: var(--survivor-dark); }
+  &.neutral  { border-left-color: var(--neutral-dark); }
 
   &.is-pinned {
     background: rgba(28, 28, 41, 1) !important;

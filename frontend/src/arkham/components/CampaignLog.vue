@@ -359,6 +359,9 @@ onMounted(loadMissingCards)
 watch([recordedSets, selectedTitle, investigators], loadMissingCards)
 
 // --- Display helpers ------------------------------------------------------------
+const isSeal = (key: string): boolean =>
+  ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
+
 const displayRecordValue = (key: string, value: any): string => {
   const contents: string | undefined = value.contents || value.recordVal?.contents
 
@@ -501,143 +504,179 @@ const mapData = computed(() => {
       </div>
     </div>
 
-    <div class="campaign-log column">
-      <h1>Campaign Log: {{ game.name }}</h1>
+    <div class="log-column">
+      <div class="campaign-log column">
+        <h1>Campaign Log: {{ game.name }}</h1>
 
-      <div v-if="emptyLog" class="box">No entries yet.</div>
-
-      <CampaignLogSection
-        v-if="remembered.length > 0"
-        title="Remembered"
-        :items="remembered"
-      />
-
-      <div class="log-categories">
-        <div v-if="logTitles.length > 1" class="options">
-          <div
-            v-for="title in logTitles"
-            :key="title"
-            class="log-title-option"
-            :class="{ checked: title === selectedTitle }"
-          >
-            <input
-              name="log"
-              type="radio"
-              v-model="selectedTitle"
-              :value="title"
-              :id="`log${title}`"
-            />
-            <label :for="`log${title}`">{{ title }}</label>
-          </div>
-        </div>
-
-        <div v-if="hasSupplies" class="supplies-container">
-          <h2>{{ t('theForgottenAge.supplies.title') }}</h2>
-          <div class="supplies-content">
-            <Supplies v-for="i in investigators" :key="i.id" :player="i">
-              <template #heading>
-                <h3>{{ i.name.title }}</h3>
-              </template>
-            </Supplies>
-          </div>
-        </div>
+        <div v-if="emptyLog" class="empty-state">No entries yet.</div>
 
         <CampaignLogSection
-          v-if="recorded.length > 0"
-          title="Campaign Notes"
-          :items="recorded.map(r => t(r))"
+          v-if="remembered.length > 0"
+          title="Remembered"
+          :items="remembered"
         />
 
-        <!-- Campaign sections -->
-        <template v-for="section in sections" :key="section.key">
-          <component
-            v-if="section.component"
-            :is="section.component"
-            :sectionId="section.id"
-            :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
-            :records="section.records"
-            :relationshipLevel="section.relationshipLevel"
-          />
+        <div class="log-categories">
+          <div v-if="logTitles.length > 1" class="options">
+            <div
+              v-for="title in logTitles"
+              :key="title"
+              class="log-title-option"
+              :class="{ checked: title === selectedTitle }"
+            >
+              <input
+                name="log"
+                type="radio"
+                v-model="selectedTitle"
+                :value="title"
+                :id="`log${title}`"
+              />
+              <label :for="`log${title}`">{{ title }}</label>
+            </div>
+          </div>
+
+          <div v-if="hasSupplies" class="supplies-container">
+            <h2>{{ t('theForgottenAge.supplies.title') }}</h2>
+            <div class="supplies-content">
+              <Supplies v-for="i in investigators" :key="i.id" :player="i">
+                <template #heading>
+                  <h3>{{ i.name.title }}</h3>
+                </template>
+              </Supplies>
+            </div>
+          </div>
+
           <CampaignLogSection
-            v-else
-            :title="t(section.titleKey)"
-            :items="section.records.map(r => t(r))"
+            v-if="recorded.length > 0"
+            title="Campaign Notes"
+            :items="recorded.map(r => t(r))"
           />
-        </template>
 
-        <CampaignLogInvestigatorSection
-          v-for="m in investigatorLogSections"
-          :key="m.investigator.id"
-          :name="fullName(m.investigator.name)"
-          :recorded="m.recorded"
-          :recordedCounts="m.recordedCounts"
-          :recordedSetsEntries="m.recordedSetsEntries"
-          :displayRecordValue="displayRecordValue"
-        />
+          <!-- Campaign sections -->
+          <template v-for="section in sections" :key="section.key">
+            <component
+              v-if="section.component"
+              :is="section.component"
+              :sectionId="section.id"
+              :prefix="section.titleKey.split('.').slice(0, 1).join('.')"
+              :records="section.records"
+              :relationshipLevel="section.relationshipLevel"
+            />
+            <CampaignLogSection
+              v-else
+              :title="t(section.titleKey)"
+              :items="section.records.map(r => t(r))"
+            />
+          </template>
 
-        <!-- Campaign recorded sets + counts -->
-        <CampaignLogRecordedSets
-          :entries="Object.entries(recordedSets)"
-          :counts="recordedCounts"
-          :displayRecordValue="displayRecordValue"
-        />
+          <CampaignLogInvestigatorSection
+            v-for="m in investigatorLogSections"
+            :key="m.investigator.id"
+            :name="fullName(m.investigator.name)"
+            :recorded="m.recorded"
+            :recordedCounts="m.recordedCounts"
+            :recordedSetsEntries="m.recordedSetsEntries"
+            :displayRecordValue="displayRecordValue"
+          />
 
-        <CampaignLogPartners
-          v-if="Object.values(partners).length > 0"
-          :partners="partners"
-          :cardCodeToTitle="cardCodeToTitle"
-        />
+          <!-- Campaign recorded sets + counts -->
+          <CampaignLogRecordedSets
+            :entries="Object.entries(recordedSets)"
+            :counts="recordedCounts"
+            :displayRecordValue="displayRecordValue"
+          />
+
+          <CampaignLogPartners
+            v-if="Object.values(partners).length > 0"
+            :partners="partners"
+            :cardCodeToTitle="cardCodeToTitle"
+          />
+        </div>
       </div>
-    </div>
 
-    <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
-      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="true" :investigators="investigators" />
+      <XpBreakdown
+        v-for="([step, entries], idx) in breakdowns"
+        :key="idx"
+        :game="game"
+        :step="step"
+        :entries="entries"
+        :playerId="playerId"
+        :showAll="true"
+        :investigators="investigators"
+        :defaultCollapsed="idx > 0"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
+/* ── Page ────────────────────────────────────────────────── */
+
 .content {
   overflow: auto;
   width: 100%;
-  padding-bottom: 50px;
+  padding-bottom: 60px;
 }
 
-.campaign-log {
-  width: 80%;
-  margin-inline: auto;
-  margin-block: 20px;
-  font-size: 1rem;
-  color: var(--title);
-}
-
-.breakdowns {
-  width: 80%;
-  margin: 0 auto;
-}
+/* ── Investigators ───────────────────────────────────────── */
 
 .investigators-log {
   display: flex;
   flex-direction: column;
   gap: 10px;
   place-items: center;
-  margin: 20px;
+  padding: 24px 20px 0;
+}
+
+/* ── Campaign log ────────────────────────────────────────── */
+
+.log-column {
+  width: 80%;
+  margin-inline: auto;
+  margin-block: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.campaign-log {
+  font-size: 1rem;
+  color: var(--title);
 }
 
 h1 {
   font-family: teutonic, sans-serif;
-  font-size: 2em;
-  margin: 0 0 16px;
-  padding: 0;
+  font-size: 2.2em;
+  margin: 0 0 20px;
+  padding: 0 0 14px;
   color: var(--title);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+
+/* ── Empty state ─────────────────────────────────────────── */
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.9rem;
+  font-style: italic;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+}
+
+/* ── Log categories ──────────────────────────────────────── */
 
 .log-categories {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
+
+/* ── Log tabs (Dream Eaters split) ───────────────────────── */
 
 .options {
   display: flex;
@@ -651,36 +690,42 @@ h1 {
   gap: 8px;
   padding: 8px 14px;
   border-radius: 6px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 
-  input[type="radio"] { accent-color: var(--spooky-green); }
+  input[type="radio"] { accent-color: var(--spooky-green); cursor: pointer; }
 
   label {
     flex: 1;
     cursor: pointer;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(255,255,255,0.6);
+    font-family: teutonic, sans-serif;
+    font-size: 1em;
+    font-weight: normal;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.45);
   }
 
   &.checked {
-    background: rgba(255,255,255,0.12);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.18);
     label { color: #f0f0f0; }
   }
 
-  &:hover:not(.checked) { background: rgba(255,255,255,0.09); }
+  &:hover:not(.checked) {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
 }
 
+/* ── Supplies ────────────────────────────────────────────── */
+
 .supplies-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  background: var(--box-background);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 14px 16px;
 
   h2 {
     font-family: teutonic, sans-serif;
@@ -689,7 +734,18 @@ h1 {
     color: rgba(255,255,255,0.5);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    margin: 0;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  h3 {
+    font-family: teutonic, sans-serif;
+    font-size: 0.95em;
+    font-weight: normal;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
   }
 }
 
@@ -697,10 +753,11 @@ h1 {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
-.hidden { display: none; }
+
+/* ── Scarlet Keys / World Map ────────────────────────────── */
 
 .scarlet-keys {
   display: flex;
@@ -719,4 +776,6 @@ h1 {
   margin: 0 auto;
   max-width: 60vw;
 }
+
+.hidden { display: none; }
 </style>

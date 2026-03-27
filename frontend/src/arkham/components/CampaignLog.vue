@@ -500,13 +500,13 @@ const mapData = computed(() => {
           />
         </div>
 
-        <div v-if="time || scarletKeys" class="column">
-          <div class="world-map-container">
-            <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
-          </div>
-          <div class="scarlet-keys">
+        <div v-if="time || scarletKeys" class="scarlet-keys-row">
+          <div class="scarlet-keys-sidebar">
             <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
             <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
+          </div>
+          <div class="world-map-container">
+            <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
           </div>
         </div>
 
@@ -632,7 +632,6 @@ const mapData = computed(() => {
   flex-direction: column;
   gap: 10px;
   place-items: center;
-  padding: 24px 20px 0;
 }
 
 /* ── Campaign log ────────────────────────────────────────── */
@@ -644,6 +643,7 @@ const mapData = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  container-type: inline-size;
 }
 
 .campaign-log {
@@ -766,22 +766,44 @@ h1 {
 
 /* ── Scarlet Keys / World Map ────────────────────────────── */
 
-.scarlet-keys {
+.scarlet-keys-row {
   display: flex;
-  max-width: 90vw;
-  margin: 0 auto;
   flex-direction: row;
+  align-items: flex-start;
   gap: 20px;
+  width: 100%;
+}
 
-  @media (max-width: 1500px) {
-    flex-direction: column;
-    align-items: center;
-  }
+.scarlet-keys-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .world-map-container {
-  margin: 0 auto;
-  max-width: 60vw;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Switch to 1-column when the map would be forced below 500px */
+@container (max-width: 820px) {
+  .scarlet-keys-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .scarlet-keys-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .world-map-container {
+    width: 100%;
+  }
 }
 
 .hidden { display: none; }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { imgsrc } from '@/arkham/helpers';
-import { computed, ref, inject } from 'vue'
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/vue/24/solid'
+import { watch, computed, ref, inject } from 'vue'
 import { Game } from '@/arkham/types/Game';
 import { useI18n } from 'vue-i18n';
 
@@ -123,7 +122,36 @@ const locationData = computed<Record<MapLocationId, LocationData>>(() => {
 
 
 const svgEl = ref<SVGSVGElement | null>(null)
-const fullScreen = ref(false);
+const wrapperEl = ref<HTMLDivElement | null>(null)
+const fullScreen = ref(false)
+
+// ── Pan / drag ────────────────────────────────────────────
+const panOffset = ref({ x: 0, y: 0 })
+const isDragging = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+const dragStartPan = ref({ x: 0, y: 0 })
+
+function startDrag(e: MouseEvent) {
+  if (e.button !== 0 || props.embark) return
+  isDragging.value = true
+  dragStart.value = { x: e.clientX, y: e.clientY }
+  dragStartPan.value = { ...panOffset.value }
+  e.preventDefault()
+}
+
+function onDrag(e: MouseEvent) {
+  if (!isDragging.value || !svgEl.value) return
+  const { w, h } = baseViewBox.value
+  const rect = svgEl.value.getBoundingClientRect()
+  const scaleX = w / rect.width
+  const scaleY = h / rect.height
+  panOffset.value = {
+    x: dragStartPan.value.x - (e.clientX - dragStart.value.x) * scaleX,
+    y: dragStartPan.value.y - (e.clientY - dragStart.value.y) * scaleY,
+  }
+}
+
+function stopDrag() { isDragging.value = false }
 // select a location
 const selectedLocation = ref<MapLocationId | null>(null)
 function select(location: MapLocationId) {
@@ -174,18 +202,46 @@ const coordinates = computed(() => {
   return null
 })
 
+watch([coordinates, fullScreen], () => { panOffset.value = { x: 0, y: 0 } })
+
+const ZOOM_W = 1200
+const ZOOM_H = 781
+
+// PIN_OFFSET: the pin circle head is ~24 SVG units above the tip (scaled 1.5 * 16 circle center at -24)
+const PIN_OFFSET_Y = 24
+
+const baseViewBox = computed(() => {
+  if (fullScreen.value || !coordinates.value || props.embark) return { x0: 0, y0: 0, w: 3000, h: 1952 }
+  const { x, y } = coordinates.value
+  const x0 = Math.max(0, Math.min(3000 - ZOOM_W, x - ZOOM_W / 2))
+  const y0 = Math.max(0, Math.min(1952 - ZOOM_H, (y - PIN_OFFSET_Y) - ZOOM_H / 2))
+  return { x0, y0, w: ZOOM_W, h: ZOOM_H }
+})
+
+const viewBoxValues = computed(() => {
+  const { x0, y0, w, h } = baseViewBox.value
+  return {
+    x0: Math.max(0, Math.min(3000 - w, x0 + panOffset.value.x)),
+    y0: Math.max(0, Math.min(1952 - h, y0 + panOffset.value.y)),
+    w, h,
+  }
+})
+
+const viewBox = computed(() => {
+  const { x0, y0, w, h } = viewBoxValues.value
+  return `${x0} ${y0} ${w} ${h}`
+})
+
 const worldMap = imgsrc('world-map.jpg')
 
 const toggleFullScreen = async () => {
-  const el = svgEl.value
+  const el = wrapperEl.value
   if (!el) return
 
   if (!document.fullscreenElement) {
-    // Request fullscreen for the SVG container
     await el.requestFullscreen?.()
     fullScreen.value = true
   } else {
-    // Exit fullscreen mode
     await document.exitFullscreen?.()
     fullScreen.value = false
   }
@@ -199,7 +255,18 @@ document.addEventListener('fullscreenchange', () => {
 </script>
 
 <template>
-  <svg width="90vw" viewBox="0 0 3000 1952" fill="none" xmlns="http://www.w3.org/2000/svg" ref="svgEl">
+  <div class="map-wrapper" :class="{ 'embark-view': embark }" ref="wrapperEl">
+  <svg
+    :viewBox="viewBox"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    ref="svgEl"
+    :class="{ dragging: isDragging }"
+    @mousedown="startDrag"
+    @mousemove="onDrag"
+    @mouseup="stopDrag"
+    @mouseleave="stopDrag"
+  >
     <defs>
       <g id="marker-red">
         <circle r="13" fill="none" stroke="#d82e21" stroke-width="3"/>
@@ -633,34 +700,6 @@ document.addEventListener('fullscreenchange', () => {
       >
         {{ String.fromCodePoint(0x0048) }}
       </text>
-    </g>
-
-    <!-- Button in the bottom right to toggle full screen -->
-    <g
-      class="fullscreen-button"
-      @click="toggleFullScreen"
-      :transform="`translate(${3000 - 90}, ${1952 - 90})`"
-    >
-      <foreignObject x="0" y="0" width="80" height="80">
-        <ArrowsPointingOutIcon
-          v-if="!fullScreen"
-          :class="[
-            'h-20 w-20 transition-colors duration-200 cursor-pointer',
-            fullScreen
-              ? 'text-gray-400'
-              : 'text-gray-800'
-          ]"
-        />
-        <ArrowsPointingInIcon
-          v-else
-          :class="[
-            'h-20 w-20 transition-colors duration-200 cursor-pointer',
-            fullScreen
-              ? 'text-gray-400'
-              : 'text-gray-800'
-          ]"
-        />
-      </foreignObject>
     </g>
 
     <Transition name="drawer" mode="out-in">
@@ -1183,23 +1222,88 @@ document.addEventListener('fullscreenchange', () => {
       </foreignObject>
     </Transition>
   </svg>
+
+  <!-- HTML overlay button — unaffected by SVG viewBox/coordinate system -->
+  <button class="expand-btn" @click.stop="toggleFullScreen" title="Toggle fullscreen">
+    <svg v-if="!fullScreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/>
+    </svg>
+    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path fill-rule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0l3.97 3.97V4.5a.75.75 0 0 1 1.5 0V9a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clip-rule="evenodd"/>
+    </svg>
+  </button>
+  </div>
 </template>
 
 <style scoped>
-svg {
-  width: auto;
-  max-width: 95%;
-  min-width: 60vw;
-  max-height: 95%;
-  margin: 0 auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+.map-wrapper {
+  position: relative;
+  width: 100%;
+
+  &:fullscreen, &:-webkit-full-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+
+    > svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+  }
 }
 
-.fullscreen-button {
+svg {
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  cursor: grab;
+  display: block;
+
+  &.dragging { cursor: grabbing; }
+}
+
+.embark-view svg {
+  cursor: default;
+}
+
+/* In embark (StoryQuestion) view, cap height to available space below header */
+.embark-view {
+  max-width: calc((100vh - 80px) * 3000 / 1952);
+  margin: 0 auto;
+}
+
+.embark-view svg {
+  max-height: calc(100vh - 80px);
+}
+
+.expand-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  z-index: 10;
+  transition: opacity 0.15s, background 0.15s;
+
+  &:hover { opacity: 1; background: rgba(0,0,0,0.75); }
+
   svg {
-    max-width: unset;
-    min-width: unset;
-    box-shadow: unset;
+    width: 22px;
+    height: 22px;
+    display: block;
+    box-shadow: none;
+    cursor: pointer;
   }
 }
 
@@ -1241,11 +1345,9 @@ use {
 }
 
 .fullscreen-button {
-  color: red;
-  &:hover {
-    cursor: pointer;
-    color: blue;
-  }
+  cursor: pointer;
+  opacity: 0.85;
+  &:hover { opacity: 1; }
 }
 /* optional hover pop */
 /*.route:hover .route-base { stroke-width: 7 }

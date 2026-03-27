@@ -68,6 +68,7 @@ thead th {
   padding-left: 50px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--line-color);
+  color: var(--ink-color);
 }
 
 thead th span {
@@ -75,12 +76,11 @@ thead th span {
   &::after {
     content: '';
     position: absolute;
-    inset: 0;
     left: -20px;
     right: -20px;
-    bottom: 10px;
+    bottom: 0.5em;
+    height: 0;
     border-bottom: 2px solid var(--ink-color);
-    background-color: transparent;
     transform: rotateZ(-0.477deg);
   }
 }
@@ -94,6 +94,7 @@ tbody {
 
 td {
   border-bottom: 1px solid var(--line-color);
+  color: var(--ink-color);
 }
 
 header {
@@ -104,15 +105,15 @@ h2 {
   width: fit-content;
   margin: 0 auto;
   position: relative;
+  color: var(--ink-color);
   &::after {
     content: '';
     position: absolute;
-    inset: 0;
     left: -10px;
     right: -30px;
-    bottom: 20px;
+    bottom: 0.5em;
+    height: 0;
     border-bottom: 2px solid var(--ink-color);
-    background-color: transparent;
     transform: rotateZ(-1.5deg);
   }
 }

@@ -6,11 +6,15 @@ import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
 import { capitalize } from '@/arkham/helpers'
 import NewDeck from '@/arkham/components/NewDeck.vue';
 import Deck from '@/arkham/components/DeckRow.vue';
+import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useToast } from "vue-toastification";
 
 const allDecks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)
 const toast = useToast()
+const showNewDeck = ref(false)
+const searchText = ref('')
+const sortBy = ref<'name' | 'class'>('name')
 
 interface Filter {
   classes: string[]
@@ -18,10 +22,15 @@ interface Filter {
 
 const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
+const CLASS_ORDER: Record<string, number> = {
+  guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
+}
+
 const filter = ref<Filter>({ classes: [] })
 
 async function addDeck(d: Arkham.Deck) {
   allDecks.value.push(d)
+  showNewDeck.value = false
 }
 
 async function deleteDeckEvent() {
@@ -38,14 +47,28 @@ fetchDecks().then(async (response) => {
   allDecks.value = response
 })
 
-const decks = computed(() =>
-  allDecks.value.filter((deck) => {
-    if (filter.value.classes.length === 0) {
-      return true
-    }
-    return filter.value.classes.some((k) => Arkham.deckClass(deck)[k])
+const decks = computed(() => {
+  let result = allDecks.value.filter((deck) => {
+    const matchesClass = filter.value.classes.length === 0 ||
+      filter.value.classes.some((k) => Arkham.deckClass(deck)[k])
+    const matchesSearch = !searchText.value ||
+      deck.name.toLowerCase().includes(searchText.value.toLowerCase())
+    return matchesClass && matchesSearch
   })
-)
+
+  if (sortBy.value === 'name') {
+    result = [...result].sort((a, b) => a.name.localeCompare(b.name))
+  } else if (sortBy.value === 'class') {
+    result = [...result].sort((a, b) => {
+      const classObj = (d: Arkham.Deck) => Arkham.deckClass(d)
+      const ca = allClasses.find(k => classObj(a)[k]) ?? 'neutral'
+      const cb = allClasses.find(k => classObj(b)[k]) ?? 'neutral'
+      return (CLASS_ORDER[ca] ?? 5) - (CLASS_ORDER[cb] ?? 5)
+    })
+  }
+
+  return result
+})
 
 async function sync(deck: Arkham.Deck) {
   syncDeck(deck.id).then(() => {
@@ -66,29 +89,55 @@ function toggleClass(c: string) {
 
 <template>
   <div class="page-container">
-    <div id="decks" class="page-content column">
-      <section>
-        <header><h2 class="title">New Deck</h2></header>
-        <NewDeck @new-deck="addDeck"/>
-      </section>
-      <section class="column">
-        <h2 class="title">Existing Decks</h2>
-        <section>
-          <ul class="button-list">
-            <li v-for="iclass in allClasses" :key="iclass" :class="{ [iclass]: true, off: !filter.classes.includes(iclass) }" @click="toggleClass(iclass)"><span :class="{ [`${iclass}-icon`]: true }"></span> {{capitalize(iclass)}}</li>
-          </ul>
-        </section>
-        <div v-if="decks.length == 0" class="box">
-          <p>You currently have no decks.</p>
+    <div id="decks">
+      <header class="decks-header">
+        <h2>My Decks</h2>
+        <PrimaryButton :label="showNewDeck ? 'Cancel' : 'New Deck'" @click="showNewDeck = !showNewDeck" />
+      </header>
+
+      <div v-if="showNewDeck" class="new-deck-panel">
+        <NewDeck @new-deck="addDeck" />
+      </div>
+
+      <div class="toolbar">
+        <div class="class-filters">
+          <button
+            v-for="iclass in allClasses"
+            :key="iclass"
+            class="class-pill"
+            :class="{ [iclass]: filter.classes.includes(iclass), active: filter.classes.includes(iclass) }"
+            @click="toggleClass(iclass)"
+          >
+            <span :class="`${iclass}-icon`"></span>
+            {{ capitalize(iclass) }}
+          </button>
         </div>
-        <div v-else class="decks column">
-          <transition-group name="deck">
-            <div v-for="deck in decks" :key="deck.id" class="deck">
-              <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
-            </div>
-          </transition-group>
+        <div class="toolbar-right">
+          <input
+            v-model="searchText"
+            class="search-input"
+            placeholder="Search decks…"
+            type="search"
+          />
+          <select v-model="sortBy" class="sort-select">
+            <option value="name">Sort: Name</option>
+            <option value="class">Sort: Class</option>
+          </select>
         </div>
-      </section>
+      </div>
+
+      <div v-if="decks.length === 0" class="empty-state">
+        <p>No decks match your filters.</p>
+      </div>
+      <div v-else class="deck-grid">
+        <Deck
+          v-for="deck in decks"
+          :key="deck.id"
+          :deck="deck"
+          :markDelete="() => deleteId = deck.id"
+          :sync="() => sync(deck)"
+        />
+      </div>
 
       <Prompt
         v-if="deleteId"
@@ -102,128 +151,127 @@ function toggleClass(c: string) {
 
 <style scoped>
 #decks {
-  min-width: 60vw;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 24px 20px;
 }
 
-.open-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.sync-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.deck-delete {
-  justify-self: flex-end;
-  align-self: flex-start;
-  a {
-    color: #660000;
-    &:hover {
-      color: #990000;
-    }
-  }
-}
-
-.portrait--decklist {
-  width: 100px;
-  margin-right: 10px;
-}
-
-.deck-title {
-  font-weight: 800;
-  font-size: 1.2em;
-  a {
-    text-decoration: none;
-    &:hover {
-      color: #336699;
-    }
-  }
-}
-
-.deck-move,
-.deck-enter-active,
-.deck-leave-active {
-  transition: all 0.5s ease;
-}
-
-.deck-enter-from,
-.deck-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.deck-leave-active {
-  position: absolute;
-}
-
-.deck span.taboo-list {
-  font-size: 0.8em;
-  background: rgba(255, 255, 255, 0.2);
-  color: #efefef;
-  display: inline-block;
-  width: fit-content;
-  height: fit-content;
-  padding: 5px;
-  border-radius: 5px;
-  flex: 0;
-  flex-basis: fit-content;
-}
-
-.deck-details {
+.decks-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+
+  h2 {
+    flex: 1;
+    color: var(--title);
+    font-size: 2em;
+    text-transform: uppercase;
+    font-family: teutonic, sans-serif;
+    margin: 0;
+  }
+}
+
+.new-deck-panel {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.class-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   flex: 1;
 }
 
-.button-list {
+.class-pill {
   display: flex;
-  list-style: none;
-  gap: 2px;
-  li {
-    flex-grow: 1;
-    text-align: center;
-    padding: 5px 10px;
-    color: #fff;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-content: center;
-    gap: 5px;
-    cursor: pointer;
-    user-select: none;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  user-select: none;
 
-    &.guardian {
-      background: var(--guardian-dark);
-    }
-
-    &.seeker {
-      background: var(--seeker-dark);
-    }
-
-    &.rogue {
-      background: var(--rogue-dark);
-    }
-
-    &.mystic {
-      background: var(--mystic-dark);
-    }
-
-    &.survivor {
-      background: var(--survivor-dark);
-    }
-
-    &.neutral {
-      background: var(--neutral-dark);
-    }
-
-    &.off {
-      background: #333;
-    }
+  &:hover {
+    color: #aaa;
+    border-color: #444;
   }
+
+  &.active.guardian { background: var(--guardian-extra-dark); border-color: var(--guardian-dark); color: #fff; }
+  &.active.seeker   { background: var(--seeker-extra-dark);   border-color: var(--seeker-dark);   color: #fff; }
+  &.active.rogue    { background: var(--rogue-extra-dark);    border-color: var(--rogue-dark);    color: #fff; }
+  &.active.mystic   { background: var(--mystic-extra-dark);   border-color: var(--mystic-dark);   color: #fff; }
+  &.active.survivor { background: var(--survivor-extra-dark); border-color: var(--survivor-dark); color: #fff; }
+  &.active.neutral  { background: var(--neutral-extra-dark);  border-color: var(--neutral-dark);  color: #fff; }
 }
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-input {
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  color: #ccc;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  outline: none;
+  width: 180px;
+  transition: border-color 0.12s;
+
+  &::placeholder { color: #444; }
+  &:focus { border-color: #444; }
+}
+
+.sort-select {
+  width: max-content;
+  padding: 6px 32px 6px 10px;
+  font-size: 0.82rem;
+  color: #ccc;
+  background-color: #1a1a1a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+
+  option { background: #1a1a1a; }
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.deck-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 </style>

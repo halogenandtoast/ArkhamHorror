@@ -54,7 +54,7 @@ const tabooList = computed(() => {
     <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
     <div class="deck-details">
       <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
-      <span v-if="tabooList" class="taboo-list">Taboo: {{tabooList}}</span>
+      <span v-if="tabooList" class="taboo-list"><font-awesome-icon icon="book" /> Taboo: {{tabooList}}</span>
     </div>
     <div class="open-deck">
       <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
@@ -146,17 +146,22 @@ h2 {
   position: absolute;
 }
 
-.deck span.taboo-list {
-  font-size: 0.8em;
-  background: rgba(255, 255, 255, 0.2);
-  color: #efefef;
-  display: inline-block;
+.decklist span.taboo-list {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  flex: none;
+  gap: 5px;
   width: fit-content;
-  height: fit-content;
-  padding: 5px;
-  border-radius: 5px;
-  flex: 0;
-  flex-basis: fit-content;
+  padding: 1px 7px;
+  line-height: 1.6;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #c8a96e;
+  background: rgba(200, 169, 110, 0.12);
+  border: 1px solid rgba(200, 169, 110, 0.25);
+  border-radius: 4px;
+  letter-spacing: 0.02em;
 }
 
 .deck-details {
@@ -168,7 +173,7 @@ h2 {
 .decklist {
   display: flex;
   color: #f0f0f0;
-  transition: all 0.5s; 
+  transition: all 0.5s;
 
   span {
     flex: 1;

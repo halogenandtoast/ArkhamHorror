@@ -7,6 +7,7 @@ import type { GameDetails } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
+import PrimaryButton from '@/components/PrimaryButton.vue';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute()
@@ -93,7 +94,7 @@ const dismissNotification = (notification) => {
         <section>
           <header class="main-header">
             <h2>{{$t('activeGames')}}</h2>
-            <button @click="toggleNewGame" class="new-game-button">New Game</button>
+            <PrimaryButton label="New Game" @click="toggleNewGame" />
           </header>
           <div v-if="activeGames.length === 0" class="box">
             <p>No active games.</p>

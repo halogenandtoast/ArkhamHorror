@@ -451,7 +451,11 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigators
 
-        let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
+        -- This used to be
+        -- let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
+        -- So if we have depth issue investigate here
+        depth <- getWindowDepth
+        let wasUsedThisWindow = maybe False (\u -> usedDepth u == depth && depth > 0) $ find ((== ability) . usedAbility) usedAbilities'
 
         pure
           . (&& not wasUsedThisWindow)

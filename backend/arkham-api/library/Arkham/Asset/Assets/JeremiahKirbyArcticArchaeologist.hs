@@ -23,7 +23,7 @@ instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =
-    [applyTaboo $ restricted a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
+    [applyTaboo $ controlled_ a 1 $ freeReaction $ AssetEntersPlay #after (be a)]
    where
     applyTaboo =
       if tabooed TabooList21 a

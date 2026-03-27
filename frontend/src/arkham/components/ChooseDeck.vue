@@ -6,6 +6,7 @@ import { fetchDecks } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
+import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
@@ -13,9 +14,10 @@ import NewDeck from '@/arkham/components/NewDeck.vue'
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 const deckId = ref<string | null>(null)
+const unsavedDeckList = ref<ArkhamDbDecklist | null>(null)
 const createdPortrait = ref<string | null>(null)
 
-type DeckType = "UseExistingDeck" | "LoadNewDeck"
+type DeckType = "UseExistingDeck" | "LoadNewDeck" | "UnsavedDeck"
 const deckType = ref<DeckType>("UseExistingDeck")
 
 const props = defineProps<{
@@ -24,6 +26,7 @@ const props = defineProps<{
 }>()
 
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
+const chooseDeckList = inject<(deckList: ArkhamDbDecklist) => Promise<void>>('chooseDeckList')
 const question = computed(() => props.game.question[props.playerId])
 
 const questionLabel = computed(() => {
@@ -38,7 +41,14 @@ async function setPortrait(src: string) {
 async function addDeck(d: Arkham.Deck) {
   decks.value = [...decks.value, d]
   deckId.value = d.id
+  unsavedDeckList.value = null
   deckType.value = "UseExistingDeck"
+}
+
+async function addUnsavedDeck(dl: ArkhamDbDecklist) {
+  unsavedDeckList.value = dl
+  deckId.value = null
+  deckType.value = "UnsavedDeck"
 }
 
 const error = computed(() => {
@@ -71,10 +81,8 @@ const error = computed(() => {
 })
 
 const disabled = computed(() => {
-  if(!deckId.value) {
-    return true
-  }
-
+  if (unsavedDeckList.value) return false
+  if (!deckId.value) return true
   return error.value !== null
 })
 
@@ -93,7 +101,9 @@ const emit = defineEmits(['choose'])
 const chooseChoice = (idx: number) => emit('choose', idx)
 
 async function choose() {
-  if (deckId.value && error.value === null) {
+  if (unsavedDeckList.value && chooseDeckList) {
+    await chooseDeckList(unsavedDeckList.value)
+  } else if (deckId.value && error.value === null) {
     if (chooseDeck) {
       await chooseDeck(deckId.value)
     }
@@ -168,7 +178,7 @@ const chosenDeckTabooList = computed(() => {
 <template>
   <div class="container">
     <div class="investigators">
-      <h2>{{$t('create.chooseYourDeck', {s: players.length > 1 ? 's' : ''})}}</h2>
+      <h2 class="page-title">{{$t('create.chooseYourDeck', {s: players.length > 1 ? 's' : ''})}}</h2>
       <div class="portraits">
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
@@ -189,33 +199,41 @@ const chosenDeckTabooList = computed(() => {
             <div v-if="chosenImage && player.id == playerId" class="portrait">
               <img :src="chosenImage" />
             </div>
-            <div v-else-if="createdPortrait &&  deckType == 'LoadNewDeck'" class="portrait">
+            <div v-else-if="createdPortrait && (deckType == 'LoadNewDeck' || deckType == 'UnsavedDeck')" class="portrait">
               <img :src="createdPortrait" />
             </div>
             <div v-else class="portrait-empty">
               <img :src="imgsrc('slots/ally.png')" />
             </div>
             <div v-if="needsReply && player.id == playerId" class="deck-main">
-              <div class="buttons">
+              <div class="deck-tabs">
                 <button @click.prevent="deckType = 'UseExistingDeck'" :class="{ current: deckType == 'UseExistingDeck'}" :disabled="decks.length == 0">
                   {{$t('create.useExistingDeck')}}
                 </button>
-                <button @click.prevent="deckType = 'LoadNewDeck'" :class="{ current: deckType == 'LoadNewDeck'}">
+                <button @click.prevent="deckType = 'LoadNewDeck'" :class="{ current: deckType == 'LoadNewDeck' || deckType == 'UnsavedDeck'}">
                   {{$t('create.loadNewDeck')}}
                 </button>
               </div>
-              <form v-if="deckType == 'UseExistingDeck'" class="choose-deck" @submit.prevent="choose">
-                <select v-model="deckId">
-                  <option disabled :value="null">{{$t('create.selectADeck')}}</option>
-                  <option v-for="deck in decks" :key="deck.id" :value="deck.id" :class="deckClass(deck)">{{deck.name}}</option>
-                </select>
+              <form v-if="deckType == 'UseExistingDeck'" class="deck-form" @submit.prevent="choose">
+                <div class="select-wrapper">
+                  <select v-model="deckId">
+                    <option disabled :value="null">{{$t('create.selectADeck')}}</option>
+                    <option v-for="deck in decks" :key="deck.id" :value="deck.id" :class="deckClass(deck)">{{deck.name}}</option>
+                  </select>
+                  <svg class="select-chevron" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
                 <p class="error" v-if="error">{{error}}</p>
-                <button type="submit" :disabled="disabled">{{$t('create.choose')}}</button>
+                <div v-if="chosenDeckTabooList" class="taboo-badge">
+                  <font-awesome-icon icon="shield-halved" />
+                  {{chosenDeckTabooList}}
+                </div>
+                <button type="submit" class="primary-action" :disabled="disabled">{{$t('create.choose')}}</button>
               </form>
-              <NewDeck v-else @new-deck="addDeck" :no-portrait="true" :set-portrait="setPortrait" />
-              <div v-if="chosenDeckTabooList" class="taboo-list">
-                {{$t('create.tabooList', {tabooList: chosenDeckTabooList})}}
-              </div>
+              <form v-else-if="deckType == 'UnsavedDeck'" class="deck-form" @submit.prevent="choose">
+                <p class="unsaved-deck-name">{{ unsavedDeckList?.name }}</p>
+                <button type="submit" class="primary-action">{{$t('create.choose')}}</button>
+              </form>
+              <NewDeck v-else @new-deck="addDeck" @new-deck-list="addUnsavedDeck" :no-portrait="true" :set-portrait="setPortrait" />
             </div>
           </template>
         </div>
@@ -226,168 +244,6 @@ const chosenDeckTabooList = computed(() => {
 
 
 <style scoped>
-.investigators {
-  width: 100%;
-  color: #FFF;
-  padding: 10px;
-  border-radius: 3px;
-  max-width: 800px;
-  margin-inline: auto;
-  margin-top: 20px;
-
-  h2 {
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-    color: white;
-    margin-bottom: 10px;
-  }
-}
-
-.portraits {
-  --gap: 10px;
-  --columns: 4;
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-}
-
-.deck-main {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.choose-deck {
-  width: 100%;
-  color: #FFF;
-  border-radius: 3px;
-  button {
-    outline: 0;
-    padding: 15px;
-    background: #6E8640;
-    text-transform: uppercase;
-    color: white;
-    border: 0;
-    width: 100%;
-    &:hover {
-      background: hsl(80, 35%, 32%);
-    }
-  }
-  button[disabled] {
-    background: #999;
-    cursor: not-allowed;
-    &:hover {
-      background: #999;
-    }
-  }
-  input[type=text] {
-    outline: 0;
-    border: 1px solid #000;
-    padding: 15px;
-    background: #F2F2F2;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  select {
-    outline: 0;
-    border: 1px solid #000;
-    padding: 15px;
-    background: var(--background-dark);
-    width: 100%;
-    margin-bottom: 10px;
-    background-image:
-      linear-gradient(45deg, transparent 50%, gray 50%),
-      linear-gradient(135deg, gray 50%, transparent 50%),
-      linear-gradient(to right, #ccc, #ccc);
-    background-position:
-      calc(100% - 25px) calc(1.3em + 2px),
-      calc(100% - 20px) calc(1.3em + 2px),
-      calc(100% - 3.5em) 0.5em;
-    background-size:
-      5px 5px,
-      5px 5px,
-      1px 2.5em;
-    background-repeat: no-repeat;
-  }
-  a {
-    color: #365488;
-    font-weight: bolder;
-  }
-  p {
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-  }
-}
-
-h2 {
-  color: #656A84;
-  margin-left: 10px;
-  text-transform: uppercase;
-}
-
-input[type=radio] {
-  display: none;
-  /* margin: 10px; */
-}
-
-input[type=radio] + label {
-  display:inline-block;
-  padding: 4px 12px;
-  background-color: hsl(80, 5%, 39%);
-  &:hover {
-    background-color: hsl(80, 15%, 39%);
-  }
-  border-color: #ddd;
-}
-
-input[type=radio]:checked + label {
-  background: #6E8640;
-}
-
-input[type=checkbox] {
-  display: none;
-  /* margin: 10px; */
-}
-
-input[type=checkbox] + label {
-  display:inline-block;
-  padding: 4px 12px;
-  background-color: hsl(80, 5%, 39%);
-  &:hover {
-    background-color: hsl(80, 15%, 39%);
-  }
-
-  border-color: #ddd;
-}
-
-input[type=checkbox]:checked + label {
-  background: #6E8640;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  justify-items: center;
-  align-content: center;
-  justify-content: center;
-}
-
-select::-ms-expand {
-  display: none;
-}
-
-select {
-  appearance: none;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  &::picker {
-    appearance: none;
-  }
-}
-
 .container {
   background: var(--background);
   width: 100%;
@@ -396,72 +252,52 @@ select {
   margin: 0;
 }
 
-form {
+.investigators {
+  width: 100%;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 3px;
   max-width: 800px;
   margin-inline: auto;
   margin-top: 20px;
 }
 
-.choose-deck {
-  p.error {
-    color: white;
-    background-color: darkred;
-    padding: 10px;
-    text-align: center;
-    margin-bottom: 10px;
-    display: block;
-  }
+.page-title {
+  margin: 0 0 12px 0;
+  padding: 0;
+  text-transform: uppercase;
+  color: #cecece;
+  font-family: Teutonic;
+  font-size: 1.8em;
+  letter-spacing: 0.04em;
 }
 
-.portrait {
-  width: 100px;
-  border-radius: 5px;
-  flex-shrink: 0;
-  img {
-    width: 100%;
-    border-radius: 5px;
-    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  }
-}
-
-.portrait-empty {
-  width: 100px;
-  height: 155px;
-  border-radius: 5px;
-  flex-shrink: 0;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  background: rgba(100, 100, 100, 0.5);
+.portraits {
   display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: center;
-  justify-items: center;
-  img {
-    width: 80%;
-  }
+  flex-direction: column;
+  gap: 10px;
 }
 
 .investigator-row {
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 10px;
   display: flex;
-  gap: 10px;
-  justify-items: flex-start;
+  gap: 12px;
+  align-items: flex-start;
+
   & :deep(.choices) {
     margin: 0;
     padding: 0;
   }
   & :deep(form) {
-    margin: 0px;
+    margin: 0;
     height: fit-content;
   }
-  & :deep(.choose-deck) {
-    border-radius: 5px;
-  }
+
   .question {
     flex: 1;
-
     & :deep(.modal-contents) {
       border-radius: 5px;
       form {
@@ -483,31 +319,208 @@ form {
   }
 }
 
-.taboo-list {
-  color: #A8A749;
-  margin: auto;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-weight: bold;
-  text-transform: uppercase;
-  width: 100%;
+.portrait {
+  width: 100px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  img {
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  }
 }
 
-.buttons {
+.portrait-empty {
+  width: 100px;
+  height: 155px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  background: rgba(100, 100, 100, 0.3);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 80%;
+    opacity: 0.6;
+  }
+}
+
+.deck-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+/* Tab buttons */
+.deck-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+
   button {
-    border: 0;
-    padding: 10px;
-    flex: 1;
-    &:hover {
-      background-color: var(--button-1-highlight);
+    height: 42px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.22);
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.78em;
+    cursor: pointer;
+    transition: transform 120ms ease, background 160ms ease, color 120ms ease;
+    outline: none;
+
+    &:hover:not(:disabled) {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.95);
+      transform: translateY(-1px);
+    }
+
+    &.current {
+      background: rgba(110, 134, 64, 0.95);
+      border-color: rgba(255,255,255,0.10);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Deck selection form */
+.deck-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  p.unsaved-deck-name {
+    color: white;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  p.error {
+    color: white;
+    background-color: rgba(180, 30, 30, 0.85);
+    border: 1px solid rgba(255,80,80,0.3);
+    border-radius: 5px;
+    padding: 10px 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.82em;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Select wrapper with SVG chevron */
+.select-wrapper {
+  position: relative;
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    outline: 0;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 5px;
+    padding: 12px 40px 12px 14px;
+    background: var(--background-dark);
+    color: #e0e0e0;
+    width: 100%;
+    font-size: 0.92em;
+    cursor: pointer;
+    transition: border-color 120ms ease;
+
+    &:focus {
+      border-color: rgba(110, 134, 64, 0.7);
     }
   }
 
-  button.current {
-    background-color: var(--button-1);
+  .select-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 8px;
+    color: #888;
+    pointer-events: none;
   }
+}
+
+/* Primary action button */
+.primary-action {
+  width: 100%;
+  height: 48px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(110, 134, 64, 0.95);
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.88em;
+  cursor: pointer;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.3);
+  transition: transform 120ms ease, background 160ms ease, box-shadow 160ms ease;
+  outline: none;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(110, 134, 64, 1);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+/* Taboo badge */
+.taboo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #A8A749;
+  background: rgba(168, 167, 73, 0.12);
+  border: 1px solid rgba(168, 167, 73, 0.3);
+  border-radius: 4px;
+  padding: 4px 10px;
+  align-self: flex-start;
+}
+
+/* Taboo shown on chosen investigator rows */
+.taboo-list {
+  color: #A8A749;
+  font-size: 0.78em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 0;
 }
 
 option.guardian {

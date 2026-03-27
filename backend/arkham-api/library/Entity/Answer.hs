@@ -40,6 +40,7 @@ data Answer
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
+  | DeckListAnswer {deckList :: ArkhamDBDecklist, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
   | ExchangeAmountsAnswer
@@ -268,6 +269,7 @@ answerPlayer = \case
   CampaignSettingsAnswer _ -> Nothing
   CampaignSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
+  DeckListAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
   CampaignStepAnswer _ -> Nothing
@@ -293,6 +295,12 @@ handleAnswer Game {..} playerId = \case
     update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     let question' = Map.delete playerId gameQuestion
     handled $ LoadDecklist playerId (arkhamDeckList deck)
+      : [AskMap question' | not (Map.null question')]
+  DeckListAnswer dl _ -> do
+    let investigatorId = investigator_code dl
+    update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
+    let question' = Map.delete playerId gameQuestion
+    handled $ LoadDecklist playerId dl
       : [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'

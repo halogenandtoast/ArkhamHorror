@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 export interface Props {
   prompt: string
@@ -10,121 +10,144 @@ export interface Props {
 
 const props = defineProps<Props>()
 const cancelFun = computed(() => typeof props.cancel === 'function' ? props.cancel : props.no)
+
+const dialogRef = ref<HTMLDialogElement>()
+
+onMounted(() => {
+  dialogRef.value?.showModal()
+})
+
+function handleYes() {
+  dialogRef.value?.close()
+  props.yes()
+}
+
+function handleNo() {
+  dialogRef.value?.close()
+  props.no()
+}
+
+function handleCancel() {
+  dialogRef.value?.close()
+  cancelFun.value()
+}
 </script>
 
 <template>
-  <div class="cd-popup" role="alert">
-    <div class="cd-popup-container">
-      <p>{{prompt}}</p>
-      <ul class="cd-buttons">
-         <li><a @click.prevent="yes" href="#yes">Yes</a></li>
-         <li><a @click.prevent="no" href="#no">No</a></li>
-      </ul>
-      <a
-        @click.prevent="cancelFun"
-        href="#cancel"
-        class="cd-popup-close img-replace">Close</a>
+  <dialog ref="dialogRef" @cancel.prevent="handleCancel">
+    <button class="close-btn" @click.prevent="handleCancel" aria-label="Close">
+      <font-awesome-icon icon="times" />
+    </button>
+    <p class="prompt-text">{{ prompt }}</p>
+    <div class="prompt-actions">
+      <button class="btn btn--confirm" @click.prevent="handleYes">Yes</button>
+      <button class="btn btn--cancel" @click.prevent="handleNo">No</button>
     </div>
-  </div>
+  </dialog>
 </template>
 
 <style scoped>
-.cd-popup {
+dialog {
   position: fixed;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(94,110,141,.9);
-  z-index: 999999999;
-}
-
-.cd-popup-container {
-  position: relative;
+  margin: auto;
+  padding: 32px;
   width: 90%;
   max-width: 400px;
-  margin: 4em auto;
-  background: #fff;
-  border-radius: .25em;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(0,0,0,.2);
+  background: #1e2030;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  color: #f0f0f0;
+  opacity: 0;
+  transform: scale(0.94) translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease,
+              display 0.2s allow-discrete,
+              overlay 0.2s allow-discrete;
 
-  p {
-    padding: 3em 1em;
-    margin: 0;
+  &[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: scale(0.94) translateY(-10px);
+    }
   }
 }
 
-.cd-popup-close {
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  transition: background 0.2s ease, backdrop-filter 0.2s ease,
+              display 0.2s allow-discrete,
+              overlay 0.2s allow-discrete;
+}
+
+dialog[open]::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  dialog[open]::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+.close-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s;
 
-  &::before {
-    transform: rotate(45deg);
-    left: 8px;
-    content: '';
-    position: absolute;
-    top: 12px;
-    width: 14px;
-    height: 3px;
-    background-color: #8f9cb5;
-  }
-
-  &::after {
-    transform: rotate(135deg);
-    left: 8px;
-    content: '';
-    position: absolute;
-    top: 12px;
-    width: 14px;
-    height: 3px;
-    background-color: #8f9cb5;
-  }
+  &:hover { color: #ccc; }
 }
 
-.cd-buttons {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.prompt-text {
+  margin: 0 0 28px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #d0d0d0;
+  padding-right: 20px;
+}
+
+.prompt-actions {
   display: flex;
-  a {
-    display: block;
-    height: 60px;
-    line-height: 60px;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: #fff;
-  }
-  li:first-child a {
-    background: #fc7169;
-    border-radius: 0 0 0 .25em;
-    &:hover {
-        background-color: #fc8982;
-    }
-  }
-  li:last-child a {
-    background: #b6bece;
-    border-radius: 0 0 .25em 0;
-    &:hover {
-        background-color: #c5ccd8;
-    }
-  }
-  li {
-    padding: 0;
-    margin: 0;
-    flex: 1;
-  }
+  gap: 10px;
+  justify-content: flex-end;
 }
 
-.img-replace {
-  display: inline-block;
-  overflow: hidden;
-  text-indent: 100%;
-  color: transparent;
-  white-space: nowrap;
-  text-wrap: pretty;
+.btn {
+  padding: 8px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.btn--confirm {
+  background: #c0392b;
+  color: #fff;
+}
+
+.btn--cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
 }
 </style>

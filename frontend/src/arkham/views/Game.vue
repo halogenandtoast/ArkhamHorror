@@ -635,6 +635,15 @@ async function chooseDeck(deckId: string): Promise<void> {
   }
 }
 
+async function chooseDeckList(deckList: object): Promise<void> {
+  if(game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
+    game.value.question = {}
+    processing.value = true
+    send(JSON.stringify({tag: 'DeckListAnswer', deckList, playerId: playerId.value}))
+  }
+}
+
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question
@@ -685,6 +694,7 @@ function debugExport (exportType: ExportType) {
 
 // provides
 provide('chooseDeck', chooseDeck)
+provide('chooseDeckList', chooseDeckList)
 provide('send', send)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)

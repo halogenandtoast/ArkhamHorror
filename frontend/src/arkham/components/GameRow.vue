@@ -5,6 +5,7 @@ import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { CampaignDetails } from '@/arkham/types/Campaign';
 import type { ScenarioDetails } from '@/arkham/types/Scenario';
 import { imgsrc } from '@/arkham/helpers';
+import Prompt from '@/components/Prompt.vue'
 
 const props = withDefaults(defineProps<{
   game: GameDetails
@@ -71,16 +72,14 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <div class="game-difficulty">{{difficulty}}</div>
 
           <div v-if="deleteGame" class="game-delete">
-              <transition name="slide">
-                <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
-              </transition>
-              <transition name="slide">
-                <div class="delete-buttons" v-show="deleting">
-                  <button href="#delete" @click.prevent="deleting = false">Cancel</button>
-                  <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
-                </div>
-              </transition>
-            </div>
+            <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+          </div>
+          <Prompt
+            v-if="deleting"
+            prompt="Are you sure you want to delete this game?"
+            :yes="deleteGame"
+            :no="() => deleting = false"
+          />
         </div>
       </div>
       <div class="game-subdetails">
@@ -378,41 +377,6 @@ h2 {
   text-transform: uppercase;
 }
 
-.delete-buttons {
-  display: flex;
-  gap: 5px;
-
-  button {
-    border: 0;
-    padding: 5px 10px;
-    border-radius: 3px;
-  }
-
-  .delete-button {
-    background-color: var(--delete);
-  }
-}
-
-.slide-leave-active ,
-.slide-enter-active {
-  transition: all 0.3s linear;
-}
-
-.slide-enter-active {
-  transition-delay: 0.2s;
-}
-
-.slide-enter-to,
-.slide-leave-from {
-  max-width: 1000px;
-  opacity: 1;
-}
-
-.slide-enter-from, .slide-leave-to {
-  overflow: hidden;
-  max-width: 0;
-  opacity: 0;
-}
 
 .solo {
   color: rgba(255, 255, 255, 0.5);

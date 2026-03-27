@@ -100,11 +100,21 @@ function getCardName(s: string) {
 }
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
+
+const scenarioIconId = computed<string | null>(() => {
+  const s = props.step
+  if (s.tag === 'ScenarioStep') return s.contents.replace(/^c/, '')
+  if (s.tag === 'ScenarioStepWithOptions') return s.contents[0].replace(/^c/, '')
+  if (s.tag === 'StandaloneScenarioStep') return s.contents[0].replace(/^c/, '')
+  if (s.tag === 'StandaloneScenarioStepWithOptions') return s.contents[0].replace(/^c/, '')
+  return null
+})
 </script>
 
 <template>
   <div class="breakdown">
     <header class="breakdown-header" @click="collapsed = !collapsed">
+      <img v-if="scenarioIconId" :src="imgsrc(`sets/${scenarioIconId}.png`)" class="scenario-icon" />
       <h2 class="title">{{name}}</h2>
       <section class="amounts">
         <div class="investigator-amount" v-for="[investigator, total] in headerInvestigators" :key="investigator.id">
@@ -174,12 +184,20 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
   border-bottom-color: transparent;
 }
 
+.scenario-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1) opacity(0.75);
+}
+
 h2.title {
   flex: 1;
   font-family: teutonic, sans-serif;
   font-size: 1.1em;
   font-weight: normal;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.75);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0;

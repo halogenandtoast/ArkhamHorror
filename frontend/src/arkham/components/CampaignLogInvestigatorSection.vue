@@ -55,7 +55,7 @@ const { t } = useI18n()
   font-family: teutonic, sans-serif;
   font-size: 1.1em;
   font-weight: normal;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.75);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0 0 10px;

@@ -13,11 +13,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const deckUrlToPage = (url: string): string => {
-  // converts https://arkhamdb.com/api/public/decklist/25027
-  // to https://arkhamdb.com/decklist/view/25027
-  // OR
-  // converts https://arkhamdb.com/api/public/deck/25027
-  // to https://arkhamdb.com/deck/view/25027
   return url
     .replace("https://arkhamdb.com", localizeArkhamDBBaseUrl())
     .replace("/api/public/decklist", "/decklist/view")
@@ -40,7 +35,6 @@ const deckClass = computed(() => {
   if (deckInvestigator.value) {
     return investigatorClass(deckInvestigator.value)
   }
-
   return {};
 })
 
@@ -53,104 +47,78 @@ const tabooList = computed(() => {
   <div class="decklist box" :class="deckClass">
     <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
     <div class="deck-details">
-      <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
-      <span v-if="tabooList" class="taboo-list"><font-awesome-icon icon="book" /> Taboo: {{tabooList}}</span>
-    </div>
-    <div class="open-deck">
-      <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
-    </div>
-    <div v-if="deck.url && sync" class="sync-deck">
-      <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-    </div>
-    <div v-if="markDelete" class="deck-delete">
-      <a href="#delete" @click.prevent="markDelete"><font-awesome-icon icon="trash" /></a>
+      <div class="deck-main">
+        <router-link class="deck-name" :to="{ name: 'Deck', params: { deckId: deck.id }}">{{ deck.name }}</router-link>
+        <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+      </div>
+      <div class="deck-actions">
+        <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB">
+          <font-awesome-icon icon="external-link" />
+        </a>
+        <a v-if="deck.url && sync" class="action-btn" href="#" title="Sync deck" @click.prevent="sync">
+          <font-awesome-icon icon="refresh" />
+        </a>
+        <a v-if="markDelete" class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="markDelete">
+          <font-awesome-icon icon="trash" />
+        </a>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.deck {
+.decklist {
   display: flex;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 3px;
-  span {
-    flex: 1;
-  }
-  a {
-    color: var(--title);
-    &:hover {
-      color: var(--title);
-    }
-  }
-}
+  gap: 16px;
+  color: #f0f0f0;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s, border-color 0.2s;
 
-h2 {
-  color: #656A84;
-  margin-left: 10px;
-  text-transform: uppercase;
-}
-
-.open-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.sync-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.deck-delete {
-  justify-self: flex-end;
-  align-self: flex-start;
-  a {
-    color: #660000;
-    &:hover {
-      color: #990000;
-    }
-  }
+  &.guardian { border-left-color: var(--guardian-dark); &:hover { background-color: var(--guardian-extra-dark); } }
+  &.seeker   { border-left-color: var(--seeker-dark);   &:hover { background-color: var(--seeker-extra-dark); } }
+  &.rogue    { border-left-color: var(--rogue-dark);    &:hover { background-color: var(--rogue-extra-dark); } }
+  &.mystic   { border-left-color: var(--mystic-dark);   &:hover { background-color: var(--mystic-extra-dark); } }
+  &.survivor { border-left-color: var(--survivor-dark); &:hover { background-color: var(--survivor-extra-dark); } }
+  &.neutral  { border-left-color: var(--neutral-dark);  &:hover { background-color: var(--neutral-extra-dark); } }
 }
 
 .portrait--decklist {
   width: 150px;
-  margin-right: 10px;
   border-radius: 5px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
-.deck-title {
-  font-weight: 800;
+.deck-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.deck-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.deck-name {
   font-size: 1.2em;
-  a {
-    color: var(--title);
-    text-decoration: none;
-  }
+  font-weight: 800;
+  color: var(--title);
+  text-decoration: none;
+  line-height: 1.2;
+  transition: color 0.15s;
+
+  &:hover { color: var(--spooky-green); }
 }
 
-.deck-move,
-.deck-enter-active,
-.deck-leave-active {
-  transition: all 0.5s ease;
-}
-
-.deck-enter-from,
-.deck-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.deck-leave-active {
-  position: absolute;
-}
-
-.decklist span.taboo-list {
+.taboo-badge {
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
-  flex: none;
   gap: 5px;
   width: fit-content;
   padding: 1px 7px;
@@ -164,58 +132,19 @@ h2 {
   letter-spacing: 0.02em;
 }
 
-.deck-details {
+.deck-actions {
   display: flex;
-  flex-direction: column;
-  flex: 1;
+  align-items: center;
+  gap: 14px;
 }
 
-.decklist {
-  display: flex;
-  color: #f0f0f0;
-  transition: all 0.5s;
+.action-btn {
+  color: #8a93a8;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: color 0.15s;
 
-  span {
-    flex: 1;
-  }
-
-  a {
-    color: var(--title);
-    font-weight: bolder;
-
-    &:hover {
-      color: rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  &.guardian:hover {
-    background-color: var(--guardian-extra-dark);
-    border-color: var(--guardian-dark);
-  }
-
-  &.seeker:hover {
-    background-color: var(--seeker-extra-dark);
-    border-color: var(--seeker-dark);
-  }
-
-  &.rogue:hover {
-    background-color: var(--rogue-extra-dark);
-    border-color: var(--rogue-dark);
-  }
-
-  &.mystic:hover {
-    background-color: var(--mystic-extra-dark);
-    border-color: var(--mystic-dark);
-  }
-
-  &.survivor:hover {
-    background-color: var(--survivor-extra-dark);
-    border-color: var(--survivor-dark);
-  }
-
-  &.neutral:hover {
-    background-color: var(--neutral-extra-dark);
-    border-color: var(--neutral-dark);
-  }
+  &:hover { color: #fff; }
+  &.action-btn--delete { &:hover { color: #ff6666; } }
 }
 </style>

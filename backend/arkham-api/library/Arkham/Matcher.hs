@@ -408,6 +408,9 @@ eventAt = EventAt . LocationWithId
 eventControlledBy :: InvestigatorId -> EventMatcher
 eventControlledBy = EventControlledBy . InvestigatorWithId
 
+eventOwnedBy :: InvestigatorId -> EventMatcher
+eventOwnedBy = EventOwnedBy . InvestigatorWithId
+
 eventPlayedBy :: InvestigatorId -> EventMatcher
 eventPlayedBy = EventPlayedBy . InvestigatorWithId
 

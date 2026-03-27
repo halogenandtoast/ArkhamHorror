@@ -473,7 +473,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     events <-
       select
         $ oneOf
-          [ eventControlledBy (toId investigator') <> mapOneOf EventWithPlacement [Limbo, Unplaced]
+          [ eventOwnedBy (toId investigator') <> mapOneOf EventWithPlacement [Limbo, Unplaced]
           , mapOneOf
               EventWithPlacement
               [ AttachedToInvestigator $ toId investigator'

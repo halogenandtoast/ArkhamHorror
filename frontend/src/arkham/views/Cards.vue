@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
-import { localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
-import CardImage from '@/arkham/components/CardImage.vue';
+import CardListView from '@/arkham/components/CardListView.vue';
+import CardImageView from '@/arkham/components/CardImageView.vue';
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
@@ -398,26 +398,6 @@ const cardName = (card: Arkham.CardDef) => {
   return `${card.name.title}${subtitle}`
 }
 
-const cardCost = (card: Arkham.CardDef) => {
-  if (card.cost?.tag === "StaticCost") {
-    return card.cost.contents
-  }
-
-  if (card.cost?.tag === "DynamicCost") {
-    return -2
-  }
-
-  if (card.cost?.tag === "DeferredCost") {
-    return -2
-  }
-
-  if (card.cost?.tag === "DiscardAmountCost") {
-    return -2
-  }
-
-  return null
-}
-
 const cardType = (card: Arkham.CardDef) => {
   switch(card.cardType) {
     case "PlayerTreacheryType":
@@ -429,59 +409,9 @@ const cardType = (card: Arkham.CardDef) => {
   }
 }
 
-const cardTraits = (card: Arkham.CardDef) => {
-  if (card.cardTraits.length === 0) { return '' }
-  return `${card.cardTraits.join('. ')}.`
-}
-
-const levelText = (card: Arkham.CardDef) => {
-  if (!card.level) return ''
-  if (card.level === 0) return ''
-  return ` (${card.level})`
-}
-
-const cardIcons = (card: Arkham.CardDef) => {
-  return card.skills.map((s) => {
-    if(s.tag === "SkillIcon") {
-      switch(s.contents) {
-        case "SkillWillpower": return "willpower"
-        case "SkillIntellect": return "intellect"
-        case "SkillCombat": return "combat"
-        case "SkillAgility": return "agility"
-        default: return "unknown"
-      }
-    }
-
-    if (s.tag == "WildIcon" || s.tag == "WildMinusIcon") {
-      return "wild"
-    }
-
-    return "unknown"
-  })
-}
-
 const cardSet = (card: Arkham.CardDef) => {
   const cardCode = parseInt(card.art)
   return sets.find((s) => cardCode >= s.min && cardCode <= s.max)
-}
-
-const cardSetText = (card: Arkham.CardDef) => {
-  const setNumber = parseInt(card.art.slice(2,))
-  const language = localStorage.getItem('language') || 'en'
-  var setName = ''
-
-  if (language !== 'en') {
-    const match: ArkhamDBCard | null = store.getDbCard(card.art)
-    if (match) setName = match.pack_name
-  }
-
-  if (!setName) {
-    const set = cardSet(card)
-    if (set !== null && set !== undefined) setName = set.name
-  }
-
-  if (setName) return `${setName} ${setNumber % 500}`
-  else return "Unknown"
 }
 
 const cycleSets = (cycle: CardCycle) => {
@@ -568,37 +498,8 @@ const toggleIncludeEncounter = () => {
           <span>Include Encounter</span>
         </label>
       </header>
-      <div class="cards" v-if="view == View.Image">
-        <a v-for="card in cards" :key="card.art" target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
-          <CardImage :card="card" />
-        </a>
-      </div>
-      <table class="card-table" v-if="view == View.List">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Class</th>
-            <th>Cost</th>
-            <th>Type</th>
-            <th>Icons</th>
-            <th>Traits</th>
-            <th>Set</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="card in cards" :key="card.art">
-            <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{cardName(card)}}{{levelText(card)}}</a></td>
-            <td>{{card.classSymbols.join(', ')}}</td>
-            <td>{{cardCost(card)}}</td>
-            <td>{{cardType(card)}}</td>
-            <td>
-              <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]" ></i>
-            </td>
-            <td>{{cardTraits(card)}}</td>
-            <td>{{cardSetText(card)}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <CardImageView v-if="view == View.Image" :cards="cards" />
+      <CardListView v-if="view == View.List" :cards="cards" />
     </div>
   </div>
 </template>
@@ -829,89 +730,4 @@ header {
   }
 }
 
-/* ── Card grid ──────────────────────────────────────────── */
-
-.cards {
-  flex: 1;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-  padding: 16px;
-  align-content: start;
-
-  > a {
-    display: flex;
-    justify-content: center;
-  }
-
-  &:deep(.card-container) {
-    width: 100%;
-    max-width: 240px;
-  }
-}
-
-/* ── Card table ─────────────────────────────────────────── */
-
-.card-table {
-  display: block;
-  overflow-y: auto;
-  flex: 1;
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.86rem;
-}
-
-.card-table thead {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.card-table th {
-  text-align: left;
-  padding: 8px 10px;
-  color: #888;
-  background: color-mix(in srgb, var(--background) 96%, transparent);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
-
-  &:first-child { padding-left: 20px; }
-}
-
-.card-table td {
-  padding: 6px 10px;
-  color: #cecece;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-
-  &:first-child { padding-left: 20px; }
-}
-
-.card-table tbody tr {
-  transition: background 0.1s;
-  &:hover { background: rgba(255,255,255,0.04); }
-}
-
-/* ── Icons ──────────────────────────────────────────────── */
-
-i { font-style: normal; }
-
-.willpower { font-size: 1.3em; margin: 0 1px; color: var(--willpower); }
-.intellect { font-size: 1.3em; margin: 0 1px; color: var(--intellect); }
-.combat    { font-size: 1.3em; margin: 0 1px; color: var(--combat); }
-.agility   { font-size: 1.3em; margin: 0 1px; color: var(--agility); }
-.wild      { font-size: 1.3em; margin: 0 1px; color: var(--wild); }
-
-/* ── Links ──────────────────────────────────────────────── */
-
-a {
-  color: var(--spooky-green);
-  text-decoration: none;
-  font-weight: 500;
-  &:hover { opacity: 0.8; }
-}
 </style>

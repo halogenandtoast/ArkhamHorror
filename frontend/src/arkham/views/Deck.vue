@@ -7,10 +7,11 @@ import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
 import * as DeckHelpers from '@/arkham/types/Deck';
 import Prompt from '@/components/Prompt.vue'
+import CardListView from '@/arkham/components/CardListView.vue'
+import CardImageView from '@/arkham/components/CardImageView.vue'
 import { useToast } from "vue-toastification";
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
-
-import sets from '@/arkham/data/sets.json'
+import { displayTabooId } from '@/arkham/taboo'
 
 export interface Props {
   deckId: string
@@ -56,7 +57,6 @@ fetchCards(true).then((response) => {
   })
 })
 
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
 const view = ref(View.List)
 
 const cards = computed(() => {
@@ -68,117 +68,35 @@ const cards = computed(() => {
     if (key === "c01000") {
       return Array(value).fill({ cardCode: key, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null })
     }
-    
+
     const result: Arkham.CardDef | undefined = allCards.value.find((c) => `c${c.art}` === key)
     const language = localStorage.getItem('language') || 'en'
     if (language === 'en') return Array(value).fill(result)
-    
+
     if (!result) return
     const match: ArkhamDBCard | null = store.getDbCard(result.art)
     if (!match) return Array(value).fill(result)
-    
+
     // Name
-    
     result.name.title = match.name
     if (match.subname) result.name.subtitle = match.subname
-    
+
     // Class
     if (match.faction_name && result.classSymbols.length > 0) result.classSymbols[0] = match.faction_name
     if (match.faction2_name && result.classSymbols.length > 1) {
       result.classSymbols[1] = match.faction2_name
       if (match.faction3_name && result.classSymbols.length > 2) result.classSymbols[2] = match.faction3_name
     }
-    
+
     // Type
     result.cardType = match.type_name
-    
+
     // Traits
     if (match.traits) result.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
-    
-    // Done...
+
     return Array(value).fill(result)
   })
 })
-
-const cardName = (card: Arkham.CardDef) => {
-  const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
-
-  return `${card.name.title}${subtitle}`
-}
-
-const cardCost = (card: Arkham.CardDef) => {
-  if (card.cost?.tag === "StaticCost") return card.cost.contents
-  if (card.cost?.tag === "DynamicCost") return -2
-  if (card.cost?.tag === "DeferredCost") return -2
-  if (card.cost?.tag === "DiscardAmountCost") return -2
-
-  return null
-}
-
-const cardType = (card: Arkham.CardDef) => {
-  switch(card.cardType) {
-    case "PlayerTreacheryType":
-      return "Treachery"
-    case "PlayerEnemyType":
-      return "Enemy"
-    default:
-      return card.cardType.replace(/Type$/, '')
-  }
-}
-
-const cardTraits = (card: Arkham.CardDef) => {
-  if (card.cardTraits.length === 0) { return '' }
-  return `${card.cardTraits.join('. ')}.`
-}
-
-const levelText = (card: Arkham.CardDef) => {
-  if (card.level === 0 || card.level === null) return ''
-  return ` (${card.level})`
-}
-
-const cardIcons = (card: Arkham.CardDef) => {
-  return card.skills.map((s) => {
-    if(s.tag === "SkillIcon") {
-      switch(s.contents) {
-        case "SkillWillpower": return "willpower"
-        case "SkillIntellect": return "intellect"
-        case "SkillCombat": return "combat"
-        case "SkillAgility": return "agility"
-        default: return "unknown"
-      }
-    }
-
-    if (s.tag == "WildIcon" || s.tag == "WildMinusIcon") {
-      return "wild"
-    }
-
-    return "unknown"
-  })
-}
-
-const cardSet = (card: Arkham.CardDef) => {
-  const cardCode = parseInt(card.art)
-  return sets.find((s) => cardCode >= s.min && cardCode <= s.max)
-}
-
-const cardSetText = (card: Arkham.CardDef) => {
-  const setNumber = parseInt(card.art.slice(2,))
-  const language = localStorage.getItem('language') || 'en'
-  var setName = ''
-  
-  if (language !== 'en') {
-    const match: ArkhamDBCard | null = store.getDbCard(card.art)
-    if (match) setName = match.pack_name
-  }
-  
-  if (!setName) {
-    const set = cardSet(card)
-    if (set !== null && set !== undefined) setName = set.name
-  }
-  
-  if (setName) return `${setName} ${setNumber % 500}`
-  else return "Unknown"
-}
 
 async function deleteDeckEvent() {
   if (deck.value) {
@@ -198,11 +116,6 @@ async function sync() {
 }
 
 const deckUrlToPage = (url: string): string => {
-  // converts https://arkhamdb.com/api/public/decklist/25027
-  // to https://arkhamdb.com/decklist/view/25027
-  // OR
-  // converts https://arkhamdb.com/api/public/deck/25027
-  // to https://arkhamdb.com/deck/view/25027
   return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
@@ -227,6 +140,9 @@ const deckClass = computed(() => {
   return {}
 })
 
+const tabooList = computed(() => {
+  return deck.value?.list.taboo_id ? displayTabooId(deck.value.list.taboo_id) : null
+})
 
 watch(deckRef, (el) => {
   if (el !== null) {
@@ -248,7 +164,10 @@ watch(deckRef, (el) => {
         <template v-if="deck">
           <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
           <div class="deck--details">
-            <h1 class="deck-title">{{deck.name}}</h1>
+            <div class="deck-main">
+              <h1 class="deck-title">{{deck.name}}</h1>
+              <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+            </div>
             <div class="deck--actions">
               <div class="deck--view-options">
                 <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
@@ -258,42 +177,17 @@ watch(deckRef, (el) => {
                   <font-awesome-icon icon="image" />
                 </button>
               </div>
-              <div class="deck--non-view-options">
-                <div class="open-deck">
-                  <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
-                </div>
-                <div v-if="deck.url" class="sync-deck">
-                  <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-                </div>
-                <div class="deck-delete">
-                  <a href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
-                </div>
+              <div class="deck-actions">
+                <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB"><font-awesome-icon icon="external-link" /></a>
+                <a v-if="deck.url" class="action-btn" href="#" title="Sync deck" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+                <a class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
               </div>
             </div>
           </div>
         </template>
       </header>
-      <div class="cards" v-if="view == View.Image">
-        <img class="card" v-for="(card, idx) in cards" :key="idx" :src="image(card)" />
-      </div>
-      <table class="box" v-if="view == View.List">
-        <thead>
-          <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
-        </thead>
-        <tbody>
-          <tr v-for="(card, idx) in cards" :key="idx">
-            <td>{{cardName(card)}}{{levelText(card)}}</td>
-            <td>{{card.classSymbols.join(', ')}}</td>
-            <td>{{cardCost(card)}}</td>
-            <td>{{cardType(card)}}</td>
-            <td>
-              <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]" ></i>
-            </td>
-            <td>{{cardTraits(card)}}</td>
-            <td>{{cardSetText(card)}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <CardImageView v-if="view == View.Image" :cards="cards" />
+      <CardListView v-if="view == View.List" :cards="cards" />
     </div>
     <Prompt
       v-if="deleting"
@@ -305,259 +199,57 @@ watch(deckRef, (el) => {
 </template>
 
 <style scoped>
+/* ── Layout ─────────────────────────────────────────────── */
+
 .container {
   display: flex;
-  min-width: 60vw;
-  margin: 0 auto;
-  margin-top: 20px;
+  height: calc(100vh - 40px);
+  max-width: unset;
+  margin: 0;
+  overflow: hidden;
 }
 
 .results {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.card {
-  width: calc(100% - 20px);
-  margin: 10px;
-  border-radius: 10px;
+/* ── Deck header ─────────────────────────────────────────── */
+
+.deck {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  color: #f0f0f0;
+  background: var(--box-background);
+  border-left: 4px solid transparent;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
+  position: sticky;
+  position: -webkit-sticky;
+  top: -1px;
+  flex-shrink: 0;
 
-.cards {
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  padding: 10px;
-}
+  &.guardian { border-left-color: var(--guardian-dark); background: linear-gradient(30deg, var(--guardian-extra-dark), var(--guardian-dark)); }
+  &.seeker   { border-left-color: var(--seeker-dark);   background: linear-gradient(30deg, var(--seeker-extra-dark), var(--seeker-dark)); }
+  &.rogue    { border-left-color: var(--rogue-dark);    background: linear-gradient(30deg, var(--rogue-extra-dark), var(--rogue-dark)); }
+  &.mystic   { border-left-color: var(--mystic-dark);   background: linear-gradient(30deg, var(--mystic-extra-dark), var(--mystic-dark)); }
+  &.survivor { border-left-color: var(--survivor-dark); background: linear-gradient(30deg, var(--survivor-extra-dark), var(--survivor-dark)); }
+  &.neutral  { border-left-color: var(--neutral-dark);  background: linear-gradient(30deg, var(--neutral-extra-dark), var(--neutral-dark)); }
 
-table.box {
-  width: calc(100% - 40px);
-  padding: 0;
-  margin: 20px;
-  border-radius: 10px;
-  border-spacing: 0;
-  background-color: rgba(255,255,255,0.05);
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
-
-th {
-  text-align: left;
-}
-
-tr td:nth-child(1){
-  padding-left: 20px;
-}
-
-tr th:nth-child(1){
-  padding-left: 20px;
-}
-
-tbody td {
-  padding: 5px;
-}
-
-thead tr th {
-  color: #aaa;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 5px 5px;
-
-  &:nth-child(1) {
-    border-top-left-radius: 10px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 10px;
-  }
-}
-
-tr {
-  color: #cecece;
-}
-
-tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.willpower {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--willpower);
-}
-
-.intellect {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--intellect);
-}
-
-.combat {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--combat);
-}
-
-.agility {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--agility);
-}
-
-.wild {
-  font-size: 1.5em;
-  margin: 0 2px;
-  color: var(--wild);
-}
-
-a {
-  font-weight: bold;
-  color: var(--spooky-green);
-  text-decoration: none;
-  &:hover {
-    color: var(--spooky-green)-light;
-  }
-}
-
-.cycles {
-  color: #999;
-  overflow-y: auto;
-}
-
-button {
-  border: 0;
-}
-
-i {
-  font-style: normal;
-}
-
-.pressed {
-  background-color: #333;
-  color: white;
-}
-
-/* deck header */
-
-.open-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.sync-deck {
-  justify-self: flex-end;
-  align-self: flex-start;
-  margin-right: 10px;
-}
-
-.deck-delete {
-  justify-self: flex-end;
-  align-self: flex-start;
-  a {
-    color: var(--title);
-    &:hover {
-      color: #990000;
-    }
+  &.is-pinned {
+    background: rgba(28, 28, 41, 1) !important;
+    border-left-color: transparent !important;
   }
 }
 
 .portrait--decklist {
   width: 200px;
-  margin-right: 10px;
+  flex-shrink: 0;
+  align-self: flex-start;
   border-radius: 10px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
-
-.deck-title {
-  font-weight: 800;
-  font-size: 2em;
-  margin: 0;
-  padding: 0;
-  flex: 1;
-}
-
-.deck {
-  background-color: #15192C;
-  color: #f0f0f0;
-  margin: 0 20px;
-  padding: 20px;
-
-  &.guardian {
-    background-color: var(--guardian-dark);
-    background: linear-gradient(30deg, var(--guardian-extra-dark), var(--guardian-dark));
-  }
-
-  &.seeker {
-    background: linear-gradient(30deg, var(--seeker-extra-dark), var(--seeker-dark));
-  }
-
-  &.rogue {
-    background: linear-gradient(30deg, var(--rogue-extra-dark), var(--rogue-dark));
-  }
-
-  &.mystic {
-    background: linear-gradient(30deg, var(--mystic-extra-dark), var(--mystic-dark));
-  }
-
-  &.survivor {
-    background: linear-gradient(30deg, var(--survivor-extra-dark), var(--survivor-dark));
-  }
-
-  &.neutral {
-    background-color: var(--neutral-dark);
-    background-image: linear-gradient(30deg, var(--neutral-extra-dark), var(--neutral-dark));
-  }
-
-  /*&.survivor::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    background: #0000000d;
-    mask-position: left top;
-    mask-size: cover;
-    -webkit-mask-image: url(/img/arkham/masks/survivor.svg);
-    mask-image: url(/img/arkham/masks/survivor.svg);
-    z-index: -1;
-  }*/
-  a {
-    color: var(--title);
-    font-weight: bolder;
-    &:hover {
-      color: rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  display: flex;
-
-  width: calc(100% - 40px);
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  border-radius: 10px;
-  &.is-pinned {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    opacity: 0.98;
-  }
-  background-color: rgba(0,0,0,0.3);
-
-  color: white;
-
-  input {
-    margin-right: 10px;
-  }
-
-  button {
-    padding: 5px;
-  }
-
-  position: sticky;
-  position: -webkit-sticky;
-  top: -1px;
-
-  &.is-pinned {
-    background-color: rgba(28, 28, 41, 1) !important;
-  }
 }
 
 .deck--details {
@@ -566,17 +258,79 @@ i {
   flex-direction: column;
 }
 
+.deck-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.deck-title {
+  font-weight: 800;
+  font-size: 2em;
+  margin: 0;
+  padding: 0;
+}
+
+.taboo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 1px 7px;
+  line-height: 1.6;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #c8a96e;
+  background: rgba(200, 169, 110, 0.12);
+  border: 1px solid rgba(200, 169, 110, 0.25);
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
 .deck--actions {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
 }
 
 .deck--view-options {
   display: flex;
-  flex: 1;
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 2px;
+  width: fit-content;
+
+  button {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 9px;
+    color: #777;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover { color: #ccc; }
+    &.pressed { background: rgba(255,255,255,0.12); color: #eee; }
+  }
 }
 
-.deck--non-view-options {
+.deck-actions {
   display: flex;
-  align-self: flex-end;
+  align-items: center;
+  gap: 14px;
+}
+
+.action-btn {
+  color: #8a93a8;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover { color: #fff; }
+  &.action-btn--delete:hover { color: #ff6666; }
 }
 </style>

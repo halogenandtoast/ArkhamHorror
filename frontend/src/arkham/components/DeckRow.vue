@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { displayTabooId } from '@/arkham/taboo';
 import {imgsrc, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
@@ -11,6 +12,11 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const router = useRouter()
+
+function navigateToDeck() {
+  router.push({ name: 'Deck', params: { deckId: props.deck.id } })
+}
 
 const deckUrlToPage = (url: string): string => {
   return url
@@ -44,14 +50,14 @@ const tabooList = computed(() => {
 </script>
 
 <template>
-  <div class="decklist box" :class="deckClass">
+  <div class="decklist box" :class="deckClass" @click="navigateToDeck">
     <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
     <div class="deck-details">
       <div class="deck-main">
-        <router-link class="deck-name" :to="{ name: 'Deck', params: { deckId: deck.id }}">{{ deck.name }}</router-link>
+        <span class="deck-name">{{ deck.name }}</span>
         <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
       </div>
-      <div class="deck-actions">
+      <div class="deck-actions" @click.stop>
         <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB">
           <font-awesome-icon icon="external-link" />
         </a>
@@ -72,14 +78,15 @@ const tabooList = computed(() => {
   gap: 16px;
   color: #f0f0f0;
   border-left: 4px solid transparent;
+  cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
 
-  &.guardian { border-left-color: var(--guardian-dark); &:hover { background-color: var(--guardian-extra-dark); } }
-  &.seeker   { border-left-color: var(--seeker-dark);   &:hover { background-color: var(--seeker-extra-dark); } }
-  &.rogue    { border-left-color: var(--rogue-dark);    &:hover { background-color: var(--rogue-extra-dark); } }
-  &.mystic   { border-left-color: var(--mystic-dark);   &:hover { background-color: var(--mystic-extra-dark); } }
-  &.survivor { border-left-color: var(--survivor-dark); &:hover { background-color: var(--survivor-extra-dark); } }
-  &.neutral  { border-left-color: var(--neutral-dark);  &:hover { background-color: var(--neutral-extra-dark); } }
+  &.guardian { border-left-color: var(--guardian-dark); &:hover { background-color: var(--guardian-extra-dark); .deck-name { color: oklch(from var(--guardian-dark) calc(l + 0.2) c h); } } }
+  &.seeker   { border-left-color: var(--seeker-dark);   &:hover { background-color: var(--seeker-extra-dark);   .deck-name { color: oklch(from var(--seeker-dark)   calc(l + 0.2) c h); } } }
+  &.rogue    { border-left-color: var(--rogue-dark);    &:hover { background-color: var(--rogue-extra-dark);    .deck-name { color: oklch(from var(--rogue-dark)    calc(l + 0.2) c h); } } }
+  &.mystic   { border-left-color: var(--mystic-dark);   &:hover { background-color: var(--mystic-extra-dark);   .deck-name { color: oklch(from var(--mystic-dark)   calc(l + 0.2) c h); } } }
+  &.survivor { border-left-color: var(--survivor-dark); &:hover { background-color: var(--survivor-extra-dark); .deck-name { color: oklch(from var(--survivor-dark) calc(l + 0.2) c h); } } }
+  &.neutral  { border-left-color: var(--neutral-dark);  &:hover { background-color: var(--neutral-extra-dark);  .deck-name { color: oklch(from var(--neutral-dark)  calc(l + 0.2) c h); } } }
 }
 
 .portrait--decklist {
@@ -88,6 +95,11 @@ const tabooList = computed(() => {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   flex-shrink: 0;
   align-self: flex-start;
+  transition: transform 0.3s ease;
+
+  .decklist:hover & {
+    transform: scale(1.04);
+  }
 }
 
 .deck-details {
@@ -109,12 +121,10 @@ const tabooList = computed(() => {
   font-size: 1.2em;
   font-weight: 800;
   color: var(--title);
-  text-decoration: none;
   line-height: 1.2;
   transition: color 0.15s;
-
-  &:hover { color: var(--spooky-green); }
 }
+
 
 .taboo-badge {
   display: inline-flex;

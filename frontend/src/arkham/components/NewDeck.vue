@@ -9,8 +9,9 @@ import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
   noPortrait?: boolean
+  alwaysSave?: boolean
   setPortrait?: (src: string) => void
-}>(), { noPortrait: false })
+}>(), { noPortrait: false, alwaysSave: false })
 
 const emit = defineEmits(['newDeck', 'newDeckList'])
 
@@ -33,7 +34,8 @@ interface ArkhamDBCard {
 
 const errors = ref<string[]>([])
 const valid = ref(false)
-const saveDeck = ref(true)
+const saveDeck = computed(() => props.alwaysSave ? true : saveDeckToggle.value)
+const saveDeckToggle = ref(true)
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
 const deck = ref<string | null>(null)
@@ -181,7 +183,7 @@ async function createDeck() {
         <ArkhamDbDeck v-model="deckList" />
         <input type="file" accept=".json,application/json" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
-        <div class="save-option" :class="{ active: saveDeck }" @click="saveDeck = !saveDeck" role="checkbox" :aria-checked="saveDeck">
+        <div v-if="!alwaysSave" class="save-option" :class="{ active: saveDeck }" @click="saveDeckToggle = !saveDeckToggle" role="checkbox" :aria-checked="saveDeck">
           <div class="save-option-body">
             <span class="save-option-title">Save to Deck List</span>
             <span class="save-option-desc">Keep this deck available for future campaigns</span>
@@ -190,7 +192,7 @@ async function createDeck() {
             <div class="save-option-thumb" />
           </div>
         </div>
-        <button :disabled="!valid" @click.prevent="createDeck" class="primary-action">{{ saveDeck ? 'Save &amp; Use' : 'Use Without Saving' }}</button>
+        <button :disabled="!valid" @click.prevent="createDeck" class="primary-action">{{ alwaysSave ? 'Save' : saveDeck ? 'Save &amp; Use' : 'Use Without Saving' }}</button>
       </div>
     </div>
     <div class="errors" v-if="investigatorError">

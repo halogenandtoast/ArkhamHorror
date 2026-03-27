@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-defineProps<{ label: string }>()
+withDefaults(defineProps<{ label: string; danger?: boolean }>(), { danger: false })
 defineEmits(['click'])
 </script>
 
 <template>
-  <button class="primary-btn" @click="$emit('click')">{{ label }}</button>
+  <button class="primary-btn" :class="{ danger }" @click="$emit('click')">{{ label }}</button>
 </template>
 
 <style scoped>
@@ -25,6 +25,11 @@ defineEmits(['click'])
 
   &:hover {
     background: hsl(80, 35%, 32%);
+  }
+
+  &.danger {
+    background-color: #c0392b;
+    &:hover { background-color: #a93226; }
   }
 }
 </style>

@@ -76,11 +76,11 @@ async function sync(deck: Arkham.Deck) {
     <div id="decks">
       <header class="decks-header">
         <h2>My Decks</h2>
-        <PrimaryButton :label="showNewDeck ? 'Cancel' : 'New Deck'" @click="showNewDeck = !showNewDeck" />
+        <PrimaryButton :label="showNewDeck ? 'Cancel' : 'New Deck'" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
       </header>
 
       <div v-if="showNewDeck" class="new-deck-panel">
-        <NewDeck @new-deck="addDeck" />
+        <NewDeck always-save @new-deck="addDeck" />
       </div>
 
       <DeckToolbar

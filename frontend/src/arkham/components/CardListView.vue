@@ -122,13 +122,8 @@ const cardSetText = (card: Arkham.CardDef) => {
 <style scoped>
 .card-table-wrapper {
   flex: 1;
+  overflow-x: auto;
   overflow-y: auto;
-  @media (max-width: 768px) {
-    overflow-x: auto;
-    overflow-y: clip;
-    flex: none;
-    width: 100%;
-  }
 }
 
 .card-table {

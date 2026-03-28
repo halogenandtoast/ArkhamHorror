@@ -521,8 +521,6 @@ const showSidebar = ref(false)
   overflow: hidden;
   @media (max-width: 768px) {
     flex-direction: column;
-    height: auto;
-    overflow: visible;
   }
 }
 
@@ -728,10 +726,6 @@ const showSidebar = ref(false)
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  @media (max-width: 768px) {
-    overflow: visible;
-    min-height: 60vh;
-  }
 }
 
 header {

@@ -594,7 +594,8 @@ h2.title {
 
 .page-container {
   height: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: 100%;
   margin-block: 10px;
 }
@@ -626,7 +627,8 @@ h2.title {
 
 .router-container {
   position: relative;
-  overflow: auto;
+  overflow-x: clip;
+  overflow-y: auto;
 }
 
 footer {

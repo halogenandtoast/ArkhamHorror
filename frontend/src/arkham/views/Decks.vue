@@ -75,7 +75,7 @@ async function sync(deck: Arkham.Deck) {
   <div class="page-container">
     <div id="decks">
       <header class="decks-header">
-        <h2>My Decks</h2>
+        <h2>Decks</h2>
         <PrimaryButton :label="showNewDeck ? 'Cancel' : 'New Deck'" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
       </header>
 

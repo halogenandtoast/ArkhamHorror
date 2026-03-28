@@ -19,10 +19,6 @@ defineProps<{ cards: Arkham.CardDef[] }>()
   flex: 1;
   overflow-y: auto;
   display: grid;
-  @media (max-width: 768px) {
-    overflow: visible;
-    flex: none;
-  }
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
   padding: 16px;

@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { debugGame, deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
 import type { GameDetails } from '@/arkham/types/Game';
-import type { User } from '@/types';
+import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
@@ -15,7 +15,7 @@ const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
-const notifications: Ref<Notification[]> = ref([])
+const notifications: Ref<AppNotification[]> = ref([])
 
 const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
 
@@ -24,7 +24,7 @@ const finishedGames = computed(() => games.value.filter(g => g.gameState.tag ===
 
 fetchGames().then((result) => games.value = result.filter((g) => g.tag === 'game') as GameDetails[])
 
-fetchNotifications().then((result) => notifications.value = result.data.filter((n: number) => !dismissedNotifications.includes(n.id)))
+fetchNotifications().then((result) => notifications.value = result.filter((n: AppNotification) => !dismissedNotifications.includes(n.id)))
 
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
@@ -66,7 +66,7 @@ const toggleNewGame = () => {
   })
 }
 
-const dismissNotification = (notification) => {
+const dismissNotification = (notification: AppNotification) => {
   localStorage.setItem('dismissedNotifications', JSON.stringify([notification.id, ...dismissedNotifications]))
   notifications.value = notifications.value.filter(n => n.id !== notification.id)
 }
@@ -125,8 +125,9 @@ h2 {
   font-size: 2em;
   text-transform: uppercase;
   font-family: teutonic, sans-serif;
-  @media (max-width: 600px) {
-      text-align: center;
+  margin: 0;
+  @media (max-width: 768px) {
+    font-size: 1.5em;
   }
 }
 
@@ -150,6 +151,12 @@ h2 {
   max-width: 98vw;
   min-width: 60vw;
   margin: 0 auto;
+  @media (max-width: 768px) {
+    min-width: unset;
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
 }
 
 .slide-enter-active,

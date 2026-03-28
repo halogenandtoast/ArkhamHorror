@@ -120,6 +120,12 @@ async function sync(deck: Arkham.Deck) {
   min-width: 60vw;
   margin: 0 auto;
   padding: 0 20px;
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: unset;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
 }
 
 .decks-header {
@@ -134,6 +140,11 @@ async function sync(deck: Arkham.Deck) {
     text-transform: uppercase;
     font-family: teutonic, sans-serif;
     margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 

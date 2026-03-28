@@ -28,7 +28,7 @@ async function logout() {
     </span>
 
     <OnClickOutside @trigger="expanded = false">
-      <span class="user-links"> 
+      <span class="user-links">
         <template v-if="currentUser">
           <label for="dropdown-toggle" @click="expanded = !expanded">
             <span>{{currentUser.username}}</span>

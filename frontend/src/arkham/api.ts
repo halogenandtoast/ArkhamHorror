@@ -41,12 +41,16 @@ export const fetchGameReplay = async (gameId: string, step: number): Promise<Fet
   return { game: gameData, totalSteps }
 }
 
-interface Notification {
+export interface AppNotification {
+  id: number;
   body: string;
   created_at: Date;
 }
 
-export const fetchNotifications = (): Promise<Notification[]> => api.get('notifications')
+export const fetchNotifications = async (): Promise<AppNotification[]> => {
+  const { data } = await api.get('notifications')
+  return data
+}
 
 export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
   const { data } = await api.get(`admin/games/find/${playerId}`)

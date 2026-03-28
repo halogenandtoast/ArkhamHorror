@@ -168,20 +168,20 @@ watch(deckRef, (el) => {
               <h1 class="deck-title">{{deck.name}}</h1>
               <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
             </div>
-            <div class="deck--actions">
-              <div class="deck--view-options">
-                <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
-                  <font-awesome-icon icon="list" />
-                </button>
-                <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }">
-                  <font-awesome-icon icon="image" />
-                </button>
-              </div>
-              <div class="deck-actions">
-                <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB"><font-awesome-icon icon="external-link" /></a>
-                <a v-if="deck.url" class="action-btn" href="#" title="Sync deck" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-                <a class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
-              </div>
+          </div>
+          <div class="deck--actions">
+            <div class="deck--view-options">
+              <button @click.prevent="view = View.List" :class="{ pressed: view == View.List }">
+                <font-awesome-icon icon="list" />
+              </button>
+              <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }">
+                <font-awesome-icon icon="image" />
+              </button>
+            </div>
+            <div class="deck-actions">
+              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB"><font-awesome-icon icon="external-link" /></a>
+              <a v-if="deck.url" class="action-btn" href="#" title="Sync deck" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+              <a class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
             </div>
           </div>
         </template>
@@ -207,6 +207,12 @@ watch(deckRef, (el) => {
   max-width: unset;
   margin: 0;
   overflow: hidden;
+  @media (max-width: 768px) {
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: visible;
+    flex-direction: column;
+  }
 }
 
 .results {
@@ -214,14 +220,20 @@ watch(deckRef, (el) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  @media (max-width: 768px) {
+    overflow: visible;
+  }
 }
 
 /* ── Deck header ─────────────────────────────────────────── */
 
 .deck {
+  --deck-pad: 20px;
   display: flex;
-  gap: 16px;
-  padding: 20px;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 0;
+  padding: var(--deck-pad) 0 0; /* no horizontal padding — children handle their own spacing */
   color: #f0f0f0;
   background: var(--box-background);
   border-left: 4px solid transparent;
@@ -230,6 +242,12 @@ watch(deckRef, (el) => {
   position: -webkit-sticky;
   top: -1px;
   flex-shrink: 0;
+  align-items: flex-start;
+  @media (max-width: 768px) {
+    --deck-pad: 12px;
+    position: static;
+    padding: 10px 0 0;
+  }
 
   &.guardian { border-left-color: var(--guardian-dark); }
   &.seeker   { border-left-color: var(--seeker-dark); }
@@ -237,11 +255,6 @@ watch(deckRef, (el) => {
   &.mystic   { border-left-color: var(--mystic-dark); }
   &.survivor { border-left-color: var(--survivor-dark); }
   &.neutral  { border-left-color: var(--neutral-dark); }
-
-  &.is-pinned {
-    background: rgba(28, 28, 41, 1) !important;
-    border-left-color: transparent !important;
-  }
 }
 
 .portrait--decklist {
@@ -250,12 +263,20 @@ watch(deckRef, (el) => {
   align-self: flex-start;
   border-radius: 10px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  margin-left: var(--deck-pad);
+  @media (max-width: 768px) {
+    width: 72px;
+    border-radius: 6px;
+  }
 }
 
 .deck--details {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  margin-right: var(--deck-pad);
+  margin-bottom: var(--deck-pad);
 }
 
 .deck-main {
@@ -263,6 +284,10 @@ watch(deckRef, (el) => {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  @media (max-width: 768px) {
+    min-width: 0;
+    gap: 4px;
+  }
 }
 
 .deck-title {
@@ -270,6 +295,9 @@ watch(deckRef, (el) => {
   font-size: 2em;
   margin: 0;
   padding: 0;
+  @media (max-width: 768px) {
+    font-size: 1.1em;
+  }
 }
 
 .taboo-badge {
@@ -291,8 +319,11 @@ watch(deckRef, (el) => {
 .deck--actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: auto;
+  gap: 16px;
+  flex-basis: 100%;
+  padding: 8px var(--deck-pad);
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .deck--view-options {

@@ -91,21 +91,26 @@ const cardSetText = (card: Arkham.CardDef) => {
           <th>Cost</th>
           <th>Type</th>
           <th>Icons</th>
-          <th>Traits</th>
-          <th>Set</th>
+          <th class="traits-col">Traits</th>
+          <th class="set-col">Set</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(card, idx) in cards" :key="idx">
           <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a></td>
-          <td>{{ card.classSymbols.join(', ') }}</td>
+          <td>
+            <span class="class-text">{{ card.classSymbols.join(', ') }}</span>
+            <span class="class-icons">
+              <span v-for="sym in card.classSymbols" :key="sym" :class="`${sym.toLowerCase()}-icon`"></span>
+            </span>
+          </td>
           <td>{{ cardCost(card) }}</td>
           <td>{{ cardType(card) }}</td>
           <td>
             <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
           </td>
-          <td>{{ cardTraits(card) }}</td>
-          <td>{{ cardSetText(card) }}</td>
+          <td class="traits-col">{{ cardTraits(card) }}</td>
+          <td class="set-col">{{ cardSetText(card) }}</td>
         </tr>
       </tbody>
     </table>
@@ -116,46 +121,68 @@ const cardSetText = (card: Arkham.CardDef) => {
 .card-table-wrapper {
   flex: 1;
   overflow-y: auto;
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    overflow-y: clip;
+    flex: none;
+    width: 100%;
+  }
 }
 
 .card-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.86rem;
-}
-
-.card-table thead {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  @media (max-width: 768px) {
+    width: auto;
+    min-width: 580px;
+  }
 }
 
 .card-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   text-align: left;
-  padding: 8px 10px;
-  color: #888;
-  background: color-mix(in srgb, var(--background) 96%, transparent);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  padding: 11px 12px;
+  color: #a8a8a8;
+  background: var(--box-background);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
 
   &:first-child { padding-left: 20px; }
+
+  @media (max-width: 768px) {
+    padding: 8px 8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    &:first-child { padding-left: 12px; }
+  }
 }
 
 .card-table td {
-  padding: 6px 10px;
-  color: #cecece;
+  padding: 7px 12px;
+  color: #d0d0d0;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 
   &:first-child { padding-left: 20px; }
+
+  @media (max-width: 768px) {
+    padding: 5px 8px;
+    &:first-child { padding-left: 12px; }
+  }
 }
 
 .card-table tbody tr {
   transition: background 0.1s;
-  &:hover { background: rgba(255,255,255,0.04); }
+  &:hover { background: rgba(255,255,255,0.05); }
+  &:nth-child(even) { background: rgba(255,255,255,0.02); }
+  &:nth-child(even):hover { background: rgba(255,255,255,0.05); }
 }
 
 i { font-style: normal; }
@@ -171,5 +198,16 @@ a {
   text-decoration: none;
   font-weight: 500;
   &:hover { opacity: 0.8; }
+}
+
+.class-icons {
+  display: none;
+  gap: 2px;
+  span[class$="-icon"] { font-size: 1.1em; }
+}
+
+@media (max-width: 768px) {
+  .class-text { display: none; }
+  .class-icons { display: inline-flex; }
 }
 </style>

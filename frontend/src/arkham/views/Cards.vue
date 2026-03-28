@@ -445,11 +445,15 @@ const toggleIncludeEncounter = () => {
   const includeEncounter = route.query.includeEncounter === 'true'
   router.push({ name: 'Cards', query: { ...route.query, includeEncounter: !includeEncounter ? 'true' : undefined }})
 }
+
+const showSidebar = ref(false)
 </script>
 
 <template>
   <div class="container">
-    <div class="sidebar">
+    <div class="sidebar-overlay" :class="{ visible: showSidebar }" @click="showSidebar = false"></div>
+    <div class="sidebar" :class="{ open: showSidebar }">
+      <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
       <div class="chapter-tabs">
         <button
           :class="['chapter-tab', { active: activeChapter === 1 }]"
@@ -485,6 +489,10 @@ const toggleIncludeEncounter = () => {
     </div>
     <div class="results">
       <header>
+        <button class="sidebar-toggle" @click="showSidebar = !showSidebar" title="Browse sets">
+          <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
+          <font-awesome-icon icon="book" />
+        </button>
         <form @submit.prevent="setFilter">
           <input v-model="query" placeholder="Search cards..." />
           <button type="submit"><font-awesome-icon icon="search" /></button>
@@ -511,6 +519,11 @@ const toggleIncludeEncounter = () => {
   max-width: unset;
   margin: 0;
   overflow: hidden;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
 }
 
 /* ── Sidebar ────────────────────────────────────────────── */
@@ -521,6 +534,80 @@ const toggleIncludeEncounter = () => {
   width: clamp(200px, 18vw, 320px);
   border-right: 1px solid rgba(255,255,255,0.08);
   overflow: hidden;
+  @media (max-width: 768px) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    max-height: unset;
+    border-right: 1px solid rgba(255,255,255,0.12);
+    background: var(--background);
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+    &.open { transform: translateX(0); }
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+  @media (max-width: 768px) {
+    &.visible {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 49;
+    }
+  }
+}
+
+.sidebar-close {
+  display: none;
+  @media (max-width: 768px) {
+    display: flex;
+    align-self: flex-end;
+    margin: 8px 8px 0 auto;
+    background: transparent;
+    border: none;
+    color: #777;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 1.1em;
+    flex-shrink: 0;
+    &:hover { color: #ccc; }
+  }
+}
+
+.sidebar-toggle {
+  display: none;
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 32px;
+    padding: 0 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    color: #aaa;
+    cursor: pointer;
+    flex-shrink: 0;
+    &:hover { background: rgba(255,255,255,0.14); color: #eee; }
+  }
+}
+
+.toggle-arrow {
+  display: none;
+  @media (max-width: 768px) {
+    display: inline-block;
+    transform: rotate(180deg);
+    font-size: 0.65em;
+    opacity: 0.7;
+  }
 }
 
 .chapter-tabs {
@@ -641,6 +728,10 @@ const toggleIncludeEncounter = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  @media (max-width: 768px) {
+    overflow: visible;
+    min-height: 60vh;
+  }
 }
 
 header {

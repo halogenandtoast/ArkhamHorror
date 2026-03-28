@@ -22,6 +22,10 @@ defineEmits(['click'])
   font-weight: bolder;
   cursor: pointer;
   transition: background-color 0.3s linear;
+  @media (max-width: 768px) {
+    padding: 6px 10px;
+    font-size: 0.82em;
+  }
 
   &:hover {
     background: hsl(80, 35%, 32%);

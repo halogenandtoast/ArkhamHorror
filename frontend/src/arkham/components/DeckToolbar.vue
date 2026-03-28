@@ -56,6 +56,10 @@ function toggleClass(c: string) {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .class-filters {
@@ -63,6 +67,10 @@ function toggleClass(c: string) {
   flex-wrap: wrap;
   gap: 4px;
   flex: 1;
+  @media (max-width: 768px) {
+    flex: none;
+    gap: 4px;
+  }
 }
 
 .class-pill {
@@ -91,6 +99,14 @@ function toggleClass(c: string) {
   &.active.neutral  { background: var(--neutral-extra-dark);  border-color: var(--neutral-dark);  color: #fff; }
 
   span[class$="-icon"] { font-size: 1em; }
+
+  @media (max-width: 768px) {
+    flex: 1;
+    height: 36px;
+    padding: 0;
+    .pill-label { display: none; }
+    span[class$="-icon"] { font-size: 1.15em; }
+  }
 }
 
 /* Compact mode: icon-only square buttons */
@@ -118,6 +134,9 @@ function toggleClass(c: string) {
   display: flex;
   align-items: center;
   gap: 8px;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .search-input {
@@ -133,6 +152,11 @@ function toggleClass(c: string) {
 
   &::placeholder { color: #444; }
   &:focus { border-color: #444; }
+
+  @media (max-width: 768px) {
+    flex: 1;
+    width: unset;
+  }
 }
 
 .compact .search-input {

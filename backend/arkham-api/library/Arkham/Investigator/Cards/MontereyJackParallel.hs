@@ -51,10 +51,9 @@ instance RunMessage MontereyJackParallel where
       pure i
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
-      chooseUpToN
+      chooseN
         iid
         (1 + additionalTargets)
-        "Do not play"
         [targetLabel card [handleTargetChoice iid (attrs.ability 1) card] | card <- cards]
       pure i
     SearchFound iid (isTarget attrs -> True) _ [] -> do

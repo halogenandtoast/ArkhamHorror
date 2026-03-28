@@ -50,7 +50,7 @@ const SET_FONT_CHARS: Record<string, string> = {
   // Cycle 12 — Core 2026
   core2026:  '\uE900',
   // Cycle 50 — Return to...
-  rtnotz:    '\u0058', rtdwl:     '\u0053', rtptc:     '\u0048',
+  rtnotz:    '\u0058', rtdwl:     '\u004A', rtptc:     '\u0048',
   rttfa:     '\u0046', rttcu:     '\u0044',
   // Cycle 60 — Investigator Starter Decks
   nat:       '\u004B', har:       '\u004D', win:       '\u004F',

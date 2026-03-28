@@ -99,9 +99,11 @@ const cardSetText = (card: Arkham.CardDef) => {
         <tr v-for="(card, idx) in cards" :key="idx">
           <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a></td>
           <td>
-            <span class="class-text">{{ card.classSymbols.join(', ') }}</span>
+            <span class="class-text">
+              <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
+            </span>
             <span class="class-icons">
-              <span v-for="sym in card.classSymbols" :key="sym" :class="`${sym.toLowerCase()}-icon`"></span>
+              <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>
             </span>
           </td>
           <td>{{ cardCost(card) }}</td>
@@ -205,6 +207,13 @@ a {
   gap: 2px;
   span[class$="-icon"] { font-size: 1.1em; }
 }
+
+.guardian-sym  { color: var(--guardian); }
+.seeker-sym    { color: var(--seeker); }
+.rogue-sym     { color: var(--rogue); }
+.mystic-sym    { color: var(--mystic); }
+.survivor-sym  { color: var(--survivor); }
+.neutral-sym   { color: var(--neutral); }
 
 @media (max-width: 768px) {
   .class-text { display: none; }

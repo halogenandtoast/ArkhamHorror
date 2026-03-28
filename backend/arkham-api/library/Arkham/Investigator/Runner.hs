@@ -648,11 +648,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   InvestigatorMulligan iid | iid == investigatorId -> do
     unableToMulligan <- hasModifier a CannotMulligan
     hand <- field InvestigatorHand iid
-    if null hand || unableToMulligan
+    let mulliganableHand = filter (\c -> toCardId c `notElem` investigatorExcludeFromMulligan) hand
+    if null mulliganableHand || unableToMulligan
       then push $ FinishedWithMulligan investigatorId
       else Choose.chooseOneM iid do
         Choose.labeled "Done With Mulligan" $ push $ FinishedWithMulligan investigatorId
-        for_ hand \card ->
+        for_ mulliganableHand \card ->
           when (cdCanReplace $ toCardDef card) do
             Choose.targeting card do
               push $ DiscardCard iid GameSource (toCardId card)
@@ -682,10 +683,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) mods
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
+    let excludedCount = length $ filter (\c -> toCardId c `elem` investigatorExcludeFromMulligan) investigatorHand
     (discard, hand, deck) <-
       if any (`elem` mods) [CannotDrawCards, CannotManipulateDeck]
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
-        else drawOpeningHand a (startingHandAmount - length investigatorHand)
+        else drawOpeningHand a (startingHandAmount - (length investigatorHand - excludedCount))
     startsWithInHandCards <- traverse genCard investigatorStartsWithInHand
     for_ startsWithInHandCards \card -> push $ ReplaceCard card.id card
     let additionalHandCards = additionalStartingCards <> startsWithInHandCards
@@ -3221,12 +3223,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           startingHandAmount = foldr applyModifier 5 modifiers'
           applyModifier (StartingHand m) n = max 0 (n + m)
           applyModifier _ n = n
+          preExistingHand = map toCardId investigatorHand
         (discard, hand, deck) <- drawOpeningHand a startingHandAmount
         pure
           $ a
           & (discardL .~ discard)
           & (handL .~ hand)
           & (deckL .~ Deck deck)
+          & (excludeFromMulliganL .~ preExistingHand)
   Instead (DoDrawCards iid) msg' | iid == toId a -> do
     mMsg <-
       maybeToList <$> popMessageMatching \case

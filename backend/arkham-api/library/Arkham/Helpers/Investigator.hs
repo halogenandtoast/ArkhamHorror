@@ -426,6 +426,7 @@ investigator f cardDef Stats {..} =
                 , investigatorMutated = Nothing
                 , investigatorDeckUrl = Nothing
                 , investigatorSettings = defaultCardSettings
+                , investigatorExcludeFromMulligan = []
                 }
         }
 

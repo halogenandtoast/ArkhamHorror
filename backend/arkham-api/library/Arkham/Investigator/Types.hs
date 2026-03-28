@@ -346,6 +346,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorMutated :: Maybe Text -- for art display
   , investigatorDeckUrl :: Maybe Text
   , investigatorSettings :: CardSettings
+  , investigatorExcludeFromMulligan :: [CardId]
   }
   deriving stock (Show, Eq, Data)
 
@@ -723,6 +724,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorMutated <- o .:? "mutated"
     investigatorDeckUrl <- o .:? "deckUrl"
     investigatorSettings <- o .:? "settings" .!= defaultCardSettings
+    investigatorExcludeFromMulligan <- o .:? "excludeFromMulligan" .!= []
 
     pure $ InvestigatorAttrs {..}
 

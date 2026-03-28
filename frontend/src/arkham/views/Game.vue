@@ -1142,7 +1142,7 @@ header {
       display: none;
       position: absolute;
       z-index: 9999;
-      top: 40px;
+      top: var(--nav-height);
       left: -37px;
       width: 114px;
       height: 36px;

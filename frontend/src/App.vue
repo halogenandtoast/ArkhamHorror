@@ -52,6 +52,10 @@ const checkAvifSupport = (): Promise<boolean> => {
 </script>
 
 <style>
+:root {
+  --nav-height: 36px;
+}
+
 html {
   color-scheme: dark;
   interpolate-size: allow-keywords;

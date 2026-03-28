@@ -150,7 +150,7 @@ watch (play, (newPlay) => {
 
 .game {
   width: 100vw;
-  height: calc(100vh - 40px);
+  height: calc(100vh - var(--nav-height));
   display: flex;
 }
 

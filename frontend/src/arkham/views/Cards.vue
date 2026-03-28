@@ -515,7 +515,7 @@ const showSidebar = ref(false)
 <style scoped>
 .container {
   display: flex;
-  height: calc(100vh - 40px);
+  height: calc(100vh - var(--nav-height));
   max-width: unset;
   margin: 0;
   overflow: hidden;

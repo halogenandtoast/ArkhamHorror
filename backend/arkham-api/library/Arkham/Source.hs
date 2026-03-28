@@ -289,3 +289,6 @@ instance Sourceable SourceableWithCardCode where
 
 proxied :: (HasCardCode a, Sourceable a, Sourceable b) => b -> a -> SourceableWithCardCode
 proxied b a = SourceableWithCardCode a (proxy b a)
+
+source_ :: Source -> Source
+source_ = id

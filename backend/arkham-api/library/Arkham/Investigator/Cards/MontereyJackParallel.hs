@@ -4,12 +4,12 @@ import Arkham.Ability
 import Arkham.Capability
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Strategy
@@ -41,28 +41,23 @@ instance RunMessage MontereyJackParallel where
   runMessage msg i@(MontereyJackParallel attrs) = runQueueT $ case msg of
     ElderSignEffect (is attrs -> True) -> do
       n <- selectCount $ assetControlledBy attrs.id <> oneOf [#charm, #relic]
-      gainResources attrs.id (#elderSign :: Source) n
+      gainResources attrs.id (source_ #elderSign) n
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withLocationOf iid \lid -> do
-        field LocationShroud lid >>= traverse_ \x -> do
-          let match = PlayableCardWithCostReduction NoAction x $ basic $ #asset <> oneOf [#charm, #relic]
-          search iid (attrs.ability 1) iid [fromTopOfDeck x] match (defer attrs IsNotDraw)
+      withLocationOf iid $ field LocationShroud >=> traverse_ \x -> do
+        let match = PlayableCardWithCostReduction NoAction x $ basic $ #asset <> oneOf [#charm, #relic]
+        search iid (attrs.ability 1) iid [fromTopOfDeck x] match (defer attrs IsNotDraw)
       pure i
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
-      chooseN
-        iid
-        (1 + additionalTargets)
-        [targetLabel card [handleTargetChoice iid (attrs.ability 1) card] | card <- cards]
+      chooseNM iid (1 + additionalTargets) $ targets cards $ handleTarget iid (attrs.ability 1)
       pure i
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      chooseOne iid [Label "No Card Founds" []]
+      chooseOneM iid $ labeled "No Card Founds" nothing
       pure i
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
-      withLocationOf iid \lid -> do
-        field LocationShroud lid >>= traverse_ \x -> do
-          costModifier (attrs.ability 1) cid (ReduceCostOf (CardWithId cid) x)
-          playCardPayingCost iid =<< getCard cid
+      withLocationOf iid $ field LocationShroud >=> traverse_ \x -> do
+        costModifier (attrs.ability 1) cid (ReduceCostOf (CardWithId cid) x)
+        playCardPayingCost iid =<< getCard cid
       pure i
     _ -> MontereyJackParallel <$> liftRunMessage msg attrs

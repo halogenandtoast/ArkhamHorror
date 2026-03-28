@@ -7,9 +7,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
-import Arkham.Investigate
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
+import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -22,7 +22,7 @@ eyesOfTheDreamer = asset EyesOfTheDreamer Cards.eyesOfTheDreamer
 
 instance HasAbilities EyesOfTheDreamer where
   getAbilities (EyesOfTheDreamer a) =
-    [ restricted a 1 ControlsThis investigateAction_
+    [ controlled_ a 1 $ investigateActionWith_ #willpower
     , controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction "Spend Charges" (WouldRevealChaosTokens #when You) (UseCostUpTo (be a) Charge 1 3)
     ]

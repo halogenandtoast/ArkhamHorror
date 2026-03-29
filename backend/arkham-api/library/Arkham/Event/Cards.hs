@@ -20,6 +20,7 @@ import Arkham.Event.Cards.TheForgottenAge as X
 import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
+import Arkham.Event.Cards.TommyMuldoon2 as X
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -77,6 +78,7 @@ allPlayerEventCards =
       , bloodRite
       , bloodWillHaveBlood2
       , bolas
+      , bounty
       , breachTheDoor
       , breakingAndEntering
       , breakingAndEntering2
@@ -118,6 +120,7 @@ allPlayerEventCards =
       , crypticWritings2
       , cunningDistraction
       , customAmmunition3
+      , customGrip
       , customModifications
       , daringManeuver
       , daringManeuver2
@@ -183,6 +186,7 @@ allPlayerEventCards =
       , explosiveWard
       , exposeWeakness1
       , exposeWeakness3
+      , extendedBarrel1
       , extensiveResearch
       , extensiveResearch1
       , extraAmmunition1
@@ -255,6 +259,7 @@ allPlayerEventCards =
       , intelReport
       , interrogate
       , intimidation
+      , ironSights
       , iveGotAPlan
       , iveGotAPlan2
       , iveHadWorse2
@@ -287,6 +292,7 @@ allPlayerEventCards =
       , lucky3
       , lure1
       , lure2
+      , makeEmSing
       , makeshiftTrap
       , makingPreparations
       , manipulateDestiny2
@@ -323,6 +329,7 @@ allPlayerEventCards =
       , oneInTheChamber
       , oneTwoPunch
       , oneTwoPunch5
+      , onTheBeat1
       , onTheHunt
       , onTheHunt3
       , onTheLam
@@ -340,6 +347,8 @@ allPlayerEventCards =
       , payYourDues
       , perseverance
       , persuasion
+      , physicalFitness
+      , physicalFitness2
       , pilfer
       , pilfer3
       , powerWord
@@ -371,6 +380,7 @@ allPlayerEventCards =
       , refine
       , regurgitation
       , reliable1
+      , restrained
       , riastrad1
       , righteousHunt1
       , rightToolForTheJob
@@ -413,6 +423,8 @@ allPlayerEventCards =
       , spectralRazor2
       , spectralShield
       , spiritualEcho2
+      , stakeout
+      , stakeout3
       , stallForTime
       , standTogether
       , standTogether3
@@ -420,6 +432,7 @@ allPlayerEventCards =
       , stirThePot
       , stirThePot5
       , stirringUpTrouble1
+      , stockAmmoReload2
       , stormOfSpirits
       , stormOfSpirits3
       , stouthearted

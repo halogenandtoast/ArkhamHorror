@@ -69,6 +69,7 @@ m1911 =
     , cdCardTraits = setFromList [Item, Weapon, Firearm]
     , cdUses = uses Ammo 4
     , cdSlots = [#hand]
+    , cdAlternateCardCodes = ["60155"]
     }
 
 resilience :: CardDef

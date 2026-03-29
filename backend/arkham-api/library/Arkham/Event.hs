@@ -808,6 +808,19 @@ allEvents =
       , SomeEventCard leadingLadyFemmeFatale
       , SomeEventCard leadingLadyEnchantress
       , SomeEventCard leadingLadyFinalGirl
+      , -- Tommy Muldoon
+        SomeEventCard makeEmSing
+      , SomeEventCard bounty
+      , SomeEventCard customGrip
+      , SomeEventCard ironSights
+      , SomeEventCard physicalFitness
+      , SomeEventCard restrained
+      , SomeEventCard stakeout
+      , SomeEventCard extendedBarrel1
+      , SomeEventCard onTheBeat1
+      , SomeEventCard physicalFitness2
+      , SomeEventCard stockAmmoReload2
+      , SomeEventCard stakeout3
       , -- André Patel
         SomeEventCard cleanSweep
       , SomeEventCard payYourDues

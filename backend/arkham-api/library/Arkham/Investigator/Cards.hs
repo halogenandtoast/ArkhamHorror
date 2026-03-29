@@ -111,6 +111,7 @@ allInvestigatorCards =
       , fatherMateoParallel
       , jennyBarnesParallel
       , lolaHayesParallel
+      , tommyMuldoon2
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -771,3 +772,7 @@ jennyBarnesParallel =
 lolaHayesParallel :: CardDef
 lolaHayesParallel =
   investigator "90087" ("Lola Hayes" <:> "The Actress") Neutral [Performer]
+
+tommyMuldoon2 :: CardDef
+tommyMuldoon2 =
+  investigator "60151" ("Tommy Muldoon" <:> "The Officer") Guardian [Police]

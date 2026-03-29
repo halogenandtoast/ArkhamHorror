@@ -85,6 +85,13 @@ instance RunMessage EffectAttrs where
     SkillTestEnded sid | isEndOfWindow a (EffectSkillTestWindow sid) -> do
       push $ DisableEffect effectId
       pure a
+    SkillTestEnded _sid -> do
+      runMaybeT_ do
+        EffectSkillTestMatchingWindow stmatch <- hoistMaybe effectWindow
+        st <- MaybeT getSkillTest
+        liftGuardM $ skillTestMatches st.investigator st.source st stmatch
+        lift $ push $ DisableEffect effectId
+      pure a
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)
       _ -> pure a

@@ -5,6 +5,7 @@ module Arkham.Effect.Window (module Arkham.Effect.Window) where
 import Arkham.Ability.Types
 import Arkham.Card.Id
 import Arkham.Id
+import Arkham.Matcher.SkillTest
 import Arkham.Phase
 import Arkham.Prelude
 import Data.Aeson.TH
@@ -18,6 +19,7 @@ data EffectWindow
   | EffectUntilEndOfNextPhaseWindowFor Phase
   | EffectCostWindow
   | EffectSkillTestWindow SkillTestId
+  | EffectSkillTestMatchingWindow SkillTestMatcher
   | EffectNextSkillTestWindow InvestigatorId
   | EffectRoundWindow
   | EffectNextActionWindow
@@ -68,8 +70,14 @@ instance IsLabel "resolution" EffectWindow where
 instance IsLabel "move" EffectWindow where
   fromLabel = EffectMoveWindow
 
+instance IsLabel "turn" (InvestigatorId -> EffectWindow) where
+  fromLabel = EffectTurnWindow
+
 instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow
+
+instance IsLabel "skillTestMatching" (SkillTestMatcher -> EffectWindow) where
+  fromLabel = EffectSkillTestMatchingWindow
 
 firstWindow :: [EffectWindow] -> EffectWindow
 firstWindow = FirstEffectWindow

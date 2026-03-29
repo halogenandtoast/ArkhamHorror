@@ -9,6 +9,7 @@ import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Id (InvestigatorId)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
 import Arkham.Trait hiding (Dreamlands, Expedition)
@@ -183,6 +184,8 @@ allPlayerTreacheryCards =
       , wrackedByNightmares
       , yaztaroth
       , liberOmniumFinium
+      , looseCannon
+      , overconfident
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -4214,6 +4217,20 @@ liberOmniumFinium =
 unaware :: CardDef
 unaware =
   (basicWeakness "60356" "Unaware")
+    { cdCardTraits = singleton Flaw
+    }
+
+looseCannon :: CardDef
+looseCannon =
+  (weakness "60153" "Loose Cannon")
+    { cdCardTraits = singleton Flaw
+    , cdDeckRestrictions = [Signature ("60151" :: InvestigatorId)]
+    , cdLevel = Nothing
+    }
+
+overconfident :: CardDef
+overconfident =
+  (basicWeakness "60154" "Overconfident")
     { cdCardTraits = singleton Flaw
     }
 

@@ -796,6 +796,9 @@ allTreacheries =
       , -- Stella Clark
         SomeTreacheryCard calledByTheMists
       , SomeTreacheryCard atychiphobia
+      , -- Tommy Muldoon
+        SomeTreacheryCard looseCannon
+      , SomeTreacheryCard overconfident
       , -- André Patel
         SomeTreacheryCard unaware
       , SomeTreacheryCard weightOfTheWorld

@@ -166,6 +166,9 @@ allPlayerSkillCards =
       , unrelenting1
       , viciousBlow
       , viciousBlow2
+      , adaptAndOvercome
+      , armedToTheTeeth
+      , indomitable3
       , watchThis
       , watchThis3
       , wellDressed
@@ -336,6 +339,7 @@ viciousBlow2 =
   (skill "02299" "Vicious Blow" [#combat, #combat] Guardian)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 2
+    , cdAlternateCardCodes = ["60176"]
     }
 
 theHomeFront :: CardDef
@@ -1268,5 +1272,25 @@ contingency3 :: CardDef
 contingency3 =
   (skill "60383" "Contingency" [#wild, #wild] Rogue)
     { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = Just 3
+    }
+
+adaptAndOvercome :: CardDef
+adaptAndOvercome =
+  (skill "60167" "Adapt and Overcome" [#agility, #combat, #wild] Guardian)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
+    }
+
+armedToTheTeeth :: CardDef
+armedToTheTeeth =
+  (skill "60168" "Armed to the Teeth" [#agility, #combat, #willpower] Guardian)
+    { cdCardTraits = setFromList [Practiced]
+    }
+
+indomitable3 :: CardDef
+indomitable3 =
+  (skill "60180" "Indomitable" [#combat, #wild, #willpower] Guardian)
+    { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 3
     }

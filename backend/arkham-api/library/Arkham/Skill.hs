@@ -347,6 +347,11 @@ allSkills = mapFromList $
       SomeSkillCard neitherRainNorSnow
     , --- survivor [ste]
       SomeSkillCard unexpectedCourage2
+    , -- Tommy Muldoon
+      SomeSkillCard adaptAndOvercome
+    , SomeSkillCard armedToTheTeeth
+    , SomeSkillCard viciousBlow2
+    , SomeSkillCard indomitable3
     , -- André Patel
       --- signature [and]
       SomeSkillCard knowTheExit

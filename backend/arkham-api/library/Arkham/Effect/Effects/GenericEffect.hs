@@ -65,6 +65,11 @@ instance HasModifiersFor GenericEffect where
         msid <- getSkillTestId
         modifiers' <- resolveModifiers modifiers
         when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+      Just (EffectSkillTestMatchingWindow stmatch) -> do
+        ms <- getSkillTest
+        for_ ms \s -> do
+          whenM (skillTestMatches s.investigator s.source s stmatch) do
+            tell $ MonoidalMap $ singletonMap attrs.target modifiers
       Just (EffectPhaseWindowFor p) -> do
         p' <- getPhase
         modifiers' <- resolveModifiers modifiers

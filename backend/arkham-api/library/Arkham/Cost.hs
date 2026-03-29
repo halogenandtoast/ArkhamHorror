@@ -1,9 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Cost (
-  module Arkham.Cost,
-  module X,
-) where
+module Arkham.Cost (module Arkham.Cost, module X) where
 
 import Arkham.Classes.GameLogger
 import Arkham.Cost.Status as X
@@ -16,6 +13,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
+import Arkham.Criteria
 import Arkham.Customization
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
@@ -184,6 +182,7 @@ data Cost
   | CostWhenEnemy EnemyMatcher Cost
   | CostWhenTreachery TreacheryMatcher Cost
   | CostWhenTreacheryElse TreacheryMatcher Cost Cost
+  | CostOnlyWhen Criterion Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost
   | CostIfRemembered ScenarioLogKey Cost Cost
@@ -296,6 +295,7 @@ displayCostType = \case
   CostWhenEnemy _ c -> displayCostType c
   CostWhenTreachery _ c -> displayCostType c
   CostWhenTreacheryElse _ _ c -> displayCostType c
+  CostOnlyWhen _ c -> displayCostType c
   CostIfEnemy _ _ c -> displayCostType c
   CostIfCustomization _ _ c -> displayCostType c
   CostIfRemembered _ _ c -> displayCostType c

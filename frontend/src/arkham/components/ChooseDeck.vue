@@ -88,7 +88,7 @@ async function addDeck(d: Arkham.Deck) {
   decks.value = [...decks.value, d]
   deckId.value = d.id
   unsavedDeckList.value = null
-  deckType.value = "UseExistingDeck"
+  await choose()
 }
 
 async function addUnsavedDeck(dl: ArkhamDbDecklist) {

@@ -359,6 +359,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       if hasEnemy
         then payCost msg c iid skipAdditionalCosts cost'
         else pure c
+    CostOnlyWhen _ cost' -> payCost msg c iid skipAdditionalCosts cost'
     CostWhenTreachery mtchr cost' -> do
       hasTreachery <- selectAny mtchr
       if hasTreachery

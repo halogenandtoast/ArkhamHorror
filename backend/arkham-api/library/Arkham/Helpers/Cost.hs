@@ -21,6 +21,7 @@ import Arkham.Helpers.Action (additionalActionCovers)
 import {-# SOURCE #-} Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch, getModifiedCardCost)
 import Arkham.Helpers.ChaosBag
+import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
@@ -221,6 +222,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         getCanAffordCost_ iid source actions windows' canModify
           $ Matcher.replaceYouMatcher iid
           $ if hasTreachery then c1 else c2
+      CostOnlyWhen cr c -> do
+        ok <- passesCriteria iid Nothing source source windows' cr
+        if ok then getCanAffordCost_ iid source actions windows' canModify c else pure False
       CostIfRemembered skey c1 c2 -> do
         ok <- remembered skey
         getCanAffordCost_ iid source actions windows' canModify $ if ok then c1 else c2

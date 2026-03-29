@@ -65,6 +65,11 @@ instance HasModifiersFor WindowModifierEffect where
             selectOne TheScenario >>= traverse_ \currentScenarioId ->
               when (scenarioId == currentScenarioId) do
                 tell $ MonoidalMap $ singletonMap target $ map setActiveDuringSetup modifiers
+          Just (EffectSkillTestMatchingWindow stmatch) -> do
+            ms <- getSkillTest
+            for_ ms \s -> do
+              whenM (skillTestMatches s.investigator s.source s stmatch) do
+                tell $ MonoidalMap $ singletonMap target modifiers
           Just (EffectSkillTestWindow sid) -> do
             msid <- getSkillTestId
             when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap target modifiers

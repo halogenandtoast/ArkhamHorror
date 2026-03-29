@@ -4,6 +4,8 @@
     "numberOfPlayers" : "玩家人数",
     "withFriends": "与好友一起",
     "multihandedSolo": "独自控制",
+    "switchingPerspectives": "切换视角",
+    "switchingPerspectivesDescription": "在多控单人游戏中，你有时需要从特定调查员的视角进行操作。使用玩家标签中的<strong>眼睛</strong>图标切换到该调查员的视角。",
 
     "campaign": "剧本模式",
     "standalone": "冒险模式（使用剧本关卡）",
@@ -11,12 +13,16 @@
 
     "alphaWarning": "此剧本目前正在开发中。它可能尚未完成，您不应该针对它提交bug报告。",
     "betaWarning": "此剧本已准备就绪供测试使用，但请做好游戏频繁崩溃的心理准备。",
+    "betaWarningScenario": "此场景已准备就绪供测试使用，但请做好游戏频繁崩溃的心理准备。",
 
     "normal": "正常",
     "returnTo": "重返...",
     
     "fullCampaign": "完整剧本",
     "partialCampaign": "部分剧本",
+    "multiplayerVariant": "多人变体",
+    "campaignType": "剧本类型",
+    "pickScenario": "选择场景",
 
     "difficulty": "难度选择",
     "Easy": "简单",
@@ -29,11 +35,27 @@
     "gameName": "游戏名称",
     "create": "创建",
 
-    "chooseYourDeck": "选择你的牌组",
+    "chooseYourDeck": "选择你的牌组{s}",
     "tabooList": "禁卡表: {tabooList}",
     "useExistingDeck": "使用已有牌组",
     "loadNewDeck": "加载新牌组",
     "selectADeck": "-- 选择一个牌组 --",
     "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
-    "choose": "选择"
+    "choose": "选择",
+
+    "variant": "剧本变体",
+    "fullCampaignOption": {
+      "theDreamEaters": "梦境 eating者<br><small>8部分剧本</small>",
+      "theDreamQuest": "梦境 quest<br><small>4部分剧本</small>",
+      "theWebOfDreams": "梦境 web<br><small>4部分剧本</small>"
+    },
+
+    "recommendedOptions": "推荐选项",
+
+    "recommendedOption": {
+      "PlayersDoNotControlStoryAssetClues": {
+        "title": "玩家不控制故事资产上的线索",
+        "description": "自《铁杉谷的盛宴》起，玩家现在控制他们控制的资产上的线索，这与本剧本有一些奇怪的交互，因此建议启用此选项以将故事资产排除在该规则之外。"
+      }
+    }
 }

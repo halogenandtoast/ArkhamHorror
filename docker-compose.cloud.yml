@@ -1,0 +1,86 @@
+# 云服务器部署配置 - 暴露到公网
+# 用法: docker compose -f docker-compose.cloud.yml up -d
+
+services:
+  db:
+    image: postgres:14.6-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=arkham_pg_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB=arkham-horror-backend
+    ports:
+      # 数据库只允许本地访问（安全）
+      - "127.0.0.1:5433:5432"
+    user: postgres
+    cap_drop:
+      - ALL
+    mem_limit: 512M
+    cpus: '0.5'
+    volumes:
+      - pgdata:/var/lib/postgresql/data:rw
+      - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+    secrets:
+      - postgres_password
+
+  # 后端 API - 暴露到公网
+  web:
+    image: "halogenandtoast/arkham-horror:latest"
+    environment:
+      # - ASSET_HOST=
+      - ASSET_HOST=https://assets.arkhamhorror.app
+    secrets:
+      - postgres_password
+    ports:
+      # 暴露到所有接口，允许外网访问
+      - "0.0.0.0:3000:3002"
+    depends_on:
+      - db
+    volumes:
+      - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+      - ./frontend/public/cards.json:/opt/arkham/src/frontend/dist/cards.json:ro
+      - ./frontend/public/cards_zh.json:/opt/arkham/src/frontend/dist/cards_zh.json:ro
+      - ./frontend/public/cards_en.json:/opt/arkham/src/frontend/dist/cards_en.json:ro
+      - ./frontend/public/cards_fr.json:/opt/arkham/src/frontend/dist/cards_fr.json:ro
+      - ./frontend/public/cards_es.json:/opt/arkham/src/frontend/dist/cards_es.json:ro
+      - ./frontend/public/cards_ko.json:/opt/arkham/src/frontend/dist/cards_ko.json:ro
+      - ./frontend/public/cards_it.json:/opt/arkham/src/frontend/dist/cards_it.json:ro
+
+  # 前端开发服务器 - 暴露到公网
+  frontend-dev:
+    image: node:24.7.0-alpine
+    working_dir: /workspace
+    command: >
+      sh -c "
+        echo '🔍 扫描本地图片文件...' &&
+        node /scripts/generate-local-files.js &&
+        cp /workspace/public/local-files.json /workspace/src/local-files.json &&
+        echo '🚀 启动开发服务器...' &&
+        npx vite dev --host 0.0.0.0
+      "
+    ports:
+      # 暴露到所有接口，允许外网访问
+      - "0.0.0.0:8080:8080"
+    volumes:
+      - ./frontend:/workspace
+      - ./frontend/node_modules:/workspace/node_modules
+      - ./scripts:/scripts:ro
+      - /workspace/dist
+    environment:
+      - NODE_ENV=development
+      - VITE_ASSET_HOST=${ASSET_HOST:-}
+      # Docker 环境下使用 web 服务名访问后端
+      - API_TARGET=docker
+    depends_on:
+      - web
+    # 确保 host.docker.internal 可用
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  pgdata:
+  frontend-node-modules:
+
+secrets:
+  postgres_password:
+    file: ./config/postgres_password.txt

@@ -3,9 +3,13 @@ import es from '@/digests/es.json'
 import fr from '@/digests/fr.json'
 import ko from '@/digests/ko.json'
 import zh from '@/digests/zh.json'
+import localFilesData from '@/local-files.json'
 
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { ref, type Ref } from 'vue';
+
+// 本地图片文件清单
+const localFiles: Set<string> = new Set(localFilesData.files || [])
 
 interface ImageHelper {
   root: string
@@ -72,7 +76,8 @@ export function isLocalized(src: string) {
   if (language === 'en') return true
 
   const helper = imgHelper.get(language) || defaultHelper
-  const path = src.replace(/^\//, '')
+  // 移除可能的 /img/arkham/ 前缀，获取相对路径
+  const path = src.replace(/^\//, '').replace(/^img\/arkham\//, '')
   const exists = helper.digests.has(path)
 
   if (exists && helper.root && helper.loaded.value) {
@@ -87,21 +92,21 @@ export function imgsrc(src: string) {
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
-  const fullPath = `${store.assetHost}/img/arkham/${path}`
-  
-  if (isLocalized(src)) {
-    const helper = imgHelper.get(language) || defaultHelper
-    const exists = helper.digests.has(path)
-    
-    if (exists && helper.root && helper.loaded.value) {
-      const i18nFullPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
-      const canFetch = helper.data.get(path)?.value || false
-      
-      if (canFetch) return i18nFullPath
-    }
+  const assetHost = store.assetHost || 'https://assets.arkhamhorror.app'
+
+  // 1. 优先使用本地文件（支持多语言目录结构）
+  const localPath = language === 'en' ? path : `${language}/${path}`
+  if (localFiles.has(localPath)) {
+    return `/img/arkham/${localPath}`
   }
   
-  return fullPath
+  // 2. 回退到基础版本
+  if (localFiles.has(path)) {
+    return `/img/arkham/${path}`
+  }
+
+  // 3. 回退到 CDN
+  return `${assetHost}/img/arkham/${path}`
 }
 
 export function pluralize(w: string, n: number) {

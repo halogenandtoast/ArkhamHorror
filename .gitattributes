@@ -1,1 +1,7 @@
-* text=auto eol=lf
+# 自动合并策略
+# 中文本地化文件：优先保留本地修改，同时合并新增的上游键
+frontend/src/locales/zh/*.json merge=ours
+frontend/src/locales/zh/**/*.json merge=ours
+
+# 卡片数据文件：优先保留本地修改
+frontend/public/cards_zh.json merge=ours

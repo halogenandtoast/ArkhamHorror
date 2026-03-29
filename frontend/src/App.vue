@@ -463,6 +463,15 @@ button {
   }
 }
 
+.free-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0075";
+    margin-right: 5px;
+  }
+}
+
 .reaction-icon {
   &:before {
     text-transform: none;

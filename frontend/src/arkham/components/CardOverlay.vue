@@ -1137,19 +1137,19 @@ watchEffect(() => {
 
 .card-data {
   &.faction-guardian {
-    --panel-color: #2b80c5;
+    --panel-color: #1c6e9f;
   }
   &.faction-seeker {
-    --panel-color: #ff8f3f;
+    --panel-color: #ba6d2a;
   }
   &.faction-rogue {
-    --panel-color: #107116;
+    --panel-color: #1e6b24;
   }
   &.faction-mystic {
-    --panel-color: #5d5593;
+    --panel-color: #554c9e;
   }
   &.faction-survivor {
-    --panel-color: #cc3038;
+    --panel-color: #bd2330;
   }
   &.faction-mythos {
     --panel-color: #dbdbdb;
@@ -1164,7 +1164,7 @@ watchEffect(() => {
 .card-data-header {
   font-size: 1.0em;
   font-family: sans-serif;
-  background-color: color-mix(in srgb, var(--panel-color) 90%, transparent);
+  background-color: var(--panel-color);
   padding: 3% 15px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -1196,7 +1196,7 @@ watchEffect(() => {
 }
 
 .card-data-body .card-text {
-  border-color: color-mix(in srgb, var(--border-color) 90%, transparent);
+  border-color: var(--border-color);
   border-left-width: 2px;
   border-left-style: solid;
 }

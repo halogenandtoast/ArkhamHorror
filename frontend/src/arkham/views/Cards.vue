@@ -56,6 +56,7 @@ const SET_FONT_CHARS: Record<string, string> = {
   nat:       '\u004B', har:       '\u004D', win:       '\u004F',
   jac:       '\u004E', ste:       '\u0050',
   // Cycle 61 — Investigator Starter Decks (Chapter 2)
+  tom:       '\uE918',
   and:       '\uE91B',
   // Cycle 70 — Side Stories
   cotr:      '\u0051', coh:       '\uEA24', lol:       '\u0053',
@@ -95,12 +96,16 @@ const store = useDbCardStore()
 
 const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
 const CACHE_VERSION = 'v1'
+const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 const getCachedCards = (withEncounter: boolean): Arkham.CardDef[] | null => {
   const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
   try {
     const cached = sessionStorage.getItem(key)
-    if (cached) return JSON.parse(cached)
+    if (cached) {
+      const { cards, timestamp } = JSON.parse(cached)
+      if (Date.now() - timestamp < CACHE_TTL_MS) return cards
+    }
   } catch { /* ignore */ }
   return null
 }
@@ -108,7 +113,7 @@ const getCachedCards = (withEncounter: boolean): Arkham.CardDef[] | null => {
 const setCachedCards = (cards: Arkham.CardDef[], withEncounter: boolean) => {
   const key = `${CACHE_KEY_PREFIX}${CACHE_VERSION}_${withEncounter}`
   try {
-    sessionStorage.setItem(key, JSON.stringify(cards))
+    sessionStorage.setItem(key, JSON.stringify({ cards, timestamp: Date.now() }))
   } catch { /* ignore quota errors */ }
 }
 

@@ -73,6 +73,7 @@
   { "name": "Jacqueline Fine", "min": 60401, "max": 60432, "playerCards": 32, "code": "jac", "cycle": 60 },
   { "name": "Stella Clark", "min": 60501, "max": 60531, "playerCards": 31, "code": "ste", "cycle": 60 },
 
+  { "name": "Tommy Muldoon", "min": 60151, "max": 60182, "playerCards": 32, "code": "tom", "cycle": 61 },
   { "name": "André Patel", "min": 60351, "max": 60384, "playerCards": 34, "code": "and", "cycle": 61 },
 
   { "name": "Curse of the Rougarou", "min": 81001, "max": 81036, "playerCards": 0, "code": "cotr", "cycle": 70 },

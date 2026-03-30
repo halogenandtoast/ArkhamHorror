@@ -1,0 +1,16 @@
+{
+  "label": {
+    "occultReliquary": {
+      "choose": "选择密教圣物的初始槽位类型"
+    },
+    "oneTwoPunch": {
+      "again": "再次攻击该敌人",
+      "skip": "不再攻击该敌人"
+    }
+  },
+  "tooltips": {
+    "shortcut": {
+      "ability": "{'{'}fast{'}'}消耗捷径：_移动_(到一个连接地点)，位于该地点的所有调查员均可触发此能力。"
+    }
+  }
+}

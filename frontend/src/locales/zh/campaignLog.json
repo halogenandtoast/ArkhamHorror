@@ -21,7 +21,7 @@
   "OBannionGangHasABoneToPickWithTheInvestigators": "欧巴尼恩帮对调查员不满",
   "DrFrancisMorganWasKidnapped": "佛朗西斯·摩尔根博士被绑架",
   "TheInvestigatorsRescuedDrFrancisMorgan": "调查员解救了佛朗西斯·摩尔根博士",
-  "NaomiHasTheInvestigatorsBacks": "调查员得到娜奥米的支持",
+  "NaomiHasTheInvestigatorsBacks": "调查员得到内奥米的支持",
   "DrHenryArmitageWasKidnapped": "亨利·阿米蒂奇博士被绑架",
   "TheInvestigatorsRescuedDrHenryArmitage": "调查员解救了亨利·阿米蒂奇博士",
   "TheInvestigatorsFailedToRecoverTheNecronomicon": "调查员未取得死灵之书",
@@ -303,7 +303,11 @@
       "youHaveInterpretedTheDreams" : "你洞悉了梦境",
       "youHaveTranslatedTheGrimoire" : "你翻译了魔法书",
       "youHaveIdentifiedTheGateway" : "你已经确认了前行道路",
-      "youHaveClassifiedANewSpecies" : "你定义了一个新物种"
+      "youHaveClassifiedANewSpecies" : "你定义了一个新物种",
+      "youHaveCalculatedTheDayOfReckoning": "你已经计算好清算之日",
+      "teachings1": "从混乱袋中移除所有的{'{'}curse{'}'}标记",
+      "teachings2": "移除一个非_圣堂_地点的淹没标记",
+      "teachings3": "击败一个你所在地点的非_精英_敌人"
     }
   }
 }

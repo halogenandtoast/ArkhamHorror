@@ -1,0 +1,140 @@
+{
+  "act1": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is your location's column number.",
+        "cultist": "-1. Place 1 resource on this card, as a scrap.",
+        "tablet": "-2. If you fail, remove 1 scrap from this card.",
+        "elderThing": "-3. If you fail, take 1 damage."
+      },
+      "hardExpert": {
+        "skull": "-X. X is twice your location's column number.",
+        "cultist": "-3. If you succeed, place 1 resource on this card, as a scrap.",
+        "tablet": "-4. Remove 1 scrap from this card.",
+        "elderThing": "-5. Take 1 damage."
+      }
+    }
+  },
+  "act2": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is your location's column number.",
+        "cultist": "-2. Place 1 resource on this card, as a switch.",
+        "tablet": "-3. If you fail, move the Mine Cart once.",
+        "elderThing": "-4. If you fail, remove 1 switch from this card."
+      },
+      "hardExpert": {
+        "skull": "-X. X is twice your location's column number.",
+        "cultist": "-3. If you succeed, place 1 resource on this card, as a switch.",
+        "tablet": "-4. Move the Mine Cart once.",
+        "elderThing": "-5. Remove 1 switch from this card."
+      }
+    }
+  },
+  "label": {
+    "mineCart": {
+      "facing": "Choose which direction the Mine Cart is facing",
+      "faceNorth": "Face North",
+      "faceSouth": "Face South",
+      "faceEast": "Face East",
+      "faceWest": "Face West",
+      "cancelMove": "Cancel the move",
+      "moveAgain": "Move an additional time"
+    },
+    "wildRide": {
+      "moveAgain": "Move it 2 additional times",
+      "damage": "Deal 1 direct damage and 1 direct horror to each investigator, _Ally_ asset, and _Resident_ card they control"
+    }
+  },
+  "tooltips": {
+    "theUndergroundMaze": {
+      "slide": "{'{'}action{'}'} Spend 1 {'{'}perPlayer{'}'} resources: Slide a revealed location into an empty adjacent space. (Group limit once per round.)",
+      "prismaticShard": "{'{'}action{'}'} If the Prismatic Shard story asset is at your location: Take control of it."
+    }
+  },
+  "intro": {
+    "title": "Scenario: Written in Rock",
+    "body": "<p>The path to North Point Mine runs through a narrow ravine in the heart of Pearl Ridge. With little to go on, you asked around the Vale for more information about the mine, but all you could gather were several conflicting accounts. People have gone missing in the mines recently, although the mining operation is purportedly shut down. The lichens and moss are supposedly nutritious, but some are lethal? Nobody explained why the mine shut down in the first place, either.</p><p>The path ends at the mouth of a yawning cave. Following an old rail track in, you find heaps of abandoned equipment overgrown with bright yellow fungi. The fungus looks far from edible, and emits a putrescent stench. Eventually, the tunnel opens into a massive cavern filled with luminescent mushrooms and towering crystal formations. The ground shifts with a slight tremor, followed by an echoing cry from deeper in the mine. Steeling yourself, you trek deeper into the cave. At the very least, Dr. Marquez will want samples of the strange overgrowth on the rusted equipment.</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Written in Rock*, *Horrors in the Rock*, *Refractions*, *Chilling Cold*, and *Ghouls*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/written-in-rock.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/ghouls.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "caves": "Gather the 6 _Cave_ locations and randomly remove 2 of them from the game. Place the rest as shown in the Location Placement diagram on page 11 (see _Location Adjacency_ on page 3).",
+    "otherLocations": "Gather each location from the *Written in Rock* encounter set. Put the Control Station location into play as shown. Set the remaining 15 _Rail_ locations aside, out of play.",
+    "scrap": "Place 1 resource on each location, as a scrap. (*Hint: The scraps collected during Act 1 will help investigators during Act 2*).",
+    "startAt": "Investigators begin play at the leftmost location.",
+    "residents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "riverHawthorne": "If it is _Day 1_, place River Hawthorne at the location in column 3.",
+    "simeonAtwood": "If it is _Day 1_ or _Day 2_, set Simeon Atwood aside, out of play.",
+    "leahAtwood": "If it is _Day 3_, set Leah Atwood aside, out of play.",
+    "remainingResidents": "Remove the rest of the *Residents* encounter set from the game.",
+    "subterraneanBeast": "If it is (_Day {'{'}day{'}'}_), remove the Subterranean Beast enemy from the game.",
+    "scenarioReference": "Put the scenario reference card into play on its Act 1 side.",
+    "setOutOfPlay": "Set both copies of the Crystal Parasite enemy and each other card from the *Written in Rock* encounter set aside, out of play."
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.leahAtwood.title </h3><p>_If Leah Atwood is not under the control of an investigator:_</p><p>You find Leah staring down at a pool of milky, glowing liquid. She brushes tears from her eyes as you approach, and resists when you ask her to leave. “This is where I want to be,” she says. You describe the cave-in at the entrance, and the present danger. “None of it matters,” she says stonily, but eventually relents. As you lead her to the cart, you turn and see a round, humanoid shape outlined against the incandescent pool. It flits quickly behind a rock.</p><p class='basic right'>Choose an investigator to take control of Leah Atwood. An investigator may trigger this codex again.</p><hr><p>_Otherwise:_</p><p>Leah breaks her silence to grab the cart’s broken lever. “Not left! Right!” The cart wobbles on the tracks, then rights itself. You share a look of relief with the Vale cook as the cart careens forward.</p><p class='basic right'>Place 1 resources on the scenario reference card, as switches.</p>"
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.simeonAtwood.title </h3><p>_If Simeon Atwood is not under the control of an investigator:_</p><p>As the mine cart judders over a rickety bridge, you notice a small figure dangling from the edge of a precipice. Acting on instinct, you lean down the lip of the mine cart and catch the figure by the forearm as you hurtle past. As you pull him into the cart, you recognize him as Simeon, chief mischief-maker of the Vale. He brushes himself off, cheeks white as paper. “I was looking for my stash. All part of the p—” he wheezes, then gives up. “Thanks for saving me. I don’t know what I would’ve done without you.”</p><p class='basic right'>Choose an investigator to take control of Simeon Atwood. An investigator may trigger this codex again.</p><hr><p>_Otherwise:_</p><p>“No, no, don’t do it like that.” Simeon pulls the lever on the cart. “How are you still alive? I’m surprised you even found me.” He hits a switch at the side of the tunnel and grins rakishly. “That’s how it’s done.”</p><p class='basic right'>Place 2 resources on the scenario reference card, as switches.</p>"
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.riverHawthorne.title </h3><p>“Fancy seeing you here,” River stands as you approach. They hold a woven basket filled to the brim with phosphorescent mushrooms and blood-red lichens. “I have quite the discerning palate, let me tell you. Eugénie Brazier herself said that I was the most demanding patron to grace her table. These are exquisite,” they inhale from their basket luxuriously, then gesture at the grim tunnel. “The things we do for love.” You offer to help them forage; after all, Dr. Marquez will want samples of the unusual growths.</p><p class='basic right'>Take control of River Hawthorne. If investigators end the scenario with both River Hawthorne and at least 2 {'{'}perPlayer{'}'} clues under their control, remember that “you helped River.”</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.writtenInRock.codex.drRosaMarquez.title </h3><p>_If it is Act 1:_</p><p>“I wonder where Simeon is. Leah seemed so worried last night,” Dr. Marquez says distractedly as she holds up a sample of a white and blue crystal. “These formations aren’t natural. I’m no geologist, but the formation is…warped. Some of these lack basic symmetry.”</p><p class='basic right'>Place 1 resource on the scenario reference card, as a scrap. An investigator may trigger this codex again during a different act.</p><hr><p>_If it is Act 2:_</p><p>“I’m getting too old for this!” Dr. Marquez bellows as she holds onto her hat. Rotting beams whiz by overhead as the mine cart careens forward. The professor hits a nearby switch with her cane as you zoom through the darkness. Somewhere deeper in the mine, something moves.</p><p class='basic right'>Swap 2 adjacent locations.</p>"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "simeon": "Bonus Experience",
+        "leah": "Bonus Experience"
+      }
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: The last thing you remember before you are knocked unconscious is the cart careening into a canyon of light. Your head pounds as you awaken surrounded by glowing blue fungus and extravegant crystal formations. There is a path up the rock, but it will take hours to trek back even to the beginning of the rail tunnels. You sigh, exhausted, and wade through the underground river.</p><p class='basic'>Check your Campaign Log.</p>",
+      "skipToResolution6": "If it is _Night 1_ or _Night 2_, cross out Simeon Atwood’s name and skip to _Resolution 6_.",
+      "skipToResolution3": "If it is _Day 1_ or _Day 2_, skip to _Resolution 3_.",
+      "skipToResolution4": "If it is _Day 3_, skip to _Resolution 4_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Simeon steps out of the mine cart looking dazed. “What a ride!” he shouts, troublingly unfazed. “No matter what, you are definitely going in the Miner’s Secret Order of Mischief ’s Hall of Fame! You’re in good company with George Washington Carver and my mom.” He nearly trips as the rail line slopes upward, toward the brilliant sky. You help him to his feet and lead him outside, into the clear fresh air.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record *Simeon survived*.</li><li>Increase Simeon Atwood’s Relationship Level by 2. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Leah grips the side of the cart as you disembark. She bites her lip as she holds back tears, unseeing. As you lead her back up the tunnel, the sound of soft weeping echoes off the stone walls. As you emerge outside into the clean, fresh air, you work up the courage to ask Leah what she saw.</p><p>“He’s gone. Simeon’s gone,” she replies.</p><ul><li>Update your Campaign Log.<ul><li>In Leah Atwood’s Notes, record *Leah saw something in the mine*.</li><li>Increase Leah Atwood’s Relationship Level. Each investigator earns 2 bonus experience.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You could swear you hear Simeon Atwood’s voice calling through the empty tunnels as you disembark. Unable to shake the sound, you double back through the tunnels in hopes of finding the young man. You eventually come to a shining abyss filled with crystals. A dark humanoid shape sits hunched over the carcass of a small animal. It skitters into the dark when you call. You shout Simeon’s name until your voice is hoarse, then retrace your steps to the exit with an awful lump in your throat.</p><ul><li>Update your Campaign Log.<ul><li>In Simeon Atwood’s Notes, record *Simeon disappeared*.</li><li>Cross out Simeon Atwood’s name.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You could swear you hear Leah Atwood’s voice calling through the empty tunnels as you disembark. Unable to shake the sound, you double back through the tunnels in hopes of finding the Vale cook. You eventually come to a shining abyss filled with crystals. A dark humanoid shape sits hunched over Leah’s body at the bottom. It skitters into the dark when you call. You take one last look at Leah’s lifeless body, then retrace your steps to the exit with an awful lump in your throat.</p><ul><li>Update your Campaign Log.<ul><li>In Leah Atwood’s Notes, record *Leah and Simeon were reunited*.</li><li>Cross out Leah Atwood’s name.</li></ul></li><li>Skip to _Resolution 6_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: You hear a familiar chittering staccato as you disembark, followed by a scent of rot. More howls and shouts echo through the twisted cavern, prompting you to run to the exit. Once you emerge into the clear night air, you turn back and wonder what other terrors are written in rock beneath the island.</p><ul><li>In your Campaign Log, record *the investigators survived the horrors in the rock*.</li><li>Proceed to _Resolution 6_.</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>_Resolution 6_: Resolution 6: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. We were lucky to escape from North Point Mine with our lives. Extreme instability and seismic tremors. Findings include asymmetrical crystal formations, rodents of unusual size, and an unusually aggressive insect population.”</p><ul><li>If the Prismatic Shard story asset was under the control of an investigator when the scenario ended, choose an investigator to add it to their deck. It does not count toward their deck size.</li><li>Update your Campaign Log.<ul><li>If “you helped River,” increase River Hawthorne’s Relationship Level. Each investigator earns 1 bonus experience.</li><li>If an investigator controls River Hawthorne and the above is not true: Decrease River Hawthorne’s Relationship Level.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *North Point Mine*.</li><li>Check your Campaign Log.<ul><li>If it is Day 1, turn to _Prelude: The First Evening_ (*page 31*).</li><li>If it is Night 1, turn to _Prelude: Dawn of the Second Day_ (*page 39*).</li><li>If it is Day 2, turn to _Prelude: The Second Evening_ (*page 43*).</li><li>If it is Night 2, turn to _Prelude: Dawn of the Final Day_ (*page 51*).</li><li>If it is Day 3, turn to _Prelude: The Final Evening_ (*page 55*).</li></ul></li></ul>"
+    }
+  },
+  "theCaveIn": "Scenario Interlude: The Cave-In",
+  "theCaveIn1": "<p>_The Cave-In 1_: As the rumbling subsides, you look back at the collapsed tunnel. There is no way back. With no other recourse, you follow the old rail line into the darkness. After some time, you come upon a brightly lit shed next to an old mine cart on the nearby tracks.</p><p class='basic'>Check your Campaign Log.</p>",
+  "proceedToTheCaveIn2": "If it is (_Day {'{'}day{'}'}_), proceed to _The Cave-In 2_.",
+  "skipToTheCaveIn3": "Otherwise, skip to _The Cave-In 3_.",
+  "theCaveIn2": "<p>_The Cave-In 2_: The shed is a former rail control station repurposed as a clubhouse. Hand-drawn maps and charts cover the walls and ceiling; they appear to be a young person’s handwriting. If someone was here recently, they may currently be trapped in the mine along with you.</p><p class='basic right'>Skip to _The Cave-In 4_.</p>",
+  "theCaveIn3": "<p>_The Cave-In 3_: A sharp trill echoes through the cavern, followed by a noisome clicking. Down a connecting tunnel, a stygian maw nested in writhing appendages advances. Your heart nearly stops as the monstrosity lets out another shrill staccato and charges toward you.</p><p class='basic right'>Proceed to _The Cave-In 4_.</p>",
+  "theCaveIn4": "<p>_The Cave-In 4_: With the entrance collapsed, the only way out of the mine is through. You push the mine cart forward with every ounce of your strength and jump in, hoping the rusted tracks hold up.</p><ul><li>Gather all 15 set-aside _Rail_ locations.<ul><li>Place the Rail Exit and the 7 depicted Rail Tunnel locations as shown in the Location Placement diagram.</li><li>Shuffle the remaining _Rail_ locations and place 1 in each space marked with a “?” on the Location Placement diagram.</li></ul></li><li>Place 1 resource on the scenario reference card, as a switch.</li><li>Place the set-aside Mine Cart asset at the Control Station and choose which direction it is facing (*see* _Sliding and Swapping Locations_ *and* _The Mine Cart_ *on page 11*).<ul><li>Place each investigator mini-card in the Mine Cart.</li><li>If either Simeon Atwood or Leah Atwood are set aside, place them at the topmost location in column 2.</li><li>Place the set-aside Prismatic Shard asset at the bottom location in column 4.</li></ul></li><li>If it is (_Night {'{'}night{'}'}_), place the set-aside Subterranean Beast enemy at the Control Station, exhausted.</li><li>Shuffle the remaining set-aside *Written in Rock* encounter cards and the encounter discard pile into the encounter deck.</li><li>Resume playing.</li></ul>"
+}

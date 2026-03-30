@@ -23,7 +23,7 @@ instance RunMessage CausticReaction where
         sid
         attrs
         iid
-        [SkillModifier #intellect 2, DamageDealt $ if clues >= 2 then 2 else 1]
+        [SkillModifier #intellect 1, DamageDealt $ if clues >= 2 then 2 else 1]
       aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> CausticReaction <$> liftRunMessage msg attrs

@@ -122,6 +122,7 @@ allPlayerTreacheryCards =
       , internalInjury
       , legInjury
       , lostSoul
+      , lethalCuriosity
       , morbidCuriosity
       , narcolepsy
       , nihilism
@@ -3754,6 +3755,12 @@ selfDestructive =
 thriceDamnedCuriosity :: CardDef
 thriceDamnedCuriosity =
   (weakness "60203" "Thrice-Damned Curiosity")
+    { cdCardTraits = singleton Flaw
+    }
+
+lethalCuriosity :: CardDef
+lethalCuriosity =
+  (basicWeakness "60254" "Lethal Curiosity")
     { cdCardTraits = singleton Flaw
     }
 

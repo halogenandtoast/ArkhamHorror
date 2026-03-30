@@ -790,6 +790,8 @@ allTreacheries =
       , -- Harvey Walters
         SomeTreacheryCard thriceDamnedCuriosity
       , SomeTreacheryCard obsessive
+      , -- Carolyn Fern
+        SomeTreacheryCard lethalCuriosity
       , -- Jacqueline Fine
         SomeTreacheryCard darkFuture
       , SomeTreacheryCard nihilism

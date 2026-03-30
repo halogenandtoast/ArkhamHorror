@@ -799,6 +799,8 @@ allTreacheries =
       , -- Tommy Muldoon
         SomeTreacheryCard looseCannon
       , SomeTreacheryCard overconfident
+      , -- Carolyn Fern
+        SomeTreacheryCard unbrokenWeb
       , -- André Patel
         SomeTreacheryCard unaware
       , SomeTreacheryCard weightOfTheWorld

@@ -95,6 +95,15 @@ hasEliminatedWindow = any $ \case
   (windowType -> EndOfGame {}) -> True
   _ -> False
 
+primaryWindowTarget :: WindowType -> Maybe Target
+primaryWindowTarget = \case
+  Healed _ target _ _ -> Just target
+  TakeDamage _ _ target _ -> Just target
+  TakeHorror _ target _ -> Just target
+  DealtHorror _ target _ -> Just target
+  DealtDamage _ _ target _ -> Just target
+  _ -> Nothing
+
 revealedChaosTokens :: [Window] -> [ChaosToken]
 revealedChaosTokens [] = []
 revealedChaosTokens ((windowType -> RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest

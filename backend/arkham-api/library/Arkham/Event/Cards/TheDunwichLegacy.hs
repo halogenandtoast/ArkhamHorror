@@ -242,7 +242,7 @@ preposterousSketches =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Insight
     , cdCriteria = Just Criteria.ClueOnLocation
-    , cdAlternateCardCodes = ["60218"]
+    , cdAlternateCardCodes = ["60218", "60263"]
     }
 
 emergencyCache2 :: CardDef

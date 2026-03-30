@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PerformAction)
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers hiding (nextSkillTestModifier)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
@@ -35,6 +35,6 @@ instance RunMessage MichaelLeigh5 where
       push $ AddUses (attrs.ability 1) (toId a) Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifier iid (attrs.ability 2) iid (DamageDealt 1)
+      thisSkillTestModifier iid (attrs.ability 2) iid (DamageDealt 1)
       pure a
     _ -> MichaelLeigh5 <$> liftRunMessage msg attrs

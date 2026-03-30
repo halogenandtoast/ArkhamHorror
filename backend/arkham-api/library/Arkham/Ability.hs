@@ -302,6 +302,7 @@ mkAbility entity idx type' =
     , abilityTarget = Nothing
     , abilitySkipForAll = False
     , abilityIgnoreAllCosts = False
+    , abilityHighlightFromWindow = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

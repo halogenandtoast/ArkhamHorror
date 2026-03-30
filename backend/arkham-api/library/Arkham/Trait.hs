@@ -210,6 +210,7 @@ data Trait
   | Possessed
   | Power
   | Practiced
+  | Profession
   | PresentDay
   | Private
   | Prop

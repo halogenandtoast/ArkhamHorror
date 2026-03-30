@@ -478,7 +478,7 @@ instance RunMessage SkillTest where
         )
         do
           push $ CheckAdditionalCommitCosts iid [card]
-      pure $ s & committedCardsL %~ insertWith (<>) iid [card]
+      pure $ s & committedCardsL %~ insertWith (flip (<>)) iid [card]
     CommitCard iid card | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       cmods <- getModifiers card
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == iid]
@@ -496,7 +496,7 @@ instance RunMessage SkillTest where
     ObtainCard cardId -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
-      pure $ s & committedCardsL %~ insertWith (<>) iid [card]
+      pure $ s & committedCardsL %~ insertWith (flip (<>)) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))
     ReturnSkillTestRevealedChaosTokens -> do

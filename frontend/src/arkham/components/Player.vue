@@ -475,7 +475,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           />
 
 
-          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
+          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot.tag}${idx}`">
             <img :src="slotImg(slot)" />
           </div>
 

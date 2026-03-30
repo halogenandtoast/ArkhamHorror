@@ -202,7 +202,7 @@ magnifyingGlass1 =
       , cdCardTraits = setFromList [Item, Tool]
       , cdLevel = Just 1
       , cdSlots = [#hand]
-      , cdAlternateCardCodes = ["01540"]
+      , cdAlternateCardCodes = ["01540", "60270"]
       }
 
 discOfItzamna2 :: CardDef

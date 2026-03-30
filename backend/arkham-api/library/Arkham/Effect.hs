@@ -45,6 +45,7 @@ import Arkham.Agenda.Agendas (
  )
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
+  dreamersChronicleEffect,
   arbiterOfFatesEffect,
   armageddon4Effect,
   armageddonEffect,
@@ -577,6 +578,7 @@ allEffects =
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloyEffect)
+    , ("60255", SomeEffect dreamersChronicleEffect)
     , ("60220", SomeEffect $ noop "60220")
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)

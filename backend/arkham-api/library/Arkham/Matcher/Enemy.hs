@@ -156,6 +156,7 @@ data EnemyMatcher
   | SignatureEnemy
   | EnemyHiddenInHand InvestigatorMatcher
   | EnemyWithConcealed
+  | EnemyWithHorrorValue
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)

@@ -1519,6 +1519,20 @@ allAssets =
       , SomeAssetCard endurance3
       , SomeAssetCard protectiveVest4
       , SomeAssetCard thompsonSubmachineGun5
+      , -- Carolyn Fern
+        SomeAssetCard experimentalPsychology
+      , SomeAssetCard dreamersChronicle
+      , SomeAssetCard occultRecords
+      , SomeAssetCard privatePractice
+      , SomeAssetCard psychologyStudent
+      , SomeAssetCard scrollOfThePharaohs
+      , SomeAssetCard universityArchivist
+      , SomeAssetCard typewriter2
+      , SomeAssetCard autopsyReport3
+      , SomeAssetCard sharpRhetoric3
+      , SomeAssetCard scrollOfThePharaohsWordsOfBast4
+      , SomeAssetCard scrollOfThePharaohsWordsOfRa4
+      , SomeAssetCard scrollOfThePharaohsWordsOfSet4
       , -- André Patel
         SomeAssetCard centerStage
       , SomeAssetCard fame

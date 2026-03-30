@@ -21,6 +21,7 @@ import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
 import Arkham.Event.Cards.TommyMuldoon2 as X
+import Arkham.Event.Cards.CarolynFern2 as X
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -91,6 +92,8 @@ allPlayerEventCards =
       , callTheBeyond2
       , callingInFavors
       , captivatingDiscovery
+      , causticReaction
+      , causticReaction2
       , catch
       , cheapShot
       , cheapShot2
@@ -101,6 +104,7 @@ allPlayerEventCards =
       , cleanSweep2
       , cleanThemOut
       , closeCall2
+      , communeWithTheCosmos5
       , confound3
       , connectTheDots
       , contraband
@@ -131,6 +135,7 @@ allPlayerEventCards =
       , darkProphecy
       , dawnStar1
       , deadEnds
+      , deEscalate
       , decipheredReality5
       , decisiveStrike2
       , decoy
@@ -237,6 +242,7 @@ allPlayerEventCards =
       , hidingSpot
       , hitAndRun
       , hitMe
+      , hypnotize2
       , holdUp
       , honedInstinct
       , hotStreak2
@@ -256,6 +262,7 @@ allPlayerEventCards =
       , improvisedWeapon2
       , inTheShadows
       , infighting3
+      , insidiousTruths
       , intelReport
       , interrogate
       , intimidation
@@ -363,6 +370,8 @@ allPlayerEventCards =
       , primedForAction
       , protectingTheAnirniq2
       , psychicSensitivity
+      , psychoanalysis
+      , psychoanalysis3
       , pushedToTheLimit
       , putrescentRot
       , quantumFlux
@@ -486,6 +495,8 @@ allPlayerEventCards =
       , unearthTheAncients2
       , untimelyTransaction1
       , unsolvedCase
+      , unflappable
+      , unflappable1
       , vamp
       , vamp3
       , vantagePoint

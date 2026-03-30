@@ -169,6 +169,8 @@ allPlayerSkillCards =
       , adaptAndOvercome
       , armedToTheTeeth
       , indomitable3
+      , establishMotive
+      , literaryAnalysis
       , watchThis
       , watchThis3
       , wellDressed
@@ -191,7 +193,7 @@ deduction :: CardDef
 deduction =
   (skill "01039" "Deduction" [#intellect] Seeker)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01539", "60219", "12039"]
+    , cdAlternateCardCodes = ["01539", "60219", "12039", "60267"]
     }
 
 opportunist :: CardDef
@@ -268,6 +270,7 @@ deduction2 =
   (skill "02150" "Deduction" [#intellect, #intellect] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 2
+    , cdAlternateCardCodes = ["60275"]
     }
 
 defiance :: CardDef
@@ -1293,4 +1296,16 @@ indomitable3 =
   (skill "60180" "Indomitable" [#combat, #wild, #willpower] Guardian)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 3
+    }
+
+establishMotive :: CardDef
+establishMotive =
+  (skill "60268" "Establish Motive" [#wild] Seeker)
+    { cdCardTraits = singleton Practiced
+    }
+
+literaryAnalysis :: CardDef
+literaryAnalysis =
+  (skill "60269" "Literary Analysis" [#intellect, #intellect] Seeker)
+    { cdCardTraits = singleton Practiced
     }

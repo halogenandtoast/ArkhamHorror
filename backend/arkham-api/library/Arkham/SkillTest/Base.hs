@@ -91,6 +91,9 @@ instance HasField "revealedChaosTokensCount" SkillTest Int where
 instance HasField "chaosTokens" SkillTest [ChaosToken] where
   getField = skillTestSetAsideChaosTokens
 
+instance HasField "step" SkillTest SkillTestStep where
+  getField = skillTestStep
+
 setIsRevelation :: SkillTest -> SkillTest
 setIsRevelation st = st {skillTestIsRevelation = True}
 

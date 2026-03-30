@@ -3287,6 +3287,7 @@ enemyMatcherFilter es matcher' = do
           Nothing -> pure False
           Just discardee -> pure $ discardee `elem` iids
     EnemyWithAnyCardsUnderneath -> filterM (fieldP EnemyCardsUnderneath notNull . toId) es
+    EnemyWithHorrorValue -> pure $ es & filter \enemy -> attr enemySanityDamage enemy > 0
     EnemyWithConcealed -> do
       es & filterM \enemy -> do
         modifiers <- getModifiers (toTarget enemy)

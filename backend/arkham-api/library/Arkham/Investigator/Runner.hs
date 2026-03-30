@@ -170,7 +170,7 @@ import Arkham.Token qualified as Token
 import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow)
+import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over, sumOf, _Just)
@@ -444,7 +444,13 @@ runWindow attrs windows actions playableCards = do
             $ [ targetLabel c [InitiatePlayCardWithWindows iid c Nothing NoPayment windows True]
               | c <- playableCards
               ]
-            <> map (\(ability, windows') -> AbilityLabel iid ability windows' [] []) actionsWithMatchingWindows
+            <> map (\(ability, windows') ->
+                let ability' = if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
+                      then case listToMaybe windows' >>= primaryWindowTarget . windowType of
+                             Just target -> withHighlight target ability
+                             Nothing -> ability
+                      else ability
+                in AbilityLabel iid ability' windows' [] []) actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs

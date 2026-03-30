@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, watch, ref } from 'vue';
+import useHighlighter from '@/composeable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
@@ -41,6 +42,8 @@ const emits = defineEmits<{
 
 const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
+const highlighter = useHighlighter()
+const isHighlighted = computed(() => highlighter.highlighted.value === props.asset.id)
 
 const uiRotation = computed<number>(() => {
   const mods = props.asset.modifiers ?? []
@@ -173,8 +176,8 @@ const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 
-const damage = computed(() => props.asset.tokens[TokenType.Damage])
-const horror = computed(() => props.asset.tokens[TokenType.Horror])
+const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) - props.asset.assignedHealthHeal)
+const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) - props.asset.assignedSanityHeal)
 
 const hasPool = computed(() => {
   const {
@@ -264,7 +267,7 @@ function startDrag(event: DragEvent) {
             :data-image-id="dataImage"
             :src="image"
             class="card"
-            :class="{ exhausted }"
+            :class="{ exhausted, 'ability-target': isHighlighted }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
             :draggable="debug.active"
@@ -451,6 +454,14 @@ function startDrag(event: DragEvent) {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+img.card {
+  transition: box-shadow 120ms ease;
+}
+
+img.card.ability-target {
+  box-shadow: 0 0 0 2px var(--highlight), 0 0 14px 5px var(--highlight), var(--card-shadow);
 }
 
 .deck-size {

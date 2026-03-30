@@ -19,6 +19,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
 import { useI18n } from 'vue-i18n';
 import useEmitter from '@/composeable/useEmitter';
+import useHighlighter from '@/composeable/useHighlighter';
 import Resources from '@/arkham/components/Resources.vue';
 import Draw from '@/arkham/components/Draw.vue';
 import { IsMobile } from '@/arkham/isMobile';
@@ -36,6 +37,8 @@ const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'hideCards', 'choose'])
 
 const id = computed(() => props.investigator.id)
+const highlighter = useHighlighter()
+const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
 const debug = useDebug()
 const choose = (idx: number) => emit('choose', idx)
 
@@ -375,7 +378,7 @@ const spadeInjury = computed(() => {
         </div>
         <div class="investigator-image">
           <img
-            :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
+            :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted }"
             class="card card--sideways"
             :src="image"
             @click="$emit('choose', investigatorAction)"
@@ -506,6 +509,7 @@ i.action {
 
 .investigator--can-interact {
   border: 2px solid var(--select);
+  border-radius: 2px;
   cursor: pointer;
 }
 
@@ -760,6 +764,14 @@ i.action {
 
 .investigator-image {
   position: relative;
+}
+
+img.card {
+  transition: box-shadow 120ms ease;
+}
+
+img.card.ability-target {
+  box-shadow: 0 0 0 2px var(--highlight), 0 0 14px 5px var(--highlight), var(--card-shadow);
 }
 
 .card-row-cards {

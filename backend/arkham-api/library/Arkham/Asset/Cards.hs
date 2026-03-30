@@ -19,6 +19,7 @@ import Arkham.Asset.Cards.TheInnsmouthConspiracy as X
 import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
+import Arkham.Asset.Cards.CarolynFern2 as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -104,6 +105,7 @@ allPlayerAssetCards =
       , astronomicalAtlas3
       , augur
       , augustLindquist
+      , autopsyReport3
       , averyClaypoolAntarcticGuide
       , averyClaypoolAntarcticGuideResolute
       , awakenedMantle
@@ -293,6 +295,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAChild3
       , dreamDiaryDreamsOfAMadman3
       , dreamDiaryDreamsOfAnExplorer3
+      , dreamersChronicle
       , dreamEnhancingSerum
       , drDewiIrawanCryptozoologist
       , drElliHorowitz
@@ -345,6 +348,7 @@ allPlayerAssetCards =
       , esotericAtlas2
       , esotericFormula
       , evanescentAscensionTheMorningStar
+      , experimentalPsychology
       , expeditedTicket
       , expeditionJournal
       , eyeOfChaos
@@ -645,6 +649,7 @@ allPlayerAssetCards =
       , obsidianBracelet
       , occultLexicon
       , occultLexicon3
+      , occultRecords
       , occultReliquary3
       , occultScraps
       , oculaObscuraEsotericEyepiece
@@ -701,6 +706,7 @@ allPlayerAssetCards =
       , priestOfTwoFaiths1
       , prismaticShardAlienMeteorite
       , prismaticSpectaclesLensToTheOtherworld2
+      , privatePractice
       , profaneIdol
       , professorWarrenRice
       , professorWilliamDyerProfessorOfGeology
@@ -709,6 +715,7 @@ allPlayerAssetCards =
       , professorWilliamWebbFinderOfHiddenConnections2
       , prophesiaeProfanaAtlasOfTheUnknowable5
       , prophetic3
+      , psychologyStudent
       , protectiveGear2
       , protectiveVest
       , protectiveVest4
@@ -785,6 +792,10 @@ allPlayerAssetCards =
       , scrollOfSecrets
       , scrollOfSecretsMystic3
       , scrollOfSecretsSeeker3
+      , scrollOfThePharaohs
+      , scrollOfThePharaohsWordsOfBast4
+      , scrollOfThePharaohsWordsOfRa4
+      , scrollOfThePharaohsWordsOfSet4
       , scrying
       , scrying3
       , scryingMirror
@@ -797,6 +808,7 @@ allPlayerAssetCards =
       , serviceRevolver
       , shardsOfTheVoid3
       , sharpRhetoric
+      , sharpRhetoric3
       , sharpshooter3
       , shieldOfFaith2
       , shiningTrapezohedron4
@@ -960,6 +972,7 @@ allPlayerAssetCards =
       , trustyBullwhipAdvanced
       , tryAndTryAgain1
       , tryAndTryAgain3
+      , typewriter2
       , twentyFiveAutomatic
       , twentyFiveAutomatic2
       , twilaKatherinePrice3
@@ -968,6 +981,7 @@ allPlayerAssetCards =
       , uncannySpecimen
       , underworldMarket2
       , underworldSupport
+      , universityArchivist
       , unscrupulousLoan3
       , untilTheEndOfTime
       , valentinoRivas

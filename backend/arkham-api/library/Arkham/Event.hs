@@ -821,6 +821,17 @@ allEvents =
       , SomeEventCard physicalFitness2
       , SomeEventCard stockAmmoReload2
       , SomeEventCard stakeout3
+      , -- Carolyn Fern
+        SomeEventCard causticReaction
+      , SomeEventCard causticReaction2
+      , SomeEventCard unflappable
+      , SomeEventCard unflappable1
+      , SomeEventCard psychoanalysis
+      , SomeEventCard psychoanalysis3
+      , SomeEventCard deEscalate
+      , SomeEventCard insidiousTruths
+      , SomeEventCard hypnotize2
+      , SomeEventCard communeWithTheCosmos5
       , -- André Patel
         SomeEventCard cleanSweep
       , SomeEventCard payYourDues

@@ -569,6 +569,8 @@ button {
   --select-dark-20: #cc00cc;
   --select-dark-30: #b200b2;
 
+  --highlight: #2dd4bf;
+
   --bullet-red: #391714;
   
   --pool-token-width: min(30px, 4vw);

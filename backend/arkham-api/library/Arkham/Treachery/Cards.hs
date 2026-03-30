@@ -186,6 +186,7 @@ allPlayerTreacheryCards =
       , liberOmniumFinium
       , looseCannon
       , overconfident
+      , unbrokenWeb
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -4232,6 +4233,14 @@ overconfident :: CardDef
 overconfident =
   (basicWeakness "60154" "Overconfident")
     { cdCardTraits = singleton Flaw
+    }
+
+unbrokenWeb :: CardDef
+unbrokenWeb =
+  (weakness "60253" "Unbroken Web")
+    { cdCardTraits = setFromList [Terror, Trait.Dreamlands]
+    , cdDeckRestrictions = [Signature ("60251" :: InvestigatorId)]
+    , cdLevel = Nothing
     }
 
 confusion :: CardDef

@@ -1,13 +1,11 @@
-module Arkham.Classes.HasQueue (
-  module Arkham.Classes.HasQueue,
-) where
+module Arkham.Classes.HasQueue (module Arkham.Classes.HasQueue) where
 
 import Arkham.Prelude
 import Arkham.Queue
-import Data.Tuple.Extra (dupe)
-import Text.Pretty.Simple
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
+import Data.Tuple.Extra (dupe)
+import Text.Pretty.Simple
 
 runQueueT :: HasQueue msg m => QueueT msg m a -> m a
 runQueueT body = do
@@ -128,7 +126,7 @@ replaceMessageMatchingM matcher replacer = do
   case after of
     [] -> pure ()
     (msg' : rest) -> do
-      msgs <- replacer msg' 
+      msgs <- replacer msg'
       setQueue $ before <> msgs <> rest
 
 replaceAllMessagesMatching

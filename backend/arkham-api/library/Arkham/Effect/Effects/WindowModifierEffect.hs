@@ -79,6 +79,7 @@ instance HasModifiersFor WindowModifierEffect where
           Just (EffectTurnWindow iid) -> do
             isTurn <- iid <=~> TurnInvestigator
             when isTurn $ tell $ MonoidalMap $ singletonMap target modifiers
+          Just (EffectNextSkillTestWindow {}) -> pure ()
           _ -> tell $ MonoidalMap $ singletonMap target modifiers
         _ -> pure ()
    where

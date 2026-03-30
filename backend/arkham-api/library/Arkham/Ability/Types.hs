@@ -45,6 +45,7 @@ data Ability = Ability
   , abilityTriggersSkillTest :: Bool
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
   , abilityTarget :: Maybe Target -- used to highlight the target of the ability in the UI
+  , abilityHighlightFromWindow :: Bool -- when true, abilityTarget is auto-set from the triggering window
   , abilitySkipForAll :: Bool
   , abilityIgnoreAllCosts :: Bool
   }
@@ -94,12 +95,16 @@ buildAbility source idx abilityType =
     , abilityTriggersSkillTest = False
     , abilityWantsSkillTest = Nothing
     , abilityTarget = Nothing
+    , abilityHighlightFromWindow = False
     , abilitySkipForAll = False
     , abilityIgnoreAllCosts = False
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
 withHighlight target ab = ab {abilityTarget = Just (toTarget target)}
+
+withWindowHighlight :: Ability -> Ability
+withWindowHighlight ab = ab {abilityHighlightFromWindow = True}
 
 skillTestAbility :: Ability -> Ability
 skillTestAbility ab = ab {abilityTriggersSkillTest = True}
@@ -259,6 +264,7 @@ instance FromJSON Ability where
     abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
     abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
     abilityTarget <- o .:? "target"
+    abilityHighlightFromWindow <- o .:? "highlightFromWindow" .!= False
     abilitySkipForAll <- o .:? "skipForAll" .!= False
     abilityIgnoreAllCosts <- o .:? "ignoreAllCosts" .!= False
 

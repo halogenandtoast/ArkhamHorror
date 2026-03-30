@@ -29,6 +29,6 @@ instance RunMessage Becky2 where
       chooseFightEnemy sid iid source
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifiers iid (attrs.ability 2) iid [IgnoreAloof, IgnoreRetaliate]
+      thisSkillTestModifiers iid (attrs.ability 2) iid [IgnoreAloof, IgnoreRetaliate]
       pure a
     _ -> Becky2 <$> liftRunMessage msg attrs

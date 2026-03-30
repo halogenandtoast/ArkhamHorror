@@ -141,11 +141,13 @@ allInvestigators =
       , SomeInvestigatorCard dexterDrake2
       , SomeInvestigatorCard isabelleBarnes
       , SomeInvestigatorCard nathanielCho
+      , SomeInvestigatorCard tommyMuldoon2
       , SomeInvestigatorCard harveyWalters
+      , SomeInvestigatorCard carolynFern2
       , SomeInvestigatorCard winifredHabbamock
-      , SomeInvestigatorCard stellaClark
-      , SomeInvestigatorCard jacquelineFine
       , SomeInvestigatorCard andrePatel
+      , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard stellaClark
       , SomeInvestigatorCard subject5U21
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel
@@ -160,7 +162,6 @@ allInvestigators =
       , SomeInvestigatorCard fatherMateoParallel
       , SomeInvestigatorCard jennyBarnesParallel
       , SomeInvestigatorCard lolaHayesParallel
-      , SomeInvestigatorCard tommyMuldoon2
       ]
 
 becomeYithian :: Investigator -> Investigator

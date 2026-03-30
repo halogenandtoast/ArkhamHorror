@@ -352,6 +352,9 @@ allSkills = mapFromList $
     , SomeSkillCard armedToTheTeeth
     , SomeSkillCard viciousBlow2
     , SomeSkillCard indomitable3
+    , -- Carolyn Fern
+      SomeSkillCard establishMotive
+    , SomeSkillCard literaryAnalysis
     , -- André Patel
       --- signature [and]
       SomeSkillCard knowTheExit

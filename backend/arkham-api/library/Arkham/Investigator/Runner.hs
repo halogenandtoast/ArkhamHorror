@@ -657,8 +657,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let mulliganableHand = filter (\c -> toCardId c `notElem` investigatorExcludeFromMulligan) hand
     if null mulliganableHand || unableToMulligan
       then push $ FinishedWithMulligan investigatorId
-      else Choose.chooseOneM iid do
-        Choose.labeled "Done With Mulligan" $ push $ FinishedWithMulligan investigatorId
+      else Choose.chooseOneM iid $ withI18n do
+        Choose.labeled' "doneWithMulligan" $ push $ FinishedWithMulligan investigatorId
         for_ mulliganableHand \card ->
           when (cdCanReplace $ toCardDef card) do
             Choose.targeting card do

@@ -30,7 +30,7 @@ import { useMenu } from '@/composeable/menu'
 import useEmitter from '@/composeable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { imgsrc } from '@/arkham/helpers'
-import { handleI18n } from '@/arkham/i18n'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
 import * as Arkham from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
@@ -121,10 +121,7 @@ const oldQuestion = ref<Record<string, Question> | null>(null)
 const { t } = useI18n();
 
 const format = (str: string) => {
-  if (str.startsWith("$")) {
-    return handleI18n(str.slice(1), t)
-  }
-  return str
+  return handleEmbeddedI18n(str, t)
 }
 
 addEntry({

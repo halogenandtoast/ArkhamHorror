@@ -3,7 +3,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composeable/debouncedRef';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
@@ -109,10 +109,7 @@ const showChoices = computed(() => {
 })
 
 const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return formatContent(handleI18n(body.slice(1), t))
-  }
-  return formatContent(body)
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 
 const paymentAmountsLabel = computed(() => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
@@ -22,7 +22,7 @@ const submit = function() {
 }
 
 const formatOption = function(option: string): string {
-  return option.startsWith("$") ? handleI18n(option, t) : option
+  return handleEmbeddedI18n(option, t)
 }
 </script>
 

@@ -642,6 +642,7 @@ library
       Arkham.Asset.Assets.Aquinnah3
       Arkham.Asset.Assets.ArbiterOfFates
       Arkham.Asset.Assets.ArcaneEnlightenment
+      Arkham.Asset.Assets.ArcaneExperience4
       Arkham.Asset.Assets.ArcaneInitiate
       Arkham.Asset.Assets.ArcaneInitiate3
       Arkham.Asset.Assets.ArcaneInsight4
@@ -714,6 +715,7 @@ library
       Arkham.Asset.Assets.BloodPact
       Arkham.Asset.Assets.BloodPact3
       Arkham.Asset.Assets.BloodstainedDagger
+      Arkham.Asset.Assets.Bloodstone
       Arkham.Asset.Assets.Blur1
       Arkham.Asset.Assets.Blur4
       Arkham.Asset.Assets.Bodyguard
@@ -753,6 +755,7 @@ library
       Arkham.Asset.Assets.CatMaskTheCapriciousMeddler
       Arkham.Asset.Assets.CelaenoFragments
       Arkham.Asset.Assets.CenterStage
+      Arkham.Asset.Assets.CeremonialRobes1
       Arkham.Asset.Assets.CeremonialSickle
       Arkham.Asset.Assets.CeremonialSickle4
       Arkham.Asset.Assets.Chainsaw4
@@ -870,6 +873,7 @@ library
       Arkham.Asset.Assets.DrawingThin
       Arkham.Asset.Assets.DrCharlesWestIIIKnowsHisPurpose
       Arkham.Asset.Assets.DrDewiIrawanCryptozoologist
+      Arkham.Asset.Assets.DreadCurseOfAzathoth3
       Arkham.Asset.Assets.DreamDiary
       Arkham.Asset.Assets.DreamDiaryDreamsOfAChild3
       Arkham.Asset.Assets.DreamDiaryDreamsOfAMadman3
@@ -1005,6 +1009,7 @@ library
       Arkham.Asset.Assets.GiftOfNodens5
       Arkham.Asset.Assets.GildedVolto
       Arkham.Asset.Assets.GirishKadakiaICPCPunjabDetective4
+      Arkham.Asset.Assets.GrandMeresCharm
       Arkham.Asset.Assets.GrannyOrne
       Arkham.Asset.Assets.GrannyOrne3
       Arkham.Asset.Assets.GrapplingHook
@@ -1107,6 +1112,7 @@ library
       Arkham.Asset.Assets.JessicaHyde1
       Arkham.Asset.Assets.JewelOfAureolus3
       Arkham.Asset.Assets.JewelOfSarnath
+      Arkham.Asset.Assets.JimCulver4
       Arkham.Asset.Assets.JimCulverHauntedMusician
       Arkham.Asset.Assets.JimsTrumpet
       Arkham.Asset.Assets.JimsTrumpetAdvanced
@@ -1261,6 +1267,7 @@ library
       Arkham.Asset.Assets.OccultScraps
       Arkham.Asset.Assets.OculaObscuraEsotericEyepiece
       Arkham.Asset.Assets.OculusMortuum
+      Arkham.Asset.Assets.OfferingBowl
       Arkham.Asset.Assets.Ofuda
       Arkham.Asset.Assets.OldBookOfLore
       Arkham.Asset.Assets.OldBookOfLore3
@@ -1367,6 +1374,7 @@ library
       Arkham.Asset.Assets.RiteOfSeeking2
       Arkham.Asset.Assets.RiteOfSeeking4
       Arkham.Asset.Assets.RitualCandles
+      Arkham.Asset.Assets.RitualDagger3
       Arkham.Asset.Assets.RiverHawthorneBigInNewYork
       Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorer
       Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorerResolute
@@ -1387,6 +1395,7 @@ library
       Arkham.Asset.Assets.SacredOathOathOfLoyalty5
       Arkham.Asset.Assets.SacredOathOathOfOrder5
       Arkham.Asset.Assets.SacredOathOathOfWisdom5
+      Arkham.Asset.Assets.SacrificialDoll
       Arkham.Asset.Assets.Safeguard
       Arkham.Asset.Assets.Safeguard2
       Arkham.Asset.Assets.SamuelBlakeObsessiveProducer
@@ -1416,10 +1425,13 @@ library
       Arkham.Asset.Assets.SealOfTheSeventhSign5
       Arkham.Asset.Assets.SebastienMoreau
       Arkham.Asset.Assets.SecondSight
+      Arkham.Asset.Assets.SecondSight5
       Arkham.Asset.Assets.SegmentOfOnyx1
       Arkham.Asset.Assets.SergeantMonroe
       Arkham.Asset.Assets.ServantOfBrassDaemonaicVassal
       Arkham.Asset.Assets.ServiceRevolver
+      Arkham.Asset.Assets.Shadowmeld
+      Arkham.Asset.Assets.Shadowmeld5
       Arkham.Asset.Assets.ShardsOfTheVoid3
       Arkham.Asset.Assets.SharpRhetoric
       Arkham.Asset.Assets.SharpRhetoric3
@@ -1472,6 +1484,7 @@ library
       Arkham.Asset.Assets.SpiritSpeaker
       Arkham.Asset.Assets.SpiritualHealing4
       Arkham.Asset.Assets.SpiritualIntuition
+      Arkham.Asset.Assets.SpiritualIntuition3
       Arkham.Asset.Assets.SpiritualResolve5
       Arkham.Asset.Assets.SplitTheAngleIreOfTheVoid
       Arkham.Asset.Assets.SpringfieldM19034
@@ -1663,6 +1676,7 @@ library
       Arkham.Asset.Cards.Core2026
       Arkham.Asset.Cards.EdgeOfTheEarth
       Arkham.Asset.Cards.Import
+      Arkham.Asset.Cards.MarieLambeau2
       Arkham.Asset.Cards.NightOfTheZealot
       Arkham.Asset.Cards.Parallel
       Arkham.Asset.Cards.Promo
@@ -2389,6 +2403,7 @@ library
       Arkham.Event.Cards.Core2026
       Arkham.Event.Cards.EdgeOfTheEarth
       Arkham.Event.Cards.Import
+      Arkham.Event.Cards.MarieLambeau2
       Arkham.Event.Cards.NightOfTheZealot
       Arkham.Event.Cards.Parallel
       Arkham.Event.Cards.Promo
@@ -2444,6 +2459,7 @@ library
       Arkham.Event.Events.Barricade3
       Arkham.Event.Events.Beguile
       Arkham.Event.Events.BellyOfTheBeast
+      Arkham.Event.Events.BendBlood5
       Arkham.Event.Events.BideYourTime
       Arkham.Event.Events.BindMonster2
       Arkham.Event.Events.BizarreDiagnosis
@@ -2454,6 +2470,7 @@ library
       Arkham.Event.Events.BloodEclipse3
       Arkham.Event.Events.BloodOfKnYan3
       Arkham.Event.Events.BloodRite
+      Arkham.Event.Events.BloodWard2
       Arkham.Event.Events.BloodWillHaveBlood2
       Arkham.Event.Events.Bolas
       Arkham.Event.Events.Bounty
@@ -2484,6 +2501,7 @@ library
       Arkham.Event.Events.CommuneWithTheCosmos5
       Arkham.Event.Events.Confound3
       Arkham.Event.Events.ConnectTheDots
+      Arkham.Event.Events.ConsumeLife
       Arkham.Event.Events.Contraband
       Arkham.Event.Events.Contraband2
       Arkham.Event.Events.ControlVariable
@@ -2575,6 +2593,7 @@ library
       Arkham.Event.Events.FalseSurrender
       Arkham.Event.Events.FangOfTyrthrha4
       Arkham.Event.Events.FaustianBargain
+      Arkham.Event.Events.FavorOfBaalshandor
       Arkham.Event.Events.FendOff3
       Arkham.Event.Events.FickleFortune3
       Arkham.Event.Events.FightOrFlight
@@ -2638,6 +2657,7 @@ library
       Arkham.Event.Events.ImprovisedWeapon
       Arkham.Event.Events.ImprovisedWeapon2
       Arkham.Event.Events.Infighting3
+      Arkham.Event.Events.InfuseLife
       Arkham.Event.Events.InsidiousTruths
       Arkham.Event.Events.IntelReport
       Arkham.Event.Events.Interrogate
@@ -2690,6 +2710,7 @@ library
       Arkham.Event.Events.MindWipe1
       Arkham.Event.Events.MindWipe3
       Arkham.Event.Events.MiracleWish5
+      Arkham.Event.Events.MirrorForm
       Arkham.Event.Events.MomentOfRespite3
       Arkham.Event.Events.MoneyTalks
       Arkham.Event.Events.MoneyTalks2
@@ -2767,6 +2788,7 @@ library
       Arkham.Event.Events.Regurgitation
       Arkham.Event.Events.Reliable1
       Arkham.Event.Events.Restrained
+      Arkham.Event.Events.Retribution2
       Arkham.Event.Events.Riastrad1
       Arkham.Event.Events.RighteousHunt1
       Arkham.Event.Events.RightToolForTheJob
@@ -2808,6 +2830,7 @@ library
       Arkham.Event.Events.SpectralRazor
       Arkham.Event.Events.SpectralRazor2
       Arkham.Event.Events.SpectralShield
+      Arkham.Event.Events.SpiritualCharm
       Arkham.Event.Events.SpiritualEcho2
       Arkham.Event.Events.Stakeout
       Arkham.Event.Events.Stakeout3
@@ -2862,6 +2885,7 @@ library
       Arkham.Event.Events.TruthFromFiction
       Arkham.Event.Events.TruthFromFiction2
       Arkham.Event.Events.TwentyOneOrBust
+      Arkham.Event.Events.UltimateSacrifice4
       Arkham.Event.Events.UnbridledKnowledge5
       Arkham.Event.Events.UncageTheSoul
       Arkham.Event.Events.UncageTheSoul3
@@ -3062,6 +3086,7 @@ library
       Arkham.Investigator.Cards.LukeRobinson
       Arkham.Investigator.Cards.MandyThompson
       Arkham.Investigator.Cards.MarieLambeau
+      Arkham.Investigator.Cards.MarieLambeau2
       Arkham.Investigator.Cards.MarionTavares
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MichaelMcGlen
@@ -4419,12 +4444,15 @@ library
       Arkham.Skill.Cards.Arrogance
       Arkham.Skill.Cards.AsYouWish
       Arkham.Skill.Cards.Beloved
+      Arkham.Skill.Cards.BloodCurse
+      Arkham.Skill.Cards.BloodCurse3
       Arkham.Skill.Cards.BruteForce1
       Arkham.Skill.Cards.CalculatedRisk
       Arkham.Skill.Cards.Confidence
       Arkham.Skill.Cards.Contemplative
       Arkham.Skill.Cards.Contingency3
       Arkham.Skill.Cards.Copycat3
+      Arkham.Skill.Cards.CosmicGuidance
       Arkham.Skill.Cards.CrackShot
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity
@@ -4446,6 +4474,7 @@ library
       Arkham.Skill.Cards.DreamsOfTheClay1
       Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
       Arkham.Skill.Cards.EasyStreet
+      Arkham.Skill.Cards.EldritchWhispers1
       Arkham.Skill.Cards.Enraptured
       Arkham.Skill.Cards.Enraptured2
       Arkham.Skill.Cards.EsotericMethod1
@@ -4814,6 +4843,7 @@ library
       Arkham.Treachery.Cards.BuriedSecretsAdvanced
       Arkham.Treachery.Cards.Calcification
       Arkham.Treachery.Cards.CalledByTheMists
+      Arkham.Treachery.Cards.CalledToGuinee
       Arkham.Treachery.Cards.CallingCard
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CallToOrder
@@ -4977,6 +5007,7 @@ library
       Arkham.Treachery.Cards.HauntingRecollections
       Arkham.Treachery.Cards.HeavyRain
       Arkham.Treachery.Cards.Hellfire
+      Arkham.Treachery.Cards.Hemophobia
       Arkham.Treachery.Cards.HeraldsOfTheDeep
       Arkham.Treachery.Cards.HideousLullaby
       Arkham.Treachery.Cards.HorrorsFromTheDeep

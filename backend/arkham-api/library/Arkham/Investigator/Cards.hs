@@ -95,6 +95,7 @@ allInvestigatorCards =
       , tommyMuldoon2
       , harveyWalters
       , carolynFern2
+      , marieLambeau2
       , winifredHabbamock
       , andrePatel
       , jacquelineFine
@@ -781,3 +782,7 @@ tommyMuldoon2 =
 carolynFern2 :: CardDef
 carolynFern2 =
   investigator "60251" ("Carolyn Fern" <:> "The Psychologist") Seeker [Medic, Scholar]
+
+marieLambeau2 :: CardDef
+marieLambeau2 =
+  investigator "60451" ("Marie Lambeau" <:> "The Entertainer") Mystic [Performer, Witch]

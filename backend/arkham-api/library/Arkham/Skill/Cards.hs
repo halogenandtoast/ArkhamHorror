@@ -171,6 +171,10 @@ allPlayerSkillCards =
       , indomitable3
       , establishMotive
       , literaryAnalysis
+      , bloodCurse
+      , cosmicGuidance
+      , eldritchWhispers1
+      , bloodCurse3
       , watchThis
       , watchThis3
       , wellDressed
@@ -422,6 +426,7 @@ torrentOfPower :: CardDef
 torrentOfPower =
   (skill "03235" "Torrent of Power" [#wild] Mystic)
     { cdCardTraits = singleton Practiced
+    , cdAlternateCardCodes = ["60469"]
     }
 
 notWithoutAFight :: CardDef
@@ -1308,4 +1313,33 @@ literaryAnalysis :: CardDef
 literaryAnalysis =
   (skill "60269" "Literary Analysis" [#intellect, #intellect] Seeker)
     { cdCardTraits = singleton Practiced
+    }
+
+bloodCurse :: CardDef
+bloodCurse =
+  (skill "60467" "Blood Curse" [#wild, #wild, #wild, #wild] Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+cosmicGuidance :: CardDef
+cosmicGuidance =
+  (skill "60468" "Cosmic Guidance" [#willpower] Mystic)
+    { cdCardTraits = singleton Augury
+    }
+
+eldritchWhispers1 :: CardDef
+eldritchWhispers1 =
+  (skill "60471" "Eldritch Whispers" [#wild, #wild] Mystic)
+    { cdCardTraits = singleton Innate
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 1
+    }
+
+bloodCurse3 :: CardDef
+bloodCurse3 =
+  (skill "60477" "Blood Curse" [#wild, #wild, #wild, #wild, #wild] Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 3
     }

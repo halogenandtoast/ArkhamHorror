@@ -26,6 +26,12 @@ evadeActionWithAlternate stype cost = ActionAbility [Evade] (Just $ OrAbilitySki
 evadeActionWithAlternate_ :: AbilitySkills -> AbilityType
 evadeActionWithAlternate_ stype = ActionAbility [Evade] (Just $ OrAbilitySkills [#agility, stype]) (ActionCost 1)
 
+evadeActionWith :: SkillType -> Cost -> AbilityType
+evadeActionWith stype cost = ActionAbility [Evade] (Just $ AbilitySkill stype) (ActionCost 1 <> cost)
+
+evadeActionWith_ :: SkillType -> AbilityType
+evadeActionWith_ stype = ActionAbility [Evade] (Just $ AbilitySkill stype) (ActionCost 1)
+
 instance IsLabel "evade" AbilityType where
   fromLabel = evadeAction_
 

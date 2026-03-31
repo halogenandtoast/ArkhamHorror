@@ -22,6 +22,7 @@ import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
 import Arkham.Event.Cards.TommyMuldoon2 as X
 import Arkham.Event.Cards.CarolynFern2 as X
+import Arkham.Event.Cards.MarieLambeau2 as X
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -66,6 +67,7 @@ allPlayerEventCards =
       , barricade
       , barricade3
       , beguile
+      , bendBlood5
       , bellyOfTheBeast
       , bideYourTime
       , bindMonster2
@@ -77,6 +79,7 @@ allPlayerEventCards =
       , bloodEclipse3
       , bloodOfKnYan3
       , bloodRite
+      , bloodWard2
       , bloodWillHaveBlood2
       , bolas
       , bounty
@@ -106,6 +109,7 @@ allPlayerEventCards =
       , closeCall2
       , communeWithTheCosmos5
       , confound3
+      , consumeLife
       , connectTheDots
       , contraband
       , contraband2
@@ -197,6 +201,7 @@ allPlayerEventCards =
       , extraAmmunition1
       , falseSurrender
       , fangOfTyrthrha4
+      , favorOfBaalshandor
       , faustianBargain
       , fendOff3
       , fickleFortune3
@@ -262,6 +267,7 @@ allPlayerEventCards =
       , improvisedWeapon2
       , inTheShadows
       , infighting3
+      , infuseLife
       , insidiousTruths
       , intelReport
       , interrogate
@@ -312,6 +318,7 @@ allPlayerEventCards =
       , mindOverMatter2
       , mindWipe1
       , mindWipe3
+      , mirrorForm
       , miracleWish5
       , momentOfRespite3
       , moneyTalks
@@ -390,6 +397,7 @@ allPlayerEventCards =
       , regurgitation
       , reliable1
       , restrained
+      , retribution2
       , riastrad1
       , righteousHunt1
       , rightToolForTheJob
@@ -431,6 +439,7 @@ allPlayerEventCards =
       , spectralRazor
       , spectralRazor2
       , spectralShield
+      , spiritualCharm
       , spiritualEcho2
       , stakeout
       , stakeout3
@@ -484,6 +493,7 @@ allPlayerEventCards =
       , truthFromFiction
       , truthFromFiction2
       , twentyOneOrBust
+      , ultimateSacrifice4
       , unbridledKnowledge5
       , uncageTheSoul
       , uncageTheSoul3

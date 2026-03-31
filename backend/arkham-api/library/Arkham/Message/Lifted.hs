@@ -1723,6 +1723,17 @@ modifySkill
 modifySkill sid (toSource -> source) (toTarget -> target) sType n =
   skillTestModifier sid source target (SkillModifier sType n)
 
+addSkillValue
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> source
+  -> target
+  -> SkillType
+  -> m ()
+addSkillValue sid (toSource -> source) (toTarget -> target) sType =
+  skillTestModifier sid source target (AddSkillValue sType)
+
 skillTestModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
@@ -1899,6 +1910,10 @@ chooseEvadeEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage
 
+chooseEvadeEnemyWith
+  :: (ReverseQueue m, Sourceable source) => SkillType -> SkillTestId -> InvestigatorId -> source -> m ()
+chooseEvadeEnemyWith sType sid iid source = chooseEvadeEnemyEdit sid iid source (Evade.withSkillType sType)
+
 chooseEvadeEnemyEdit
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId
@@ -1959,6 +1974,9 @@ mapQueue = lift . Msg.mapQueue
 toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
+
+finalizeEvent :: ReverseQueue m => EventId -> m ()
+finalizeEvent eid = push $ Do (FinishedEvent eid)
 
 toDiscard
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
@@ -2436,6 +2454,9 @@ fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f
+
+allMatchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+allMatchingDon't f = lift $ removeAllMessagesMatching f
 
 cardDrawModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)

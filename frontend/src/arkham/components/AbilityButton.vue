@@ -2,9 +2,9 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Cost } from '@/arkham/types/Cost';
-import type { AbilityLabel, AbilitySkills, FightLabel, FightLabelWithSkill, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
+import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EvadeLabelWithSkill, EngageLabel } from '@/arkham/types/Message';
 import { SkillType } from '@/arkham/types/SkillType';
-import type { Ability } from '@/arkham/types/Ability';
+import type { Ability, AbilitySkills } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
 import { replaceIcons, formatContent } from '@/arkham/helpers';
@@ -14,7 +14,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const props = withDefaults(defineProps<{
  game: Game
- ability: AbilityLabel | FightLabel | FightLabelWithSkill | EvadeLabel | EngageLabel
+ ability: AbilityLabel | FightLabel | FightLabelWithSkill | EvadeLabel | EvadeLabelWithSkill | EngageLabel
  tooltipIsButtonText?: boolean
  showMove?: boolean
 }>(), { tooltipIsButtonText: false, showMove: true })
@@ -74,6 +74,9 @@ const isAction = (action: Action) => {
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {
+    return action === "Evade"
+  }
+  if (props.ability.tag === MessageType.EVADE_LABEL_WITH_SKILL) {
     return action === "Evade"
   }
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
@@ -150,6 +153,10 @@ const abilityLabel = computed(() => {
     return `${t('Fight')} (${abilityString.value ? abilityString.value : '<i class="skill-icon skill-fight"></i>'})`
   }
 
+  if (props.ability.tag === MessageType.EVADE_LABEL_WITH_SKILL) {
+    return `${t('Evade')} (${abilityString.value ? abilityString.value : '<i class="skill-icon skill-agility"></i>'})`
+  }
+
   if (props.ability.tag === MessageType.ENGAGE_LABEL) {
     return t('Engage')
   }
@@ -221,6 +228,10 @@ const abilitySkills = computed(() => {
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return { tag: "AbilitySkill", contents: "SkillCombat" }
+  }
+
+  if (props.ability.tag === MessageType.EVADE_LABEL_WITH_SKILL) {
+    return { tag: "AbilitySkill", contents: props.ability.skillType }
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {

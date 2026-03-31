@@ -1336,11 +1336,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     player <- getPlayer a.id
     concealed <- getConcealedIds NotForExpose investigatorId
     let choices = enemyIds <> map coerce concealed
+    let elabel eid = if skillType /= #agility then EvadeLabelWithSkill eid skillType else EvadeLabel eid
     unless (null choices) do
       push
         $ chooseOne player
         $ choose.additionalOptions
-        <> [ EvadeLabel
+        <> [ elabel
                eid
                [ ChosenEvadeEnemy choose.skillTest source eid
                , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction

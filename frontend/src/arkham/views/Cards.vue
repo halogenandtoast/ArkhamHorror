@@ -57,8 +57,9 @@ const SET_FONT_CHARS: Record<string, string> = {
   jac:       '\u004E', ste:       '\u0050',
   // Cycle 61 — Investigator Starter Decks (Chapter 2)
   tom:       '\uE918',
-  and:       '\uE91B',
   car:       '\uE919',
+  and:       '\uE91B',
+  mar:       '\uE91A',
   // Cycle 70 — Side Stories
   cotr:      '\u0051', coh:       '\uEA24', lol:       '\u0053',
   guardians: '\u0054', hotel:     '\u0055', blob:      '\u0056',

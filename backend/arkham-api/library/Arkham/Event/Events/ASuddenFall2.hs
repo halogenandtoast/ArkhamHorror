@@ -1,9 +1,7 @@
 module Arkham.Event.Events.ASuddenFall2 (aSuddenFall2) where
 
-import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Fight
 import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestTargetedEnemy)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -20,7 +18,7 @@ instance RunMessage ASuddenFall2 where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #combat)
-      aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+      chooseFightEnemyWith #agility sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 2 -> do
       withSkillTest \sid ->

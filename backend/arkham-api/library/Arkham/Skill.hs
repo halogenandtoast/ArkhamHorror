@@ -355,6 +355,11 @@ allSkills = mapFromList $
     , -- Carolyn Fern
       SomeSkillCard establishMotive
     , SomeSkillCard literaryAnalysis
+    , -- Marie Lambeau
+      SomeSkillCard bloodCurse
+    , SomeSkillCard cosmicGuidance
+    , SomeSkillCard eldritchWhispers1
+    , SomeSkillCard bloodCurse3
     , -- André Patel
       --- signature [and]
       SomeSkillCard knowTheExit

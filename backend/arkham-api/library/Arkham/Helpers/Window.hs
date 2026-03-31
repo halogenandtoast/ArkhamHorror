@@ -47,6 +47,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Skill.Types qualified as Field
 import Arkham.SkillTest.Base (SkillTest (..))
 import Arkham.SkillTest.Type
 import Arkham.Source
@@ -913,6 +914,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             ]
         Window.RevealChaosTokenEventEffect who tokens' eventId -> do
           card <- field Field.EventCard eventId
+          andM
+            [ pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
+            , pure $ card `cardMatch` cardMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.RevealChaosTokenSkillEffect who tokens' skillId -> do
+          card <- field Field.SkillCard skillId
           andM
             [ pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher

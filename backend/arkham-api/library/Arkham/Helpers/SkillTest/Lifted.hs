@@ -178,6 +178,15 @@ investigate_
   -> m ()
 investigate_ sid iid source = investigateEdit_ sid iid source id
 
+investigateWith_
+  :: (Sourceable source, ReverseQueue m)
+  => SkillType
+  -> SkillTestId
+  -> InvestigatorId
+  -> source
+  -> m ()
+investigateWith_ sType sid iid source = investigateEdit_ sid iid source \i -> i {I.investigateSkillType = sType}
+
 investigateEdit_
   :: (Sourceable source, ReverseQueue m)
   => SkillTestId

@@ -66,6 +66,7 @@ handleToken attrs iid token = void $ runMaybeT do
           AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
           other -> error $ "Unhandled ability source for token effect: " <> show other
         AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
+        SkillSource skid -> push $ If (Window.RevealChaosTokenSkillEffect iid [token] skid) msgs
         TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
         ChaosTokenEffectSource _ -> pushAll msgs
         LocationSource _ -> pushAll msgs

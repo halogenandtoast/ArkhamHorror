@@ -1,9 +1,7 @@
 module Arkham.Event.Events.CausticReaction (causticReaction) where
 
-import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Fight
 import Arkham.Investigator.Projection ()
 import Arkham.Modifier
 
@@ -24,6 +22,6 @@ instance RunMessage CausticReaction where
         attrs
         iid
         [SkillModifier #intellect 2, DamageDealt $ if clues >= 2 then 2 else 1]
-      aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+      chooseFightEnemyWith #intellect sid iid attrs
       pure e
     _ -> CausticReaction <$> liftRunMessage msg attrs

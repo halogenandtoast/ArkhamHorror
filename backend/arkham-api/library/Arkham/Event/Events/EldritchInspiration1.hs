@@ -12,6 +12,7 @@ import Arkham.Event.Types qualified as Field
 import Arkham.Helpers.Effect (lookupEffectCard)
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Skill.Types qualified as Field
 import Arkham.Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -30,6 +31,7 @@ instance RunMessage EldritchInspiration1 where
         Do (If wType _) -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenSkillEffect {} -> True
           Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
         _ -> False
@@ -45,6 +47,13 @@ instance RunMessage EldritchInspiration1 where
                 ]
         Do (If (Window.RevealChaosTokenEventEffect _ _ eventId) _) -> do
           cardName <- cdName . toCardDef <$> field Field.EventCard eventId
+          questionLabel (display cardName) iid
+            $ ChooseOne
+              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
+              , Label "Resolve an additional time" [effectMsg]
+              ]
+        Do (If (Window.RevealChaosTokenSkillEffect _ _ skillId) _) -> do
+          cardName <- cdName . toCardDef <$> field Field.SkillCard skillId
           questionLabel (display cardName) iid
             $ ChooseOne
               [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
@@ -73,11 +82,13 @@ instance RunMessage EldritchInspiration1 where
         CheckWindows [Window AtIf wType _] -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenSkillEffect {} -> True
           Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
         Do (CheckWindows [Window AtIf wType _]) -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenSkillEffect {} -> True
           Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
         _ -> False

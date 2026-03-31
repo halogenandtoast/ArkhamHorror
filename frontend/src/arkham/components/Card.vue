@@ -82,7 +82,7 @@ const cardAction = computed(() => {
 })
 
 function isAbility(v: Message): v is AbilityLabel {
-  if (v.tag === MessageType.EVADE_LABEL) {
+  if (v.tag === MessageType.EVADE_LABEL || v.tag === MessageType.EVADE_LABEL_WITH_SKILL) {
     return v.enemyId === id.value
   }
 

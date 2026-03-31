@@ -80,6 +80,7 @@ data UI msg
   | SkillLabel {skillType :: SkillType, messages :: [msg]}
   | SkillLabelWithLabel {label :: Text, skillType :: SkillType, messages :: [msg]}
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
+  | EvadeLabelWithSkill {enemyId :: EnemyId, skillType :: SkillType, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabelWithSkill {enemyId :: EnemyId, skillType :: SkillType, messages :: [msg]}
   | EngageLabel {enemyId :: EnemyId, messages :: [msg]}
@@ -119,6 +120,7 @@ uiAnd ui msg = case ui of
   SkillLabel sType msgs -> SkillLabel sType (msgs <> [msg])
   SkillLabelWithLabel l sType msgs -> SkillLabelWithLabel l sType (msgs <> [msg])
   EvadeLabel enemyId msgs -> EvadeLabel enemyId (msgs <> [msg])
+  EvadeLabelWithSkill enemyId sType msgs -> EvadeLabelWithSkill enemyId sType (msgs <> [msg])
   FightLabel enemyId msgs -> FightLabel enemyId (msgs <> [msg])
   FightLabelWithSkill enemyId sType msgs -> FightLabelWithSkill enemyId sType (msgs <> [msg])
   EngageLabel enemyId msgs -> EngageLabel enemyId (msgs <> [msg])
@@ -238,6 +240,14 @@ evadeLabel
   -> t msg
   -> UI msg
 evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
+
+evadeLabelWith
+  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
+  => SkillType
+  -> enemy
+  -> t msg
+  -> UI msg
+evadeLabelWith sType (asId -> enemy) (toList -> msgs) = EvadeLabelWithSkill enemy sType msgs
 
 fightLabel
   :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))

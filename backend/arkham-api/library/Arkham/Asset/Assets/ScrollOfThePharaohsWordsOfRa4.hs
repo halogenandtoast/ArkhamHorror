@@ -1,11 +1,9 @@
 module Arkham.Asset.Assets.ScrollOfThePharaohsWordsOfRa4 (scrollOfThePharaohsWordsOfRa4) where
 
 import Arkham.Ability
-import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Fight
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -30,6 +28,6 @@ instance RunMessage ScrollOfThePharaohsWordsOfRa4 where
       let source = attrs.ability 1
       sid <- getRandom
       skillTestModifiers sid source iid [SkillModifier #intellect 3, DamageDealt n]
-      aspect iid source (#intellect `InsteadOf` #combat) (mkChooseFight sid iid source)
+      chooseFightEnemyWith #intellect sid iid source
       pure a
     _ -> ScrollOfThePharaohsWordsOfRa4 <$> liftRunMessage msg attrs

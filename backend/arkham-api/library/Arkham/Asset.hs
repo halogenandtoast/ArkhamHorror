@@ -1533,6 +1533,20 @@ allAssets =
       , SomeAssetCard scrollOfThePharaohsWordsOfBast4
       , SomeAssetCard scrollOfThePharaohsWordsOfRa4
       , SomeAssetCard scrollOfThePharaohsWordsOfSet4
+      , -- Marie Lambeau
+        SomeAssetCard grandMeresCharm
+      , SomeAssetCard offeringBowl
+      , SomeAssetCard bloodstone
+      , SomeAssetCard sacrificialDoll
+      , SomeAssetCard shadowmeld
+      , SomeAssetCard ceremonialRobes1
+      , SomeAssetCard dreadCurseOfAzathoth3
+      , SomeAssetCard ritualDagger3
+      , SomeAssetCard spiritualIntuition3
+      , SomeAssetCard arcaneExperience4
+      , SomeAssetCard jimCulver4
+      , SomeAssetCard secondSight5
+      , SomeAssetCard shadowmeld5
       , -- André Patel
         SomeAssetCard centerStage
       , SomeAssetCard fame

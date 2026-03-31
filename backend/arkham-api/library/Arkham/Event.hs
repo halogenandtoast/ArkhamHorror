@@ -832,6 +832,16 @@ allEvents =
       , SomeEventCard insidiousTruths
       , SomeEventCard hypnotize2
       , SomeEventCard communeWithTheCosmos5
+      , -- Marie Lambeau
+        SomeEventCard consumeLife
+      , SomeEventCard favorOfBaalshandor
+      , SomeEventCard infuseLife
+      , SomeEventCard mirrorForm
+      , SomeEventCard spiritualCharm
+      , SomeEventCard bloodWard2
+      , SomeEventCard retribution2
+      , SomeEventCard ultimateSacrifice4
+      , SomeEventCard bendBlood5
       , -- André Patel
         SomeEventCard cleanSweep
       , SomeEventCard payYourDues

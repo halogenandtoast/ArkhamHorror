@@ -20,6 +20,7 @@ import Arkham.Asset.Cards.ThePathToCarcosa as X
 import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
 import Arkham.Asset.Cards.CarolynFern2 as X
+import Arkham.Asset.Cards.MarieLambeau2 as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -75,6 +76,7 @@ allPlayerAssetCards =
       , aquinnah3
       , arbiterOfFates
       , arcaneEnlightenment
+      , arcaneExperience4
       , arcaneInitiate
       , arcaneInitiate3
       , arcaneInsight4
@@ -143,6 +145,7 @@ allPlayerAssetCards =
       , bloodOfThothLawIncarnate
       , bloodPact
       , bloodPact3
+      , bloodstone
       , bloodstainedDagger
       , blur1
       , blur4
@@ -181,6 +184,7 @@ allPlayerAssetCards =
       , catBurglar1
       , catMaskTheCapriciousMeddler
       , celaenoFragments
+      , ceremonialRobes1
       , ceremonialSickle
       , ceremonialSickle4
       , chainsaw4
@@ -295,6 +299,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAChild3
       , dreamDiaryDreamsOfAMadman3
       , dreamDiaryDreamsOfAnExplorer3
+      , dreadCurseOfAzathoth3
       , dreamersChronicle
       , dreamEnhancingSerum
       , drDewiIrawanCryptozoologist
@@ -418,6 +423,7 @@ allPlayerAssetCards =
       , giftOfNodens5
       , gildedVolto
       , girishKadakiaIcpcPunjabDetective4
+      , grandMeresCharm
       , grannyOrne
       , grannyOrne3
       , grapplingHook
@@ -513,6 +519,7 @@ allPlayerAssetCards =
       , jeromeDavids
       , jessicaHyde1
       , jewelOfAureolus3
+      , jimCulver4
       , jimCulverHauntedMusician
       , jimsTrumpet
       , jimsTrumpetAdvanced
@@ -654,6 +661,7 @@ allPlayerAssetCards =
       , occultScraps
       , oculaObscuraEsotericEyepiece
       , oculusMortuum
+      , offeringBowl
       , ofuda
       , oldBookOfLore
       , oldBookOfLore3
@@ -756,6 +764,7 @@ allPlayerAssetCards =
       , riteOfSeeking2
       , riteOfSeeking4
       , ritualCandles
+      , ritualDagger3
       , roaldEllsworthIntrepidExplorer
       , roaldEllsworthIntrepidExplorerResolute
       , robertCastaigneHasYourBack
@@ -770,6 +779,7 @@ allPlayerAssetCards =
       , rookieCop
       , runicAxe
       , ruthWestmacottDarkRevelations
+      , sacrificialDoll
       , sacredCovenant2
       , sacredOathOathOfLoyalty5
       , sacredOathOathOfOrder5
@@ -802,10 +812,13 @@ allPlayerAssetCards =
       , seaChangeHarpoon
       , sealOfTheSeventhSign5
       , secondSight
+      , secondSight5
       , segmentOfOnyx1
       , sergeantMonroe
       , servantOfBrassDaemonaicVassal
       , serviceRevolver
+      , shadowmeld
+      , shadowmeld5
       , shardsOfTheVoid3
       , sharpRhetoric
       , sharpRhetoric3
@@ -855,6 +868,7 @@ allPlayerAssetCards =
       , spiritSpeaker
       , spiritualHealing4
       , spiritualIntuition
+      , spiritualIntuition3
       , spiritualResolve5
       , splitTheAngleIreOfTheVoid
       , springfieldM19034

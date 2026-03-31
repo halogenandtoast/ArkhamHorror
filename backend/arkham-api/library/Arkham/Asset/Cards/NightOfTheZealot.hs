@@ -353,7 +353,7 @@ arcaneInitiate =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally, Sorcerer]
     , cdSlots = [#ally]
-    , cdAlternateCardCodes = ["01563"]
+    , cdAlternateCardCodes = ["01563", "60455"]
     }
 
 bookOfShadows3 :: CardDef

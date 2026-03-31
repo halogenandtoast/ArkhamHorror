@@ -175,6 +175,19 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
           DevourThis {} -> cur
           _ -> n
         _ -> cur
+      afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
+    case afterPlay of
+      DeferDiscard -> pure ()
+      _ -> push $ Do (FinishedEvent eid)
+    pure a
+  Do (FinishedEvent eid) | eid == eventId -> do
+    mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
+    let
+      modifyAfterPlay cur = \case
+        SetAfterPlay n -> case cur of
+          DevourThis {} -> cur
+          _ -> n
+        _ -> cur
 
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
 
@@ -187,7 +200,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
           PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
-          DeferDiscard -> push after
+          DeferDiscard -> pushAll [after, toDiscardBy eventController GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))

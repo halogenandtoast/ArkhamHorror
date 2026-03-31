@@ -1566,6 +1566,7 @@ uiToRun = \case
   SkillLabel _ msgs -> Run msgs
   SkillLabelWithLabel _ _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
+  EvadeLabelWithSkill _ _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs
   FightLabelWithSkill _ _ msgs -> Run msgs
   EngageLabel _ msgs -> Run msgs

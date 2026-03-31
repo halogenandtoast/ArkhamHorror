@@ -20,7 +20,7 @@ instance HasAbilities OfferingBowl where
 instance RunMessage OfferingBowl where
   runMessage msg a@(OfferingBowl attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      directDamage iid (attrs.ability 1) 1
+      assignDamage iid (attrs.ability 1) 1
       gainResources iid (attrs.ability 1) 2
       pure a
     _ -> OfferingBowl <$> liftRunMessage msg attrs

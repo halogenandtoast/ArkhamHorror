@@ -73,7 +73,7 @@ mkdir -p arkham-horror/config arkham-horror/scripts arkham-horror/frontend/publi
 cd arkham-horror
 curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/docker-compose.yml -o docker-compose.yml
 curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/setup.sql -o setup.sql
-curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/scripts/fetch-assets.sh -o fetch-assets.sh
+curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/scripts/fetch-assets.sh -o scripts/fetch-assets.sh
 # Generate a strong password
 openssl rand -base64 32 > config/postgres_password.txt
 docker compose up -d

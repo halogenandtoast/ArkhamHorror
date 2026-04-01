@@ -1,0 +1,19 @@
+<svg width="128" height="160" viewBox="0 0 128 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64 18C41.9086 18 24 35.9086 24 58C24 75.5087 35.3755 90.3609 51.1644 95.6044C45.2414 103.562 37.1464 112.248 28.7491 120.09C39.1901 122.447 48.3573 119.886 55.7508 113.236C61.0331 121.643 68.7826 129.399 79 137.52C81.5762 127.495 87.3704 118.804 96.7138 111.931C102.83 115.095 108.906 116.898 115 116.898C107.553 108.018 100.534 99.6733 97.6347 90.6394C105.879 83.3685 110 72.5854 110 58.5C110 36.1325 91.8675 18 69.5 18H64Z" fill="url(#ghost3-fill)"/>
+  <path d="M46 80C53.9516 85.6015 66.0484 85.6015 74 80" stroke="#F3FEFF" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="53" cy="60" r="4" fill="#F0FFFF"/>
+  <circle cx="71" cy="60" r="4" fill="#F0FFFF"/>
+  <path d="M43 42C51.9214 31.6857 70.3558 30.7081 82 40.5" stroke="url(#ghost3-glow)" stroke-width="8" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="ghost3-fill" x1="64" y1="18" x2="64" y2="137.52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FAFFFF" stop-opacity="0.94"/>
+      <stop offset="0.45" stop-color="#D4F8FF" stop-opacity="0.68"/>
+      <stop offset="1" stop-color="#8AA6FF" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="ghost3-glow" x1="43" y1="42" x2="82" y2="40.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B3F2FF" stop-opacity="0.18"/>
+      <stop offset="0.55" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B3F2FF" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+</svg>

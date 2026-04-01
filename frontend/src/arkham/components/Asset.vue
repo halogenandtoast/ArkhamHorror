@@ -21,9 +21,16 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
+import GhostOrbit from '@/arkham/components/GhostOrbit.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 import { Card } from '../types/Card';
+import {
+  isManifestedSpiritAsset,
+  isSpiritDeckHost,
+  spiritGhostKeyForCardCode,
+  spiritGhostMotionForSeed,
+} from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -114,7 +121,11 @@ const canInteract = computed(() => abilities.value.length > 0 || cardAction.valu
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-const isSpirit = computed(() => (props.asset.modifiers ?? []).some((m) => m.type.contents === 'IsSpirit'))
+const isSpirit = computed(() => isManifestedSpiritAsset(props.asset))
+const hasSpiritDeck = computed(() => isSpiritDeckHost(props.asset))
+const spiritGhostKey = computed(() => spiritGhostKeyForCardCode(cardCode.value))
+const spiritGhostMotion = computed(() => spiritGhostMotionForSeed(cardCode.value))
+const deckGhostMotion = computed(() => spiritGhostMotionForSeed('the-beyond-spirit-deck'))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -254,6 +265,7 @@ function startDrag(event: DragEvent) {
           <span class="deck-size">{{asset.marketDeck.length}}</span>
         </div>
         <div v-if="asset.spiritDeck" class="spirit-deck">
+          <GhostOrbit v-if="hasSpiritDeck" variant="deck" ghost-key="deck" :motion="deckGhostMotion" />
           <img
             class="deck card"
             :src="imgsrc('player_back.jpg')"
@@ -262,6 +274,7 @@ function startDrag(event: DragEvent) {
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
+          <GhostOrbit v-if="isSpirit" variant="card" :ghost-key="spiritGhostKey" :motion="spiritGhostMotion" />
           <img
             :data-id="id"
             :data-image-id="dataImage"
@@ -388,6 +401,8 @@ function startDrag(event: DragEvent) {
   transition: transform 0.2s linear;
   transform: rotate(calc(var(--exhaust-rotation) + var(--ui-rotation)));
   transform-origin: center;
+  position: relative;
+  z-index: 2;
 }
 
 .asset {
@@ -486,6 +501,11 @@ img.card.ability-target {
 .spirit-deck {
   position: relative;
   margin-right: 5px;
+}
+
+.card-wrapper {
+  position: relative;
+  isolation: isolate;
 }
 
 .in-vehicle {

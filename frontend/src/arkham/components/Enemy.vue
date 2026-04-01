@@ -18,7 +18,13 @@ import Skill from '@/arkham/components/Skill.vue'
 import Token from '@/arkham/components/Token.vue'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
+import GhostOrbit from '@/arkham/components/GhostOrbit.vue';
 import * as Arkham from '@/arkham/types/Enemy'
+import {
+  isManifestedSpiritEnemy,
+  spiritGhostKeyForCardCode,
+  spiritGhostMotionForSeed,
+} from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -80,6 +86,9 @@ const swarmEnemies = computed(() =>
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
 
 const referenceCards = computed(() => props.enemy.referenceCards)
+const hasSpiritAura = computed(() => isManifestedSpiritEnemy(props.enemy, props.game))
+const spiritGhostKey = computed(() => spiritGhostKeyForCardCode(props.enemy.cardCode))
+const spiritGhostMotion = computed(() => spiritGhostMotionForSeed(props.enemy.cardCode))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -250,6 +259,12 @@ function onDrop(event: DragEvent) {
       <template v-else>
         <div class="card-frame" ref="frame">
           <div class="card-wrapper" :class="{ exhausted: isExhausted }">
+            <GhostOrbit
+              v-if="hasSpiritAura"
+              variant="card"
+              :ghost-key="spiritGhostKey"
+              :motion="spiritGhostMotion"
+            />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
             </span>
@@ -434,6 +449,8 @@ function onDrop(event: DragEvent) {
   width: var(--card-width);
   max-width: var(--card-width);
   border-radius: 5px;
+  position: relative;
+  z-index: 2;
 }
 
 .pool {
@@ -462,6 +479,11 @@ function onDrop(event: DragEvent) {
 .exhausted {
   transition: transform 0.2s linear;
   transform: rotate(90deg) translateX(-10px);
+}
+
+.card-wrapper {
+  position: relative;
+  isolation: isolate;
 }
 
 :deep(.token) {

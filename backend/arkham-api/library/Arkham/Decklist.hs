@@ -84,6 +84,7 @@ loadExtraDeck decklist = do
       let convert =
             applyCustomizations decklist
               . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+              . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
       traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
 
 -- things we can choose: cards, traits, skills

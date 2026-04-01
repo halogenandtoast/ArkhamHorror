@@ -1366,18 +1366,36 @@ instance RunMessage EnemyAttrs where
       push afterWindow
       pure $ a & tokensL %~ removeAllTokens Token.Damage & defeatedL .~ False
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
-      let
-        source = damageAssignmentSource damageAssignment
-        damageEffect = damageAssignmentDamageEffect damageAssignment
-        damageAmount = damageAssignmentAmount damageAssignment
-      canDamage <- sourceCanDamageEnemy eid source
-      when canDamage do
-        Lifted.checkWhen $ Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect
-        Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
-        Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
-        Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
-        push $ EnemyDamaged eid damageAssignment
-        Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+      let source = damageAssignmentSource damageAssignment
+      case enemyPlacement of
+        AsSwarm {} -> do
+          let
+            damageEffect = damageAssignmentDamageEffect damageAssignment
+            damageAmount = damageAssignmentAmount damageAssignment
+          canDamage <- sourceCanDamageEnemy eid source
+          when canDamage do
+            Lifted.checkWhen $ Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect
+            Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+            Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+            Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+            push $ EnemyDamaged eid damageAssignment
+            Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+        _ -> do
+          swarms <- select $ InPlayEnemy $ SwarmOf eid
+          case swarms of
+            swarm : _ -> push $ Msg.EnemyDamage swarm damageAssignment
+            [] -> do
+              let
+                damageEffect = damageAssignmentDamageEffect damageAssignment
+                damageAmount = damageAssignmentAmount damageAssignment
+              canDamage <- sourceCanDamageEnemy eid source
+              when canDamage do
+                Lifted.checkWhen $ Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect
+                Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+                Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
+                Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
+                push $ EnemyDamaged eid damageAssignment
+                Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
       pure a
     EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
       let source = damageAssignment''.source

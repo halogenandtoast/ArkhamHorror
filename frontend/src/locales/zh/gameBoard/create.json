@@ -4,19 +4,25 @@
     "numberOfPlayers" : "玩家人数",
     "withFriends": "与好友一起",
     "multihandedSolo": "独自控制",
+    "switchingPerspectives": "Switching Perspectives",
+    "switchingPerspectivesDescription": "In multihanded solo, you’ll sometimes need to act from a specific investigator’s point of view. Use the <strong>eye</strong> icon in the player tabs to switch to that investigator’s perspective.",
 
     "campaign": "剧本模式",
-    "standalone": "冒险模式（使用剧本关卡）",
+    "standalone": "冒险模式(使用剧本关卡)",
     "sideStory": "独立冒险",
 
     "alphaWarning": "此剧本目前正在开发中。它可能尚未完成，您不应该针对它提交bug报告。",
     "betaWarning": "此剧本已准备就绪供测试使用，但请做好游戏频繁崩溃的心理准备。",
+    "betaWarningScenario": "This scenario is ready for testing but expect your games to break frequently.",
 
     "normal": "正常",
     "returnTo": "重返...",
     
     "fullCampaign": "完整剧本",
     "partialCampaign": "部分剧本",
+    "multiplayerVariant": "多人变体",
+    "campaignType": "剧本类型",
+    "pickScenario": "挑选冒险",
 
     "difficulty": "难度选择",
     "Easy": "简单",
@@ -24,10 +30,11 @@
     "Hard": "困难",
     "Expert": "专家",
 
-    "includeTarotReadings": "是否使用塔罗牌解牌",
+    "includeTarotReadings": "包含塔罗牌解牌",
 
     "gameName": "游戏名称",
     "create": "创建",
+    "back": "返回",
 
     "chooseYourDeck": "选择你的牌组",
     "tabooList": "禁卡表: {tabooList}",
@@ -35,5 +42,21 @@
     "loadNewDeck": "加载新牌组",
     "selectADeck": "-- 选择一个牌组 --",
     "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
-    "choose": "选择"
+    "choose": "选择",
+
+    "variant": "战役变体",
+    "fullCampaignOption": {
+      "theDreamEaters": "The Dream-Eaters<br><small>8-part campaign</small>",
+      "theDreamQuest": "The Dream-Quest<br><small>4-part campaign</small>",
+      "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
+    },
+
+    "recommendedOptions": "Recommended Options",
+
+    "recommendedOption": {
+      "PlayersDoNotControlStoryAssetClues": {
+        "title": "Players Do Not Control Story Asset Clues",
+        "description": "Since The Feast of Hemlock Vale players now control clues on assets they control, this has some weird interactions in this campaign so it is recommended to enable this option to exclude story assets from that rule."
+      }
+    }
 }

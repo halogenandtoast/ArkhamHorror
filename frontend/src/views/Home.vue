@@ -77,7 +77,7 @@ const dismissNotification = (notification: AppNotification) => {
     <NewGame v-if="currentUser && newGame" @close="toggleNewGame">
       <template #cancel>
         <button @click="toggleNewGame" class="cancel-new-game-button">
-          <span>Cancel</span>
+          <span>{{$t('cancel')}}</span>
         </button>
       </template>
     </NewGame>
@@ -92,7 +92,7 @@ const dismissNotification = (notification: AppNotification) => {
         <section>
           <header class="main-header">
             <h2>{{$t('activeGames')}}</h2>
-            <PrimaryButton label="New Game" @click="toggleNewGame" />
+            <PrimaryButton :label="$t('newGame')" @click="toggleNewGame" />
           </header>
           <div v-if="activeGames.length === 0" class="box">
             <p>No active games.</p>

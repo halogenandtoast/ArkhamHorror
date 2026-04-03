@@ -20,8 +20,7 @@ instance HasAbilities MarieLambeau2 where
   getAbilities (MarieLambeau2 attrs) =
     [ playerLimit PerPhase
         $ restricted attrs 1 Self
-        $ freeReaction
-        $ PlacedToken #after AnySource (TargetControlledBy You) #damage
+        $ freeReaction (PlacedCounter #after You AnySource #damage $ atLeast 1)
     ]
 
 instance HasChaosTokenValue MarieLambeau2 where

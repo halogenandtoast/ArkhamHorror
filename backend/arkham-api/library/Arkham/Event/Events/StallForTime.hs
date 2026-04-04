@@ -35,7 +35,7 @@ instance RunMessage StallForTime where
     PassedThisSkillTest _iid (isSource attrs -> True) -> do
       whenJustM getSkillTestTarget \case
         EnemyTarget eid -> do
-          push $ Exhaust (toTarget eid)
+          exhaustWith attrs eid
           whenM (eid <=~> NonEliteEnemy) do
             nextPhaseModifier UpkeepPhase attrs eid DoesNotReadyDuringUpkeep
         _ -> pure ()

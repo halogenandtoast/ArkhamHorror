@@ -49,7 +49,7 @@ instance RunMessage EonChart1 where
       let
         cards =
           guard (not (tabooed TabooList20 attrs))
-            *> filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
+            *> filter (any (`elem` canDoActions) . cardActionsToList . cdActions . toCardDef) handCards
       playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
       player <- getPlayer iid
       let validAction x = any (abilityIs x) [#move, #evade, #investigate]

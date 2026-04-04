@@ -92,6 +92,16 @@ sourceMatches s = \case
   Matcher.NotSource matcher -> not <$> sourceMatches s matcher
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
+  Matcher.SourceIsAbility ab ->
+    let
+      go = \case
+        AbilitySource s' n -> selectAny $ Matcher.AbilityIs s' n <> ab
+        UseAbilitySource _ s' n -> selectAny $ Matcher.AbilityIs s' n <> ab
+        IndexedSource _ s' -> go s'
+        ProxySource _ s' -> go s'
+        BothSource lSource rSource -> orM [go lSource, go rSource]
+        _ -> pure False
+    in go s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> elem eid <$> select em
     _ -> pure False

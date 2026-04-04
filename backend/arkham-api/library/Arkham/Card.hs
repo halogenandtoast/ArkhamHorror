@@ -289,8 +289,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NonExceptional -> not . cdExceptional $ toCardDef a
   PermanentCard -> cdPermanent $ toCardDef a
   NotCard m -> not (cardMatch a m)
-  CardWithAction action -> elem action $ cdActions $ toCardDef a
-  CardWithoutAction -> null $ cdActions $ toCardDef a
+  CardWithAction action -> elem action $ cardActionsToList $ cdActions $ toCardDef a
+  CardWithoutAction -> null $ cardActionsToList $ cdActions $ toCardDef a
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
@@ -423,6 +423,9 @@ isEncounterCard = \case
   VengeanceCard _ -> False
 
 instance HasField "actions" Card [Action] where
+  getField = cardActionsToList . cdActions . toCardDef
+
+instance HasField "cardActions" Card CardActions where
   getField = cdActions . toCardDef
 
 instance HasField "skills" Card [SkillIcon] where

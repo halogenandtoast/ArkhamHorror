@@ -48,6 +48,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
+import Arkham.Exhaust
 import {-# SOURCE #-} Arkham.Enemy.Types
 import Arkham.Evade.Types
 import Arkham.Exception
@@ -645,6 +646,7 @@ data Message
   | CreatedCost ActiveCostId
   | CancelCost ActiveCostId
   | SetCost ActiveCostId Cost
+  | SetActiveCostChosenAction ActiveCostId Action
   | PaySealCost InvestigatorId CardId Cost
   | PayAdditionalCost InvestigatorId BatchId Cost
   | CheckAdditionalCosts ActiveCostId
@@ -763,8 +765,7 @@ data Message
   | EnemySpawnFromOutOfPlay OutOfPlayZone (Maybe InvestigatorId) LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
   | EvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
-  | Exhaust Target
-  | ExhaustThen Target [Message]
+  | Exhaust (Exhaustion Message)
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
@@ -883,6 +884,9 @@ data Message
   | InvestigatorAdjustSlot InvestigatorId Slot SlotType SlotType
   | InvestigatorPlayedAsset InvestigatorId AssetId
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
+  | BeforePlayEvent InvestigatorId EventId ActiveCostId
+  | UpdateEventMeta EventId Value
+  | CreatePendingEvent Card InvestigatorId EventId
   | BeforeCardCost InvestigatorId ActionStatus [Window] CardId
   | FinishedEvent EventId
   | InvestigatorResigned InvestigatorId
@@ -1095,7 +1099,7 @@ data Message
   | ShuffleAllFocusedIntoDeck InvestigatorId Target
   | PutAllFocusedIntoDiscard InvestigatorId Target
   | ShuffleAllInEncounterDiscardBackIn CardCode
-  | ShuffleBackIntoEncounterDeck Target
+  | ShuffleBackIntoEncounterDeck Source Target
   | ShuffleCardsIntoDeck DeckSignifier [Card]
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
@@ -1542,6 +1546,19 @@ mconcat
               case ea of
                 Left a -> pure $ CancelSearch (InvestigatorTarget a)
                 Right a -> pure $ CancelSearch a
+            "Exhaust" -> do
+              ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              pure $ case ea of
+                Left target -> Exhaust $ Exhaustion GameSource target []
+                Right exhaustion -> Exhaust exhaustion
+            "ExhaustThen" -> do
+              (target, msgs) <- o .: "contents"
+              pure $ Exhaust $ Exhaustion GameSource target msgs
+            "ShuffleBackIntoEncounterDeck" -> do
+              ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              pure $ case ea of
+                Left target -> ShuffleBackIntoEncounterDeck GameSource target
+                Right (source, target) -> ShuffleBackIntoEncounterDeck source target
             _ -> defaultParseMessage (Object o)
       |]
   ]

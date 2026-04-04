@@ -38,7 +38,7 @@ instance HasAbilities RuinsOfTheSerpentKing where
 instance RunMessage RuinsOfTheSerpentKing where
   runMessage msg l@(RuinsOfTheSerpentKing attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ (chosenEnemyPayment -> menemy) -> do
-      for_ menemy exhaustThis
+      for_ menemy (exhaustWith attrs)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

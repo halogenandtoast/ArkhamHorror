@@ -862,7 +862,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         . filter (`abilityIs` action)
         =<< getActionsWith iid windows' decreaseCost
     handCards <- field InvestigatorHand iid
-    let actionCards = filter (elem action . cdActions . toCardDef) handCards
+    let actionCards = filter (elem action . cardActionsToList . cdActions . toCardDef) handCards
     playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
     when (notNull actions || notNull playableCards) do
       Lifted.chooseOne iid

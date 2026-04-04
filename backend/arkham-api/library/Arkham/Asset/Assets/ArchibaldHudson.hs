@@ -42,7 +42,7 @@ instance RunMessage ArchibaldHudson where
         gainResources iid (attrs.ability 1) 3
       pure a
     ForTarget (CardIdTarget cid) (SearchFound _iid (isTarget attrs -> True) _ _) -> do
-      selectEach (EnemyWithCardId cid) exhaustThis
+      selectEach (EnemyWithCardId cid) (exhaustWith attrs)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assets <- select $ AssetAt (locationWithInvestigator iid) <> AssetWithDamage

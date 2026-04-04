@@ -24,7 +24,16 @@ instance RunMessage Persuasion where
       field InvestigatorLocation iid >>= traverse_ \location -> do
         let tabooMatcher = if tabooed TabooList21 attrs then id else (<> EnemyWithTrait Humanoid)
 
-        enemies <- select $ tabooMatcher $ enemyAt location <> NonWeaknessEnemy <> canParleyEnemy iid
+        enemies <-
+          select
+            $ tabooMatcher
+            $ enemyAt location
+            <> NonWeaknessEnemy
+            <> canParleyEnemy iid
+            <> oneOf
+              [ EliteEnemy <> EnemyCanBeEvadedBy (toSource attrs)
+              , not_ EliteEnemy <> EnemyCanBeRemovedBy (toSource attrs)
+              ]
         sid <- getRandom
         chooseTargetM iid enemies \enemy ->
           parley sid iid attrs enemy #intellect
@@ -35,6 +44,6 @@ instance RunMessage Persuasion where
         isElite <- eid <=~> EliteEnemy
         if isElite
           then automaticallyEvadeEnemy iid eid
-          else shuffleBackIntoEncounterDeck eid
+          else push $ ShuffleBackIntoEncounterDeck (toSource attrs) (toTarget eid)
       pure e
     _ -> Persuasion <$> liftRunMessage msg attrs

@@ -25,7 +25,7 @@ instance RunMessage AnotherWay where
       chooseOneM iid $ scenarioI18n do
         questionLabeledCard attrs
         labeled' "anotherWay.reject" do
-          exhaustThis alejandro
+          exhaustWith attrs alejandro
           disengageFromAll alejandro
           gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.alejandroVela
         labeled' "anotherWay.accept" do

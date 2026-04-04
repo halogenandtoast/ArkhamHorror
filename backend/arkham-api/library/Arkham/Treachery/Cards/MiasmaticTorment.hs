@@ -41,7 +41,7 @@ instance RunMessage MiasmaticTorment where
       if null partners
         then gainSurge attrs
         else chooseOneM iid $ targets partners \partner -> do
-          exhaustThis partner
+          exhaustWith attrs partner
           attachTreachery attrs partner
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

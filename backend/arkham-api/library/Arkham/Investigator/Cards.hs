@@ -114,6 +114,7 @@ allInvestigatorCards =
       , fatherMateoParallel
       , jennyBarnesParallel
       , lolaHayesParallel
+      , miguelDeLaCruz
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -786,3 +787,7 @@ carolynFern2 =
 marieLambeau2 :: CardDef
 marieLambeau2 =
   investigator "60451" ("Marie Lambeau" <:> "The Entertainer") Mystic [Performer, Witch]
+
+miguelDeLaCruz :: CardDef
+miguelDeLaCruz =
+  investigator "60551" ("Miguel de la Cruz" <:> "The Rancher") Survivor [Hunter, Warden]

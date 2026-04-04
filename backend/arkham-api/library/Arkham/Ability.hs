@@ -303,6 +303,8 @@ mkAbility entity idx type' =
     , abilitySkipForAll = False
     , abilityIgnoreAllCosts = False
     , abilityHighlightFromWindow = False
+    , abilityFightCriteriaOverride = Nothing
+    , abilityEvadeCriteriaOverride = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
@@ -316,6 +318,12 @@ applyAbilityModifiers a@Ability {abilityType, abilityCriteria} modifiers =
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
 overrideAbilityCriteria (CriteriaOverride override) ab =
   ab {abilityCriteria = override}
+
+withFightCriteriaOverride :: CriteriaOverride -> Ability -> Ability
+withFightCriteriaOverride override ab = ab {abilityFightCriteriaOverride = Just override}
+
+withEvadeCriteriaOverride :: CriteriaOverride -> Ability -> Ability
+withEvadeCriteriaOverride override ab = ab {abilityEvadeCriteriaOverride = Just override}
 
 isSilentForcedAbility :: Ability -> Bool
 isSilentForcedAbility Ability {abilityType} =

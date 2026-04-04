@@ -51,6 +51,6 @@ instance RunMessage CatacombsStinksOfDeath where
       cancelEnemyDefeat enemy
       healAllDamage (attrs.ability 3) enemy
       disengageEnemyFromAll enemy
-      exhaustThis enemy
+      exhaustWith attrs enemy
       pure l
     _ -> CatacombsStinksOfDeath <$> liftRunMessage msg attrs

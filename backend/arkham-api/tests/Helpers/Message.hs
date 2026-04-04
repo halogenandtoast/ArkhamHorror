@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Enemy.Types
 import Arkham.Event.Types
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Fight
 import Arkham.Helpers
 import Arkham.Id
@@ -64,7 +65,7 @@ disengageEnemy :: Investigator -> Enemy -> Message
 disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
 exhaustEnemy :: Targetable target => target -> Message
-exhaustEnemy = Exhaust . toTarget
+exhaustEnemy = Exhaust . mkExhaustion GameSource . toTarget
 
 playAsset :: Investigator -> Asset -> Message
 playAsset i a = PlaceAsset (toId a) (InPlayArea $ toId i)

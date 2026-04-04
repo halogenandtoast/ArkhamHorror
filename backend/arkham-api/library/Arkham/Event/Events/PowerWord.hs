@@ -229,7 +229,7 @@ instance RunMessage PowerWord where
             GoCommand -> do
               choices <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
               when (notNull choices) $ chooseOrRunOne iid $ targetLabels choices (only . EnemyMove eid)
-            CowerCommand -> pushWhenM (eid <=~> ReadyEnemy) $ Exhaust (toTarget eid)
+            CowerCommand -> whenM (eid <=~> ReadyEnemy) $ exhaustWith attrs eid
             BetrayCommand -> do
               enemies <-
                 select

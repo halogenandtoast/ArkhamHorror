@@ -88,7 +88,7 @@ instance RunMessage LostInTheWoods where
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTargetedEnemy >>= \case
         Just eid -> do
-          exhaustThis eid
+          exhaustWith attrs eid
           disengageEnemy iid eid
         _ -> error "Invalid target"
       pure a

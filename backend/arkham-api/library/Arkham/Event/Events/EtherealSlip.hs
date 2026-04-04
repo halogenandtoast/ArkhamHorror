@@ -27,6 +27,7 @@ instance RunMessage EtherealSlip where
                 (RevealedLocation <> CanEnterLocation (InvestigatorWithId iid))
             )
           <> EnemyCanEnter (LocationWithId location)
+          <> EnemyCanBeMovedBy (toSource attrs)
       chooseOrRunOne
         iid
         [ targetLabel enemy [SwapPlaces (toTarget enemy, enemyLocation) (toTarget iid, location)]

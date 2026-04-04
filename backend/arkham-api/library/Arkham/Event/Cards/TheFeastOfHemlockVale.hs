@@ -23,7 +23,7 @@ aethericCurrentYuggoth =
       { cdSkills = [#combat]
       , cdKeywords = singleton (Keyword.Bonded 1 "06005")
       , cdCardTraits = setFromList [Science]
-      , cdActions = [#fight]
+      , cdActions = CardAction #fight
       , cdCriteria = Just $ exists $ AssetIs "10005b"
       }
 
@@ -34,7 +34,7 @@ aethericCurrentYoth =
       { cdSkills = [#agility]
       , cdKeywords = singleton (Keyword.Bonded 1 "06005")
       , cdCardTraits = setFromList [Science]
-      , cdActions = [#evade]
+      , cdActions = CardAction #evade
       , cdCriteria = Just $ exists $ AssetIs "10005b"
       }
 
@@ -81,7 +81,7 @@ guidedByFaith =
   (event "10025" "Guided by Faith" 2 Guardian)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Spirit, Blessed]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     }
 
 holdUp :: CardDef
@@ -89,7 +89,7 @@ holdUp =
   (event "10026" "Hold Up" 1 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria =
         Just $ exists (EnemyAt YourLocation) <> exists (InHandOf NotForPlay You <> #item <> #asset)
     }
@@ -179,7 +179,7 @@ flurryOfBlows5 =
                 <> AssetWithPerformableAbility (AbilityIsAction #fight) [IgnoreActionCost]
             )
     , cdAdditionalCost = Just (ActionCost 1)
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdLevel = Just 5
     }
 
@@ -198,7 +198,7 @@ uncannyGrowth :: CardDef
 uncannyGrowth =
   (event "10045" "Uncanny Growth" 1 Seeker)
     { cdCardTraits = setFromList [Insight, Science]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdKeywords =
         setFromList
           [ Keyword.Bonded 1 "10044"
@@ -227,7 +227,7 @@ testingSprint =
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Insight, Double]
     , cdAdditionalCost = Just (ActionCost 1)
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCriteria =
         Just
           $ exists
@@ -255,7 +255,7 @@ throwTheBookAtThem =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Gambit, Improvised]
     , cdCriteria = Just $ exists $ AssetControlledBy You <> #tome
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     }
 
 transmogrify :: CardDef
@@ -263,7 +263,7 @@ transmogrify =
   (event "10050" "Transmogrify" 1 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Gambit, Science]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     }
 
 fineTuning1 :: CardDef
@@ -286,7 +286,7 @@ confound3 =
   (event "10057" "Confound" 2 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithEvade
     , cdLevel = Just 3
     }
@@ -305,7 +305,7 @@ falseSurrender =
   (event "10070" "False Surrender" 1 Rogue)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Tactic, Trick]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria =
         Just
           $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
@@ -318,7 +318,7 @@ grift =
   (event "10071" "Grift" 0 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick, Illicit]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     }
 
@@ -336,7 +336,7 @@ stirThePot =
   (event "10073" "Stir the Pot" 3 Rogue)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Trick, Gambit]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
     }
 
@@ -345,7 +345,7 @@ vamp =
   (event "10074" "Vamp" 1 Rogue)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     }
 
@@ -380,7 +380,7 @@ vamp3 =
   (event "10081" "Vamp" 1 Rogue)
     { cdSkills = [#wild, #wild]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
     }
@@ -390,7 +390,7 @@ stirThePot5 =
   (event "10083" "Stir the Pot" 3 Rogue)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Trick, Gambit]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
     , cdLevel = Just 5
     }
@@ -454,7 +454,7 @@ drainEssence =
   (event "10094" "Drain Essence" 2 Mystic)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Spell]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyWithFight)
     }
 
@@ -483,7 +483,7 @@ etherealForm2 :: CardDef
 etherealForm2 =
   (event "10100" "Ethereal Form" 2 Mystic)
     { cdSkills = [#willpower, #agility, #wild]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdCardTraits = setFromList [Spell]
     , cdLevel = Just 2
     }
@@ -492,7 +492,7 @@ readTheSigns2 :: CardDef
 readTheSigns2 =
   (event "10101" "Read the Signs" 2 Mystic)
     { cdSkills = [#willpower, #intellect, #wild]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCardTraits = setFromList [Spell]
     , cdLevel = Just 2
     }
@@ -502,7 +502,7 @@ spectralRazor2 =
   (event "10102" "Spectral Razor" 2 Mystic)
     { cdSkills = [#willpower, #combat, #wild]
     , cdCardTraits = singleton Spell
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdLevel = Just 2
@@ -578,7 +578,7 @@ stallForTime =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdCriteria = Just (exists $ EnemyAt YourLocation <> oneOf [EnemyWithEvade, EnemyWithFight])
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     }
 
 wrongPlaceRightTime :: CardDef

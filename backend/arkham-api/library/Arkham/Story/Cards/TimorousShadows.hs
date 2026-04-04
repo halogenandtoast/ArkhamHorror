@@ -30,6 +30,6 @@ instance RunMessage TimorousShadows where
           checkWindows defeatWindows
           healAllDamage attrs uncannyShadow
           disengageFromAll uncannyShadow
-          exhaustThis uncannyShadow
+          exhaustWith attrs uncannyShadow
       pure s
     _ -> TimorousShadows <$> liftRunMessage msg attrs

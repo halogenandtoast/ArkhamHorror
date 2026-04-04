@@ -43,9 +43,9 @@ instance RunMessage TheNamelessMadness where
       unless (null xs) do
         if length xs <= n
           then do
-            for_ xs exhaustEnemy
+            for_ xs (exhaustEnemy attrs)
             doStep (n - length xs) msg'
           else chooseNM iid n do
-            targets xs exhaustEnemy
+            targets xs (exhaustEnemy attrs)
       pure e
     _ -> TheNamelessMadness <$> liftRunMessage msg attrs

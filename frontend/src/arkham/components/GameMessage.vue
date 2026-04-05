@@ -2,7 +2,7 @@
 import { defineComponent, h } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
@@ -55,7 +55,7 @@ export default defineComponent({
     msg: { type: String, required: true },
   },
   render() {
-    const msg = this.msg[0] === '$' ? handleI18n(this.msg, this.$t) : this.msg;
+    const msg = handleEmbeddedI18n(this.msg, this.$t);
     const splits = msg.split(/({[^}]+})/)
     const els = splits.map(split => {
       if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {

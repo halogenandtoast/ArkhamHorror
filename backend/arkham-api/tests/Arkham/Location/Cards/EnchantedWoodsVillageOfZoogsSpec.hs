@@ -25,7 +25,7 @@ spec = describe "Enchanted Woods (Village of Zoogs)" do
     $ \self -> do
       moonTree <- testLocationWithDef Locations.enchantedWoodsTheMoonTree (revealedL .~ True)
       village <- testLocationWithDef Locations.enchantedWoodsVillageOfZoogs (revealedL .~ True)
-      enchantedPath <- testLocationWithDef Locations.theEnchantedPath id
+      enchantedPath <- testLocationWithDef Locations.theEnchantedPath (revealedL .~ True)
 
       self `moveTo` moonTree
 

@@ -3318,9 +3318,14 @@ enemyMatcherFilter es matcher' = do
       let notCannotBeAttacked = filter (`notElem` cannotBeAttacked) es
       flip filterM notCannotBeAttacked \enemy -> do
         enemyMods <- getModifiers (toTarget enemy)
-        pure $ not $ any (\case
-          CannotBeAttackedByPlayerSourcesExcept sm -> not (allowsPlayerCardSource sm)
-          _ -> False) enemyMods
+        pure
+          $ not
+          $ any
+            ( \case
+                CannotBeAttackedByPlayerSourcesExcept sm -> not (allowsPlayerCardSource sm)
+                _ -> False
+            )
+            enemyMods
     SwarmingEnemy ->
       flip filterM es \enemy -> do
         modifiers <- getModifiers (toTarget enemy)
@@ -4002,9 +4007,13 @@ enemyMatcherFilter es matcher' = do
             excluded <-
               elem (toId enemy)
                 <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
-            sourceBlocked <- anyM (\case
-              CannotBeEngagedByPlayerSourcesExcept sm -> not <$> sourceMatches source sm
-              _ -> pure False) enemyModifiers
+            sourceBlocked <-
+              anyM
+                ( \case
+                    CannotBeEngagedByPlayerSourcesExcept sm -> not <$> sourceMatches source sm
+                    _ -> pure False
+                )
+                enemyModifiers
             if excluded || sourceBlocked
               then pure False
               else
@@ -4161,7 +4170,8 @@ instance Projection Location where
         let card = lookupCard locationCardCode locationCardId
         pure $ if locationRevealed && not card.singleSided then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
-      LocationPrintedSymbol -> pure locationSymbol
+      LocationPrintedSymbol -> pure $ if locationRevealed then locationRevealedSymbol else locationSymbol
+      UnsafeLocationRevealedSymbol -> pure locationRevealedSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)

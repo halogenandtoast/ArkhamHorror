@@ -25,7 +25,7 @@ instance RunMessage BurdenOfLeadership where
           chooseOneAtATimeM iid do
             targets allies \ally -> do
               chooseOneM iid do
-                whenMatch ally AssetReady $ labeled "Exhaust" $ exhaustThis ally
+                whenMatch ally AssetReady $ labeled "Exhaust" $ exhaustWith attrs ally
                 whenMatch ally (oneOf [AssetWithHealth, AssetWithSanity]) do
                   labeled "Deal 1 direct damage and 1 direct horror"
                     $ dealAssetDirectDamageAndHorror ally attrs 1 1

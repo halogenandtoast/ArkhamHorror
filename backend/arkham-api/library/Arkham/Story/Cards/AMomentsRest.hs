@@ -25,7 +25,7 @@ instance RunMessage AMomentsRest where
       chooseOrRunOneM iid do
         scenarioI18n $ labeled' "aMomentsRest.chooseEnemy " do
           chooseTargetM iid enemies \enemy -> do
-            exhaustThis enemy
+            exhaustWith attrs enemy
             disengageFromAll enemy
         whenM (canHaveHorrorHealed attrs iid) do
           withI18n $ countVar 5 $ labeled' "healHorror" $ healHorror iid attrs 5

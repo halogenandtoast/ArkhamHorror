@@ -37,7 +37,7 @@ unearthTheAncients =
   (event "04024" "Unearth the Ancients" 1 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCriteria =
         Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
     }
@@ -72,7 +72,7 @@ improvisedWeapon :: CardDef
 improvisedWeapon =
   (event "04033" "Improvised Weapon" 1 Survivor)
     { cdCardTraits = setFromList [Tactic, Improvised]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdPlayableFromDiscard = True
     }
 
@@ -140,7 +140,7 @@ persuasion =
             ( exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
                 <> exists (You <> can.target.encounterDeck)
             )
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     }
 
 counterspell2 :: CardDef
@@ -246,7 +246,7 @@ slipAway =
   (event "04232" "Slip Away" 2 Rogue)
     { cdCardTraits = singleton Trick
     , cdSkills = [#intellect, #agility]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdAlternateCardCodes = ["60314"]
     }
 
@@ -271,7 +271,7 @@ bloodEclipse3 =
   (event "04266" "Blood Eclipse" 1 Guardian)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell, Spirit]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdAdditionalCost = Just $ UpTo (Fixed 3) $ InvestigatorDamageCost ThisCard You DamageAny 1
     , cdLevel = Just 3
     }
@@ -292,7 +292,7 @@ wingingIt :: CardDef
 wingingIt =
   (event "04272" "Winging It" 1 Survivor)
     { cdCardTraits = setFromList [Tactic, Improvised]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdPlayableFromDiscard = True
     }
 
@@ -314,7 +314,7 @@ impromptuBarrier :: CardDef
 impromptuBarrier =
   (event "04312" "Impromptu Barrier" 1 Survivor)
     { cdCardTraits = setFromList [Tactic, Improvised]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdPlayableFromDiscard = True
     }
 

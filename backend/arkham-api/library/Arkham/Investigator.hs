@@ -144,11 +144,12 @@ allInvestigators =
       , SomeInvestigatorCard tommyMuldoon2
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard carolynFern2
-      , SomeInvestigatorCard marieLambeau2
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard andrePatel
       , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard marieLambeau2
       , SomeInvestigatorCard stellaClark
+      , SomeInvestigatorCard miguelDeLaCruz
       , SomeInvestigatorCard subject5U21
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel

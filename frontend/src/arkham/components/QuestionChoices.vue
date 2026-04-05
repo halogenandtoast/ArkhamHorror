@@ -3,7 +3,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 
@@ -20,10 +20,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 const { t } = useI18n()
 const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return formatContent(handleI18n(body.slice(1), t))
-  }
-  return formatContent(body)
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 </script>
 <template>

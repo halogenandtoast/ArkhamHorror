@@ -210,6 +210,8 @@ instance RunMessage TheDreamEaters where
     case msg of
       HandleOption opt@(CampaignVariant _variant) -> do
         pure $ TheDreamEaters $ attrs & logL . optionsL %~ insertSet opt
+      HandleOption UseSwarmPlaceholders -> do
+        pure $ TheDreamEaters $ attrs & logL . optionsL %~ insertSet UseSwarmPlaceholders
       StartCampaign -> do
         -- [ALERT] StartCampaign, overriden to not choose decks yet
         lead <- getActivePlayer

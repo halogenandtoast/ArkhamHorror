@@ -21,6 +21,7 @@ data CampaignOption
   | TakePowderOfIbnGhazi
   | TakeTheNecronomicon
   | AddAcrossSpaceAndTime
+  | UseSwarmPlaceholders
   | -- | The Circle Undone
     TakeBlackBook
   | TakePuzzleBox

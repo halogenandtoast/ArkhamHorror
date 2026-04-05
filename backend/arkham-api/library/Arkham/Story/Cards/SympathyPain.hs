@@ -30,6 +30,6 @@ instance RunMessage SympathyPain where
           checkWindows defeatWindows
           healAllDamage attrs slainForeman
           disengageFromAll slainForeman
-          exhaustThis slainForeman
+          exhaustWith attrs slainForeman
       pure s
     _ -> SympathyPain <$> liftRunMessage msg attrs

@@ -449,6 +449,12 @@ data EnemyCriterion
   | EnemyMatchesCriteria [EnemyCriterion]
   deriving stock (Show, Eq, Ord, Data)
 
+canFightAtAnyLocation :: Criterion
+canFightAtAnyLocation = EnemyCriteria (ThisEnemy $ CanBeAttackedBy You) <> CanAttack
+
+canEvadeAtAnyLocation :: Criterion
+canEvadeAtAnyLocation = EnemyCriteria (ThisEnemy EnemyWithEvade)
+
 fightOverride :: EnemyMatcher -> EnemyMatcher
 fightOverride = CanFightEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
 

@@ -53,7 +53,7 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
       shuffleWhisperingChaosBackIntoEncounterDeck attrs
       pushAll
         [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
-        , ShuffleBackIntoEncounterDeck (toTarget eid)
+        , ShuffleBackIntoEncounterDeck GameSource (toTarget eid)
         ]
       pure l
     _ -> ForsakenTowerOfPrimevalLight <$> liftRunMessage msg attrs

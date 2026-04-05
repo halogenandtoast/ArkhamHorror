@@ -28,7 +28,7 @@ instance HasAbilities HoracioMartinez where
 instance RunMessage HoracioMartinez where
   runMessage msg a@(HoracioMartinez attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
-      exhaustThis attack.enemy
+      exhaustWith attrs attack.enemy
       roundModifier (attrs.ability 1) attack.enemy CannotReady
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do

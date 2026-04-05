@@ -214,11 +214,11 @@ watch(selectedCampaign, (id) => {
 })
 
 watch(campaign, (c) => {
-  const recs = ((c as any)?.recommendedOptions ?? []) as Array<{ type: 'toggle'; option: { tag: string } }>
+  const recs = ((c as any)?.recommendedOptions ?? []) as Array<{ type: 'toggle'; default?: boolean; option: { tag: string } }>
   const next: Record<string, boolean> = {}
 
   for (const r of recs) {
-    if (r.type === 'toggle' && r.option?.tag) next[r.option.tag] = true
+    if (r.type === 'toggle' && r.option?.tag) next[r.option.tag] = r.default ?? true
   }
 
   recommendedOptionState.value = { ...next, ...recommendedOptionState.value }

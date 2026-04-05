@@ -79,7 +79,7 @@ fortuitousDiscovery :: CardDef
 fortuitousDiscovery =
   (event "06034" "Fortuitous Discovery" 0 Survivor)
     { cdCardTraits = setFromList [Fortune, Insight]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdKeywords = singleton Keyword.Myriad
     , cdCost = Just DiscardAmountCost
     }
@@ -98,7 +98,7 @@ followed =
   (event "06114" "Followed" 2 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Tactic
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCriteria = Just $ exists $ EnemyAt YourLocation
     , cdBeforeEffect = True
     }
@@ -107,7 +107,7 @@ readTheSigns :: CardDef
 readTheSigns =
   (event "06117" "Read the Signs" 2 Mystic)
     { cdSkills = [#willpower, #intellect]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCardTraits = setFromList [Spell]
     }
 
@@ -147,7 +147,7 @@ etherealForm :: CardDef
 etherealForm =
   (event "06164" "Ethereal Form" 2 Mystic)
     { cdSkills = [#willpower, #agility]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdCardTraits = setFromList [Spell]
     }
 
@@ -183,7 +183,7 @@ spectralRazor =
   (event "06201" "Spectral Razor" 2 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = singleton Spell
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }

@@ -28,7 +28,7 @@ instance RunMessage TheKingsParade where
       pure s
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      exhaustThis hastur
+      exhaustWith attrs hastur
       selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
       pure s
     _ -> TheKingsParade <$> liftRunMessage msg attrs

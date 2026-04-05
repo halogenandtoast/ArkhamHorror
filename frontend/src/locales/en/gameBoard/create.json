@@ -56,6 +56,10 @@
       "PlayersDoNotControlStoryAssetClues": {
         "title": "Players Do Not Control Story Asset Clues",
         "description": "Since The Feast of Hemlock Vale players now control clues on assets they control, this has some weird interactions in this campaign so it is recommended to enable this option to exclude story assets from that rule."
+      },
+      "UseSwarmPlaceholders": {
+        "title": "Use Placeholder Cards for Swarms",
+        "description": "Instead of using cards from the lead investigator's deck as swarm placeholders, generate placeholder cards that do not belong to any investigator's deck."
       }
     }
 }

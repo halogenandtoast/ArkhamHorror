@@ -154,13 +154,18 @@ data ModifierType
   | CannotBeAttacked
   | CannotBeAttackedBy EnemyMatcher
   | CannotBeAttackedByPlayerSourcesExcept SourceMatcher
+  | CannotBeEvadedByPlayerSourcesExcept SourceMatcher
+  | CannotReceiveModifiersFromPlayerSources
+  | CannotBeExhaustedBy SourceMatcher
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeDamagedBySourcesExcept SourceMatcher
   | CannotBeDefeated
+  | CannotBeDefeatedBy SourceMatcher
   | CannotBeEngaged
   | CannotBeEngagedBy EnemyMatcher
+  | CannotBeEngagedByPlayerSourcesExcept SourceMatcher
   | CannotBeEnteredBy EnemyMatcher
   | CannotBeEvaded
   | CannotBeFlipped
@@ -168,6 +173,9 @@ data ModifierType
   | CannotBeFullyFlooded
   | CannotBeHuntedBy EnemyMatcher
   | CannotBeMoved
+  | CannotBeMovedBy SourceMatcher
+  | CannotBeDisengagedBy SourceMatcher
+  | CannotBeRemovedBy SourceMatcher
   | CannotBeRevealed
   | CannotCancelHorror
   | CannotCancelHorrorFrom Source

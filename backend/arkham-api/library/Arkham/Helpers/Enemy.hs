@@ -121,7 +121,7 @@ noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
 noSpawn attrs miid = do
   let noSpawnMsg = case enemyUnableToSpawn attrs of
         DiscardIfUnableToSpawn -> toDiscard GameSource (toId attrs)
-        ShuffleBackInIfUnableToSpawn -> ShuffleBackIntoEncounterDeck (toTarget attrs)
+        ShuffleBackInIfUnableToSpawn -> ShuffleBackIntoEncounterDeck GameSource (toTarget attrs)
   pushAll $ noSpawnMsg
     : [ Surge iid (toSource attrs) | enemySurgeIfUnableToSpawn attrs, iid <- toList miid
       ]

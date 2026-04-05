@@ -35,6 +35,6 @@ instance RunMessage SnowCoveredCrag where
   runMessage msg l@(SnowCoveredCrag attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid
-      chooseOneAtATimeM iid $ targets assets exhaustThis
+      chooseOneAtATimeM iid $ targets assets (exhaustWith attrs)
       pure l
     _ -> SnowCoveredCrag <$> liftRunMessage msg attrs

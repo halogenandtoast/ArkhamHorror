@@ -23,6 +23,7 @@ import Arkham.Event.Cards.TheScarletKeys as X
 import Arkham.Event.Cards.TommyMuldoon2 as X
 import Arkham.Event.Cards.CarolynFern2 as X
 import Arkham.Event.Cards.MarieLambeau2 as X
+import Arkham.Event.Cards.MiguelDeLaCruz as X
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -143,6 +144,7 @@ allPlayerEventCards =
       , decipheredReality5
       , decisiveStrike2
       , decoy
+      , decoyTrap
       , deepKnowledge
       , delayTheInevitable
       , deliverance3
@@ -205,6 +207,7 @@ allPlayerEventCards =
       , faustianBargain
       , fendOff3
       , fickleFortune3
+      , fieldDressing1
       , fightOrFlight
       , fineTuning1
       , firstWatch
@@ -226,6 +229,7 @@ allPlayerEventCards =
       , getOverHere
       , getOverHere2
       , ghastlyRevelation
+      , glassing
       , glimpseTheUnthinkable1
       , glimpseTheUnthinkable5
       , glory
@@ -233,6 +237,8 @@ allPlayerEventCards =
       , grievousWound
       , grift
       , gritYourTeeth
+      , guerrillaTactics
+      , guerrillaTactics2
       , guidance
       , guidance1
       , guidedByFaith
@@ -244,6 +250,7 @@ allPlayerEventCards =
       , heroicRescue
       , heroicRescue2
       , hiddenPocket
+      , hiddenShelter
       , hidingSpot
       , hitAndRun
       , hitMe
@@ -303,9 +310,11 @@ allPlayerEventCards =
       , lucky
       , lucky2
       , lucky3
+      , lieInWait
       , lure1
       , lure2
       , makeEmSing
+      , makeshiftBomb3
       , makeshiftTrap
       , makingPreparations
       , manipulateDestiny2
@@ -396,6 +405,7 @@ allPlayerEventCards =
       , refine
       , regurgitation
       , reliable1
+      , respite2
       , restrained
       , retribution2
       , riastrad1
@@ -404,6 +414,7 @@ allPlayerEventCards =
       , rightUnderTheirNoses
       , rightUnderTheirNoses3
       , riteOfEquilibrium5
+      , ropeTrap2
       , sacrifice1
       , salvage2
       , scarletRot
@@ -453,6 +464,7 @@ allPlayerEventCards =
       , stockAmmoReload2
       , stormOfSpirits
       , stormOfSpirits3
+      , stalkPrey
       , stouthearted
       , stringOfCurses
       , sureGamble3

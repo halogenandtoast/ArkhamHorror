@@ -39,7 +39,7 @@ instance RunMessage SaadiansTombs where
       swapLocation attrs =<< fetchCard Cards.saadiansTombsAbandoned
       pure l
     UseCardAbility _iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
-      exhaustThis enemy
+      exhaustWith attrs enemy
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       swapLocation attrs =<< fetchCard Cards.saadiansTombsAbandoned

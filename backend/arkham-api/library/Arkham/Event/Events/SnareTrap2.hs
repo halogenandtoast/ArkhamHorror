@@ -31,7 +31,7 @@ instance RunMessage SnareTrap2 where
       pure e
     UseCardAbility _iid (isSource attrs -> True) 1 (getEnemies -> enemies) _ -> do
       for_ enemies \enemyId -> do
-        exhaustThis enemyId
+        exhaustWith attrs enemyId
         disengageEnemyFromAll enemyId
         place attrs (AttachedToEnemy enemyId)
       pure e

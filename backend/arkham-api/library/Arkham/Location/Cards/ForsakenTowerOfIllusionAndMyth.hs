@@ -69,7 +69,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
         Just nyarlathotep -> do
           pushAll
             [ InitiateEnemyAttack $ enemyAttack nyarlathotep (attrs.ability 1) iid
-            , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+            , ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
             ]
       pure l
     _ -> ForsakenTowerOfIllusionAndMyth <$> liftRunMessage msg attrs

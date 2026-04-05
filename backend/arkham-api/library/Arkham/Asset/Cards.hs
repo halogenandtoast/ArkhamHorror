@@ -21,6 +21,7 @@ import Arkham.Asset.Cards.TheScarletKeys as X
 import Arkham.Asset.Cards.TommyMuldoon2 as X
 import Arkham.Asset.Cards.CarolynFern2 as X
 import Arkham.Asset.Cards.MarieLambeau2 as X
+import Arkham.Asset.Cards.MiguelDeLaCruz as X
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
@@ -620,6 +621,19 @@ allPlayerAssetCards =
       , mindsEye2
       , mineralSpecimen
       , mirandaKeeper
+      , miguelsKnapsack
+      , danielJameson
+      , huntingDog
+      , loner
+      , oldCompass
+      , pocketknife
+      , sameOldThing
+      , extraRations1
+      , canteen2
+      , huntersInstinct2
+      , winchesterModel522
+      , levelheaded3
+      , longbow3
       , misdirection2
       , miskatonicArchaeologyFunding4
       , missDoyle1

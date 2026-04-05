@@ -1,17 +1,13 @@
 module Arkham.Asset.Assets.AncientStone1 (ancientStone1) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
-import Arkham.Discover
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
-import Arkham.Location.Types (Field (..))
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.SkillTest (getSkillTestDifficulty, withSkillTest)
+import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,27 +17,19 @@ ancientStone1 :: AssetCard AncientStone1
 ancientStone1 = asset AncientStone1 Cards.ancientStone1
 
 instance HasAbilities AncientStone1 where
-  getAbilities (AncientStone1 a) = [restrictedAbility a 1 ControlsThis investigateAction_]
+  getAbilities (AncientStone1 a) = [controlled_ a 1 investigateAction_]
 
 instance RunMessage AncientStone1 where
-  runMessage msg a@(AncientStone1 attrs) = case msg of
+  runMessage msg a@(AncientStone1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
-      enabled <- skillTestModifiers sid attrs investigation.location [ShroudModifier 3]
-      pushAll
-        [ enabled
-        , toMessage investigation
-        ]
+      withLocationOf iid \lid -> skillTestModifiers sid attrs lid [ShroudModifier 3]
+      investigate sid iid (attrs.ability 1)
       pure a
-    Successful (Action.Investigate, LocationTarget lid) iid _ target _ | attrs `is` target -> do
-      amount <- min 2 <$> field LocationClues lid
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
-      discovery <- viaInvestigate <$> discover lid (toAbilitySource attrs 1) amount
-      pushAll
-        $ [ Msg.DiscoverClues iid discovery
-          , toDiscardBy iid (toAbilitySource attrs 1) attrs
-          ]
-        <> [RecordCount YouHaveIdentifiedTheStone difficulty]
+      withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+      toDiscardBy iid (attrs.ability 1) attrs
+      recordCount YouHaveIdentifiedTheStone difficulty
       pure a
-    _ -> AncientStone1 <$> runMessage msg attrs
+    _ -> AncientStone1 <$> liftRunMessage msg attrs

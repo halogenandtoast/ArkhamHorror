@@ -60,6 +60,7 @@ const SET_FONT_CHARS: Record<string, string> = {
   car:       '\uE919',
   and:       '\uE91B',
   mar:       '\uE91A',
+  mig:       '\uE91C',
   // Cycle 70 — Side Stories
   cotr:      '\u0051', coh:       '\uEA24', lol:       '\u0053',
   guardians: '\u0054', hotel:     '\u0055', blob:      '\u0056',

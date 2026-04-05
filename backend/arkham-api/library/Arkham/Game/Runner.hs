@@ -42,8 +42,10 @@ import Arkham.Game.Json ()
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Campaign.Option
 import Arkham.Helpers
 import Arkham.Helpers.Criteria
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
@@ -939,7 +941,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         case attr enemyPlacement enemy of
           AsSwarm _ c -> case toCardOwner c of
             Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
-            Nothing -> error "Missing owner"
+            Nothing -> unlessM (hasCampaignOption UseSwarmPlaceholders) $ error "Missing owner"
           _ -> do
             pushAll $ map RemoveEnemy swarms
 

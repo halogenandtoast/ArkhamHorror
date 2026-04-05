@@ -676,9 +676,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       push $ Ask pid $ ChooseExchangeAmounts source iid resources iid' resources' #resource
     pure a
   PlaceSwarmCards iid eid n | iid == investigatorId && n > 0 -> do
-    let cards = map toCard . take n $ unDeck investigatorDeck
-    for_ cards $ push . PlacedSwarmCard eid
-    pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
+    usePlaceholders <- hasCampaignOption UseSwarmPlaceholders
+    if usePlaceholders
+      then do
+        hostCard <- field Field.EnemyCard eid
+        replicateM_ n do
+          card <- genCard hostCard
+          push $ PlacedSwarmCard eid card
+        pure a
+      else do
+        let cards = map toCard . take n $ unDeck investigatorDeck
+        for_ cards $ push . PlacedSwarmCard eid
+        pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
   AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do
     push $ toMessage $ randomDiscardMatching investigatorId source matcher
     pure a

@@ -5764,6 +5764,7 @@ test-suite spec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Location.Cards.DreamGatePointlessRealitySpec
       Arkham.Location.Cards.DreamGateWondrousJourneySpec
+      Arkham.Location.Cards.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Scenario.SpecHelpers
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.FearlessSpec

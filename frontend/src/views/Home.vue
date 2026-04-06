@@ -7,6 +7,7 @@ import type { GameDetails } from '@/arkham/types/Game';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
+import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import { storeToRefs } from 'pinia';
 
@@ -44,6 +45,7 @@ const submitDebugUpload = async (e: Event) => {
 }
 
 const newGame = ref(route.path === "/new-game" || false)
+const showImport = ref(false)
 
 // View Transition helper
 function withViewTransition(fn: () => void) {
@@ -105,13 +107,12 @@ const dismissNotification = (notification: AppNotification) => {
           <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
         </section>
-        <section v-if="currentUser && currentUser.beta === true">
-          <header><h2>{{$t('debugGame')}}</h2></header>
-          <form enctype="multipart/form-data" method=POST class="box">
-            <p>Load a game previously exported view the "Debug Export"</p>
-            <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
-            <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
-          </form>
+        <section v-if="currentUser">
+          <header>
+            <h2>Load Game</h2>
+            <PrimaryButton v-if="!showImport" label="Load Export" @click="showImport = true" />
+          </header>
+          <ImportGame v-if="showImport" @close="showImport = false" />
         </section>
       </div>
     </div>

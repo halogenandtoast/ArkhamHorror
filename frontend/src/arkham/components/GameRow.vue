@@ -403,4 +403,19 @@ h2 {
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
 }
+
+.claim-seat-link {
+  padding: 3px 10px;
+  background: var(--spooky-green);
+  color: white !important;
+  border-radius: 3px;
+  text-decoration: none;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  font-weight: bold;
+
+  &:hover {
+    background: hsl(80, 35%, 32%);
+  }
+}
 </style>

@@ -209,3 +209,17 @@ export const debugGame = async (formData: FormData): Promise<Game> => {
   const { data } = await api.post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return gameDecoder.decodePromise(data)
 }
+
+export const importGame = async (formData: FormData): Promise<Game> => {
+  const { data } = await api.post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  return gameDecoder.decodePromise(data)
+}
+
+export const fetchOpenSeats = async (gameId: string): Promise<string[]> => {
+  const { data } = await api.get(`arkham/games/${gameId}/open-seats`)
+  return data as string[]
+}
+
+export const claimSeat = async (gameId: string, investigatorId: string): Promise<void> => {
+  await api.post(`arkham/games/${gameId}/claim-seat`, { investigatorId })
+}

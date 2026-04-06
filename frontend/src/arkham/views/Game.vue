@@ -82,12 +82,18 @@ const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
 const emitter = useEmitter()
+const router = useRouter()
 const source = ref(`${window.location.href}/join`)
+const claimSeatSource = computed(() => {
+  const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
+  return window.location.origin + resolved.href
+})
+const isGameHost = computed(() => !!localStorage.getItem(`gameHost_${props.gameId}`))
 const store = useCardStore()
 const userStore = useUserStore()
 const { copy } = useClipboard({ source })
+const { copy: copyClaimSeat } = useClipboard({ source: claimSeatSource })
 const { addEntry, menuItems } = useMenu()
-const router = useRouter()
 const preloaded = new Set<string>()
 let mouseX = 0;
 let mouseY = 0;
@@ -888,20 +894,32 @@ onUnmounted(() => {
         <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }} </button>
       </div>
     </div>
-    <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
-      <header>
+    <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">      <header>
         <h2>{{ $t('waitingForMorePlayers') }}</h2>
       </header>
       <GameDetails :game="game" id="invite">
         <div v-if="playerId == game.activePlayerId" class="full-width">
-          <p>{{ $t('showInviteLink') }}</p>
-          <div class="invite-link">
-            <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
-          </div>
+          <template v-if="game.multiplayerVariant === 'WithFriends'">
+            <p>Share this link so others can pick their investigator:</p>
+            <div class="invite-link">
+              <input type="text" :value="claimSeatSource"><button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>
+            </div>
+          </template>
+          <template v-else>
+            <p>{{ $t('showInviteLink') }}</p>
+            <div class="invite-link">
+              <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
+            </div>
+          </template>
         </div>
       </GameDetails>
     </div>
     <template v-else>
+      <div v-if="isGameHost && game.gameState.tag === 'IsChooseDecks'" class="invite-banner">
+        <span>Share invite link:</span>
+        <input type="text" :value="claimSeatSource" readonly />
+        <button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>
+      </div>
       <Draggable v-if="showSettings">
       <Settings :game="game" :playerId="playerId" :closeSettings="() => showSettings = false" />
       </Draggable>
@@ -1085,6 +1103,33 @@ onUnmounted(() => {
   p { margin: 0; padding: 0; margin-bottom: 20px; font-size: 1.3em; }
   @media (max-width: 800px) and (orientation: portrait){
     width: 100%;
+  }
+}
+
+.invite-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--background-dark);
+  border-bottom: 1px solid var(--box-border);
+  span { color: var(--title); font-size: 0.85em; white-space: nowrap; }
+  input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--box-border);
+    color: var(--title);
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+  button {
+    background: var(--spooky-green);
+    border: 0;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 3px;
+    cursor: pointer;
   }
 }
 

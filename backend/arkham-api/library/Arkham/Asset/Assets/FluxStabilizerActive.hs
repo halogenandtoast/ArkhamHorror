@@ -21,7 +21,7 @@ instance HasAbilities FluxStabilizerActive where
   getAbilities (FluxStabilizerActive a) =
     [ controlled_ a 1
         $ freeReaction
-        $ PlacedToken #after AnySource (AssetTargetMatches $ AssetControlledBy You) Clue
+        $ PlacedToken #when AnySource (AssetTargetMatches $ AssetControlledBy You) Clue
     ]
 
 instance RunMessage FluxStabilizerActive where

@@ -24,7 +24,7 @@ instance RunMessage ToilAndTrouble where
       withLocationOf iid \location -> do
         mPowerTreachery <- find (`cardMatch` CardWithTrait Power) <$> scenarioField ScenarioDiscard
         chooseOrRunOneM iid $ scenarioI18n do
-          for_ mPowerTreachery $ labeled' "toilAndTrouble.power" . drawCard iid
+          for_ mPowerTreachery $ labeled' "toilAndTrouble.power" . resolveRevelation_ iid
           labeled' "toilAndTrouble.incursion" $ resolveIncursion location
       pure t
     _ -> ToilAndTrouble <$> liftRunMessage msg attrs

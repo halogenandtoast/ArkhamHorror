@@ -3626,7 +3626,10 @@ drawCard iid card = do
 resolveRevelation :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 resolveRevelation iid card = do
   obtainCard $ toCard card
-  push $ ResolveRevelation iid (toCard card)
+  resolveRevelation_ iid card
+
+resolveRevelation_ :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+resolveRevelation_ iid = push . ResolveRevelation iid . toCard
 
 resign :: ReverseQueue m => InvestigatorId -> m ()
 resign iid = push $ Resign iid

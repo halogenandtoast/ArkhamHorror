@@ -82,7 +82,12 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, isDiscoveringLastClue, withLocationOf)
+import Arkham.Helpers.Location (
+  getCanMoveTo,
+  getCanMoveToMatchingLocations,
+  isDiscoveringLastClue,
+  withLocationOf,
+ )
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
@@ -115,6 +120,7 @@ import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
+import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   AssetMatcher (..),
@@ -151,7 +157,6 @@ import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
-import Arkham.Keyword (Keyword (Starting))
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
@@ -444,13 +449,17 @@ runWindow attrs windows actions playableCards = do
             $ [ targetLabel c [InitiatePlayCardWithWindows iid c Nothing NoPayment windows True]
               | c <- playableCards
               ]
-            <> map (\(ability, windows') ->
-                let ability' = if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
-                      then case listToMaybe windows' >>= primaryWindowTarget . windowType of
-                             Just target -> withHighlight target ability
-                             Nothing -> ability
-                      else ability
-                in AbilityLabel iid ability' windows' [] []) actionsWithMatchingWindows
+            <> map
+              ( \(ability, windows') ->
+                  let ability' =
+                        if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
+                          then case listToMaybe windows' >>= primaryWindowTarget . windowType of
+                            Just target -> withHighlight target ability
+                            Nothing -> ability
+                          else ability
+                   in AbilityLabel iid ability' windows' [] []
+              )
+              actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
@@ -2411,7 +2420,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         filterM
           ( \(sType', slot) ->
               andM
-                [pure $ sType /= sType', pure $ sType `elem` adjustableSlotsFor slot, canPutIntoSlot assetCard (emptySlot slot)]
+                [ pure $ sType /= sType'
+                , pure $ sType `elem` adjustableSlotsFor slot
+                , canPutIntoSlot assetCard (emptySlot slot)
+                ]
           )
           $ concatMap (\(t, bs) -> (t,) <$> bs)
           $ mapToList (a ^. slotsL)
@@ -4982,7 +4994,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               Just PerTestOrAbility -> usedDepth <= depth
               _ -> True
         )
-      & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+      & ( usedAbilitiesL
+            %~ map
+              ( \u ->
+                  case abilityLimitType (abilityLimit (usedAbility u)) of
+                    Just PerTestOrAbility -> u {usedThisWindow = False}
+                    _ -> u
+              )
+        )
   PerformEnemyAttack eid -> do
     withMaybeField Field.EnemyAttacking eid \details -> do
       when (any (isTarget a) details.targets) do

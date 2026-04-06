@@ -3,6 +3,7 @@ module Arkham.Location.Cards.RitualSiteTothis (ritualSiteTothis) where
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -23,7 +24,8 @@ instance HasAbilities RitualSiteTothis where
 instance RunMessage RitualSiteTothis where
   runMessage msg l@(RitualSiteTothis attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) 1 attrs
+      n <- perPlayer 1
+      discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) n attrs
       tothisBarrens <- selectJust $ locationIs Cards.tothisBarrens
       placeTokens (attrs.ability 1) tothisBarrens Shard 1
       pure l

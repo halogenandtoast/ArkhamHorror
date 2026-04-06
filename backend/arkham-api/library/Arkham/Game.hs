@@ -5187,8 +5187,8 @@ instance Query ExtendedCardMatcher where
         pure $ filter (`elem` discards) cs
       InPlayAreaOf who -> do
         iids <- select who
-        cards <- concatForM iids $ \i -> do
-          assets <- selectFields AssetCard (AssetWithPlacement $ InPlayArea i)
+        cards <- concatForM iids \i -> do
+          assets <- selectFields AssetCard (AssetInPlayAreaOf $ InvestigatorWithId i)
           events <- selectFields EventCard (EventWithPlacement $ InPlayArea i)
           skills <- selectFields SkillCard (SkillWithPlacement $ InPlayArea i)
           pure $ assets <> events <> skills

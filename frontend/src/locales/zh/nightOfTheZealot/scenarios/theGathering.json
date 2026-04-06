@@ -1,6 +1,6 @@
 {
   "setup": {
-    "gatherSets": "将下列遭遇组中的所有遭遇卡找出: *聚集于此*, *老鼠*, *食尸鬼*, *恐惧打击*, *远古恶魔*, and *寒冷刺骨*. 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "gatherSets": "将下列遭遇组中的所有遭遇卡找出: *聚集于此*, *老鼠*, *食尸鬼*, *恐惧打击*, *远古恶魔*, 和 *寒冷刺骨*. 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
     "placeLocations": "将地点“书房”放置入场。将其他地点卡放在一边。每位调查员从书房开始游戏。",
     "setOutOfPlay": "将食尸鬼祭司和丽塔·钱德勒放在一边。"
   },

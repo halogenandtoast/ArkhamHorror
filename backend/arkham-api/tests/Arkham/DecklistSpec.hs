@@ -40,7 +40,7 @@ extraDeckDecklist =
     , investigator_code = "90049"
     , investigator_name = "Jim Culver"
     , meta = Just "{\"extra_deck\":\"05153\"}"
-    , taboo_id = Just 23
+    , taboo_id = Just 8
     , url = Nothing
     }
 
@@ -52,6 +52,6 @@ sideSlotsDecklist =
     , investigator_code = "90049"
     , investigator_name = "Jim Culver"
     , meta = Nothing
-    , taboo_id = Just 23
+    , taboo_id = Just 8
     , url = Nothing
     }

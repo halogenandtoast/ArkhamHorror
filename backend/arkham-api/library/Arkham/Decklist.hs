@@ -1,6 +1,6 @@
 module Arkham.Decklist (module Arkham.Decklist, module Arkham.Decklist.Type) where
 
-import Arkham.Card
+import Arkham.Card hiding (setTaboo)
 import Arkham.Card.PlayerCard
 import Arkham.Customization
 import Arkham.Decklist.Type
@@ -67,7 +67,7 @@ loadDecklistCards f decklist =
       genPlayerCardWith (lookupPlayerCardDef cardCode)
         $ applyCustomizations decklist
         . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
-        . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
+        . setTaboo (fromTabooId $ taboo_id decklist)
 
 loadExtraDeck :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
 loadExtraDeck decklist = do
@@ -84,7 +84,7 @@ loadExtraDeck decklist = do
       let convert =
             applyCustomizations decklist
               . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
-              . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
+              . setTaboo (fromTabooId $ taboo_id decklist)
       traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
 
 -- things we can choose: cards, traits, skills

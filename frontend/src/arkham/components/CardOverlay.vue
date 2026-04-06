@@ -371,6 +371,12 @@ const allCustomizations = new Set([
   '09061', '09079', '09080', '09081', '09099', '09100', '09101', '09119'
 ])
 
+const isSpirit = computed<boolean>(() => {
+  const el = hoveredElement.value
+  if (!el) return false
+  return el.dataset.isSpirit === 'true'
+})
+
 const cardCode = computed<string | null>(() => {
   if (!card.value) return null
   const m = card.value.match(/cards\/(\d+)(_.*)?\.avif$/)
@@ -888,6 +894,8 @@ watchEffect(() => {
         </g>
       </svg>
 
+      <font-awesome-icon v-if="isSpirit && card" :icon="['fas', 'ghost']" class="spirit-icon" />
+
       <svg
         v-if="additionalCard"
         class="card-svg customizations-svg"
@@ -1125,6 +1133,20 @@ watchEffect(() => {
 .reversed, .Reversed { transform: rotateZ(180deg); }
 
 .card-image { position: relative; }
+
+.spirit-icon {
+  position: absolute;
+  bottom: 7%;
+  right: 5.1%;
+  z-index: 3;
+  font-size: 1.7em;
+  color: rgba(180, 230, 255, 0.95);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
+  pointer-events: none;
+}
 
 @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 

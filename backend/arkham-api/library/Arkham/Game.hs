@@ -3315,7 +3315,17 @@ enemyMatcherFilter es matcher' = do
 
       cannotBeAttacked <-
         enemyMatcherFilter es (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
-      pure $ filter (`notElem` cannotBeAttacked) es
+      let notCannotBeAttacked = filter (`notElem` cannotBeAttacked) es
+      flip filterM notCannotBeAttacked \enemy -> do
+        enemyMods <- getModifiers (toTarget enemy)
+        pure
+          $ not
+          $ any
+            ( \case
+                CannotBeAttackedByPlayerSourcesExcept sm -> not (allowsPlayerCardSource sm)
+                _ -> False
+            )
+            enemyMods
     SwarmingEnemy ->
       flip filterM es \enemy -> do
         modifiers <- getModifiers (toTarget enemy)
@@ -3853,7 +3863,11 @@ enemyMatcherFilter es matcher' = do
             [o] -> overrideAbilityCriteria o
             _ -> error "multiple overrides found"
         excluded <- elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
-        if excluded
+        sourceIsExcluded <- flip anyM enemyModifiers \case
+          CannotBeEvadedByPlayerSourcesExcept sourceMatcher ->
+            not <$> sourceMatches source sourceMatcher
+          _ -> pure False
+        if excluded || sourceIsExcluded
           then pure False
           else
             anyM
@@ -3873,9 +3887,10 @@ enemyMatcherFilter es matcher' = do
           CanOnlyBeDefeatedBy matcher -> not <$> sourceMatches source matcher
           CanOnlyBeDefeatedByDamage -> pure True
           CannotBeDefeated -> pure True
+          CannotBeDefeatedBy sm -> sourceMatches source sm
           _ -> pure False
       noneM prevents modifiers
-    EnemyCanBeEvadedBy _source -> do
+    EnemyCanBeEvadedBy source -> do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers iid
       let
@@ -3887,8 +3902,47 @@ enemyMatcherFilter es matcher' = do
             )
             modifiers'
       flip filterM es \enemy -> do
-        notElem (toId enemy)
-          <$> select (oneOf $ EnemyWithModifier CannotBeEvaded : not_ EnemyWithEvade : enemyFilters)
+        inBasicList <-
+          notElem (toId enemy)
+            <$> select (oneOf $ EnemyWithModifier CannotBeEvaded : not_ EnemyWithEvade : enemyFilters)
+        if not inBasicList
+          then pure False
+          else do
+            enemyMods <- getModifiers (toTarget enemy)
+            not
+              <$> anyM
+                ( \case
+                    CannotBeEvadedByPlayerSourcesExcept sm -> sourceMatches source sm >>= pure . not
+                    _ -> pure False
+                )
+                enemyMods
+    EnemyCanBeRemovedBy source -> flip filterM es \enemy -> do
+      modifiers <- getModifiers (toTarget enemy)
+      not
+        <$> anyM
+          ( \case
+              CannotBeRemovedBy sm -> sourceMatches source sm
+              _ -> pure False
+          )
+          modifiers
+    EnemyCanBeMovedBy source -> flip filterM es \enemy -> do
+      modifiers <- getModifiers (toTarget enemy)
+      not
+        <$> anyM
+          ( \case
+              CannotBeMovedBy sm -> sourceMatches source sm
+              _ -> pure False
+          )
+          modifiers
+    EnemyCanBeDisengagedBy source -> flip filterM es \enemy -> do
+      modifiers <- getModifiers (toTarget enemy)
+      not
+        <$> anyM
+          ( \case
+              CannotBeDisengagedBy sm -> sourceMatches source sm
+              _ -> pure False
+          )
+          modifiers
     CanEvadeEnemyWithOverride override -> do
       iid <- view activeInvestigatorIdL <$> getGame
       flip filterM es \enemy -> do
@@ -3953,7 +4007,14 @@ enemyMatcherFilter es matcher' = do
             excluded <-
               elem (toId enemy)
                 <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
-            if excluded
+            sourceBlocked <-
+              anyM
+                ( \case
+                    CannotBeEngagedByPlayerSourcesExcept sm -> not <$> sourceMatches source sm
+                    _ -> pure False
+                )
+                enemyModifiers
+            if excluded || sourceBlocked
               then pure False
               else
                 anyM
@@ -3966,6 +4027,15 @@ enemyMatcherFilter es matcher' = do
                         ]
                   )
                   (getAbilities enemy)
+    EnemyCanBeEngagedBy source -> flip filterM es \enemy -> do
+      modifiers <- getModifiers (toTarget enemy)
+      not
+        <$> anyM
+          ( \case
+              CannotBeEngagedByPlayerSourcesExcept sm -> not <$> sourceMatches source sm
+              _ -> pure False
+          )
+          modifiers
     CanEngageEnemyWithOverride override -> do
       iid <- view activeInvestigatorIdL <$> getGame
       flip filterM es \enemy -> do
@@ -4100,7 +4170,8 @@ instance Projection Location where
         let card = lookupCard locationCardCode locationCardId
         pure $ if locationRevealed && not card.singleSided then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
-      LocationPrintedSymbol -> pure locationSymbol
+      LocationPrintedSymbol -> pure $ if locationRevealed then locationRevealedSymbol else locationSymbol
+      UnsafeLocationRevealedSymbol -> pure locationRevealedSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)

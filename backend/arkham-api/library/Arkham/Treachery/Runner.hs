@@ -169,7 +169,7 @@ instance RunMessage TreacheryAttrs where
         Just target | isTarget target (sourceToTarget source) -> toDiscard GameSource (toTarget a)
         _ -> pure ()
       pure a
-    Exhaust (isTarget a -> True) -> do
+    Exhaust ea | a `isTarget` ea.target -> do
       pure $ a & exhaustedL .~ True
     ReadyExhausted -> do
       push $ Ready $ toTarget a

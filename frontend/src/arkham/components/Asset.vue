@@ -24,6 +24,7 @@ import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 import { Card } from '../types/Card';
+import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -115,7 +116,7 @@ const canInteract = computed(() => abilities.value.length > 0 || cardAction.valu
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-const isSpirit = computed(() => (props.asset.modifiers ?? []).some((m) => m.type.contents === 'IsSpirit'))
+const isSpirit = computed(() => isManifestedSpiritAsset(props.asset))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -263,9 +264,11 @@ function startDrag(event: DragEvent) {
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
+          <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
           <img
             :data-id="id"
             :data-image-id="dataImage"
+            :data-is-spirit="isSpirit || undefined"
             :src="image"
             class="card"
             :class="{ exhausted, 'ability-target': isHighlighted }"
@@ -494,11 +497,14 @@ img.card.ability-target {
   font-size: 1.2em;
   color: rgba(255, 255, 255, 0.6);
   left: 50%;
-  top: 40%;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 10px;
-  border-radius: 20px;
+  top: 37%;
   transform: translateX(-50%) translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 1.5em;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
 }
 
 .market-deck {
@@ -518,6 +524,24 @@ img.card.ability-target {
   gap: 10px;
   align-items: flex-start;
   margin-top: 8px;
+}
+
+.card-wrapper {
+  position: relative;
+}
+
+.spirit-icon {
+  position: absolute;
+  bottom: 8%;
+  right: 0%;
+  z-index: 3;
+  font-size: 0.9em;
+  color: rgba(180, 230, 255, 0.95);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
+  pointer-events: none;
 }
 
 .in-vehicle {

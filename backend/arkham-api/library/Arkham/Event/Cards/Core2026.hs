@@ -89,7 +89,7 @@ throughTheCracks =
   (event "12037" "Through the Cracks" 3 Seeker)
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     }
 
 throughTheCracks2 :: CardDef
@@ -97,7 +97,7 @@ throughTheCracks2 =
   (event "12041" "Through the Cracks" 2 Seeker)
     { cdSkills = [#agility, #wild]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdLevel = Just 2
     }
 
@@ -115,7 +115,7 @@ paintTheTownRed =
   (event "12051" "Paint the Town Red" 0 Rogue)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Fortune, Gambit]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ Criteria.youExist can.target.encounterDeck
     }
 
@@ -133,7 +133,7 @@ decisiveStrike2 =
   (event "12055" "Decisive Strike" 2 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Gambit]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     }
 
 willOfTheCosmos :: CardDef
@@ -149,7 +149,7 @@ augurOfElokoss3 =
     { cdSkills = [#willpower, #intellect, #wild]
     , cdCardTraits = setFromList [Spell, Augury]
     , cdLevel = Just 3
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     }
 
 shoveOff :: CardDef
@@ -157,7 +157,7 @@ shoveOff =
   (event "12079" "\"Shove off!\"" 1 Survivor)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     }
 
 scrapeBy1 :: CardDef

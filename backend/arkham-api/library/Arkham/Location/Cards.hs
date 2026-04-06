@@ -5457,7 +5457,7 @@ enchantedWoodsVillageOfZoogs =
       [Squiggle]
       ("Enchanted Woods" <:> "Village of Zoogs")
       [Woods]
-      Triangle
+      Diamond
       [Squiggle, Square, Star]
       BeyondTheGatesOfSleep
 

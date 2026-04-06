@@ -15,7 +15,7 @@ waylay = event Waylay Cards.waylay
 instance RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid <> ExhaustedEnemy <> EnemyWithEvade
+      enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid <> ExhaustedEnemy <> EnemyWithEvade <> EnemyCanBeDefeatedBy (toSource attrs)
       sid <- getRandom
       chooseTargetM iid enemies \enemy ->
         beginSkillTest sid iid attrs enemy #agility (EnemyMaybeFieldCalculation enemy EnemyEvade)

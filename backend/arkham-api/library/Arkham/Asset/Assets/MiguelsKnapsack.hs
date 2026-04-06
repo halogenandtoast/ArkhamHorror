@@ -1,0 +1,38 @@
+module Arkham.Asset.Assets.MiguelsKnapsack (miguelsKnapsack) where
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Location (getConnectedLocations, withLocationOf)
+import Arkham.Helpers.Window (getPlayedEvent)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+
+newtype MiguelsKnapsack = MiguelsKnapsack AssetAttrs
+  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+miguelsKnapsack :: AssetCard MiguelsKnapsack
+miguelsKnapsack = asset MiguelsKnapsack Cards.miguelsKnapsack
+
+instance HasAbilities MiguelsKnapsack where
+  getAbilities (MiguelsKnapsack a) =
+    [controlled_ a 1 $ triggered (PlayEvent #when You AnyEvent) (exhaust a)]
+
+instance RunMessage MiguelsKnapsack where
+  runMessage msg a@(MiguelsKnapsack attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (getPlayedEvent -> eid) _ -> do
+      withLocationOf iid \lid -> do
+        connectingLids <- getConnectedLocations lid
+        card <- fetchCard eid
+        chooseOneM iid do
+          labeled "Draw 1 card" do
+            drawCards iid (attrs.ability 1) 1
+          when (notNull connectingLids) do
+            labeled "Play that event at a connecting location" do
+              chooseOrRunOneM iid do
+                targets connectingLids \lid' ->
+                  cardResolutionModifiers card (attrs.ability 1) iid [AsIfAt lid']
+      pure a
+    _ -> MiguelsKnapsack <$> liftRunMessage msg attrs

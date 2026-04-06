@@ -1,7 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -O0 #-}
+{-# OPTIONS_GHC -O0 -Wno-deprecations #-}
 
 module Arkham.Helpers.Window where
 
@@ -2005,6 +2005,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM
             [ matches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
+            ]
+        Window.EnemySpawns enemyId lid ->
+          andM
+            [ traceShowId <$> matches enemyId enemyMatcher
+            , traceShowId <$> locationMatches iid source window' lid whereMatcher
             ]
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->

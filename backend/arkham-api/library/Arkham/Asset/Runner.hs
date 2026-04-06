@@ -654,13 +654,11 @@ instance RunMessage AssetAttrs where
       pure a
     CardEnteredPlay _ card ->
       pure $ a & cardsUnderneathL %~ filter (/= card)
-    Exhaust target | a `isTarget` target -> do
-      pushAll $ doFrame (Exhaust target) (Window.Exhausts (toTarget a))
+    Exhaust ea | a `isTarget` ea.target -> do
+      pushAll $ doFrame (Exhaust ea) (Window.Exhausts (toTarget a))
       pure a
-    Do (Exhaust target) | a `isTarget` target -> do
-      pure $ a & exhaustedL .~ True
-    ExhaustThen target msgs | a `isTarget` target -> do
-      unless assetExhausted $ pushAll msgs
+    Do (Exhaust ea) | a `isTarget` ea.target -> do
+      unless assetExhausted $ pushAll ea.thenMsgs
       pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case a.controller of
       Just iid -> do

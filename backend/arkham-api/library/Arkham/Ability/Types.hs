@@ -11,6 +11,7 @@ import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria (Criterion (NoRestriction))
+import Arkham.Criteria.Override (CriteriaOverride)
 import Arkham.Json
 import Arkham.Matcher
 import Arkham.SkillType
@@ -48,6 +49,8 @@ data Ability = Ability
   , abilityHighlightFromWindow :: Bool -- when true, abilityTarget is auto-set from the triggering window
   , abilitySkipForAll :: Bool
   , abilityIgnoreAllCosts :: Bool
+  , abilityFightCriteriaOverride :: Maybe CriteriaOverride
+  , abilityEvadeCriteriaOverride :: Maybe CriteriaOverride
   }
   deriving stock (Show, Ord, Data)
 
@@ -98,6 +101,8 @@ buildAbility source idx abilityType =
     , abilityHighlightFromWindow = False
     , abilitySkipForAll = False
     , abilityIgnoreAllCosts = False
+    , abilityFightCriteriaOverride = Nothing
+    , abilityEvadeCriteriaOverride = Nothing
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
@@ -267,6 +272,8 @@ instance FromJSON Ability where
     abilityHighlightFromWindow <- o .:? "highlightFromWindow" .!= False
     abilitySkipForAll <- o .:? "skipForAll" .!= False
     abilityIgnoreAllCosts <- o .:? "ignoreAllCosts" .!= False
+    abilityFightCriteriaOverride <- o .:? "fightCriteriaOverride"
+    abilityEvadeCriteriaOverride <- o .:? "evadeCriteriaOverride"
 
     pure Ability {..}
 

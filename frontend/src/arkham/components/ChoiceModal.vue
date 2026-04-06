@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { choiceRequiresModal } from '@/arkham/types/Message';
-import { formatContent, replaceIcons } from '@/arkham/helpers';
-import { handleI18n } from '@/arkham/i18n';
+import { formatContent } from '@/arkham/helpers';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
@@ -56,7 +56,7 @@ const focusedCards = computed(() => {
 
 const paymentAmountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return question.value.label
   }
 
   return null
@@ -81,7 +81,7 @@ const question = computed(() => props.game.question[props.playerId])
 
 const amountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return question.value.label
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -92,7 +92,7 @@ const amountsLabel = computed(() => {
 })
 
 const label = function(body: string) {
-  return formatContent(body.startsWith("$") ? handleI18n(body.slice(1), t) : body)
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 
 const skillTestResults = computed(() => props.game.skillTestResults)

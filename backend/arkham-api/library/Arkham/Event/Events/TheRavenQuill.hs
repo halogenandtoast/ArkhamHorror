@@ -5,6 +5,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorResigned)
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Message qualified as Msg
@@ -154,7 +155,7 @@ instance RunMessage TheRavenQuill where
         AssetTarget aid -> do
           others <- select $ assetControlledBy iid <> #exhausted <> not_ (AssetWithId aid)
           chooseOne iid $ Label "Do not ready asset" []
-            : [targetLabel asset [Exhaust (toTarget attrs), Ready (toTarget asset)] | asset <- others]
+            : [targetLabel asset [Exhaust (mkExhaustion attrs attrs), Ready (toTarget asset)] | asset <- others]
         _ -> error "invalid attach"
       pure e
     _ -> TheRavenQuill <$> liftRunMessage msg attrs

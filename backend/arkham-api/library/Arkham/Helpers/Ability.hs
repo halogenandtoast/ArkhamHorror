@@ -144,8 +144,9 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
           EnemyFightActionCriteria override -> Just override
           CanModify (EnemyFightActionCriteria override) -> Just override
           _ -> Nothing
-        overrides = mapMaybe isOverride modifiers
-      enemies <- selectAny $ case nonEmpty overrides of
+        modifierOverrides = mapMaybe isOverride modifiers
+        allOverrides = modifierOverrides ++ maybeToList (abilityFightCriteriaOverride ab)
+      enemies <- selectAny $ case nonEmpty allOverrides of
         Nothing -> Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanFightEnemyWithOverride $ combineOverrides os
       canMoveToConnected <- case ab.source.asset of
@@ -176,8 +177,9 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
           EnemyEvadeActionCriteria override -> Just override
           CanModify (EnemyEvadeActionCriteria override) -> Just override
           _ -> Nothing
-        overrides = mapMaybe isOverride modifiers
-      base <- selectAny $ case nonEmpty overrides of
+        modifierOverrides = mapMaybe isOverride modifiers
+        allEvadeOverrides = modifierOverrides ++ maybeToList (abilityEvadeCriteriaOverride ab)
+      base <- selectAny $ case nonEmpty allEvadeOverrides of
         Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
       concealed <-

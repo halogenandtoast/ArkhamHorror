@@ -88,6 +88,8 @@ allPlayerEnemyCards =
       , sacrificialBeast
       , vengefulHound
       , serpentsOfYigAdvanced
+      , felineHybrid
+      , bloodDrinker
       ]
 
 allEncounterEnemyCards :: Map CardCode CardDef
@@ -4531,4 +4533,19 @@ extradimensionalEnemy :: CardDef
 extradimensionalEnemy =
   (enemy "xextra" "Extradimensional Enemy" FortuneAndFolly 0)
     { cdCardTraits = singleton Extradimensional
+    }
+
+felineHybrid :: CardDef
+felineHybrid =
+  unique
+    $ (weakness "60553" "Feline Hybrid")
+      { cdCardTraits = setFromList [Creature, Mutated]
+      , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+      }
+
+bloodDrinker :: CardDef
+bloodDrinker =
+  (basicWeakness "60554" "Blood Drinker")
+    { cdCardTraits = setFromList [Humanoid, Monster]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }

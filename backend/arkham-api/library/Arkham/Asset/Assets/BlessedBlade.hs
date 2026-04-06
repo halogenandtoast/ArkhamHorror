@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.BlessedBlade (blessedBlade, BlessedBlade (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Cost
 import Arkham.Helpers.SkillTest
@@ -40,7 +41,7 @@ instance RunMessage BlessedBlade where
             st.investigator
             [ Label
                 "Exhaust Blessed Blade to add 1 {bless} token"
-                [Exhaust (toTarget attrs), AddChaosToken #bless]
+                [Exhaust (mkExhaustion attrs attrs), AddChaosToken #bless]
             , Label "Do not exhaust" []
             ]
       pure a

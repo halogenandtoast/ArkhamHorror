@@ -71,7 +71,7 @@ instance RunMessage TonyMorgan where
           . filter (any (`elem` [#fight, #engage]) . abilityActions)
           <$> getActions iid windows'
       playableCards <- withModifiers attrs (toModifiers attrs [BountiesOnly]) $ do
-        filter (any (`elem` [#fight, #engage]) . cdActions . toCardDef)
+        filter (any (`elem` [#fight, #engage]) . cardActionsToList . cdActions . toCardDef)
           <$> getPlayableCards attrs iid (UnpaidCost NoAction) windows'
 
       chooseOneM iid do

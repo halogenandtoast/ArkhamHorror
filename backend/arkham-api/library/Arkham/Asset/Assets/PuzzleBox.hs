@@ -49,7 +49,7 @@ instance RunMessage PuzzleBox where
       chooseOrRunOneM iid $ scenarioI18n do
         for_ locationLit \location ->
           labeled' "puzzleBox.unlight" $ updateLocation location LocationBrazier (Just Unlit)
-        for_ readySpectralWatcher $ labeled' "puzzleBox.exhaust" . exhaustThis
+        for_ readySpectralWatcher $ labeled' "puzzleBox.exhaust" . exhaustWith attrs
         when canDealDamage do
           for_ exhaustedSpectralWatcher
             $ labeled' "puzzleBox.damage"

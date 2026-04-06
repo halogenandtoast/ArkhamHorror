@@ -355,7 +355,8 @@ defaultCampaignRunner msg a = case msg of
             )
         )
         key
-  RecordCount key int ->
+  RecordCount key int -> do
+    send $ "Record \"" <> format key <> "\" (" <> tshow int <> ")"
     pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
   IncrementRecordCount key int ->
     pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key

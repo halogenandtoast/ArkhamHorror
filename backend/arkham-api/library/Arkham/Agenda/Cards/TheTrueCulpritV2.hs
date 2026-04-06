@@ -57,7 +57,7 @@ instance RunMessage TheTrueCulpritV2 where
           when isReady do
             labeled "remove 2 clues from Sinister Solution to either exhaust Otherworldly Meddler" do
               removeClues sinisterSolution sinisterSolution 2
-              exhaustThis otherworldlyMeddler
+              exhaustWith attrs otherworldlyMeddler
 
           labeled "remove 2 clues to deal it 2 damage" do
             removeClues sinisterSolution sinisterSolution 2

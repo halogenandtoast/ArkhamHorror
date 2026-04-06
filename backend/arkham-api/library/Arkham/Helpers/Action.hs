@@ -262,17 +262,24 @@ hasFightActions
   -> m Bool
 hasFightActions iid requestor window windows' = do
   abilities <- selectMap (setRequestor requestor) (#basic <> #fight <> AbilityWindow window)
-  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
+  andM
+    [ selectAny (CanFightEnemy (toSource requestor))
+    , anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
+    ]
 
 hasEvadeActions
-  :: (HasCallStack, Tracing m, HasGame m)
+  :: (HasCallStack, Sourceable source, Tracing m, HasGame m)
   => InvestigatorId
+  -> source
   -> WindowMatcher
   -> [Window]
   -> m Bool
-hasEvadeActions iid window windows' = do
-  abilities <- select $ #evade <> AbilityWindow window
-  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
+hasEvadeActions iid requestor window windows' = do
+  abilities <- selectMap (setRequestor requestor) (#basic <> #evade <> AbilityWindow window)
+  andM
+    [ selectAny (CanEvadeEnemy (toSource requestor))
+    , anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
+    ]
 
 hasInvestigateActions
   :: (Sourceable source, Tracing m, HasGame m)

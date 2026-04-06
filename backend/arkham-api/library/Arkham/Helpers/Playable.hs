@@ -313,7 +313,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
       alternateResourceCosts = mapMaybe alternateResourceCost modifiers
     canAffordAlternateResourceCost <- case alternateResourceCosts of
       [] -> pure False
-      _ -> anyM (getCanAffordCost iid source (cdActions pcDef) windows') alternateResourceCosts
+      _ -> anyM (getCanAffordCost iid source (pcDef.actions) windows') alternateResourceCosts
     mBaseModifiedCardCost <- getModifiedCardCost iid c
     mModifiedCardCost <-
       maybe (pure Nothing) (fmap Just . getPotentiallyModifiedCardCost iid c True) mBaseModifiedCardCost
@@ -413,10 +413,11 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
         pure $ null $ cdSlots pcDef \\ possibleSlots
     let slotsDetail = if slotsOk then Nothing else Just $ "No available slot of type: " <> tshow (cdSlots pcDef)
 
-    -- Evade actions check (only if card has evade action)
-    let hasEvade = #evade `elem` pcDef.actions && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
+    -- Evade/Fight actions check
+    let isOrActions = isOrCardActions (cdActions pcDef)
+    let hasEvade = #evade `elem` pcDef.actions && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` pcDef.actions)
     attrs <- getAttrs @Investigator iid
-    ac <- getActionCost attrs (cdActions pcDef <> [#play | costStatus == UnpaidCost NeedsAction])
+    ac <- getActionCost attrs (pcDef.actions <> [#play | costStatus == UnpaidCost NeedsAction])
     let
       isDuringTurnWindow = \case
         (windowType -> DuringTurn iid') -> iid == iid'
@@ -425,13 +426,13 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
     evadeOk <- if hasEvade
       then withGrantedActions iid GameSource ac do
         if inFastWindow || doAsIfTurn
-          then asIfTurn iid $ hasEvadeActions iid (Window.DuringTurn You) (defaultWindows iid <> windows')
-          else hasEvadeActions iid (Window.DuringTurn You) (defaultWindows iid <> windows')
+          then asIfTurn iid $ hasEvadeActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
+          else hasEvadeActions iid (CardIdSource c.id) (Window.DuringTurn You) (defaultWindows iid <> windows')
       else pure True
     let evadeDetail = if evadeOk then Nothing else Just "No enemy at your location that can be evaded"
 
     -- Fight actions check (only if card has fight action)
-    let hasFight = #fight `elem` pcDef.actions && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
+    let hasFight = #fight `elem` pcDef.actions && not (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` pcDef.actions)
     fightOk <- if hasFight
       then withGrantedActions iid GameSource ac do
         if inFastWindow || doAsIfTurn
@@ -441,7 +442,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
     let fightDetail = if fightOk then Nothing else Just "No enemy at your location that can be fought"
 
     -- Investigate check (only if card has investigate action)
-    let hasInvestigate = #investigate `elem` pcDef.actions
+    let hasInvestigate = #investigate `elem` pcDef.actions && not isOrActions
     investigateOk <- if hasInvestigate
       then do
         mloc <- getLocationOf iid
@@ -474,7 +475,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
       guard $ case costStatus of
         UnpaidCost _ -> True
         _ -> False
-      guard $ #investigate `elem` cdActions pcDef
+      guard $ #investigate `elem` pcDef.actions
       lid <- MaybeT $ getLocationOf iid
       mods <- lift $ getModifiers lid
       pure [m | AdditionalCostToInvestigate m <- mods]
@@ -488,7 +489,7 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
         Keyword.Seal sealing -> if costStatus == PaidCost then Nothing else sealingToCost sealing
         _ -> Nothing
     resignCosts <- runDefaultMaybeT [] do
-      guard $ #resign `elem` cdActions pcDef
+      guard $ #resign `elem` pcDef.actions
       lid <- MaybeT $ field InvestigatorLocation iid
       mods <- lift $ getModifiers lid
       pure [m | AdditionalCostToResign m <- mods]
@@ -515,8 +516,10 @@ getPlayabilityChecksWithResources iid (toSource -> source) availableResources co
         , ("Limits", limitsDetail)
         ]
         <> [("Slots", slotsDetail) | not (null (cdSlots pcDef))]
-        <> [("Evade actions", evadeDetail) | hasEvade]
-        <> [("Fight actions", fightDetail) | hasFight]
+        <> if isOrActions && hasEvade && hasFight
+             then [("Fight or Evade", if fightOk || evadeOk then Nothing else Just "No enemy that can be fought or evaded")]
+             else [("Evade actions", evadeDetail) | hasEvade]
+               <> [("Fight actions", fightDetail) | hasFight]
         <> [("Investigate", investigateDetail) | hasInvestigate]
         <> [("Action cost", actionCostDetail)]
     pure checks

@@ -42,7 +42,7 @@ instance RunMessage HallowedChalice where
           labeled
             "Exhaust Hallowed Chalice and place 1 doom on it to heal 2 damage or 2 horror from that investigator."
             do
-              push $ Exhaust (toTarget attrs)
+              exhaustThis attrs
               placeDoom (attrs.ability 1) attrs 1
               chooseOrRunOne
                 iid

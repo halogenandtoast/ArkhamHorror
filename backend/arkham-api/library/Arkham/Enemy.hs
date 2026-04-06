@@ -668,6 +668,9 @@ allEnemies =
         SomeEnemyCard screechingBanshee
       , -- Nathanial Cho
         SomeEnemyCard tommyMalloy
+      , -- Miguel de la Cruz
+        SomeEnemyCard felineHybrid
+      , SomeEnemyCard bloodDrinker
       , -- Curse of the Rougarou
         SomeEnemyCard bogGator
       , SomeEnemyCard swampLeech

@@ -24,7 +24,7 @@ instance HasAbilities WrackedByNightmares where
 instance RunMessage WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      selectEach (assetControlledBy iid) $ push . Exhaust . toTarget
+      selectEach (assetControlledBy iid) $ exhaustWith attrs
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

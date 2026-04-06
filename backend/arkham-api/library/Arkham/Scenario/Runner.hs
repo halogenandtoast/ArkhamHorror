@@ -1248,7 +1248,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let (toShuffleBackIn, discard) = partition ((== cardCode) . toCardCode) scenarioDiscard
     encounterDeck <- withDeckM (shuffleM . (<> toShuffleBackIn)) scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ discard
-  ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
+  ShuffleBackIntoEncounterDeck _source (EnemyTarget eid) -> do
     placement <- field EnemyPlacement eid
     card <- case placement of
       AsSwarm _ c -> pure c
@@ -1266,7 +1266,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             pure a
           Nothing -> error "must be owned"
       _ -> error "must be encounter card"
-  ShuffleBackIntoEncounterDeck (LocationTarget lid) -> do
+  ShuffleBackIntoEncounterDeck _source (LocationTarget lid) -> do
     card <- field LocationCard lid
     case card of
       EncounterCard card' -> do
@@ -1274,7 +1274,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
-  ShuffleBackIntoEncounterDeck (TreacheryTarget tid) -> do
+  ShuffleBackIntoEncounterDeck _source (TreacheryTarget tid) -> do
     fetchCard tid >>= \case
       EncounterCard card -> do
         if null scenarioEncounterDeck

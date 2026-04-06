@@ -30,6 +30,6 @@ instance RunMessage PlayfulShadows where
           checkWindows defeatWindows
           healAllDamage attrs uncannyShadow
           disengageFromAll uncannyShadow
-          exhaustThis uncannyShadow
+          exhaustWith attrs uncannyShadow
       pure s
     _ -> PlayfulShadows <$> liftRunMessage msg attrs

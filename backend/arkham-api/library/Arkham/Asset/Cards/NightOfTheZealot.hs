@@ -409,7 +409,7 @@ rabbitsFoot =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#accessory]
-    , cdAlternateCardCodes = ["01575", "60510"]
+    , cdAlternateCardCodes = ["01575", "60510", "60560"]
     }
 
 strayCat :: CardDef

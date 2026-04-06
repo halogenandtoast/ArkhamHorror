@@ -60,6 +60,7 @@ const uiRotation = computed<number>(() => {
 })
 
 const cardCode = computed(() => props.asset.cardCode)
+const isTheBeyond = computed(() => cardCode.value === 'c90052')
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
 const image = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
@@ -360,22 +361,44 @@ function startDrag(event: DragEvent) {
       <template v-if="debug.active">
         <button @click="debugging = true">Debug</button>
       </template>
-      <Asset
-        v-for="assetId in asset.assets"
-        :asset="game.assets[assetId]"
-        :game="game"
-        :playerId="playerId"
-        :key="assetId"
-        @choose="$emit('choose', $event)"
-      />
-      <Enemy
-        v-for="enemyId in asset.enemies"
-        :enemy="game.enemies[enemyId]"
-        :game="game"
-        :playerId="playerId"
-        :key="enemyId"
-        @choose="$emit('choose', $event)"
-      />
+      <template v-if="isTheBeyond">
+        <div v-if="(asset.assets?.length ?? 0) > 0 || (asset.enemies?.length ?? 0) > 0" class="spirit-manifest-row">
+          <Asset
+            v-for="assetId in asset.assets"
+            :asset="game.assets[assetId]"
+            :game="game"
+            :playerId="playerId"
+            :key="assetId"
+            @choose="$emit('choose', $event)"
+          />
+          <Enemy
+            v-for="enemyId in asset.enemies"
+            :enemy="game.enemies[enemyId]"
+            :game="game"
+            :playerId="playerId"
+            :key="enemyId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <Asset
+          v-for="assetId in asset.assets"
+          :asset="game.assets[assetId]"
+          :game="game"
+          :playerId="playerId"
+          :key="assetId"
+          @choose="$emit('choose', $event)"
+        />
+        <Enemy
+          v-for="enemyId in asset.enemies"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :playerId="playerId"
+          :key="enemyId"
+          @choose="$emit('choose', $event)"
+        />
+      </template>
     </div>
     <DebugAsset v-if="debugging" :game="game" :asset="asset" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>
@@ -492,6 +515,15 @@ img.card.ability-target {
 .spirit-deck {
   position: relative;
   margin-right: 5px;
+}
+
+.spirit-manifest-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 8px;
 }
 
 .card-wrapper {

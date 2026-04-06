@@ -16,7 +16,7 @@ heliosTelescopeGateToTheCosmos = asset HeliosTelescopeGateToTheCosmos Cards.heli
 
 instance HasAbilities HeliosTelescopeGateToTheCosmos where
   getAbilities (HeliosTelescopeGateToTheCosmos a) =
-    [ controlled a 1 (exists $ at_ YourLocation <> ExhaustedEnemy <> NonEliteEnemy)
+    [ restricted a 1 (OnSameLocation <> exists (at_ YourLocation <> ExhaustedEnemy <> NonEliteEnemy))
         $ actionAbilityWithCost (assetUseCost a Shard 1)
     , playerLimit PerRound
         $ fastAbility a 2 Free (ControlsThis <> exists (colocatedWithMatch You <> not_ You))

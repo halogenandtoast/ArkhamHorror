@@ -60,6 +60,9 @@ const label = function(body: string) {
       <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
         <FormattedEntry :entry="choice.flavor" />
       </div>
+      <div v-else-if="choice.tag === MessageType.DONE" class="message-label">
+        <button @click="choose(index)" v-html="label(choice.label)"></button>
+      </div>
 
       <a
         v-if="choice.tag === MessageType.SKILL_LABEL"

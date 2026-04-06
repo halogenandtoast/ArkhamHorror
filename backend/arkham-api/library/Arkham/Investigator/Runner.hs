@@ -2411,7 +2411,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         filterM
           ( \(sType', slot) ->
               andM
-                [pure $ sType /= sType', pure $ sType `elem` adjustableSlotsFor slot, canPutIntoSlot assetCard slot]
+                [pure $ sType /= sType', pure $ sType `elem` adjustableSlotsFor slot, canPutIntoSlot assetCard (emptySlot slot)]
           )
           $ concatMap (\(t, bs) -> (t,) <$> bs)
           $ mapToList (a ^. slotsL)

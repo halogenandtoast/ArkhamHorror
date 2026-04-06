@@ -37,6 +37,6 @@ instance RunMessage ParlorTheMidwinterGala where
   runMessage msg l@(ParlorTheMidwinterGala attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select ReadyEnemy
-      chooseTargetM iid enemies exhaustThis
+      chooseTargetM iid enemies (exhaustWith attrs)
       pure l
     _ -> ParlorTheMidwinterGala <$> liftRunMessage msg attrs

@@ -30,6 +30,6 @@ instance RunMessage ALostMemento where
           checkWindows defeatWindows
           healAllDamage attrs buriedMiner
           disengageFromAll buriedMiner
-          exhaustThis buriedMiner
+          exhaustWith attrs buriedMiner
       pure s
     _ -> ALostMemento <$> liftRunMessage msg attrs

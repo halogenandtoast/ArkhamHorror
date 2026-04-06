@@ -38,6 +38,6 @@ instance RunMessage Bolas where
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attachedTo.enemy exhaustThis
+      for_ attrs.attachedTo.enemy (exhaustWith attrs)
       pure e
     _ -> Bolas <$> liftRunMessage msg attrs

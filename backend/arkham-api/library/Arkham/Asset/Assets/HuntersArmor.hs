@@ -63,7 +63,7 @@ instance RunMessage HuntersArmor where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         labeled "Exhaust Hunter's Armor to draw 1 card" do
-          push $ Exhaust (toTarget attrs)
+          exhaustThis attrs
           drawCardsIfCan iid (attrs.ability 1) 1
         labeled "Do no exhaust" nothing
       pure a

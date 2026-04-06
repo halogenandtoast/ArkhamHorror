@@ -279,6 +279,9 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
     MaxPerTraitPerRound t m -> do
       n <- count (elem t) . map toTraits <$> getAllCardUses
       pure $ m > n
+    LimitPerTraitPerLocation t m -> do
+      n <- selectCount $ EventWithTrait t <> EventAt (locationWithInvestigator iid)
+      pure $ m > n
 
 cardIsFast :: HasGame m => Card -> m Bool
 cardIsFast = cardIsFast' getModifiers

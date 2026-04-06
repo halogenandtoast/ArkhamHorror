@@ -53,8 +53,11 @@ instance RunMessage Beguile where
     UseAbility iid ab _ | isSource attrs ab.source && ab.index == 1 -> do
       case attrs.placement.attachedTo of
         Just (EnemyTarget eid) -> do
+          canMove <- selectAny $ be eid <> EnemyCanBeMovedBy (toSource $ attrs.ability 1)
           locations <-
-            selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
+            if canMove
+              then selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
+              else pure False
           investigate' <-
             selectAny
               $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
@@ -86,9 +89,11 @@ instance RunMessage Beguile where
       case attrs.placement.attachedTo.enemy of
         Just eid -> case fromMaybe (1 :: Int) (getEventMeta attrs) of
           1 -> do
-            locations <-
-              select $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
-            chooseOne iid [targetLabel location [EnemyMove eid location] | location <- locations]
+            canMove <- selectAny $ be eid <> EnemyCanBeMovedBy (toSource $ attrs.ability 1)
+            when canMove do
+              locations <-
+                select $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
+              chooseOne iid [targetLabel location [EnemyMove eid location] | location <- locations]
           2 -> do
             field EnemyLocation eid >>= traverse_ \lid -> do
               abilities <-

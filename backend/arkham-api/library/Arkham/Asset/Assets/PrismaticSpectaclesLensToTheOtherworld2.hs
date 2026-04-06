@@ -65,7 +65,7 @@ instance RunMessage PrismaticSpectaclesLensToTheOtherworld2Effect where
           guard $ isTarget sid metaTarget
           lift $ chooseOneM iid do
             labeled "Exhaust Prismatic Spectacles to discover 1 additional clue at your location" do
-              exhaustThis aid
+              exhaustWith attrs aid
               skillTestModifier sid attrs.source iid (DiscoveredClues 1)
             labeled "Do not exaust" nothing
         _ -> pure ()

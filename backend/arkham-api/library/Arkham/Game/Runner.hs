@@ -42,8 +42,10 @@ import Arkham.Game.Json ()
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Campaign.Option
 import Arkham.Helpers
 import Arkham.Helpers.Criteria
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
@@ -591,6 +593,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
           , activeCostCancelled = False
+          , activeCostChosenOrAction = Nothing
+          , activeCostPendingEventId = Nothing
           }
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
@@ -664,6 +668,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
           , activeCostCancelled = False
+          , activeCostChosenOrAction = Nothing
+          , activeCostPendingEventId = Nothing
           }
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
@@ -935,7 +941,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         case attr enemyPlacement enemy of
           AsSwarm _ c -> case toCardOwner c of
             Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
-            Nothing -> error "Missing owner"
+            Nothing -> unlessM (hasCampaignOption UseSwarmPlaceholders) $ error "Missing owner"
           _ -> do
             pushAll $ map RemoveEnemy swarms
 
@@ -1423,6 +1429,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           <> tshow card
           <> " but it is not in the list of playable cards"
         pure g
+  CreatePendingEvent card iid eid -> do
+    let event' = flip overAttrs (createEvent card iid eid) \attrs ->
+          attrs {eventPlacement = Limbo}
+    pure $ g & entitiesL . eventsL %~ insertMap eid event'
   PutCardIntoPlayById iid cardId mtarget payment windows' -> do
     c <- getCard cardId
     runMessage (PutCardIntoPlay iid c mtarget payment windows') g
@@ -1480,19 +1490,35 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 | maybe False (`elem` investigatorDiscard (toAttrs investigator')) (preview _PlayerCard card) ->
                     Zone.FromDiscard
                 | otherwise -> Zone.FromPlay
-          eid <- getRandom
+          -- Check for a pending event created by BeforePlayEvent
           let
-            event' =
-              flip overAttrs (createEvent pc iid eid) \attrs ->
-                attrs
-                  { eventWindows = windows'
-                  , eventPlayedFrom = zone
-                  , eventTarget = mtarget
-                  , eventOriginalCardCode = pcOriginalCardCode pc
-                  , eventPayment = payment
-                  , eventPlacement = Limbo
-                  }
-
+            mPendingEvent = find (\e -> eventCardId (toAttrs e) == toCardId card)
+              $ toList (g ^. entitiesL . eventsL)
+          (eid, event') <- case mPendingEvent of
+            Just existing -> do
+              let eid = toId existing
+              let event' = flip overAttrs existing \attrs ->
+                    attrs
+                      { eventWindows = windows'
+                      , eventPlayedFrom = zone
+                      , eventTarget = mtarget
+                      , eventOriginalCardCode = pcOriginalCardCode pc
+                      , eventPayment = payment
+                      , eventPlacement = Limbo
+                      }
+              pure (eid, event')
+            Nothing -> do
+              eid <- getRandom
+              let event' = flip overAttrs (createEvent pc iid eid) \attrs ->
+                    attrs
+                      { eventWindows = windows'
+                      , eventPlayedFrom = zone
+                      , eventTarget = mtarget
+                      , eventOriginalCardCode = pcOriginalCardCode pc
+                      , eventPayment = payment
+                      , eventPlacement = Limbo
+                      }
+              pure (eid, event')
           whenPlayEvent <- checkWindows [mkWindow #when $ Window.PlayEvent iid eid]
           afterPlayEvent <- checkWindows [mkWindow #after $ Window.PlayEvent iid eid]
           pushAll

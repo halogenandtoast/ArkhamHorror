@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.DreamlandsEclipse (dreamlandsEclipse, DreamlandsEc
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedLocation, withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -29,13 +29,13 @@ instance RunMessage DreamlandsEclipse where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      getSkillTestTarget >>= \case
+      getSkillTestTargetedLocation >>= \case
         Nothing -> error "invalid window"
-        Just target -> do
+        Just lid -> do
           withSkillTest \sid -> chooseOneM iid do
             labeled "Take 1 horror" $ assignHorror iid source 1
             labeled "Your location gets +2 shroud for this investigation" do
-              skillTestModifier sid source target (ShroudModifier 2)
+              skillTestModifier sid source lid (ShroudModifier 2)
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       toDiscard (attrs.ability 2) attrs

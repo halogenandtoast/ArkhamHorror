@@ -62,6 +62,7 @@ allPlayerSkillCards =
       , defiance2
       , desperateSearch
       , determined
+      , doOrDie
       , diabolicalLuck
       , doubleDown2
       , doubleOrNothing
@@ -109,6 +110,7 @@ allPlayerSkillCards =
       , nimble
       , notWithoutAFight
       , occultTheory1
+      , onTheBrink
       , onTheBrink2
       , onTheMend
       , opportunist
@@ -134,6 +136,7 @@ allPlayerSkillCards =
       , resourceful
       , riseToTheOccasion
       , riseToTheOccasion3
+      , rough1
       , runForYourLife
       , savant1
       , sayYourPrayers
@@ -159,6 +162,7 @@ allPlayerSkillCards =
       , theHomeFront
       , threeAces1
       , timelyIntervention
+      , timelyIntervention3
       , torrentOfPower
       , trueUnderstanding
       , unexpectedCourage
@@ -1090,7 +1094,7 @@ slippery =
 timelyIntervention :: CardDef
 timelyIntervention =
   (skill "12081" "Timely Intervention" [#willpower, #agility, #wild] Survivor)
-    { cdCardTraits = setFromList [Practiced]
+    { cdCardTraits = singleton Fortune
     , cdCommitRestrictions = [MaxOnePerTest, CanCommitAfterRevealingTokens]
     }
 
@@ -1341,5 +1345,33 @@ bloodCurse3 =
   (skill "60477" "Blood Curse" [#wild, #wild, #wild, #wild, #wild] Mystic)
     { cdCardTraits = setFromList [Spell, Cursed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 3
+    }
+
+doOrDie :: CardDef
+doOrDie =
+  (skill "60568" "Do or Die" [#agility, #intellect, #willpower] Survivor)
+    { cdCardTraits = singleton Fortune
+    }
+
+onTheBrink :: CardDef
+onTheBrink =
+  (skill "60569" "On the Brink" [#wild] Survivor)
+    { cdCardTraits = setFromList [Gambit, Desperate]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+rough1 :: CardDef
+rough1 =
+  (skill "60572" "Rough" [#combat, #wild] Survivor)
+    { cdCardTraits = singleton Innate
+    , cdLevel = Just 1
+    }
+
+timelyIntervention3 :: CardDef
+timelyIntervention3 =
+  (skill "60582" "Timely Intervention" [#wild, #wild, #wild] Survivor)
+    { cdCardTraits = singleton Fortune
+    , cdCommitRestrictions = [MaxOnePerTest, CanCommitAfterRevealingTokens]
     , cdLevel = Just 3
     }

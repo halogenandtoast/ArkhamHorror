@@ -380,6 +380,9 @@ instance IsLabel "investigate" CardMatcher where
 isEnemyCard :: CardMatcher -> CardMatcher
 isEnemyCard = (#enemy <>)
 
+cardMatcher_ :: CardMatcher -> CardMatcher
+cardMatcher_ = id
+
 instance Semigroup CardMatcher where
   AnyCard <> a = a
   a <> AnyCard = a

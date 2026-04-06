@@ -91,6 +91,7 @@ import Arkham.Asset.Assets (
   steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
   wellConnected3Effect,
+  winchesterModel522Effect,
   wither4Effect,
   witherEffect,
   yaotl1Effect,
@@ -606,6 +607,7 @@ allEffects =
     , ("60465", SomeEffect mirrorFormEffect)
     , ("60480", SomeEffect ultimateSacrifice4Effect)
     , ("60512", SomeEffect willToSurviveEffect)
+    , ("60575", SomeEffect winchesterModel522Effect)
     , ("72002", SomeEffect showbusinessAsUsualEffect)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)

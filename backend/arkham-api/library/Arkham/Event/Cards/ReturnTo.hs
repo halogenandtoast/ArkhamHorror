@@ -118,7 +118,7 @@ stormOfSpirits3 =
   (event "52008" "Storm of Spirits" 3 Mystic)
     { cdSkills = [#willpower, #combat, #combat]
     , cdCardTraits = singleton Spell
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdLevel = Just 3
     }
 
@@ -127,7 +127,7 @@ bloodEclipse1 =
   (event "53001" "Blood Eclipse" 1 Guardian)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell, Spirit]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdAdditionalCost = Just $ InvestigatorDamageCost ThisCard You DamageAny 2
     , cdLevel = Just 1
     }

@@ -71,308 +71,313 @@ withSkillCardCode cCode f = case lookup cCode allSkills of
   Just (SomeSkillCard a) -> f a
 
 allSkills :: Map CardCode SomeSkillCard
-allSkills = mapFromList $
-  concatMap
-    someSkillCardCodes
-    [ -- Night of the Zealot
-      --- guardian [notz]
-      SomeSkillCard viciousBlow
-    , --- seeker [notz]
-      SomeSkillCard deduction
-    , --- rogue [notz]
-      SomeSkillCard opportunist
-    , --- mystic [notz]
-      SomeSkillCard fearless
-    , --- survivor [notz]
-      SomeSkillCard survivalInstinct
-    , --- neutral [notz]
-      SomeSkillCard guts
-    , SomeSkillCard perception
-    , SomeSkillCard overpower
-    , SomeSkillCard manualDexterity
-    , SomeSkillCard unexpectedCourage
-    , -- The Dunwich Legacy
-      --- rogue [tdl]
-      SomeSkillCard doubleOrNothing
-    , --- seeker [tdl]
-      SomeSkillCard deduction2
-    , --- mystic [tdl]
-      SomeSkillCard defiance
-    , --- survivor [tdl]
-      SomeSkillCard riseToTheOccasion
-    , -- Undimensioned and Unseen
-      --- seeker [uau]
-      SomeSkillCard inquiringMind
-    , --- rogue [uau]
-      SomeSkillCard quickThinking
-    , SomeSkillCard opportunist2
-    , --- survivor [uau]
-      SomeSkillCard survivalInstinct2
-    , -- Where Doom Awaits
-      --- guardian [wda]
-      SomeSkillCard leadership
-    , --- mystic [wda]
-      SomeSkillCard fearless2
-    , --- survivor [wda]
-      SomeSkillCard strokeOfLuck2
-    , -- Lost in Time and Space
-      --- guardian [litas]
-      SomeSkillCard viciousBlow2
-    , -- The Path to Carcosa
-      --- signature [tpc]
-      SomeSkillCard theHomeFront
-    , --- survivor [tpc]
-      SomeSkillCard resourceful
-    , -- Echoes of the Past
-      --- neutral [eotp]
-      SomeSkillCard sayYourPrayers
-    , SomeSkillCard desperateSearch
-    , SomeSkillCard recklessAssault
-    , SomeSkillCard runForYourLife
-    , -- The Pallid Mask
-      --- guardian [tpm]
-      SomeSkillCard inspiringPresence
-    , --- seeker [tpm]
-      SomeSkillCard eureka
-    , --- rogue [tpm]
-      SomeSkillCard watchThis
-    , --- mystic [tpm]
-      SomeSkillCard torrentOfPower
-    , -- Black Stars Rise
-      --- survivor [bsr]
-      SomeSkillCard notWithoutAFight
-    , -- Dim Carcosa
-      --- mystic [dca]
-      SomeSkillCard sealOfTheElderSign5
-    , -- The Forgotten Age
-      --- survivor [tfa]
-      SomeSkillCard lastChance
-    , -- Threads of Fate
-      --- survivor [tof]
-      SomeSkillCard stunningBlow
-    , -- The Boundary Beyond
-      --- guardian [tbb]
-      SomeSkillCard takeTheInitiative
-    , --- seeker [tbb]
-      SomeSkillCard trueUnderstanding
-    , --- rogue [tbb]
-      SomeSkillCard hatchetMan
-    , --- mystic [tbb]
-      SomeSkillCard enraptured
-    , -- Heart of the Elders
-      --- guardian [hote]
-      SomeSkillCard intrepid
-    , --- mystic [hote]
-      SomeSkillCard defiance2
-    , --- survivor [hote]
-      SomeSkillCard takeHeart
-    , -- Shattered Aeons
-      --- rogue [sha]
-      SomeSkillCard allIn5
-    , -- The Circle Undone
-      --- guardian [tcu]
-      SomeSkillCard steadfast
-    , --- seeker [tcu]
-      SomeSkillCard curiosity
-    , --- rogue [tcu]
-      SomeSkillCard cunning
-    , --- mystic [tcu]
-      SomeSkillCard prophesy
-    , --- survivor [tcu]
-      SomeSkillCard ableBodied
-    , -- The Dream Eaters
-      -- The Search for Kadath
-      --- guardian [sfk]
-      SomeSkillCard daring
-    , --- seeker [sfk]
-      SomeSkillCard essenceOfTheDream
-    , --- rogue [sfk]
-      SomeSkillCard momentum1
-    , -- A Thousand Shapes of Horror
-      --- guardian [tsh]
-      SomeSkillCard selfSacrifice
-    , --- survivor [tsh]
-      SomeSkillCard bruteForce1
-    , -- Dark Side of the Moon
-      --- rogue [dsm]
-      SomeSkillCard threeAces1
-    , --- survivor [dsm]
-      SomeSkillCard sharpVision1
-    , -- Point of No Return
-      --- guardian [pnr]
-      SomeSkillCard leadership2
-    , --- rogue [pnr]
-      SomeSkillCard daredevil2
-    , --- survivor [pnr]
-      SomeSkillCard expeditiousRetreat1
-    , -- Where the Gods Dwell
-      --- seeker [wgd]
-      SomeSkillCard surprisingFind1
-    , -- Weaver of the Cosmos
-      --- seeker [woc]
-      SomeSkillCard theEyeOfTruth5
-    , --- seeker/bonded/theEyeOfTruth5 [woc]
-      SomeSkillCard dreamParasite
-    , -- The Innsmouth Conspiracy
-      --- signature [tic]
-      SomeSkillCard whispersFromTheDeep
-    , --- seeker [tic]
-      SomeSkillCard planOfAction
-    , --- mystic [tic]
-      SomeSkillCard promiseOfPower
-    , --- survivor [tic]
-      SomeSkillCard predestined
-    , SomeSkillCard beloved
-    , -- In Too Deep
-      --- rogue [itd]
-      SomeSkillCard skeptic1
-    , -- Horror in High Gear
-      --- survivor [hhg]
-      SomeSkillCard unrelenting1
-    , SomeSkillCard signumCrucis2
-    , -- A Light in the Fog
-      --- seeker [lif]
-      SomeSkillCard fey1
-    , -- Into the Maelstrom
-      --- rogue  [itm]
-      SomeSkillCard justifyTheMeans3
-    , -- Edge of the Earth
-      --- guardian [eote]
-      SomeSkillCard defensiveStance1
-    , --- seeker [eote]
-      SomeSkillCard surveyTheArea1
-    , --- rogue [eote]
-      SomeSkillCard savant1
-    , --- mystic [eote]
-      SomeSkillCard occultTheory1
-    , --- survivor [eote]
-      SomeSkillCard strengthInNumbers1
-    , SomeSkillCard dauntlessSpirit1
-    , -- The Scarlet Keys
-      --- signature [tsk]
-      SomeSkillCard asYouWish
-    , SomeSkillCard onTheMend
-    , --- guardian [tsk]
-      SomeSkillCard fightingLessons
-    , SomeSkillCard helpingHand
-    , --- seeker [tsk]
-      SomeSkillCard analysis
-    , --- rogue [tsk]
-      SomeSkillCard calculatedRisk
-    , --- mystic [tsk]
-      SomeSkillCard ghastlyPossession1
-    , --- survivor [tsk]
-      SomeSkillCard grizzled
-    , SomeSkillCard gumption1
-    , -- The Feast of Hemloch Vale
-      --- guardian [fhv]
-      SomeSkillCard purified
-    , SomeSkillCard strongArmed1
-    , --- seeker [fhv]
-      SomeSkillCard wellFunded
-    , SomeSkillCard esotericMethod1
-    , --- rogue [fhv]
-      SomeSkillCard diabolicalLuck
-    , SomeSkillCard lightfooted
-    , --- mystic [fhv]
-      SomeSkillCard accursed
-    , SomeSkillCard mesmericInfluence1
-    , --- survivor [fhv]
-      SomeSkillCard longShot
-    , SomeSkillCard persistence1
-    , SomeSkillCard providential2
-    , --- neutral [fhv]
-      SomeSkillCard wellDressed
-    , -- The Drowned City
-      --- signature [tdc]
-      SomeSkillCard determined
-    , SomeSkillCard grimResolve
-    , --- guardian [tdc]
-      SomeSkillCard hardboiled
-    , SomeSkillCard inspiringPresence2
-    , --- seeker [tdc]
-      SomeSkillCard quickWitted1
-    , --- rogue [tdc]
-      SomeSkillCard crackShot
-    , SomeSkillCard watchThis3
-    , --- mystic [tdc]
-      SomeSkillCard enraptured2
-    , --- survivor [tdc]
-      SomeSkillCard contemplative
-    , SomeSkillCard lastChance3
-    , --- neutral [tdc]
-      SomeSkillCard confidence
-    , --- specialist [tdc]
-      SomeSkillCard dreamsOfTheClay1
-    , SomeSkillCard inquisitive1
-    , SomeSkillCard doubleDown2
-    , SomeSkillCard memoriesOfAnotherLife5
-    , -- Core 2026
-      --- rogue [core2026]
-      SomeSkillCard outOfSight
-    , SomeSkillCard outOfSight3
-    , --- mystic [core2026]
-      SomeSkillCard soulLink
-    , --- survivor [core2026]
-      SomeSkillCard slippery
-    , SomeSkillCard timelyIntervention
-    , SomeSkillCard onTheBrink2
-    , -- Return to the Dunwich Legacy
-      --- survivor [rtdwl]
-      SomeSkillCard riseToTheOccasion3
-    , -- Nathanial Cho
-      --- guardian [nat]
-      SomeSkillCard overpower2
-    , -- Harvey Walters
-      -- seeker [har]
-      SomeSkillCard perception2
-    , -- Winifred Habbamock
-      --- signature [win]
-      SomeSkillCard anythingYouCanDoBetter
-    , --- signature weakness [win]
-      SomeSkillCard arrogance
-    , --- basic weakness [win]
-      SomeSkillCard reckless
-    , --- rogue [win]
-      SomeSkillCard nimble
-    , SomeSkillCard daredevil
-    , SomeSkillCard manualDexterity2
-    , SomeSkillCard copycat3
-    , -- Jacqueline Fine
-      --- mystic [jac]
-      SomeSkillCard prescient
-    , SomeSkillCard guts2
-    , -- Stella Clark
-      --- signature [ste]
-      SomeSkillCard neitherRainNorSnow
-    , --- survivor [ste]
-      SomeSkillCard unexpectedCourage2
-    , -- Tommy Muldoon
-      SomeSkillCard adaptAndOvercome
-    , SomeSkillCard armedToTheTeeth
-    , SomeSkillCard viciousBlow2
-    , SomeSkillCard indomitable3
-    , -- Carolyn Fern
-      SomeSkillCard establishMotive
-    , SomeSkillCard literaryAnalysis
-    , -- Marie Lambeau
-      SomeSkillCard bloodCurse
-    , SomeSkillCard cosmicGuidance
-    , SomeSkillCard eldritchWhispers1
-    , SomeSkillCard bloodCurse3
-    , -- André Patel
-      --- signature [and]
-      SomeSkillCard knowTheExit
-    , SomeSkillCard knowTheLine
-    , SomeSkillCard knowTheScene
-    , --- rogue [and]
-      SomeSkillCard easyStreet
-    , SomeSkillCard outTheDoor
-    , SomeSkillCard outTheDoor1
-    , SomeSkillCard contingency3
-    , -- The Deep Gate
-      --- signature [tdg]
-      SomeSkillCard nauticalProwess
-    , --- signature weakness [tdg]
-      SomeSkillCard dreamsOfTheDeepTheDeepGate
-    ]
+allSkills =
+  mapFromList
+    $ concatMap
+      someSkillCardCodes
+      [ -- Night of the Zealot
+        --- guardian [notz]
+        SomeSkillCard viciousBlow
+      , --- seeker [notz]
+        SomeSkillCard deduction
+      , --- rogue [notz]
+        SomeSkillCard opportunist
+      , --- mystic [notz]
+        SomeSkillCard fearless
+      , --- survivor [notz]
+        SomeSkillCard survivalInstinct
+      , --- neutral [notz]
+        SomeSkillCard guts
+      , SomeSkillCard perception
+      , SomeSkillCard overpower
+      , SomeSkillCard manualDexterity
+      , SomeSkillCard unexpectedCourage
+      , -- The Dunwich Legacy
+        --- rogue [tdl]
+        SomeSkillCard doubleOrNothing
+      , --- seeker [tdl]
+        SomeSkillCard deduction2
+      , --- mystic [tdl]
+        SomeSkillCard defiance
+      , --- survivor [tdl]
+        SomeSkillCard riseToTheOccasion
+      , -- Undimensioned and Unseen
+        --- seeker [uau]
+        SomeSkillCard inquiringMind
+      , --- rogue [uau]
+        SomeSkillCard quickThinking
+      , SomeSkillCard opportunist2
+      , --- survivor [uau]
+        SomeSkillCard survivalInstinct2
+      , -- Where Doom Awaits
+        --- guardian [wda]
+        SomeSkillCard leadership
+      , --- mystic [wda]
+        SomeSkillCard fearless2
+      , --- survivor [wda]
+        SomeSkillCard strokeOfLuck2
+      , -- Lost in Time and Space
+        --- guardian [litas]
+        SomeSkillCard viciousBlow2
+      , -- The Path to Carcosa
+        --- signature [tpc]
+        SomeSkillCard theHomeFront
+      , --- survivor [tpc]
+        SomeSkillCard resourceful
+      , -- Echoes of the Past
+        --- neutral [eotp]
+        SomeSkillCard sayYourPrayers
+      , SomeSkillCard desperateSearch
+      , SomeSkillCard recklessAssault
+      , SomeSkillCard runForYourLife
+      , -- The Pallid Mask
+        --- guardian [tpm]
+        SomeSkillCard inspiringPresence
+      , --- seeker [tpm]
+        SomeSkillCard eureka
+      , --- rogue [tpm]
+        SomeSkillCard watchThis
+      , --- mystic [tpm]
+        SomeSkillCard torrentOfPower
+      , -- Black Stars Rise
+        --- survivor [bsr]
+        SomeSkillCard notWithoutAFight
+      , -- Dim Carcosa
+        --- mystic [dca]
+        SomeSkillCard sealOfTheElderSign5
+      , -- The Forgotten Age
+        --- survivor [tfa]
+        SomeSkillCard lastChance
+      , -- Threads of Fate
+        --- survivor [tof]
+        SomeSkillCard stunningBlow
+      , -- The Boundary Beyond
+        --- guardian [tbb]
+        SomeSkillCard takeTheInitiative
+      , --- seeker [tbb]
+        SomeSkillCard trueUnderstanding
+      , --- rogue [tbb]
+        SomeSkillCard hatchetMan
+      , --- mystic [tbb]
+        SomeSkillCard enraptured
+      , -- Heart of the Elders
+        --- guardian [hote]
+        SomeSkillCard intrepid
+      , --- mystic [hote]
+        SomeSkillCard defiance2
+      , --- survivor [hote]
+        SomeSkillCard takeHeart
+      , -- Shattered Aeons
+        --- rogue [sha]
+        SomeSkillCard allIn5
+      , -- The Circle Undone
+        --- guardian [tcu]
+        SomeSkillCard steadfast
+      , --- seeker [tcu]
+        SomeSkillCard curiosity
+      , --- rogue [tcu]
+        SomeSkillCard cunning
+      , --- mystic [tcu]
+        SomeSkillCard prophesy
+      , --- survivor [tcu]
+        SomeSkillCard ableBodied
+      , -- The Dream Eaters
+        -- The Search for Kadath
+        --- guardian [sfk]
+        SomeSkillCard daring
+      , --- seeker [sfk]
+        SomeSkillCard essenceOfTheDream
+      , --- rogue [sfk]
+        SomeSkillCard momentum1
+      , -- A Thousand Shapes of Horror
+        --- guardian [tsh]
+        SomeSkillCard selfSacrifice
+      , --- survivor [tsh]
+        SomeSkillCard bruteForce1
+      , -- Dark Side of the Moon
+        --- rogue [dsm]
+        SomeSkillCard threeAces1
+      , --- survivor [dsm]
+        SomeSkillCard sharpVision1
+      , -- Point of No Return
+        --- guardian [pnr]
+        SomeSkillCard leadership2
+      , --- rogue [pnr]
+        SomeSkillCard daredevil2
+      , --- survivor [pnr]
+        SomeSkillCard expeditiousRetreat1
+      , -- Where the Gods Dwell
+        --- seeker [wgd]
+        SomeSkillCard surprisingFind1
+      , -- Weaver of the Cosmos
+        --- seeker [woc]
+        SomeSkillCard theEyeOfTruth5
+      , --- seeker/bonded/theEyeOfTruth5 [woc]
+        SomeSkillCard dreamParasite
+      , -- The Innsmouth Conspiracy
+        --- signature [tic]
+        SomeSkillCard whispersFromTheDeep
+      , --- seeker [tic]
+        SomeSkillCard planOfAction
+      , --- mystic [tic]
+        SomeSkillCard promiseOfPower
+      , --- survivor [tic]
+        SomeSkillCard predestined
+      , SomeSkillCard beloved
+      , -- In Too Deep
+        --- rogue [itd]
+        SomeSkillCard skeptic1
+      , -- Horror in High Gear
+        --- survivor [hhg]
+        SomeSkillCard unrelenting1
+      , SomeSkillCard signumCrucis2
+      , -- A Light in the Fog
+        --- seeker [lif]
+        SomeSkillCard fey1
+      , -- Into the Maelstrom
+        --- rogue  [itm]
+        SomeSkillCard justifyTheMeans3
+      , -- Edge of the Earth
+        --- guardian [eote]
+        SomeSkillCard defensiveStance1
+      , --- seeker [eote]
+        SomeSkillCard surveyTheArea1
+      , --- rogue [eote]
+        SomeSkillCard savant1
+      , --- mystic [eote]
+        SomeSkillCard occultTheory1
+      , --- survivor [eote]
+        SomeSkillCard strengthInNumbers1
+      , SomeSkillCard dauntlessSpirit1
+      , -- The Scarlet Keys
+        --- signature [tsk]
+        SomeSkillCard asYouWish
+      , SomeSkillCard onTheMend
+      , --- guardian [tsk]
+        SomeSkillCard fightingLessons
+      , SomeSkillCard helpingHand
+      , --- seeker [tsk]
+        SomeSkillCard analysis
+      , --- rogue [tsk]
+        SomeSkillCard calculatedRisk
+      , --- mystic [tsk]
+        SomeSkillCard ghastlyPossession1
+      , --- survivor [tsk]
+        SomeSkillCard grizzled
+      , SomeSkillCard gumption1
+      , -- The Feast of Hemloch Vale
+        --- guardian [fhv]
+        SomeSkillCard purified
+      , SomeSkillCard strongArmed1
+      , --- seeker [fhv]
+        SomeSkillCard wellFunded
+      , SomeSkillCard esotericMethod1
+      , --- rogue [fhv]
+        SomeSkillCard diabolicalLuck
+      , SomeSkillCard lightfooted
+      , --- mystic [fhv]
+        SomeSkillCard accursed
+      , SomeSkillCard mesmericInfluence1
+      , --- survivor [fhv]
+        SomeSkillCard longShot
+      , SomeSkillCard persistence1
+      , SomeSkillCard providential2
+      , --- neutral [fhv]
+        SomeSkillCard wellDressed
+      , -- The Drowned City
+        --- signature [tdc]
+        SomeSkillCard determined
+      , SomeSkillCard grimResolve
+      , --- guardian [tdc]
+        SomeSkillCard hardboiled
+      , SomeSkillCard inspiringPresence2
+      , --- seeker [tdc]
+        SomeSkillCard quickWitted1
+      , --- rogue [tdc]
+        SomeSkillCard crackShot
+      , SomeSkillCard watchThis3
+      , --- mystic [tdc]
+        SomeSkillCard enraptured2
+      , --- survivor [tdc]
+        SomeSkillCard contemplative
+      , SomeSkillCard lastChance3
+      , --- neutral [tdc]
+        SomeSkillCard confidence
+      , --- specialist [tdc]
+        SomeSkillCard dreamsOfTheClay1
+      , SomeSkillCard inquisitive1
+      , SomeSkillCard doubleDown2
+      , SomeSkillCard memoriesOfAnotherLife5
+      , -- Core 2026
+        --- rogue [core2026]
+        SomeSkillCard outOfSight
+      , SomeSkillCard outOfSight3
+      , --- mystic [core2026]
+        SomeSkillCard soulLink
+      , --- survivor [core2026]
+        SomeSkillCard slippery
+      , SomeSkillCard timelyIntervention
+      , SomeSkillCard onTheBrink2
+      , -- Return to the Dunwich Legacy
+        --- survivor [rtdwl]
+        SomeSkillCard riseToTheOccasion3
+      , -- Nathanial Cho
+        --- guardian [nat]
+        SomeSkillCard overpower2
+      , -- Harvey Walters
+        -- seeker [har]
+        SomeSkillCard perception2
+      , -- Winifred Habbamock
+        --- signature [win]
+        SomeSkillCard anythingYouCanDoBetter
+      , --- signature weakness [win]
+        SomeSkillCard arrogance
+      , --- basic weakness [win]
+        SomeSkillCard reckless
+      , --- rogue [win]
+        SomeSkillCard nimble
+      , SomeSkillCard daredevil
+      , SomeSkillCard manualDexterity2
+      , SomeSkillCard copycat3
+      , -- Jacqueline Fine
+        --- mystic [jac]
+        SomeSkillCard prescient
+      , SomeSkillCard guts2
+      , -- Stella Clark
+        --- signature [ste]
+        SomeSkillCard neitherRainNorSnow
+      , --- survivor [ste]
+        SomeSkillCard unexpectedCourage2
+      , -- Tommy Muldoon
+        SomeSkillCard adaptAndOvercome
+      , SomeSkillCard armedToTheTeeth
+      , SomeSkillCard viciousBlow2
+      , SomeSkillCard indomitable3
+      , -- Carolyn Fern
+        SomeSkillCard establishMotive
+      , SomeSkillCard literaryAnalysis
+      , -- André Patel
+        --- signature [and]
+        SomeSkillCard knowTheExit
+      , SomeSkillCard knowTheLine
+      , SomeSkillCard knowTheScene
+      , --- rogue [and]
+        SomeSkillCard easyStreet
+      , SomeSkillCard outTheDoor
+      , SomeSkillCard outTheDoor1
+      , SomeSkillCard contingency3
+      , -- Marie Lambeau
+        SomeSkillCard bloodCurse
+      , SomeSkillCard cosmicGuidance
+      , SomeSkillCard eldritchWhispers1
+      , SomeSkillCard bloodCurse3
+      , -- Miguel de la Cruz
+        SomeSkillCard doOrDie
+      , SomeSkillCard onTheBrink
+      , SomeSkillCard rough1
+      , -- The Deep Gate
+        --- signature [tdg]
+        SomeSkillCard nauticalProwess
+      , --- signature weakness [tdg]
+        SomeSkillCard dreamsOfTheDeepTheDeepGate
+      ]

@@ -53,7 +53,7 @@ instance RunMessage DowsingRod where
           push investigate'
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      push $ Exhaust (toTarget attrs)
+      exhaustThis attrs
       placeDoom (attrs.ability 1) attrs 1
       accessibleLocationIds <- getAccessibleLocations iid attrs
       chooseTargetM iid accessibleLocationIds (moveTo (attrs.ability 1) iid)

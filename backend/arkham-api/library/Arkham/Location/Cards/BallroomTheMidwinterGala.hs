@@ -27,10 +27,10 @@ instance RunMessage BallroomTheMidwinterGala where
       chooseTargetM iid assets (handleTarget iid attrs)
       pure l
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      exhaustThis aid
+      exhaustWith attrs aid
       assets <- select $ assetAt attrs.id <> AssetWithTrait Guest <> AssetReady <> not_ (AssetWithId aid)
       chooseTargetM iid assets \aid' -> do
-        exhaustThis aid'
+        exhaustWith attrs aid'
         whenM (assetCanHaveHorrorHealed (attrs.ability 1) aid) $ healHorror aid (attrs.ability 1) 1
         whenM (assetCanHaveHorrorHealed (attrs.ability 1) aid') $ healHorror aid' (attrs.ability 1) 1
       pure l

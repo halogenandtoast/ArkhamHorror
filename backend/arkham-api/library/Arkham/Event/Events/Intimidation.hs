@@ -17,7 +17,13 @@ intimidation = event Intimidation Cards.intimidation
 instance RunMessage Intimidation where
   runMessage msg e@(Intimidation attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> EnemyWithRemainingHealth (atLeast 1)
+      selectOneToHandle iid attrs
+        $ enemyAtLocationWith iid
+        <> EnemyWithRemainingHealth (atLeast 1)
+        <> oneOf
+          [ EliteEnemy <> EnemyCanBeDamagedBySource (toSource attrs)
+          , not_ EliteEnemy <> EnemyCanBeRemovedBy (toSource attrs)
+          ]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom

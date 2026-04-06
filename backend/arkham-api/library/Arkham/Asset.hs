@@ -1533,6 +1533,16 @@ allAssets =
       , SomeAssetCard scrollOfThePharaohsWordsOfBast4
       , SomeAssetCard scrollOfThePharaohsWordsOfRa4
       , SomeAssetCard scrollOfThePharaohsWordsOfSet4
+      , -- André Patel
+        SomeAssetCard centerStage
+      , SomeAssetCard fame
+      , SomeAssetCard theGrapevine
+      , SomeAssetCard extravagantRing
+      , SomeAssetCard marcusSengstacke
+      , SomeAssetCard polishedCane
+      , SomeAssetCard theGrapevine2
+      , SomeAssetCard marcusSengstacke2
+      , SomeAssetCard silverTongue3
       , -- Marie Lambeau
         SomeAssetCard grandMeresCharm
       , SomeAssetCard offeringBowl
@@ -1547,16 +1557,20 @@ allAssets =
       , SomeAssetCard jimCulver4
       , SomeAssetCard secondSight5
       , SomeAssetCard shadowmeld5
-      , -- André Patel
-        SomeAssetCard centerStage
-      , SomeAssetCard fame
-      , SomeAssetCard theGrapevine
-      , SomeAssetCard extravagantRing
-      , SomeAssetCard marcusSengstacke
-      , SomeAssetCard polishedCane
-      , SomeAssetCard theGrapevine2
-      , SomeAssetCard marcusSengstacke2
-      , SomeAssetCard silverTongue3
+      , -- Miguel de la Cruz
+        SomeAssetCard miguelsKnapsack
+      , SomeAssetCard danielJameson
+      , SomeAssetCard huntingDog
+      , SomeAssetCard loner
+      , SomeAssetCard oldCompass
+      , SomeAssetCard pocketknife
+      , SomeAssetCard sameOldThing
+      , SomeAssetCard extraRations1
+      , SomeAssetCard canteen2
+      , SomeAssetCard huntersInstinct2
+      , SomeAssetCard winchesterModel522
+      , SomeAssetCard levelheaded3
+      , SomeAssetCard longbow3
       , -- Misc
         SomeAssetCard courage
       ]

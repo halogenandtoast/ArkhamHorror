@@ -46,7 +46,7 @@ instance RunMessage OnyxPentacle where
         labeled "If you succeed by 2 or more, remove 1 doom from Onyx Pentacle." $ doStep 2 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      push $ Exhaust (toTarget attrs)
+      exhaustThis attrs
       placeDoom (attrs.ability 1) attrs 1
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 1

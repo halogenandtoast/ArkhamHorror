@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.BlessedBlade4 (blessedBlade4, BlessedBlade4 (..)) whe
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Cost
 import Arkham.Helpers.SkillTest
@@ -38,7 +39,7 @@ instance RunMessage BlessedBlade4 where
           $ chooseOne
             st.investigator
             [ Label ("Exhaust Blessed Blade (4) to add " <> pluralize blessTokens "{bless} token")
-                $ Exhaust (toTarget attrs)
+                $ Exhaust (mkExhaustion attrs attrs)
                 : replicate blessTokens (AddChaosToken #bless)
             , Label "Do not exhaust" []
             ]

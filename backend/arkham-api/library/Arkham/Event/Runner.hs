@@ -127,9 +127,8 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
     push (Ready $ toTarget a)
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
-  Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
-  ExhaustThen (isTarget a -> True) msgs -> do
-    unless eventExhausted $ pushAll msgs
+  Exhaust ea | a `isTarget` ea.target -> do
+    unless eventExhausted $ pushAll ea.thenMsgs
     pure $ a & exhaustedL .~ True
   PayCardCost _ card _ | toCardId a == toCardId card -> do
     pure $ a & beingPaidForL .~ True
@@ -339,4 +338,10 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
       OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ a & placementL .~ p
       OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ a & placementL .~ p
       _ -> pure a
+  UpdateEventMeta eid value | eid == eventId -> do
+    pure $ a & metaL .~ value
+  BeforePlayEvent _ eid acId | eid == eventId -> do
+    -- Default: no pre-play questions; resume the cost pipeline immediately
+    push $ CreatedCost acId
+    pure a
   _ -> pure a

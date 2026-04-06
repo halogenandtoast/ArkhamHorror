@@ -30,6 +30,6 @@ instance RunMessage ExhumeTheBones where
           checkWindows defeatWindows
           healAllDamage attrs buriedMiner
           disengageFromAll buriedMiner
-          exhaustThis buriedMiner
+          exhaustWith attrs buriedMiner
       pure s
     _ -> ExhumeTheBones <$> liftRunMessage msg attrs

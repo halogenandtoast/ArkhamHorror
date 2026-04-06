@@ -20,7 +20,7 @@ instance HasAbilities BlackmailFile where
   getAbilities (BlackmailFile x) =
     [ skillTestAbility
         $ restrictedAbility x 1 ControlsThis
-        $ parleyAction (ChooseEnemyCost $ EnemyAt YourLocation <> NonEliteEnemy <> EnemyWithHealth)
+        $ parleyAction (ChooseEnemyCost $ EnemyAt YourLocation <> NonEliteEnemy <> EnemyWithHealth <> EnemyCanBeDisengagedBy (AbilitySource (toSource x) 1))
     ]
 
 instance RunMessage BlackmailFile where

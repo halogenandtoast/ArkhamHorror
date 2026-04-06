@@ -38,6 +38,7 @@ import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
+import Arkham.Exhaust (mkExhaustion, Exhaustion (..))
 import Arkham.Fight
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
@@ -1014,7 +1015,7 @@ instance RunMessage EnemyAttrs where
               push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
 
         whenM (eid <=~> ReadyEnemy) do
-          push $ Exhaust (toTarget a)
+          push $ Exhaust (mkExhaustion a a)
       pure a
     When (PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
       pushM $ checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]
@@ -1087,7 +1088,7 @@ instance RunMessage EnemyAttrs where
       mods <- getModifiers iid
       emods <- getModifiers eid
       pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
-      pushWhen (DoNotExhaustEvaded `notElem` emods) $ Exhaust (toTarget a)
+      pushWhen (DoNotExhaustEvaded `notElem` emods) $ Exhaust (mkExhaustion a a)
       runDefaultMaybeT a do
         pendingSpawnAt <- hoistMaybe $ (.spawnAt) <$> enemySpawnDetails
         lid <- MaybeT $ case pendingSpawnAt of
@@ -1095,31 +1096,38 @@ instance RunMessage EnemyAttrs where
           SpawnPlaced p -> placementLocation p
           _ -> placementLocation a.placement
         pure $ a & spawnDetailsL . _Just %~ \sd -> sd {spawnDetailsSpawnAt = SpawnAtLocation lid}
-    Exhaust (isTarget a -> True) -> do
-      let
-        isEnemyAttack = \case
-          TargetLabel (EnemyTarget eid) [EnemyAttack details] -> eid == enemyId && details.enemy == enemyId
-          _ -> False
-        isNotInvalidEnemyAttack = \case
-          msg'@(TargetLabel _ [EnemyAttack details])
-            | isEnemyAttack msg' -> attackIsValid details (a & exhaustedL .~ True)
-          _ -> pure True
-      overMessagesM \case
-        Ask pid (ChooseOneAtATime xs) | any isEnemyAttack xs -> do
-          filterM isNotInvalidEnemyAttack xs >>= \case
-            [] -> pure []
-            xs' -> pure [Ask pid (ChooseOneAtATime xs')]
-        msg' -> pure [msg']
+    Exhaust ea | a `isTarget` ea.target -> do
+      mods <- getModifiers (toTarget a)
+      sourceBlocked <- anyM (\case
+        CannotBeExhaustedBy sm -> sourceMatches ea.source sm
+        _ -> pure False) mods
+      if sourceBlocked
+        then pure a
+        else do
+          let
+            isEnemyAttack = \case
+              TargetLabel (EnemyTarget eid) [EnemyAttack details] -> eid == enemyId && details.enemy == enemyId
+              _ -> False
+            isNotInvalidEnemyAttack = \case
+              msg'@(TargetLabel _ [EnemyAttack details])
+                | isEnemyAttack msg' -> attackIsValid details (a & exhaustedL .~ True)
+              _ -> pure True
+          overMessagesM \case
+            Ask pid (ChooseOneAtATime xs) | any isEnemyAttack xs -> do
+              filterM isNotInvalidEnemyAttack xs >>= \case
+                [] -> pure []
+                xs' -> pure [Ask pid (ChooseOneAtATime xs')]
+            msg' -> pure [msg']
 
-      case enemyPlacement of
-        AsSwarm eid' _ -> push $ Exhaust (toTarget eid')
-        _ -> do
-          others <- select $ SwarmOf (toId a) <> ReadyEnemy
-          pushAll [Exhaust (toTarget other) | other <- others]
+          case enemyPlacement of
+            AsSwarm eid' _ -> push $ Exhaust ea {exhaustionTarget = toTarget eid'}
+            _ -> do
+              others <- select $ SwarmOf (toId a) <> ReadyEnemy
+              pushAll [Exhaust ea {exhaustionTarget = toTarget other} | other <- others]
 
-      afterWindow <- checkWindows [mkAfter $ Window.Exhausts (toTarget a)]
-      push afterWindow
-      pure $ a & exhaustedL .~ True
+          afterWindow <- checkWindows [mkAfter $ Window.Exhausts (toTarget a)]
+          push afterWindow
+          pure $ a & exhaustedL .~ True
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- field EnemyEvade eid
       case mEnemyEvade' of
@@ -1315,7 +1323,7 @@ instance RunMessage EnemyAttrs where
           pushAll
             $ [attackMessage | allowAttack && not details.cancelled]
             <> [ScenarioSpecific "enemyAttacked" (toJSON enemyId)]
-            <> [ Exhaust (toTarget a)
+            <> [ Exhaust (mkExhaustion a a)
                | allowAttack
                , swarmExhaust
                , attackExhaustsEnemy details
@@ -1336,7 +1344,7 @@ instance RunMessage EnemyAttrs where
               | allowAttack && not details.cancelled
               ]
             <> [ScenarioSpecific "enemyAttacked" (toJSON enemyId)]
-            <> [ Exhaust (toTarget a)
+            <> [ Exhaust (mkExhaustion a a)
                | allowAttack
                , swarmExhaust
                , attackExhaustsEnemy details
@@ -1432,7 +1440,7 @@ instance RunMessage EnemyAttrs where
                 let
                   defeatMsgs =
                     if ExhaustIfDefeated `elem` modifiers'
-                      then [Exhaust (toTarget a) | not enemyExhausted]
+                      then [Exhaust (mkExhaustion a a) | not enemyExhausted]
                       else [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
 
                 pushAll $ [whenMsg, afterMsg] <> defeatMsgs
@@ -1482,7 +1490,7 @@ instance RunMessage EnemyAttrs where
                 let
                   defeatMsgs =
                     if ExhaustIfDefeated `elem` modifiers'
-                      then [Exhaust (toTarget a) | not enemyExhausted]
+                      then [Exhaust (mkExhaustion a a) | not enemyExhausted]
                       else
                         [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
                           <> ( guard (notNull excessDamageTargets && excess > 0)
@@ -1527,9 +1535,13 @@ instance RunMessage EnemyAttrs where
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+      blockedBySource <- anyM (\case
+        CannotBeDefeatedBy sm -> sourceMatches source sm
+        _ -> pure False) modifiers'
       validDefeat <-
         ( ( canBeDefeated
               && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
+              && not blockedBySource
           )
             &&
         )
@@ -1657,8 +1669,14 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
         <> [RemoveEnemy a.id]
       pure a
-    ShuffleBackIntoEncounterDeck (isTarget a -> True) -> do
-      pure $ a & placementL .~ OutOfPlay RemovedZone
+    ShuffleBackIntoEncounterDeck source (isTarget a -> True) -> do
+      mods <- getModifiers (toTarget a)
+      blocked <- anyM (\case
+        CannotBeRemovedBy sm -> sourceMatches source sm
+        _ -> pure False) mods
+      if blocked
+        then pure a
+        else pure $ a & placementL .~ OutOfPlay RemovedZone
     PlaceEnemyOutOfPlay _oZone eid | a.id == eid -> do
       let
         isDiscardEnemy = \case

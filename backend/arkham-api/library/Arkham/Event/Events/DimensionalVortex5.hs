@@ -42,7 +42,7 @@ instance RunMessage DimensionalVortex5Effect where
           locationExists <- selectAny $ LocationWithId lid
           if locationExists
             then do
-              exhaustThis enemy
+              exhaustWith attrs enemy
               place enemy (AtLocation lid)
             else toDiscard GameSource enemy
       disableReturn e

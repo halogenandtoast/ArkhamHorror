@@ -3016,12 +3016,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           pushAll $ moveAfter movement
             <> [afterEntering]
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
-            <> [CheckEnemyEngagement iid]
+            <> [CheckEnemyEngagement iid | not movement.skipEngagement]
           pure $ a & movementL .~ Nothing
   ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
     whenM (getCanMoveTo iid' (moveSource movement) lid) do
       Choose.chooseOneM iid' do
-        Choose.labeled "Move too" $ moveTo iid' iid' lid
+        Choose.labeled "Move too" $ moveToEdit iid' iid' lid (\m -> m {moveSkipEngagement = True})
         Choose.labeled "Skip" Choose.nothing
 
     pure a

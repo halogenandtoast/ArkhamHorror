@@ -22,6 +22,7 @@ data Movement = Movement
   , movePayAdditionalCosts :: Bool
   , moveAfter :: [Message]
   , moveAdditionalEnterCosts :: Cost
+  , moveSkipEngagement :: Bool
   , moveId :: MovementId
   }
   deriving stock (Show, Ord, Eq, Data)
@@ -52,6 +53,9 @@ instance HasField "after" Movement [Message] where
 
 instance HasField "additionalEnterCosts" Movement Cost where
   getField = moveAdditionalEnterCosts
+
+instance HasField "skipEngagement" Movement Bool where
+  getField = moveSkipEngagement
 
 instance HasField "id" Movement MovementId where
   getField = moveId
@@ -87,6 +91,7 @@ move (toSource -> moveSource) (toTarget -> moveTarget) lid = do
       , movePayAdditionalCosts = True
       , moveAfter = []
       , moveAdditionalEnterCosts = Free
+      , moveSkipEngagement = False
       , moveId
       }
 
@@ -108,6 +113,7 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher = do
       , movePayAdditionalCosts = True
       , moveAfter = []
       , moveAdditionalEnterCosts = Free
+      , moveSkipEngagement = False
       , moveId
       }
 
@@ -129,6 +135,7 @@ moveTowards (toSource -> moveSource) (toTarget -> moveTarget) (asId -> locationI
       , movePayAdditionalCosts = True
       , moveAfter = []
       , moveAdditionalEnterCosts = Free
+      , moveSkipEngagement = False
       , moveId
       }
 
@@ -150,6 +157,7 @@ moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher = 
       , movePayAdditionalCosts = True
       , moveAfter = []
       , moveAdditionalEnterCosts = Free
+      , moveSkipEngagement = False
       , moveId
       }
 
@@ -183,6 +191,7 @@ instance FromJSON Movement where
     movePayAdditionalCosts <- o .: "movePayAdditionalCosts"
     moveAfter <- o .: "moveAfter"
     moveAdditionalEnterCosts <- o .:? "moveAdditionalEnterCosts" .!= Free
+    moveSkipEngagement <- o .:? "moveSkipEngagement" .!= False
     moveId <- o .:? "moveId" .!= MovementId (fromWords64 6128981282234515924 12039885860129472512)
 
     pure Movement {..}

@@ -1,17 +1,17 @@
 module Arkham.Investigator.Cards.DianaStanley (dianaStanley) where
 
+import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Ability
 import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
-import Arkham.Message.Lifted.Choose
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard, EventCard, PlaceUnderneath, SkillCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Window (Window (..))
@@ -79,8 +79,10 @@ instance RunMessage DianaStanley where
       canLeavePlay <- case source of
         AssetSource aid -> elem aid <$> select AssetCanLeavePlayByNormalMeans
         _ -> pure $ not (cdPermanent $ toCardDef card)
-      when canLeavePlay do
-        push removeMsg
+      leftPlayButRetrievable <- fieldMap InvestigatorDiscard (elem (toCardId card) . map toCardId) iid
+      when (canLeavePlay || leftPlayButRetrievable) do
+        unless leftPlayButRetrievable do
+          push removeMsg
         obtainCard card
         placeUnderneath attrs [card]
       drawCards iid (attrs.ability 1) 1

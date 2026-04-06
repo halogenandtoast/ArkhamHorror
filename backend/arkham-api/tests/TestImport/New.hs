@@ -36,6 +36,7 @@ import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
+import Arkham.Exhaust
 import Arkham.Fight
 import Arkham.ForMovement
 import Arkham.Game.Settings
@@ -905,4 +906,4 @@ setActive :: Investigator -> TestAppT ()
 setActive player = run $ SetActiveInvestigator (toId player)
 
 exhaust :: Targetable target => target -> TestAppT ()
-exhaust target = run $ Exhaust (toTarget target)
+exhaust target = run $ Exhaust $ mkExhaustion GameSource (toTarget target)

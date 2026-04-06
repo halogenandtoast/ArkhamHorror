@@ -24,6 +24,7 @@ import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 import { Card } from '../types/Card';
+import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -59,6 +60,7 @@ const uiRotation = computed<number>(() => {
 })
 
 const cardCode = computed(() => props.asset.cardCode)
+const isTheBeyond = computed(() => cardCode.value === 'c90052')
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
 const image = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
@@ -114,7 +116,7 @@ const canInteract = computed(() => abilities.value.length > 0 || cardAction.valu
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-const isSpirit = computed(() => (props.asset.modifiers ?? []).some((m) => m.type.contents === 'IsSpirit'))
+const isSpirit = computed(() => isManifestedSpiritAsset(props.asset))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -125,7 +127,7 @@ function isAbility(v: Message): v is AbilityLabel {
     return true
   }
 
-  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+  if ((v.tag === MessageType.EVADE_LABEL || v.tag === MessageType.EVADE_LABEL_WITH_SKILL) && v.enemyId === id.value) {
     return true
   }
 
@@ -262,9 +264,11 @@ function startDrag(event: DragEvent) {
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
+          <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
           <img
             :data-id="id"
             :data-image-id="dataImage"
+            :data-is-spirit="isSpirit || undefined"
             :src="image"
             class="card"
             :class="{ exhausted, 'ability-target': isHighlighted }"
@@ -357,22 +361,44 @@ function startDrag(event: DragEvent) {
       <template v-if="debug.active">
         <button @click="debugging = true">Debug</button>
       </template>
-      <Asset
-        v-for="assetId in asset.assets"
-        :asset="game.assets[assetId]"
-        :game="game"
-        :playerId="playerId"
-        :key="assetId"
-        @choose="$emit('choose', $event)"
-      />
-      <Enemy
-        v-for="enemyId in asset.enemies"
-        :enemy="game.enemies[enemyId]"
-        :game="game"
-        :playerId="playerId"
-        :key="enemyId"
-        @choose="$emit('choose', $event)"
-      />
+      <template v-if="isTheBeyond">
+        <div v-if="(asset.assets?.length ?? 0) > 0 || (asset.enemies?.length ?? 0) > 0" class="spirit-manifest-row">
+          <Asset
+            v-for="assetId in asset.assets"
+            :asset="game.assets[assetId]"
+            :game="game"
+            :playerId="playerId"
+            :key="assetId"
+            @choose="$emit('choose', $event)"
+          />
+          <Enemy
+            v-for="enemyId in asset.enemies"
+            :enemy="game.enemies[enemyId]"
+            :game="game"
+            :playerId="playerId"
+            :key="enemyId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <Asset
+          v-for="assetId in asset.assets"
+          :asset="game.assets[assetId]"
+          :game="game"
+          :playerId="playerId"
+          :key="assetId"
+          @choose="$emit('choose', $event)"
+        />
+        <Enemy
+          v-for="enemyId in asset.enemies"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :playerId="playerId"
+          :key="enemyId"
+          @choose="$emit('choose', $event)"
+        />
+      </template>
     </div>
     <DebugAsset v-if="debugging" :game="game" :asset="asset" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>
@@ -471,11 +497,14 @@ img.card.ability-target {
   font-size: 1.2em;
   color: rgba(255, 255, 255, 0.6);
   left: 50%;
-  top: 40%;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 10px;
-  border-radius: 20px;
+  top: 37%;
   transform: translateX(-50%) translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 1.5em;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
 }
 
 .market-deck {
@@ -486,6 +515,33 @@ img.card.ability-target {
 .spirit-deck {
   position: relative;
   margin-right: 5px;
+}
+
+.spirit-manifest-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.card-wrapper {
+  position: relative;
+}
+
+.spirit-icon {
+  position: absolute;
+  bottom: 8%;
+  right: 0%;
+  z-index: 3;
+  font-size: 0.9em;
+  color: rgba(180, 230, 255, 0.95);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
+  pointer-events: none;
 }
 
 .in-vehicle {

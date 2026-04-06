@@ -30,7 +30,7 @@ instance RunMessage YigsMercy where
           then labeled' "yigsMercy.refuses" nothing
           else do
             labeled' "yigsMercy.reject" do
-              exhaustThis ichtaca
+              exhaustWith attrs ichtaca
               disengageFromAll ichtaca
               gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
             labeled' "yigsMercy.accept" do

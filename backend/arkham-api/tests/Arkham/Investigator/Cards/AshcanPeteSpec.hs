@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.AshcanPeteSpec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Events
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher (assetIs)
 import TestImport.Lifted
@@ -24,7 +25,7 @@ spec = describe "\"Ashcan\" Pete" $ do
         [ loadDeck ashcanPete [card]
         , drawCards ashcanPete.id ashcanPete 1
         , playAsset ashcanPete asset
-        , Exhaust (toTarget asset)
+        , Exhaust (mkExhaustion GameSource $ toTarget asset)
         , CheckWindows [fastPlayerWindow]
         ]
       chooseOptionMatching "activate ability" \case
@@ -44,7 +45,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       sid <- getRandom
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
-        , Exhaust (toTarget duke)
+        , Exhaust (mkExhaustion GameSource $ toTarget duke)
         , beginSkillTest sid ashcanPete SkillIntellect 2
         ]
       chooseOnlyOption "start skill test"

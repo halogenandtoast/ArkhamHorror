@@ -147,7 +147,9 @@ allInvestigators =
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard andrePatel
       , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard marieLambeau2
       , SomeInvestigatorCard stellaClark
+      , SomeInvestigatorCard miguelDeLaCruz
       , SomeInvestigatorCard subject5U21
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel

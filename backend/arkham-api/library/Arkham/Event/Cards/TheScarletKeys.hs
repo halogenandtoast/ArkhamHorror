@@ -52,7 +52,7 @@ bolas =
   (event "09025" "Bolas" 1 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     }
 
 breachTheDoor :: CardDef
@@ -76,7 +76,7 @@ motivationalSpeech =
   (event "09028" "Motivational Speech" 0 Guardian)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Spirit]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     }
 
 oneInTheChamber :: CardDef
@@ -171,7 +171,7 @@ mapTheArea =
   (event "09048" "Map the Area" 1 Seeker)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     }
 
 existentialRiddle1 :: CardDef
@@ -179,7 +179,7 @@ existentialRiddle1 =
   (event "09052" "Existential Riddle" 1 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight, Paradox]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> NonEliteEnemy <> CanParleyEnemy You)
     , cdLevel = Just 1
     }
@@ -300,7 +300,7 @@ quickGetaway =
   (event "09069" "Quick Getaway" 2 Rogue)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = [#evade]
+    , cdActions = CardAction #evade
     , cdFastWindow =
         Just $ EnemyAttacks #when You AnyEnemyAttack (EnemyWithEvade <> EnemyIsEngagedWith You)
     }
@@ -310,7 +310,7 @@ breakingAndEntering2 =
   (event "09074" "Breaking and Entering" 2 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
     }
@@ -378,7 +378,7 @@ stringOfCurses =
   (event "09088" "String of Curses" 1 Mystic)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spell]
-    , cdActions = [#parley]
+    , cdActions = CardAction #parley
     , cdCriteria =
         Just
           $ exists

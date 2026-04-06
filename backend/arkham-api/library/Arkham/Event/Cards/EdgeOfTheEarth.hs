@@ -10,7 +10,7 @@ toeToToe =
   (event "08020" "Toe to Toe" 0 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdBeforeEffect = True
     , cdCriteria = Just (exists $ CanFightEnemy ThisCard <> EnemyCanAttack You)
     }
@@ -28,7 +28,7 @@ gangUp1 =
   (event "08022" "Gang Up" 3 Guardian)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Synergy]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdLevel = Just 1
     }
 
@@ -37,7 +37,7 @@ sweepingKick1 =
   (event "08023" "Sweeping Kick" 1 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spirit, Tactic, Trick]
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdLevel = Just 1
     }
 
@@ -69,7 +69,7 @@ fangOfTyrthrha4 :: CardDef
 fangOfTyrthrha4 =
   (event "08029" "Fang of Tyr'thrha" 3 Guardian)
     { cdCardTraits = singleton Spell
-    , cdActions = [#fight]
+    , cdActions = CardAction #fight
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdLevel = Just 4
     , cdCriteria =
@@ -107,7 +107,7 @@ unearthTheAncients2 =
   (event "08039" "Unearth the Ancients" 0 Seeker)
     { cdSkills = [#intellect, #intellect, #agility]
     , cdCardTraits = singleton Insight
-    , cdActions = [#investigate]
+    , cdActions = CardAction #investigate
     , cdCriteria =
         Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
     , cdLevel = Just 2
@@ -118,7 +118,7 @@ scoutAhead =
   (event "08047" "Scout Ahead" 1 Rogue)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdActions = [#move]
+    , cdActions = CardAction #move
     , cdCriteria = Just $ youExist can.move
     }
 

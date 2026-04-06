@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
@@ -13,6 +14,8 @@ type FullCampaignOption = {
 
 type RecommendedToggle = {
   type: 'toggle'
+  default?: boolean
+  icon?: 'bug-ant'
   option: { tag: string }
 }
 
@@ -356,6 +359,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           <div class="recommended-row" v-for="o in recommendedToggles" :key="optKey(o)">
             <div class="recommended-text">
               <div class="recommended-name">
+                <BugAntIcon v-if="o.icon === 'bug-ant'" class="recommended-icon" aria-hidden="true" />
                 {{ $t(`create.recommendedOption.${o.option.tag}.title`) ?? o.option.tag }}
               </div>
               <div class="recommended-desc" v-if="$te?.(`create.recommendedOption.${o.option.tag}.description`)">
@@ -776,6 +780,14 @@ input[type='radio']:checked + label {
 
 .recommended-toggle {
   width: 180px;
+}
+
+.recommended-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  margin-right: 0.4em;
+  opacity: 0.75;
 }
 
 @media (max-width: 700px) {

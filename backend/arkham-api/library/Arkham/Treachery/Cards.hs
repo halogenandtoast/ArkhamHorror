@@ -188,6 +188,8 @@ allPlayerTreacheryCards =
       , looseCannon
       , overconfident
       , unbrokenWeb
+      , calledToGuinee
+      , hemophobia
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -4248,6 +4250,20 @@ unbrokenWeb =
     { cdCardTraits = setFromList [Terror, Trait.Dreamlands]
     , cdDeckRestrictions = [Signature ("60251" :: InvestigatorId)]
     , cdLevel = Nothing
+    }
+
+calledToGuinee :: CardDef
+calledToGuinee =
+  (weakness "60453" "Called to Guin\233e")
+    { cdCardTraits = setFromList [Curse, Pact]
+    , cdDeckRestrictions = [Signature ("60451" :: InvestigatorId)]
+    , cdLevel = Nothing
+    }
+
+hemophobia :: CardDef
+hemophobia =
+  (basicWeakness "60454" "Hemophobia")
+    { cdCardTraits = singleton Terror
     }
 
 confusion :: CardDef

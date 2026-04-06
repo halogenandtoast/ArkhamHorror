@@ -353,7 +353,7 @@ arcaneInitiate =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally, Sorcerer]
     , cdSlots = [#ally]
-    , cdAlternateCardCodes = ["01563"]
+    , cdAlternateCardCodes = ["01563", "60455"]
     }
 
 bookOfShadows3 :: CardDef
@@ -409,7 +409,7 @@ rabbitsFoot =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#accessory]
-    , cdAlternateCardCodes = ["01575", "60510"]
+    , cdAlternateCardCodes = ["01575", "60510", "60560"]
     }
 
 strayCat :: CardDef

@@ -1064,6 +1064,7 @@
   {
     "id": "06",
     "name": "The Dream-Eaters",
+    "recommendedOptions": [{ "type": "toggle", "default": false, "icon": "bug-ant", "option": { "tag": "UseSwarmPlaceholders" }}],
     "variants": [
       {
         "key": "theDreamEaters"

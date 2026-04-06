@@ -44,6 +44,7 @@ import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
+import Arkham.Exhaust qualified as Exhaust
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv
@@ -531,6 +532,15 @@ beginSkillTest
   -> GameCalculation
   -> m ()
 beginSkillTest sid iid source target sType n = push $ Msg.beginSkillTest sid iid source target sType n
+
+repeatSkillTest :: ReverseQueue m => SkillTestId -> SkillTestId -> m ()
+repeatSkillTest newSid oldSid = push $ Msg.RepeatSkillTest newSid oldSid
+
+repeatSkillTestWith :: ReverseQueue m => (SkillTestId -> m ()) -> m ()
+repeatSkillTestWith f = Msg.withSkillTest \stid -> do
+  sid <- getRandom
+  f sid
+  repeatSkillTest sid stid
 
 gameOverIf :: ReverseQueue m => Bool -> m ()
 gameOverIf t = when t gameOver
@@ -1723,6 +1733,28 @@ modifySkill
 modifySkill sid (toSource -> source) (toTarget -> target) sType n =
   skillTestModifier sid source target (SkillModifier sType n)
 
+modifyAnySkill
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> source
+  -> target
+  -> Int
+  -> m ()
+modifyAnySkill sid (toSource -> source) (toTarget -> target) n =
+  skillTestModifier sid source target (AnySkillValue n)
+
+addSkillValue
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> source
+  -> target
+  -> SkillType
+  -> m ()
+addSkillValue sid (toSource -> source) (toTarget -> target) sType =
+  skillTestModifier sid source target (AddSkillValue sType)
+
 skillTestModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
@@ -1899,6 +1931,10 @@ chooseEvadeEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage
 
+chooseEvadeEnemyWith
+  :: (ReverseQueue m, Sourceable source) => SkillType -> SkillTestId -> InvestigatorId -> source -> m ()
+chooseEvadeEnemyWith sType sid iid source = chooseEvadeEnemyEdit sid iid source (Evade.withSkillType sType)
+
 chooseEvadeEnemyEdit
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId
@@ -1945,6 +1981,21 @@ investigateWithSkillChoice sid iid source skillTypes = do
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
+investigateLocationWithSkillChoice
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [SkillType]
+  -> LocationId
+  -> m ()
+investigateLocationWithSkillChoice sid iid source skillTypes lid = do
+  inv <- mkInvestigateLocation sid iid source lid
+  let using = toMessage . (`Investigate.withSkillType` inv)
+  Arkham.Message.Lifted.chooseOne
+    iid
+    [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
+
 investigate
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId
@@ -1959,6 +2010,9 @@ mapQueue = lift . Msg.mapQueue
 toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
+
+finalizeEvent :: ReverseQueue m => EventId -> m ()
+finalizeEvent eid = push $ Do (FinishedEvent eid)
 
 toDiscard
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
@@ -2437,6 +2491,9 @@ fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f
 
+allMatchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+allMatchingDon't f = lift $ removeAllMessagesMatching f
+
 cardDrawModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDrawId -> source -> target -> ModifierType -> m ()
@@ -2805,8 +2862,11 @@ passSkillTest = push Msg.PassSkillTest
 ready :: (ReverseQueue m, Targetable target) => target -> m ()
 ready = push . Msg.ready
 
-exhaustThis :: (ReverseQueue m, Targetable target) => target -> m ()
-exhaustThis = push . Msg.Exhaust . toTarget
+exhaustThis :: (ReverseQueue m, Sourceable target, Targetable target) => target -> m ()
+exhaustThis t = push . Msg.Exhaust $ Exhaust.mkExhaustion t t
+
+exhaustWith :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+exhaustWith s t = push . Msg.Exhaust $ Exhaust.mkExhaustion s t
 
 readyThis :: (ReverseQueue m, Targetable target) => target -> m ()
 readyThis = push . Msg.Ready . toTarget
@@ -3147,8 +3207,8 @@ automaticallyEvadeEnemy
   -> m ()
 automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId investigator) (asId enemy)
 
-exhaustEnemy :: (ReverseQueue m, Targetable target) => target -> m ()
-exhaustEnemy = push . Exhaust . toTarget
+exhaustEnemy :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+exhaustEnemy s t = push . Exhaust $ Exhaust.mkExhaustion s t
 
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 placeInBonded iid = push . PlaceInBonded iid . toCard
@@ -3566,7 +3626,10 @@ drawCard iid card = do
 resolveRevelation :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 resolveRevelation iid card = do
   obtainCard $ toCard card
-  push $ ResolveRevelation iid (toCard card)
+  resolveRevelation_ iid card
+
+resolveRevelation_ :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+resolveRevelation_ iid = push . ResolveRevelation iid . toCard
 
 resign :: ReverseQueue m => InvestigatorId -> m ()
 resign iid = push $ Resign iid
@@ -3822,7 +3885,7 @@ updateLocation
 updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
 
 shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
-shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTarget target)
+shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck GameSource (toTarget target)
 
 setActions
   :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)

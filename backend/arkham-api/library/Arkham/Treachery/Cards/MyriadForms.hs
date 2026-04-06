@@ -26,7 +26,7 @@ instance RunMessage MyriadForms where
 
       for_ inHand $ \(_, card) -> push $ RevealCard (toCardId card)
       for_ inHand $ \(nyarlathotep, _) -> push $ EnemyWillAttack $ enemyAttack nyarlathotep (toSource attrs) iid
-      for_ inHand $ \(nyarlathotep, _) -> push $ ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+      for_ inHand $ \(nyarlathotep, _) -> push $ ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
 
       for_ mInPlay $ \nyarlathotep -> do
         pushAll

@@ -286,7 +286,7 @@ instance RunMessage TheMidwinterGala where
 
       theBloodlessMan <- enemyAt Enemies.theBloodlessMan lanternChamber
       placeAsset_ Assets.thePaleLanternHypnoticGlow (AttachedToEnemy theBloodlessMan)
-      exhaustThis theBloodlessMan
+      exhaustWith attrs theBloodlessMan
 
       monsters <-
         asDefs <$> amongGathered (CardWithTrait Monster <> not_ (cardIs Enemies.theBloodlessManUnleashed))

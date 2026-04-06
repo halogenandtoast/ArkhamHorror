@@ -803,6 +803,9 @@ allTreacheries =
       , SomeTreacheryCard overconfident
       , -- Carolyn Fern
         SomeTreacheryCard unbrokenWeb
+      , -- Marie Lambeau
+        SomeTreacheryCard calledToGuinee
+      , SomeTreacheryCard hemophobia
       , -- André Patel
         SomeTreacheryCard unaware
       , SomeTreacheryCard weightOfTheWorld

@@ -26,14 +26,15 @@ ritaYoung =
 instance HasAbilities RitaYoung where
   getAbilities (RitaYoung a) =
     [ playerLimit PerRound
-        $ (restrictedAbility a 1)
-          ( Self
-              <> oneOf
-                [ exists AccessibleLocation
-                , exists (EvadingEnemy <> EnemyCanBeDamagedBySource (a.ability 1)) <> CanDealDamage
-                ]
+        $ selfAbility
+          a
+          1
+          ( oneOf
+              [ exists AccessibleLocation
+              , exists (EvadingEnemy <> EnemyCanBeDamagedBySource (a.ability 1)) <> CanDealDamage
+              ]
           )
-          (freeReaction $ Matcher.EnemyEvaded #after You AnyEnemy)
+          (triggered_ $ Matcher.EnemyEvaded #after You AnyEnemy)
     ]
 
 instance HasChaosTokenValue RitaYoung where

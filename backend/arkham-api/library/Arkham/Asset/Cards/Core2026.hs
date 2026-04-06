@@ -226,6 +226,7 @@ secondSight =
     , cdCardTraits = setFromList [Spell]
     , cdSlots = [#arcane]
     , cdUses = uses Charge 3
+    , cdAlternateCardCodes = ["60460"]
     }
 
 spiritualIntuition :: CardDef

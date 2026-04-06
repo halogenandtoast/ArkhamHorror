@@ -106,6 +106,7 @@ data instance Field Location :: Type -> Type where
   LocationInvestigateDifficulty :: Field Location GameCalculation
   LocationConcealedCards :: Field Location [ConcealedCardId]
   LocationGlobalMeta :: Field Location (Map Aeson.Key Value)
+  UnsafeLocationRevealedSymbol :: Field Location LocationSymbol
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -139,6 +140,7 @@ fieldLens = \case
   LocationBrazier -> brazierL
   LocationFloodLevel -> floodLevelL
   LocationBreaches -> breachesL
+  UnsafeLocationRevealedSymbol -> revealedSymbolL
   LocationLabel -> labelL
   LocationTraits -> virtual
   LocationKeywords -> virtual
@@ -208,6 +210,7 @@ instance FromJSON (SomeField Location) where
     "LocationRevealed" -> pure $ SomeField LocationRevealed
     "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
     "LocationPrintedShroud" -> pure $ SomeField LocationPrintedShroud
+    "UnsafeLocationRevealedSymbol" -> pure $ SomeField UnsafeLocationRevealedSymbol
     "LocationShroud" -> pure $ SomeField LocationShroud
     "LocationTokens" -> pure $ SomeField LocationTokens
     "LocationKeys" -> pure $ SomeField LocationKeys
@@ -220,7 +223,7 @@ instance FromJSON (SomeField Location) where
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     "LocationGlobalMeta" -> pure $ SomeField LocationGlobalMeta
-    _ -> error "no such field"
+    _ -> error "no such Location field"
 
 instance Entity LocationAttrs where
   type EntityId LocationAttrs = LocationId

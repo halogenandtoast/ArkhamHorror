@@ -17,6 +17,7 @@ export type Placement
   | { tag: "InVehicle", contents: string }
   | { tag: "InPosition", contents: Position }
   | { tag: "AttachedToLocation", contents: string }
+  | { tag: "AttachedToAsset", contents: [string, Placement | null] }
   | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
@@ -28,6 +29,14 @@ export type Placement
 // pos will be a tuple of two numbers [x, y] and we need to convert it to an object { x: number, y: number }
 export const positionDecoder = JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.number()], 'PositionTuple').map(([x, y]) => ({ x, y }));
 
+const attachedToAssetContentsDecoder: JsonDecoder.Decoder<[string, Placement | null]> = JsonDecoder.tuple(
+  [
+    JsonDecoder.string(),
+    JsonDecoder.nullable(JsonDecoder.lazy(() => placementDecoder)),
+  ],
+  'AttachedToAssetContents',
+);
+
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AsSwarm"), swarmHost: JsonDecoder.string(), swarmCard: cardDecoder }, 'AsSwarm'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("NextToAgenda")}, 'NextToAgenda'),
@@ -37,6 +46,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AtLocation"), contents: JsonDecoder.string() }, 'AtLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InVehicle"), contents: JsonDecoder.string() }, 'InVehicle'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToLocation"), contents: JsonDecoder.string() }, 'AttachedToLocation'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAsset"), contents: attachedToAssetContentsDecoder }, 'AttachedToAsset'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InThreatArea"), contents: JsonDecoder.string() }, 'InThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPlayArea"), contents: JsonDecoder.string() }, 'InPlayArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("StillInHand"), contents: JsonDecoder.string() }, 'StillInHand'),

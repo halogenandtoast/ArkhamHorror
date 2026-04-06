@@ -13,6 +13,7 @@ import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
+import Arkham.Source
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Tracing
@@ -58,7 +59,7 @@ shuffleWhisperingChaosBackIntoEncounterDeck
   :: (HasQueue Message m, HasGame m, Tracing m) => LocationAttrs -> m ()
 shuffleWhisperingChaosBackIntoEncounterDeck attrs = do
   x <- getWhisperingChaos attrs
-  push $ ShuffleBackIntoEncounterDeck (toTarget x)
+  push $ ShuffleBackIntoEncounterDeck GameSource (toTarget x)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "whereTheGodsDwell" a

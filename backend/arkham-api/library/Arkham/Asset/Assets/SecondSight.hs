@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.I18n
-import Arkham.Investigate.Types
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -26,7 +25,7 @@ instance RunMessage SecondSight where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       onRevealChaosTokenEffect sid #cultist attrs attrs $ doStep 1 msg
-      investigateEdit_ sid iid (attrs.ability 1) \i -> i {investigateSkillType = #willpower}
+      investigateWith_ #willpower sid iid (attrs.ability 1)
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       if attrs.use #charge == 0

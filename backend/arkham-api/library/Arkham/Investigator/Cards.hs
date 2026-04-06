@@ -95,6 +95,7 @@ allInvestigatorCards =
       , tommyMuldoon2
       , harveyWalters
       , carolynFern2
+      , marieLambeau2
       , winifredHabbamock
       , andrePatel
       , jacquelineFine
@@ -113,6 +114,7 @@ allInvestigatorCards =
       , fatherMateoParallel
       , jennyBarnesParallel
       , lolaHayesParallel
+      , miguelDeLaCruz
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -781,3 +783,11 @@ tommyMuldoon2 =
 carolynFern2 :: CardDef
 carolynFern2 =
   investigator "60251" ("Carolyn Fern" <:> "The Psychologist") Seeker [Medic, Scholar]
+
+marieLambeau2 :: CardDef
+marieLambeau2 =
+  investigator "60451" ("Marie Lambeau" <:> "The Entertainer") Mystic [Performer, Witch]
+
+miguelDeLaCruz :: CardDef
+miguelDeLaCruz =
+  investigator "60551" ("Miguel de la Cruz" <:> "The Rancher") Survivor [Hunter, Warden]

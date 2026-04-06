@@ -15,6 +15,7 @@ import Arkham.Matcher.Types (
   AssetMatcher,
   EnemyMatcher,
   LocationMatcher,
+  SourceMatcher (..),
  )
 import Arkham.Prelude
 import Arkham.Tarot
@@ -177,6 +178,31 @@ proxy a b = ProxySource (toSource a) (toSource b)
 
 bothSource :: (Sourceable a, Sourceable b) => a -> b -> Source
 bothSource a b = BothSource (toSource a) (toSource b)
+
+isPlayerCardSource :: Source -> Bool
+isPlayerCardSource = \case
+  AbilitySource s _ -> isPlayerCardSource s
+  UseAbilitySource _ s _ -> isPlayerCardSource s
+  PaymentSource s -> isPlayerCardSource s
+  IndexedSource _ s -> isPlayerCardSource s
+  AssetSource _ -> True
+  EventSource _ -> True
+  SkillSource _ -> True
+  InvestigatorSource _ -> True
+  _ -> False
+
+-- | Static check: would this SourceMatcher potentially match a player card source?
+-- Used for playability checks where we don't have a specific source but need to know
+-- if player card sources are allowed through.
+allowsPlayerCardSource :: SourceMatcher -> Bool
+allowsPlayerCardSource = \case
+  SourceIsPlayerCard -> True
+  SourceIsPlayerCardAbility -> True
+  AnySource -> True
+  SourceMatchesAny ms -> any allowsPlayerCardSource ms
+  SourceMatches ms -> all allowsPlayerCardSource ms
+  NotSource m -> not (allowsPlayerCardSource m)
+  _ -> False
 
 instance Sourceable Source where
   toSource = id

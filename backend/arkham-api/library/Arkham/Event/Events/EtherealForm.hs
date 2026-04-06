@@ -20,7 +20,7 @@ instance RunMessage EtherealForm where
       chooseEvadeEnemy sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      enemies <- select $ enemyEngagedWith iid
+      enemies <- select $ enemyEngagedWith iid <> EnemyCanBeDisengagedBy (toSource attrs)
       roundModifiers attrs iid [UIModifier Ethereal, CannotBeEngaged, CannotAttack, CannotDealDamage]
       pushAll $ map (DisengageEnemy iid) enemies
       pure e

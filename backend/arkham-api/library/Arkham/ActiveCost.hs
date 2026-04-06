@@ -77,6 +77,7 @@ import Arkham.Projection
 import Arkham.Scenario.Deck (ScenarioDeckKey (TekeliliDeck))
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
@@ -92,7 +93,11 @@ import GHC.Records
 activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case ac.target of
   ForAbility a -> #activate : a.actions
-  ForCard isPlayAction c -> [#play | isPlayAction == IsPlayAction] <> c.actions
+  ForCard isPlayAction c ->
+    [#play | isPlayAction == IsPlayAction]
+      <> case ac.activeCostChosenOrAction of
+        Just chosen -> [chosen]
+        Nothing -> cardActionsToList (cdActions (toCardDef c))
   ForCost _ -> []
   ForAdditionalCost _ -> []
 
@@ -514,7 +519,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems c.source (toTarget cardId)
       pure c
     ExhaustCost target -> do
-      push $ Exhaust target
+      push $ Exhaust (mkExhaustion c.source target)
       withPayment $ ExhaustPayment [target]
     ExhaustAssetCost matcher -> do
       assets <- select $ matcher <> AssetReady
@@ -998,8 +1003,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         modifiedActionCost = max 0 (x + costModifier')
         actions' = case c.target of
           ForAbility a -> a.actions
-          ForCard IsPlayAction c' -> #play : c'.actions
-          ForCard NotPlayAction c' -> c'.actions
+          ForCard {} -> c.actions
           _ -> []
         source' = case activeCostTarget c of
           ForAbility a -> toSource a
@@ -1471,54 +1475,62 @@ instance RunMessage ActiveCost where
         ForCost _ -> do
           pushAll [PayCosts acId, PayCostFinished acId]
           pure c
-        ForCard isPlayAction card -> do
-          modifiers' <- (<>) <$> getModifiers iid <*> getModifiers card
+        ForCard _isPlayAction card -> do
           let cardDef = toCardDef card
-          enabled <-
-            createCardEffect
-              cardDef
-              (Just $ EffectCost acId)
-              (BothSource (InvestigatorSource iid) (CardIdSource card.id))
-              (toCardId card)
+          -- For OrCardActions with no prior BeforePlayEvent, create a pending event
+          -- so the event itself can ask the player before costs begin
+          case (cardDef.cardActions, c.pendingEventId) of
+            (OrCardActions _, Nothing) -> do
+              eid <- getRandom
+              pushAll [CreatePendingEvent card iid eid, BeforePlayEvent iid eid acId]
+              pure $ c {activeCostPendingEventId = Just eid}
+            _ -> do
+              modifiers' <- (<>) <$> getModifiers iid <*> getModifiers card
+              enabled <-
+                createCardEffect
+                  cardDef
+                  (Just $ EffectCost acId)
+                  (BothSource (InvestigatorSource iid) (CardIdSource card.id))
+                  (toCardId card)
 
-          let
-            modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
-            actions = [Action.Play | isPlayAction == IsPlayAction] <> cardDef.actions
-            mEffect =
-              guard cardDef.beforeEffect
-                *> [ enabled
-                   , CheckAdditionalCosts acId
+              let
+                modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
+                actions = c.actions
+                mEffect =
+                  guard cardDef.beforeEffect
+                    *> [ enabled
+                       , CheckAdditionalCosts acId
+                       ]
+              batchId <- getRandom
+              beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
+              wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
+              -- We only need to check attacks of opportunity if we spend actions,
+              -- indepdent of the card being fast (for example the card you would
+              -- play off of Uncage the Soul)
+              pushAll
+                $ (guard (notNull actions) *> [BeginAction, beforeWindowMsg])
+                <> mEffect
+                <> [ wouldPayWindowMsg
+                   , Would
+                       batchId
+                       $ [ Will (CheckAttackOfOpportunity iid False Nothing)
+                         | not modifiersPreventAttackOfOpportunity
+                             && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                             && isNothing cardDef.fastWindow
+                             && all (`notElem` nonAttackOfOpportunityActions) actions
+                             && (totalActionCost c.costs > 0)
+                         ]
+                       <> [PayCosts acId]
+                       <> [ CheckAttackOfOpportunity iid False Nothing
+                          | not modifiersPreventAttackOfOpportunity
+                              && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                              && isNothing cardDef.fastWindow
+                              && all (`notElem` nonAttackOfOpportunityActions) actions
+                              && (totalActionCost c.costs > 0)
+                          ]
+                       <> [PayCostFinished acId]
                    ]
-          batchId <- getRandom
-          beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
-          wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
-          -- We only need to check attacks of opportunity if we spend actions,
-          -- indepdent of the card being fast (for example the card you would
-          -- play off of Uncage the Soul)
-          pushAll
-            $ (guard (notNull actions) *> [BeginAction, beforeWindowMsg])
-            <> mEffect
-            <> [ wouldPayWindowMsg
-               , Would
-                   batchId
-                   $ [ Will (CheckAttackOfOpportunity iid False Nothing)
-                     | not modifiersPreventAttackOfOpportunity
-                         && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                         && isNothing cardDef.fastWindow
-                         && all (`notElem` nonAttackOfOpportunityActions) actions
-                         && (totalActionCost c.costs > 0)
-                     ]
-                   <> [PayCosts acId]
-                   <> [ CheckAttackOfOpportunity iid False Nothing
-                      | not modifiersPreventAttackOfOpportunity
-                          && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                          && isNothing cardDef.fastWindow
-                          && all (`notElem` nonAttackOfOpportunityActions) actions
-                          && (totalActionCost c.costs > 0)
-                      ]
-                   <> [PayCostFinished acId]
-               ]
-          pure c
+              pure c
         ForAbility a@(Ability {..}) -> do
           modifiers' <- getCombinedModifiers [toTarget iid, AbilityTarget iid $ abilityToRef a]
           let
@@ -1601,6 +1613,8 @@ instance RunMessage ActiveCost where
                 else throw $ InvalidState $ "Can't afford cost (b): " <> tshow cost
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
+    SetActiveCostChosenAction acId action | acId == c.id -> do
+      pure $ c {activeCostChosenOrAction = Just action}
     PaidCost acId _ _ payment | acId == c.id -> do
       pure $ c & costPaymentsL <>~ payment
     PayCostFinished acId | acId == c.id -> do
@@ -1632,10 +1646,10 @@ instance RunMessage ActiveCost where
                 <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = c.investigator
-          let actions = [#play | isPlayAction == IsPlayAction] <> card.actions
           let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] Nothing $ ActionCost 1)
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
+          let actions = c.actions
           afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
           pushAll
             $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]

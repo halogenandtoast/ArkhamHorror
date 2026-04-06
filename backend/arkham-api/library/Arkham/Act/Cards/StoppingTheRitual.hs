@@ -33,7 +33,7 @@ instance RunMessage StoppingTheRitual where
       insteadOfDiscarding nahab do
         healAllDamage attrs nahab
         disengageFromAll nahab
-        exhaustThis nahab
+        exhaustWith attrs nahab
         roundModifier attrs nahab DoesNotReadyDuringUpkeep
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

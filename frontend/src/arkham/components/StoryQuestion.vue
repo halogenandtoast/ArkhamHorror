@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel } from '@/arkham/types/Message';
@@ -29,10 +29,7 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return formatContent(handleI18n(body.slice(1), t))
-  }
-  return formatContent(body)
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 
 const portraitLabelImage = (investigatorId: string) => {

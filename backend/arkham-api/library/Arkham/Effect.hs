@@ -91,6 +91,7 @@ import Arkham.Asset.Assets (
   steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
   wellConnected3Effect,
+  winchesterModel522Effect,
   wither4Effect,
   witherEffect,
   yaotl1Effect,
@@ -137,6 +138,8 @@ import Arkham.Event.Events (
   onTheLamAdvancedEffect,
   oneInTheChamberEffect,
   prestidigitationEffect,
+  mirrorFormEffect,
+  ultimateSacrifice4Effect,
   sleightOfHandEffect,
   snipe1Effect,
   spectralRazor2Effect,
@@ -601,7 +604,10 @@ allEffects =
     , ("60430", SomeEffect $ noop "60430")
     , ("60431", SomeEffect $ noop "60431")
     , ("60432", SomeEffect $ noop "60432")
+    , ("60465", SomeEffect mirrorFormEffect)
+    , ("60480", SomeEffect ultimateSacrifice4Effect)
     , ("60512", SomeEffect willToSurviveEffect)
+    , ("60575", SomeEffect winchesterModel522Effect)
     , ("72002", SomeEffect showbusinessAsUsualEffect)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)

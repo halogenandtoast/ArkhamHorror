@@ -82,7 +82,12 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, isDiscoveringLastClue, withLocationOf)
+import Arkham.Helpers.Location (
+  getCanMoveTo,
+  getCanMoveToMatchingLocations,
+  isDiscoveringLastClue,
+  withLocationOf,
+ )
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
@@ -115,6 +120,7 @@ import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
+import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   AssetMatcher (..),
@@ -151,7 +157,6 @@ import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
-import Arkham.Keyword (Keyword (Starting))
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
@@ -444,13 +449,17 @@ runWindow attrs windows actions playableCards = do
             $ [ targetLabel c [InitiatePlayCardWithWindows iid c Nothing NoPayment windows True]
               | c <- playableCards
               ]
-            <> map (\(ability, windows') ->
-                let ability' = if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
-                      then case listToMaybe windows' >>= primaryWindowTarget . windowType of
-                             Just target -> withHighlight target ability
-                             Nothing -> ability
-                      else ability
-                in AbilityLabel iid ability' windows' [] []) actionsWithMatchingWindows
+            <> map
+              ( \(ability, windows') ->
+                  let ability' =
+                        if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
+                          then case listToMaybe windows' >>= primaryWindowTarget . windowType of
+                            Just target -> withHighlight target ability
+                            Nothing -> ability
+                          else ability
+                   in AbilityLabel iid ability' windows' [] []
+              )
+              actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
@@ -676,9 +685,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       push $ Ask pid $ ChooseExchangeAmounts source iid resources iid' resources' #resource
     pure a
   PlaceSwarmCards iid eid n | iid == investigatorId && n > 0 -> do
-    let cards = map toCard . take n $ unDeck investigatorDeck
-    for_ cards $ push . PlacedSwarmCard eid
-    pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
+    usePlaceholders <- hasCampaignOption UseSwarmPlaceholders
+    if usePlaceholders
+      then do
+        hostCard <- field Field.EnemyCard eid
+        replicateM_ n do
+          card <- genCard hostCard
+          push $ PlacedSwarmCard eid card
+        pure a
+      else do
+        let cards = map toCard . take n $ unDeck investigatorDeck
+        for_ cards $ push . PlacedSwarmCard eid
+        pure $ a & (deckL %~ filter ((`notElem` cards) . PlayerCard))
   AllRandomDiscard source matcher | not (a ^. defeatedL || a ^. resignedL) -> do
     push $ toMessage $ randomDiscardMatching investigatorId source matcher
     pure a
@@ -862,7 +880,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         . filter (`abilityIs` action)
         =<< getActionsWith iid windows' decreaseCost
     handCards <- field InvestigatorHand iid
-    let actionCards = filter (elem action . cdActions . toCardDef) handCards
+    let actionCards = filter (elem action . cardActionsToList . cdActions . toCardDef) handCards
     playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
     when (notNull actions || notNull playableCards) do
       Lifted.chooseOne iid
@@ -1336,11 +1354,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     player <- getPlayer a.id
     concealed <- getConcealedIds NotForExpose investigatorId
     let choices = enemyIds <> map coerce concealed
+    let elabel eid = if skillType /= #agility then EvadeLabelWithSkill eid skillType else EvadeLabel eid
     unless (null choices) do
       push
         $ chooseOne player
         $ choose.additionalOptions
-        <> [ EvadeLabel
+        <> [ elabel
                eid
                [ ChosenEvadeEnemy choose.skillTest source eid
                , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
@@ -2401,7 +2420,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         filterM
           ( \(sType', slot) ->
               andM
-                [pure $ sType /= sType', pure $ sType `elem` adjustableSlotsFor slot, canPutIntoSlot assetCard slot]
+                [ pure $ sType /= sType'
+                , pure $ sType `elem` adjustableSlotsFor slot
+                , canPutIntoSlot assetCard (emptySlot slot)
+                ]
           )
           $ concatMap (\(t, bs) -> (t,) <$> bs)
           $ mapToList (a ^. slotsL)
@@ -2994,12 +3016,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           pushAll $ moveAfter movement
             <> [afterEntering]
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
-            <> [CheckEnemyEngagement iid]
+            <> [CheckEnemyEngagement iid | not movement.skipEngagement]
           pure $ a & movementL .~ Nothing
   ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
     whenM (getCanMoveTo iid' (moveSource movement) lid) do
       Choose.chooseOneM iid' do
-        Choose.labeled "Move too" $ moveTo iid' iid' lid
+        Choose.labeled "Move too" $ moveToEdit iid' iid' lid (\m -> m {moveSkipEngagement = True})
         Choose.labeled "Skip" Choose.nothing
 
     pure a
@@ -4972,7 +4994,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               Just PerTestOrAbility -> usedDepth <= depth
               _ -> True
         )
-      & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+      & ( usedAbilitiesL
+            %~ map
+              ( \u ->
+                  case abilityLimitType (abilityLimit (usedAbility u)) of
+                    Just PerTestOrAbility -> u {usedThisWindow = False}
+                    _ -> u
+              )
+        )
   PerformEnemyAttack eid -> do
     withMaybeField Field.EnemyAttacking eid \details -> do
       when (any (isTarget a) details.targets) do

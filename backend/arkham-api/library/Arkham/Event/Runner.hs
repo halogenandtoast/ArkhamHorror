@@ -127,9 +127,8 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
     push (Ready $ toTarget a)
     pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
-  Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
-  ExhaustThen (isTarget a -> True) msgs -> do
-    unless eventExhausted $ pushAll msgs
+  Exhaust ea | a `isTarget` ea.target -> do
+    unless eventExhausted $ pushAll ea.thenMsgs
     pure $ a & exhaustedL .~ True
   PayCardCost _ card _ | toCardId a == toCardId card -> do
     pure $ a & beingPaidForL .~ True
@@ -175,6 +174,19 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
           DevourThis {} -> cur
           _ -> n
         _ -> cur
+      afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
+    case afterPlay of
+      DeferDiscard -> pure ()
+      _ -> push $ Do (FinishedEvent eid)
+    pure a
+  Do (FinishedEvent eid) | eid == eventId -> do
+    mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
+    let
+      modifyAfterPlay cur = \case
+        SetAfterPlay n -> case cur of
+          DevourThis {} -> cur
+          _ -> n
+        _ -> cur
 
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
 
@@ -187,7 +199,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
           PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
-          DeferDiscard -> push after
+          DeferDiscard -> pushAll [after, toDiscardBy eventController GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
@@ -326,4 +338,10 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
       OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ a & placementL .~ p
       OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ a & placementL .~ p
       _ -> pure a
+  UpdateEventMeta eid value | eid == eventId -> do
+    pure $ a & metaL .~ value
+  BeforePlayEvent _ eid acId | eid == eventId -> do
+    -- Default: no pre-play questions; resume the cost pipeline immediately
+    push $ CreatedCost acId
+    pure a
   _ -> pure a

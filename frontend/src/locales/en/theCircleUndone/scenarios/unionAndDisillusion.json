@@ -44,7 +44,7 @@
     "unvisitedIsleMistyClearing": {
       "doom": "Place 1 doom on this location"
     },
-    "unvisitedIslesForsakenWoods": {
+    "unvisitedIsleForsakenWoods": {
       "search": "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location",
       "attack": "The nearest Whippoorwill attacks you"
     },

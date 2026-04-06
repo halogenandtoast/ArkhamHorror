@@ -42,7 +42,7 @@ instance RunMessage AethericCurrentYuggoth where
             locations <- select $ oneOf [LocationCanBeEnteredBy eid, locationWithEnemy eid]
             chooseOneM iid do
               labeled "Exhaust Enemy and move it" do
-                push $ Exhaust (toTarget eid)
+                exhaustWith attrs eid
                 chooseOneM iid do
                   for_ locations \lid -> targeting lid $ push $ EnemyMove eid lid
               labeled "Do not exhaust enemy" nothing

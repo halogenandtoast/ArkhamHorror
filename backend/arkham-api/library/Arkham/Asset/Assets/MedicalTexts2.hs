@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Types (getController)
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
@@ -43,7 +44,7 @@ instance RunMessage MedicalTexts2 where
       getSkillTestTarget >>= \case
         Just (InvestigatorTarget iid) -> do
           chooseOrRunOne iid
-            $ [Label "Exhaust Medical Texts" [Exhaust (toTarget attrs)] | attrs.ready]
+            $ [Label "Exhaust Medical Texts" [Exhaust (mkExhaustion attrs attrs)] | attrs.ready]
             <> [Label "Deal 1 damage to that investigator" [Msg.assignDamage iid (toAbilitySource attrs 1) 1]]
         _ -> error "invalid target"
       pure a

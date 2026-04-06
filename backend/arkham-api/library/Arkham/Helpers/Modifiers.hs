@@ -92,7 +92,10 @@ getModifiers' (toTarget -> BothTarget t1 t2) = do
     <> findWithDefault [] ThisTarget allMods
 getModifiers' (toTarget -> target) = do
   allMods <- getAllModifiers
-  pure $ findWithDefault [] ThisTarget allMods <> findWithDefault [] target allMods
+  let rawMods = findWithDefault [] ThisTarget allMods <> findWithDefault [] target allMods
+  if CannotReceiveModifiersFromPlayerSources `notElem` map modifierType rawMods
+    then pure rawMods
+    else pure $ filter (\m -> modifierType m == CannotReceiveModifiersFromPlayerSources || not (isPlayerCardSource (modifierSource m))) rawMods
 
 hasModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
@@ -130,6 +133,31 @@ modifySelf
   -> [ModifierType]
   -> m ()
 modifySelf target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+
+immuneToPlayerEffect :: [ModifierType]
+immuneToPlayerEffect =
+  [ CannotBeAttackedByPlayerSourcesExcept $ SourceIsAbility BasicAbility
+  , CannotBeEvadedByPlayerSourcesExcept $ SourceIsAbility BasicAbility
+  , CannotBeDamagedByPlayerSourcesExcept $ SourceIsAbility BasicAbility
+  , CannotBeEngagedByPlayerSourcesExcept $ SourceIsAbility BasicAbility
+  , CannotReceiveModifiersFromPlayerSources
+  , CannotBeExhaustedBy SourceIsPlayerCard
+  , CannotBeDefeatedBy SourceIsPlayerCard
+  , CannotBeRemovedBy SourceIsPlayerCard
+  , CannotBeMovedBy SourceIsPlayerCard
+  , CannotBeDisengagedBy SourceIsPlayerCard
+  ]
+
+immuneToPlayerEffects
+  :: ( Targetable target
+     , Sourceable target
+     , HasGame m
+     , Tracing m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => target
+  -> m ()
+immuneToPlayerEffects target = modifySelf target immuneToPlayerEffect
 
 modifySelf1
   :: ( Targetable target

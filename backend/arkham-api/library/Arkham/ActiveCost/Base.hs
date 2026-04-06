@@ -1,5 +1,6 @@
 module Arkham.ActiveCost.Base where
 
+import Arkham.Action (Action)
 import Arkham.Prelude
 
 import Arkham.Ability.Types
@@ -19,6 +20,8 @@ data ActiveCost = ActiveCost
   , activeCostInvestigator :: InvestigatorId
   , activeCostSealedChaosTokens :: [ChaosToken]
   , activeCostCancelled :: Bool
+  , activeCostChosenOrAction :: Maybe Action
+  , activeCostPendingEventId :: Maybe EventId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass ToJSON
@@ -33,6 +36,8 @@ instance FromJSON ActiveCost where
     activeCostInvestigator <- o .: "activeCostInvestigator"
     activeCostSealedChaosTokens <- o .: "activeCostSealedChaosTokens"
     activeCostCancelled <- o .:? "activeCostCancelled" .!= False
+    activeCostChosenOrAction <- o .:? "activeCostChosenOrAction"
+    activeCostPendingEventId <- o .:? "activeCostPendingEventId"
     pure ActiveCost {..}
 
 instance HasField "id" ActiveCost ActiveCostId where
@@ -58,6 +63,12 @@ instance HasField "investigator" ActiveCost InvestigatorId where
 
 instance HasField "sealedChaosTokens" ActiveCost [ChaosToken] where
   getField = activeCostSealedChaosTokens
+
+instance HasField "chosenOrAction" ActiveCost (Maybe Action) where
+  getField = activeCostChosenOrAction
+
+instance HasField "pendingEventId" ActiveCost (Maybe EventId) where
+  getField = activeCostPendingEventId
 
 data IsPlayAction = IsPlayAction | NotPlayAction
   deriving stock (Show, Eq, Generic)

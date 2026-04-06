@@ -1543,6 +1543,34 @@ allAssets =
       , SomeAssetCard theGrapevine2
       , SomeAssetCard marcusSengstacke2
       , SomeAssetCard silverTongue3
+      , -- Marie Lambeau
+        SomeAssetCard grandMeresCharm
+      , SomeAssetCard offeringBowl
+      , SomeAssetCard bloodstone
+      , SomeAssetCard sacrificialDoll
+      , SomeAssetCard shadowmeld
+      , SomeAssetCard ceremonialRobes1
+      , SomeAssetCard dreadCurseOfAzathoth3
+      , SomeAssetCard ritualDagger3
+      , SomeAssetCard spiritualIntuition3
+      , SomeAssetCard arcaneExperience4
+      , SomeAssetCard jimCulver4
+      , SomeAssetCard secondSight5
+      , SomeAssetCard shadowmeld5
+      , -- Miguel de la Cruz
+        SomeAssetCard miguelsKnapsack
+      , SomeAssetCard danielJameson
+      , SomeAssetCard huntingDog
+      , SomeAssetCard loner
+      , SomeAssetCard oldCompass
+      , SomeAssetCard pocketknife
+      , SomeAssetCard sameOldThing
+      , SomeAssetCard extraRations1
+      , SomeAssetCard canteen2
+      , SomeAssetCard huntersInstinct2
+      , SomeAssetCard winchesterModel522
+      , SomeAssetCard levelheaded3
+      , SomeAssetCard longbow3
       , -- Misc
         SomeAssetCard courage
       ]

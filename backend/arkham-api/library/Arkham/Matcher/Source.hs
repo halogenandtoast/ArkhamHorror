@@ -3,6 +3,7 @@
 module Arkham.Matcher.Source where
 
 import Arkham.Card.CardType
+import {-# SOURCE #-} Arkham.Matcher.Ability
 import Arkham.Matcher.Asset
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
@@ -28,6 +29,7 @@ data SourceMatcher
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher
   | SourceIsType CardType
+  | SourceIsAbility AbilityMatcher
   | SourceIsPlayerCard
   | SourceIsPlayerCardAbility
   | AnySource

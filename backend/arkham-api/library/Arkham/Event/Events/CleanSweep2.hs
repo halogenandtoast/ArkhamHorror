@@ -3,7 +3,7 @@ module Arkham.Event.Events.CleanSweep2 (cleanSweep2) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Helpers.SkillTest.Lifted (investigate_)
+import Arkham.Helpers.SkillTest.Lifted (investigateWith_)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 
@@ -19,7 +19,7 @@ instance RunMessage CleanSweep2 where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #intellect)
-      investigate_ sid iid attrs
+      investigateWith_ #agility sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       locations <- getAccessibleLocations iid attrs

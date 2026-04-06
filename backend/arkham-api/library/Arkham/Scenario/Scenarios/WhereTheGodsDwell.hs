@@ -143,7 +143,7 @@ instance RunMessage WhereTheGodsDwell where
               [ targetLabel
                 nyarlathotep
                 [ InitiateEnemyAttack $ enemyAttack nyarlathotep TabletEffect iid
-                , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+                , ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
                 ]
               | nyarlathotep <- nyarlathoteps
               ]

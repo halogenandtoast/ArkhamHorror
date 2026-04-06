@@ -371,6 +371,12 @@ const allCustomizations = new Set([
   '09061', '09079', '09080', '09081', '09099', '09100', '09101', '09119'
 ])
 
+const isSpirit = computed<boolean>(() => {
+  const el = hoveredElement.value
+  if (!el) return false
+  return el.dataset.isSpirit === 'true'
+})
+
 const cardCode = computed<string | null>(() => {
   if (!card.value) return null
   const m = card.value.match(/cards\/(\d+)(_.*)?\.avif$/)
@@ -688,13 +694,16 @@ const skillItems = computed<SkillRender[]>(() => {
  * ========================================================================== */
 
 const dbCardName = ref<string>('')
+const dbCardTypeName = ref<string>('')
+const dbCardFactionName = ref<string>('')
+const dbCardFactionCode = ref<string>('')
 const dbCardTraits = ref<string>('')
 const dbCardText = ref<string>('')
 const dbCardFlavor = ref<string>('')
 const dbCardCustomizationText = ref<string>('')
 
 const dbCardData = computed<boolean>(() =>
-  !!(dbCardName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value || dbCardFlavor.value)
+  !!(dbCardName.value || dbCardTypeName.value || dbCardFactionName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value || dbCardFlavor.value)
 )
 
 const TOKEN_MAP: Record<string, string> = {
@@ -752,6 +761,24 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
   if (dbCard.is_unique) name = `*${name}`
   return name
 }
+
+const getCardTypeName = (dbCard: ArkhamDBCard,): string | null => {
+  if (!card.value || isLocalized(card.value)) return null
+  const t = dbCard.type_name || null
+  return t ? replaceText(t) : null
+}
+
+const getCardFactionName = (dbCard: ArkhamDBCard,): string | null => {
+  if (!card.value || isLocalized(card.value)) return null
+  const t = dbCard.faction_name || null
+  return t ? replaceText(t) : null
+}
+
+const getCardFactionCode = (dbCard: ArkhamDBCard,): string | null => {
+  if (!card.value || isLocalized(card.value)) return null
+  return dbCard.faction_code || null
+}
+
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null =>
   (!card.value || isLocalized(card.value)) ? null :
     (needBack ? (dbCard.double_sided ? (dbCard.back_traits || dbCard.traits) : dbCard.back_traits) : dbCard.traits) || null
@@ -772,7 +799,7 @@ const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null =>
   (!card.value || isLocalized(card.value)) ? null : replaceText(dbCard.customization_text || '')
 
 watchEffect(() => {
-  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
+  dbCardName.value = dbCardTypeName.value = dbCardFactionName.value = dbCardFactionCode.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
   const src = card.value
   if (!src) return
   const m = src.match(/(\d+b?)(_.*)?\.avif$/)
@@ -787,12 +814,18 @@ watchEffect(() => {
   const needBack = dbCard.code !== code
 
   const name = getCardName(dbCard, needBack)
+  const type = getCardTypeName(dbCard)
+  const faction = getCardFactionName(dbCard)
+  const factionCode = getCardFactionCode(dbCard)
   const traits = getCardTraits(dbCard, needBack)
   const text = getCardText(dbCard, needBack)
   const flavor = getCardFlavor(dbCard, needBack)
   const cust = getCardCustomizationText(dbCard)
 
   dbCardName.value = name ? `${tabooSuffix ? '[Taboo] ' : ''}${name}` : ''
+  dbCardTypeName.value = type ?? ''
+  dbCardFactionName.value = faction ?? ''
+  dbCardFactionCode.value = factionCode ?? ''
   dbCardTraits.value = traits ?? ''
   dbCardText.value = text ?? ''
   dbCardFlavor.value = flavor ?? ''
@@ -888,6 +921,8 @@ watchEffect(() => {
         </g>
       </svg>
 
+      <font-awesome-icon v-if="isSpirit && card" :icon="['fas', 'ghost']" class="spirit-icon" />
+
       <svg
         v-if="additionalCard"
         class="card-svg customizations-svg"
@@ -969,13 +1004,31 @@ watchEffect(() => {
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
 
-    <div class="card-data" v-if="dbCardData" :class="{ reversed, Reversed: upsideDown }">
-      <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
-      <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
-      <p v-if="dbCardText"><br></p>
-      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.85em;"></p>
-      <p v-if="dbCardFlavor"><br></p>
-      <p v-if="dbCardFlavor" v-html="dbCardFlavor" style="font-size: 0.75em; font-style: italic;"></p>
+    <div
+      class="card-data"
+      v-if="dbCardData"
+      :class="{ reversed, Reversed: upsideDown, [`faction-${dbCardFactionCode || 'neutral'}`]: true }"
+    >
+      <div class="card-data-header">
+        <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      </div>
+      <div class="card-data-body">
+        <div class="card-info">
+          <div>
+            <p v-if="dbCardTypeName">{{ dbCardTypeName }}</p>
+            <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
+          </div>
+          <div>
+            <p v-if="dbCardFactionName">{{ dbCardFactionName }}</p>
+          </div>
+        </div>
+        <div v-if="dbCardText" class="card-text">
+          <p v-html="dbCardText"></p>
+        </div>
+        <div v-if="dbCardFlavor" class="card-flavor">
+          <p v-html="dbCardFlavor"></p>
+        </div>
+      </div>
     </div>
 
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
@@ -1075,8 +1128,7 @@ watchEffect(() => {
   min-height: inherit;
   overflow-y: visible;
   margin-left: 2px;
-  padding: 5px;
-  border-radius: 15px;
+  border-radius: 12px;
   font-family: Arial;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -1084,11 +1136,86 @@ watchEffect(() => {
   -ms-overflow-style: none;
   scrollbar-width: none;
   scroll-behavior: smooth;
-  background-color: rgba(185, 185, 185, 0.85);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  --panel-color: #808080;
+  --border-color: var(--panel-color);
 }
+
+.card-data {
+  &.faction-guardian {
+    --panel-color: #1c6e9f;
+  }
+  &.faction-seeker {
+    --panel-color: #ba6d2a;
+  }
+  &.faction-rogue {
+    --panel-color: #1e6b24;
+  }
+  &.faction-mystic {
+    --panel-color: #554c9e;
+  }
+  &.faction-survivor {
+    --panel-color: #bd2330;
+  }
+  &.faction-mythos {
+    --panel-color: #dbdbdb;
+    --border-color: #0a0a0a;
+  }
+}
+
 .card-data::-webkit-scrollbar {
   display: none;
+}
+
+.card-data-header {
+  font-size: 1.0em;
+  font-family: sans-serif;
+  background-color: var(--panel-color);
+  padding: 3% 15px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.card-data-body {
+  font-size: 0.9em;
+  font-family: serif;
+  flex: 1;
+  padding: 15px;
+  background-color: rgba(212, 212, 212, 0.85);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.card-data-body > *:not(:first-child) {
+  margin-top: 8px;
+}
+
+.card-data-body :deep(span[class$="-icon"]),
+.card-data-body :deep(span[class*=" -icon"]) {
+  font-size: 1.25em;
+}
+
+.card-data-body .card-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.card-data-body .card-text {
+  border-color: var(--border-color);
+  border-left-width: 2px;
+  border-left-style: solid;
+}
+
+.card-data-body .card-text p {
+  margin: 0 8px;
+}
+
+.card-data-body .card-flavor {
+  font-size: 0.85em;
+  font-style: italic;
 }
 
 .card-overlay {
@@ -1125,6 +1252,20 @@ watchEffect(() => {
 .reversed, .Reversed { transform: rotateZ(180deg); }
 
 .card-image { position: relative; }
+
+.spirit-icon {
+  position: absolute;
+  bottom: 7%;
+  right: 5.1%;
+  z-index: 3;
+  font-size: 1.7em;
+  color: rgba(180, 230, 255, 0.95);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
+  pointer-events: none;
+}
 
 @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 

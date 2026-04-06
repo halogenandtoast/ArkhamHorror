@@ -30,6 +30,6 @@ instance RunMessage FamilialPain where
           checkWindows defeatWindows
           healAllDamage attrs slainForeman
           disengageFromAll slainForeman
-          exhaustThis slainForeman
+          exhaustWith attrs slainForeman
       pure s
     _ -> FamilialPain <$> liftRunMessage msg attrs

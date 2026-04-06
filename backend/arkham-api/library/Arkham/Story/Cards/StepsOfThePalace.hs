@@ -18,7 +18,7 @@ instance RunMessage StepsOfThePalace where
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
       storyEnemyDamage iid n hastur
-      exhaustThis hastur
+      exhaustWith attrs hastur
       selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
       pure s
     _ -> StepsOfThePalace <$> liftRunMessage msg attrs

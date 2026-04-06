@@ -3,7 +3,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composeable/debouncedRef';
-import { handleI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
@@ -47,7 +47,7 @@ function zoneToLabel(s: string) {
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const questionChoices = computed(() => {
-  return choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
+  const withoutDone = choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
     const { tag } = choice
     if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
     if (tag === MessageType.TOOLTIP_LABEL) return true
@@ -60,6 +60,15 @@ const questionChoices = computed(() => {
 
     return false
   })
+
+  // When Done appears alongside regular label choices, include it so it renders
+  // with the same button style instead of the modal-footer style
+  if (withoutDone.length > 0 && doneLabel.value) {
+    const doneEntry = choices.value.map((c, idx) => [c, idx]).find(([c]) => c.tag === MessageType.DONE)
+    if (doneEntry) return [...withoutDone, doneEntry]
+  }
+
+  return withoutDone
 })
 const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
 const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
@@ -109,10 +118,7 @@ const showChoices = computed(() => {
 })
 
 const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return formatContent(handleI18n(body.slice(1), t))
-  }
-  return formatContent(body)
+  return formatContent(handleEmbeddedI18n(body, t))
 }
 
 const paymentAmountsLabel = computed(() => {
@@ -176,6 +182,8 @@ const doneLabel = computed(() => {
 
   return null
 })
+
+const doneIsFooter = computed(() => !questionChoices.value.some(([c]) => c.tag === MessageType.DONE))
 
 const paymentChoiceLabel = function(text: string): string {
   if (text.startsWith("$")) {
@@ -667,7 +675,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         <img :src="questionImage" class="card" />
       </div>
     </template>
-    <div v-if="doneLabel">
+    <div v-if="doneLabel && doneIsFooter">
       <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
     </div>
   </div>
@@ -1148,6 +1156,7 @@ h2 {
 .done:hover {
   background-color: #311b3e;
 }
+
 
 .tokens {
   display: flex;

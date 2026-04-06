@@ -19,6 +19,7 @@ import Token from '@/arkham/components/Token.vue'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
+import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -80,6 +81,7 @@ const swarmEnemies = computed(() =>
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
 
 const referenceCards = computed(() => props.enemy.referenceCards)
+const hasSpiritAura = computed(() => isManifestedSpiritEnemy(props.enemy, props.game))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
@@ -91,6 +93,10 @@ function isAbility(v: Message): v is AbilityLabel {
   }
 
   if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
+  if (v.tag === MessageType.EVADE_LABEL_WITH_SKILL && v.enemyId === id.value) {
     return true
   }
 
@@ -246,6 +252,7 @@ function onDrop(event: DragEvent) {
       <template v-else>
         <div class="card-frame" ref="frame">
           <div class="card-wrapper" :class="{ exhausted: isExhausted }">
+            <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
             </span>
@@ -253,6 +260,7 @@ function onDrop(event: DragEvent) {
               class="card enemy"
               :class="{ dragging, 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
+              :data-is-spirit="hasSpiritAura || undefined"
               :data-fight="fight"
               :data-evade="evade"
               :data-health="health"
@@ -270,6 +278,7 @@ function onDrop(event: DragEvent) {
               class="card enemy"
               :class="{ 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
+              :data-is-spirit="hasSpiritAura || undefined"
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
               @click="clicked"
@@ -458,6 +467,24 @@ function onDrop(event: DragEvent) {
 .exhausted {
   transition: transform 0.2s linear;
   transform: rotate(90deg) translateX(-10px);
+}
+
+.card-wrapper {
+  position: relative;
+}
+
+.spirit-icon {
+  position: absolute;
+  bottom: 8%;
+  right: 6%;
+  z-index: 3;
+  font-size: 0.9em;
+  color: rgba(180, 230, 255, 0.95);
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
+  pointer-events: none;
 }
 
 :deep(.token) {

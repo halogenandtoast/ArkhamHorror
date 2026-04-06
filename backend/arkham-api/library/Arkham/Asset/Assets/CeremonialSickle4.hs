@@ -37,7 +37,7 @@ instance RunMessage CeremonialSickle4 where
           push fight
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      push $ Exhaust (toTarget attrs)
+      exhaustThis attrs
       placeDoom (attrs.ability 1) attrs 1
       thisSkillTestModifiers iid (attrs.ability 1) iid [AnySkillValue 3, DamageDealt 1]
       pure a

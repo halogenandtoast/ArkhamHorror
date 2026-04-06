@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.BlessedBlade4 (blessedBlade4, BlessedBlade4 (..)) where
+module Arkham.Asset.Assets.BlessedBlade4 (blessedBlade4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -24,12 +24,15 @@ instance RunMessage BlessedBlade4 where
   runMessage msg a@(BlessedBlade4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       skillTestModifier sid (attrs.ability 1) sid ReturnBlessedToChaosBag
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      withSkillTest \sid -> priority $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      pure a
     BeforeRevealChaosTokens -> do
-      void $ runMaybeT $ do
+      runMaybeT_ do
         st <- MaybeT getSkillTest
         guard $ isAbilitySource attrs 1 st.source
         liftGuardM $ getCanAffordCost st.investigator st.source [] [] (exhaust attrs)

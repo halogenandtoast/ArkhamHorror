@@ -130,6 +130,7 @@
     "robertFriendly": "Robert Friendly"
   },
   "label": {
+    "noAir": "You did not find air, Take 5 direct damage",
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
   },
   "key": {

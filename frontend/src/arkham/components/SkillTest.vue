@@ -523,7 +523,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </span>
         <span v-else-if="testResult !== null">
-          Failed by {{testResult + (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </span>
       </div>
 

@@ -712,7 +712,7 @@ instance RunMessage SkillTest where
         modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
           Unrun -> Unrun
           SucceededBy b m -> SucceededBy b (max 0 (m + n))
-          FailedBy b m -> FailedBy b (max 0 (m - n))
+          FailedBy b m -> FailedBy b (max 0 (m + n))
         modifySkillTestResult r _ = r
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]

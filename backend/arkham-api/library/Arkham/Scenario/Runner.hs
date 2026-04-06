@@ -857,8 +857,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           then do
             when (null rest && not scenarioInShuffle) do
               checkWhen Window.EncounterDeckRunsOutOfCards
-              push $ ShuffleEncounterDiscardBackInByKey key
             push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
+            when (null rest && not scenarioInShuffle) do
+              push $ ShuffleEncounterDiscardBackInByKey key
           else do
             when (null rest && not scenarioInShuffle) do
               checkWhen Window.EncounterDeckRunsOutOfCards

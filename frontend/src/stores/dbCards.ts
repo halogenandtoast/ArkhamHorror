@@ -16,6 +16,7 @@ export interface ArkhamDBCard {
   faction_name: string
   faction2_name?: string
   faction3_name?: string
+  faction_code?: string
   type_name: string
   pack_name: string
   real_name: string

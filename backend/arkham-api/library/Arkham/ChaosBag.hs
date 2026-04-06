@@ -1025,9 +1025,18 @@ instance RunMessage ChaosBag where
                 & (setAsideChaosTokensL %~ delete token)
                 & (revealedChaosTokensL %~ delete token)
     RemoveAllChaosTokens face ->
-      pure
-        $ c
-        & (chaosTokensL %~ filter ((/= face) . chaosTokenFace))
-        & (setAsideChaosTokensL %~ filter ((/= face) . chaosTokenFace))
-        & (revealedChaosTokensL %~ filter ((/= face) . chaosTokenFace))
+      case filter ((== face) . chaosTokenFace) chaosBagChaosTokens of
+        [] -> pure c
+        xs -> do
+          let shouldReturnToPool = face `elem` [#bless, #curse, #frost]
+          if shouldReturnToPool
+            then do
+              push $ ReturnChaosTokensToPool xs
+              pure c
+            else
+              pure
+                $ c
+                & (chaosTokensL %~ filter (`notElem` xs))
+                & (setAsideChaosTokensL %~ filter (`notElem` xs))
+                & (revealedChaosTokensL %~ filter (`notElem` xs))
     _ -> pure c

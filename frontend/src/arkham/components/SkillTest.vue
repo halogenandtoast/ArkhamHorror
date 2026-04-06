@@ -278,7 +278,11 @@ const testResult = computed(() => {
 const tokenEffects = computed(() => {
   const scenario = props.game.scenario
   if(!scenario) return []
-  const tokens = props.skillTest.resolvedChaosTokens.length > 0 ? props.skillTest.resolvedChaosTokens : props.skillTest.revealedChaosTokens
+  const tokens = props.skillTest.resolvedChaosTokens.length > 0
+    ? props.skillTest.resolvedChaosTokens
+    : props.skillTest.revealedChaosTokens.length > 0
+      ? props.skillTest.revealedChaosTokens
+      : props.game.focusedChaosTokens
   const faces = tokens.map((t) => t.face)
 
   const difficulty = ['Easy', 'Standard'].includes(scenario.difficulty) ? 'easyStandard' : 'hardExpert'

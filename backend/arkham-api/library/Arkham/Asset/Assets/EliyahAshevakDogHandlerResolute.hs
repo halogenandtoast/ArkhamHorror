@@ -19,7 +19,7 @@ eliyahAshevakDogHandlerResolute = allyWith EliyahAshevakDogHandlerResolute Cards
 
 instance HasAbilities EliyahAshevakDogHandlerResolute where
   getAbilities (EliyahAshevakDogHandlerResolute a) =
-    [ restricted a 1 (ControlsThis <> DuringTurn You)
+    [ controlled a 1 (DuringTurn You)
         $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) [#evade]
     ]
 
@@ -32,8 +32,10 @@ instance RunMessage EliyahAshevakDogHandlerResolute where
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       connected <- getAccessibleLocations iid attrs
-      chooseOrRunOneM iid do
-        labeled "Do not move to a connecting location" nothing
-        targets connected $ moveTo attrs iid
+      unless (null connected) do
+        additionalSkillTestOption "Eliyah Ashevak" do
+          chooseOrRunOneM iid do
+            labeled "Do not move to a connecting location" nothing
+            targets connected $ moveTo attrs iid
       pure a
     _ -> EliyahAshevakDogHandlerResolute <$> liftRunMessage msg attrs

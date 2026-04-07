@@ -22,7 +22,7 @@ newtype JudgementXX = JudgementXX AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 judgementXX :: AgendaCard JudgementXX
-judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
+judgementXX = agendaWith (1, A) JudgementXX Cards.judgementXX (Static 0) (doomThresholdL .~ Nothing)
 
 instance HasAbilities JudgementXX where
   getAbilities (JudgementXX a) =

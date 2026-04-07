@@ -448,6 +448,9 @@ inDiscardOf = InDiscardOf . InvestigatorWithId . asId
 basic :: CardMatcher -> ExtendedCardMatcher
 basic = BasicCardMatch
 
+instance HasField "level" (CardMatcher -> ExtendedCardMatcher) (Int -> ExtendedCardMatcher) where
+  getField f n = f (CardWithLevel n)
+
 basicCardIs :: HasCardCode a => a -> ExtendedCardMatcher
 basicCardIs = basic . cardIs
 

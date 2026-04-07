@@ -267,8 +267,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
-  CardWithLevel n -> Just n == cdLevel (toCardDef a)
-  CardWithMaxLevel n -> maybe False (<= n) $ cdLevel (toCardDef a)
+  CardWithLevel n -> Just n == (toCard a).level
+  CardWithMaxLevel n -> maybe False (<= n) $ (toCard a).level
   FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
   CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
@@ -441,7 +441,11 @@ instance HasField "printedCost" Card Int where
   getField = (.printedCost) . toCardDef
 
 instance HasField "level" Card (Maybe Int) where
-  getField = cdLevel . toCardDef
+  getField c =
+    let def = toCardDef c
+     in if null (cdCustomizations def)
+        then cdLevel def
+        else Just $ (sum (map fst (IntMap.elems c.customizations)) + 1) `div` 2
 
 instance HasField "experienceCost" Card Int where
   getField c =

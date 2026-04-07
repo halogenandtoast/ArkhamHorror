@@ -22,7 +22,7 @@ submergedTemple =
 
 instance HasModifiersFor SubmergedTemple where
   getModifiersFor (SubmergedTemple a) =
-    modifySelect a (at_ (be a) <> EnemyWithTrait AncientOne) [EnemyFight 2]
+    modifySelect a (at_ (be a) <> EnemyWithTrait DeepOne) [EnemyFight 2]
 
 instance HasAbilities SubmergedTemple where
   getAbilities (SubmergedTemple a) =

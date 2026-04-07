@@ -18,7 +18,7 @@ instance HasAbilities RuinousStreets where
     extendRevealed
       a
       [ restricted a 1 (DuringSkillTest $ SkillTestAt (be a)) $ forced $ RevealChaosToken #after You #frost
-      , restricted a 2 (exists $ LocationWithDiscoverableCluesBy You <> connectedFrom (be a))
+      , restricted a 2 (Here <> exists (LocationWithDiscoverableCluesBy You <> connectedFrom (be a)))
           $ freeReaction (DiscoveringLastClue #after You (be a))
       ]
 

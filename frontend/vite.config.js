@@ -15,7 +15,6 @@ export default defineConfig({
   },
   server: {
     port: 8080,
-    allowedHosts: 'all',
     proxy: {
       "^/api": {
         target: "http://127.0.0.1:3000",

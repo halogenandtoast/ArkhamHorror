@@ -28,8 +28,10 @@ fetchOpenSeats(props.gameId).then(seats => {
   openSeats.value = seats
 })
 
-const poll = setInterval(async () => {
-  openSeats.value = await fetchOpenSeats(props.gameId)
+const poll = setInterval(() => {
+  fetchOpenSeats(props.gameId).then(seats => {
+    openSeats.value = seats
+  }).catch(() => {})
 }, 3000)
 
 onUnmounted(() => clearInterval(poll))

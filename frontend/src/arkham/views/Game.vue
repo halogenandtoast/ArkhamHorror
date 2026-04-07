@@ -88,7 +88,30 @@ const claimSeatSource = computed(() => {
   const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
   return window.location.origin + resolved.href
 })
-const isGameHost = computed(() => !!localStorage.getItem(`gameHost_${props.gameId}`))
+const openSeatsCount = ref(0)
+
+async function fetchOpenSeatsCount() {
+  try {
+    const seats = await Api.fetchOpenSeats(props.gameId)
+    openSeatsCount.value = seats.length
+  } catch { /* ignore */ }
+}
+
+watch(() => props.gameId, (id) => {
+  if (!id) return
+  fetchOpenSeatsCount()
+}, { immediate: true })
+
+let seatsPollInterval: ReturnType<typeof setInterval> | null = null
+
+watch(openSeatsCount, (count) => {
+  if (count > 0 && !seatsPollInterval) {
+    seatsPollInterval = setInterval(fetchOpenSeatsCount, 5000)
+  } else if (count === 0 && seatsPollInterval) {
+    clearInterval(seatsPollInterval)
+    seatsPollInterval = null
+  }
+})
 const store = useCardStore()
 const userStore = useUserStore()
 const { copy } = useClipboard({ source })
@@ -733,6 +756,7 @@ onUnmounted(() => {
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
+  if (seatsPollInterval) clearInterval(seatsPollInterval)
   close()
 })
 
@@ -915,8 +939,8 @@ onUnmounted(() => {
       </GameDetails>
     </div>
     <template v-else>
-      <div v-if="isGameHost && game.gameState.tag === 'IsChooseDecks'" class="invite-banner">
-        <span>Share invite link:</span>
+      <div v-if="openSeatsCount > 0 && !gameOver" class="invite-banner">
+        <span>Invite link:</span>
         <input type="text" :value="claimSeatSource" readonly />
         <button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>
       </div>
@@ -1113,24 +1137,31 @@ onUnmounted(() => {
   padding: 8px 12px;
   background: var(--background-dark);
   border-bottom: 1px solid var(--box-border);
-  span { color: var(--title); font-size: 0.85em; white-space: nowrap; }
-  input {
-    flex: 1;
-    background: transparent;
-    border: 1px solid var(--box-border);
-    color: var(--title);
-    padding: 4px 8px;
-    border-radius: 3px;
-    font-size: 0.85em;
-  }
-  button {
-    background: var(--spooky-green);
-    border: 0;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-  }
+}
+
+.invite-banner span {
+  color: var(--title);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.invite-banner input {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--box-border);
+  color: var(--title);
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.invite-banner button {
+  background: var(--spooky-green);
+  border: 0;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .invite-container {

@@ -34,9 +34,8 @@ import UnliftIO.Exception (catch, try)
 addC :: Text -> Text
 addC iid = if "c" `T.isPrefixOf` iid then iid else "c" <> iid
 
--- | Replace the original player UUID (from an exported game) with the new
--- local ArkhamPlayer UUID in the stored game JSONB.
--- Reads the original UUID via SQL from the investigators path in current_data.
+-- | Replace the original player UUID with the new local ArkhamPlayer UUID.
+-- Uses jsonb_set to target the exact path, avoiding accidental replacements.
 remapInvestigatorUUID
   :: ArkhamGameId
   -> Text           -- ^ investigator card code, e.g. "c03004"
@@ -45,7 +44,7 @@ remapInvestigatorUUID
 remapInvestigatorUUID gameId iCode newPlayerId = do
   let newUUID = toPathPiece newPlayerId
       normalizedCode = addC iCode
-  results <- rawSql
+  results :: [Single (Maybe Text)] <- rawSql
     "SELECT current_data->'gameEntities'->'investigators'->?->>'playerId' \
     \FROM arkham_games WHERE id = ?"
     [PersistText normalizedCode, PersistText (toPathPiece gameId)]
@@ -102,10 +101,9 @@ getApiV1ArkhamGameReloadR gameId = do
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
-  -- Convert to multiplayer solitaire
   userId <- getRequestUserId
   (params, files) <- runRequestBody
-  let mInvestigatorId = snd <$> find ((== "investigatorId") . fst) params
+  let mInvestigatorId = fmap addC $ snd <$> find ((== "investigatorId") . fst) params
   let mVariantOverride = snd <$> find ((== "multiplayerVariant") . fst) params
   eExportData :: Either String ArkhamExport <-
     fmap eitherDecodeStrict'
@@ -117,11 +115,11 @@ postApiV1ArkhamGamesImportR = do
   now <- liftIO getCurrentTime
 
   case eExportData of
-    Left err -> error $ T.pack err
+    Left err -> invalidArgs [T.pack err]
     Right export -> do
       let
         ArkhamGameExportData {..} = aeCampaignData export
-        investigatorIds = aeCampaignPlayers export
+        investigatorIds = map addC $ aeCampaignPlayers export
         exportVariant = agedMultiplayerVariant
         variant = case mVariantOverride of
           Just "WithFriends" -> WithFriends
@@ -133,7 +131,10 @@ postApiV1ArkhamGamesImportR = do
           Solo ->
             traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
           WithFriends -> do
-            let chosenInvestigator = fromMaybe (fromMaybe "00000" (headMay investigatorIds)) mInvestigatorId
+            let mChosen = mInvestigatorId <|> headMay investigatorIds
+            chosenInvestigator <- case mChosen of
+              Nothing  -> lift $ invalidArgs ["No investigator specified"]
+              Just iid -> pure iid
             newPlayerId <- insert $ ArkhamPlayer userId gameId chosenInvestigator
             remapInvestigatorUUID gameId chosenInvestigator newPlayerId
         rawExecute
@@ -154,7 +155,6 @@ postApiV1ArkhamGamesImportR = do
         for_ agedSteps \s ->
           insert_
             $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
-
         rawExecute
           "DO $$ \
           \BEGIN \
@@ -176,8 +176,7 @@ postApiV1ArkhamGamesImportR = do
           (Entity key $ ArkhamGame agedName agedCurrentData agedStep variant now now)
           (GameLog $ map arkhamLogEntryBody agedLog)
 
--- | Returns the list of investigator IDs that have no player assigned yet.
--- Only relevant for WithFriends games imported via postApiV1ArkhamGamesImportR.
+-- | Returns investigator IDs with no player assigned yet.
 getApiV1ArkhamGameOpenSeatsR :: ArkhamGameId -> Handler [Text]
 getApiV1ArkhamGameOpenSeatsR gameId = do
   _ <- getRequestUserId
@@ -202,24 +201,22 @@ data ClaimSeatPost = ClaimSeatPost
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
--- | Claim an open seat in a WithFriends game by choosing an investigator.
+-- | Claim an open seat in a WithFriends game.
 postApiV1ArkhamGameClaimSeatR :: ArkhamGameId -> Handler ()
 postApiV1ArkhamGameClaimSeatR gameId = do
   userId <- getRequestUserId
-  ClaimSeatPost {investigatorId} <- requireCheckJsonBody
+  ClaimSeatPost {investigatorId = rawId} <- requireCheckJsonBody
+  let investigatorId = addC rawId
   runDB do
     g <- get404 gameId
-    -- Only valid for multiplayer games
     when (arkhamGameMultiplayerVariant g /= WithFriends)
-      $ error "This game is not a multiplayer game"
-    -- Validate investigator is in the game
+      $ lift $ permissionDenied "This game is not a multiplayer game"
     let allInvestigators =
           map (addC . unCardCode . unInvestigatorId)
             . gamePlayerOrder
             $ arkhamGameCurrentData g
     unless (investigatorId `elem` allInvestigators)
-      $ error "Invalid investigator for this game"
-    -- Check the seat is not already taken
+      $ lift $ invalidArgs ["Invalid investigator for this game"]
     mTaken <- selectOne $ do
       players <- from $ table @ArkhamPlayer
       where_
@@ -227,10 +224,9 @@ postApiV1ArkhamGameClaimSeatR gameId = do
         &&. players ^. ArkhamPlayerInvestigatorId ==. val investigatorId
       pure players
     when (isJust mTaken)
-      $ error "This seat is already taken"
-    -- Check user doesn't already have a seat in this game
+      $ lift $ permissionDenied "This seat is already taken"
     mAlreadyJoined <- getBy (UniquePlayer userId gameId)
     when (isJust mAlreadyJoined)
-      $ error "You already have a seat in this game"
+      $ lift $ permissionDenied "You already have a seat in this game"
     newPlayerId <- insert $ ArkhamPlayer userId gameId investigatorId
     remapInvestigatorUUID gameId investigatorId newPlayerId

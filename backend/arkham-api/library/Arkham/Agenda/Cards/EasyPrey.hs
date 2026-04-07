@@ -22,7 +22,9 @@ easyPrey = agenda (2, A) EasyPrey Cards.easyPrey (Static 6)
 
 instance HasAbilities EasyPrey where
   getAbilities (EasyPrey a) =
-    [restricted a 1 (ExtendedCardCount (AtLeast $ PerPlayer 4) HollowedCard) $ forced AnyWindow]
+    [ restricted a 1 (ExtendedCardCount (AtLeast $ PerPlayer 4) HollowedCard) $ forced AnyWindow
+    | onSide A a
+    ]
 
 instance RunMessage EasyPrey where
   runMessage msg a@(EasyPrey attrs) = runQueueT $ case msg of

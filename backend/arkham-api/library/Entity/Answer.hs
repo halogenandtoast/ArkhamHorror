@@ -221,12 +221,17 @@ data CampaignSettings = CampaignSettings
   deriving stock Show
 
 instance FromJSON CampaignSettings where
-  parseJSON = withObject "CampaignSettings" $ \o ->
+  parseJSON = withObject "CampaignSettings" $ \o -> do
+    options <- o .: "options" >>= traverse parseOption
     CampaignSettings
       <$> (o .: "keys")
       <*> (o .: "counts")
       <*> (o .: "sets")
-      <*> (o .: "options")
+      <*> pure options
+   where
+    parseOption = \case
+      String s -> parseJSON (object ["tag" .= String s])
+      v -> parseJSON v
 
 instance FromJSON CampaignRecorded where
   parseJSON = withObject "CampaignRecorded" $ \o ->

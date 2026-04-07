@@ -3197,8 +3197,13 @@ getScarletKeysMatching matcher = do
       iids <- selectMap toTarget im
       pure $ filter ((`elem` iids) . attr keyBearer) as
     ScarletKeyWithInvestigator im -> do
-      placements <- selectMap AttachedToInvestigator im
-      pure $ filter ((`elem` placements) . attr keyPlacement) as
+      iids <- select im
+      as & filterM \a -> do
+        mods <- getModifiers a
+        let asIfControllers = [iid | AsIfUnderControlOf iid <- mods]
+        pure
+          $ (attr keyPlacement a `elem` map AttachedToInvestigator iids)
+          || any (`elem` iids) asIfControllers
     ScarletKeyWithEnemy em -> do
       placements <- selectMap AttachedToEnemy em
       pure $ filter ((`elem` placements) . attr keyPlacement) as

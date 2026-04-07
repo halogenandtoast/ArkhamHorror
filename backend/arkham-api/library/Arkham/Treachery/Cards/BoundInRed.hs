@@ -24,7 +24,7 @@ instance HasModifiersFor BoundInRed where
 
 instance HasAbilities BoundInRed where
   getAbilities (BoundInRed a) =
-    [restricted a 1 (exists (ScarletKeyWithBearer You <> StableScarletKey)) actionAbility]
+    [restricted a 1 (exists (ScarletKeyWithInvestigator You <> StableScarletKey)) actionAbility]
 
 instance RunMessage BoundInRed where
   runMessage msg t@(BoundInRed attrs) = runQueueT $ case msg of
@@ -37,7 +37,7 @@ instance RunMessage BoundInRed where
           chooseTargetM iid coterie $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skeys <- select $ ScarletKeyWithBearer (InvestigatorWithId iid) <> StableScarletKey
+      skeys <- select $ ScarletKeyWithInvestigator (InvestigatorWithId iid) <> StableScarletKey
       chooseTargetM iid skeys $ flipOverBy iid (attrs.ability 1)
       toDiscardBy iid (attrs.ability 1) attrs
       pure t

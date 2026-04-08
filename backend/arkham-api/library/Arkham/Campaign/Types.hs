@@ -66,6 +66,13 @@ data instance Field Campaign :: Type -> Type where
   CampaignInvalidCards :: Field Campaign [CardCode]
   CampaignDestiny :: Field Campaign (Map Scope TarotCard)
 
+data XpBreakdownStep = XpBreakdownStep
+  { xbsStep :: CampaignStep
+  , xbsInvestigators :: [InvestigatorId]
+  , xbsEntries :: XpBreakdown
+  }
+  deriving stock (Show, Eq, Ord, Generic, Data)
+
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
@@ -77,7 +84,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignStep :: CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: Map ScenarioId Resolution
-  , campaignXpBreakdown :: [(CampaignStep, XpBreakdown)]
+  , campaignXpBreakdown :: [XpBreakdownStep]
   , campaignModifiers :: Map InvestigatorId [Modifier]
   , campaignMeta :: Value
   , campaignStore :: Map Text Value
@@ -185,7 +192,7 @@ destinyL = lens campaignDestiny $ \m x -> m {campaignDestiny = x}
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
-xpBreakdownL :: Lens' CampaignAttrs [(CampaignStep, XpBreakdown)]
+xpBreakdownL :: Lens' CampaignAttrs [XpBreakdownStep]
 xpBreakdownL = lens campaignXpBreakdown $ \m x -> m {campaignXpBreakdown = x}
 
 completeStep :: CampaignStep -> [CampaignStep] -> [CampaignStep]
@@ -305,6 +312,17 @@ chaosBagOf = campaignChaosBag . toAttrs
 
 $(deriveToJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)
 
+instance ToJSON XpBreakdownStep where
+  toJSON xs = object
+    [ "step" .= xs.xbsStep
+    , "investigators" .= xs.xbsInvestigators
+    , "entries" .= xs.xbsEntries
+    ]
+
+instance FromJSON XpBreakdownStep where
+  parseJSON = withObject "XpBreakdownStep" $ \o ->
+    XpBreakdownStep <$> o .: "step" <*> o .: "investigators" <*> o .: "entries"
+
 oldBreakdown :: Map ScenarioId XpBreakdown -> [(CampaignStep, XpBreakdown)]
 oldBreakdown = map (first ScenarioStep) . Map.toList
 
@@ -329,7 +347,12 @@ instance FromJSON CampaignAttrs where
     campaignStep <- o .: "step"
     campaignCompletedSteps <- o .: "completedSteps"
     campaignResolutions <- o .: "resolutions"
-    campaignXpBreakdown <- (oldBreakdown <$> o .: "xpBreakdown") <|> (o .:? "xpBreakdown" .!= mempty)
+    let deckIids = Map.keys campaignDecks
+        toXpBreakdownStep (s, e) = XpBreakdownStep s deckIids e
+    campaignXpBreakdown <-
+      (map toXpBreakdownStep . oldBreakdown <$> o .: "xpBreakdown")
+      <|> (map toXpBreakdownStep <$> o .:? "xpBreakdown" .!= mempty)
+      <|> (o .:? "xpBreakdown" .!= mempty)
     campaignModifiers <- o .: "modifiers"
     campaignMeta <- o .: "meta"
     campaignStore <- o .:? "store" .!= mempty

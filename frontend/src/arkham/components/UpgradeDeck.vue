@@ -8,6 +8,7 @@ import { Investigator } from '@/arkham/types/Investigator';
 import { baseKey } from '@/arkham/types/Log';
 import Prompt from '@/components/Prompt.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
+import type { XpBreakdownStep } from '@/arkham/types/Xp';
 import Question from '@/arkham/components/Question.vue';
 
 // TODO should we pass in the investigator
@@ -247,7 +248,18 @@ async function skip() {
   });
 }
 
-const breakdowns = computed(() => {
+const allGameInvestigators = computed(() => ({
+  ...props.game.investigators,
+  ...props.game.killedInvestigators,
+}))
+
+function breakdownInvestigators(breakdown: XpBreakdownStep): Investigator[] {
+  return breakdown.investigators
+    .map(iid => allGameInvestigators.value[iid])
+    .filter(Boolean) as Investigator[]
+}
+
+const breakdowns = computed<XpBreakdownStep[]>(() => {
   if (props.game.campaign) {
     return props.game.campaign.xpBreakdown
   }
@@ -339,8 +351,8 @@ const tabooList = function (investigator: Investigator) {
       </div>
     </div>
 
-    <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
-      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="false" :investigators="investigators" />
+    <div v-for="(breakdown, idx) in breakdowns" :key="idx" class="breakdowns">
+      <XpBreakdown :game="game" :step="breakdown.step" :entries="breakdown.entries" :playerId="playerId" :showAll="false" :investigators="breakdownInvestigators(breakdown)" />
     </div>
   </div>
 

@@ -417,14 +417,15 @@ defaultCampaignRunner msg a = case msg of
       (ReportXp $ XpBreakdown [InvestigatorLoseXp iid $ XpDetail XpFromCardEffect "Spent Xp" n])
       a
   ReportXp report -> do
-    let
+    activeIids <- select $ IncludeEliminated Anyone
     pure $ updateAttrs a \attrs ->
-      case campaignXpBreakdown attrs of
-        (step, report') : rest
-          | step == normalizedCampaignStep (campaignStep attrs) ->
-              attrs & xpBreakdownL .~ (step, report' <> report) : rest
-        _ -> attrs & xpBreakdownL %~ ((normalizedCampaignStep (campaignStep attrs), report) :)
-  IgnoreGainXP step -> pure $ updateAttrs a \attrs -> attrs & xpBreakdownL %~ filter ((/= step) . fst)
+      let currentStep = normalizedCampaignStep (campaignStep attrs)
+      in case campaignXpBreakdown attrs of
+        XpBreakdownStep step iids xp : rest
+          | step == currentStep ->
+              attrs & xpBreakdownL .~ XpBreakdownStep step iids (xp <> report) : rest
+        _ -> attrs & xpBreakdownL %~ (XpBreakdownStep currentStep activeIids report :)
+  IgnoreGainXP step -> pure $ updateAttrs a \attrs -> attrs & xpBreakdownL %~ filter ((/= step) . (.xbsStep))
   UseAbility _ ab _ | ab.source == CampaignSource -> do
     push $ Do msg
     pure a

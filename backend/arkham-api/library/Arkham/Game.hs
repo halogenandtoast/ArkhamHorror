@@ -28,6 +28,11 @@ import Arkham.Asset.Uses (Uses (..), useType)
 import Arkham.Campaign
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
+import Arkham.CampaignLog (CampaignLog (..))
+import Arkham.CampaignLogKey (
+  CampaignLogKey (DrivenInsaneInvestigators, KilledInvestigators),
+  recordedCardCodes,
+ )
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers (pattern HollowedCard)
@@ -582,6 +587,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("locations" .= locations)
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
+      <> ("killedInvestigators" .= killedInvestigators)
       <> ("enemies" .= enemies)
       <> ("assets" .= assets)
       <> ("acts" .= acts)
@@ -644,6 +650,30 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ Map.keys (campaignDecks attrs)
+    killedInvestigators = case gameMode of
+      This c -> killedInvestigatorsFrom (attr campaignLog c)
+      That _ -> mempty
+      These c _ -> killedInvestigatorsFrom (attr campaignLog c)
+    killedInvestigatorsFrom clog =
+      let
+        activeIids = Map.keysSet (gameInvestigators g)
+        sets = campaignLogRecordedSets clog
+        killed = recordedCardCodes $ findWithDefault [] KilledInvestigators sets
+        insane = recordedCardCodes $ findWithDefault [] DrivenInsaneInvestigators sets
+        deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
+       in
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , (`with` emptyAdditionalData)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
+                )
+            )
+          $ deadIids
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
     locations <-
@@ -679,6 +709,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "locations" .= toJSON locations
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
+        , "killedInvestigators" .= toJSON killedInvestigators
         , "enemies" .= toJSON enemies
         , "assets" .= toJSON assets
         , "acts" .= toJSON acts
@@ -746,6 +777,30 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ Map.elems attrs
+    killedInvestigators = case gameMode of
+      This c -> killedInvestigatorsFrom (attr campaignLog c)
+      That _ -> mempty
+      These c _ -> killedInvestigatorsFrom (attr campaignLog c)
+    killedInvestigatorsFrom clog =
+      let
+        activeIids = Map.keysSet (gameInvestigators g)
+        sets = campaignLogRecordedSets clog
+        killed = recordedCardCodes $ findWithDefault [] KilledInvestigators sets
+        insane = recordedCardCodes $ findWithDefault [] DrivenInsaneInvestigators sets
+        deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
+       in
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , (`with` emptyAdditionalData)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
+                )
+            )
+          $ deadIids
 
 getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
 getPlayerInvestigator pid = do

@@ -184,8 +184,8 @@ instance RunMessage SanguineShadows where
               record TheSanguineWatchersTormentContinues
               record LaChicaRojaIsOnYourSide
               setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.theSanguineWatcherHeSeesWhatIsNotThere
-              markTime 2
               resolutionWithXp "noResolutionSeeingRed" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
+              markTime 2
               endOfScenario
             _ -> do
               resolution "noResolution"
@@ -193,29 +193,29 @@ instance RunMessage SanguineShadows where
         Resolution 1 -> do
           n <- countScenarioTokens Token.Target
           record YouHaventSeenTheLastOfLaChicaRoja
-          markTime 1
           resolutionWithXp "resolution1"
             $ if n > 0
               then allGainXpWithBonus' attrs $ toBonus "bonus.targets" n
               else allGainXp' attrs
           chooseBearer Keys.theWeepingLady
+          markTime 1
           endOfScenario
         Resolution 2 -> do
           record YouHaventSeenTheLastOfTheSanguineWatcher
           record LaChicaRojaIsOnYourSide
-          markTime 3
           resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
           chooseBearer Keys.theWeepingLady
+          markTime 3
           endOfScenario
         Resolution 3 -> do
           n <- countScenarioTokens Token.Target
           record YouHaventSeenTheLastOfLaChicaRoja
           setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.laChicaRojaHotOnYourTrail
-          markTime 1
           resolutionWithXp "resolution3"
             $ if n > 0
               then allGainXpWithBonus' attrs $ toBonus "bonus.targets" n
               else allGainXp' attrs
+          markTime 1
           endOfScenario
         _ -> error "invalid resolution"
       pure s

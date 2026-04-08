@@ -193,9 +193,9 @@ instance RunMessage DealingsInTheDark where
           n <- getCurrentActStepMaybe
           if n == Just 1 || n == Just 2
             then do
-              markTime 1
               setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
               resolutionWithXp "noResolution" $ allGainXp' attrs
+              markTime 1
               endOfScenario
             else do
               resolution "noResolutionAct3"
@@ -211,9 +211,9 @@ instance RunMessage DealingsInTheDark where
                 li.validate (not theCellRefusedEcesOffer) "resolution1.theCellIsWorkingWithEce"
           push $ if theCellRefusedEcesOffer then R2 else R3
         Resolution 2 -> do
-          markTime 2
           resolutionWithXp "resolution2" $ allGainXp' attrs
           chooseBearer Keys.theTwistedAntiprism
+          markTime 2
           endOfScenario
         Resolution 3 -> do
           working <- getHasRecord TheCellIsWorkingWithEce
@@ -226,21 +226,21 @@ instance RunMessage DealingsInTheDark where
                 li.validate (not working) "resolution3.theCellIsDeceivingEce"
           push $ if working then R4 else R5
         Resolution 4 -> do
-          markTime 3
           record EceTrustsTheCell
           setBearer Keys.theTwistedAntiprism $ keyWithEnemy Assets.eceSahinTheVermillionVeiledLady
           resolutionWithXp "resolution4" $ allGainXp' attrs
+          markTime 3
           endOfScenario
         Resolution 5 -> do
-          markTime 3
           record EceDoesNotTrustTheCell
           resolutionWithXp "resolution5" $ allGainXp' attrs
           chooseBearer Keys.theTwistedAntiprism
+          markTime 3
           endOfScenario
         Resolution 6 -> do
-          markTime 2
           setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution6" $ allGainXp' attrs
+          markTime 2
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"
       pure s

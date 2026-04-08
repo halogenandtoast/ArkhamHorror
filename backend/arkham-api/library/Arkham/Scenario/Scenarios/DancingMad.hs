@@ -218,24 +218,24 @@ instance RunMessage DancingMad where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          markTime 1
           record TheCellDidntDiscoverTheTruthInHavana
           record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
           setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarezRedInHisLedger
           resolutionWithXp "noResolution" $ allGainXp' attrs
+          markTime 1
         Resolution 1 -> do
-          markTime 2
           record DesiIsInYourDebt
           record YouKnowThePassphrase
           time <- getTime
           campaignSpecific "unlockedTheta" (min 35 $ time + 6)
           resolutionWithXp "resolution1" $ allGainXp' attrs
+          markTime 2
         Resolution 2 -> do
-          markTime 1
           record TheCellDidntDiscoverTheTruthInHavana
           record YouHaventSeenTheLastOfDesiderioDelgadoAlvarez
           setBearer Keys.theMirroringBlade $ keyWithEnemy Enemies.desiderioDelgadoAlvarezRedInHisLedger
           resolutionWithXp "resolution1" $ allGainXp' attrs
+          markTime 1
         _ -> error "Unknown resolution for Dancing Mad"
       endOfScenario
       pure s

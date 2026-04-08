@@ -84,7 +84,7 @@
   "spendActions": "花费 1 个行动 | 花费 {count} 个行动",
   "spendClues": "花费 1 个线索 | 花费 {count} 个线索",
   "spendResources": "花费 1 资源 | 花费 {count} 资源",
-  "startAsSlot": "Start as @:{slot} slot",
+  "startAsSlot": "作为 @:{slot} 槽位开始",
   "sufferPhysicalTrauma": "受到 1 点肉体创伤 | 受到 {count} 点肉体创伤",
   "sufferMentalTrauma": "受到 1 点精神创伤 | 受到 {count} 点精神创伤",
   "takeControlOfKey": "控制钥匙",

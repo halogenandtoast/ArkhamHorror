@@ -23,6 +23,7 @@ instance RunMessage TheGoldBug where
   runMessage msg a@(TheGoldBug attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       place attrs (InThreatArea iid)
+      checkDefeated attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       shuffleIntoDeck iid attrs

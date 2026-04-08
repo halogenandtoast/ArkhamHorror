@@ -115,6 +115,9 @@ const allResolved = computed(() => {
         <template v-else-if="tokenChoice.tag === 'Draw'">
           <img :src="imgsrc('ct_blank.png')" class="token" />
         </template>
+        <template v-else-if="tokenChoice.tag === 'DrawUntil'">
+          <img :src="imgsrc('ct_blank.png')" class="token" />
+        </template>
         <template v-else>
           <div class="error"> Token choice was unhandled, please report with: {{tokenChoice}}</div>
         </template>

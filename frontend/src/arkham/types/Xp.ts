@@ -20,6 +20,11 @@ export type XpBreakdownStep = {
   entries: XpEntry[]
 }
 
+export type LegaxyXpBreakdownStep = {
+  step: CampaignStep
+  entries: XpEntry[]
+}
+
 export type XpBreakdown = XpBreakdownStep[];
 
 export const xpSourceDecoder = JsonDecoder.oneOf<XpSource>(
@@ -78,6 +83,17 @@ export const xpBreakdownStepDecoder = JsonDecoder.object<XpBreakdownStep>(
   'XpBreakdownStep'
 );
 
+export const legacyXpBreakdownStepDecoder = JsonDecoder.object<LegaxyXpBreakdownStep>(
+  {
+    step: campaignStepDecoder,
+    entries: JsonDecoder.array(xpEntryDecoder, 'XpEntry[]'),
+  },
+  'XpBreakdownStep'
+);
+
 export const xpBreakdownDecoder =
-  JsonDecoder.array(xpBreakdownStepDecoder, 'XpBreakdown');
+  JsonDecoder.oneOf<XpBreakdownStep[]>([
+    JsonDecoder.array(xpBreakdownStepDecoder, 'XpBreakdown'),
+    JsonDecoder.array(legacyXpBreakdownStepDecoder, 'LegacyXpBreakdown').map(legacy => legacy.map(step => ({ ...step, investigators: [] } as XpBreakdownStep)))
+  ], 'XpBreakdown');
 

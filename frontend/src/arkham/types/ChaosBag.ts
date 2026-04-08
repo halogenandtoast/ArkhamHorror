@@ -43,6 +43,14 @@ export const decidingDecoder = JsonDecoder.object<Deciding>({
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Deciding')
 
+export type DrawUntil = {
+  tag: "DrawUntil"
+}
+
+export const drawUntilDecoder = JsonDecoder.object<DrawUntil>({
+  tag: JsonDecoder.literal("DrawUntil"),
+}, 'DrawUntil')
+
 export const chaosBagStepStateDecoder = JsonDecoder.oneOf<ChaosBagStepState>([
   resolvedDecoder,
   decidedDecoder,
@@ -120,6 +128,7 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
   chooseMatchDecoder,
   chooseMatchChoiceDecoder,
   decidingDecoder,
+  drawUntilDecoder,
 ], 'ChaosBagStep')
 
 

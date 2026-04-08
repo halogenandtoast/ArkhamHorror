@@ -5684,6 +5684,7 @@ test-suite spec
       Arkham.Asset.Assets.PhysicalTrainingSpec
       Arkham.Asset.Assets.PickpocketingSpec
       Arkham.Asset.Assets.PoliceBadge2Spec
+      Arkham.Asset.Assets.QuickStudy2Spec
       Arkham.Asset.Assets.RabbitsFootSpec
       Arkham.Asset.Assets.ResearchLibrarianSpec
       Arkham.Asset.Assets.Rolands38SpecialSpec

@@ -147,7 +147,6 @@ sourceMatches s = \case
   Matcher.SourceOwnedBy whoMatcher ->
     let
       checkSource = \case
-        PaymentSource source' -> checkSource source'
         AbilitySource source' n -> do
           iid' <- getActiveInvestigatorId
           checkSource (UseAbilitySource iid' source' n)
@@ -293,7 +292,6 @@ sourceMatches s = \case
         PaymentSource source' -> check source'
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
-        PaymentSource source' -> check source'
         AssetSource _ -> True
         EventSource _ -> True
         SkillSource _ -> True

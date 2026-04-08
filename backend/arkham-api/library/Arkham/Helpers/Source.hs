@@ -175,6 +175,7 @@ sourceMatches s = \case
           case toCardOwner c of
             Nothing -> pure False
             Just iid -> elem iid <$> select whoMatcher
+        PaymentSource s' -> checkSource s'
         _ -> pure False
      in
       checkSource s
@@ -290,6 +291,7 @@ sourceMatches s = \case
       check = \case
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
+        PaymentSource source' -> check source'
         AssetSource _ -> True
         EventSource _ -> True
         SkillSource _ -> True

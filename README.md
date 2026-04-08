@@ -2,42 +2,41 @@
 
 ![Screenshot](./docs/img/screenshot.png)
 
-The goal of this project is to implement a web version of Arkham Horror with as
-many of the rules implemented as possible.
+该项目的目标是实现一个网页版的《诡镇奇谈》，并尽可能多地实现游戏规则。
 
-## Warning
+## 警告
 
-This is very much a work in progress. Things may break at any time, but if they do,
-please file a bug.
+这目前仍处于开发阶段，随时可能出现问题，如果出现问题，
+请提交错误报告。
 
-## Features
+## 特征
 
-* Multiplayer up to 4 players
-* Multiplayer solitaire
-* Tarot Readings
-* Deck import from ArkhamDB and arkham.build
+* 最多支持 4 名玩家的多人游戏
+* 多人纸牌游戏
+* 塔罗牌占卜
+* 从 ArkhamDB 和 arkham.build 导入牌组
 
-## Finished Content
+## 已完成内容
 
-### Player Cards
+### 玩家卡
 
-* All player cards before 2026
+* 2026年之前的所有玩家卡
 
-### Campaigns
+### 战役
 
-* Night of the Zealot
-  * Return to Night of the Zealot
-* The Dunwich Legacy
-  * Return to The Dunwich Legacy
-* The Path To Carcosa
-  * Return to The Path To Carcosa
-* The Forgotten Age
-  * Return to The Forgotten Age
-* The Circle Undone
-  * Return to The Circle Undone
-* The Dream-Eaters
-* The Innsmouth Conspiracy
-* Edge of the Earth
+* 狂热之夜
+  * 重返狂热之夜
+* 敦威治遗产
+  * 重返敦威治遗产
+* 卡尔克萨之路
+  * 重返卡尔克萨之路
+* 失落的时代
+  * 重返失落的时代
+* 万象无终
+  * 重返万象无终
+* 食梦者
+* 印斯茅斯暗潮
+* 地球边缘
 
 ### Side Stories
 
@@ -47,7 +46,7 @@ please file a bug.
 * The Midwinter Gala
 * Film Fatale
 
-## I just want to try this out on my computer
+## 我想在我的电脑上尝试游玩
 
 ### Linux Users
 
@@ -57,8 +56,8 @@ Install [Docker][docker], then run:
 curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash
 ```
 
-This creates an `arkham-horror/` directory, downloads the required files, generates
-a database password, and starts the app. Open http://localhost:3000 when it's done.
+这将创建一个名为 `arkham-horror/` 的目录，下载所需文件，生成数据库密码，并启动应用程序。
+完成后，请打开 http://localhost:3000。
 
 The script will ask if you want to download game images (~2.9 GB). If you skip
 this step, the app loads images from the CDN automatically — no extra setup needed.

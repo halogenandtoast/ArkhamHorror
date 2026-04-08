@@ -7,6 +7,7 @@ import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
+import type { Source } from '@/arkham/types/Source'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -211,14 +212,48 @@ watch(() => choices.value, () => {
 
 const modifiers = computed(() => props.investigator.modifiers)
 
-const isBlanked = computed(() => {
-  return (
-    modifiers.value?.some(
-      (m) =>
-        m.type.tag === "Blank"
-        || (m.type.tag === "OtherModifier" && m.type.contents === "Blank")
-    ) ?? false
-  )
+const blankedModifier = computed(() => {
+  return modifiers.value?.find(
+    (m) =>
+      m.type.tag === "Blank"
+      || (m.type.tag === "OtherModifier" && m.type.contents === "Blank")
+  ) ?? null
+})
+
+const isBlanked = computed(() => blankedModifier.value !== null)
+
+function blankedSourceCardCode(source: Source): string | null {
+  if (source.tag === 'AbilitySource') return blankedSourceCardCode(source.source)
+  if (source.tag === 'AssetSource') {
+    const asset = props.game.assets[source.contents]
+    if (!asset) return null
+    const mutated = asset.mutated ? `_${asset.mutated}` : ''
+    return `${asset.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'TreacherySource') {
+    const treachery = props.game.treacheries[source.contents]
+    return treachery ? treachery.cardCode.replace('c', '') : null
+  }
+  if (source.tag === 'EnemySource') {
+    const enemy = props.game.enemies[source.contents]
+    if (!enemy) return null
+    return `${enemy.cardCode.replace('c', '')}${enemy.flipped ? 'b' : ''}`
+  }
+  if (source.tag === 'EventSource') {
+    const event = props.game.events[source.contents]
+    if (!event) return null
+    const mutated = event.mutated ? `_${event.mutated}` : ''
+    return `${event.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'InvestigatorSource') return source.contents.replace('c', '')
+  return null
+}
+
+const blankedCardCode = computed<string | null>(() => {
+  const m = blankedModifier.value
+  if (!m) return null
+  if (m.card) return m.card.contents.cardCode.replace(/^c/, '')
+  return blankedSourceCardCode(m.source)
 })
 
 const captured = computed(() => {
@@ -396,15 +431,7 @@ const spadeInjury = computed(() => {
             @dragover.prevent="dragover($event)"
             @dragenter.prevent
           />
-          <div
-            v-if="isBlanked"
-            class="blanked-badge"
-            title="Blanked"
-            aria-label="Blanked"
-          >
-            <span class="blanked-badge__slash"></span>
-            <span class="blanked-badge__slash blanked-badge__slash--cross"></span>
-          </div>
+          <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
           <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
@@ -787,29 +814,17 @@ i.action {
 
 .blanked-badge {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: 2px solid rgba(122, 18, 18, 0.96);
-  background: transparent;
-  pointer-events: none;
+  right: 6px;
+  bottom: 22px;
+  width: 24px;
+  height: 24px;
+  color: #e05252;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
+  cursor: default;
   z-index: 2;
-}
-
-.blanked-badge__slash {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 2px;
-  height: 18px;
-  background: rgba(122, 18, 18, 0.96);
-  border-radius: 999px;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.blanked-badge__slash--cross {
-  transform: translate(-50%, -50%) rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 img.card {

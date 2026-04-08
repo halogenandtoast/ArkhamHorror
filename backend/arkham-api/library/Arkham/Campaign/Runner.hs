@@ -365,7 +365,8 @@ defaultCampaignRunner msg a = case msg of
   ScenarioResolution r -> case (toAttrs a).step.scenario of
     Just sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
     _ -> error $ "must be called in a scenario, but called in " <> show (campaignStep (toAttrs a))
-  DrivenInsane iid ->
+  DrivenInsane iid -> do
+    push $ After msg
     pure
       $ updateAttrs a
       $ logL
@@ -374,7 +375,8 @@ defaultCampaignRunner msg a = case msg of
         (<>)
         DrivenInsaneInvestigators
         (singleton $ recorded $ unInvestigatorId iid)
-  InvestigatorKilled _ iid ->
+  InvestigatorKilled _ iid -> do
+    push $ After msg
     pure
       $ updateAttrs a
       $ logL

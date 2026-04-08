@@ -526,9 +526,9 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
           <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
         </div>
       </div>
-      <template v-else>
+      <div v-else class="intro-text-body">
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
-      </template>
+      </div>
     </div>
 
 
@@ -785,7 +785,7 @@ section {
     text-justify: inter-character;
   }
   &:deep(.resolution) {
-    padding: 40px;
+    padding: 20px;
   }
   &:has(.resolution) {
     background: #BAA898;
@@ -1258,9 +1258,14 @@ h2 {
   &:has(.resolution) {
     background-color: #BAA597;
     box-shadow: unset;
-    overflow: auto;
+    overflow: hidden;
+    max-height: none;
     isolation: isolate;
     position: relative;
+    .intro-text-body {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
     &::after {
       border: 20px solid #D4CCC3;
       border-left-width: 10px;

@@ -23,8 +23,8 @@
   "resetPassword": "重置密码",
   "settings": "设置",
   "updatePassword": "更新密码",
-  "username": "用戶名",
-  "usernameOrEmailAlreadyTaken": "用戶名或电子邮件已被使用",
+  "username": "用户名",
+  "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
   "label": {
     "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
     "takeControlOfKey": "控制钥匙"
@@ -32,8 +32,8 @@
   "tooltips": {
     "takeControlOfKey": "获得{key}钥匙的控制权"
   },
-  "shuffleRemainder": "将剩余的遭遇牌混洗，形成遭遇牌库。",
-  "readyToBegin": "你现在可以开始游戏了。",
+  "shuffleRemainder": "将剩余的遭遇牌混洗，形成遭遇牌库",
+  "readyToBegin": "你现在可以开始游戏了",
 
   "Yes": "是",
   "No": "否",
@@ -46,14 +46,14 @@
   "Fight": "攻擊",
   "Engage": "交战",
   "Forced": "強制",
-  "Delayed": "延迟",
+  "Delayed": "延时效果",
   "Objective": "目标",
   "Haunted": "恶灵附身",
   
-  "Results": "結局",
+  "Results": "结局",
   "Story": "故事",
   "ChooseOne": "选择一项",
   "Choose": "选择",
   "setup": "设置",
-  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续直到剧本结束。"
+  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续直到剧本结束"
 }

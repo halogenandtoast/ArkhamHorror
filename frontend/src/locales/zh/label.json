@@ -75,7 +75,7 @@
   "playNoCards": "不能打出牌",
   "proceedToSetup": "继续 _Setup_",
   "ready": "准备 {name}",
-  "removeTokensFrom": "从 {name} 中移除 1 个 {token}  | 从 {name} 中移除 {count} 个 {token}",
+  "removeTokensFrom": "从 {name} 中移除 1 个 {token} | 从 {name} 中移除 {count} 个 {token}",
   "removeAgendaDoom": "从当前密谋上移除 1 个毁灭标记 | 从当前密谋上移除 {count} 个毁灭标记",
   "removeDoom": "移除 1 个毁灭标记 | 移除 {count} 个毁灭标记",
   "secretlyAddToHand": "将 {name} 秘密加入你的手牌",

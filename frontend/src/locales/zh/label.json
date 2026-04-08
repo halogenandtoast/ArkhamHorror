@@ -15,7 +15,7 @@
   "discard": "弃牌",
   "discardAssets": "丢弃你控制的一张支援卡| 丢弃你控制的 {count} 张支援卡",
   "discardThatAsset": "丢弃那张支援卡",
-  "discardCards": "丢弃 1 张手牌Discard 1 card | 丢弃 {count} 张手牌",
+  "discardCards": "丢弃 1 张手牌 | 丢弃 {count} 张手牌",
   "discardCardsWithMatchingIcons": "弃掉至少包含 1 个 {'{'}{skillIcon}{'}'} 图标的卡牌 | 弃掉总计至少包含 {count} 个 {'{'}{skillIcon}{'}'} 图标的卡牌",
   "discardFromHand": "从手牌中弃牌",
   "discardAllCardsFromHand": "弃掉你的所有手牌",

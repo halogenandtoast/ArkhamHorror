@@ -139,15 +139,12 @@ getActionCostModifier ac = do
   modifiers <- getModifiers iid
   pure $ foldr (applyModifier takenActions performedActions) 0 modifiers
  where
-  actions = case ac.actions of
-    [] -> error "expected action"
-    as -> as
   applyModifier takenActions performedActions (AdditionalActionCostOf match m) n =
     -- For cards we've already calculated the cost as an additional cost for
     -- the action specifically
     case ac.target of
       ForCard {} -> n
-      _ -> if any (matchTarget takenActions performedActions match) actions then n + m else n
+      _ -> if any (matchTarget takenActions performedActions match) ac.actions then n + m else n
   applyModifier _ _ _ n = n
 
 countAdditionalActionPayments :: Payment -> Int

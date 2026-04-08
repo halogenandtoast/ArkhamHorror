@@ -8,7 +8,6 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Field
 import Arkham.Helpers.Location (placementLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
@@ -77,8 +76,7 @@ instance RunMessage FalseColorsV2 where
       turnOverAllConcealed attrs
       do_ msg
       inPlayVersion <- selectJust $ enemyIs Enemies.desiderioDelgadoAlvarez106
-      placement <- field EnemyPlacement inPlayVersion
-      mlocation <- placementLocation placement
+      mlocation <- placementLocation =<< field EnemyPlacement inPlayVersion
       badVersion <- fetchCard inPlayVersion
       outOfPlayCard <- fetchCard Assets.desiderioDelgadoAlvarez
       let goodVersion = lookupCard Enemies.desiderioDelgadoAlvarez107.cardCode outOfPlayCard.id
@@ -86,10 +84,9 @@ instance RunMessage FalseColorsV2 where
       removeFromGame inPlayVersion
 
       shuffle [goodVersion, badVersion] >>= \case
-        [x, y] -> do
-          x1 <- createEnemy x Unplaced
-          push $ UpdateEnemy x1 $ Update EnemyPlacement placement
-          for_ mlocation $ createEnemy_ y . AtLocation
+        [x, y] -> for_ mlocation \loc -> do
+          createEnemy_ x (AtLocation loc)
+          createEnemy_ y (AtLocation loc)
         _ -> error "Invalid needs both"
 
       selectWithField EnemyClues EnemyWithAnyClues >>= traverse_ \(enemy, clues) -> do

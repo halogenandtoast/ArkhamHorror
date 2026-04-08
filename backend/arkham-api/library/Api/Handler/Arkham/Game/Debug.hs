@@ -135,9 +135,10 @@ postApiV1ArkhamGamesImportR = do
           \  END IF; \
           \END$$;"
           []
-        for_ agedSteps \s ->
-          insert_
-            $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
+        insertMany_
+          [ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
+          | s <- agedSteps
+          ]
 
         rawExecute
           "DO $$ \

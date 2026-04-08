@@ -76,6 +76,7 @@ export type Game = {
   gameState: GameState;
   investigators: Record<string, Investigator>;
   otherInvestigators: Record<string, Investigator>;
+  killedInvestigators: Record<string, Investigator>;
   leadInvestigatorId: string;
   activePlayerId: string;
   locations: Record<string, Location>;
@@ -216,6 +217,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     gameState: gameStateDecoder,
     investigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     otherInvestigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
+    killedInvestigators: JsonDecoder.optional(JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>')),
     leadInvestigatorId: JsonDecoder.string(),
     activePlayerId: JsonDecoder.string(),
     locations: JsonDecoder.record<Location>(locationDecoder, 'Dict<UUID, Location>'),
@@ -245,8 +247,9 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     scenarioSteps: JsonDecoder.number()
   },
   'Game',
-).map(({mode, ...game}) => ({
+).map(({mode, killedInvestigators, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
+  killedInvestigators: killedInvestigators ?? {},
   ...game
 }))

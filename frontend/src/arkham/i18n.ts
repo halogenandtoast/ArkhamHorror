@@ -48,7 +48,8 @@ function isWholeI18nToken(input: string) {
     return false
   }
 
-  return /^[A-Za-z0-9_]+=[is]:\S+(\s+[A-Za-z0-9_]+=[is]:\S+)*$/.test(rest)
+  const value = '(?:"(?:[^"\\\\]|\\\\.)*"|\\S+)'
+  return new RegExp(`^[A-Za-z0-9_]+=[is]:${value}(\\s+[A-Za-z0-9_]+=[is]:${value})*$`).test(rest)
 }
 
 function parseInput(input: string) {

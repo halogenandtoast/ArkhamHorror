@@ -38,7 +38,7 @@ thePathToCarcosa :: Difficulty -> ThePathToCarcosa
 thePathToCarcosa = campaign ThePathToCarcosa (CampaignId "03") "The Path to Carcosa"
 
 findNewBearerIfNeeded :: ReverseQueue m => CampaignAttrs -> InvestigatorId -> m ()
-findNewBearerIfNeeded attrs iid = void $ runMaybeT do
+findNewBearerIfNeeded attrs iid = runMaybeT_ do
   theManInThePallidMask <- MaybeT $ fetchCardMaybe Enemies.theManInThePallidMask
   owner <-
     hoistMaybe $ findKey (any ((== Enemies.theManInThePallidMask) . toCardDef)) attrs.storyCards

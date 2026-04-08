@@ -72,13 +72,11 @@ watch(hoveredElement, (el) => {
   }, 300)
 })
 
-onMounted(() => {
-  const mq = window.matchMedia('(hover: none) and (pointer: coarse)')
-  const update = () => (isMobile.value = mq.matches)
-  update()
-  mq.addEventListener?.('change', update)
-  onUnmounted(() => mq.removeEventListener?.('change', update))
-})
+const mq = window.matchMedia('(hover: none) and (pointer: coarse)')
+const updateIsMobile = () => (isMobile.value = mq.matches)
+updateIsMobile()
+onMounted(() => mq.addEventListener?.('change', updateIsMobile))
+onUnmounted(() => mq.removeEventListener?.('change', updateIsMobile))
 
 /* =============================================================================
  * Pointer/hover handling

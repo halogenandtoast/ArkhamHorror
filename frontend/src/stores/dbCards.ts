@@ -30,57 +30,66 @@ export interface ArkhamDBCard {
 
 export interface DbCardsState {
   dbCards: ArkhamDBCard[]
+  dbCardsIndex: Map<string, ArkhamDBCard>
   lang: string
 }
 
 export const useDbCardStore = defineStore("dbCards", {
   state: (): DbCardsState => ({
     dbCards: [],
+    dbCardsIndex: new Map(),
     lang: 'en'
   } as DbCardsState),
-  
+
   actions: {
     getDbCard(code: string): ArkhamDBCard | null {
       if (this.dbCards.length < 1) {
         const language = localStorage.getItem('language') || 'en'
         if (language !== 'en') this.initDbCards()
       }
-      
-      return this.dbCards.find((c: ArkhamDBCard) => c.code == code)
-        || this.dbCards.find((c: ArkhamDBCard) => `${c.code}b` == code)
-        || null
+
+      return this.dbCardsIndex.get(code) ?? null
     },
-    
+
     getCardName(cardTitle: string, typeCode: string = ""): string {
       if (this.dbCards.length < 1) {
         const language = localStorage.getItem('language') || 'en'
         if (language !== 'en') this.initDbCards()
       }
-      
+
       const i = typeCode
         ? this.dbCards.find((c: ArkhamDBCard) =>  c.type_code === typeCode && c.real_name == cardTitle)
         : this.dbCards.find((c: ArkhamDBCard) =>  c.real_name == cardTitle)
-      
+
       return i ? i.name : cardTitle
     },
-    
+
     async fetchDbCards() {
       const data = await fetch(`/cards_${this.lang}.json`.replace(/^\//, '')).then(async (cardResponse) => {
         return await cardResponse.json()
       })
       this.dbCards = data
+      const index = new Map<string, ArkhamDBCard>()
+      for (const card of data as ArkhamDBCard[]) {
+        index.set(card.code, card)
+        index.set(`${card.code}b`, card)
+      }
+      this.dbCardsIndex = index
     },
-    
+
     async initDbCards() {
       const language = localStorage.getItem('language') || 'en'
-      
+
       if (this.lang === language && this.dbCards.length < 1) {
         await this.fetchDbCards()
       }
       else {
         this.lang = language
-        
-        if (this.lang === 'en') this.dbCards = []
+
+        if (this.lang === 'en') {
+          this.dbCards = []
+          this.dbCardsIndex = new Map()
+        }
         else await this.fetchDbCards()
       }
     }

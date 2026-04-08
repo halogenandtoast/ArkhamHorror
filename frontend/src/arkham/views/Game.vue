@@ -704,10 +704,11 @@ const onMove = (event: MouseEvent) => {
 }
 
 // callbacks
-emitter.on('playabilityResult', (result: any) => {
+const onPlayabilityResult = (result: any) => {
   if (!debug.active) return
   playabilityInfo.value = { cardId: result.cardId, cardCode: result.cardCode, checks: result.checks }
-})
+}
+emitter.on('playabilityResult', onPlayabilityResult)
 
 onMounted(() => {
   (window as any).sendDebug = async (msg: any) => { if (game.value) await debug.send(game.value.id, msg) }
@@ -727,6 +728,7 @@ onUnmounted(() => {
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
+  emitter.off('playabilityResult', onPlayabilityResult)
   close()
 })
 

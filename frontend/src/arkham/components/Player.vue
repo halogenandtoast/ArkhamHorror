@@ -365,7 +365,8 @@ onMounted(() => {
       } else {
         handAreaMarginBottom.value = handCardExposedHeight_MIN;
         handAreaPointerEvents.value = 'none';
-        document.addEventListener('click',toggleHandAreaMarginBottom)
+        document.removeEventListener('click', toggleHandAreaMarginBottom)
+        document.addEventListener('click', toggleHandAreaMarginBottom)
       }
     });
   }

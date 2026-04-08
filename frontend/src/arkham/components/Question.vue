@@ -521,7 +521,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
       <div v-if="readCards.length > 0" class="story-with-card">
-        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>
           <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
         </div>

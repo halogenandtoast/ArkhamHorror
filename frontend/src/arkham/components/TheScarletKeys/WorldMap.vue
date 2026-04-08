@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { imgsrc } from '@/arkham/helpers';
-import { watch, computed, ref, inject } from 'vue'
+import { watch, computed, ref, inject, onMounted, onUnmounted } from 'vue'
 import { Game } from '@/arkham/types/Game';
 import { useI18n } from 'vue-i18n';
 import WorldMapDrawerContent from '@/arkham/components/TheScarletKeys/WorldMapDrawerContent.vue';
@@ -249,9 +249,9 @@ const toggleFullScreen = async () => {
 }
 
 // Handle user pressing ESC or system exit
-document.addEventListener('fullscreenchange', () => {
-  fullScreen.value = !!document.fullscreenElement
-})
+const onFullscreenChange = () => { fullScreen.value = !!document.fullscreenElement }
+onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))
+onUnmounted(() => document.removeEventListener('fullscreenchange', onFullscreenChange))
 
 </script>
 

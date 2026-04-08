@@ -42,6 +42,8 @@ export type ModifierType
   | AnySkillValue
   | BaseSkill
   | BaseSkillOf
+  | Blank
+  | BlankExceptForcedAbilities
   | CannotEnter
   | Hollow
   | CannotDiscoverCluesAt
@@ -72,6 +74,14 @@ export type BaseSkillOf = {
   tag: "BaseSkillOf"
   skillType: string
   value: number
+}
+
+export type Blank = {
+  tag: "Blank"
+}
+
+export type BlankExceptForcedAbilities = {
+  tag: "BlankExceptForcedAbilities"
 }
 
 export type Difficulty = {
@@ -245,6 +255,14 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       skillType: JsonDecoder.string(),
       value: JsonDecoder.number()
     }, 'BaseSkillOf'),
+  JsonDecoder.object<Blank>(
+    {
+      tag: JsonDecoder.literal('Blank')
+    }, 'Blank'),
+  JsonDecoder.object<BlankExceptForcedAbilities>(
+    {
+      tag: JsonDecoder.literal('BlankExceptForcedAbilities')
+    }, 'BlankExceptForcedAbilities'),
   JsonDecoder.object<BaseSkill>(
     {
       tag: JsonDecoder.literal('BaseSkill'),

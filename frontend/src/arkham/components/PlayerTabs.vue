@@ -97,6 +97,10 @@ const isForcedAbility = (ability: Message): ability is AbilityLabel => {
   return ability.tag === "AbilityLabel" && ability.ability.type.tag === "ForcedAbility"
 }
 
+const isTargetLabel = (ability: Message): ability is TargetLabel => {
+  return ability.tag === "TargetLabel"
+}
+
 const sourceToPlacement = (source: Source): Placement | null => {
   switch (source.tag) {
     case "EnemySource":
@@ -115,12 +119,31 @@ const sourceToPlacement = (source: Source): Placement | null => {
   return null
 }
 
+const targetToPlacement = (target: Target): Placement | null => {
+  switch (target.tag) {
+    case "EnemyTarget":
+      {
+        const { contents } = target
+        if (contents) return props.game.enemies[contents].placement
+      }
+    case "TreacheryTarget":
+      {
+        const { contents } = target
+        if (contents) return props.game.treacheries[contents].placement
+      }
+    default:
+  }
+
+  return null
+}
+
 watchEffect(() => {
   // determines which tab will be active, it should be the player who is
   // playing the game, but on occasion there will be a forced effect in another
   // players tab and we'd like to direct the player there
-  const playersWithForced = ArkhamGame
-    .choices(props.game, props.playerId)
+  const allChoices = ArkhamGame.choices(props.game, props.playerId)
+
+  const playersWithForced = allChoices
     .reduce((acc, c) => {
       if (isForcedAbility(c)) {
         const { source } = c.ability
@@ -129,11 +152,25 @@ watchEffect(() => {
           const investigator = props.game.investigators[placement.contents]
           if (investigator) acc.push(investigator.playerId)
         }
+      } else if (allChoices.length == 1) {
       }
       return acc
     }, [] as string[])
 
-  const playerIds = [...new Set(playersWithForced)]
+  const allTargets = allChoices.every(isTargetLabel)
+  const playersWithTargets = !allTargets ? [] : allChoices
+    .reduce((acc, c) => {
+      if (isTargetLabel(c)) {
+        const placement = targetToPlacement(c.target)
+        if (placement?.tag == 'InThreatArea') {
+          const investigator = props.game.investigators[placement.contents]
+          if (investigator) acc.push(investigator.playerId)
+        }
+      }
+      return acc
+    }, [] as string[])
+
+  const playerIds = [...new Set(allTargets ? playersWithTargets : playersWithForced)]
 
   if (playerIds.length == 0) {
     const investigator = Object.values(props.players).find(i => i.playerId === props.playerId)

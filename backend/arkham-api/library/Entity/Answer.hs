@@ -24,6 +24,7 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Control.Exception (evaluate, try)
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -377,7 +378,14 @@ handleAnswer Game {..} playerId = \case
         _ -> handled [message, AskMap gameQuestion]
       else handled [message]
   Answer response -> do
-    maybe (unhandled "Player not being asked") (\q -> handled $ go id q response)
+    maybe
+      (unhandled "Player not being asked")
+      ( \q -> do
+          result <- liftIO $ try @SomeException $ evaluate $ go id q response
+          case result of
+            Left _ -> unhandled "Wrong question type"
+            Right msgs -> handled msgs
+      )
       $ Map.lookup playerId gameQuestion
  where
   go

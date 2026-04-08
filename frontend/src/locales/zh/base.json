@@ -19,7 +19,7 @@
   "password": "密码",
   "passwordResetRequested": "密码重置已请求",
   "passwordUpdatedSuccessfully": "密码已成功更新",
-  "register": "注冊",
+  "register": "注册",
   "resetPassword": "重置密码",
   "settings": "设置",
   "updatePassword": "更新密码",
@@ -55,5 +55,5 @@
   "ChooseOne": "选择一项",
   "Choose": "选择",
   "setup": "设置",
-  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续到剧本結束。"
+  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续直到剧本结束。"
 }

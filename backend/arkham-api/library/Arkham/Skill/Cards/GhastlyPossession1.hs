@@ -1,9 +1,11 @@
 module Arkham.Skill.Cards.GhastlyPossession1 (ghastlyPossession1) where
 
 import Arkham.Asset.Types (Field (..))
-import Arkham.Helpers.SkillTest (withSkillTestSource, withSkillTest)
+import Arkham.Criteria
+import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestSource)
 import Arkham.Helpers.Use
 import Arkham.Matcher
+import Arkham.Message qualified
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
@@ -44,7 +46,7 @@ instance RunMessage GhastlyPossession1 where
       GhastlyPossession1 <$> liftRunMessage msg attrs
     DoStep 1 (InvestigatorCommittedSkill _iid sid) | sid == toId attrs -> do
       pure . GhastlyPossession1 $ attrs & setMeta True
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest _iid _ _ (isTarget attrs -> True) _ _ -> do
       let
         active =
           case fromJSON attrs.meta of
@@ -53,23 +55,35 @@ instance RunMessage GhastlyPossession1 where
       when active do
         withSkillTestSource \source -> do
           for_ source.asset \aid -> do
-            hasDoom <- fieldMap AssetDoom (> 0) aid
-            mAddAmount <- runMaybeT do
-              guardM $ lift $ aid <=~> not_ AssetWithoutUses
-              (uType, n) <-
-                MaybeT $ fmap (listToMaybe . mapToList) . toStartingUses =<< field AssetStartingUses aid
-              current <- lift $ findWithDefault 0 uType <$> field AssetUses aid
-              let half = n `div` 2
-              pure $ (uType, min (n - current) half)
+            additionalSkillTestOptionEdit
+              ( \opt ->
+                  opt
+                    { Arkham.Message.criteria =
+                        Just (exists $ AssetWithId aid <> oneOf [AssetWithAnyDoom, AssetNotAtUsesX])
+                    }
+              )
+              "Ghastly Possession (1)"
+              (do_ msg)
+      pure s
+    Do (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
+      withSkillTestSource \source -> do
+        for_ source.asset \aid -> do
+          hasDoom <- fieldMap AssetDoom (> 0) aid
+          mAddAmount <- runMaybeT do
+            guardM $ lift $ aid <=~> not_ AssetWithoutUses
+            (uType, n) <-
+              MaybeT $ fmap (listToMaybe . mapToList) . toStartingUses =<< field AssetStartingUses aid
+            current <- lift $ findWithDefault 0 uType <$> field AssetUses aid
+            let half = n `div` 2
+            pure (uType, min (n - current) half)
 
-            when (hasDoom || isJust mAddAmount) do
-              additionalSkillTestOption "Ghastly Possession (1)" do
-                chooseOneM iid do
-                  when hasDoom do
-                    labeled "Remove 1 doom from that asset" do
-                      removeDoom attrs (toTarget aid) 1
-                  for_ mAddAmount \(uType, n) ->
-                    labeled "Replenish half of its uses (rounded down)" do
-                      placeTokens attrs (toTarget aid) uType n
+          when (hasDoom || isJust mAddAmount) do
+            chooseOneM iid do
+              when hasDoom do
+                labeled "Remove 1 doom from that asset" do
+                  removeDoom attrs (toTarget aid) 1
+              for_ mAddAmount \(uType, n) ->
+                labeled "Replenish half of its uses (rounded down)" do
+                  placeTokens attrs (toTarget aid) uType n
       pure s
     _ -> GhastlyPossession1 <$> liftRunMessage msg attrs

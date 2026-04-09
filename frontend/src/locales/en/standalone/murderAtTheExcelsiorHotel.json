@@ -66,6 +66,10 @@
   "continue": "_You are now ready to continue playing._"
   },
   "resolutions": {
+    "label": {
+      "playAgain": "Play Again",
+      "leaveThingsAlone": "Leave Things Alone"
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<p>_If no resolution was reached because each investigator was defeated_: You collapse to the floor, gasping for breath. The air around you feels oppressive, your ears filled with the agonizing wails of other innocents who have fallen victim to the cruel machinations that continue in the Excelsior hotel. You clutch at the carpet, your vision swirling and swaying as you feel yourself losing consciousness. Your efforts have been in vain. The nefarious plans that have been set into motion can no longer be undone.</p><ul><li>In your Campaign Log, record that *the Excelsior claims another victim*.</li><li>Proceed to _Resolution 2_.</li></ul>"

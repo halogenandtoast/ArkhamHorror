@@ -26,15 +26,21 @@ instance HasModifiersFor DirtyFighting2 where
 
 instance HasAbilities DirtyFighting2 where
   getAbilities (DirtyFighting2 a) =
-    [ controlled_ a 1 $ triggered (EnemyEvaded #after You $ ignoreAloofFightOverride AnyEnemy) (exhaust a)
+    [ controlled_ a 1
+        $ triggered
+          ( EnemyEvaded #after You
+              $ CanFightEnemyWithOverride
+              $ CriteriaOverride
+              $ EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
+          )
+          (exhaust a)
     ]
 
 instance RunMessage DirtyFighting2 where
   runMessage msg a@(DirtyFighting2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
-      nextSkillTestModifier iid (attrs.ability 1) iid (MustFight enemy)
       afterMaybeSkillTest iid "Dirty Fighting" do
-        temporaryModifier enemy (attrs.ability 1) IgnoreAloof do
+        temporaryModifiers iid (attrs.ability 1) [IgnoreAloof, MustFight enemy] do
           performActionAction iid (attrs.ability 1) #fight
       pure a
     _ -> DirtyFighting2 <$> liftRunMessage msg attrs

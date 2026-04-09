@@ -8,7 +8,7 @@ makeEmSing =
   (event "60160" "\"Make 'em sing\"" 2 Guardian)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#combat, #intellect]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
     }
 
@@ -43,7 +43,7 @@ physicalFitness =
   (event "60164" "Physical Fitness" 2 Guardian)
     { cdCardTraits = setFromList [Spirit]
     , cdSkills = [#agility, #combat]
-    , cdActions = CardAction #move
+    , cdActions = #move
     }
 
 restrained :: CardDef
@@ -59,7 +59,7 @@ stakeout =
   (event "60166" "Stakeout" 2 Guardian)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#intellect, #intellect]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     }
 
 extendedBarrel1 :: CardDef
@@ -86,7 +86,7 @@ physicalFitness2 =
   (event "60174" "Physical Fitness" 1 Guardian)
     { cdCardTraits = setFromList [Spirit]
     , cdSkills = [#agility, #combat]
-    , cdActions = CardAction #move
+    , cdActions = #move
     , cdLevel = Just 2
     }
 
@@ -104,6 +104,6 @@ stakeout3 =
   (event "60179" "Stakeout" 2 Guardian)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#agility, #intellect]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdLevel = Just 3
     }

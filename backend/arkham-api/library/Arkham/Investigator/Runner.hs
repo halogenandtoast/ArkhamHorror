@@ -28,6 +28,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
+import Arkham.Actions (actionsToList)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Option
@@ -880,7 +881,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         . filter (`abilityIs` action)
         =<< getActionsWith iid windows' decreaseCost
     handCards <- field InvestigatorHand iid
-    let actionCards = filter (elem action . cardActionsToList . cdActions . toCardDef) handCards
+    let actionCards = filter (elem action . actionsToList . cdActions . toCardDef) handCards
     playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
     when (notNull actions || notNull playableCards) do
       Lifted.chooseOne iid
@@ -1280,14 +1281,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             _ -> costToEnter
         applyFightCostModifiers costToEnter _ = costToEnter
       pushAll
-        [ BeginAction
-        , beforeWindowMsg
-        , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-        , FightEnemy eid choose {chooseFightIsAction = False}
-        , afterWindowMsg
-        , FinishAction
-        , TakenActions iid [#fight]
-        ]
+        $ [ BeginAction
+          , beforeWindowMsg
+          ]
+        <> [ TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
+           | choose.payCost
+           ]
+        <> [ FightEnemy eid choose {chooseFightIsAction = False}
+           , afterWindowMsg
+           , FinishAction
+           , TakenActions iid [#fight]
+           ]
     pure a
   FightEnemy eid choose | choose.investigator == investigatorId && not choose.isAction -> do
     handleSkillTestNesting_ choose.skillTest msg do
@@ -1329,6 +1333,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let skillType = choose.skillType
     let enemyMatcher = choose.matcher
     let isAction = choose.isAction
+    let payCost = choose.payCost
     let
       isOverride = \case
         EnemyEvadeActionCriteria override -> Just override
@@ -1356,16 +1361,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let choices = enemyIds <> map coerce concealed
     let elabel eid = if skillType /= #agility then EvadeLabelWithSkill eid skillType else EvadeLabel eid
     unless (null choices) do
-      push
-        $ chooseOne player
-        $ choose.additionalOptions
-        <> [ elabel
-               eid
-               [ ChosenEvadeEnemy choose.skillTest source eid
-               , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+      if isAction && not payCost
+        then do
+          let iid = investigatorId
+          beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #evade]
+          afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #evade]
+          pushAll
+            [ BeginAction
+            , beforeWindowMsg
+            , chooseOne player
+                $ choose.additionalOptions
+                <> [ elabel
+                       eid
+                       [ ChosenEvadeEnemy choose.skillTest source eid
+                       , EvadeEnemy choose.skillTest a.id eid source mTarget skillType False
+                       ]
+                   | eid <- choices
+                   ]
+            , afterWindowMsg
+            , FinishAction
+            , TakenActions iid [#evade]
+            ]
+        else
+          push
+            $ chooseOne player
+            $ choose.additionalOptions
+            <> [ elabel
+                   eid
+                   [ ChosenEvadeEnemy choose.skillTest source eid
+                   , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+                   ]
+               | eid <- choices
                ]
-           | eid <- choices
-           ]
     pure a
   ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == investigatorId -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
@@ -3556,7 +3583,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           Lose n -> subtractTokens token n
     pure $ a & tokensL %~ f
   TakeResources iid n source True | iid == investigatorId -> do
-    let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] Nothing $ ActionCost 1)
+    let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility #resource Nothing $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
     afterActivateAbilityWindow <- checkAfter $ Window.ActivateAbility iid [] ability
     beforeWindowMsg <- checkWhen $ Window.PerformAction iid #resource

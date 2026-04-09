@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.UnvisitedIsleMistyClearing (unvisitedIsleMistyClearing) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.GameValue
 import Arkham.Helpers.Log
@@ -33,7 +32,7 @@ instance HasAbilities UnvisitedIsleMistyClearing where
   getAbilities (UnvisitedIsleMistyClearing attrs) =
     extendRevealed
       attrs
-      [ skillTestAbility $ restricted attrs 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
+      [ skillTestAbility $ restricted attrs 1 Here $ ActionAbility #circle Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleMistyClearing.haunted1" attrs 2
       ]
 

@@ -288,10 +288,10 @@ instance HasAbilities EnemyAttrs where
   getAbilities e =
     [ basicAbility
         $ restrictedAbility e AbilityAttack canFightCriteria
-        $ ActionAbility [#fight] #combat (ActionCost 1)
+        $ ActionAbility #fight #combat (ActionCost 1)
     , basicAbility
         $ restrictedAbility e AbilityEvade EvadeCriteria
-        $ ActionAbility [#evade] #agility (ActionCost 1)
+        $ ActionAbility #evade #agility (ActionCost 1)
     , basicAbility
         $ restrictedAbility
           e
@@ -303,7 +303,7 @@ instance HasAbilities EnemyAttrs where
               <> EnemyCriteria (ThisEnemy $ EnemyCanEngage You)
               <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotBeEngaged)
           )
-        $ ActionAbility [#engage] Nothing (ActionCost 1)
+        $ ActionAbility #engage Nothing (ActionCost 1)
     ]
 
 instance Entity EnemyAttrs where

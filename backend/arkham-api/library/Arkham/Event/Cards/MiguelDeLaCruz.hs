@@ -1,5 +1,6 @@
 module Arkham.Event.Cards.MiguelDeLaCruz where
 
+import Arkham.Actions
 import Arkham.Criteria (evadeOverride, fightOverride)
 import Arkham.Event.Cards.Import
 import Arkham.ForMovement
@@ -25,7 +26,7 @@ guerrillaTactics =
   (event "60564" "Guerrilla Tactics" 1 Survivor)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#agility, #combat]
-    , cdActions = OrCardActions [CardAction #fight, CardAction #evade]
+    , cdActions = OrActions [#fight, #evade]
     , cdCriteria =
         Just
           $ exists
@@ -72,7 +73,7 @@ guerrillaTactics2 =
   (event "60576" "Guerrilla Tactics" 1 Survivor)
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#agility, #combat, #wild]
-    , cdActions = OrCardActions [CardAction #fight, CardAction #evade]
+    , cdActions = OrActions [#fight, #evade]
     , cdCriteria =
         Just
           $ exists

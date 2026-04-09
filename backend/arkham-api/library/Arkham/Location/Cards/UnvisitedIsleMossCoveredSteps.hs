@@ -5,7 +5,6 @@ module Arkham.Location.Cards.UnvisitedIsleMossCoveredSteps (
 where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Effect.Import
 import Arkham.GameValue
@@ -36,7 +35,10 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
   getAbilities (UnvisitedIsleMossCoveredSteps a) =
     extendRevealed
       a
-      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
+      [ skillTestAbility
+          $ restricted a 1 Here
+          $ ActionAbility #circle Nothing
+          $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleMossCoveredSteps.haunted" a 2
       ]
 
@@ -63,7 +65,7 @@ unvisitedIsleMossCoveredStepsEffect = cardEffect UnvisitedIsleMossCoveredStepsEf
 
 instance HasModifiersFor UnvisitedIsleMossCoveredStepsEffect where
   getModifiersFor (UnvisitedIsleMossCoveredStepsEffect a) =
-    modified_ a a.target [AdditionalActionCostOf (IsAction Action.Move) 1]
+    modified_ a a.target [AdditionalActionCostOf #move 1]
 
 instance RunMessage UnvisitedIsleMossCoveredStepsEffect where
   runMessage msg e@(UnvisitedIsleMossCoveredStepsEffect attrs) = runQueueT $ case msg of

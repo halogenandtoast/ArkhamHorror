@@ -77,7 +77,7 @@ hereticAbilities
 hereticAbilities (toAttrs -> a) =
   withBaseAbilities
     a
-    [ restricted a 1 OnSameLocation $ FastAbility' (ClueCost $ Static 1) [#parley]
+    [ restricted a 1 OnSameLocation $ FastAbility' (ClueCost $ Static 1) #parley
     , mkAbility a 2 $ forced $ EnemyDefeated #after Anyone ByAny (be (asId a))
     ]
 

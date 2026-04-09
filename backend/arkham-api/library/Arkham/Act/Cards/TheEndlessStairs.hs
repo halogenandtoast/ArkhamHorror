@@ -3,7 +3,6 @@ module Arkham.Act.Cards.TheEndlessStairs (TheEndlessStairs (..), theEndlessStair
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Prelude
@@ -21,7 +20,7 @@ instance HasAbilities TheEndlessStairs where
       (proxied (RevealedLocation <> LocationWithLabel "mysteriousStairs5") x)
       1
       Here
-      (ActionAbility [Action.Resign] Nothing $ ActionCost 1)
+      (ActionAbility #resign Nothing $ ActionCost 1)
       : [ restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
           $ Objective
           $ ForcedAbility AnyWindow

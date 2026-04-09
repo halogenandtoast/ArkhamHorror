@@ -346,6 +346,7 @@ library
       Arkham.Act.Types
       Arkham.Action
       Arkham.Action.Additional
+      Arkham.Actions
       Arkham.ActiveCost
       Arkham.ActiveCost.Base
       Arkham.Agenda
@@ -2996,6 +2997,7 @@ library
       Arkham.Helpers.ChaosToken
       Arkham.Helpers.Choices
       Arkham.Helpers.Choose
+      Arkham.Helpers.CombatTarget
       Arkham.Helpers.Cost
       Arkham.Helpers.Criteria
       Arkham.Helpers.Customization

@@ -20,7 +20,7 @@ instance HasAbilities UpstairsDoorwayBedroom where
     extendRevealed
       x
       [ restricted x 1 (Here <> exists (TreacheryInThreatAreaOf You <> TreacheryIsNonWeakness))
-          $ ActionAbility [] Nothing (ActionCost 2)
+          $ ActionAbility mempty Nothing (ActionCost 2)
       , restricted x 2 (Here <> not_ (Remembered FoundACrackedMirror))
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (be x)

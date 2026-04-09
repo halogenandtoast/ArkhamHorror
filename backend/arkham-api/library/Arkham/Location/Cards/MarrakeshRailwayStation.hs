@@ -23,7 +23,7 @@ instance HasAbilities MarrakeshRailwayStation where
       then
         extendRevealed
           a
-          [ groupLimit PerTurn $ restricted a 1 (DuringTurn Anyone <> Here) $ FastAbility' Free [#move]
+          [ groupLimit PerTurn $ restricted a 1 (DuringTurn Anyone <> Here) $ FastAbility' Free #move
           , scenarioI18n $ withI18nTooltip "marrakeshRailwayStation.resign" (locationResignAction a)
           , becomeAbandonedAbility a 3
           ]

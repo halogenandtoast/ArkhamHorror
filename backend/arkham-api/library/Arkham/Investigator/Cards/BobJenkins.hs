@@ -46,7 +46,7 @@ instance HasAbilities BobJenkins where
         attrs
         1
         (PlayableCardExists (UnpaidCost NoAction) matchCards)
-        (ActionAbility [] Nothing mempty)
+        (ActionAbility mempty Nothing mempty)
     | BobJenkinsAction `notElem` map additionalActionType attrs.usedAdditionalActions
     ]
    where

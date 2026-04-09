@@ -1,7 +1,6 @@
 module Arkham.Agenda.Cards.ReturnToPredatorOrPrey (returnToPredatorOrPrey) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
@@ -16,7 +15,7 @@ returnToPredatorOrPrey = agenda (1, A) ReturnToPredatorOrPrey Cards.returnToPred
 
 instance HasAbilities ReturnToPredatorOrPrey where
   getAbilities (ReturnToPredatorOrPrey attrs) =
-    [mkAbility attrs 1 $ ActionAbility [Action.Resign] Nothing (ActionCost 1)]
+    [mkAbility attrs 1 $ ActionAbility #resign Nothing (ActionCost 1)]
 
 instance RunMessage ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs) = runQueueT $ case msg of

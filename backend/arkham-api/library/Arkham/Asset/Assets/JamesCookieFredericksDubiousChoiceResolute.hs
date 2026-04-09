@@ -26,7 +26,7 @@ jamesCookieFredericksDubiousChoiceResolute =
 instance HasAbilities JamesCookieFredericksDubiousChoiceResolute where
   getAbilities (JamesCookieFredericksDubiousChoiceResolute a) =
     [ restricted a 1 (ControlsThis <> DuringTurn You)
-        $ FastAbility' (assetUseCost a Ammo 1 <> exhaust a) [#fight]
+        $ FastAbility' (assetUseCost a Ammo 1 <> exhaust a) #fight
     ]
 
 instance RunMessage JamesCookieFredericksDubiousChoiceResolute where

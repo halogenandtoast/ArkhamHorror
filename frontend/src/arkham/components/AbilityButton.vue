@@ -6,6 +6,7 @@ import type { AbilityLabel, FightLabel, FightLabelWithSkill, EvadeLabel, EvadeLa
 import { SkillType } from '@/arkham/types/SkillType';
 import type { Ability, AbilitySkills } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
+import { actionsToList } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
 import { replaceIcons, formatContent } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
@@ -94,7 +95,7 @@ const isAction = (action: Action) => {
     if (tag !== "ActionAbility") {
       return false
     }
-    const actions = ability.value.type.actions
+    const actions = actionsToList(ability.value.type.actions)
     return actions.indexOf(action) !== -1
   }
 
@@ -193,8 +194,16 @@ const abilityLabel = computed(() => {
     const { actions, cost } = ability.value.type
     const total = totalActionCost(cost)
     const skillIcon = abilityString.value ? ` (${abilityString.value})` : ""
-    if (actions.length === 1) {
-      return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>${skillIcon}`
+    const actionPrefix = total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""
+
+    if (actions.tag === "OrActions") {
+      const labels = actions.contents.map(a => actionsToList(a).map(n => t(n)).join(" "))
+      return `${actionPrefix}<span>${t('slashOr', labels)}</span>${skillIcon}`
+    }
+
+    const asList = actionsToList(actions)
+    if (asList.length === 1) {
+      return `${actionPrefix}<span>${t(asList[0])}</span>${skillIcon}`
     }
 
     return replaceIcons("{action}".repeat(totalActionCost(cost)))

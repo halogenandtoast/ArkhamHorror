@@ -22,6 +22,7 @@ mkChooseEvade sid iid source =
       , chooseEvadeTarget = Nothing
       , chooseEvadeSkillType = #agility
       , chooseEvadeIsAction = False
+      , chooseEvadePayCost = False
       , chooseEvadeOverride = False
       , chooseEvadeSkillTest = sid
       , chooseEvadeAdditionalOptions = []

@@ -108,7 +108,7 @@ righteousHunt1 =
   (event "07109" "Righteous Hunt" 1 Guardian)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Blessed]
-    , cdActions = CardAction #engage
+    , cdActions = #engage
     , cdLevel = Just 1
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdCriteria =
@@ -136,7 +136,7 @@ breakingAndEntering =
   (event "07114" "Breaking and Entering" 2 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdAlternateCardCodes = ["12050"]
     }
@@ -146,7 +146,7 @@ radiantSmite1 =
   (event "07153" "Radiant Smite" 1 Guardian)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Spell, Blessed]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 1
     }
 
@@ -219,7 +219,7 @@ riastrad1 =
   (event "07193" "Ríastrad" 0 Rogue)
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Spell, Spirit, Cursed]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 1
     }
 

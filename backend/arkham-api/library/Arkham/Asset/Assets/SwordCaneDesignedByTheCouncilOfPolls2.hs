@@ -3,10 +3,12 @@ module Arkham.Asset.Assets.SwordCaneDesignedByTheCouncilOfPolls2 (swordCaneDesig
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Evade
-import Arkham.Fight
+import Arkham.Actions (orActions)
+import Arkham.Evade.Types
+import Arkham.Fight.Types
+import Arkham.Helpers.CombatTarget
 import Arkham.Matcher
-import Arkham.Modifier (ModifierType(..))
+import Arkham.Modifier
 import Arkham.Message.Lifted.Choose
 
 newtype SwordCaneDesignedByTheCouncilOfPolls2 = SwordCaneDesignedByTheCouncilOfPolls2 AssetAttrs
@@ -21,8 +23,7 @@ instance HasAbilities SwordCaneDesignedByTheCouncilOfPolls2 where
     [ controlled x 1 (any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2), EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)])
         $ freeReaction
         $ AssetEntersPlay #after (be x)
-    , displayAsAction $ restricted x 2 ControlsThis $ fightAction $ exhaust x
-    , displayAsAction $ restricted x 2 ControlsThis $ evadeAction $ exhaust x
+    , displayAsAction $ restricted x 2 ControlsThis $ ActionAbility (orActions [#fight, #evade]) Nothing (exhaust x <> ActionCost 1)
     ]
 
 instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
@@ -38,21 +39,18 @@ instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      fightableEnemies <- select $ CanFightEnemy source
-      evadeableEnemies <- select $ CanEvadeEnemy source
-
+      canFight <- hasFightTargets source iid
+      canEvade <- hasEvadeTargets source iid
       sid <- getRandom
-
       skillTestModifier sid source iid (AnySkillValue 1)
-
       chooseOrRunOneM iid do
-        unless (null evadeableEnemies) $ labeled "Evade" do
+        when canEvade $ labeled "Evade" do
           chooseOneM iid do
             for_ [#willpower, #agility] \sk -> do
-              skillLabeled sk $ chooseEvadeEnemyEdit sid iid source (Arkham.Evade.withSkillType sk)
-        unless (null fightableEnemies) $ labeled "Fight" do
+              skillLabeled sk $ chooseEvadeEnemyEdit sid iid source (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
+        when canFight $ labeled "Fight" do
           chooseOneM iid do
             for_ [#willpower, #combat] \sk -> do
-              skillLabeled sk $ chooseFightEnemyEdit sid iid source (Arkham.Fight.withSkillType sk)
+              skillLabeled sk $ chooseFightEnemyEdit sid iid source (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})
       pure a
     _ -> SwordCaneDesignedByTheCouncilOfPolls2 <$> liftRunMessage msg attrs

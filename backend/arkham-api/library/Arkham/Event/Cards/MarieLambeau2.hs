@@ -9,7 +9,7 @@ consumeLife =
   (event "60462" "Consume Life" 3 Mystic)
     { cdCardTraits = setFromList [Spell]
     , cdSkills = [#combat, #willpower]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 favorOfBaalshandor :: CardDef
@@ -52,7 +52,7 @@ spiritualCharm =
   (event "60466" "Spiritual Charm" 0 Mystic)
     { cdCardTraits = setFromList [Spell, Trick]
     , cdSkills = [#agility, #willpower]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria =
         Just $ exists $ NonEliteEnemy <> EnemyAt (oneOf [YourLocation, ConnectedLocation NotForMovement])
     }
@@ -102,5 +102,5 @@ bendBlood5 =
     { cdCardTraits = setFromList [Spell, Cursed]
     , cdSkills = [#combat, #combat, #willpower, #willpower]
     , cdLevel = Just 5
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }

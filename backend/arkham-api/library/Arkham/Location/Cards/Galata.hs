@@ -19,7 +19,7 @@ instance HasAbilities Galata where
     extendRevealed1 a
       $ groupLimit PerRound
       $ restricted a 1 (Here <> exists ConcealedCardAny <> youExist InvestigatorCanExpose)
-      $ FastAbility' (ResourceCost 3) [#parley]
+      $ FastAbility' (ResourceCost 3) #parley
 
 instance RunMessage Galata where
   runMessage msg l@(Galata attrs) = runQueueT $ case msg of

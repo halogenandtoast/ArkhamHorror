@@ -3,7 +3,9 @@ module Arkham.Asset.Assets.SummonedHound1 (summonedHound1) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Actions (orActions)
 import Arkham.Fight
+import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
 import Arkham.Investigate.Types
@@ -21,19 +23,17 @@ summonedHound1 = assetWith SummonedHound1 Cards.summonedHound1 $ healthL ?~ 3
 instance HasAbilities SummonedHound1 where
   getAbilities (SummonedHound1 attrs) =
     [ controlled attrs 1 (not_ DuringAction <> DuringTurn You)
-        $ FastAbility' (exhaust attrs) [#fight]
-    , controlled attrs 1 (not_ DuringAction <> DuringTurn You)
-        $ FastAbility' (exhaust attrs) [#investigate]
+        $ FastAbility' (exhaust attrs) (orActions [#fight, #investigate])
     ]
 
 instance RunMessage SummonedHound1 where
   runMessage msg a@(SummonedHound1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) _ -> do
       sid <- getRandom
-      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
+      canFight <- hasFightTargets (toSource attrs) iid
       canInvestigate <- maybe (pure False) (`matches` InvestigatableLocation) =<< getMaybeLocation iid
       chooseOrRunOneM iid do
-        unless (null fightableEnemies) do
+        when canFight do
           labeled "Fight" do
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
             chooseFightEnemyEdit sid iid (attrs.ability 1) \cf -> cf {chooseFightIsAction = True}

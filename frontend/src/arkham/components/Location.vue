@@ -8,6 +8,7 @@ import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
+import { actionsToList } from '@/arkham/types/Action';
 import ConcealedCard from '@/arkham/components/ConcealedCard.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Seal from '@/arkham/components/Seal.vue';
@@ -96,7 +97,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
+    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
   }
 
   return false

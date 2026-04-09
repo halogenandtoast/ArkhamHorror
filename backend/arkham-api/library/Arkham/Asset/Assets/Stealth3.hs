@@ -21,7 +21,7 @@ instance HasAbilities Stealth3 where
   getAbilities (Stealth3 attrs) =
     [ wantsSkillTest AnySkillTest
         $ controlledAbility attrs 1 (DuringTurn You)
-        $ FastAbility' (exhaust attrs) [#evade]
+        $ FastAbility' (exhaust attrs) #evade
     ]
 
 instance HasModifiersFor Stealth3 where

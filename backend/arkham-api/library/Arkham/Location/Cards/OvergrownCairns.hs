@@ -29,7 +29,7 @@ instance HasAbilities OvergrownCairns where
                 <> InvestigatorExists
                   (HealableInvestigator (toSource attrs) HorrorType You)
             )
-          $ ActionAbility [] Nothing
+          $ ActionAbility mempty Nothing
           $ Costs [ActionCost 1, ResourceCost 2]
       | locationRevealed attrs
       ]

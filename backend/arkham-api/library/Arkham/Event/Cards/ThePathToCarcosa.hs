@@ -102,7 +102,7 @@ astralTravel =
   (event "03034" "Astral Travel" 3 Mystic)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = singleton Spell
-    , cdActions = CardAction #move
+    , cdActions = #move
     , cdCriteria = Just $ exists $ RevealedLocation <> Unblocked <> NotYourLocation
     , cdAlternateCardCodes = ["60413"]
     }
@@ -176,7 +176,7 @@ stormOfSpirits =
   (event "03153" "Storm of Spirits" 3 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = singleton Spell
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 fightOrFlight :: CardDef
@@ -256,7 +256,7 @@ cheapShot =
   (event "03194" "Cheap Shot" 2 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdAlternateCardCodes = ["60312"]
     }
 

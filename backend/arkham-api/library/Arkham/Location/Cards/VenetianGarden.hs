@@ -36,7 +36,7 @@ instance HasAbilities VenetianGarden where
                 <> InvestigatorExists
                   (HealableInvestigator (toSource attrs) HorrorType You)
             )
-          $ ActionAbility [] Nothing
+          $ ActionAbility mempty Nothing
           $ Costs [ActionCost 2, ResourceCost 2]
       | locationRevealed attrs
       ]

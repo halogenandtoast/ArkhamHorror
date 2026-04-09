@@ -20,7 +20,7 @@ instance HasAbilities SawboneAlleyInTooDeep where
       [ skillTestAbility $ restricted attrs 1 Here parleyAction_
       , groupLimit PerGame
           $ restricted attrs 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 7))
-          $ FastAbility' Free [#parley]
+          $ FastAbility' Free #parley
       ]
 
 instance RunMessage SawboneAlleyInTooDeep where

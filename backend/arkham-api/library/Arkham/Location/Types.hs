@@ -3,7 +3,6 @@
 module Arkham.Location.Types (module Arkham.Location.Types, module X, Field (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
@@ -340,7 +339,7 @@ locationWith f def shroud' revealClues g =
 
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs =
-  toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility [Action.Resign] Nothing (ActionCost 1))
+  toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility #resign Nothing (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs =

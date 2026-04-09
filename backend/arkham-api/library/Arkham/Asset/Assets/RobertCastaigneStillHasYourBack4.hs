@@ -31,7 +31,7 @@ instance HasAbilities RobertCastaigneStillHasYourBack4 where
             <> basic (#firearm <> CardFillsLessSlots 2 #hand)
             <> CardWithPerformableAbility #fight [IgnoreAllCosts]
         )
-        $ FastAbility' (exhaust a) [#fight]
+        $ FastAbility' (exhaust a) #fight
     ]
 
 instance RunMessage RobertCastaigneStillHasYourBack4 where

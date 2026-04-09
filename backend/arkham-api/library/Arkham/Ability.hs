@@ -18,6 +18,7 @@ import Arkham.Duration as X
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.Actions
 import Arkham.Constants
 import Arkham.I18n
 import Arkham.Matcher
@@ -217,7 +218,7 @@ fightAbility entity idx cost criteria =
 
 evadeAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Cost -> Criterion -> Ability
 evadeAbility entity idx cost criteria =
-  (mkAbility entity idx (ActionAbility [#evade] #agility cost))
+  (mkAbility entity idx (ActionAbility #evade #agility cost))
     { abilityCriteria = criteria
     }
 
@@ -236,7 +237,7 @@ reactionAbility
   -> Criterion
   -> Ability
 reactionAbility entity idx cost window criteria =
-  (mkAbility entity idx (ReactionAbility window cost []))
+  (mkAbility entity idx (ReactionAbility window cost mempty))
     { abilityCriteria = criteria
     }
 
@@ -264,13 +265,13 @@ cosmos a n = mkAbility a n Cosmos
 
 reaction
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
-reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost [])
+reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost mempty)
 
 uncancellable :: Ability -> Ability
 uncancellable ab = ab {abilityCanBeCancelled = False}
 
 abilityEffect :: (HasCardCode a, Sourceable a) => a -> [Action] -> Cost -> Ability
-abilityEffect a actions cost = mkAbility a (-1) (AbilityEffect actions cost)
+abilityEffect a actions cost = mkAbility a (-1) (AbilityEffect (andActions actions) cost)
 
 basicAbility :: Ability -> Ability
 basicAbility ab = ab {abilityBasic = True}
@@ -349,15 +350,17 @@ isTriggeredAbility =
 -- Hidden to this module
 abilityTypeActions :: Bool -> AbilityType -> [Action]
 abilityTypeActions isBasic = \case
-  FastAbility' _ actions -> actions
-  ReactionAbility {actions} -> actions
+  FastAbility' _ actions -> actionsToList actions
+  ReactionAbility {actions} -> actionsToList actions
   CustomizationReaction {} -> []
   ConstantReaction {} -> []
-  ActionAbility { actions } -> if #play `elem` actions then actions else [#activate | not isBasic] <> actions
+  ActionAbility {actions} ->
+    let as = actionsToList actions
+     in if #play `elem` as then as else [#activate | not isBasic] <> as
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
   ForcedAbilityWithCost _ _ -> []
-  AbilityEffect actions _ -> actions
+  AbilityEffect actions _ -> actionsToList actions
   Haunted -> []
   ServitorAbility action -> [action]
   Cosmos -> []
@@ -372,7 +375,7 @@ abilityTypeCost = \case
   ReactionAbility _ cost _ -> cost
   CustomizationReaction _ _ cost -> cost
   ConstantReaction _ _ cost -> cost
-  ActionAbility { cost } -> cost
+  ActionAbility {cost} -> cost
   SilentForcedAbility _ -> Free
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
@@ -394,7 +397,7 @@ modifyCost f = \case
     CustomizationReaction label window $ f cost
   ConstantReaction label window cost ->
     ConstantReaction label window $ f cost
-  a@ActionAbility { cost } -> a { cost = f cost }
+  a@ActionAbility {cost} -> a {cost = f cost}
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->

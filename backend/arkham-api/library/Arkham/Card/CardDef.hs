@@ -4,6 +4,7 @@
 module Arkham.Card.CardDef where
 
 import Arkham.Action (Action)
+import Arkham.Actions as X
 import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Card.CardCode
@@ -27,7 +28,6 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Trait
-import Control.Monad.Fail (fail)
 import Data.Aeson.TH
 import GHC.Records
 
@@ -68,65 +68,6 @@ data CardLimit
   | MaxPerTraitPerRound Trait Int
   | LimitPerTraitPerLocation Trait Int
   deriving stock (Show, Eq, Ord, Data)
-
-data CardActions
-  = CardAction Action
-  | AndCardActions [CardActions]
-  | OrCardActions [CardActions]
-  deriving stock (Show, Eq, Ord, Data)
-
-cardActionsToList :: CardActions -> [Action]
-cardActionsToList (CardAction a) = [a]
-cardActionsToList (AndCardActions as) = concatMap cardActionsToList as
-cardActionsToList (OrCardActions as) = nub $ concatMap cardActionsToList as
-
-isOrCardActions :: CardActions -> Bool
-isOrCardActions (OrCardActions _) = True
-isOrCardActions _ = False
-
--- Smart constructors
-andActions :: [Action] -> CardActions
-andActions [a] = CardAction a
-andActions as = AndCardActions (map CardAction as)
-
-orActions :: [Action] -> CardActions
-orActions [a] = CardAction a
-orActions as = OrCardActions (map CardAction as)
-
--- Top-level branches of an OrCardActions (for presenting choices)
-orBranches :: CardActions -> [[Action]]
-orBranches (OrCardActions as) = map cardActionsToList as
-orBranches other = [cardActionsToList other]
-
-instance ToJSON CardActions where
-  toJSON (CardAction a) = object ["tag" .= ("CardAction" :: Text), "contents" .= a]
-  toJSON (AndCardActions as) = object ["tag" .= ("AndCardActions" :: Text), "contents" .= as]
-  toJSON (OrCardActions as) = object ["tag" .= ("OrCardActions" :: Text), "contents" .= as]
-
-instance FromJSON CardActions where
-  parseJSON v = case v of
-    Array _ -> andActions <$> parseJSON v
-    _ ->
-      withObject
-        "CardActions"
-        ( \o -> do
-            tag <- o .: "tag"
-            case (tag :: Text) of
-              "CardAction" -> CardAction <$> o .: "contents"
-              "AndCardActions" -> AndCardActions <$> o .: "contents"
-              "OrCardActions" -> OrCardActions <$> o .: "contents"
-              _ -> fail $ "Unknown CardActions tag: " <> show tag
-        )
-        v
-
-instance Semigroup CardActions where
-  AndCardActions as <> AndCardActions bs = AndCardActions (as <> bs)
-  AndCardActions as <> b = AndCardActions (as <> [b])
-  a <> AndCardActions bs = AndCardActions (a : bs)
-  a <> b = AndCardActions [a, b]
-
-instance Monoid CardActions where
-  mempty = AndCardActions []
 
 mconcat
   [ deriveJSON defaultOptions ''DeckRestriction
@@ -207,7 +148,7 @@ data CardDef = CardDef
   , cdRevealedCardTraits :: Set Trait
   , cdKeywords :: Set Keyword
   , cdFastWindow :: Maybe WindowMatcher
-  , cdActions :: CardActions
+  , cdActions :: Actions
   , cdRevelation :: IsRevelation
   , cdVictoryPoints :: Maybe Int
   , cdVengeancePoints :: Maybe Int
@@ -274,9 +215,9 @@ instance HasField "meta" CardDef (Map Text Value) where
   getField = cdMeta
 
 instance HasField "actions" CardDef [Action] where
-  getField = cardActionsToList . cdActions
+  getField = actionsToList . cdActions
 
-instance HasField "cardActions" CardDef CardActions where
+instance HasField "cardActions" CardDef Actions where
   getField = cdActions
 
 instance HasField "name" CardDef Name where
@@ -344,7 +285,7 @@ emptyCardDef cCode name cType =
     , cdRevealedCardTraits = mempty
     , cdKeywords = mempty
     , cdFastWindow = Nothing
-    , cdActions = AndCardActions []
+    , cdActions = AndActions []
     , cdRevelation = NoRevelation
     , cdVictoryPoints = Nothing
     , cdVengeancePoints = Nothing

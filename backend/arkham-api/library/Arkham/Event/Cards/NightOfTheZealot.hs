@@ -134,7 +134,7 @@ backstab =
   (event "01051" "Backstab" 3 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdAlternateCardCodes = ["01551"]
     }
 
@@ -189,7 +189,7 @@ blindingLight =
   (event "01066" "Blinding Light" 2 Mystic)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Spell]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdAlternateCardCodes = ["01566"]
     }
 
@@ -209,7 +209,7 @@ blindingLight2 =
   (event "01069" "Blinding Light" 1 Mystic)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Spell]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 2
     , cdAlternateCardCodes = ["01569"]
     }
@@ -219,7 +219,7 @@ cunningDistraction =
   (event "01078" "Cunning Distraction" 5 Survivor)
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdAlternateCardCodes = ["01578"]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdCriteria = Just $ exists $ EnemyCanBeEvadedBy ThisCard

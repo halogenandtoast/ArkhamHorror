@@ -63,8 +63,8 @@ const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
 
 const scenario = computed(() =>
   gameMode.value === 'SideStory'
-    ? sideStories.value.find((s) => s.id === selectedScenario.value)
-    : scenarios.value.find((s) => s.id === selectedScenario.value)
+    ? sideStories.value.find(() => s.id === selectedScenario.value)
+    : scenarios.value.find(() => s.id === selectedScenario.value)
 )
 
 const campaign = computed(() =>
@@ -81,7 +81,7 @@ const selectedCampaignReturnTo = computed(() => {
 
 const campaignScenarios = computed(() =>
   selectedCampaign.value
-    ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && s.show !== false)
+    ? scenarios.value.filter(() => s.campaign == selectedCampaign.value && s.show !== false)
     : []
 )
 
@@ -94,7 +94,7 @@ const canStandalone = computed(() => {
 
 const difficulties = computed<Difficulty[]>(() => {
   if (gameMode.value === 'SideStory') {
-    const s = sideStories.value.find((c) => c.id === selectedScenario.value)
+    const  = sideStories.value.find((c) => c.id === selectedScenario.value)
     if (s?.standaloneDifficulties) return s.standaloneDifficulties as Difficulty[]
     return []
   }
@@ -342,7 +342,7 @@ async function start() {
             class="action secondary"
             @click="goBack"
           >
-            {{ $t('Back') ?? 'Back' }}
+            {{ $t('Back') }}
           </button>
 
           <button v-if="step === 'GameOptions'" class="primary-action" type="submit" :disabled="nextDisabled">

@@ -3363,6 +3363,75 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           n = cardDrawAmount cardDraw
 
         modifiers' <- getModifiers (toTarget a)
+
+        -- Shared finalization for a completed card draw. Takes all drawn cards
+        -- (before the cardDraw.discard filter) and the remaining deck, then
+        -- pushes the appropriate messages and returns the updated attrs.
+        let
+          finalizeDraw allBeforeFilter deck' = do
+            let
+              (discarded, allDrawn) =
+                maybe
+                  ([], allBeforeFilter)
+                  (\mtch -> partition (`cardMatch` mtch) allBeforeFilter)
+                  cardDraw.discard
+              doShuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
+              handleCard c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
+            msgs <- if not doShuffleBackInEachWeakness then concatMapM handleCard allDrawn else pure []
+            player <- getPlayer iid
+            let
+              weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
+              msgs' =
+                (<> msgs)
+                  $ guard (doShuffleBackInEachWeakness && notNull weaknesses)
+                  *> [ FocusCards weaknesses
+                     , chooseOne
+                         player
+                         [ Label
+                             "Shuffle Weaknesses back in"
+                             [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses]
+                         ]
+                     ]
+            windowMsgs <-
+              if null deck'
+                then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
+                else pure []
+            let (before, _, after) = frame $ Window.DrawCards iid $ map toCard allDrawn
+            checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
+            -- Cards with revelations won't be in hand after they resolve, so exclude them from the discard
+            let
+              toDrawDiscard = \case
+                AfterDrawDiscard x -> Sum x
+                _ -> mempty
+              discardable = filter (`cardMatch` (DiscardableCard <> NotCard CardWithRevelation)) allDrawn
+              discardAmount =
+                min (length discardable) $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
+              -- Only focus those that will still be in hand
+              focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
+            pushAll
+              $ windowMsgs
+              <> [DeckHasNoCards iid Nothing | null deck']
+              <> [before]
+              <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
+              <> msgs'
+              <> [after]
+              <> ( guard (discardAmount > 0)
+                     *> [ FocusCards focusable
+                        , chooseN
+                            player
+                            discardAmount
+                            [targetLabel card [DiscardCard iid (toSource a) card.id] | card <- discardable]
+                        , UnfocusCards
+                        ]
+                 )
+              <> [CheckHandSize iid | checkHandSize]
+            pure
+              $ a
+              & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
+              & (deckL .~ Deck deck')
+              & (drawnCardsL .~ mempty)
+              & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
+
         if null investigatorDeck
           then do
             -- What happens if the Yorick player has Graveyard Ghouls engaged
@@ -3373,13 +3442,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             -- horror. In this case, you cannot shuffle your discard pile into
             -- your deck, so you will neither draw 1 card, nor will you take 1
             -- horror."
-            unless (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
-              wouldDo
-                (EmptyDeck iid (Just $ drawCards iid source n))
-                (Window.DeckWouldRunOutOfCards iid)
-                (Window.DeckHasNoCards iid)
-            -- push $ EmptyDeck iid
-            pure a
+            let canShuffle = not (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers')
+            if canShuffle
+              then do
+                wouldDo
+                  (EmptyDeck iid (Just $ drawCards iid source n))
+                  (Window.DeckWouldRunOutOfCards iid)
+                  (Window.DeckHasNoCards iid)
+                pure a
+              else if null investigatorDrawnCards
+                then pure a
+                else finalizeDraw investigatorDrawnCards []
           else do
             let deck = unDeck investigatorDeck
             if length deck < n
@@ -3387,73 +3460,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 push $ drawCards iid source (n - length deck)
                 pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
               else do
-                let
-                  (drawn, deck') = splitAt n deck
-                  allDrawn' = investigatorDrawnCards <> drawn
-                  (discarded, allDrawn) = maybe ([], allDrawn') (\mtch -> partition (`cardMatch` mtch) allDrawn') cardDraw.discard
-                  doShuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
-                  handleCardDraw c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
-                msgs <- if not doShuffleBackInEachWeakness then concatMapM handleCardDraw allDrawn else pure []
-                player <- getPlayer iid
-                let
-                  weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
-                  msgs' =
-                    (<> msgs)
-                      $ guard (doShuffleBackInEachWeakness && notNull weaknesses)
-                      *> [ FocusCards weaknesses
-                         , chooseOne
-                             player
-                             [ Label
-                                 "Shuffle Weaknesses back in"
-                                 [ UnfocusCards
-                                 , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses
-                                 ]
-                             ]
-                         ]
-
-                windowMsgs <-
-                  if null deck'
-                    then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
-                    else pure []
-                let (before, _, after) = frame $ Window.DrawCards iid $ map toCard allDrawn
-                checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
-
-                -- Cards with revelations won't be in hand afte they resolve, so exclude them from the discard
-                let
-                  toDrawDiscard = \case
-                    AfterDrawDiscard x -> Sum x
-                    _ -> mempty
-                let discardable =
-                      filter (`cardMatch` (DiscardableCard <> NotCard CardWithRevelation)) allDrawn
-                let discardAmount =
-                      min (length discardable)
-                        $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
-                -- Only focus those that will still be in hand
-                let focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
-
-                pushAll
-                  $ windowMsgs
-                  <> [DeckHasNoCards iid Nothing | null deck']
-                  <> [before]
-                  <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
-                  <> msgs'
-                  <> [after]
-                  <> ( guard (discardAmount > 0)
-                         *> [ FocusCards focusable
-                            , chooseN
-                                player
-                                discardAmount
-                                [targetLabel card [DiscardCard iid (toSource a) card.id] | card <- discardable]
-                            , UnfocusCards
-                            ]
-                     )
-                  <> [CheckHandSize iid | checkHandSize]
-                pure
-                  $ a
-                  & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
-                  & (deckL .~ Deck deck')
-                  & (drawnCardsL .~ mempty)
-                  & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
+                let (drawn, deck') = splitAt n deck
+                finalizeDraw (investigatorDrawnCards <> drawn) deck'
   InvestigatorDrewPlayerCardFrom iid card mDeck | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
     let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))

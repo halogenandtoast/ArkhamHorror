@@ -50,8 +50,8 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
     Entity stepId step <- maybeToExceptM (jsonError "Missing step") $ getBy (UniqueStep gameId n)
     -- never delete the initial step as it can not be redone
     -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
-    when (arkhamStepStep step <= 0) $ throwError $ jsonErrorContents step "Can't undo the first step"
-    if null (patchOperations $ choicePatchDown $ arkhamStepChoice step)
+    when (step.step <= 0) $ throwError $ jsonErrorContents step "Can't undo the first step"
+    if null (patchOperations $ choicePatchDown step.choice)
       then do
         -- we don't need to apply any real updates so let's just remove the step
         -- ensure previous step exists
@@ -82,11 +82,11 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
             let
               arkhamGame =
                 ArkhamGame
-                  (arkhamGameName game)
+                  game.name
                   (if isDebug then ge else ge {gameSeed = seed})
                   (n - 1)
-                  (arkhamGameMultiplayerVariant game)
-                  (arkhamGameCreatedAt game)
+                  game.multiplayerVariant
+                  game.createdAt
                   now
             lift do
               replace gameId arkhamGame
@@ -96,7 +96,7 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
                 where_ $ entries.step >=. val (n - 1)
               deleteKey stepId
 
-              case arkhamGameMultiplayerVariant game of
+              case game.multiplayerVariant of
                 Solo ->
                   replace pid
                     $ arkhamPlayer
@@ -113,8 +113,8 @@ putApiV1ArkhamGameUndoR gameId = do
     getBy (UniquePlayer userId' gameId) >>= \case
       Nothing | user.admin -> do
         game <- get404 gameId
-        player <- get404 $ coerce $ gameActivePlayerId $ arkhamGameCurrentData game
-        pure $ coerce $ arkhamPlayerUserId player
+        player <- get404 @_ @_ @ArkhamPlayer $ coerce $ gameActivePlayerId game.currentData
+        pure player.userId
       _ -> pure userId'
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
@@ -137,17 +137,17 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
           fmap unValue <$> select do
             entries <- from $ table @ArkhamLogEntry
             where_ $ entries.arkhamGameId ==. val gameId
-            where_ $ entries.step <. val (arkhamGameStep agame - n)
+            where_ $ entries.step <. val (agame.step - n)
             orderBy [desc entries.createdAt]
             pure entries.body
 
         let g =
               ArkhamGame
-                (arkhamGameName agame)
-                ((arkhamGameCurrentData agame) {gameSeed = x})
-                (arkhamGameStep agame)
-                (arkhamGameMultiplayerVariant agame)
-                (arkhamGameCreatedAt agame)
+                agame.name
+                (agame.currentData {gameSeed = x})
+                agame.step
+                agame.multiplayerVariant
+                agame.createdAt
                 now
 
         replace gameId g
@@ -163,10 +163,10 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
 stepBackScenario :: UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Int))
 stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
   runExceptT do
-    let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
+    let n = gameScenarioSteps game.currentData - 1
     when (n <= 0) $ throwError "No scenario steps to undo"
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
-    let toStep = max 0 (arkhamGameStep game - n)
+    let toStep = max 0 (game.step - n)
     steps <- lift $ select do
       steps <- from $ table @ArkhamStep
       where_ $ steps.arkhamGameId ==. val gameId
@@ -193,17 +193,10 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
 
     let undoPatch = foldMap (choicePatchDown . arkhamStepChoice . entityVal) steps
 
-    case patch (arkhamGameCurrentData game) undoPatch of
+    case patch game.currentData undoPatch of
       Error e -> throwError $ jsonError $ T.pack e
       Success ge -> lift do
-        let arkhamGame =
-              ArkhamGame
-                (arkhamGameName game)
-                ge
-                toStep
-                (arkhamGameMultiplayerVariant game)
-                (arkhamGameCreatedAt game)
-                now
+        let arkhamGame = ArkhamGame game.name ge toStep game.multiplayerVariant game.createdAt now
 
         replace gameId arkhamGame
         delete do
@@ -211,7 +204,7 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
           where_ $ entries.arkhamGameId ==. val gameId
           where_ $ entries.step >. val toStep
 
-        case arkhamGameMultiplayerVariant game of
+        case game.multiplayerVariant of
           Solo ->
             replace pid
               $ arkhamPlayer

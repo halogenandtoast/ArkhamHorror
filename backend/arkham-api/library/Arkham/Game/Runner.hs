@@ -1963,7 +1963,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         getSkillTest >>= \case
           Just st -> do
             case opts of
-              [opt] -> push $ uiToRun opt.option
+              [opt] -> case opt.criteria of
+                Nothing -> push $ uiToRun opt.option
+                Just c -> do
+                  ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                  when ok $ push $ uiToRun opt.option
               _ -> do
                 opts' <-
                   opts & mapMaybeM \opt -> do

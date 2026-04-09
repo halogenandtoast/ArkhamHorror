@@ -171,6 +171,9 @@ instance HasField "canDamage" Source EnemyMatcher where
 enemy_ :: EnemyMatcher -> EnemyMatcher
 enemy_ = id
 
+enemyCanBeEvadedBy :: Sourceable source => source -> EnemyMatcher
+enemyCanBeEvadedBy = EnemyCanBeEvadedBy . toSource
+
 instance IsString EnemyMatcher where
   fromString = EnemyWithTitle . fromString
 

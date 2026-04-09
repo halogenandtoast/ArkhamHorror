@@ -24,6 +24,7 @@ data Movement = Movement
   , moveAdditionalEnterCosts :: Cost
   , moveSkipEngagement :: Bool
   , moveId :: MovementId
+  , moveForced :: Bool
   }
   deriving stock (Show, Ord, Eq, Data)
 
@@ -60,12 +61,19 @@ instance HasField "skipEngagement" Movement Bool where
 instance HasField "id" Movement MovementId where
   getField = moveId
 
+instance HasField "forced" Movement Bool where
+  getField = moveForced
+
 data MovementMeans = Direct | OneAtATime | Towards | Place | TowardsN Int
   deriving stock (Show, Ord, Eq, Data)
 
 -- Forced movement should not require additional costs
 uncancellableMove :: Movement -> Movement
 uncancellableMove m = m {moveCancelable = False, movePayAdditionalCosts = False}
+
+-- Forced movement should not require additional costs
+forcedMove :: Movement -> Movement
+forcedMove m = m {moveCancelable = False, movePayAdditionalCosts = False, moveForced = True}
 
 afterMove :: [Message] -> Movement -> Movement
 afterMove msgs m = m {moveAfter = msgs}
@@ -93,6 +101,7 @@ move (toSource -> moveSource) (toTarget -> moveTarget) lid = do
       , moveAdditionalEnterCosts = Free
       , moveSkipEngagement = False
       , moveId
+      , moveForced = False
       }
 
 moveToMatch
@@ -115,6 +124,7 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher = do
       , moveAdditionalEnterCosts = Free
       , moveSkipEngagement = False
       , moveId
+      , moveForced = False
       }
 
 moveTowards
@@ -137,6 +147,7 @@ moveTowards (toSource -> moveSource) (toTarget -> moveTarget) (asId -> locationI
       , moveAdditionalEnterCosts = Free
       , moveSkipEngagement = False
       , moveId
+      , moveForced = False
       }
 
 moveTowardsMatching
@@ -159,6 +170,7 @@ moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher = 
       , moveAdditionalEnterCosts = Free
       , moveSkipEngagement = False
       , moveId
+      , moveForced = False
       }
 
 moveToLocationMatcher :: Movement -> LocationMatcher
@@ -193,5 +205,6 @@ instance FromJSON Movement where
     moveAdditionalEnterCosts <- o .:? "moveAdditionalEnterCosts" .!= Free
     moveSkipEngagement <- o .:? "moveSkipEngagement" .!= False
     moveId <- o .:? "moveId" .!= MovementId (fromWords64 6128981282234515924 12039885860129472512)
+    moveForced <- o .:? "moveForced" .!= False
 
     pure Movement {..}

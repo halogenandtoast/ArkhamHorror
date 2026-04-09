@@ -35,6 +35,11 @@ moveTo
   => source -> InvestigatorId -> location -> m ()
 moveTo source iid location = moveToEdit source iid location id
 
+forcedMoveTo
+  :: (ReverseQueue m, Sourceable source, ToId location LocationId)
+  => source -> InvestigatorId -> location -> m ()
+forcedMoveTo source iid location = moveToEdit source iid location forcedMove
+
 moveToEdit
   :: (ReverseQueue m, Sourceable source, ToId location LocationId)
   => source -> InvestigatorId -> location -> (Movement -> Movement) -> m ()

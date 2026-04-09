@@ -3004,11 +3004,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         )
   ResolveMovement iid | iid == investigatorId -> do
     mods <- getModifiers iid
-    let canMove =
-          none
-            (`elem` mods)
-            (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
-    when canMove $ push $ Do msg
+    let
+      isForcedMove = maybe False (.forced) investigatorMovement
+      canMove =
+        none
+          (`elem` mods)
+          (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
+    when (canMove || isForcedMove) $ push $ Do msg
     pure a
   Do (ResolveMovement iid) | iid == investigatorId -> do
     case investigatorMovement of
@@ -3450,9 +3452,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   (Window.DeckWouldRunOutOfCards iid)
                   (Window.DeckHasNoCards iid)
                 pure a
-              else if null investigatorDrawnCards
-                then pure a
-                else finalizedDraw investigatorDrawnCards []
+              else
+                if null investigatorDrawnCards
+                  then pure a
+                  else finalizedDraw investigatorDrawnCards []
           else do
             let deck = unDeck investigatorDeck
             if length deck < n

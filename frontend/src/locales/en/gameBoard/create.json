@@ -34,6 +34,7 @@
 
     "gameName": "Game Name",
     "create": "Create",
+    "back": "back",
 
     "chooseYourDeck": "Choose your deck{s}",
     "tabooList": "Taboo List: {tabooList}",

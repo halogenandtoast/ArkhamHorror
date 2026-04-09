@@ -3368,7 +3368,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         -- (before the cardDraw.discard filter) and the remaining deck, then
         -- pushes the appropriate messages and returns the updated attrs.
         let
-          finalizeDraw allBeforeFilter deck' = do
+          finalizedDraw allBeforeFilter deck' = do
             let
               (discarded, allDrawn) =
                 maybe
@@ -3452,7 +3452,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 pure a
               else if null investigatorDrawnCards
                 then pure a
-                else finalizeDraw investigatorDrawnCards []
+                else finalizedDraw investigatorDrawnCards []
           else do
             let deck = unDeck investigatorDeck
             if length deck < n
@@ -3461,7 +3461,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
               else do
                 let (drawn, deck') = splitAt n deck
-                finalizeDraw (investigatorDrawnCards <> drawn) deck'
+                finalizedDraw (investigatorDrawnCards <> drawn) deck'
   InvestigatorDrewPlayerCardFrom iid card mDeck | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
     let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))

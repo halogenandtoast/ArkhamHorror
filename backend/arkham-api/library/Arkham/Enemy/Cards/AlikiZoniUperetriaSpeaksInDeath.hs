@@ -39,7 +39,7 @@ instance RunMessage AlikiZoniUperetriaSpeaksInDeath where
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       for_ cards \card -> do
         hollow iid card
-        whenMatch card CardWithHollowedCopy do
+        whenMatch card (CardWithHollowedCopy #any) do
           skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
           chooseOneAtATimeM iid $ targets skeys shift
       pure e

@@ -242,7 +242,11 @@
       "all": "Deal 1 damage to all enemies at your location."
     },
     "doNotExposeConcealed": "Do not expose Concealed Card",
-    "doNotRevealConcealed": "Do not reveal Concealed Card"
+    "doNotRevealConcealed": "Do not reveal Concealed Card",
+    "drDewiIrawan": {
+      "reveal": "Reveal a card from your hand to shuffle each copy of that card that is set-aside as a hollow into its owner's deck",
+      "discard": "Discard a card from your hand to shuffle any set-aside hollow into its owner's deck"
+    }
   },
   "xp": {
     "chaosTokens": "Already at 4 chaos tokens"

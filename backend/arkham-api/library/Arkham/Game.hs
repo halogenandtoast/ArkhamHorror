@@ -5240,8 +5240,8 @@ instance Query ExtendedCardMatcher where
           iids <- select who
           names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
           pure $ count (== name) names > 1
-      CardWithHollowedCopy -> do
-        hollows <- selectMap toTitle HollowedCard
+      CardWithHollowedCopy inner -> do
+        hollows <- selectMap toTitle (HollowedCard <> inner)
         pure $ cs & filter \c -> toTitle c `elem` hollows
       InEncounterDiscard -> do
         cards <- scenarioFieldMap ScenarioDiscard (map toCard)

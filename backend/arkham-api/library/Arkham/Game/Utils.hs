@@ -282,7 +282,9 @@ getCostForCard iid card isPlayAction = do
         Just resources -> case cdCost (toCardDef card) of
           Just (AnyMatchingCardCost ecMatcher) -> do
             cards <- select ecMatcher
-            pure $ Cost.OrCost $ map (Cost.ResourceCost . getCost) cards
+            pure $ case nubOrd (map (Cost.ResourceCost . getCost) cards) of
+              [x] -> x
+              xs -> Cost.OrCost xs
           Just (MatchingEnemyFieldCost enemyMatcher enemyCostField) -> do
             enemies <- select enemyMatcher
             let enemyField = case enemyCostField of

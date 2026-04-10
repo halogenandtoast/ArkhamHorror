@@ -77,6 +77,12 @@ motivationalSpeech =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Spirit]
     , cdActions = #parley
+    , cdCriteria =
+        Just
+          $ exists
+          $ PlayableCard
+            (UnpaidCost NoAction)
+            (InHandOf ForPlay (affectsOthers $ colocatedWithMatch You <> can.have.cards.leaveDiscard) <> #ally)
     }
 
 oneInTheChamber :: CardDef

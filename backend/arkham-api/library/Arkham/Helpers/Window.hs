@@ -468,6 +468,16 @@ getChaosToken = \case
     Nothing -> getChaosToken rest
   (_ : rest) -> getChaosToken rest
 
+getChaosTokens :: HasCallStack => [Window] -> [ChaosToken]
+getChaosTokens = \case
+  [] -> []
+  ((windowType -> Window.RevealChaosToken _ token) : rest) -> token : getChaosTokens rest
+  ((windowType -> Window.ResolvesChaosToken _ token) : rest) -> token : getChaosTokens rest
+  ((windowType -> Window.ScenarioEvent _ _ val) : rest) -> case maybeResult val of
+    Just token -> token : getChaosTokens rest
+    Nothing -> getChaosTokens rest
+  (_ : rest) -> getChaosTokens rest
+
 getThatEnemy :: [Window] -> Maybe EnemyId
 getThatEnemy = \case
   [] -> Nothing

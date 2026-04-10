@@ -1,5 +1,9 @@
 {
+    "applyAll": "全部",
     "skillTestTitle": "技能检定",
+    "toBeCommitted": "待投入",
+    "committedCards": "已投入卡牌",
+    "toBeCommittedNote": "在点击上方的标记前，卡牌尚未正式投入；在此之前，你的技能值可能不会显示所获得的加成。",
 
     "waitingForMorePlayers": "正在等待更多玩家",
     "showInviteLink": "使用此链接邀请玩家：",

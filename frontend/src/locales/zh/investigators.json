@@ -1,4 +1,10 @@
 {
   "Roland Banks: The Fed": "罗兰·班克斯",
-  "Daisy Walker: The Librarian":"黛西·沃克"
+
+  "Daisy Walker: The Librarian":"黛西·沃克",
+  
+  "Rex Murphy: The Reporter": "雷克斯·墨菲",
+  "Automatically fail to draw 3": "本次技能检定自动失败,并抽 3 张牌",
+  "Resolve normally": "正常结算"
+  
 }

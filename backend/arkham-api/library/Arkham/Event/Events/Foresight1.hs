@@ -24,8 +24,8 @@ foresight1 = event Foresight1 Cards.foresight1
 allCardNames :: HasGame m => m [Text]
 allCardNames = nub . sort . map toTitle <$> findAllCards (const True)
 
-getWindowInvestigator :: [Window] -> (InvestigatorId, CardDrawId)
-getWindowInvestigator [] = error "getWindowInvestigator: empty list"
+getWindowInvestigator :: HasCallStack => [Window] -> (InvestigatorId, CardDrawId)
+getWindowInvestigator [] = error $ "getWindowInvestigator: empty list\n" <> prettyCallStack callStack
 getWindowInvestigator ((windowType -> Window.WouldDrawCard iid cid _) : _) = (iid, cid)
 getWindowInvestigator (_ : ws) = getWindowInvestigator ws
 
@@ -33,7 +33,7 @@ getWindowInvestigator (_ : ws) = getWindowInvestigator ws
 
 instance RunMessage Foresight1 where
   runMessage msg e@(Foresight1 attrs) = runQueueT $ case msg of
-    InvestigatorPlayEvent iid eid _ (getWindowInvestigator -> (iid', cid)) _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid (is attrs -> True) _ (getWindowInvestigator -> (iid', cid)) _ -> do
       cardNames <- allCardNames
 
       chooseOneDropDown iid =<< for cardNames \name -> do

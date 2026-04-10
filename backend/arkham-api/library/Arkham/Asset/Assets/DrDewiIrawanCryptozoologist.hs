@@ -15,7 +15,7 @@ newtype DrDewiIrawanCryptozoologist = DrDewiIrawanCryptozoologist AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drDewiIrawanCryptozoologist :: AssetCard DrDewiIrawanCryptozoologist
-drDewiIrawanCryptozoologist = asset DrDewiIrawanCryptozoologist Cards.drDewiIrawanCryptozoologist
+drDewiIrawanCryptozoologist = ally DrDewiIrawanCryptozoologist Cards.drDewiIrawanCryptozoologist (2, 3)
 
 instance HasModifiersFor DrDewiIrawanCryptozoologist where
   getModifiersFor (DrDewiIrawanCryptozoologist a) = controllerGets a [SkillModifier #willpower 1]

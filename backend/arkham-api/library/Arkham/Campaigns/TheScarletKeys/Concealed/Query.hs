@@ -14,6 +14,7 @@ import Arkham.Matcher.Source
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Tracing
+import Data.Function (on)
 
 data ForExpose = ForExpose Source | NotForExpose
 
@@ -26,8 +27,14 @@ getConcealedAt
   :: (HasGame m, Tracing m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]
 getConcealedAt fe location = do
   concealed <- getConcealedAtAll fe location
-  let (known, unknown) = partition (attr concealedCardKnown) concealed
-  pure $ known <> take 1 unknown
+  pure
+    $ concatMap keepPerPlacement
+    $ groupBy ((==) `on` concealedCardPlacement)
+    $ sortOn concealedCardPlacement concealed
+ where
+  keepPerPlacement cs =
+    let (known, unknown) = partition (attr concealedCardKnown) cs
+     in known <> take 1 unknown
 
 getConcealedAtAll
   :: (HasGame m, Tracing m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]

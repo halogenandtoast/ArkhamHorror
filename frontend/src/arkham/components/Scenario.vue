@@ -426,36 +426,31 @@ const positionToGridArea = function(pos: Position): string {
 
 
 const gridConcealed = computed<ConcealedGroup[]>(() => {
-  if (!props.scenario.meta) return
-  const { concealedCards } = props.scenario.meta
-  if (!concealedCards) return
+  const concealedCards = props.scenario.meta?.concealedCards as [[number, number], string[]][] | undefined
+  if (!concealedCards) return []
 
-  const groups = new Map<
-    string,
-    { position: Position; known: ConcealedCard[]; unknown: ConcealedCard[] }
-  >();
+  const available = Object.values(props.game.concealed)
+  const availableIds = new Set(available.map(c => c.id))
 
-  for (const details of concealedCards) {
-    const [pos, cards] = details
-    const position = { x: pos[0], y: pos[1] }
-    
-    const key = `${position.x}:${position.y}`;
-
-    let group = groups.get(key);
-    if (!group) {
-      group = { position, known: [], unknown: [] };
-      groups.set(key, group);
-    }
-
+  const cardPosition: Record<string, Position> = {}
+  for (const [[x, y], cards] of concealedCards) {
+    const position = { x, y }
     for (const cardId of cards) {
-      const card = props.game.concealed[cardId]
-      if (!card) continue
-      (card.known ? group.known : group.unknown).push(card);
+      if (availableIds.has(cardId)) cardPosition[cardId] = position
     }
   }
 
-  return [...groups.values()];
-});
+  const groups = new Map<string, ConcealedGroup>()
+  for (const card of available) {
+    const position = cardPosition[card.id]
+    if (!position) continue
+    const key = `${position.x}:${position.y}`
+    const group = groups.get(key) ?? groups.set(key, { position, known: [], unknown: [] }).get(key)!
+    ;(card.known ? group.known : group.unknown).push(card)
+  }
+
+  return [...groups.values()]
+})
 
 function isHollow(m: ModifierType): m is Hollow {
   return m.tag === "Hollow"

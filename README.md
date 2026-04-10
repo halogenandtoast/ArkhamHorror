@@ -49,6 +49,8 @@ please file a bug.
 
 ## I just want to try this out on my computer
 
+### Linux Users
+
 Install [Docker][docker], then run:
 
 ```
@@ -58,11 +60,31 @@ curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/i
 This creates an `arkham-horror/` directory, downloads the required files, generates
 a database password, and starts the app. Open http://localhost:3000 when it's done.
 
-> **Windows users:** Run the command above inside a [WSL2][wsl2] terminal.
-> Docker Desktop integrates with WSL2 so `docker compose` will work from there.
-
 The script will ask if you want to download game images (~2.9 GB). If you skip
 this step, the app loads images from the CDN automatically — no extra setup needed.
+
+### Windows Users
+
+- Install Docker, specifically the version of Docker known as [Docker Desktop](https://docs.docker.com/desktop/).
+- Install a "terminal only" version of Ubuntu that can be run inside of Windows, for which the easiest available method is to [install from the Microsoft Store](https://documentation.ubuntu.com/wsl/latest/howto/install-ubuntu-wsl2/#method-3-install-from-the-microsoft-store). You may choose any Linux distro other than Ubuntu if you know what you are doing.
+- Start the Ubuntu terminal and run:
+  ```
+  curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash
+  ```
+- The app should start being served at http://localhost:3000, if nothing went wrong.
+- Every time you want to start the app, you can use `docker compose up`
+- If you get around to figuring out how to use Docker Desktop, you could also press buttons to start and stop the app instead of typing commands to run it.
+
+#### Things that can go wrong
+
+If the app doesnt start at all, or it starts but you cannot create a user account, or any other issue due to Murphy's Law, you have to check the logs of the Docker container to find the error messages. In Docker Desktop, you can access this by clicking on the `arkham-horror` "compose stack" found in the `Containers` list.
+
+Possible problems:
+
+| Problem | Solution |
+| ------------- | ------------- |
+| Error involving `docker-credential-desktop.exe` | Try restarting your computer |
+| When clicking on the "REGISTER" button, the error `password authentication failed` is logged| Stop the app using `docker compose down` and then refetch the app using `docker compose pull`
 
 ### Manual setup (alternative)
 

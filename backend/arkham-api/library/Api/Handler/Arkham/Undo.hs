@@ -1,3 +1,6 @@
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module Api.Handler.Arkham.Undo (putApiV1ArkhamGameUndoR, putApiV1ArkhamGameUndoScenarioR) where
 
 import Api.Arkham.Helpers
@@ -68,7 +71,7 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
           deleteKey stepId
           pure $ game {arkhamGameStep = n - 1}
       else do
-        case patch (arkhamGameCurrentData game) (choicePatchDown $ arkhamStepChoice step) of
+        case patchWithRecovery (arkhamGameCurrentData game) (choicePatchDown $ arkhamStepChoice step) of
           -- TODO: We need to add back the gameActionDiff
           -- ensure previous step exists
           Error e -> throwError $ jsonError $ T.pack e
@@ -118,7 +121,9 @@ putApiV1ArkhamGameUndoR gameId = do
       _ -> pure userId'
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
-      Left err -> sendStatusJSON Status.status400 err
+      Left err -> do
+        $(logWarn) $ "undo failed: " <> tshow err
+        sendStatusJSON Status.status400 err
       Right (ArkhamGame {..}) -> do
         publishToRoom gameId
           $ GameUpdate
@@ -154,7 +159,9 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
         pure (g, gameLog)
 
   case eResult of
-    Left err -> sendStatusJSON Status.status400 err
+    Left err -> do
+      $(logWarn) $ "undo scenario failed: " <> tshow err
+      sendStatusJSON Status.status400 err
     Right (ArkhamGame {..}, gameLog) -> do
       publishToRoom gameId
         $ GameUpdate
@@ -193,7 +200,7 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
 
     let undoPatch = foldMap (choicePatchDown . arkhamStepChoice . entityVal) steps
 
-    case patch game.currentData undoPatch of
+    case patchWithRecovery game.currentData undoPatch of
       Error e -> throwError $ jsonError $ T.pack e
       Success ge -> lift do
         let arkhamGame = ArkhamGame game.name ge toStep game.multiplayerVariant game.createdAt now

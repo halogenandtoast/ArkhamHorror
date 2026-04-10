@@ -393,7 +393,7 @@ getModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getModifiedSkillValue = do
   st <- getJustSkillTest
   modifiers' <- getModifiers (SkillTestTarget st.id)
-  let cancelSkills = CancelSkills `elem` modifiers'
+  let cancelSkills = any (`elem` modifiers') [CancelSkills , CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
   iconCount <- if cancelSkills then pure 0 else skillIconCount st
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
@@ -428,7 +428,7 @@ calculateSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillT
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  let cancelSkills = CancelSkills `elem` modifiers'
+  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   iconCount <- if cancelSkills then pure 0 else skillIconCount s
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s

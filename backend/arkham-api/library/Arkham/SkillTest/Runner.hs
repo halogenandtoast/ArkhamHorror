@@ -462,6 +462,10 @@ instance RunMessage SkillTest where
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
+    CancelSkillEffects -> do
+      pure $ s & subscribersL %~ filter \case
+        SkillTarget {} -> False
+        _ -> True
     PutCardOnBottomOfDeck _ _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     PutCardOnTopOfDeck _ _ card -> do

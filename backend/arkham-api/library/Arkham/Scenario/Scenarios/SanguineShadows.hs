@@ -173,7 +173,7 @@ instance RunMessage SanguineShadows where
       pure s
     ResolveChaosToken drawnToken Tablet _iid -> do
       withSkillTest \sid -> do
-        skillTestModifier sid drawnToken.face sid CancelSkills
+        skillTestModifier sid drawnToken.face sid CancelEachCommittedCard
         push CancelSkillEffects
       pure s
     ScenarioResolution r -> scope "resolutions" do

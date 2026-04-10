@@ -156,7 +156,7 @@ const normalizeSkill = (skill: string) => {
       <span class="text">Cancel matching chaos tokens and reveal another</span>
     </template>
     <template v-else-if="modifier.type.tag === 'HandSize'">
-      <span class="text">{{modifier.type.contents > 0 ? "+" : "-"}}{{modifier.type.contents}} Hand Size</span>
+      <span class="text">{{modifier.type.contents > 0 ? "+" : "-"}}{{modifier.type.contents}} {{ $t('Hand Size') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier'">
       <span class="text">{{modifier.type.contents}}</span>

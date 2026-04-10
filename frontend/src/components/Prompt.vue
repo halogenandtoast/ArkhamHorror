@@ -38,10 +38,10 @@ function handleCancel() {
     <button class="close-btn" @click.prevent="handleCancel" aria-label="Close">
       <font-awesome-icon icon="times" />
     </button>
-    <p class="prompt-text">{{ prompt }}</p>
+    <p class="prompt-text">{{ $t(prompt) }}</p>
     <div class="prompt-actions">
-      <button class="btn btn--confirm" @click.prevent="handleYes">Yes</button>
-      <button class="btn btn--cancel" @click.prevent="handleNo">No</button>
+      <button class="btn btn--confirm" @click.prevent="handleYes">{{ $t('Yes') }}</button>
+      <button class="btn btn--cancel" @click.prevent="handleNo">{{ $t('No') }}</button>
     </div>
   </dialog>
 </template>

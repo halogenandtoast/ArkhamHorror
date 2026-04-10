@@ -609,7 +609,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           </template>
 
         </transition-group>
-        <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">Hand Size: {{totalHandSize}}/{{investigator.handSize}}</div>
+        <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ $t('Hand Size') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">

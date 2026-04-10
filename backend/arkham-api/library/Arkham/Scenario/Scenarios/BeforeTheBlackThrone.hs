@@ -185,10 +185,13 @@ instance RunMessage BeforeTheBlackThrone where
           scenarioI18n $ questionLabeled' "nightgauntSteed"
           withI18n $ labeled' "yes" do
             removeTokens ScenarioSource ScenarioTarget #resource 2
-            eachInvestigator $ createAssetAt_ Assets.nightgauntSteed . InPlayArea
+            eachInvestigator $ (`forInvestigator` DoStep 1 EndSetup)
           withI18n $ labeled' "no" nothing
         doStep 1 EndSetup
       BeforeTheBlackThrone <$> liftRunMessage msg attrs
+    ForInvestigator iid (DoStep 1 EndSetup) -> do
+      createAssetAt_ Assets.nightgauntSteed $ InPlayArea iid
+      pure s
     DoStep 1 EndSetup -> do
       getSetAsideCardsMatching (cardIs Assets.nightgauntSteed) >>= traverse_ obtainCard
       pure s

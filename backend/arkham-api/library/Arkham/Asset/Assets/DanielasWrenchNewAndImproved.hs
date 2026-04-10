@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.DanielasWrenchNewAndImproved (danielasWrenchNewAndImp
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Attack.Types
 import Arkham.Helpers.History
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -28,7 +29,7 @@ instance RunMessage DanielasWrenchNewAndImproved where
       enemies <- select $ EnemyAt YourLocation <> oneOf [EnemyCanEngage You, EnemyCanAttack You]
       chooseTargetM iid enemies \enemy -> do
         engageEnemy iid enemy
-        initiateEnemyAttack enemy (attrs.ability 1) iid
+        initiateEnemyAttackEdit enemy (attrs.ability 1) iid \x -> x {attackDespiteExhausted = True}
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

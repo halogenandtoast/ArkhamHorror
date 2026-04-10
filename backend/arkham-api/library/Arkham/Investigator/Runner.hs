@@ -3289,11 +3289,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           & (deckL .~ Deck deck)
           & (excludeFromMulliganL .~ preExistingHand)
   Instead (DoDrawCards iid) msg' | iid == toId a -> do
+    let
+      isDraw = \case
+        Run msgs -> any isDraw msgs
+        Search s -> s.isDraw
+        _ -> False
+      afterDrawMessages =
+        case investigatorDrawing >>= cardDrawAndThen of
+          Just m | isDraw msg' -> [m]
+          _ -> []
     mMsg <-
       maybeToList <$> popMessageMatching \case
         DrawEnded _ iid' -> iid == iid'
         _ -> False
-    pushAll $ mMsg <> [msg']
+    pushAll $ mMsg <> [msg'] <> afterDrawMessages
     pure $ a & drawingL .~ Nothing
   DrawCards iid cardDraw | iid == toId a -> do
     cid <- getRandom

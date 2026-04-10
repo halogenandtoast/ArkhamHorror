@@ -41,6 +41,6 @@ instance RunMessage TrustyBullwhipAdvanced where
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   pushWhen canEvade $ EnemyEvaded iid eid
                 labeled "Do nothing" nothing
-            _ -> error "impossible"
+            _ -> error "TrustyBullwhipAdvanced: impossible"
       pure a
     _ -> TrustyBullwhipAdvanced <$> liftRunMessage msg attrs

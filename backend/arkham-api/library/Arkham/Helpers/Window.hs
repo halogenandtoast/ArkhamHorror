@@ -359,7 +359,7 @@ cancelledCard (_ : xs) = cancelledCard xs
 
 getPlayedEvent :: [Window] -> EventId
 getPlayedEvent = \case
-  [] -> error "impossible"
+  [] -> error "getPlayedEvent: impossible"
   ((windowType -> Window.PlayEventDiscarding _ eventId) : _) -> eventId
   ((windowType -> Window.PlayEvent _ eventId) : _) -> eventId
   (_ : rest) -> getPlayedEvent rest
@@ -643,7 +643,7 @@ replaceWindow f wf = do
     \case
       CheckWindows ws -> [CheckWindows $ map (\w -> if f w then wf w else w) ws]
       Do (CheckWindows ws) -> [Do (CheckWindows $ map (\w -> if f w then wf w else w) ws)]
-      _ -> error "impossible"
+      _ -> error "replaceWindow: impossible"
 
 replaceWindowMany
   :: (HasCallStack, HasQueue Message m) => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
@@ -668,7 +668,7 @@ replaceWindowMany f wf = do
                   ws
             )
         ]
-      _ -> error "impossible"
+      _ -> error "replaceWindowMany: impossible"
 
 windowSkillTest :: [Window] -> Maybe SkillTest
 windowSkillTest = \case
@@ -685,7 +685,7 @@ getDefeatedAsset :: [Window] -> AssetId
 getDefeatedAsset = \case
   ((windowType -> Window.AssetDefeated aid _) : _) -> aid
   (_ : rest) -> getDefeatedAsset rest
-  _ -> error "impossible"
+  _ -> error "getDefeatedAsset: impossible"
 
 getAbility :: [Window] -> (Ability, [Window])
 getAbility [] = error "No windows"

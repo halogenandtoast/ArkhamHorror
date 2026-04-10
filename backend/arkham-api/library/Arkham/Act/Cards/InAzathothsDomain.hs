@@ -89,7 +89,7 @@ instance RunMessage InAzathothsDomain where
       (firstCosmosCard, secondCosmosCard, thirdCosmosCard, fourthCosmosCard) <-
         shuffleM (theBlackThrone : cards) <&> \case
           [x, y, z, b] -> (x, y, z, b)
-          _ -> error "impossible"
+          _ -> error "InAzathothsDomain: impossible"
 
       (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 8) lead
       for_ playerCards obtainCard

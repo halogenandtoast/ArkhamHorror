@@ -1701,7 +1701,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           & (tarotCardsL . at GlobalTarot . non [] .~ [TarotCard Upright c1, TarotCard Reversed c2])
           & tarotDeckL
           %~ filter (`notElem` cards)
-      _ -> error "impossible"
+      _ -> error "PerformReading(Balance): impossible"
   PerformReading Choice -> do
     lead <- getLead
     cards <- map (TarotCard Upright) <$> sampleN 3 (NE.fromList scenarioTarotDeck)

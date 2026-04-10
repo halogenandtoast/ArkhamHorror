@@ -460,7 +460,7 @@ withSkillTestMetadata :: (HasGame m, Tracing m) => SkillTest -> m (With SkillTes
 withSkillTestMetadata st = do
   stmModifiedSkillValue <- getSkillTestModifiedSkillValue
   stmSkills <- getSkillTestSkillTypes
-  stmModifiedDifficulty <- fromJustNote "impossible" <$> getSkillTestDifficulty
+  stmModifiedDifficulty <- fromJustNote "withSkillTestMetadata: impossible" <$> getSkillTestDifficulty
   stmModifiers <- getFullModifiers st
   pure $ st `with` SkillTestMetadata {..}
 
@@ -5516,7 +5516,7 @@ instance Projection Campaign where
   getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking campaign attrs" <$> getCampaign
   project _ = getCampaign
   field fld _ = do
-    c <- fromJustNote "impossible" <$> getCampaign
+    c <- fromJustNote ("field(Campaign): impossible\n" <> prettyCallStack callStack) <$> getCampaign
     let CampaignAttrs {..} = toAttrs c
     case fld of
       CampaignCompletedSteps -> pure campaignCompletedSteps

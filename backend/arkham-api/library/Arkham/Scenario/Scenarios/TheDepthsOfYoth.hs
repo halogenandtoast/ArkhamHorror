@@ -146,7 +146,7 @@ setupTheDepthsOfYoth attrs = do
   let
     (start, rest) = case locations of
       (x : xs) -> (x, xs)
-      _ -> error "impossible"
+      _ -> error "TheDepthsOfYoth: impossible"
     (inExplore, setAsideLocations) = splitAt 4 rest
 
   explorationDeck <-

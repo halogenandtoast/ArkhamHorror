@@ -1080,7 +1080,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         Window.PlacedToken s t Token.Horror m
           | m > n -> [Window.PlacedToken s t Token.Horror (m - n), Window.PlacedToken s target Token.Horror n]
         Window.PlacedToken s _ Token.Horror _ -> [Window.PlacedToken s target Token.Horror n]
-        _ -> error "impossible"
+        _ -> error "ReassignHorror: impossible"
     pure g
   ReassignDamage source target n -> do
     replaceWindowMany
@@ -1091,7 +1091,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         Window.PlacedToken s t Token.Damage m
           | m > n -> [Window.PlacedToken s t Token.Damage (m - n), Window.PlacedToken s target Token.Damage n]
         Window.PlacedToken s _ Token.Damage _ -> [Window.PlacedToken s target Token.Damage n]
-        _ -> error "impossible"
+        _ -> error "ReassignDamage: impossible"
     pure g
   CommitCard iid card -> do
     let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)

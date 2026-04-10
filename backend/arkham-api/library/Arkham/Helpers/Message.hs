@@ -134,7 +134,7 @@ dealAdditionalDamage iid amount additionalMessages = do
               horror
               []
               []
-          _ -> error "impossible"
+          _ -> error "dealAdditionalDamage: impossible"
       replaceMessage damageMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No damage occured for additional damage"
 
@@ -162,7 +162,7 @@ dealAdditionalHorror iid amount additionalMessages = do
               []
               []
           CheckDefeated source target -> PlaceAdditionalDamage target source 0 amount
-          _ -> error "impossible"
+          _ -> error "dealAdditionalHorror: impossible"
       replaceMessage horrorMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No horror occured for additional horror"
 

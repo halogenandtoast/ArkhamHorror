@@ -42,7 +42,7 @@ instance RunMessage TwentyFiveAutomatic2 where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let ab = fromJustNote "impossible" $ getAbilities a !!? 0
+      let ab = fromJustNote "TwentyFiveAutomatic2: impossible" $ getAbilities a !!? 0
       chooseOneM iid $ abilityLabeled iid (decreaseAbilityActionCost ab 1) nothing
       pure a
     _ -> TwentyFiveAutomatic2 <$> liftRunMessage msg attrs

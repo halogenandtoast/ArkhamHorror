@@ -10,6 +10,7 @@ export type Placement
   = { tag: "InThreatArea", contents: string }
   | { tag: "InPlayArea", contents: string }
   | { tag: "StillInHand", contents: string }
+  | { tag: "StillInDiscard", contents: string }
   | { tag: "HiddenInHand", contents: string }
   | { tag: "OnTopOfDeck", contents: string }
   | { tag: "OutOfPlay", contents: string }
@@ -50,6 +51,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InThreatArea"), contents: JsonDecoder.string() }, 'InThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPlayArea"), contents: JsonDecoder.string() }, 'InPlayArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("StillInHand"), contents: JsonDecoder.string() }, 'StillInHand'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("StillInDiscard"), contents: JsonDecoder.string() }, 'StillInDiscard'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("HiddenInHand"), contents: JsonDecoder.string() }, 'HiddenInHand'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("OnTopOfDeck"), contents: JsonDecoder.string() }, 'OnTopOfDeck'),
   JsonDecoder.object({ tag: JsonDecoder.literal("OutOfPlay"), contents: JsonDecoder.string()}, 'OutOfPlay'),

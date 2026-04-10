@@ -142,9 +142,11 @@ watch(choices, async (newChoices) => {
       return props.investigator.discard.some(card => card.id === c.target.contents)
     }
     if (c.tag === "AbilityLabel") {
-      return props.investigator.discard.some(card => {
-        return card.id === c.ability.source.contents
-      })
+      const sourceId = c.ability.source.sourceTag === 'OtherSource' ? c.ability.source.contents : undefined
+      if (!sourceId) return false
+      if (props.investigator.discard.some(card => card.id === sourceId)) return true
+      const asset = props.game.assets[sourceId]
+      return asset && props.investigator.discard.some(card => asset.cardId == card.id)
     }
     return false
   }

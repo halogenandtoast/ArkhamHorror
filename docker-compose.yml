@@ -11,7 +11,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=arkham_pg_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_PASSWORD=arkham_secret
       - POSTGRES_DB=arkham-horror-backend
     ports:
       # Bind to localhost only to prevent external access
@@ -35,10 +35,11 @@ services:
     # ASSET_HOST is auto-detected by web-entrypoint.sh:
     #   unset (default): uses local images if present, CDN otherwise
     # To override, uncomment one of the lines below:
-    # environment:
-    #   - ASSET_HOST=                                 # force local images
-    #   - ASSET_HOST=https://assets.arkhamhorror.app # force CDN
-    #   - REDIS_CONN=redis://redis:6379
+    environment:
+      - ASSET_HOST=
+      - POSTGRES_PASSWORD=arkham_secret
+      - DATABASE_URL=postgres://arkham_pg_user:arkham_secret@db:5432/arkham-horror-backend
+      - JWT_SECRET=arkham_super_secret_jwt_key_123456
     secrets:
       - postgres_password
     ports:

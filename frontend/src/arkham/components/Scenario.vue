@@ -103,17 +103,20 @@ watch(locationsZoom, (value) => {
   localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
 })
 
+function zoomStep(value: number): number {
+  const center = 1.5  // peak step around the middle of the normal range
+  const sigma = 1.0  // controls how quickly the step tapers off
+  const max = 0.15
+  const min = 0.01
+  return Math.max(min, max * Math.exp(-Math.pow(value - center, 2) / (2 * sigma * sigma)))
+}
+
 function increaseZoom() {
-  locationsZoom.value = parseFloat((locationsZoom.value + 0.25).toFixed(2))
+  locationsZoom.value = parseFloat((locationsZoom.value + zoomStep(locationsZoom.value)).toFixed(3))
 }
 
 function decreaseZoom() {
-  // Divide by 2 when at or below 0.5 to avoid reaching zero
-  if (locationsZoom.value <= 0.5) {
-    locationsZoom.value = parseFloat((locationsZoom.value / 2).toFixed(4))
-  } else {
-    locationsZoom.value = parseFloat((locationsZoom.value - 0.25).toFixed(2))
-  }
+  locationsZoom.value = parseFloat(Math.max(0.01, locationsZoom.value - zoomStep(locationsZoom.value)).toFixed(3))
 }
 
 const { isMobile } = IsMobile();
@@ -1197,7 +1200,7 @@ async function addChaosToken(face: any){
         <Connections :game="game" :playerId="playerId" />
         <div class="zoom-control">
           <button class="zoom-btn" @click.stop="decreaseZoom">−</button>
-          <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.25" class="zoom-slider" />
+          <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
           <button class="zoom-btn" @click.stop="increaseZoom">+</button>
         </div>
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">

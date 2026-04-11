@@ -3,6 +3,7 @@ import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
+  watch,
   onMounted,
   onUpdated,
   onBeforeUnmount,
@@ -83,7 +84,7 @@ const choose = async (idx: number) => emit('choose', idx)
 //Refs
 const settingsStore = useSettings()
 const { splitView } = storeToRefs(settingsStore)
-const { toggleSplitView } = settingsStore
+const { toggleSplitView, setGameId } = settingsStore
 const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
@@ -97,12 +98,29 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
-const locationsZoom = ref(1);
+const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
+watch(locationsZoom, (value) => {
+  localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
+})
+
+function increaseZoom() {
+  locationsZoom.value = parseFloat((locationsZoom.value + 0.25).toFixed(2))
+}
+
+function decreaseZoom() {
+  // Divide by 2 when at or below 0.5 to avoid reaching zero
+  if (locationsZoom.value <= 0.5) {
+    locationsZoom.value = parseFloat((locationsZoom.value / 2).toFixed(4))
+  } else {
+    locationsZoom.value = parseFloat((locationsZoom.value - 0.25).toFixed(2))
+  }
+}
 
 const { isMobile } = IsMobile();
 
 // callbacks
 onMounted(() => {
+  setGameId(props.game.id)
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -1177,7 +1195,11 @@ async function addChaosToken(face: any){
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
         <Connections :game="game" :playerId="playerId" />
-        <input v-model="locationsZoom" type="range" min="1" max="3" step="0.25" class="zoomer" />
+        <div class="zoom-control">
+          <button class="zoom-btn" @click.stop="decreaseZoom">−</button>
+          <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.25" class="zoom-slider" />
+          <button class="zoom-btn" @click.stop="increaseZoom">+</button>
+        </div>
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
             v-for="location in locations"
@@ -1889,10 +1911,17 @@ async function addChaosToken(face: any){
   }
 }
 
-.zoomer {
+.zoom-control {
   position: absolute;
   right: 10px;
   bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 20px;
+  padding: 4px 10px;
 
   @media (max-width: 768px) and (orientation: portrait) {
     display: none;
@@ -1900,11 +1929,77 @@ async function addChaosToken(face: any){
 }
 
 @media screen and (max-width: 400px) {
-  .zoomer { display: none}
+  .zoom-control { display: none }
 }
 
 @media not screen {
-  .zoomer { display: none}
+  .zoom-control { display: none }
+}
+
+.zoom-btn {
+  background: none;
+  border: none;
+  color: var(--title);
+  font-size: 18px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--background-mid);
+    color: var(--spooky-green);
+  }
+
+  &:active {
+    background: var(--button-1-highlight);
+    color: white;
+  }
+}
+
+.zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 4px;
+  background: var(--box-border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5a9465;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: background 0.15s, transform 0.1s;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  background: #6aaa75;
+  transform: scale(1.2);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5a9465;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .barrier {

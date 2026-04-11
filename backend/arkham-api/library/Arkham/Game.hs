@@ -1692,7 +1692,12 @@ abilityMatches a@Ability {..} = \case
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
-    pure $ a `elem` abilities
+    -- TrueMagick wraps borrowed abilities in ProxySource (CardIdSource _) so
+    -- we unwrap the proxy
+    let unproxied = case abilitySource of
+          ProxySource (CardIdSource _) s -> a {abilitySource = s}
+          _ -> a
+    pure $ a `elem` abilities || unproxied `elem` abilities
   TriggeredAbility -> pure $ isTriggeredAbility a
   ActiveAbility -> do
     active <- view activeAbilitiesL <$> getGame

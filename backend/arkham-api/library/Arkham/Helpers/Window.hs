@@ -694,9 +694,8 @@ getAbility (_ : rest) = getAbility rest
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
-getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of
-  AssetSource aid -> Just aid
-  _ -> getWindowAsset xs
+getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) =
+  (abilitySource ability).asset <|> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
 
 enemyMatches :: (HasGame m, Tracing m) => EnemyId -> EnemyMatcher -> m Bool

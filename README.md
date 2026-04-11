@@ -67,6 +67,7 @@ this step, the app loads images from the CDN automatically — no extra setup ne
 
 - Install Docker, specifically the version of Docker known as [Docker Desktop](https://docs.docker.com/desktop/).
 - Install a "terminal only" version of Ubuntu that can be run inside of Windows, for which the easiest available method is to [install from the Microsoft Store](https://documentation.ubuntu.com/wsl/latest/howto/install-ubuntu-wsl2/#method-3-install-from-the-microsoft-store). You may choose any Linux distro other than Ubuntu if you know what you are doing.
+- In Docker Desktop, go to `Settings > Resources > WSL Integration` and enable integration with Ubuntu Linux distro that you installed in the previous step. This allows us to access Docker from inside Ubuntu.
 - Start the Ubuntu terminal and run:
   ```
   curl -fsSL https://raw.githubusercontent.com/halogenandtoast/ArkhamHorror/main/install.sh | bash

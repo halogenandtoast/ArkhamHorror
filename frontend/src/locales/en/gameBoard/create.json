@@ -50,6 +50,27 @@
       "theWebOfDreams": "The Web of Dreams<br><small>4-part campaign</small>"
     },
 
+    "advancedRulesConfiguration": "Advanced Rules Configuration",
+    "rulesPresets": "Presets",
+    "presetCustom": "Custom",
+
+    "preset": {
+      "chapter1": {
+        "name": "Chapter 1",
+        "description": "Recommended for Chapter 1 campaigns."
+      },
+      "chapter2": {
+        "name": "Chapter 2",
+        "description": "Recommended for Chapter 2 campaigns."
+      }
+    },
+
+    "asIfAtBehavior": "\"As If\" At Behavior",
+    "asIfAtChapter1": "Chapter 1 Rules",
+    "asIfAtChapter1Description": "\"As If\" at a location applies for the duration of the entire card or ability, including window triggers from other cards.",
+    "asIfAtChapter2": "Chapter 2 Rules",
+    "asIfAtChapter2Description": "\"As If\" at a location applies only during the resolution of the specified ability or action. Other card abilities and window triggers resolve under the actual game state.",
+
     "recommendedOptions": "Recommended Options",
 
     "recommendedOption": {

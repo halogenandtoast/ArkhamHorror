@@ -4,6 +4,7 @@
 module Arkham.Game.Json where
 
 import Arkham.Game.Base
+import Arkham.Game.Settings (defaultSettings)
 import Arkham.Prelude
 import Data.Aeson.TH
 import Data.Map.Strict qualified as Map
@@ -23,7 +24,7 @@ instance FromJSON Game where
     gameTurnHistory <- o .:? "gameTurnHistory" .!= mempty
     gameRoundHistory <- o .:? "gameRoundHistory" .!= mempty
     gameInitialSeed <- o .: "gameInitialSeed"
-    gameSettings <- o .: "gameSettings"
+    gameSettings <- o .:? "gameSettings" .!= defaultSettings
     gameSeed <- o .: "gameSeed"
     gameWindowDepth <- o .: "gameWindowDepth"
     gameWindowStack <- o .: "gameWindowStack"
@@ -73,5 +74,6 @@ instance FromJSON Game where
     gamePerformTarotReadings <- o .: "gamePerformTarotReadings"
     gameCurrentBatchId <- o .: "gameCurrentBatchId"
     gameScenarioSteps <- o .:? "gameScenarioSteps" .!= 0
+    let gameAsIfAtIgnored = mempty
 
     pure Game {..}

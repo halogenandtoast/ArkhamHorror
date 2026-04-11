@@ -83,6 +83,7 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
+import Arkham.Game.Settings (settingsStrictAsIfAt)
 import Arkham.Helpers.Location (
   getCanMoveTo,
   getCanMoveToMatchingLocations,
@@ -2276,17 +2277,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         concealed <- getConcealedAt (ForExpose $ toSource iid) lid
+        settings <- getSettings
+        let
+          strictAsIfAt = settingsStrictAsIfAt settings
+          wrapWindows msgs
+            | strictAsIfAt = [SetAsIfAtIgnored iid True] <> msgs <> [SetAsIfAtIgnored iid False]
+            | otherwise = msgs
 
         let
           defaultDiscover :: Lifted.ReverseQueue n => n ()
           defaultDiscover =
             pushAll
               $ [ MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
-                , locationWindowsBefore
-                , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
-                , After $ GainClues iid d.source clueCount
-                , locationWindowsAfter
                 ]
+              <> wrapWindows [locationWindowsBefore]
+              <> [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
+                 , After $ GainClues iid d.source clueCount
+                 ]
+              <> wrapWindows [locationWindowsAfter]
               <> d.discoverThen
 
         if

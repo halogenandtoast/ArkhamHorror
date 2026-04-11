@@ -173,7 +173,8 @@ export const newGame = async (
   campaignName: string,
   multiplayerVariant: string,
   includeTarotReadings: boolean,
-  options: NewGame.CampaignOption[]
+  options: NewGame.CampaignOption[],
+  strictAsIfAt?: boolean
 ): Promise<Game> => {
   const { data } = await api.post('arkham/games', {
     deckIds,
@@ -184,7 +185,8 @@ export const newGame = async (
     campaignName,
     multiplayerVariant,
     includeTarotReadings,
-    options
+    options,
+    strictAsIfAt
   })
   return gameDecoder.decodePromise(data)
 }

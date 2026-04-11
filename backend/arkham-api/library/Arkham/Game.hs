@@ -310,6 +310,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePerformTarotReadings = includeTarotReadings
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameAsIfAtIgnored = mempty
         }
  where
   mode = case scenarioOrCampaignId of
@@ -4605,11 +4606,17 @@ instance Projection Investigator where
       InvestigatorPlacement -> pure investigatorPlacement
       InvestigatorLocation -> do
         mods <- getModifiers iid
+        settings <- getSettings
+        game <- getGame
         let
+          strictMode = settingsStrictAsIfAt settings && iid `member` gameAsIfAtIgnored game
           mAsIfAt =
-            headMay $ mods & mapMaybe \case
-              AsIfAt lid -> Just lid
-              _ -> Nothing
+            if strictMode
+              then Nothing
+              else
+                headMay $ mods & mapMaybe \case
+                  AsIfAt lid -> Just lid
+                  _ -> Nothing
         case investigatorPlacement of
           AtLocation lid -> pure $ mAsIfAt <|> Just lid
           InVehicle aid -> (mAsIfAt <|>) . join <$> fieldMay AssetLocation aid

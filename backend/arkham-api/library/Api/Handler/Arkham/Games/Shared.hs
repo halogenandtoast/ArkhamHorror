@@ -156,97 +156,75 @@ instance ToJSON GameDetailsEntry where
     FailedGameDetails t -> object ["error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
--- | Regular game update. The lock is held only during two short DB phases;
--- the expensive runMessages processing runs outside any transaction, so undo
--- requests are no longer blocked for the full duration of message processing.
---
--- Phase 1 (short lock): fetch state + handleAnswer (deck answers write here)
--- Phase 2 (no lock):    runMessages — all game logic runs here
--- Phase 3 (short lock): write results
 updateGame :: Answer -> ArkhamGameId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId writeChannel = do
   tracer <- getTracer
   oldLog <- runDB $ getGameLog gameId Nothing
-
-  -- Phase 1: short lock — fetch state and dispatch the answer.
-  -- Some answer types (DeckAnswer, DeckListAnswer) write to DB here.
-  mWork <- runDB do
-    lockGame gameId
-    rawGame <- get404 (ArkhamGameRawKey gameId)
-    let n = arkhamGameRawStep rawGame
-    mLastStep <- getBy $ UniqueStep gameId n
-    gameJson <- case fromJSON @Game rawGame.currentData of
-      Error e -> error $ "Failed to parse game: " <> tshow e
-      Success g -> pure g
+  (ArkhamGame {..}, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+    mLastStep <- getBy $ UniqueStep gameId arkhamGameStep
     let
-      Game {..} = gameJson
-      currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+      gameJson@Game {..} = arkhamGameCurrentData
+      currentQueue =
+        maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
     activePlayer <- runReaderT getActivePlayer gameJson
+
     let playerId = fromMaybe activePlayer (answerPlayer response)
+
+    logRef <- newIORef []
     handleAnswer gameJson playerId response >>= \case
-      Unhandled _ -> pure $ Left (gameJson, rawGame.name)
+      Unhandled _ -> pure (g, [])
       Handled answerMessages -> do
         let
           messages =
             [SetActivePlayer playerId | activePlayer /= playerId]
               <> answerMessages
               <> [SetActivePlayer activePlayer | activePlayer /= playerId]
-        pure $ Right (rawGame, gameJson, gameSeed, n, messages, currentQueue)
+        gameRef <- newIORef gameJson
+        queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
+        genRef <- newIORef $ mkStdGen gameSeed
 
-  case mWork of
-    Left (gameJson, gameName) ->
-      publishToRoom gameId
-        $ GameUpdate
-        $ PublicGame gameId gameName (gameLogToLogEntries oldLog) gameJson
-    Right (rawGame, gameJson, gameSeed, n, messages, currentQueue) -> do
-      -- Phase 2: no lock held — run all game logic in memory.
-      -- This is the expensive part that was previously holding the lock,
-      -- causing undo requests to block for 10-20 seconds.
-      logRef <- newIORef []
-      gameRef <- newIORef gameJson
-      queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
-      genRef <- newIORef $ mkStdGen gameSeed
-      runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
-        runMessages (gameIdToText gameId) Nothing
-      ge <- readIORef gameRef
-      -- toJSON once, reused for both diff computation and DB store
-      let ge_json = toJSON ge
-          diffDown = diffValues ge_json rawGame.currentData
-      updatedQueue <- readIORef $ queueToRef queueRef
-      updatedLog <- readIORef logRef
-      now <- liftIO getCurrentTime
+        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
+          runMessages (gameIdToText gameId) Nothing
 
-      -- Phase 3: short lock — write results.
-      runDB do
-        deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. n]
-        replace (ArkhamGameRawKey gameId) $
-          ArkhamGameRaw
-            rawGame.name
-            ge_json
-            (n + 1)
-            rawGame.multiplayerVariant
-            rawGame.createdAt
-            now
-        insertMany_ $ map (newLogEntry gameId n now) updatedLog
+        ge <- readIORef gameRef
+        let diffDown = diff ge arkhamGameCurrentData
+
+        updatedQueue <- readIORef $ queueToRef queueRef
+        updatedLog <- readIORef logRef
+
+        now <- liftIO getCurrentTime
+        deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
+        let g' =
+              ArkhamGame
+                arkhamGameName
+                ge
+                (arkhamGameStep + 1)
+                arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
+        replace gameId g'
+        insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
         void
           $ upsertBy
-            (UniqueStep gameId (n + 1))
+            (UniqueStep gameId (arkhamGameStep + 1))
             ( ArkhamStep gameId
                 (Choice diffDown updatedQueue)
-                (n + 1)
+                (arkhamGameStep + 1)
                 (ActionDiff $ view actionDiffL ge)
             )
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
+        pure (g', updatedLog)
 
-      publishToRoom gameId
-        $ GameUpdate
-        $ PublicGame
-          gameId
-          rawGame.name
-          (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
-          ge
+  publishToRoom gameId
+    $ GameUpdate
+    $ PublicGame
+      gameId
+      arkhamGameName
+      (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
+      arkhamGameCurrentData
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

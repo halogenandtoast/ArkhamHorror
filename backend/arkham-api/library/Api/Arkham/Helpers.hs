@@ -24,7 +24,6 @@ import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental
 import Database.Redis (RedisChannel)
 import Entity.Arkham.Game
-import Entity.Arkham.GameRaw
 import Entity.Arkham.LogEntry
 import GHC.Records
 import Import hiding (appLogger, appTracer, (==.), (>=.))
@@ -177,10 +176,9 @@ displayCardType = \case
 
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do
-  game <- from $ table @ArkhamGameRaw
+  game <- from $ table @ArkhamGame
   where_ $ game.id ==. val gameId
   locking forUpdate
-  pure game.id
 
 atomicallyWithGame :: ArkhamGameId -> (ArkhamGame -> DB a) -> DB a
 atomicallyWithGame gameId f = do

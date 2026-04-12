@@ -123,19 +123,6 @@ patchWithRecovery g (Patch ops) =
 patchValueWithRecovery :: Value -> Diff.Patch -> Result Value
 patchValueWithRecovery v (Patch ops) = foldM applyWithRecovery v ops
 
--- | Strip the gameActionDiff field from a JSON Value before diffing.
--- Avoids including the large (and irrelevant) action diff in the patch.
-stripActionDiff :: Value -> Value
-stripActionDiff (Object obj) = Object (KM.delete "gameActionDiff" obj)
-stripActionDiff v = v
-
--- | Compute a diff directly from pre-serialized Values, avoiding Game<->Value
--- round-trips. Equivalent to 'diff' but works at the Value level.
--- Use this when you already have both game states as Values (e.g. fetched via
--- ArkhamGameRaw and the result of toJSON after runMessages).
-diffValues :: Value -> Value -> Diff.Patch
-diffValues a b = Diff.diff (stripActionDiff a) (stripActionDiff b)
-
 -- | Update the gameSeed field directly in a JSON Value without going through Game.
 setGameSeed :: Int -> Value -> Value
 setGameSeed seed (Object obj) = Object $ KM.insert "gameSeed" (toJSON seed) obj

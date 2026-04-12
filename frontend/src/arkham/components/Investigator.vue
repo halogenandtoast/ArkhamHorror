@@ -480,7 +480,7 @@ const spadeInjury = computed(() => {
             :disabled="skipTriggersAction == -1"
             @click="$emit('choose', skipTriggersAction)"
             class="skip-triggers-button"
-          >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
+          >{{ isMobile ? t('Skip') : t('investigator.skipTriggers') }}</button>
 
           <button
             v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"

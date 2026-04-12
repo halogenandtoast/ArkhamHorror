@@ -480,8 +480,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             ></i>
           </template>
           <template v-if="modifier.type.tag === 'AnySkillValue'">
-            <span>+ {{modifier.type.contents}}</span>
-            <span class="text">Skill Value</span>
+            <span> {{modifier.type.contents}}</span>
+            <span class="text">{{ $t('skillValue') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleSuccess'">
             <span class="text">Double Success</span>
@@ -520,10 +520,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 
       <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
         <span v-if="skillTestResults.skillTestResultsSuccess">
-          Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('Succeeded by {amount}', { amount: (testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
         <span v-else-if="testResult !== null">
-          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('Failed by {amount}', { amount: testResult - (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
       </div>
 
@@ -532,13 +532,13 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         v-if="skipTriggersAction !== -1"
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
-      >Skip Triggers</button>
+      >{{ $t('skipTriggers') }}</button>
       <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"
         v-if="applyResultsAction !== -1"
         @click="choose(applyResultsAction)"
-      >Apply Results</button>
+      >{{ $t('Apply Results') }}</button>
     </div>
   </Draggable>
 </template>

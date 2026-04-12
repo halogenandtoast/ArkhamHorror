@@ -12,5 +12,13 @@ import theInnsmouthConspiracy from '@/locales/zh/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/zh/edgeOfTheEarth'
 import standalone from '@/locales/zh/standalone'
 import gameBoard from '@/locales/zh/gameBoard/gameBoard'
+import cardsZh from '../../public/cards_zh.json'
 
-export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+const autoCardsDict: Record<string, string> = {};
+Object.values(cardsZh).forEach((card: any) => {
+  if (card.real_name && card.name) {
+    autoCardsDict[card.real_name] = card.name;
+  }
+});
+
+export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, ...autoCardsDict, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

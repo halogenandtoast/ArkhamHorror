@@ -36,9 +36,10 @@ instance RunMessage UnbrokenWeb where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       when (attrs.token #horror >= 4) $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSource (attrs.ability 2) $ effect iid do
-        during #resolution
-        apply $ XPModifier "Unbroken Web" (-2)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      for_ attrs.owner \iid -> do
+        withSource (attrs.ability 2) $ effect iid do
+          during #resolution
+          apply $ XPModifier "Unbroken Web" (-2)
       pure t
     _ -> UnbrokenWeb <$> liftRunMessage msg attrs

@@ -520,10 +520,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 
       <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
         <span v-if="skillTestResults.skillTestResultsSuccess">
-          Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('Succeeded by {amount}', { amount: (testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
         <span v-else-if="testResult !== null">
-          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('Failed by {amount}', { amount: testResult - (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
       </div>
 

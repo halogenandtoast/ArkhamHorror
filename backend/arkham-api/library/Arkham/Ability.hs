@@ -437,7 +437,11 @@ applyAbilityCriteriaModifiers c modifiers = foldr applyCriterionModifier c modif
   applyCriterionModifier :: ModifierType -> Criterion -> Criterion
   applyCriterionModifier IgnoreOnSameLocation c' = overCriteria (k isLocationCheck NoRestriction) c'
   applyCriterionModifier IgnoreEngagementRequirement c' = overCriteria handleEngagementCheck c'
+  applyCriterionModifier IgnoreAllCosts c' = overCriteria unwrapIfCostsAreIgnored c'
   applyCriterionModifier _ c' = c'
+  unwrapIfCostsAreIgnored = \case
+    IfCostsAreIgnored inner -> inner
+    x -> x
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier
@@ -549,7 +553,7 @@ modifyAbilityCost :: (Cost -> Cost) -> Ability -> Ability
 modifyAbilityCost f ab = ab {Arkham.Ability.Types.abilityType = modifyCost f (abilityType ab)}
 
 ignoreAllCosts :: Ability -> Ability
-ignoreAllCosts ab = modifyAbilityCost (const Free) ab
+ignoreAllCosts ab = applyAbilityModifiers ab [IgnoreAllCosts]
 
 decrease_ :: Ability -> Int -> Ability
 decrease_ = decreaseAbilityActionCost

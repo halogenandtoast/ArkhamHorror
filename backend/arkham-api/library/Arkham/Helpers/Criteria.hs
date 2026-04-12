@@ -793,6 +793,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
     Criteria.AffectedByTarot -> case source of
       TarotSource card -> affectedByTarot iid card
       _ -> pure False
+    Criteria.IfCostsAreIgnored _ -> pure True
  where
   source = case source' of
     AbilitySource s _ -> s

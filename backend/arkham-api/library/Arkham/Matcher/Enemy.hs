@@ -126,6 +126,7 @@ data EnemyMatcher
   | EnemyWithoutModifier ModifierType
   | EnemyWithModifier ModifierType
   | EnemyWithEvade
+  | EnemyWithEvadeValue Int
   | EnemyWithFight
   | UnengagedEnemy
   | UniqueEnemy

@@ -3756,6 +3756,7 @@ enemyMatcherFilter es matcher' = do
     EnemyWithModifier modifier -> do
       flip filterM es \enemy -> elem modifier <$> getModifiers (toTarget enemy)
     EnemyWithEvade -> filterM (fieldP EnemyEvade isJust . toId) es
+    EnemyWithEvadeValue n -> filterM (fieldP EnemyEvade (== Just n) . toId) es
     EnemyWithFight -> filterM (fieldP EnemyFight isJust . toId) es
     EnemyWithPlacement p -> filterM (fieldP EnemyPlacement (== p) . toId) es
     EnemyHiddenInHand investigatorMatcher -> do

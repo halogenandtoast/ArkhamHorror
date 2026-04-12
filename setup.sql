@@ -350,6 +350,8 @@ ALTER TABLE ONLY public.password_resets ALTER COLUMN user_id SET DEFAULT nextval
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
+ALTER TABLE ONLY public.arkham_steps
+    ADD CONSTRAINT arkham_steps_pkey PRIMARY KEY (id);
 
 --
 -- Name: arkham_decks arkham_decks_pkey; Type: CONSTRAINT; Schema: public; Owner: -

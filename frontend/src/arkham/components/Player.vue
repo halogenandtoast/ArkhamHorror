@@ -348,8 +348,8 @@ function onDrop(event: DragEvent) {
 }
 
 const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
-const handCardExposedHeight_MIN = `${-0.85 * handCardHeight}`;
-const handCardExposedHeight_MAX = `${-0.35 * handCardHeight}`;
+const handCardExposedHeight_MIN = `${-(handCardHeight - 50)}`;
+const handCardExposedHeight_MAX = `0`;
 const handAreaMarginBottom = ref(handCardExposedHeight_MIN);
 const handAreaPointerEvents = ref('none');
 
@@ -612,7 +612,7 @@ function toggleHandAreaMarginBottom(event: Event) {
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">Hand Size: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
-    <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+    <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ bottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
       <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
         @drop="onDropHand($event)"
         @dragover.prevent="dragover($event)"
@@ -680,6 +680,9 @@ function toggleHandAreaMarginBottom(event: Event) {
   align-items: flex-start;
   padding: 10px;
   background: var(--background-dark);
+  @media (max-width: 800px) and (orientation: portrait) {
+    padding-bottom: 0;
+  }
 }
 
 :deep(.location) {
@@ -894,13 +897,17 @@ function toggleHandAreaMarginBottom(event: Event) {
 }
 
 .hand-area-IsMobile {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  align-items: flex-start;
-  flex: 1;
-  max-width: 100%;
+  align-items: stretch;
   height: calc(var(--card-height) * 4);
+  background: var(--background-dark);
+  transition: bottom 0.3s ease;
+  overflow: hidden;
   :deep(.card){
     width: calc(var(--card-width) * 4);
     min-width: calc(var(--card-width) * 4);

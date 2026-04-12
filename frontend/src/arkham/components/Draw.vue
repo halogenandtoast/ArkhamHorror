@@ -222,6 +222,15 @@ watch(choices, async (newChoices) => {
     text-wrap: pretty;
   }
 
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    button {
+      width: fit-content;
+    }
+  }
+
   @media (min-width: 801px) {
     width: var(--card-width);
     :deep(button) {
@@ -276,6 +285,9 @@ watch(choices, async (newChoices) => {
 
 .view-discard-button {
   width: 100%;
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: fit-content;
+  }
 }
 
 .deck-container {

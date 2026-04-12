@@ -437,59 +437,61 @@ const spadeInjury = computed(() => {
       </div>
       <div>
         <div class="player-buttons">
-          <span v-if="!isMobile" class="action-container">
-            <i class="spade" v-if="spadeInjury"></i>
-            <i class="heart" v-if="heartInjury"></i>
-            <i class="diamond" v-if="diamondInjury"></i>
-            <i class="club" v-if="clubInjury"></i>
-            <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
-          </span>
-          <span v-if="investigator.additionalActions.length > 0">
-            <template v-for="action in investigator.additionalActions" :key="action">
-            <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
-              <i class="action"></i>
-            </button>
-            <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
+          <div class="button-group">
+            <span v-if="!isMobile" class="action-container">
+              <i class="spade" v-if="spadeInjury"></i>
+              <i class="heart" v-if="heartInjury"></i>
+              <i class="diamond" v-if="diamondInjury"></i>
+              <i class="club" v-if="clubInjury"></i>
+              <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+            </span>
+            <span v-if="investigator.additionalActions.length > 0">
+              <template v-for="action in investigator.additionalActions" :key="action">
+              <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
+                <i class="action"></i>
+              </button>
+              <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
+              </template>
+            </span>
+            <template v-if="debug.active">
+              <button
+                @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
+                @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
+              >+</button>
             </template>
-          </span>
-          <template v-if="debug.active">
+            <AbilityButton
+              v-for="ability in abilities"
+              :key="ability.index"
+              :ability="ability.contents"
+              :game="game"
+              @click="$emit('choose', ability.index)"
+              />
             <button
-              @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
-              @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
-            >+</button>
-          </template>
-          <AbilityButton
-            v-for="ability in abilities"
-            :key="ability.index"
-            :ability="ability.contents"
-            :game="game"
-            @click="$emit('choose', ability.index)"
-            />
-          <button
-          :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
-          :disabled="endTurnAction == -1"
-          @click="$emit('choose', endTurnAction)"
-          >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
+            :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
+            :disabled="endTurnAction == -1"
+            @click="$emit('choose', endTurnAction)"
+            >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
 
-          <button
-            v-if="devoured && devoured.length > 0"
-            @click="showDevoured"
-          >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
+            <button
+              v-if="devoured && devoured.length > 0"
+              @click="showDevoured"
+            >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
 
-          <button
-            :disabled="skipTriggersAction == -1"
-            @click="$emit('choose', skipTriggersAction)"
-            class="skip-triggers-button"
-          >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
+            <button
+              :disabled="skipTriggersAction == -1"
+              @click="$emit('choose', skipTriggersAction)"
+              class="skip-triggers-button"
+            >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
 
-          <button
-            v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
-            @click="showModifiers = true"
-            >Show Modifiers</button>
+            <button
+              v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
+              @click="showModifiers = true"
+              >Show Modifiers</button>
 
-          <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
+            <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
 
-          <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+            <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+          </div>
           <Draw
             v-if="isMobile"
             :game="game"
@@ -766,6 +768,22 @@ i.action {
   display: flex;
 }
 
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    :deep(button) {
+      width: 100%;
+      height: fit-content;
+      font-size: small;
+    }
+  }
+}
+
 .player-buttons {
   margin-left: 10px;
   display: flex;
@@ -778,13 +796,8 @@ i.action {
   @media (max-width: 800px) and (orientation: portrait) {
     margin-left: 0;
     flex-direction: row;
+    align-items: flex-start;
     gap: 8px;
-    height: calc(var(--pool-token-width)*1.2);
-    overflow: hidden;
-    :deep(button) {
-      width: calc(var(--pool-token-width) * 1.2);
-      font-size:small;
-    }
     :deep(img) {
       width: calc(var(--pool-token-width) * 1.2);
     }

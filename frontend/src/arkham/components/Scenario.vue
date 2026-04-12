@@ -2171,6 +2171,9 @@ async function addChaosToken(face: any){
   .player-info {
     flex: 1;
   }
+  @media (max-width: 800px) {
+    padding-bottom: 50px;
+  }
 }
 
 .split-view #player-zone {

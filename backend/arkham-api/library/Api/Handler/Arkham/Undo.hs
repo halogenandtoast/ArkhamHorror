@@ -13,10 +13,12 @@ import Arkham.Id
 import Control.Lens (view)
 import Control.Monad.Except
 import Control.Monad.Random (getRandom)
+import Data.Aeson.KeyMap qualified as KM
 import Data.Aeson.Patch
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
+import Entity.Arkham.GameRaw
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
@@ -45,11 +47,27 @@ maybeToExceptM_ msg ma = do
   a <- lift ma
   void $ maybeToExcept msg a
 
+-- | Extract gameScenarioSteps from raw JSON without deserializing to Game.
+getScenarioSteps :: Json.Value -> Int
+getScenarioSteps (Object obj) =
+  case KM.lookup "gameScenarioSteps" obj of
+    Just (Number n) -> round n
+    _ -> 0
+getScenarioSteps _ = 0
+
+-- | Single-step undo. Optimized to avoid the expensive Game<->Value round-trip:
+-- fetches game state as raw JSON (ArkhamGameRaw), applies the patch at the Value
+-- level, then deserializes to Game exactly once for the return value.
+--
+-- Old cost: fromJSON(fetch) + toJSON(patch) + fromJSON(patch) + toJSON(replace) = 4 conversions
+-- New cost: fromJSON(return value only) = 1 conversion
 stepBack :: Bool -> UserId -> ArkhamGameId -> DB (Either Json.Value ArkhamGame)
-stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
+stepBack isDebug userId gameId = do
+  lockGame gameId
+  rawGame <- get404 (ArkhamGameRawKey gameId)
   runExceptT do
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
-    let n = arkhamGameStep game
+    let n = arkhamGameRawStep rawGame
     Entity stepId step <- maybeToExceptM (jsonError "Missing step") $ getBy (UniqueStep gameId n)
     -- never delete the initial step as it can not be redone
     -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
@@ -60,6 +78,10 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
         -- ensure previous step exists
         maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
           $ getBy (UniqueStep gameId (n - 1))
+        -- Parse once before DB changes (data unchanged, just decrement step)
+        ge <- case fromJSON @Game rawGame.currentData of
+          Error e -> throwError $ jsonError $ T.pack e
+          Success g -> pure g
         lift do
           update \g -> do
             set g [ArkhamGameStep =. val (n - 1)]
@@ -69,37 +91,52 @@ stepBack isDebug userId gameId = atomicallyWithGame gameId \game ->
             where_ $ entries.arkhamGameId ==. val gameId
             where_ $ entries.step >=. val (n - 1)
           deleteKey stepId
-          pure $ game {arkhamGameStep = n - 1}
+        pure $ ArkhamGame rawGame.name ge (n - 1) rawGame.multiplayerVariant rawGame.createdAt rawGame.updatedAt
       else do
-        case patchWithRecovery (arkhamGameCurrentData game) (choicePatchDown $ arkhamStepChoice step) of
+        case patchValueWithRecovery rawGame.currentData (choicePatchDown $ arkhamStepChoice step) of
           -- TODO: We need to add back the gameActionDiff
           -- ensure previous step exists
           Error e -> throwError $ jsonError $ T.pack e
-          Success ge -> do
+          Success patchedValue -> do
             maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
               $ getBy (UniqueStep gameId (n - 1))
 
             now <- liftIO getCurrentTime
             seed <- liftIO getRandom
 
+            let finalValue = if isDebug then patchedValue else setGameSeed seed patchedValue
+
+            -- Deserialize exactly once for the return value (PublicGame + Solo mode)
+            ge <- case fromJSON @Game finalValue of
+              Error e -> throwError $ jsonError $ T.pack e
+              Success g -> pure g
+
             let
               arkhamGame =
                 ArkhamGame
-                  game.name
-                  (if isDebug then ge else ge {gameSeed = seed})
+                  rawGame.name
+                  ge
                   (n - 1)
-                  game.multiplayerVariant
-                  game.createdAt
+                  rawGame.multiplayerVariant
+                  rawGame.createdAt
                   now
             lift do
-              replace gameId arkhamGame
+              -- Store raw Value directly, avoiding toJSON :: Game -> Value
+              replace (ArkhamGameRawKey gameId) $
+                ArkhamGameRaw
+                  rawGame.name
+                  finalValue
+                  (n - 1)
+                  rawGame.multiplayerVariant
+                  rawGame.createdAt
+                  now
               delete do
                 entries <- from $ table @ArkhamLogEntry
                 where_ $ entries.arkhamGameId ==. val gameId
                 where_ $ entries.step >=. val (n - 1)
               deleteKey stepId
 
-              case game.multiplayerVariant of
+              case rawGame.multiplayerVariant of
                 Solo ->
                   replace pid
                     $ arkhamPlayer
@@ -167,13 +204,20 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
         $ GameUpdate
         $ PublicGame gameId arkhamGameName gameLog arkhamGameCurrentData
 
+-- | Multi-step scenario undo. Like stepBack but optimized to apply a combined
+-- patch at the Value level and deserialize only once for the return value.
+--
+-- Old cost: fromJSON(fetch) + toJSON(patch) + fromJSON(patch) + toJSON(replace in func) = 4 conversions
+-- New cost: fromJSON(return value only) = 1 conversion (handler's replace adds 1 more)
 stepBackScenario :: UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Int))
-stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
+stepBackScenario userId gameId = do
+  lockGame gameId
+  rawGame <- get404 (ArkhamGameRawKey gameId)
   runExceptT do
-    let n = gameScenarioSteps game.currentData - 1
+    let n = getScenarioSteps rawGame.currentData - 1
     when (n <= 0) $ throwError "No scenario steps to undo"
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
-    let toStep = max 0 (game.step - n)
+    let toStep = max 0 (arkhamGameRawStep rawGame - n)
     steps <- lift $ select do
       steps <- from $ table @ArkhamStep
       where_ $ steps.arkhamGameId ==. val gameId
@@ -183,10 +227,6 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
       pure steps
 
     lift do
-      update \g -> do
-        set g [ArkhamGameStep =. val toStep]
-        where_ $ g.id ==. val gameId
-
       delete do
         xsteps <- from $ table @ArkhamStep
         where_ $ xsteps.id `in_` valList (map entityKey steps)
@@ -200,22 +240,33 @@ stepBackScenario userId gameId = atomicallyWithGame gameId \game ->
 
     let undoPatch = foldMap (choicePatchDown . arkhamStepChoice . entityVal) steps
 
-    case patchWithRecovery game.currentData undoPatch of
+    case patchValueWithRecovery rawGame.currentData undoPatch of
       Error e -> throwError $ jsonError $ T.pack e
-      Success ge -> lift do
-        let arkhamGame = ArkhamGame game.name ge toStep game.multiplayerVariant game.createdAt now
+      Success patchedValue -> do
+        -- Deserialize exactly once for the return value
+        ge <- case fromJSON @Game patchedValue of
+          Error e -> throwError $ jsonError $ T.pack e
+          Success g -> pure g
 
-        replace gameId arkhamGame
-        delete do
-          entries <- from $ table @ArkhamLogEntry
-          where_ $ entries.arkhamGameId ==. val gameId
-          where_ $ entries.step >. val toStep
+        let arkhamGame = ArkhamGame rawGame.name ge toStep rawGame.multiplayerVariant rawGame.createdAt now
 
-        case game.multiplayerVariant of
-          Solo ->
-            replace pid
-              $ arkhamPlayer
-                { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-                }
-          WithFriends -> pure ()
-        pure (arkhamGame, n)
+        lift do
+          -- Store raw Value directly, avoiding toJSON :: Game -> Value
+          -- Note: the handler will replace again with an updated gameSeed
+          replace (ArkhamGameRawKey gameId) $
+            ArkhamGameRaw
+              rawGame.name
+              patchedValue
+              toStep
+              rawGame.multiplayerVariant
+              rawGame.createdAt
+              now
+
+          case rawGame.multiplayerVariant of
+            Solo ->
+              replace pid
+                $ arkhamPlayer
+                  { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+                  }
+            WithFriends -> pure ()
+          pure (arkhamGame, n)

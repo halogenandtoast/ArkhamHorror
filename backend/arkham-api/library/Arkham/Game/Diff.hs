@@ -117,6 +117,17 @@ patchWithRecovery g (Patch ops) =
     Error e -> Error e
     Success v -> fromJSON v
 
+-- | Apply a patch directly to a JSON Value, avoiding the expensive Game<->Value
+-- round-trip. Use this when you already have the game state as a Value (e.g.
+-- fetched via ArkhamGameRaw) to avoid two full serialization cycles.
+patchValueWithRecovery :: Value -> Diff.Patch -> Result Value
+patchValueWithRecovery v (Patch ops) = foldM applyWithRecovery v ops
+
+-- | Update the gameSeed field directly in a JSON Value without going through Game.
+setGameSeed :: Int -> Value -> Value
+setGameSeed seed (Object obj) = Object $ KM.insert "gameSeed" (toJSON seed) obj
+setGameSeed _ v = v
+
 applyWithRecovery :: Value -> Operation -> Result Value
 applyWithRecovery v op =
   case Diff.applyOperation op v of

@@ -178,7 +178,7 @@ displayCardType = \case
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do
   game <- from $ table @ArkhamGameRaw
-  where_ $ game.id ==. val gameId
+  where_ $ game.id ==. val (ArkhamGameRawKey gameId)
   locking forUpdate
   pure game.id
 

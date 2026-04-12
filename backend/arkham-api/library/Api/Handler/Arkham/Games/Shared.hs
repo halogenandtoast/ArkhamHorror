@@ -216,37 +216,52 @@ updateGame response gameId writeChannel = do
       updatedLog <- readIORef logRef
       now <- liftIO getCurrentTime
 
-      -- Phase 3: short lock — write results.
-      runDB do
-        deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. n]
-        replace (ArkhamGameRawKey gameId) $
-          ArkhamGameRaw
-            rawGame.name
-            ge_json
-            (n + 1)
-            rawGame.multiplayerVariant
-            rawGame.createdAt
-            now
-        insertMany_ $ map (newLogEntry gameId n now) updatedLog
-        void
-          $ upsertBy
-            (UniqueStep gameId (n + 1))
-            ( ArkhamStep gameId
-                (Choice diffDown updatedQueue)
+      -- Phase 3: re-acquire lock and write, but only if the game step hasn't
+      -- changed since Phase 1. A different player may have committed an update
+      -- during Phase 2 (runMessages), which would make our diff stale.
+      committed <- runDB do
+        lockGame gameId
+        currentRaw <- get404 (ArkhamGameRawKey gameId)
+        if arkhamGameRawStep currentRaw /= n
+          then pure False
+          else do
+            deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. n]
+            replace (ArkhamGameRawKey gameId) $
+              ArkhamGameRaw
+                rawGame.name
+                ge_json
                 (n + 1)
-                (ActionDiff $ view actionDiffL ge)
-            )
-            [ ArkhamStepChoice =. Choice diffDown updatedQueue
-            , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
-            ]
+                rawGame.multiplayerVariant
+                rawGame.createdAt
+                now
+            insertMany_ $ map (newLogEntry gameId n now) updatedLog
+            void
+              $ upsertBy
+                (UniqueStep gameId (n + 1))
+                ( ArkhamStep gameId
+                    (Choice diffDown updatedQueue)
+                    (n + 1)
+                    (ActionDiff $ view actionDiffL ge)
+                )
+                [ ArkhamStepChoice =. Choice diffDown updatedQueue
+                , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
+                ]
+            pure True
 
-      publishToRoom gameId
-        $ GameUpdate
-        $ PublicGame
-          gameId
-          rawGame.name
-          (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
-          ge
+      if committed
+        then
+          publishToRoom gameId
+            $ GameUpdate
+            $ PublicGame
+              gameId
+              rawGame.name
+              (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
+              ge
+        else
+          atomically
+            $ writeTChan writeChannel
+            $ encode
+            $ GameError "Game state changed before your action could be saved, please retry"
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

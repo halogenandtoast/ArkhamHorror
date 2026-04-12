@@ -56,15 +56,15 @@ getApiV1ArkhamGameFullExportR gameId = do
     sendChunkLBS $ encode (arkhamGameStep ge)
     sendChunkLBS ",\"steps\":["
     sendFlush
+    isFirstRef <- liftIO $ newIORef True
     steps <-
       lift $ runDB $ Persist.selectList [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
-    case steps of
-      [] -> pure ()
-      (Entity _ f : rest) -> do
-        sendChunkLBS $ encode f
-        for_ rest $ \(Entity _ s) -> do
-          sendChunkBS ","
-          sendChunkLBS $ encode s
+    for_ steps $ \(Entity _ s) -> do
+      isFirst <- liftIO $ readIORef isFirstRef
+      unless isFirst $ sendChunkBS ","
+      liftIO $ writeIORef isFirstRef False
+      sendChunkLBS $ encode s
+      sendFlush
     sendChunkLBS "],\"log\":[],\"multiplayerVariant\":"
     sendChunkLBS $ encode (arkhamGameMultiplayerVariant ge)
     sendChunkLBS "}}"

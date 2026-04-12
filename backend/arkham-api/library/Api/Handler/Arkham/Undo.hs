@@ -63,8 +63,13 @@ getScenarioSteps _ = 0
 -- New cost: fromJSON(return value only) = 1 conversion
 stepBack :: Bool -> UserId -> ArkhamGameId -> DB (Either Json.Value ArkhamGame)
 stepBack isDebug userId gameId = do
+  t0 <- liftIO getCurrentTime
   lockGame gameId
+  t1 <- liftIO getCurrentTime
+  $(logWarn) $ "[undo] lockGame: " <> tshow (diffUTCTime t1 t0)
   rawGame <- get404 (ArkhamGameRawKey gameId)
+  t2 <- liftIO getCurrentTime
+  $(logWarn) $ "[undo] get404 rawGame: " <> tshow (diffUTCTime t2 t1)
   runExceptT do
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
     let n = arkhamGameRawStep rawGame
@@ -79,9 +84,12 @@ stepBack isDebug userId gameId = do
         maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
           $ getBy (UniqueStep gameId (n - 1))
         -- Parse once before DB changes (data unchanged, just decrement step)
+        t3 <- liftIO getCurrentTime
         ge <- case fromJSON @Game rawGame.currentData of
           Error e -> throwError $ jsonError $ T.pack e
           Success g -> pure g
+        t4 <- liftIO getCurrentTime
+        $(logWarn) $ "[undo] fromJSON (empty patch): " <> tshow (diffUTCTime t4 t3)
         lift do
           update \g -> do
             set g [ArkhamGameStep =. val (n - 1)]
@@ -91,6 +99,8 @@ stepBack isDebug userId gameId = do
             where_ $ entries.arkhamGameId ==. val gameId
             where_ $ entries.step >=. val (n - 1)
           deleteKey stepId
+        t5 <- liftIO getCurrentTime
+        $(logWarn) $ "[undo] DB writes (empty patch): " <> tshow (diffUTCTime t5 t4)
         pure $ ArkhamGame rawGame.name ge (n - 1) rawGame.multiplayerVariant rawGame.createdAt rawGame.updatedAt
       else do
         case patchValueWithRecovery rawGame.currentData (choicePatchDown $ arkhamStepChoice step) of
@@ -101,6 +111,9 @@ stepBack isDebug userId gameId = do
             maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
               $ getBy (UniqueStep gameId (n - 1))
 
+            t3 <- liftIO getCurrentTime
+            $(logWarn) $ "[undo] patchValue+lookups: " <> tshow (diffUTCTime t3 t2)
+
             now <- liftIO getCurrentTime
             seed <- liftIO getRandom
 
@@ -110,6 +123,9 @@ stepBack isDebug userId gameId = do
             ge <- case fromJSON @Game finalValue of
               Error e -> throwError $ jsonError $ T.pack e
               Success g -> pure g
+
+            t4 <- liftIO getCurrentTime
+            $(logWarn) $ "[undo] fromJSON Game: " <> tshow (diffUTCTime t4 t3)
 
             let
               arkhamGame =
@@ -143,6 +159,10 @@ stepBack isDebug userId gameId = do
                       { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
                       }
                 WithFriends -> pure ()
+
+              t5 <- liftIO getCurrentTime
+              $(logWarn) $ "[undo] DB writes: " <> tshow (diffUTCTime t5 t4)
+              $(logWarn) $ "[undo] total: " <> tshow (diffUTCTime t5 t0)
               pure arkhamGame
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()

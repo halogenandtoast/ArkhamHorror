@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Heleprs.Investigator
+import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (DuringTurn)
 
 newtype DetectivesIntuition = DetectivesIntuition EventAttrs

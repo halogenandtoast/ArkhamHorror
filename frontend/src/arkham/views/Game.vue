@@ -617,9 +617,10 @@ async function loadAllImages(game:Arkham.Game):Promise<void>{
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
+    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value, questionVersion } }))
   }
 }
 
@@ -644,18 +645,20 @@ async function chooseDeckList(deckList: object): Promise<void> {
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
+    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion } }))
   }
 }
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
+    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion } }))
   }
 }
 

@@ -5912,13 +5912,16 @@ runMessages gameId mLogger = do
                 [] -> pushEnd EndInvestigation
                 [x] -> push $ ChoosePlayer x SetTurnPlayer
                 xs -> do
-                  player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
-                  push
-                    $ questionLabel "Choose player to take turn" player
-                    $ ChooseOne
-                      [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
-                      | iid <- xs
-                      ]
+                  if view leadInvestigatorIdL g == "00000"
+                    then push ChooseLeadInvestigator
+                    else do
+                      player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
+                      push
+                        $ questionLabel "Choose player to take turn" player
+                        $ ChooseOne
+                          [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
+                          | iid <- xs
+                          ]
 
               runMessages gameId mLogger
             else do

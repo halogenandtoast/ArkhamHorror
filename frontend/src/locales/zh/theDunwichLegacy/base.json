@@ -1,7 +1,12 @@
 {
+  "interludes": {
+    "1": "阿米蒂奇的命运",
+    "2": "幸存者"
+  },
     "key": {
         "professorWarrenRiceWasKidnapped" : "沃伦·莱斯教授被绑架",
         "theInvestigatorsRescuedProfessorWarrenRice" : "调查员解救了沃伦·莱斯教授",
+        "TakeWarrenRice": "获得沃伦·莱斯教授",
         "theInvestigatorsFailedToSaveTheStudents" : "未能成功拯救学生",
         "theStudentsWereRescued" : "成功拯救学生",
         "theExperimentWasDefeated" : "击败实验体",
@@ -10,6 +15,7 @@
         "drFrancisMorganWasKidnapped" : "佛朗西斯·摩尔根博士被绑架",
         "theInvestigatorsRescuedDrFrancisMorgan" : "调查员解救了佛朗西斯·摩尔根博士",
         "naomiHasTheInvestigatorsBacks" : "调查员得到娜奥米的支持",
+        "cheated" : "作弊了",
         "drHenryArmitageWasKidnapped" : "亨利·阿米蒂奇博士被绑架",
         "theInvestigatorsRescuedDrHenryArmitage" : "调查员解救了亨利·阿米蒂奇博士",
         "theInvestigatorsFailedToRecoverTheNecronomicon" : "调查员未取得死灵之书",
@@ -21,7 +27,7 @@
         "theInvestigatorsPutSilasBishopOutOfHisMisery" : "塞拉斯·毕晓普结束了悲惨的一生",
         "theInvestigatorsRestoredSilasBishop" : "塞拉斯·毕晓普恢复原形",
         "theInvestigatorsBanishedSilasBishop" : "塞拉斯·毕晓普被杀死",
-        "sacrificedToYogSothoth" : "Sacrificed to Yog-Sothoth",
+        "sacrificedToYogSothoth" : "犹格·索托斯的祭品",
         "drHenryArmitageSurvivedTheDunwichLegacy" : "亨利·阿米蒂奇博士在敦威治事件中存活",
         "professorWarrenRiceSurvivedTheDunwichLegacy" : "沃伦·莱斯教授在敦威治事件中存活",
         "drFrancisMorganSurvivedTheDunwichLegacy" : "佛朗西斯·摩尔根博士在敦威治事件中存活",

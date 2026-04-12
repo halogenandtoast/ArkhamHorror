@@ -391,7 +391,9 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
       <div class="location-column">
         <div class="card-frame" :class="{ explosion }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
-          <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
+          <span v-if="blocked" class="status-icon">
+            <font-awesome-icon :icon="['fab', 'expeditedssl']" />
+          </span>
             <span v-for="ui in important" class="important" :class="{ 'important--can-interact': canInteract }" v-tooltip="ui">
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
@@ -631,13 +633,17 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   position: absolute;
   top: 10%;
   background: rgba(255, 255, 255, 0.7);
-  border-radius: 1.5em;
+  border-radius: 50%;
   font-size: 2.6em;
   color: rgba(0, 0, 0, 0.8);
   pointer-events: none;
   z-index: 1;
-  min-height: min-content;
   scale: 0.8;
+  width: 1.2em;
+  height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .important {

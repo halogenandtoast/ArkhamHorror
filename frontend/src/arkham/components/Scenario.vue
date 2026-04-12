@@ -99,8 +99,9 @@ const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
 const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
-watch(locationsZoom, (value) => {
+watch(locationsZoom, async (value) => {
   localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
+  await updateScrollMargins()
 })
 
 function zoomStep(value: number): number {
@@ -124,6 +125,7 @@ const { isMobile } = IsMobile();
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
+  updateScrollMargins()
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -368,13 +370,31 @@ const gridAreas = computed(()=>{
   return rotatedRows.map(r => `"${r.join(' ')}"`).join(' ')
 })
 
-// keep object identity stable; only its fields change
-const locationStyles = computed(()=>({
-  display:'grid',
-  gap:'20px',
+// transform: scale() is used rather than CSS zoom because it is handled consistently
+// by getBoundingClientRect() in all browsers. The scroll area doesn't follow transform
+// automatically, so we set margins after each render to compensate.
+const locationStyles = computed(() => ({
+  display: 'grid',
+  gap: '20px',
   'grid-template-areas': gridAreas.value ?? '',
-  zoom: locationsZoom.value
+  transform: `scale(${locationsZoom.value})`,
+  transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
 }))
+
+async function updateScrollMargins() {
+  await nextTick()
+  const grid = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
+  if (!grid) return
+  const z = locationsZoom.value
+  // offsetWidth/Height exclude margins, so we always read the natural grid size directly.
+  if (z >= 1) {
+    grid.style.marginRight  = `${grid.offsetWidth  * (z - 1)}px`
+    grid.style.marginBottom = `${grid.offsetHeight * (z - 1)}px`
+  } else {
+    grid.style.marginRight  = ''
+    grid.style.marginBottom = ''
+  }
+}
 
 const scenarioDeckStyles = computed(() => {
   const { decksLayout } = props.scenario
@@ -517,6 +537,7 @@ const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.placement === null && a.label !== "cosmos"))
+watch(locations, updateScrollMargins, { flush: 'post' })
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
@@ -702,7 +723,8 @@ function beforeLeave(e: Element) {
 }
 
 function toggleZoom(e: MouseEvent) {
-  const el = (e.target as HTMLElement).closest('.location-cards') as HTMLElement;
+  const el = (e.target as HTMLElement).closest('.location-cards') as HTMLElement | null;
+  if (!el) return;
   const zoomValue = 4;
   const isZoomedIn = el.style.zoom === String(zoomValue);
 
@@ -1203,6 +1225,7 @@ async function addChaosToken(face: any){
           <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
           <button class="zoom-btn" @click.stop="increaseZoom">+</button>
         </div>
+        <div class="location-cards-scroller">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
             v-for="location in locations"
@@ -1259,6 +1282,7 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
+        </div>
       </div>
 
       <div id="player-zone">
@@ -1457,16 +1481,21 @@ async function addChaosToken(face: any){
   }
 }
 
-.location-cards {
-  width: 100%;
-  height: 100%;
-  margin: auto;
+.location-cards-scroller {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
-  place-content: safe center;
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
+}
+
+.location-cards {
   display: grid;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
 .location-cards-container {
@@ -1917,7 +1946,7 @@ async function addChaosToken(face: any){
 .zoom-control {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 5px;
   display: flex;
   align-items: center;
   gap: 6px;

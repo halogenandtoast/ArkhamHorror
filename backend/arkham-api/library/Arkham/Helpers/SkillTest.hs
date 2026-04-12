@@ -821,6 +821,9 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       Just eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
+  Matcher.WhileEvading -> case skillTestAction st of
+    Just Action.Evade -> pure True
+    _ -> pure False
   Matcher.WhileEvadingAnEnemy enemyMatcher -> case skillTestAction st of
     Just Action.Evade -> case st.target.enemy of
       Just eid -> elem eid <$> select enemyMatcher

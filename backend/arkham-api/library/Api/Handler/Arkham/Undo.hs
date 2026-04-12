@@ -1,6 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
-
 module Api.Handler.Arkham.Undo (putApiV1ArkhamGameUndoR, putApiV1ArkhamGameUndoScenarioR) where
 
 import Api.Arkham.Helpers
@@ -17,7 +14,6 @@ import Data.Aeson.KeyMap qualified as KM
 import Data.Aeson.Patch
 import Data.Text qualified as T
 import Data.Time.Clock
-import System.IO (hPutStrLn)
 import Database.Esqueleto.Experimental
 import Entity.Arkham.GameRaw
 import Entity.Arkham.LogEntry
@@ -64,13 +60,8 @@ getScenarioSteps _ = 0
 -- New cost: fromJSON(return value only) = 1 conversion
 stepBack :: Bool -> UserId -> ArkhamGameId -> DB (Either Json.Value ArkhamGame)
 stepBack isDebug userId gameId = do
-  t0 <- liftIO getCurrentTime
   lockGame gameId
-  t1 <- liftIO getCurrentTime
-  liftIO . hPutStrLn stderr . T.unpack $ "[undo] lockGame: " <> tshow (diffUTCTime t1 t0)
   rawGame <- get404 (ArkhamGameRawKey gameId)
-  t2 <- liftIO getCurrentTime
-  liftIO . hPutStrLn stderr . T.unpack $ "[undo] get404 rawGame: " <> tshow (diffUTCTime t2 t1)
   runExceptT do
     Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
     let n = arkhamGameRawStep rawGame
@@ -85,12 +76,9 @@ stepBack isDebug userId gameId = do
         maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
           $ getBy (UniqueStep gameId (n - 1))
         -- Parse once before DB changes (data unchanged, just decrement step)
-        t3 <- liftIO getCurrentTime
         ge <- case fromJSON @Game rawGame.currentData of
           Error e -> throwError $ jsonError $ T.pack e
           Success g -> pure g
-        t4 <- liftIO getCurrentTime
-        liftIO . hPutStrLn stderr . T.unpack $ "[undo] fromJSON (empty patch): " <> tshow (diffUTCTime t4 t3)
         lift do
           update \g -> do
             set g [ArkhamGameStep =. val (n - 1)]
@@ -100,8 +88,6 @@ stepBack isDebug userId gameId = do
             where_ $ entries.arkhamGameId ==. val gameId
             where_ $ entries.step >=. val (n - 1)
           deleteKey stepId
-        t5 <- liftIO getCurrentTime
-        liftIO . hPutStrLn stderr . T.unpack $ "[undo] DB writes (empty patch): " <> tshow (diffUTCTime t5 t4)
         pure $ ArkhamGame rawGame.name ge (n - 1) rawGame.multiplayerVariant rawGame.createdAt rawGame.updatedAt
       else do
         case patchValueWithRecovery rawGame.currentData (choicePatchDown $ arkhamStepChoice step) of
@@ -112,9 +98,6 @@ stepBack isDebug userId gameId = do
             maybeToExceptM_ (jsonError $ "can not go back, at step: " <> tshow n)
               $ getBy (UniqueStep gameId (n - 1))
 
-            t3 <- liftIO getCurrentTime
-            liftIO . hPutStrLn stderr . T.unpack $ "[undo] patchValue+lookups: " <> tshow (diffUTCTime t3 t2)
-
             now <- liftIO getCurrentTime
             seed <- liftIO getRandom
 
@@ -124,9 +107,6 @@ stepBack isDebug userId gameId = do
             ge <- case fromJSON @Game finalValue of
               Error e -> throwError $ jsonError $ T.pack e
               Success g -> pure g
-
-            t4 <- liftIO getCurrentTime
-            liftIO . hPutStrLn stderr . T.unpack $ "[undo] fromJSON Game: " <> tshow (diffUTCTime t4 t3)
 
             let
               arkhamGame =
@@ -160,10 +140,6 @@ stepBack isDebug userId gameId = do
                       { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
                       }
                 WithFriends -> pure ()
-
-              t5 <- liftIO getCurrentTime
-              liftIO . hPutStrLn stderr . T.unpack $ "[undo] DB writes: " <> tshow (diffUTCTime t5 t4)
-              liftIO . hPutStrLn stderr . T.unpack $ "[undo] total: " <> tshow (diffUTCTime t5 t0)
               pure arkhamGame
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
@@ -179,9 +155,7 @@ putApiV1ArkhamGameUndoR gameId = do
       _ -> pure userId'
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
-      Left err -> do
-        liftIO . hPutStrLn stderr . T.unpack $ "undo failed: " <> tshow err
-        sendStatusJSON Status.status400 err
+      Left err -> sendStatusJSON Status.status400 err
       Right (ArkhamGame {..}) -> do
         publishToRoom gameId
           $ GameUpdate
@@ -217,9 +191,7 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
         pure (g, gameLog)
 
   case eResult of
-    Left err -> do
-      liftIO . hPutStrLn stderr . T.unpack $ "undo scenario failed: " <> tshow err
-      sendStatusJSON Status.status400 err
+    Left err -> sendStatusJSON Status.status400 err
     Right (ArkhamGame {..}, gameLog) -> do
       publishToRoom gameId
         $ GameUpdate

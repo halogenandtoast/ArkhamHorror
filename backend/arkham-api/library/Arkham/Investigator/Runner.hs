@@ -55,6 +55,7 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
+import Arkham.Game.Settings (settingsStrictAsIfAt)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (
@@ -83,7 +84,6 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Game.Settings (settingsStrictAsIfAt)
 import Arkham.Helpers.Location (
   getCanMoveTo,
   getCanMoveToMatchingLocations,
@@ -3708,6 +3708,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         else push $ drawCards investigatorId ScenarioSource 1
     push $ ForTarget (toTarget a) (DoStep 2 (ForInvestigator investigatorId AllDrawCardAndResource))
     pure a
+  SendMessage (isTarget a -> True) msg' -> liftRunMessage msg' a
   ForTarget (isTarget a -> True) (DoStep 2 (ForInvestigator _ AllDrawCardAndResource)) | not (a ^. defeatedL || a ^. resignedL) -> do
     lift $ takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do

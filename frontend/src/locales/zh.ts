@@ -13,4 +13,4 @@ import edgeOfTheEarth from '@/locales/zh/edgeOfTheEarth'
 import standalone from '@/locales/zh/standalone'
 import gameBoard from '@/locales/zh/gameBoard/gameBoard'
 
-export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, label, ...campaignLog, investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

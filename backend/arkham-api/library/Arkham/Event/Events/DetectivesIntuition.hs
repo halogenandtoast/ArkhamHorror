@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Heleprs.Investigator
 import Arkham.Matcher hiding (DuringTurn)
 
 newtype DetectivesIntuition = DetectivesIntuition EventAttrs
@@ -25,8 +26,11 @@ instance RunMessage DetectivesIntuition where
   runMessage msg e@(DetectivesIntuition attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       gainResources iid (attrs.ability 1) 2
-      healDamage iid (attrs.ability 1) 1
-      healHorror iid (attrs.ability 1) 1
+      chooseOrRunOneM iid do
+        whenM (canHaveDamageHealed attrs iid) do
+          damageLabeled iid $ healDamage iid (attrs.ability 1) 1
+        whenM (canHaveHorrorHealed attrs iid) do
+          horrorLabeled iid $ healHorror iid (attrs.ability 1) 1
       pure e
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       drawCards iid (attrs.ability 1) 2

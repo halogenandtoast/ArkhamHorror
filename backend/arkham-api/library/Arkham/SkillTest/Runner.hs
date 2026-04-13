@@ -290,6 +290,12 @@ instance RunMessage SkillTest where
               , After revealMsg
               ]
       pure $ s & (setAsideChaosTokensL %~ (<> chaosTokens))
+    RequestedChaosTokens _ _ chaosTokens -> do
+      -- Other sources should track in additional
+      pure
+        $ s
+        & (additionalRevealedChaosTokensL %~ (<> chaosTokens))
+        & (revealedChaosTokensCountL +~ length chaosTokens)
     RevealChaosToken SkillTestSource {} iid token -> do
       pushM $ checkAfter $ Window.RevealChaosToken iid token
 

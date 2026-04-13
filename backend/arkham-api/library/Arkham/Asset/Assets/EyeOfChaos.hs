@@ -61,8 +61,9 @@ instance RunMessage EyeOfChaosEffect where
                     when stillInPlay do
                       labeled "Place 1 Charge on Eye of Chaos" do
                         addUses attrs.source assetId Charge 1
-                    labeled "Discover 1 clues at a connecting location" do
-                      chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
+                    unless (null lids) do
+                      labeled "Discover 1 clues at a connecting location" do
+                        chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
                 disable attrs
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId

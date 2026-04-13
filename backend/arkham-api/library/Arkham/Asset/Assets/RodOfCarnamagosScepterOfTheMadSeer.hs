@@ -17,8 +17,10 @@ rodOfCarnamagosScepterOfTheMadSeer =
   asset RodOfCarnamagosScepterOfTheMadSeer Cards.rodOfCarnamagosScepterOfTheMadSeer
 
 instance HasAbilities RodOfCarnamagosScepterOfTheMadSeer where
-  getAbilities (RodOfCarnamagosScepterOfTheMadSeer a) =
-    [controlled_ a 1 $ freeTrigger $ ChooseEnemyCost (NonEliteEnemy <> at_ Anywhere) <> exhaust a]
+  getAbilities (RodOfCarnamagosScepterOfTheMadSeer attrs) =
+    [ controlled_ attrs 1
+        $ freeTrigger (ChooseEnemyCost (NonEliteEnemy <> EnemyAt Anywhere) <> exhaust attrs)
+    ]
 
 instance RunMessage RodOfCarnamagosScepterOfTheMadSeer where
   runMessage msg a@(RodOfCarnamagosScepterOfTheMadSeer attrs) = runQueueT $ case msg of
@@ -34,5 +36,6 @@ instance RunMessage RodOfCarnamagosScepterOfTheMadSeer where
             rot <- sample rots'
             obtainCard rot
             push $ CreateEventAt iid rot (AttachedToEnemy eid)
+      push $ ReturnChaosTokens tokens
       pure a
     _ -> RodOfCarnamagosScepterOfTheMadSeer <$> liftRunMessage msg attrs

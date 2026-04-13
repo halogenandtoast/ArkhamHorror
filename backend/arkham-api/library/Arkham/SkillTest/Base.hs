@@ -40,6 +40,7 @@ data SkillTest = SkillTest
   , skillTestOriginalDifficulty :: Maybe SkillTestDifficulty
   , skillTestSetAsideChaosTokens :: [ChaosToken]
   , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
+  , skillTestAdditionalRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
   , skillTestResolvedChaosTokens :: [ChaosToken]
   , skillTestToResolveChaosTokens :: [ChaosToken]
   , skillTestResult :: SkillTestResult
@@ -84,6 +85,9 @@ instance HasField "investigator" SkillTest InvestigatorId where
 
 instance HasField "revealedChaosTokens" SkillTest [ChaosToken] where
   getField = skillTestRevealedChaosTokens
+
+instance HasField "additionalRevealedChaosTokens" SkillTest [ChaosToken] where
+  getField = skillTestAdditionalRevealedChaosTokens
 
 instance HasField "revealedChaosTokensCount" SkillTest Int where
   getField = skillTestRevealedChaosTokensCount
@@ -159,6 +163,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestOriginalDifficulty = Just difficulty
     , skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
+    , skillTestAdditionalRevealedChaosTokens = mempty
     , skillTestResolvedChaosTokens = mempty
     , skillTestToResolveChaosTokens = mempty
     , skillTestResult = Unrun
@@ -196,7 +201,8 @@ resetSkillTest sid skillTest =
     , skillTestCommittedCards = mempty
     , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
     , skillTestId = sid
-    , skillTestDifficulty = fromMaybe (skillTestDifficulty skillTest) (skillTestOriginalDifficulty skillTest)
+    , skillTestDifficulty =
+        fromMaybe (skillTestDifficulty skillTest) (skillTestOriginalDifficulty skillTest)
     }
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
@@ -214,6 +220,7 @@ instance FromJSON SkillTest where
     skillTestOriginalDifficulty <- o .:? "originalDifficulty"
     skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
+    skillTestAdditionalRevealedChaosTokens <- o .:? "additionalRevealedChaosTokens" .!= []
     skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
     skillTestToResolveChaosTokens <- o .: "toResolveChaosTokens"
     skillTestResult <- o .: "result"

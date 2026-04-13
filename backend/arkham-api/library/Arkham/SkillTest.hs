@@ -51,6 +51,9 @@ toResolveChaosTokensL = lens skillTestToResolveChaosTokens $ \m x -> m {skillTes
 revealedChaosTokensL :: Lens' SkillTest [ChaosToken]
 revealedChaosTokensL = lens skillTestRevealedChaosTokens $ \m x -> m {skillTestRevealedChaosTokens = x}
 
+additionalRevealedChaosTokensL :: Lens' SkillTest [ChaosToken]
+additionalRevealedChaosTokensL = lens skillTestAdditionalRevealedChaosTokens $ \m x -> m {skillTestAdditionalRevealedChaosTokens = x}
+
 revealedChaosTokensCountL :: Lens' SkillTest Int
 revealedChaosTokensCountL = lens skillTestRevealedChaosTokensCount $ \m x -> m {skillTestRevealedChaosTokensCount = x}
 

@@ -82,7 +82,9 @@ inSkillTest :: HasGame m => m Bool
 inSkillTest = isJust <$> getSkillTest
 
 getSkillTestRevealedChaosTokens :: HasGame m => m [ChaosToken]
-getSkillTestRevealedChaosTokens = maybe [] skillTestRevealedChaosTokens <$> getSkillTest
+getSkillTestRevealedChaosTokens =
+  maybe [] (\st -> skillTestRevealedChaosTokens st <> skillTestAdditionalRevealedChaosTokens st)
+    <$> getSkillTest
 
 getSkillTestResolvedChaosTokens :: HasGame m => m [ChaosToken]
 getSkillTestResolvedChaosTokens = maybe [] skillTestResolvedChaosTokens <$> getSkillTest
@@ -393,7 +395,7 @@ getModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getModifiedSkillValue = do
   st <- getJustSkillTest
   modifiers' <- getModifiers (SkillTestTarget st.id)
-  let cancelSkills = any (`elem` modifiers') [CancelSkills , CancelEachCommittedCard]
+  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
   iconCount <- if cancelSkills then pure 0 else skillIconCount st
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
@@ -771,11 +773,12 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.SkillTestWithRevealedChaosToken matcher ->
     anyM (`Query.matches` Matcher.IncludeSealed matcher)
       $ skillTestRevealedChaosTokens st
+      <> skillTestAdditionalRevealedChaosTokens st
   Matcher.SkillTestWithRevealedChaosTokenCount n matcher ->
     (>= n)
       <$> countM
         (`Query.matches` Matcher.IncludeSealed matcher)
-        (skillTestRevealedChaosTokens st)
+        (skillTestRevealedChaosTokens st <> skillTestAdditionalRevealedChaosTokens st)
   Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
   Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
   Matcher.SkillTestOnLocation match -> case skillTestSource st of

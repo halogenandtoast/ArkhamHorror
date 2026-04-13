@@ -441,7 +441,7 @@ moves timing who source destination =
 getRevealedChaosTokens :: [Window] -> [ChaosToken]
 getRevealedChaosTokens = \case
   [] -> []
-  ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens
+  ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens <> st.additionalRevealedChaosTokens
   ((windowType -> Window.RevealChaosTokensDuringSkillTest _ _ ts) : _) -> ts
   ((windowType -> Window.RevealChaosToken _ t) : rest) -> t : getRevealedChaosTokens rest
   (_ : rest) -> getRevealedChaosTokens rest

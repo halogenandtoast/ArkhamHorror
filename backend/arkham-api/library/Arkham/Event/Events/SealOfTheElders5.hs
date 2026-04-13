@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SealOfTheElders5 (sealOfTheElders5, SealOfTheElders5 (..)) where
+module Arkham.Event.Events.SealOfTheElders5 (sealOfTheElders5) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Cards

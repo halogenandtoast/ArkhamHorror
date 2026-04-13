@@ -1,6 +1,5 @@
 module Arkham.Event.Events.Stakeout (stakeout) where
 
-import Arkham.Action qualified as Action
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
@@ -18,9 +17,9 @@ instance RunMessage Stakeout where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (SkillModifier #intellect 2)
-      investigateEdit_ sid iid attrs (setTarget attrs)
+      investigate_ sid iid attrs
       pure e
-    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      healHorror iid attrs 1
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      healHorrorIfCan iid attrs 1
       pure e
     _ -> Stakeout <$> liftRunMessage msg attrs

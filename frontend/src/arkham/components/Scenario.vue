@@ -2000,6 +2000,7 @@ async function addChaosToken(face: any){
   gap: 6px;
   padding: 2px 8px;
   flex-shrink: 0;
+  align-self: center;
 
   @media (pointer: coarse) {
     display: none;

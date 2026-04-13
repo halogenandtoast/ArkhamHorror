@@ -1337,12 +1337,13 @@ async function addChaosToken(face: any){
           :activePlayerId="activePlayerId"
           :tarotCards="props.scenario.tarotCards"
           @choose="choose"
-        />
-        <div class="zoom-control">
-          <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
-          <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
-          <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
-        </div>
+        >
+          <div class="zoom-control">
+            <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
+            <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
+            <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
+          </div>
+        </PlayerTabs>
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
@@ -1535,6 +1536,7 @@ async function addChaosToken(face: any){
   min-height: 0;
   min-width: 0;
   overflow: auto;
+  touch-action: manipulation;
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
   display: flex;
@@ -1996,19 +1998,12 @@ async function addChaosToken(face: any){
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  align-self: flex-start;
-  margin-top: 5px;
+  padding: 2px 8px;
   flex-shrink: 0;
-  position: absolute;
-  right: 40px;
-  @media (max-width: 768px) and (orientation: portrait) {
+
+  @media (pointer: coarse) {
     display: none;
   }
-}
-
-@media screen and (max-width: 400px) {
-  .zoom-control { display: none }
 }
 
 @media not screen {

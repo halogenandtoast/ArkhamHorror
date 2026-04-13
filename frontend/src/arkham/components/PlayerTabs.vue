@@ -189,6 +189,7 @@ watchEffect(() => {
 
 <template>
   <div class="player-info">
+    <div class="tabs-row">
     <ul class='tabs__header'>
       <li v-for='investigator in investigators'
         :key='investigator.name.title'
@@ -219,6 +220,8 @@ watchEffect(() => {
           @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
       </li>
     </ul>
+    <slot />
+    </div>
     <Tab
       v-for="investigator in investigators"
       :key="investigator.id"
@@ -261,7 +264,13 @@ watchEffect(() => {
 </template>
 
 <style scoped>
+.tabs-row {
+  display: flex;
+  align-items: flex-end;
+}
+
 ul.tabs__header {
+  flex: 1;
   display: flex;
   list-style: none;
   padding: 0;

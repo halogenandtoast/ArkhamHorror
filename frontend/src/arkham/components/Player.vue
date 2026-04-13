@@ -347,6 +347,8 @@ function onDrop(event: DragEvent) {
   }
 }
 
+const playAreaCollapsed = ref(false)
+
 const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
 const handCardExposedHeight_MIN = `${-(handCardHeight - 50)}`;
 const handCardExposedHeight_MAX = `0`;
@@ -394,9 +396,11 @@ function toggleHandAreaMarginBottom(event: Event) {
 
 <template>
   <div class="player-cards">
+    <button class="in-play-toggle" @click="playAreaCollapsed = !playAreaCollapsed"></button>
     <transition name="grow">
       <section
         class="in-play"
+        :class="{ 'in-play--collapsed': playAreaCollapsed }"
         @drop="onDrop($event)"
         @dragover.prevent="dragover($event)"
         @dragenter.prevent
@@ -712,15 +716,55 @@ function toggleHandAreaMarginBottom(event: Event) {
   box-shadow: var(--card-shadow);
 }
 
+.in-play-toggle {
+  display: none;
+  width: 100%;
+  height: 12px;
+  align-items: center;
+  justify-content: center;
+  background: #1e2235;
+  border: none;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &::before {
+    content: '';
+    width: 32px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: flex;
+  }
+}
+
 .in-play {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
   gap: 5px;
-  background: #999;
-  padding: 10px;
   background: var(--background-dark);
+  padding: 10px;
   border-bottom: 1px solid var(--background);
   border-top: 1px solid var(--background);
+  max-height: 300px;
+  transition: max-height 0.15s cubic-bezier(0.4, 0, 0.2, 1), padding 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.1s ease;
+
+  > * {
+    flex-shrink: 0;
+  }
+
+  &.in-play--collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
 }
 
 .hand {

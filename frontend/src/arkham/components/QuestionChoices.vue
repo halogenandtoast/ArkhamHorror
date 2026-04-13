@@ -20,7 +20,11 @@ const choose = (idx: number) => emit('choose', idx)
 
 const { t } = useI18n()
 const label = function(body: string) {
-  return formatContent(handleEmbeddedI18n(body, t))
+  if (body.startsWith('Discover Clue at ')) {
+    const rawLocation = body.replace('Discover Clue at ', '').trim();
+    return t('discover_clue_at_template', { location: t(rawLocation) });
+  }
+  return formatContent(handleEmbeddedI18n(t(body), t))
 }
 </script>
 <template>
@@ -34,10 +38,10 @@ const label = function(body: string) {
           />
       </template>
       <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-        <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+        <button @click="choose(index)" v-tooltip="choice.tooltip">{{ t(choice.label) }}</button>
       </template>
       <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
-        <button @click="choose(index)">{{choice.ability.type.label}}</button>
+        <button @click="choose(index)">{{ t(choice.ability.type.label) }}</button>
       </template>
       <div v-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
@@ -77,7 +81,7 @@ const label = function(body: string) {
         class="button"
         @click="choose(index)"
       >
-        Use <i :class="`icon${choice.skillType}`"></i>: {{choice.label}}
+        Use <i :class="`icon${choice.skillType}`"></i>: {{ t(choice.label) }}
       </a>
     </template>
   </div>

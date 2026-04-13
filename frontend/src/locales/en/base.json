@@ -136,5 +136,10 @@
   "slashOr": "{0}/{1}",
   "and": "{0} or {1}",
   "cardsUnderneath": "1 Card Underneath | {count} Cards Underneath",
-  "drew": "{iname} drew {name}"
+  "drew": "{iname} drew {name}",
+  "Done With Mulligan": "Done With Mulligan",
+  "skip": "Skip",
+  "handSize": "Hand Size",
+  "yes": "Yes",
+  "no": "No"
 }

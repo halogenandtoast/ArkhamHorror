@@ -2935,6 +2935,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure $ a & assignedHealthDamageL %~ max 0 . subtract n
   HealHorrorDirectly (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
+    let totalSanity = amount + investigatorHorrorHealed
+    let overHealSanity = max 0 (totalSanity - a.sanityDamage - a.assignedSanityDamage)
+
+    pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id source overHealSanity
+
     a' <-
       if amount > 0 then liftRunMessage (RemoveTokens source (toTarget a) #horror amount) a else pure a
     pure
@@ -2945,7 +2950,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     cannotHealDamage <- hasModifier a CannotHealDamage
     if cannotHealDamage
       then pure a
-      else liftRunMessage (RemoveTokens source (toTarget a) #damage amount) a
+      else do
+        let overHealDamage = max 0 (amount - a.healthDamage - a.assignedHealthDamage)
+        pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id source overHealDamage
+
+        liftRunMessage (RemoveTokens source (toTarget a) #damage amount) a
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- field InvestigatorHealth (toId a)
     modifiedSanity <- field InvestigatorSanity (toId a)

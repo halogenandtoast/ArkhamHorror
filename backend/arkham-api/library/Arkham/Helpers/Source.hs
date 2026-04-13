@@ -175,6 +175,11 @@ sourceMatches s = \case
           case toCardOwner c of
             Nothing -> pure False
             Just iid -> elem iid <$> select whoMatcher
+        CardCostSource cid -> do
+          c <- getCard cid
+          case toCardOwner c of
+            Nothing -> pure False
+            Just iid -> elem iid <$> select whoMatcher
         PaymentSource s' -> checkSource s'
         _ -> pure False
      in

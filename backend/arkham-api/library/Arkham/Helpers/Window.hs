@@ -2015,11 +2015,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
             ]
-        Window.EnemySpawns enemyId lid ->
-          andM
-            [ matches enemyId enemyMatcher
-            , locationMatches iid source window' lid whereMatcher
-            ]
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case

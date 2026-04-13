@@ -17,11 +17,14 @@ umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 instance RunMessage UmordhothsHunger where
   runMessage msg t@(UmordhothsHunger attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
+      eachInvestigator (`randomDiscard` attrs)
+      doStep 1 msg
+      selectEach AnyInPlayEnemy \enemy -> healDamage enemy attrs 1
+      pure t
+    DoStep 1 (Revelation _ (isSource attrs -> True)) -> do
       eachInvestigator \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
-        if handCount == 0
-          then kill attrs iid
-          else randomDiscard iid attrs
-      selectEach AnyInPlayEnemy \enemy -> healDamage enemy attrs 1
+        when (handCount == 0) do
+          kill attrs iid
       pure t
     _ -> UmordhothsHunger <$> liftRunMessage msg attrs

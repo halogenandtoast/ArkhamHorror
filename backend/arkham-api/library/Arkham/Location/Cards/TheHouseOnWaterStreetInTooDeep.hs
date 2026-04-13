@@ -30,7 +30,7 @@ instance HasAbilities TheHouseOnWaterStreetInTooDeep where
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
       , restricted a 2 (Here <> thisIs a LocationWithAdjacentBarrier)
-          $ FastAbility' (HandDiscardCost 1 #any) [#parley]
+          $ FastAbility' (HandDiscardCost 1 #any) #parley
       ]
 
 instance RunMessage TheHouseOnWaterStreetInTooDeep where

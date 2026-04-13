@@ -94,7 +94,7 @@ instance RunMessage TheCosmosBeckons where
       (firstCosmosCard, secondCosmosCard, thirdCosmosCard) <-
         shuffleM (courtOfTheGreatOldOnes : cards) <&> \case
           [x, y, z] -> (x, y, z)
-          _ -> error "impossible"
+          _ -> error "TheCosmosBeckons: impossible"
 
       (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 7) lead
 

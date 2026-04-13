@@ -26,6 +26,7 @@ mkChooseFightPure sid iid source =
     , chooseFightTarget = Nothing
     , chooseFightSkillType = #combat
     , chooseFightIsAction = False
+    , chooseFightPayCost = False
     , chooseFightOnlyChoose = False
     , chooseFightOverride = False
     , chooseFightSkillTest = sid

@@ -839,7 +839,7 @@ instance RunMessage ChaosBag where
             pure token'
           -- let tokens' = filter (not . chaosTokenCancelled) tokens''
 
-          -- If we are dealing with the skill test, then the after window will be managed by it
+          -- If we are dealing with the skill test, then the when/after windows will be managed by it
           let
             sourceIsSkillTest = case source of
               SkillTestSource _ -> True

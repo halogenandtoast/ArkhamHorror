@@ -104,7 +104,7 @@ stored k = do
 matchingCardsAlreadyInDeck
   :: (HasGame m, Tracing m) => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
-  decks <- campaignField CampaignDecks
+  decks <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
   pure $ Map.map (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck) decks
 
 addCampaignCardToDeckChoice
@@ -134,15 +134,16 @@ forceAddCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
       ]
 
 getCurrentDeck
-  :: (HasGame m, Tracing m, ToId investigator InvestigatorId) => investigator -> m (Deck PlayerCard)
+  :: (HasCallStack, HasGame m, Tracing m, ToId investigator InvestigatorId)
+  => investigator -> m (Deck PlayerCard)
 getCurrentDeck (asId -> iid) =
   field InvestigatorDeck iid >>= \case
     Deck [] -> do
-      decks <- campaignField CampaignDecks
+      decks <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
       case Map.lookup iid decks of
         Nothing -> pure $ Deck []
         Just deck -> do
-          allStoryCards <- campaignField CampaignStoryCards
+          allStoryCards <- withStandalone (field CampaignStoryCards) (field ScenarioStoryCards)
           let storyCards = findWithDefault [] iid allStoryCards
           let storyCardCodes = map toCardCode storyCards
           let deck' = filter (\card -> card.cardCode `notElem` storyCardCodes) (unDeck deck)

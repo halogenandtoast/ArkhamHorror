@@ -7,7 +7,7 @@ cleanSweep =
   (event "60364" "Clean Sweep" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#agility, #intellect]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     }
 
 payYourDues :: CardDef
@@ -15,7 +15,7 @@ payYourDues =
   (event "60365" "Pay Your Dues" 0 Rogue)
     { cdCardTraits = singleton Favor
     , cdSkills = [#intellect, #willpower]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCost = Just (MatchingEnemyFieldCost (NonEliteEnemy <> EnemyAt YourLocation) EnemyRemainingHealthField)
     }
 
@@ -24,7 +24,7 @@ quickExit =
   (event "60366" "Quick Exit" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#agility, #willpower]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     }
 
 aSuddenFall :: CardDef
@@ -32,7 +32,7 @@ aSuddenFall =
   (event "60367" "A Sudden Fall" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#agility, #combat]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 rightUnderTheirNoses :: CardDef
@@ -48,7 +48,7 @@ cleanSweep2 =
   (event "60376" "Clean Sweep" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#intellect, #intellect, #wild]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdLevel = Just 2
     }
 
@@ -57,7 +57,7 @@ quickExit2 =
   (event "60377" "Quick Exit" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#willpower, #willpower, #wild]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 2
     }
 
@@ -66,7 +66,7 @@ aSuddenFall2 =
   (event "60378" "A Sudden Fall" 2 Rogue)
     { cdCardTraits = setFromList [Tactic, Trick]
     , cdSkills = [#combat, #combat, #wild]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 2
     }
 

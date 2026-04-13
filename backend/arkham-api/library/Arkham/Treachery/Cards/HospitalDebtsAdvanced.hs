@@ -32,7 +32,8 @@ instance RunMessage HospitalDebtsAdvanced where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll [SpendResources iid 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
       pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      gameModifier (attrs.ability 2) iid (XPModifier "Hospital Debts" (-2))
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      for_ attrs.owner \iid -> do
+        gameModifier (attrs.ability 2) iid (XPModifier "Hospital Debts" (-2))
       pure t
     _ -> HospitalDebtsAdvanced <$> liftRunMessage msg attrs

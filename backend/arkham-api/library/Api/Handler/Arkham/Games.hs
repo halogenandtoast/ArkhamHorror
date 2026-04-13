@@ -23,6 +23,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Cost.Status
 import Arkham.Difficulty
 import Arkham.Game
+import Arkham.Game.Settings (settingsStrictAsIfAt)
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
@@ -94,6 +95,7 @@ data CreateGamePost = CreateGamePost
   , multiplayerVariant :: MultiplayerVariant
   , includeTarotReadings :: Bool
   , options :: Set CampaignOption
+  , strictAsIfAt :: Maybe Bool
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -109,11 +111,16 @@ postApiV1ArkhamGamesR = do
   now <- liftIO getCurrentTime
 
   let
-    game = case campaignId of
+    defaultStrictAsIfAt = case campaignId of
+      Just (CampaignId cid) -> cid >= "11"
+      Nothing -> False
+    strictAsIfAtValue = fromMaybe defaultStrictAsIfAt strictAsIfAt
+    baseGame = case campaignId of
       Just cid -> newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
       Nothing -> case scenarioId of
         Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
         Nothing -> error "missing either a campign id or a scenario id"
+    game = baseGame {gameSettings = baseGame.gameSettings {settingsStrictAsIfAt = strictAsIfAtValue}}
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 

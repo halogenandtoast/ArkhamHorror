@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.UnvisitedIsleForsakenWoods (unvisitedIsleForsakenWoods) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
@@ -34,7 +33,7 @@ instance HasAbilities UnvisitedIsleForsakenWoods where
   getAbilities (UnvisitedIsleForsakenWoods a) =
     extendRevealed
       a
-      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility #circle Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleForsakenWoods.haunted" a 2
       ]
 

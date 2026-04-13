@@ -3,7 +3,6 @@ module Arkham.Act.Cards.NoAsylum (noAsylum) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Action qualified as Action
 import Arkham.Constants
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -29,7 +28,7 @@ instance HasAbilities NoAsylum where
                (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
                ResignAbility
                (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
-               (ActionAbility [Action.Resign] Nothing $ ActionCost 1)
+               (ActionAbility #resign Nothing $ ActionCost 1)
          , restricted x 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
          ]
 

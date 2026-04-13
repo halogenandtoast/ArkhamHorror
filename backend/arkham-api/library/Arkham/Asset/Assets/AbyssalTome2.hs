@@ -17,7 +17,7 @@ abyssalTome2 = asset AbyssalTome2 Cards.abyssalTome2
 instance HasAbilities AbyssalTome2 where
   getAbilities (AbyssalTome2 a) =
     [ controlled_ a 1
-        $ ActionAbility [#fight] (Just $ OrAbilitySkills [#combat, #intellect, #willpower]) (exhaust a)
+        $ ActionAbility #fight (Just $ OrAbilitySkills [#combat, #intellect, #willpower]) (exhaust a)
     ]
 
 instance HasModifiersFor AbyssalTome2 where

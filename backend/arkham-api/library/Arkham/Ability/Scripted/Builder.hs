@@ -12,6 +12,7 @@ import Arkham.Ability.Scripted qualified as S
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.Actions (singleAction)
 import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Matcher
@@ -81,14 +82,16 @@ buildActionAbility
 buildActionAbility entity idx body =
   snd
     $ runAbilityBuilder body
-    $ ScriptedAbility (mkAbility entity idx $ ActionAbility [] Nothing (ActionCost 1)) (AbilityScript $ pure ())
+    $ ScriptedAbility
+      (mkAbility entity idx $ ActionAbility mempty Nothing (ActionCost 1))
+      (AbilityScript $ pure ())
 
 addAction :: Action -> ActionAbilityBuilder a ()
 addAction a = ActionAbilityBuilder $ \(ScriptedAbility ab s) ->
   let
     abilityType' =
       case abilityType ab of
-        ActionAbility as skills c -> ActionAbility (as <> [a]) skills c
+        ActionAbility as skills c -> ActionAbility (as <> singleAction a) skills c
         x -> x
    in
     ((), ScriptedAbility (ab {Arkham.Ability.Types.abilityType = abilityType'}) s)

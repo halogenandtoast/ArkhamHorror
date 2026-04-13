@@ -290,6 +290,12 @@ instance RunMessage SkillTest where
               , After revealMsg
               ]
       pure $ s & (setAsideChaosTokensL %~ (<> chaosTokens))
+    RequestedChaosTokens _ _ chaosTokens -> do
+      -- Other sources should track in additional
+      pure
+        $ s
+        & (additionalRevealedChaosTokensL %~ (<> chaosTokens))
+        & (revealedChaosTokensCountL +~ length chaosTokens)
     RevealChaosToken SkillTestSource {} iid token -> do
       pushM $ checkAfter $ Window.RevealChaosToken iid token
 
@@ -462,6 +468,10 @@ instance RunMessage SkillTest where
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))
+    CancelSkillEffects -> do
+      pure $ s & subscribersL %~ filter \case
+        SkillTarget {} -> False
+        _ -> True
     PutCardOnBottomOfDeck _ _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     PutCardOnTopOfDeck _ _ card -> do

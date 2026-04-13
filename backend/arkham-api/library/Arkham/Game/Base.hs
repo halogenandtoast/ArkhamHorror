@@ -96,6 +96,7 @@ data Game = Game
     gamePerformTarotReadings :: Bool
   , gameCurrentBatchId :: Maybe BatchId
   , gameScenarioSteps :: Int
+  , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
   }
   deriving stock (Eq, Show)
 

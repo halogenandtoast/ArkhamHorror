@@ -201,33 +201,33 @@ instance RunMessage DeadHeat where
         Resolution 1 -> do
           setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
           record TheLoversAreReunited
-          markTime 1
           resolutionWithXp "resolution1" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 2 -> do
           setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
           record YouHaventSeenTheLastOfAmaranth
-          markTime 1
           resolutionWithXp "resolution2" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 3 -> do
           chooseBearer Keys.theLastBlossom
           record AmaranthHasLeftTheCoterie
-          markTime 2
           resolutionWithXp "resolution3" $ allGainXp' attrs
+          markTime 2
           endOfScenario
         Resolution 4 -> do
           chooseBearer Keys.theLastBlossom
           record YouHaventSeenTheLastOfAmaranth
-          markTime 1
           resolutionWithXp "resolution4" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 5 -> do
           record YouHaventSeenTheLastOfAmaranth
           eachInvestigator (`sufferMentalTrauma` 1)
           setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthScarletScorn
-          markTime 1
           resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs (toBonus "bonus" 3)
+          markTime 1
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"
       pure s

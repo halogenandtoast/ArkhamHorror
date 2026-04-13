@@ -25,7 +25,7 @@ wither4 :: AssetCard Wither4
 wither4 = asset Wither4 Cards.wither4
 
 instance HasAbilities Wither4 where
-  getAbilities (Wither4 a) = [controlled_ a 1 $ ActionAbility [#fight] #willpower (ActionCost 1)]
+  getAbilities (Wither4 a) = [controlled_ a 1 $ ActionAbility #fight #willpower (ActionCost 1)]
 
 instance RunMessage Wither4 where
   runMessage msg a@(Wither4 attrs) = runQueueT $ case msg of

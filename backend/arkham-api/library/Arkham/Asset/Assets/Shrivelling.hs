@@ -20,7 +20,7 @@ shrivelling = asset Shrivelling Cards.shrivelling
 instance HasAbilities Shrivelling where
   getAbilities (Shrivelling a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbility [#fight] #willpower
+        $ ActionAbility #fight #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]

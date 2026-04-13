@@ -30,7 +30,7 @@ instance RunMessage InLostCarcosa where
       advancedWithClues attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
+      theManInThePallidMask <- fetchCard Enemies.theManInThePallidMask
       palaceOfTheKing <- getJustLocationByName "Palace of the King"
       createEnemyAt_ theManInThePallidMask palaceOfTheKing
       advanceActDeck attrs

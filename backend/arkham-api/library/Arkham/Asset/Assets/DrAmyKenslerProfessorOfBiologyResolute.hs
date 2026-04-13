@@ -28,7 +28,7 @@ drAmyKenslerProfessorOfBiologyResolute =
 
 instance HasAbilities DrAmyKenslerProfessorOfBiologyResolute where
   getAbilities (DrAmyKenslerProfessorOfBiologyResolute a) =
-    [ controlled a 1 (DuringTurn You) $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) [#investigate]
+    [ controlled a 1 (DuringTurn You) $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) #investigate
     ]
 
 instance RunMessage DrAmyKenslerProfessorOfBiologyResolute where

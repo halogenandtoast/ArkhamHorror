@@ -19,7 +19,7 @@ foolMeOnce1 = event FoolMeOnce1 Cards.foolMeOnce1
 getTreachery :: [Window] -> (BatchId, TreacheryId)
 getTreachery (w@(windowType -> WouldBeDiscarded (TreacheryTarget treacheryId)) : _) = (fromJustNote "missing batchId" $ windowBatchId w, treacheryId)
 getTreachery (_ : rest) = getTreachery rest
-getTreachery [] = error "impossible"
+getTreachery [] = error "FoolMeOnce1(getTreachery): impossible"
 
 instance HasAbilities FoolMeOnce1 where
   getAbilities (FoolMeOnce1 attrs) =

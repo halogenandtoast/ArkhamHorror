@@ -12,7 +12,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement
+import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Token qualified as Token
 
@@ -26,7 +26,9 @@ whereIsShe = agenda (1, A) WhereIsShe Cards.whereIsShe (Static 7)
 instance HasAbilities WhereIsShe where
   getAbilities (WhereIsShe a) =
     [ mkAbility a 1 $ forced $ GameBegins #when
-    , mkAbility a 2 $ forced $ CampaignEvent #after (Just You) "exposed[decoy]"
+    , restricted a 2 (exists $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat)
+        $ forced
+        $ CampaignEvent #after (Just You) "exposed[decoy]"
     ]
 
 instance RunMessage WhereIsShe where
@@ -71,6 +73,7 @@ instance RunMessage WhereIsShe where
     DoStep 2 (AdvanceAgenda (isSide B attrs -> True)) -> do
       laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
       lead <- getLead
+      place laChicaRoja InTheShadows
       resolveConcealed lead laChicaRoja
       pure a
     ResetAgendaDeckToStage 1 -> do

@@ -36,6 +36,6 @@ instance RunMessage UnderSurveillance1 where
           automaticallyEvadeEnemy iid enemyId
           discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
           nextPhaseModifier #upkeep (attrs.ability 1) enemyId DoesNotReadyDuringUpkeep
-        _ -> error "impossible"
+        _ -> error "UnderSurveillance1: impossible"
       pure e
     _ -> UnderSurveillance1 <$> liftRunMessage msg attrs

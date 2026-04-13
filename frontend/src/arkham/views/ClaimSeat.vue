@@ -14,15 +14,6 @@ const router = useRouter()
 const openSeats = ref<string[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-const copied = ref(false)
-
-const inviteUrl = window.location.href
-
-function copyInvite() {
-  navigator.clipboard.writeText(inviteUrl)
-  copied.value = true
-  setTimeout(() => copied.value = false, 2000)
-}
 
 fetchOpenSeats(props.gameId).then(seats => {
   openSeats.value = seats
@@ -63,16 +54,6 @@ async function claim(investigatorId: string) {
       </div>
 
       <div v-else>
-        <div class="invite-section">
-          <p class="label">Send this link to other players:</p>
-          <div class="invite-link">
-            <input type="text" :value="inviteUrl" readonly />
-            <button @click="copyInvite()" class="copy-btn">
-              {{ copied ? '✓ Copied!' : 'Copy' }}
-            </button>
-          </div>
-        </div>
-
         <p class="label">Choose your investigator:</p>
         <div class="seats-grid">
           <button
@@ -176,39 +157,6 @@ h2 {
   opacity: 0.6;
 }
 
-.invite-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--box-border);
-  margin-bottom: 8px;
-}
-
-.copy-btn {
-  padding: 6px 14px;
-  background: var(--spooky-green);
-  border: 0;
-  color: white;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 0.85em;
-  white-space: nowrap;
-}
-
-.copy-btn:hover {
-  background: hsl(80, 35%, 32%);
-}
-
-.invite-link input {
-  flex: 1;
-  background: var(--background-dark);
-  border: 1px solid var(--box-border);
-  color: var(--title);
-  padding: 6px 10px;
-  border-radius: 3px;
-  font-size: 0.85em;
-}
 
 .empty {
   display: flex;

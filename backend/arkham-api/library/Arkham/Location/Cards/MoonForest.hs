@@ -27,7 +27,7 @@ instance HasAbilities MoonForest where
       [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , playerLimit PerRound
           $ restrictedAbility attrs 2 (Here <> not_ DuringAction)
-          $ FastAbility' Free [#evade]
+          $ FastAbility' Free #evade
       ]
 
 instance RunMessage MoonForest where

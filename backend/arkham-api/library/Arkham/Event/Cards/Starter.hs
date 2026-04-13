@@ -1,5 +1,6 @@
 module Arkham.Event.Cards.Starter where
 
+import Arkham.Actions
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
 import Arkham.ForMovement
@@ -8,7 +9,7 @@ cleanThemOut :: CardDef
 cleanThemOut =
   (event "60111" "Clean Them Out" 0 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdSkills = [#willpower, #combat]
     }
 
@@ -16,7 +17,7 @@ counterpunch :: CardDef
 counterpunch =
   (event "60112" "Counterpunch" 0 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdSkills = [#combat, #agility]
     , cdFastWindow = Just $ EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy
     }
@@ -28,7 +29,7 @@ getOverHere :: CardDef
 getOverHere =
   (event "60114" "\"Get over here!\"" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = AndCardActions [CardAction #engage, CardAction #fight]
+    , cdActions = AndActions [#engage, #fight]
     , cdSkills = [#willpower, #combat]
     , cdCriteria =
         Just
@@ -53,7 +54,7 @@ monsterSlayer :: CardDef
 monsterSlayer =
   (event "60116" "Monster Slayer" 0 Guardian)
     { cdCardTraits = singleton Spirit
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdSkills = [#wild]
     }
 
@@ -61,7 +62,7 @@ oneTwoPunch :: CardDef
 oneTwoPunch =
   (event "60117" "One-Two Punch" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdSkills = [#combat]
     }
 
@@ -111,7 +112,7 @@ getOverHere2 :: CardDef
 getOverHere2 =
   (event "60123" "\"Get over here!\"" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = AndCardActions [CardAction #engage, CardAction #fight]
+    , cdActions = AndActions [#engage, #fight]
     , cdSkills = [#willpower, #willpower, #combat]
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
@@ -173,7 +174,7 @@ oneTwoPunch5 :: CardDef
 oneTwoPunch5 =
   (event "60132" "One-Two Punch" 2 Guardian)
     { cdCardTraits = setFromList [Spirit, Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdSkills = [#combat, #combat, #combat, #combat]
     , cdLevel = Just 5
     }
@@ -183,7 +184,7 @@ burningTheMidnightOil =
   (event "60214" "Burning the Midnight Oil" 0 Seeker)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Insight
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     }
 
 crypticWritings :: CardDef
@@ -210,7 +211,7 @@ occultInvocation =
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = singleton Spell
     , cdAdditionalCost = Just $ UpTo (Fixed 2) $ HandDiscardCost 1 #any
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 glimpseTheUnthinkable1 :: CardDef
@@ -238,7 +239,7 @@ iveGotAPlan2 =
     { cdSkills = [#intellect, #intellect, #combat]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdLevel = Just 2
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 mindOverMatter2 :: CardDef
@@ -254,7 +255,7 @@ seekingAnswers2 :: CardDef
 seekingAnswers2 =
   (event "60227" "Seeking Answers" 1 Seeker)
     { cdSkills = [#intellect, #agility, #agility]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdCardTraits = singleton Insight
     , cdLevel = Just 2
     , cdAlternateCardCodes = ["01685"]
@@ -265,14 +266,14 @@ pilfer =
   (event "60315" "Pilfer" 4 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     }
 
 sneakBy :: CardDef
 sneakBy =
   (event "60316" "Sneak By" 0 Rogue)
     { cdCardTraits = singleton Trick
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdSkills = [#agility, #agility]
     }
 
@@ -290,7 +291,7 @@ cheapShot2 =
   (event "60323" "Cheap Shot" 2 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = singleton Trick
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 2
     }
 
@@ -299,7 +300,7 @@ slipAway2 =
   (event "60324" "Slip Away" 2 Rogue)
     { cdCardTraits = singleton Trick
     , cdSkills = [#intellect, #agility]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 2
     }
 
@@ -308,7 +309,7 @@ pilfer3 =
   (event "60328" "Pilfer" 4 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdLevel = Just 3
     }
 
@@ -317,7 +318,7 @@ backstab3 =
   (event "60329" "Backstab" 3 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 3
     }
 

@@ -17,7 +17,7 @@ instance HasAbilities Obsessive where
   getAbilities (Obsessive a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnBegins #when You
     , restrictedAbility a 2 (InThreatAreaOf $ colocatedWithMatch You)
-        $ ActionAbility [] Nothing
+        $ ActionAbility mempty Nothing
         $ ActionCost 2
     ]
 

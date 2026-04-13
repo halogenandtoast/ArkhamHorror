@@ -20,6 +20,7 @@ data ChooseEvade = ChooseEvade
   , chooseEvadeTarget :: Maybe Target
   , chooseEvadeSkillType :: SkillType
   , chooseEvadeIsAction :: Bool
+  , chooseEvadePayCost :: Bool
   , chooseEvadeOverride :: Bool
   , chooseEvadeSkillTest :: SkillTestId
   , chooseEvadeAdditionalOptions :: [UI Message]
@@ -31,6 +32,9 @@ instance HasField "investigator" ChooseEvade InvestigatorId where
 
 instance HasField "isAction" ChooseEvade Bool where
   getField = chooseEvadeIsAction
+
+instance HasField "payCost" ChooseEvade Bool where
+  getField = chooseEvadePayCost
 
 instance HasField "skillType" ChooseEvade SkillType where
   getField = chooseEvadeSkillType
@@ -67,6 +71,7 @@ instance FromJSON ChooseEvade where
     chooseEvadeTarget <- o .:? "chooseEvadeTarget"
     chooseEvadeSkillType <- o .: "chooseEvadeSkillType"
     chooseEvadeIsAction <- o .: "chooseEvadeIsAction"
+    chooseEvadePayCost <- o .:? "chooseEvadePayCost" .!= chooseEvadeIsAction
     chooseEvadeOverride <- o .: "chooseEvadeOverride"
     chooseEvadeSkillTest <- o .: "chooseEvadeSkillTest"
     chooseEvadeAdditionalOptions <- o .:? "chooseEvadeAdditionalOptions" .!= []

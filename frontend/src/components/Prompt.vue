@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
+
+const { t } = useI18n()
 
 export interface Props {
   prompt: string
@@ -31,6 +35,11 @@ function handleCancel() {
   dialogRef.value?.close()
   cancelFun.value()
 }
+
+const format = (str: string) => {
+  return handleEmbeddedI18n(str, t)
+}
+
 </script>
 
 <template>
@@ -38,10 +47,10 @@ function handleCancel() {
     <button class="close-btn" @click.prevent="handleCancel" aria-label="Close">
       <font-awesome-icon icon="times" />
     </button>
-    <p class="prompt-text">{{ prompt }}</p>
+    <p class="prompt-text">{{ format(prompt) }}</p>
     <div class="prompt-actions">
-      <button class="btn btn--confirm" @click.prevent="handleYes">Yes</button>
-      <button class="btn btn--cancel" @click.prevent="handleNo">No</button>
+      <button class="btn btn--confirm" @click.prevent="handleYes">{{ t('yes') }}</button>
+      <button class="btn btn--cancel" @click.prevent="handleNo">{{ t('no') }}</button>
     </div>
   </dialog>
 </template>

@@ -24,7 +24,7 @@ instance RunMessage Clairvoyance where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      skillTestModifier sid attrs iid (DiscoveredClues 1)
+      skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       onRevealChaosTokenEffect sid (oneOf [#eldersign, #plusone, #zero]) attrs attrs do
         assignHorror iid source 1
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)

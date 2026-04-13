@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.TempleOfTheUnion_177a (
-  templeOfTheUnion_177a,
-  TempleOfTheUnion_177a (..),
-)
-where
+module Arkham.Location.Cards.TempleOfTheUnion_177a (templeOfTheUnion_177a) where
 
 import Arkham.Ability
 import Arkham.Key
@@ -25,13 +21,14 @@ instance HasAbilities TempleOfTheUnion_177a where
       $ extendRevealed
         a
         [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-        , restricted
-            a
-            2
-            ( Here
-                <> exists (at_ (be a) <> InvestigatorWithKey RedKey)
-                <> exists (at_ (be a) <> InvestigatorWithKey GreenKey)
-            )
+        , onlyOnce
+            $ restricted
+              a
+              2
+              ( Here
+                  <> exists (at_ (be a) <> InvestigatorWithKey RedKey)
+                  <> exists (at_ (be a) <> InvestigatorWithKey GreenKey)
+              )
             $ FastAbility
             $ GroupClueCost (PerPlayer 2) (be a)
         ]

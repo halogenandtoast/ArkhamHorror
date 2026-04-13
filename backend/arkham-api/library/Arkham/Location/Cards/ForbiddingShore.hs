@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.ForbiddingShore (forbiddingShore) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.GameValue
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -22,7 +21,7 @@ instance HasAbilities ForbiddingShore where
   getAbilities (ForbiddingShore a) =
     extendRevealed
       a
-      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility #circle Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "forbiddingShore.haunted" a 2
       ]
 

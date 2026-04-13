@@ -2,6 +2,7 @@ module Arkham.Location.Cards.TheEdgeOfTheUniverse (theEdgeOfTheUniverse) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Actions (actionsToList)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -11,12 +12,11 @@ import Arkham.Matcher
 import Arkham.Phase
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
-theEdgeOfTheUniverse =
-  location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
+theEdgeOfTheUniverse = location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
 
 instance HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor (TheEdgeOfTheUniverse a) = do
@@ -29,10 +29,6 @@ instance HasAbilities TheEdgeOfTheUniverse where
     let actions = getAbilities attrs
     flip map actions $ \action -> case abilityType action of
       ActionAbility actions' _ _
-        | Action.Move `elem` actions' ->
+        | Action.Move `elem` actionsToList actions' ->
             action & abilityCriteriaL <>~ youExist (InvestigatorWithClues (atLeast 2))
       _ -> action
-
-instance RunMessage TheEdgeOfTheUniverse where
-  runMessage msg (TheEdgeOfTheUniverse attrs) =
-    TheEdgeOfTheUniverse <$> runMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Window
 import Arkham.ForMovement
+import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Modifiers (ModifierType (..), effectModifiers)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -34,7 +35,7 @@ anyuChoices attrs iid = do
         ems
         (attrs.ability 1)
         (toTarget iid)
-  canEvade <- selectAny $ CanEvadeEnemy (attrs.ability 1)
+  canEvade <- hasEvadeTargets (attrs.ability 1) iid
   when canEvade do
     labeled "_Evade_. Attempt to evade with a base {agility} skill of 4" do
       sid <- getRandom

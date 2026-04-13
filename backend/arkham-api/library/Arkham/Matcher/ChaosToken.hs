@@ -17,6 +17,7 @@ pattern NonSymbol = NotChaosToken IsSymbol
 
 data ChaosTokenMatcher
   = WithNegativeModifier
+  | WithAutoFailModifier
   | OnlyInBag ChaosTokenMatcher
   | ChaosTokenFaceIs ChaosTokenFace
   | ChaosTokenOriginalFaceIs ChaosTokenFace
@@ -57,6 +58,7 @@ instance ToDisplay ChaosTokenMatcher where
     OnlyInBag inner -> toDisplay inner
     ChaosTokenIs _ -> "Specific chaos token"
     WithNegativeModifier -> "Chaos token with negative modifier"
+    WithAutoFailModifier -> "Chaos token with auto fail modifier"
     ChaosTokenOriginalFaceIs face -> toDisplay face
     ChaosTokenFaceIs face -> toDisplay face
     ChaosTokenFaceIsNot face -> "not " <> toDisplay face
@@ -123,6 +125,9 @@ instance IsLabel "0" ChaosTokenMatcher where
 
 instance IsLabel "+1" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs PlusOne
+
+instance IsLabel "negative" ChaosTokenMatcher where
+  fromLabel = WithNegativeModifier
 
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x

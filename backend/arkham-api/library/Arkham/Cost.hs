@@ -314,7 +314,7 @@ displayCostType = \case
         <> " of "
         <> toTitle def
         <> " into your deck"
-    Nothing -> error "impossible"
+    Nothing -> error "ShuffleBondedCost: impossible"
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
   UnlessFastActionCost n -> pluralize n "Action"

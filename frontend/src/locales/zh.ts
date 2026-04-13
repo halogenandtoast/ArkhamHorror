@@ -1,5 +1,7 @@
 import base from '@/locales/zh/base.json'
+import label from '@/locales/zh/label.json'
 import campaignLog from '@/locales/zh/campaignLog.json'
+import investigators from '@/locales/zh/investigators.json'
 import nightOfTheZealot from '@/locales/zh/nightOfTheZealot'
 import theDunwichLegacy from '@/locales/zh/theDunwichLegacy'
 import thePathToCarcosa from '@/locales/zh/thePathToCarcosa'
@@ -11,4 +13,4 @@ import edgeOfTheEarth from '@/locales/zh/edgeOfTheEarth'
 import standalone from '@/locales/zh/standalone'
 import gameBoard from '@/locales/zh/gameBoard/gameBoard'
 
-export default {...base, ...campaignLog, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

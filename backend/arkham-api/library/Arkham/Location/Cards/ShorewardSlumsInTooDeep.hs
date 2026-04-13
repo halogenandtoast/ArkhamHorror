@@ -30,7 +30,7 @@ instance HasAbilities ShorewardSlumsInTooDeep where
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
       , restricted a 2 (Here <> thisIs a LocationWithAdjacentBarrier)
-          $ FastAbility' (DamageCost (a.ability 2) YouTarget 1) [#parley]
+          $ FastAbility' (DamageCost (a.ability 2) YouTarget 1) #parley
       ]
 
 instance RunMessage ShorewardSlumsInTooDeep where

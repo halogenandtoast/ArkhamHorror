@@ -142,9 +142,11 @@ watch(choices, async (newChoices) => {
       return props.investigator.discard.some(card => card.id === c.target.contents)
     }
     if (c.tag === "AbilityLabel") {
-      return props.investigator.discard.some(card => {
-        return card.id === c.ability.source.contents
-      })
+      const sourceId = c.ability.source.sourceTag === 'OtherSource' ? c.ability.source.contents : undefined
+      if (!sourceId) return false
+      if (props.investigator.discard.some(card => card.id === sourceId)) return true
+      const asset = props.game.assets[sourceId]
+      return asset && props.investigator.discard.some(card => asset.cardId == card.id)
     }
     return false
   }
@@ -220,6 +222,15 @@ watch(choices, async (newChoices) => {
     text-wrap: pretty;
   }
 
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    button {
+      width: fit-content;
+    }
+  }
+
   @media (min-width: 801px) {
     width: var(--card-width);
     :deep(button) {
@@ -274,6 +285,9 @@ watch(choices, async (newChoices) => {
 
 .view-discard-button {
   width: 100%;
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: fit-content;
+  }
 }
 
 .deck-container {

@@ -124,7 +124,7 @@ instance RunMessage ActAttrs where
       _ -> do
         enabled <- chaosTokenEffect source token $ ChaosTokenFaceModifier [Zero]
         pushAll
-          [ ChaosTokenCanceled iid source token
+          [ SendMessage (toTarget iid) (ChaosTokenCanceled iid source token)
           , enabled
           ]
         pure $ a {actUsedWheelOfFortuneX = True}

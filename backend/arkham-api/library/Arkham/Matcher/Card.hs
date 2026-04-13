@@ -49,7 +49,7 @@ data ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher
   | CardWithCopyInHand Who
-  | CardWithHollowedCopy
+  | CardWithHollowedCopy ExtendedCardMatcher
   | CardIsAttachedToLocation LocationMatcher
   | CardIsAttachedToEncounterCardAt LocationMatcher
   | NotThisCard
@@ -449,6 +449,9 @@ instance FromJSON ExtendedCardMatcher where
   parseJSON = withObject "ExtendedCardMatcher" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CardWithHollowedCopy" -> do
+        contents <- o .:? "contents" .!= BasicCardMatch AnyCard
+        pure $ CardWithHollowedCopy contents
       "AnyCard" -> pure (BasicCardMatch AnyCard)
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
       "InHandOf" -> do

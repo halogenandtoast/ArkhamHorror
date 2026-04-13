@@ -36,7 +36,7 @@ instance HasAbilities InnsmouthSquareInTooDeep where
       , restricted a 2 (Here <> thisIs a LocationWithAdjacentBarrier) parleyAction_
       , groupLimit PerGame
           $ restricted a 3 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 2))
-          $ FastAbility' Free [#parley]
+          $ FastAbility' Free #parley
       ]
 
 instance RunMessage InnsmouthSquareInTooDeep where

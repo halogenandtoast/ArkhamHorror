@@ -20,7 +20,7 @@ eliyahAshevakDogHandlerResolute = allyWith EliyahAshevakDogHandlerResolute Cards
 instance HasAbilities EliyahAshevakDogHandlerResolute where
   getAbilities (EliyahAshevakDogHandlerResolute a) =
     [ controlled a 1 (DuringTurn You)
-        $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) [#evade]
+        $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) #evade
     ]
 
 instance RunMessage EliyahAshevakDogHandlerResolute where

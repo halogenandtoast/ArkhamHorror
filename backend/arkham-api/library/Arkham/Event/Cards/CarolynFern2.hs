@@ -7,7 +7,7 @@ causticReaction =
   (event "60261" "Caustic Reaction" 2 Seeker)
     { cdCardTraits = setFromList [Tactic, Science]
     , cdSkills = [#combat, #intellect]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 unflappable :: CardDef
@@ -15,7 +15,7 @@ unflappable =
   (event "60262" "Unflappable" 2 Seeker)
     { cdCardTraits = singleton Insight
     , cdSkills = [#agility, #intellect]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     }
 
 psychoanalysis :: CardDef
@@ -30,7 +30,7 @@ deEscalate =
   (event "60265" "De-Escalate" 1 Seeker)
     { cdCardTraits = singleton Insight
     , cdSkills = [#willpower, #willpower]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria =
         Just
           $ exists (EnemyAt YourLocation <> CanParleyEnemy You <> EnemyWithHorrorValue)
@@ -42,7 +42,7 @@ insidiousTruths =
   (event "60266" "Insidious Truths" 2 Seeker)
     { cdCardTraits = setFromList [Insight, Cursed]
     , cdSkills = [#agility, #combat]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdAdditionalCost = Just $ UpTo (Fixed 2) $ HandDiscardCost 1 #any
     }
 
@@ -51,7 +51,7 @@ unflappable1 =
   (event "60271" "Unflappable" 2 Seeker)
     { cdCardTraits = singleton Insight
     , cdSkills = [#agility, #intellect, #wild]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 1
     }
 
@@ -60,7 +60,7 @@ causticReaction2 =
   (event "60273" "Caustic Reaction" 2 Seeker)
     { cdCardTraits = setFromList [Tactic, Science]
     , cdSkills = [#combat, #combat, #intellect]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 2
     }
 
@@ -69,7 +69,7 @@ hypnotize2 =
   (event "60274" "Hypnotize" 2 Seeker)
     { cdCardTraits = singleton Science
     , cdSkills = [#intellect, #wild, #willpower]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation <> CanParleyEnemy You
     , cdLevel = Just 2
     }
@@ -87,6 +87,6 @@ communeWithTheCosmos5 =
   (event "60282" "Commune with the Cosmos" 2 Seeker)
     { cdCardTraits = singleton Spell
     , cdSkills = [#intellect, #intellect, #wild]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdLevel = Just 5
     }

@@ -490,10 +490,10 @@ guardMatches
   :: (HasCallStack, Tracing m, HasGame m, Query a, Alternative m) => QueryElement a -> a -> m ()
 guardMatches a matcher = guardM $ elem a <$> select matcher
 
-(<=~>) :: (Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<=~>) :: (HasCallStack, Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches
 
-(<!=~>) :: (Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<!=~>) :: (HasCallStack, Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<!=~>) el q = not <$> matches el q
 
 unlessMatch

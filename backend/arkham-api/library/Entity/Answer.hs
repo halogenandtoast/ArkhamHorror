@@ -24,6 +24,7 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Control.Exception (evaluate, try)
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -57,15 +58,20 @@ data Answer
 data QuestionResponse = QuestionResponse
   { qrChoice :: Int
   , qrPlayerId :: Maybe PlayerId
+  , qrQuestionVersion :: Maybe Int
   }
   deriving stock (Show, Generic)
 
-newtype PaymentAmountsResponse = PaymentAmountsResponse
-  {parAmounts :: Map UUID Int}
+data PaymentAmountsResponse = PaymentAmountsResponse
+  { parAmounts :: Map UUID Int
+  , parQuestionVersion :: Maybe Int
+  }
   deriving stock (Show, Generic)
 
-newtype AmountsResponse = AmountsResponse
-  {arAmounts :: Map UUID Int}
+data AmountsResponse = AmountsResponse
+  { arAmounts :: Map UUID Int
+  , arQuestionVersion :: Maybe Int
+  }
   deriving stock (Show, Generic)
 
 data PartnerDetailsResponse = PartnerDetailsResponse
@@ -77,13 +83,23 @@ data PartnerDetailsResponse = PartnerDetailsResponse
   deriving anyclass FromJSON
 
 instance FromJSON QuestionResponse where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
+  parseJSON = withObject "QuestionResponse" \o -> do
+    qrChoice <- o .: "choice"
+    qrPlayerId <- o .:? "playerId"
+    qrQuestionVersion <- o .:? "questionVersion"
+    pure QuestionResponse {..}
 
 instance FromJSON PaymentAmountsResponse where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "par"
+  parseJSON = withObject "PaymentAmountsResponse" \o -> do
+    parAmounts <- o .: "amounts"
+    parQuestionVersion <- o .:? "questionVersion"
+    pure PaymentAmountsResponse {..}
 
 instance FromJSON AmountsResponse where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "ar"
+  parseJSON = withObject "AmountsResponse" \o -> do
+    arAmounts <- o .: "amounts"
+    arQuestionVersion <- o .:? "questionVersion"
+    pure AmountsResponse {..}
 
 data StandaloneSetting
   = SetKey CampaignLogKey Bool
@@ -334,37 +350,42 @@ handleAnswer Game {..} playerId = \case
     if n < 0
       then handled [MoveTokens source (toSource toInvestigator) (toTarget fromInvestigator) token (abs n)]
       else handled [MoveTokens source (toSource fromInvestigator) (toTarget toInvestigator) token n]
-  AmountsAnswer response -> case Map.lookup playerId gameQuestion of
-    Just (ChooseAmounts _ _ choices target) -> do
-      let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
-      let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      handled
-        $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
-        : [AskMap question' | not (Map.null question')]
-    Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
-      let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
-      let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      handled
-        $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
-        : [AskMap question' | not (Map.null question')]
-    _ -> unhandled "Wrong question type"
+  AmountsAnswer response ->
+    case arQuestionVersion response of
+      Just v | v /= gameScenarioSteps -> unhandled "Stale question"
+      _ -> case Map.lookup playerId gameQuestion of
+        Just (ChooseAmounts _ _ choices target) -> do
+          let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
+          let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+          let question' = Map.delete playerId gameQuestion
+          let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
+          handled
+            $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
+            : [AskMap question' | not (Map.null question')]
+        Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
+          let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
+          let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+          let question' = Map.delete playerId gameQuestion
+          let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
+          handled
+            $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
+            : [AskMap question' | not (Map.null question')]
+        _ -> unhandled "Wrong question type"
   PaymentAmountsAnswer response ->
-    case Map.lookup playerId gameQuestion of
-      Just (ChoosePaymentAmounts _ _ info) -> do
-        let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
-        let
-          combinePaymentAmounts n = \case
-            PayCost acId iid skip (UseCost aMatcher uType m) -> [PayCost acId iid skip (UseCost aMatcher uType (n * m))]
-            PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
-            PayCost acId iid skip other -> [PayCost acId iid skip (fold $ replicate n other)]
-            payMsg -> replicate n payMsg
-        let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
-        handled $ concatMap handleCost $ Map.toList (parAmounts response)
-      _ -> unhandled "Wrong question type"
+    case parQuestionVersion response of
+      Just v | v /= gameScenarioSteps -> unhandled "Stale question"
+      _ -> case Map.lookup playerId gameQuestion of
+        Just (ChoosePaymentAmounts _ _ info) -> do
+          let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
+          let
+            combinePaymentAmounts n = \case
+              PayCost acId iid skip (UseCost aMatcher uType m) -> [PayCost acId iid skip (UseCost aMatcher uType (n * m))]
+              PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
+              PayCost acId iid skip other -> [PayCost acId iid skip (fold $ replicate n other)]
+              payMsg -> replicate n payMsg
+          let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
+          handled $ concatMap handleCost $ Map.toList (parAmounts response)
+        _ -> unhandled "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case
           PlayerWindowChooseOne _ -> True
@@ -376,9 +397,19 @@ handleAnswer Game {..} playerId = \case
         ForceChaosTokenDraw _ -> handled [message]
         _ -> handled [message, AskMap gameQuestion]
       else handled [message]
-  Answer response -> do
-    maybe (unhandled "Player not being asked") (\q -> handled $ go id q response)
-      $ Map.lookup playerId gameQuestion
+  Answer response ->
+    case qrQuestionVersion response of
+      Just v | v /= gameScenarioSteps -> unhandled "Stale question"
+      _ ->
+        maybe
+          (unhandled "Player not being asked")
+          ( \q -> do
+              result <- liftIO $ try @SomeException $ evaluate $ go id q response
+              case result of
+                Left _ -> unhandled "Wrong question type"
+                Right msgs -> handled msgs
+          )
+          $ Map.lookup playerId gameQuestion
  where
   go
     :: (Question Message -> Question Message)

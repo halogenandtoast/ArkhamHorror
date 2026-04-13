@@ -49,7 +49,12 @@ instance HasChaosTokenValue WilsonRichards where
 
 instance RunMessage WilsonRichards where
   runMessage msg i@(WilsonRichards (With attrs meta)) = runQueueT $ case msg of
+    Blanked BeginRound -> pure . WilsonRichards $ attrs `with` Meta True
     BeginRound -> pure . WilsonRichards $ attrs `with` Meta True
+    Blanked (PaidForCardCost iid pc _) | attrs.id == iid -> do
+      if active meta && toCard pc `cardMatch` card_ (#asset <> #tool)
+        then pure . WilsonRichards $ attrs `with` Meta False
+        else pure i
     PaidForCardCost iid pc _ | attrs.id == iid -> do
       if active meta && toCard pc `cardMatch` card_ (#asset <> #tool)
         then pure . WilsonRichards $ attrs `with` Meta False

@@ -18,7 +18,7 @@ instance HasAbilities Atychiphobia where
         $ forced
         $ SkillTestResult #after You AnySkillTest #failure
     , restrictedAbility a 2 (InThreatAreaOf $ colocatedWithMatch You)
-        $ ActionAbility [] Nothing
+        $ ActionAbility mempty Nothing
         $ ActionCost 2
     ]
 

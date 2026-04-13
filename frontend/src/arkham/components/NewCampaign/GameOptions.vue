@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, tokenOrder } from '@/arkham/types/ChaosToken'
@@ -162,6 +162,33 @@ const selectedFullCampaignOption = computed<FullCampaignOption | null>(() => {
 
 const recommendedOptionState =
   defineModel<Record<string, boolean>>('recommendedOptionState', { required: true })
+
+const strictAsIfAt = defineModel<boolean>('strictAsIfAt', { required: true })
+
+const rulesExpanded = ref(false)
+
+type RulesPreset = 'chapter1' | 'chapter2'
+
+type RulesSettings = {
+  strictAsIfAt: boolean
+}
+
+const presets: Record<RulesPreset, RulesSettings> = {
+  chapter1: { strictAsIfAt: false },
+  chapter2: { strictAsIfAt: true },
+}
+
+const activePreset = computed<RulesPreset | null>(() => {
+  for (const [key, p] of Object.entries(presets) as [RulesPreset, RulesSettings][]) {
+    if (strictAsIfAt.value === p.strictAsIfAt) return key
+  }
+  return null
+})
+
+function applyPreset(preset: RulesPreset) {
+  const p = presets[preset]
+  strictAsIfAt.value = p.strictAsIfAt
+}
 
 const recommendedToggles = computed<RecommendedToggle[]>(() => {
   const c = props.campaign as any
@@ -350,6 +377,56 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
           <input type="radio" v-model="includeTarotReadings" :value="true" id="tarotYes" />
           <label for="tarotYes">{{ $t('Yes') }}</label>
         </div>
+      </div>
+
+      <div class="card rules-card">
+        <button type="button" class="rules-toggle" @click="rulesExpanded = !rulesExpanded">
+          <span class="card-title" style="margin-bottom: 0">{{ $t('create.advancedRulesConfiguration') ?? 'Advanced Rules Configuration' }}</span>
+          <span class="rules-header-right">
+            <span class="preset-pill" :class="activePreset ?? 'custom'">
+              {{ activePreset ? ($t(`create.preset.${activePreset}.name`) ?? activePreset) : ($t('create.presetCustom') ?? 'Custom') }}
+            </span>
+            <span class="rules-chevron" :class="{ expanded: rulesExpanded }">▸</span>
+          </span>
+        </button>
+        <transition name="slide">
+          <div v-if="rulesExpanded" class="rules-body subcard">
+            <div class="card-title small">{{ $t('create.rulesPresets') ?? 'Presets' }}</div>
+            <div class="preset-options">
+              <button
+                v-for="preset in (['chapter1', 'chapter2'] as RulesPreset[])"
+                :key="preset"
+                type="button"
+                class="preset-option"
+                :class="{ selected: activePreset === preset }"
+                @click="applyPreset(preset)"
+              >
+                <span class="preset-name">{{ $t(`create.preset.${preset}.name`) ?? preset }}</span>
+                <span class="preset-desc">{{ $t(`create.preset.${preset}.description`) ?? '' }}</span>
+              </button>
+            </div>
+
+            <div class="rule-setting subcard">
+              <div class="card-title small">{{ $t('create.asIfAtBehavior') ?? '"As If" At Behavior' }}</div>
+              <div class="as-if-at-options">
+                <label class="as-if-at-option" :class="{ selected: !strictAsIfAt }" @click="strictAsIfAt = false">
+                  <div class="as-if-at-header">
+                    <input type="radio" v-model="strictAsIfAt" :value="false" id="asIfAtChapter1" />
+                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter1') ?? 'Chapter 1 Rules' }}</span>
+                  </div>
+                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter1Description') ?? '' }}</div>
+                </label>
+                <label class="as-if-at-option" :class="{ selected: strictAsIfAt }" @click="strictAsIfAt = true">
+                  <div class="as-if-at-header">
+                    <input type="radio" v-model="strictAsIfAt" :value="true" id="asIfAtChapter2" />
+                    <span class="as-if-at-name">{{ $t('create.asIfAtChapter2') ?? 'Chapter 2 Rules' }}</span>
+                  </div>
+                  <div class="as-if-at-desc">{{ $t('create.asIfAtChapter2Description') ?? '' }}</div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </transition>
       </div>
 
       <div v-if="recommendedToggles.length > 0" class="card">
@@ -780,6 +857,149 @@ input[type='radio']:checked + label {
 
 .recommended-toggle {
   width: 180px;
+}
+
+.rules-body {
+  display: grid;
+  gap: 12px;
+}
+
+.preset-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.preset-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.preset-option.selected {
+  background: rgba(110, 134, 64, 0.2);
+  border-color: rgba(110, 134, 64, 0.6);
+}
+
+.preset-option:hover:not(.selected) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.preset-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.preset-desc {
+  font-size: 11px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.rule-setting {
+  margin-top: 0;
+}
+
+.as-if-at-options {
+  display: grid;
+  gap: 8px;
+}
+
+.as-if-at-option {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.as-if-at-option.selected {
+  background: rgba(110, 134, 64, 0.2);
+  border-color: rgba(110, 134, 64, 0.6);
+}
+
+.as-if-at-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.as-if-at-header :deep(input[type='radio']),
+.as-if-at-header input[type='radio'] {
+  display: inline-block !important;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  accent-color: rgb(110, 134, 64);
+}
+
+.as-if-at-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.as-if-at-desc {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rules-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preset-pill {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.preset-pill.chapter1,
+.preset-pill.chapter2 {
+  background: rgba(110, 134, 64, 0.25);
+  border-color: rgba(110, 134, 64, 0.55);
+  color: rgba(180, 210, 120, 0.9);
+}
+
+.rules-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.rules-chevron {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 200ms ease;
+}
+
+.rules-chevron.expanded {
+  transform: rotate(90deg);
 }
 
 .recommended-icon {

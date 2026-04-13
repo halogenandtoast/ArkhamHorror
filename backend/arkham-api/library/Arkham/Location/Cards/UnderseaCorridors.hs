@@ -28,7 +28,7 @@ instance HasAbilities UnderseaCorridors where
       [ restricted a 1 (Here <> youExist (InvestigatorWithKey WhiteKey)) actionAbility
       , playerLimit PerRound
           $ restricted a 2 (thisExists a (LocationWithKey WhiteKey) <> Here)
-          $ FastAbility' Free [#move]
+          $ FastAbility' Free #move
       ]
 
 instance RunMessage UnderseaCorridors where

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.SealOfTheSeventhSign5 (sealOfTheSeventhSign5, SealOfTheSeventhSign5 (..)) where
+module Arkham.Asset.Assets.SealOfTheSeventhSign5 (sealOfTheSeventhSign5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

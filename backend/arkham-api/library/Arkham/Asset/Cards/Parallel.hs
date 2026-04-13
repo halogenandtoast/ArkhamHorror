@@ -119,6 +119,7 @@ theBeyondBleakNetherworld =
     $ permanent
     $ (asset "90052" ("The Beyond" <:> "Bleak Netherworld") 0 Neutral)
       { cdCardTraits = setFromList [Sanctum, Spectral]
+      , cdOtherSide = Just "90052b"
       }
 
 zoeysCrossAdvanced :: CardDef

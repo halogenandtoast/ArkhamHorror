@@ -168,6 +168,7 @@ overCriteria f = \case
   Criteria cs -> f (Criteria (map f cs))
   AnyCriterion cs -> f (AnyCriterion (map f cs))
   Negate c -> f (Negate (f c))
+  IfCostsAreIgnored c -> f (IfCostsAreIgnored (f c))
   c -> f c
 
 data Criterion
@@ -301,6 +302,7 @@ data Criterion
   | ElectrostaticDetonation
   | BearerNotEliminated
   | IsReturnTo
+  | IfCostsAreIgnored Criterion
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

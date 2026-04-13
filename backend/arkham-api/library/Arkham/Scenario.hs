@@ -15,6 +15,7 @@ import Arkham.EncounterSet (EncounterSet)
 import Arkham.EncounterSet qualified as EncounterSet
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Modifiers
@@ -539,7 +540,7 @@ instance HasChaosTokenValue Scenario where
           CurseToken -> pure $ ChaosTokenValue chaosTokenFace (NegativeModifier 2)
           BlessToken -> pure $ ChaosTokenValue chaosTokenFace (PositiveModifier 2)
           FrostToken -> do
-            revealed <- map (.face) <$> getSkillTestRevealedChaosTokens
+            revealed <- getModifiedChaosTokenFaces =<< getSkillTestRevealedChaosTokens
             pure
               $ ChaosTokenValue chaosTokenFace
               $ if count (== #frost) revealed == 2 then AutoFailModifier else NegativeModifier 1

@@ -23,7 +23,7 @@ eyeOfChaos4 = asset EyeOfChaos4 Cards.eyeOfChaos4
 instance HasAbilities EyeOfChaos4 where
   getAbilities (EyeOfChaos4 a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbility [#investigate] #willpower
+        $ ActionAbility #investigate #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]
@@ -66,8 +66,9 @@ instance RunMessage EyeOfChaos4Effect where
                     when stillInPlay do
                       labeled "Place 1 Charge on Eye of Chaos (4)" do
                         addUses attrs.source assetId Charge 1
-                    labeled "Discover 1 clues at a connecting location" do
-                      chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
+                    unless (null lids) do
+                      labeled "Discover 1 clues at a connecting location" do
+                        chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId

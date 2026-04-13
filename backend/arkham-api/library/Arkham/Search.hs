@@ -71,6 +71,12 @@ instance HasField "allFoundCards" Search [Card] where
 instance HasField "investigator" Search InvestigatorId where
   getField = searchInvestigator
 
+instance HasField "strategy" Search FoundCardsStrategy where
+  getField = searchFoundStrategy
+
+instance HasField "isDraw" Search Bool where
+  getField = isSearchDraw . searchFoundStrategy
+
 deriveToJSON defaultOptions ''Search
 
 (.!) :: FromJSON a => Vector Value -> Int -> Parser a

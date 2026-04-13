@@ -1,7 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -O0 -Wno-deprecations #-}
+{-# OPTIONS_GHC -O0 #-}
 
 module Arkham.Helpers.Window where
 
@@ -359,7 +359,7 @@ cancelledCard (_ : xs) = cancelledCard xs
 
 getPlayedEvent :: [Window] -> EventId
 getPlayedEvent = \case
-  [] -> error "impossible"
+  [] -> error "getPlayedEvent: impossible"
   ((windowType -> Window.PlayEventDiscarding _ eventId) : _) -> eventId
   ((windowType -> Window.PlayEvent _ eventId) : _) -> eventId
   (_ : rest) -> getPlayedEvent rest
@@ -441,7 +441,7 @@ moves timing who source destination =
 getRevealedChaosTokens :: [Window] -> [ChaosToken]
 getRevealedChaosTokens = \case
   [] -> []
-  ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens
+  ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens <> st.additionalRevealedChaosTokens
   ((windowType -> Window.RevealChaosTokensDuringSkillTest _ _ ts) : _) -> ts
   ((windowType -> Window.RevealChaosToken _ t) : rest) -> t : getRevealedChaosTokens rest
   (_ : rest) -> getRevealedChaosTokens rest
@@ -467,6 +467,16 @@ getChaosToken = \case
     Just token -> token
     Nothing -> getChaosToken rest
   (_ : rest) -> getChaosToken rest
+
+getChaosTokens :: HasCallStack => [Window] -> [ChaosToken]
+getChaosTokens = \case
+  [] -> []
+  ((windowType -> Window.RevealChaosToken _ token) : rest) -> token : getChaosTokens rest
+  ((windowType -> Window.ResolvesChaosToken _ token) : rest) -> token : getChaosTokens rest
+  ((windowType -> Window.ScenarioEvent _ _ val) : rest) -> case maybeResult val of
+    Just token -> token : getChaosTokens rest
+    Nothing -> getChaosTokens rest
+  (_ : rest) -> getChaosTokens rest
 
 getThatEnemy :: [Window] -> Maybe EnemyId
 getThatEnemy = \case
@@ -633,7 +643,7 @@ replaceWindow f wf = do
     \case
       CheckWindows ws -> [CheckWindows $ map (\w -> if f w then wf w else w) ws]
       Do (CheckWindows ws) -> [Do (CheckWindows $ map (\w -> if f w then wf w else w) ws)]
-      _ -> error "impossible"
+      _ -> error "replaceWindow: impossible"
 
 replaceWindowMany
   :: (HasCallStack, HasQueue Message m) => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
@@ -658,7 +668,7 @@ replaceWindowMany f wf = do
                   ws
             )
         ]
-      _ -> error "impossible"
+      _ -> error "replaceWindowMany: impossible"
 
 windowSkillTest :: [Window] -> Maybe SkillTest
 windowSkillTest = \case
@@ -675,7 +685,7 @@ getDefeatedAsset :: [Window] -> AssetId
 getDefeatedAsset = \case
   ((windowType -> Window.AssetDefeated aid _) : _) -> aid
   (_ : rest) -> getDefeatedAsset rest
-  _ -> error "impossible"
+  _ -> error "getDefeatedAsset: impossible"
 
 getAbility :: [Window] -> (Ability, [Window])
 getAbility [] = error "No windows"
@@ -684,9 +694,8 @@ getAbility (_ : rest) = getAbility rest
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
-getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of
-  AssetSource aid -> Just aid
-  _ -> getWindowAsset xs
+getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) =
+  (abilitySource ability).asset <|> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
 
 enemyMatches :: (HasGame m, Tracing m) => EnemyId -> EnemyMatcher -> m Bool
@@ -2005,11 +2014,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM
             [ matches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
-            ]
-        Window.EnemySpawns enemyId lid ->
-          andM
-            [ traceShowId <$> matches enemyId enemyMatcher
-            , traceShowId <$> locationMatches iid source window' lid whereMatcher
             ]
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->

@@ -12,3 +12,6 @@ instance Ord Criterion
 instance ToJSON Criterion
 instance FromJSON Criterion
 instance OneOf Criterion
+
+class Exists a where
+  exists :: a -> Criterion

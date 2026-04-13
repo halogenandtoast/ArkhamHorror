@@ -24,7 +24,7 @@ instance HasAbilities Shortcut2 where
             (proxied lid a)
             1
             (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
-            (FastAbility' (exhaust a) [#move])
+            (FastAbility' (exhaust a) #move)
       ]
     _ -> []
 

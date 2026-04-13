@@ -17,6 +17,7 @@ import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
 import Database.Persist.TH
+import Entity
 import Entity.Arkham.Game
 import Json
 import Orphans ()
@@ -53,8 +54,8 @@ instance PersistField ActionDiff where
     fmapLeft f (Left a) = Left (f a)
     fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
-share
-  [mkPersist sqlSettings]
+mkEntity
+  $(discoverEntities)
   [persistLowerCase|
 ArkhamStep sql=arkham_steps
   Id UUID default=uuid_generate_v4()

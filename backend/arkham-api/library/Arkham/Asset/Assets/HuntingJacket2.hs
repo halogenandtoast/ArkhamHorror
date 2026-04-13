@@ -39,6 +39,6 @@ instance RunMessage HuntingJacket2 where
       for_ attrs.cardsUnderneath \case
         PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
         EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
-        _ -> error "impossible"
+        _ -> error "HuntingJacket2: impossible"
       pure a
     _ -> HuntingJacket2 <$> liftRunMessage msg attrs

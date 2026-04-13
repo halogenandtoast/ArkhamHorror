@@ -28,6 +28,11 @@ import Arkham.Asset.Uses (Uses (..), useType)
 import Arkham.Campaign
 import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
+import Arkham.CampaignLog (CampaignLog (..))
+import Arkham.CampaignLogKey (
+  CampaignLogKey (DrivenInsaneInvestigators, KilledInvestigators),
+  recordedCardCodes,
+ )
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Helpers (pattern HollowedCard)
@@ -305,6 +310,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePerformTarotReadings = includeTarotReadings
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameAsIfAtIgnored = mempty
         }
  where
   mode = case scenarioOrCampaignId of
@@ -455,7 +461,7 @@ withSkillTestMetadata :: (HasGame m, Tracing m) => SkillTest -> m (With SkillTes
 withSkillTestMetadata st = do
   stmModifiedSkillValue <- getSkillTestModifiedSkillValue
   stmSkills <- getSkillTestSkillTypes
-  stmModifiedDifficulty <- fromJustNote "impossible" <$> getSkillTestDifficulty
+  stmModifiedDifficulty <- fromJustNote "withSkillTestMetadata: impossible" <$> getSkillTestDifficulty
   stmModifiers <- getFullModifiers st
   pure $ st `with` SkillTestMetadata {..}
 
@@ -582,6 +588,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("locations" .= locations)
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
+      <> ("killedInvestigators" .= killedInvestigators)
       <> ("enemies" .= enemies)
       <> ("assets" .= assets)
       <> ("acts" .= acts)
@@ -644,6 +651,30 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ Map.keys (campaignDecks attrs)
+    killedInvestigators = case gameMode of
+      This c -> killedInvestigatorsFrom (attr campaignLog c)
+      That _ -> mempty
+      These c _ -> killedInvestigatorsFrom (attr campaignLog c)
+    killedInvestigatorsFrom clog =
+      let
+        activeIids = Map.keysSet (gameInvestigators g)
+        sets = campaignLogRecordedSets clog
+        killed = recordedCardCodes $ findWithDefault [] KilledInvestigators sets
+        insane = recordedCardCodes $ findWithDefault [] DrivenInsaneInvestigators sets
+        deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
+       in
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , (`with` emptyAdditionalData)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
+                )
+            )
+          $ deadIids
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
     locations <-
@@ -679,6 +710,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "locations" .= toJSON locations
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
+        , "killedInvestigators" .= toJSON killedInvestigators
         , "enemies" .= toJSON enemies
         , "assets" .= toJSON assets
         , "acts" .= toJSON acts
@@ -746,6 +778,30 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ Map.elems attrs
+    killedInvestigators = case gameMode of
+      This c -> killedInvestigatorsFrom (attr campaignLog c)
+      That _ -> mempty
+      These c _ -> killedInvestigatorsFrom (attr campaignLog c)
+    killedInvestigatorsFrom clog =
+      let
+        activeIids = Map.keysSet (gameInvestigators g)
+        sets = campaignLogRecordedSets clog
+        killed = recordedCardCodes $ findWithDefault [] KilledInvestigators sets
+        insane = recordedCardCodes $ findWithDefault [] DrivenInsaneInvestigators sets
+        deadIids = filter (`notElem` activeIids) . map InvestigatorId $ killed <> insane
+       in
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , (`with` emptyAdditionalData)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
+                )
+            )
+          $ deadIids
 
 getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
 getPlayerInvestigator pid = do
@@ -1636,7 +1692,12 @@ abilityMatches a@Ability {..} = \case
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
-    pure $ a `elem` abilities
+    -- TrueMagick wraps borrowed abilities in ProxySource (CardIdSource _) so
+    -- we unwrap the proxy
+    let unproxied = case abilitySource of
+          ProxySource (CardIdSource _) s -> a {abilitySource = s}
+          _ -> a
+    pure $ a `elem` abilities || unproxied `elem` abilities
   TriggeredAbility -> pure $ isTriggeredAbility a
   ActiveAbility -> do
     active <- view activeAbilitiesL <$> getGame
@@ -3695,6 +3756,7 @@ enemyMatcherFilter es matcher' = do
     EnemyWithModifier modifier -> do
       flip filterM es \enemy -> elem modifier <$> getModifiers (toTarget enemy)
     EnemyWithEvade -> filterM (fieldP EnemyEvade isJust . toId) es
+    EnemyWithEvadeValue n -> filterM (fieldP EnemyEvade (== Just n) . toId) es
     EnemyWithFight -> filterM (fieldP EnemyFight isJust . toId) es
     EnemyWithPlacement p -> filterM (fieldP EnemyPlacement (== p) . toId) es
     EnemyHiddenInHand investigatorMatcher -> do
@@ -4550,11 +4612,17 @@ instance Projection Investigator where
       InvestigatorPlacement -> pure investigatorPlacement
       InvestigatorLocation -> do
         mods <- getModifiers iid
+        settings <- getSettings
+        game <- getGame
         let
+          strictMode = settingsStrictAsIfAt settings && iid `member` gameAsIfAtIgnored game
           mAsIfAt =
-            headMay $ mods & mapMaybe \case
-              AsIfAt lid -> Just lid
-              _ -> Nothing
+            if strictMode
+              then Nothing
+              else
+                headMay $ mods & mapMaybe \case
+                  AsIfAt lid -> Just lid
+                  _ -> Nothing
         case investigatorPlacement of
           AtLocation lid -> pure $ mAsIfAt <|> Just lid
           InVehicle aid -> (mAsIfAt <|>) . join <$> fieldMay AssetLocation aid
@@ -4801,6 +4869,11 @@ instance Query ChaosTokenMatcher where
         getChaosTokenValue iid' t.face () <&> \case
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
+          _ -> False
+      WithAutoFailModifier -> \t -> do
+        iid' <- toId <$> getActiveInvestigator
+        getChaosTokenValue iid' t.face () <&> \case
+          ChaosTokenValue _ AutoFailModifier -> True
           _ -> False
       ChaosTokenOriginalFaceIs face -> pure . (== face) . chaosTokenFace
       ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
@@ -5180,8 +5253,8 @@ instance Query ExtendedCardMatcher where
           iids <- select who
           names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
           pure $ count (== name) names > 1
-      CardWithHollowedCopy -> do
-        hollows <- selectMap toTitle HollowedCard
+      CardWithHollowedCopy inner -> do
+        hollows <- selectMap toTitle (HollowedCard <> inner)
         pure $ cs & filter \c -> toTitle c `elem` hollows
       InEncounterDiscard -> do
         cards <- scenarioFieldMap ScenarioDiscard (map toCard)
@@ -5456,7 +5529,7 @@ instance Projection Campaign where
   getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking campaign attrs" <$> getCampaign
   project _ = getCampaign
   field fld _ = do
-    c <- fromJustNote "impossible" <$> getCampaign
+    c <- fromJustNote ("field(Campaign): impossible\n" <> prettyCallStack callStack) <$> getCampaign
     let CampaignAttrs {..} = toAttrs c
     case fld of
       CampaignCompletedSteps -> pure campaignCompletedSteps
@@ -5840,13 +5913,16 @@ runMessages gameId mLogger = do
                 [] -> pushEnd EndInvestigation
                 [x] -> push $ ChoosePlayer x SetTurnPlayer
                 xs -> do
-                  player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
-                  push
-                    $ questionLabel "Choose player to take turn" player
-                    $ ChooseOne
-                      [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
-                      | iid <- xs
-                      ]
+                  if view leadInvestigatorIdL g == "00000"
+                    then push ChooseLeadInvestigator
+                    else do
+                      player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
+                      push
+                        $ questionLabel "Choose player to take turn" player
+                        $ ChooseOne
+                          [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
+                          | iid <- xs
+                          ]
 
               runMessages gameId mLogger
             else do

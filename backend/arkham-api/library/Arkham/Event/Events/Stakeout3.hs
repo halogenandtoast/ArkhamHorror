@@ -20,6 +20,6 @@ instance RunMessage Stakeout3 where
       investigate_ sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      healHorror iid attrs 2
+      healHorrorIfCan iid attrs 2
       pure e
     _ -> Stakeout3 <$> liftRunMessage msg attrs

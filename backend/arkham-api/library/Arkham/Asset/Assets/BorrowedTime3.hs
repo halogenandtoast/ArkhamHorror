@@ -22,7 +22,7 @@ instance HasAbilities BorrowedTime3 where
   getAbilities (BorrowedTime3 a) =
     doesNotProvokeAttacksOfOpportunity
       ( restrictedAbility a 1 ControlsThis
-          $ ActionAbility [] Nothing
+          $ ActionAbility mempty Nothing
           $ ActionCost 1
       )
       : [ restrictedAbility a 2 ControlsThis

@@ -25,7 +25,7 @@ instance HasAbilities GrandBazaarMarbleFountain where
   getAbilities (GrandBazaarMarbleFountain a) =
     extendRevealed1 a
       $ restricted a 1 (Here <> exists (enemyAt a <> EnemyWithAnyClues))
-      $ FastAbility' Free [#parley]
+      $ FastAbility' Free #parley
 
 instance RunMessage GrandBazaarMarbleFountain where
   runMessage msg l@(GrandBazaarMarbleFountain attrs) = runQueueT $ case msg of

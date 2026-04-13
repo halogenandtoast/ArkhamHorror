@@ -21,7 +21,7 @@ instance HasAbilities GarroteWire2 where
         attrs
         1
         (DuringTurn You <> exists (CanFightEnemy (toSource attrs) <> EnemyWithRemainingHealth (static 1)))
-        $ FastAbility' (exhaust attrs) [#fight]
+        $ FastAbility' (exhaust attrs) #fight
     ]
 
 instance RunMessage GarroteWire2 where

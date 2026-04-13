@@ -169,6 +169,7 @@ const choices = computed(() => {
   return ArkhamGame.choices(game.value, playerId.value)
 })
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
+const isGameHost = computed(() => localStorage.getItem(`gameHost_${props.gameId}`) === 'true')
 const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
 const websocketUrl = computed(() => {
   const spectatePrefix = props.spectate ? "/spectate" : ""
@@ -646,9 +647,10 @@ async function loadAllImages(game:Arkham.Game):Promise<void>{
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
+    send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value, questionVersion } }))
   }
 }
 
@@ -673,18 +675,20 @@ async function chooseDeckList(deckList: object): Promise<void> {
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
+    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion } }))
   }
 }
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question
+    const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
+    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion } }))
   }
 }
 
@@ -733,10 +737,11 @@ const onMove = (event: MouseEvent) => {
 }
 
 // callbacks
-emitter.on('playabilityResult', (result: any) => {
+const onPlayabilityResult = (result: any) => {
   if (!debug.active) return
   playabilityInfo.value = { cardId: result.cardId, cardCode: result.cardCode, checks: result.checks }
-})
+}
+emitter.on('playabilityResult', onPlayabilityResult)
 
 onMounted(() => {
   (window as any).sendDebug = async (msg: any) => { if (game.value) await debug.send(game.value.id, msg) }
@@ -757,6 +762,7 @@ onUnmounted(() => {
   delete (window as any).undo
   delete (window as any).debugChoose
   if (seatsPollInterval) clearInterval(seatsPollInterval)
+  emitter.off('playabilityResult', onPlayabilityResult)
   close()
 })
 
@@ -939,7 +945,7 @@ onUnmounted(() => {
       </GameDetails>
     </div>
     <template v-else>
-      <div v-if="openSeatsCount > 0 && !gameOver" class="invite-banner">
+      <div v-if="openSeatsCount > 0 && !gameOver && isGameHost" class="invite-banner">
         <span>Invite link:</span>
         <input type="text" :value="claimSeatSource" readonly />
         <button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>

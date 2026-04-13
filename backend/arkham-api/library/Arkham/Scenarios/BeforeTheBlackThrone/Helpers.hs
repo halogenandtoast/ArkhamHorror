@@ -21,6 +21,7 @@ import Arkham.Message.Lifted (capture)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Queue
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
@@ -173,7 +174,10 @@ handleCosmosWithHandleEmptySpace (asId -> lid) cloc f = do
       Just iid -> do
         emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
         handleMsgs <- capture (f iid c)
-        pure $ RemoveFromGame (toTarget emptySpace) : handleMsgs
+        investigators <- select $ investigatorAt emptySpace
+        let investigatorMsgs =
+              concatMap (\i -> [Do (PlaceInvestigator i $ AtLocation lid), CheckEnemyEngagement i]) investigators
+        pure $ investigatorMsgs <> (RemoveFromGame (toTarget emptySpace) : handleMsgs)
     _ -> pure []
   pushAll
     $ currentMsgs

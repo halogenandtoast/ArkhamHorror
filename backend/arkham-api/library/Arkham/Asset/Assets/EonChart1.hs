@@ -1,5 +1,6 @@
 module Arkham.Asset.Assets.EonChart1 (eonChart1) where
 
+import Arkham.Actions
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
@@ -49,7 +50,7 @@ instance RunMessage EonChart1 where
       let
         cards =
           guard (not (tabooed TabooList20 attrs))
-            *> filter (any (`elem` canDoActions) . cardActionsToList . cdActions . toCardDef) handCards
+            *> filter (any (`elem` canDoActions) . actionsToList . cdActions . toCardDef) handCards
       playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
       player <- getPlayer iid
       let validAction x = any (abilityIs x) [#move, #evade, #investigate]

@@ -14,7 +14,18 @@ export type XpEntry
   | { tag: 'InvestigatorGainXp', investigator: string, details: XpDetail }
   | { tag: 'InvestigatorLoseXp', investigator: string, details: XpDetail }
 
-export type XpBreakdown = [CampaignStep, XpEntry[]][];
+export type XpBreakdownStep = {
+  step: CampaignStep
+  investigators: string[]
+  entries: XpEntry[]
+}
+
+export type LegaxyXpBreakdownStep = {
+  step: CampaignStep
+  entries: XpEntry[]
+}
+
+export type XpBreakdown = XpBreakdownStep[];
 
 export const xpSourceDecoder = JsonDecoder.oneOf<XpSource>(
   [
@@ -63,11 +74,26 @@ export const xpEntryDecoder = JsonDecoder.oneOf<XpEntry>(
   'XpEntry'
 );
 
+export const xpBreakdownStepDecoder = JsonDecoder.object<XpBreakdownStep>(
+  {
+    step: campaignStepDecoder,
+    investigators: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
+    entries: JsonDecoder.array(xpEntryDecoder, 'XpEntry[]'),
+  },
+  'XpBreakdownStep'
+);
+
+export const legacyXpBreakdownStepDecoder = JsonDecoder.object<LegaxyXpBreakdownStep>(
+  {
+    step: campaignStepDecoder,
+    entries: JsonDecoder.array(xpEntryDecoder, 'XpEntry[]'),
+  },
+  'XpBreakdownStep'
+);
+
 export const xpBreakdownDecoder =
-  JsonDecoder.array (
-    JsonDecoder.tuple([
-      campaignStepDecoder,
-      JsonDecoder.array(xpEntryDecoder, 'XpEntry[]')]
-    , 'XpBreakdown')
-  , 'XpBreakdown');
+  JsonDecoder.oneOf<XpBreakdownStep[]>([
+    JsonDecoder.array(xpBreakdownStepDecoder, 'XpBreakdown'),
+    JsonDecoder.array(legacyXpBreakdownStepDecoder, 'LegacyXpBreakdown').map(legacy => legacy.map(step => ({ ...step, investigators: [] } as XpBreakdownStep)))
+  ], 'XpBreakdown');
 

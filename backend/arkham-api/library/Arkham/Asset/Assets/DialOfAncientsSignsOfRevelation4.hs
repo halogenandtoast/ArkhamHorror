@@ -17,7 +17,7 @@ dialOfAncientsSignsOfRevelation4 = asset DialOfAncientsSignsOfRevelation4 Cards.
 
 instance HasAbilities DialOfAncientsSignsOfRevelation4 where
   getAbilities (DialOfAncientsSignsOfRevelation4 a) =
-    [restricted a 1 ControlsThis $ FastAbility' (exhaust a <> assetUseCost a Charge 1) [#investigate]]
+    [restricted a 1 ControlsThis $ FastAbility' (exhaust a <> assetUseCost a Charge 1) #investigate]
 
 instance RunMessage DialOfAncientsSignsOfRevelation4 where
   runMessage msg a@(DialOfAncientsSignsOfRevelation4 attrs) = runQueueT $ case msg of

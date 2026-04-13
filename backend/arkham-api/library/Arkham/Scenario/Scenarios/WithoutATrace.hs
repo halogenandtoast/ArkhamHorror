@@ -316,30 +316,30 @@ instance RunMessage WithoutATrace where
           record TheCellKnowsTheTrueNatureOfTheCoterie
           record AlikiIsOnYourSide
           resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
-          markTime 3
           leadChooseOneM do
             labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
             labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
             labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          markTime 3
           endOfScenario
         Resolution 2 -> do
           record TheCellKnowsTheTrueNatureOfTheCoterie
           record YouHaventSeenTheLastOfAlikiZoniUperetria
           resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
-          markTime 2
           leadChooseOneM do
             labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
             labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
             labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          markTime 2
           endOfScenario
         Resolution 3 -> do
           record AlikiIsOnYourSide
           resolutionWithXp "resolution3" $ allGainXp' attrs
-          markTime 2
           leadChooseOneM do
             labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
             labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
             labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+          markTime 2
           endOfScenario
         Resolution 4 -> do
           record YouHaventSeenTheLastOfAlikiZoniUperetria

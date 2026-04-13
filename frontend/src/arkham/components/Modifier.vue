@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 
+const { t } = useI18n()
 const props = defineProps<{ modifier: Modifier, game: Game }>()
 
 function sourceCardCode(source: Source) {
@@ -156,7 +158,7 @@ const normalizeSkill = (skill: string) => {
       <span class="text">Cancel matching chaos tokens and reveal another</span>
     </template>
     <template v-else-if="modifier.type.tag === 'HandSize'">
-      <span class="text">{{modifier.type.contents > 0 ? "+" : "-"}}{{modifier.type.contents}} Hand Size</span>
+      <span class="text">{{modifier.type.contents > 0 ? "+" : "-"}}{{modifier.type.contents}} {{ t('handSize') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier'">
       <span class="text">{{modifier.type.contents}}</span>

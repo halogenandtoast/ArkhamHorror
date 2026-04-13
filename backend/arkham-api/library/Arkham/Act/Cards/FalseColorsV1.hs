@@ -8,7 +8,6 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyPlacement))
-import Arkham.Field
 import Arkham.Helpers.Location (placementLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
@@ -29,7 +28,7 @@ falseColorsV1 = act (2, A) FalseColorsV1 Cards.falseColorsV1 Nothing
 instance HasAbilities FalseColorsV1 where
   getAbilities = actAbilities \a ->
     [ mkAbility a 1 $ triggered (ScenarioEvent #when Nothing "wouldConceal") ConcealedXCost
-    , mkAbility a 2 $ ActionAbility [#resign] Nothing (ActionCost 1)
+    , mkAbility a 2 $ ActionAbility #resign Nothing (ActionCost 1)
     , restricted a 3 (not_ (exists $ EnemyWithPlacement InTheShadows) <> DuringTurn Anyone)
         $ Objective
         $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
@@ -73,8 +72,7 @@ instance RunMessage FalseColorsV1 where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       inPlayVersion <- selectJust $ enemyIs Enemies.desiderioDelgadoAlvarez106
-      placement <- field EnemyPlacement inPlayVersion
-      mlocation <- placementLocation placement
+      mlocation <- placementLocation =<< field EnemyPlacement inPlayVersion
       badVersion <- fetchCard inPlayVersion
       outOfPlayCard <- fetchCard Assets.desiderioDelgadoAlvarez
       let goodVersion = lookupCard Enemies.desiderioDelgadoAlvarez107.cardCode outOfPlayCard.id
@@ -82,10 +80,9 @@ instance RunMessage FalseColorsV1 where
       removeFromGame inPlayVersion
 
       shuffle [goodVersion, badVersion] >>= \case
-        [x, y] -> do
-          x1 <- createEnemy x Unplaced
-          push $ UpdateEnemy x1 $ Update EnemyPlacement placement
-          for_ mlocation $ createEnemy_ y . AtLocation
+        [x, y] -> for_ mlocation \loc -> do
+          createEnemy_ x (AtLocation loc)
+          createEnemy_ y (AtLocation loc)
         _ -> error "Invalid needs both"
 
       advanceActDeck attrs

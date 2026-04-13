@@ -48,7 +48,7 @@ instance HasAbilities HankSamson where
           $ freeReaction
           $ PlacedCounter #when You AnySource DamageCounter (atLeast 1)
       ]
-    _ -> error "Impossible"
+    _ -> error "HankSamson: Impossible"
 
 instance HasChaosTokenValue HankSamson where
   getChaosTokenValue iid ElderSign (HankSamson attrs) | iid == toId attrs = do

@@ -23,7 +23,7 @@ instance HasAbilities TheCrossroadsDay where
       [ groupLimit PerGame $ restricted a 1 Here actionAbility
       , groupLimit PerRound
           $ restricted a 2 (Here <> oneOf (map PlayerCountIs [1, 2]))
-          $ FastAbility' Free [#move]
+          $ FastAbility' Free #move
       ]
 
 instance RunMessage TheCrossroadsDay where

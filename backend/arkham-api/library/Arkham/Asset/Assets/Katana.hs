@@ -18,7 +18,7 @@ katana = asset Katana Cards.katana
 instance HasAbilities Katana where
   getAbilities (Katana a) =
     [ restrictedAbility a 1 ControlsThis fightAction_
-    , restrictedAbility a 2 ControlsThis $ FastAbility' (exhaust a) [#fight]
+    , restrictedAbility a 2 ControlsThis $ FastAbility' (exhaust a) #fight
     ]
 
 instance RunMessage Katana where

@@ -175,6 +175,12 @@ sourceMatches s = \case
           case toCardOwner c of
             Nothing -> pure False
             Just iid -> elem iid <$> select whoMatcher
+        CardCostSource cid -> do
+          c <- getCard cid
+          case toCardOwner c of
+            Nothing -> pure False
+            Just iid -> elem iid <$> select whoMatcher
+        PaymentSource s' -> checkSource s'
         _ -> pure False
      in
       checkSource s
@@ -288,6 +294,7 @@ sourceMatches s = \case
   Matcher.SourceIsPlayerCard ->
     let
       check = \case
+        PaymentSource source' -> check source'
         AbilitySource source' _ -> check source'
         UseAbilitySource _ source' _ -> check source'
         AssetSource _ -> True
@@ -299,6 +306,7 @@ sourceMatches s = \case
       pure $ check s
   Matcher.SourceIsPlayerCardAbility ->
     case s of
+      PaymentSource s' -> sourceMatches s' Matcher.SourceIsPlayerCardAbility
       AbilitySource s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       UseAbilitySource _ s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       _ -> pure False

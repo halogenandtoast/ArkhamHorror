@@ -3,6 +3,7 @@ module Arkham.Event.Events.SpectralRazor (spectralRazor, spectralRazorEffect, Sp
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Message (chooseEngageEnemy)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
@@ -18,14 +19,14 @@ spectralRazor = event SpectralRazor Cards.spectralRazor
 instance RunMessage SpectralRazor where
   runMessage msg e@(SpectralRazor attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
+      canFight <- hasFightTargets (toSource attrs) iid
       engageableEnemies <- select $ CanEngageEnemy (toSource attrs)
 
-      case (fightableEnemies, engageableEnemies) of
-        ([], []) -> error "invalid call"
-        ([], _ : _) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
-        (_ : _, []) -> doStep 1 msg
-        (_ : _, _ : _) -> do
+      case (canFight, engageableEnemies) of
+        (False, []) -> error "invalid call"
+        (False, _ : _) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
+        (True, []) -> doStep 1 msg
+        (True, _ : _) -> do
           chooseOneM iid do
             labeled "Engage an enemy first" do
               push $ chooseEngageEnemy iid attrs

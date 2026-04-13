@@ -2205,6 +2205,10 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
+additionalSkillTestOptionEdit
+  :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
+additionalSkillTestOptionEdit f = skillTestResultOptionEdit AdditionalOptionKind f
+
 originalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 originalSkillTestOption = skillTestResultOptionEdit OriginalOptionKind id
 

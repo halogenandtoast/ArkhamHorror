@@ -31,6 +31,6 @@ instance RunMessage HospitalDebts where
   runMessage = script do
     revelation placeInYourThreatArea
     onAbility 1 $ moveTokens you this #resource 1
-    onAbility 2 $ effect you do
+    onAbility 2 $ withOwner $ effect owner do
       during #resolution
       apply $ XPModifier "Hospital Debts" (-2)

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Flashlight3 (flashlight3, Flashlight3 (..)) where
+module Arkham.Asset.Assets.Flashlight3 (flashlight3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,9 +17,9 @@ flashlight3 = asset Flashlight3 Cards.flashlight3
 
 instance HasAbilities Flashlight3 where
   getAbilities (Flashlight3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
-          (InitiatedSkillTest #when You #any #any (oneOf [#investigating, #evading]))
+          (InitiatedSkillTest #when You #any #any (oneOf [#investigating, WhileEvading]))
           (assetUseCost a Supply 1)
     ]
 

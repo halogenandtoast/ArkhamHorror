@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Obscure2 (obscure2) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealLocation)
+import Arkham.Actions (orActions)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Window (engagedEnemy)
 import Arkham.Location.Types (Field (..))
@@ -26,9 +27,10 @@ instance HasAbilities Obscure2 where
           (oneOf [RevealLocation #after You Anywhere, PutLocationIntoPlay #after You Anywhere])
           (SealCost #"0")
     , restricted a 2 ControlsThis
-        $ triggered
-          (EnemyEngaged #when You $ oneOf [CanFightEnemy (a.ability 2), EnemyCanBeEvadedBy (a.ability 2)])
-          (exhaust a <> ReleaseChaosTokensCost 1 #any)
+        $ ReactionAbility
+            (EnemyEngaged #when You $ oneOf [CanFightEnemy (a.ability 2), EnemyCanBeEvadedBy (a.ability 2)])
+            (exhaust a <> ReleaseChaosTokensCost 1 #any)
+            (orActions [#fight, #evade])
     ]
 
 instance RunMessage Obscure2 where

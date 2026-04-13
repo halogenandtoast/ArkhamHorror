@@ -121,7 +121,7 @@ instance RunMessage AgendaAttrs where
       _ -> do
         enabled <- chaosTokenEffect source token $ ChaosTokenFaceModifier [MinusFive]
         pushAll
-          [ ChaosTokenCanceled iid source token
+          [ SendMessage (toTarget iid) (ChaosTokenCanceled iid source token)
           , enabled
           ]
         pure $ a {agendaUsedWheelOfFortuneX = True}

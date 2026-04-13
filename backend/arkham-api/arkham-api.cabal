@@ -346,6 +346,7 @@ library
       Arkham.Act.Types
       Arkham.Action
       Arkham.Action.Additional
+      Arkham.Actions
       Arkham.ActiveCost
       Arkham.ActiveCost.Base
       Arkham.Agenda
@@ -2996,6 +2997,7 @@ library
       Arkham.Helpers.ChaosToken
       Arkham.Helpers.Choices
       Arkham.Helpers.Choose
+      Arkham.Helpers.CombatTarget
       Arkham.Helpers.Cost
       Arkham.Helpers.Criteria
       Arkham.Helpers.Customization
@@ -5684,6 +5686,7 @@ test-suite spec
       Arkham.Asset.Assets.PhysicalTrainingSpec
       Arkham.Asset.Assets.PickpocketingSpec
       Arkham.Asset.Assets.PoliceBadge2Spec
+      Arkham.Asset.Assets.QuickStudy2Spec
       Arkham.Asset.Assets.RabbitsFootSpec
       Arkham.Asset.Assets.ResearchLibrarianSpec
       Arkham.Asset.Assets.Rolands38SpecialSpec

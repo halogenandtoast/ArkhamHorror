@@ -1,7 +1,6 @@
 module Arkham.Agenda.Cards.TimeIsRunningShort (timeIsRunningShort) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 
@@ -13,7 +12,7 @@ timeIsRunningShort :: AgendaCard TimeIsRunningShort
 timeIsRunningShort = agenda (2, A) TimeIsRunningShort Cards.timeIsRunningShort (Static 8)
 
 instance HasAbilities TimeIsRunningShort where
-  getAbilities (TimeIsRunningShort a) = [mkAbility a 1 $ ActionAbility [Action.Resign] Nothing (ActionCost 1)]
+  getAbilities (TimeIsRunningShort a) = [mkAbility a 1 $ ActionAbility #resign Nothing (ActionCost 1)]
 
 instance RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs) = runQueueT $ case msg of

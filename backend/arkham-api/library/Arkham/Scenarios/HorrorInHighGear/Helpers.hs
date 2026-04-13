@@ -41,7 +41,7 @@ getRoadDeck = getScenarioDeck RoadDeck
 getLabelPosition :: Text -> Int
 getLabelPosition label' = case unsnoc label' of
   Just (lbl, _) -> read @Int $ drop 4 $ unpack lbl
-  Nothing -> error "impossible"
+  Nothing -> error "getLabelPosition: impossible"
 
 road :: (ReverseQueue m, HasField "label" a Text) => Int -> a -> m ()
 road n attrs = do
@@ -70,7 +70,7 @@ road n attrs = do
             4 -> " " <> prefix <> "b"
             5 -> " " <> prefix <> "b"
             6 -> " ."
-            _ -> error "impossible"
+            _ -> error "road(2): impossible"
           3 -> \case
             1 -> " " <> prefix <> "a"
             2 -> " " <> prefix <> "a"
@@ -78,8 +78,8 @@ road n attrs = do
             4 -> " " <> prefix <> "b"
             5 -> " " <> prefix <> "c"
             6 -> " " <> prefix <> "c"
-            _ -> error "impossible"
-          _ -> error "impossible"
+            _ -> error "road(3): impossible"
+          _ -> error "road(?): impossible"
       layout' = map (\(idx, GridTemplateRow row) -> GridTemplateRow $ row <> go idx) (withIndex1 layout)
     push $ SetLayout layout'
 
@@ -122,7 +122,7 @@ advanceRoad = do
  where
   go mStopAt layout = do
     case getRearLabels layout of
-      [] -> error "impossible"
+      [] -> error "advanceRoad: impossible"
       xs@(x : _) -> do
         shouldStop <-
           orM
@@ -139,13 +139,13 @@ advanceRoad = do
 
 getLeavingVehicle :: [Window] -> AssetId
 getLeavingVehicle = \case
-  [] -> error "impossible"
+  [] -> error "getLeavingVehicle: impossible"
   ((windowType -> Window.VehicleLeaves aid _) : _) -> aid
   (_ : rest) -> getLeavingVehicle rest
 
 getEnteringVehicle :: [Window] -> AssetId
 getEnteringVehicle = \case
-  [] -> error "impossible"
+  [] -> error "getEnteringVehicle: impossible"
   ((windowType -> Window.VehicleEnters aid _) : _) -> aid
   (_ : rest) -> getEnteringVehicle rest
 

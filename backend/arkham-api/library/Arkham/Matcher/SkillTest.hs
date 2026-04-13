@@ -25,6 +25,7 @@ data SkillTestMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | WhileAttacking
   | WhileEvadingAnEnemy EnemyMatcher
+  | WhileEvading
   | WhileParleyingWithAnEnemy EnemyMatcher
   | WhileParleying
   | WhileTargetingEnemy EnemyMatcher

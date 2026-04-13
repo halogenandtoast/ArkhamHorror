@@ -13,7 +13,7 @@ sinisterAspirantB :: EnemyCard SinisterAspirantB
 sinisterAspirantB = enemy SinisterAspirantB Cards.sinisterAspirantB (2, Static 3, 4) (0, 1)
 
 instance HasAbilities SinisterAspirantB where
-  getAbilities (SinisterAspirantB a) = extend1 a $ restricted a 1 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #after #enemy
+  getAbilities (SinisterAspirantB a) = extend1 a $ restricted a 1 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #when #enemy
 
 instance RunMessage SinisterAspirantB where
   runMessage msg e@(SinisterAspirantB attrs) = runQueueT $ case msg of

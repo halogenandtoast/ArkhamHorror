@@ -1132,8 +1132,22 @@ instance RunMessage EdgeOfTheEarth where
           "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
           $ pushAll [ResetInvestigators, ResetGame, StartScenario "08648a" Nothing]
         labeled
-          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_." do
-          push $ NextCampaignStep $ continue TheHeartOfMadnessPart2
+          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
+          do
+            push $ NextCampaignStep $ continue TheHeartOfMadnessPart2
 
       pure c
+    EndOfGame _ -> do
+      let updatePartner a' partner = do
+            mAid <- selectOne (AssetIs partner.cardCode)
+            case mAid of
+              Nothing -> pure a'
+              Just aid -> do
+                damage <- field AssetDamage aid
+                horror <- field AssetHorror aid
+                pure
+                  $ a'
+                  & (logL . partnersL . ix (toPartnerCode partner) %~ ((damageL .~ damage) . (horrorL .~ horror)))
+      updatedAttrs <- foldM updatePartner attrs =<< traverse getPartner expeditionTeam
+      lift $ defaultCampaignRunner msg (EdgeOfTheEarth updatedAttrs)
     _ -> lift $ defaultCampaignRunner msg c

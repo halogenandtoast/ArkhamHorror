@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.TonyMorgan (tonyMorgan) where
 
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Actions
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
@@ -49,7 +50,7 @@ instance HasAbilities TonyMorgan where
           a
           NonActivateAbility
           (exists (EnemyWithBounty <> oneOf [CanFightEnemyWith (SourceOwnedBy $ be a), CanEngageEnemy source]))
-          (ActionAbility [] Nothing Free)
+          (ActionAbility mempty Nothing Free)
     | BountyAction `notElem` map additionalActionType a.usedAdditionalActions
     ]
    where
@@ -71,7 +72,7 @@ instance RunMessage TonyMorgan where
           . filter (any (`elem` [#fight, #engage]) . abilityActions)
           <$> getActions iid windows'
       playableCards <- withModifiers attrs (toModifiers attrs [BountiesOnly]) $ do
-        filter (any (`elem` [#fight, #engage]) . cardActionsToList . cdActions . toCardDef)
+        filter (any (`elem` [#fight, #engage]) . actionsToList . cdActions . toCardDef)
           <$> getPlayableCards attrs iid (UnpaidCost NoAction) windows'
 
       chooseOneM iid do

@@ -243,7 +243,7 @@ instance RunMessage TheUnspeakableOath where
       defeated <- select DefeatedInvestigator
       investigators <- allInvestigators
       unless (null defeated) do
-        flavor $ scope "defeated" $ h "title" >> p "body"
+        flavor $ scope "defeated" $ setTitle "title" >> p "body"
         for_ defeated drivenInsane
       if length defeated == length investigators
         then gameOver

@@ -35,8 +35,40 @@ getApiV1ArkhamGameScenarioExportR gameId = do
   _ <- getRequestUserId
   generateScenarioExport gameId
 
-getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler ArkhamExport
-getApiV1ArkhamGameFullExportR gameId = generateFullExport gameId
+getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler TypedContent
+getApiV1ArkhamGameFullExportR gameId = do
+  (ge, players) <- runDB $ do
+    ge <- get404 gameId
+    players <- select $ do
+      p <- from $ table @ArkhamPlayer
+      where_ (p ^. ArkhamPlayerArkhamGameId ==. val gameId)
+      pure p
+    pure (ge, players)
+  let campaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+  respondSource "application/json" $ do
+    sendChunkLBS "{\"campaignPlayers\":"
+    sendChunkLBS $ encode campaignPlayers
+    sendChunkLBS ",\"campaignData\":{\"name\":"
+    sendChunkLBS $ encode (arkhamGameName ge)
+    sendChunkLBS ",\"currentData\":"
+    sendChunkLBS $ encode (arkhamGameCurrentData ge)
+    sendChunkLBS ",\"step\":"
+    sendChunkLBS $ encode (arkhamGameStep ge)
+    sendChunkLBS ",\"steps\":["
+    sendFlush
+    isFirstRef <- liftIO $ newIORef True
+    steps <-
+      lift $ runDB $ Persist.selectList [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
+    for_ steps $ \(Entity _ s) -> do
+      isFirst <- liftIO $ readIORef isFirstRef
+      unless isFirst $ sendChunkBS ","
+      liftIO $ writeIORef isFirstRef False
+      sendChunkLBS $ encode s
+      sendFlush
+    sendChunkLBS "],\"log\":[],\"multiplayerVariant\":"
+    sendChunkLBS $ encode (arkhamGameMultiplayerVariant ge)
+    sendChunkLBS "}}"
+    sendFlush
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do
@@ -101,10 +133,12 @@ postApiV1ArkhamGamesImportR = do
           \  ) THEN \
           \    EXECUTE 'ALTER TABLE public.arkham_steps DISABLE TRIGGER enforce_step_order_per_game'; \
           \  END IF; \
-          \END$$;" []
-        for_ agedSteps \s ->
-          insert_
-            $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
+          \END$$;"
+          []
+        insertMany_
+          [ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
+          | s <- agedSteps
+          ]
 
         rawExecute
           "DO $$ \
@@ -120,7 +154,8 @@ postApiV1ArkhamGamesImportR = do
           \  ) THEN \
           \    EXECUTE 'ALTER TABLE public.arkham_steps ENABLE TRIGGER enforce_step_order_per_game'; \
           \  END IF; \
-          \END$$;" []
+          \END$$;"
+          []
         pure gameId
       pure
         $ toPublicGame

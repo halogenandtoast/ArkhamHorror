@@ -21,6 +21,7 @@ import Arkham.Helpers.Message as X hiding (
  )
 import Arkham.Helpers.SkillTest as X
 import Arkham.Id as X
+import Arkham.Name (display, toName)
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Spawn as X
@@ -38,7 +39,7 @@ import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
-import Arkham.Exhaust (mkExhaustion, Exhaustion (..))
+import Arkham.Exhaust (Exhaustion (..), mkExhaustion)
 import Arkham.Fight
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
@@ -1024,11 +1025,18 @@ instance RunMessage EnemyAttrs where
       pushM $ checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid source enemyId n)]
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
-      pushAll
-        [ UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
-        , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
-        ]
-
+      push
+        $ SkillTestResultOption
+        $ SkillTestOption
+          { option =
+              Label
+                ("Damage " <> display (toName a))
+                [ UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
+                , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
+                ]
+          , kind = OriginalOptionKind
+          , criteria = Nothing
+          }
       pure a
     Successful (Action.Fight, _) iid source target n | isTarget a target -> do
       mods <- getModifiers a
@@ -1098,9 +1106,13 @@ instance RunMessage EnemyAttrs where
         pure $ a & spawnDetailsL . _Just %~ \sd -> sd {spawnDetailsSpawnAt = SpawnAtLocation lid}
     Exhaust ea | a `isTarget` ea.target -> do
       mods <- getModifiers (toTarget a)
-      sourceBlocked <- anyM (\case
-        CannotBeExhaustedBy sm -> sourceMatches ea.source sm
-        _ -> pure False) mods
+      sourceBlocked <-
+        anyM
+          ( \case
+              CannotBeExhaustedBy sm -> sourceMatches ea.source sm
+              _ -> pure False
+          )
+          mods
       if sourceBlocked
         then pure a
         else do
@@ -1149,10 +1161,18 @@ instance RunMessage EnemyAttrs where
       pushM $ checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid source enemyId n]
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
-      pushAll
-        [ UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
-        , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
-        ]
+      push
+        $ SkillTestResultOption
+        $ SkillTestOption
+          { option =
+              Label
+                ("Evade " <> display (toName a))
+                [ UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
+                , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
+                ]
+          , kind = OriginalOptionKind
+          , criteria = Nothing
+          }
       pure a
     Successful (Action.Evade, _) iid source target n | isTarget a target -> do
       mods <- getModifiers a
@@ -1535,9 +1555,13 @@ instance RunMessage EnemyAttrs where
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-      blockedBySource <- anyM (\case
-        CannotBeDefeatedBy sm -> sourceMatches source sm
-        _ -> pure False) modifiers'
+      blockedBySource <-
+        anyM
+          ( \case
+              CannotBeDefeatedBy sm -> sourceMatches source sm
+              _ -> pure False
+          )
+          modifiers'
       validDefeat <-
         ( ( canBeDefeated
               && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
@@ -1671,9 +1695,13 @@ instance RunMessage EnemyAttrs where
       pure a
     ShuffleBackIntoEncounterDeck source (isTarget a -> True) -> do
       mods <- getModifiers (toTarget a)
-      blocked <- anyM (\case
-        CannotBeRemovedBy sm -> sourceMatches source sm
-        _ -> pure False) mods
+      blocked <-
+        anyM
+          ( \case
+              CannotBeRemovedBy sm -> sourceMatches source sm
+              _ -> pure False
+          )
+          mods
       if blocked
         then pure a
         else pure $ a & placementL .~ OutOfPlay RemovedZone

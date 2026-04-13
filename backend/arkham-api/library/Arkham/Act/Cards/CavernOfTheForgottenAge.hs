@@ -54,11 +54,12 @@ instance RunMessage CavernOfTheForgottenAge where
                 $ NearestLocationToLocation mouthOfKnYan
                 $ connectedTo
                 $ LocationWithId lid
+        unblocked <- select $ mapOneOf LocationWithId xs <> not_ BlockedLocation
         selectEach Anywhere \l -> placeClues attrs l 1
         when singleSided do
           chooseOneM lead do
-            targets xs \l -> do
-              for_ investigators \i -> moveTo attrs i l
+            targets (if null unblocked then xs else unblocked) \l -> do
+              for_ investigators \i -> forcedMoveTo attrs i l
               for_ enemies \e -> enemyMoveTo attrs e l
           shuffleIntoDeck ExplorationDeck lid
       pure a

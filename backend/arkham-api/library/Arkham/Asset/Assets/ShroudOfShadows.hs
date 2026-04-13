@@ -24,7 +24,7 @@ shroudOfShadows = asset ShroudOfShadows Cards.shroudOfShadows
 instance HasAbilities ShroudOfShadows where
   getAbilities (ShroudOfShadows a) =
     [ restricted a 1 ControlsThis
-        $ ActionAbility [#evade] #willpower
+        $ ActionAbility #evade #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]

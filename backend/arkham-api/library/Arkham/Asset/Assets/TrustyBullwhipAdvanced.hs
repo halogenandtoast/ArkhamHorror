@@ -19,7 +19,7 @@ trustyBullwhipAdvanced = asset TrustyBullwhipAdvanced Cards.trustyBullwhipAdvanc
 
 instance HasAbilities TrustyBullwhipAdvanced where
   getAbilities (TrustyBullwhipAdvanced a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbility [#fight] #agility $ ActionCost 1]
+    [restrictedAbility a 1 ControlsThis $ ActionAbility #fight #agility $ ActionCost 1]
 
 instance RunMessage TrustyBullwhipAdvanced where
   runMessage msg a@(TrustyBullwhipAdvanced attrs) = runQueueT $ case msg of
@@ -41,6 +41,6 @@ instance RunMessage TrustyBullwhipAdvanced where
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   pushWhen canEvade $ EnemyEvaded iid eid
                 labeled "Do nothing" nothing
-            _ -> error "impossible"
+            _ -> error "TrustyBullwhipAdvanced: impossible"
       pure a
     _ -> TrustyBullwhipAdvanced <$> liftRunMessage msg attrs

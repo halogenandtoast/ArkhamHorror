@@ -18,6 +18,7 @@ import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
 
 import Arkham.Action (Action)
+import Arkham.Actions
 import Arkham.Calculation
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
@@ -267,8 +268,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
-  CardWithLevel n -> Just n == cdLevel (toCardDef a)
-  CardWithMaxLevel n -> maybe False (<= n) $ cdLevel (toCardDef a)
+  CardWithLevel n -> Just n == (toCard a).level
+  CardWithMaxLevel n -> maybe False (<= n) $ (toCard a).level
   FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
   CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
@@ -289,8 +290,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NonExceptional -> not . cdExceptional $ toCardDef a
   PermanentCard -> cdPermanent $ toCardDef a
   NotCard m -> not (cardMatch a m)
-  CardWithAction action -> elem action $ cardActionsToList $ cdActions $ toCardDef a
-  CardWithoutAction -> null $ cardActionsToList $ cdActions $ toCardDef a
+  CardWithAction action -> elem action $ actionsToList $ cdActions $ toCardDef a
+  CardWithoutAction -> null $ actionsToList $ cdActions $ toCardDef a
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
@@ -423,9 +424,9 @@ isEncounterCard = \case
   VengeanceCard _ -> False
 
 instance HasField "actions" Card [Action] where
-  getField = cardActionsToList . cdActions . toCardDef
+  getField = actionsToList . cdActions . toCardDef
 
-instance HasField "cardActions" Card CardActions where
+instance HasField "cardActions" Card Actions where
   getField = cdActions . toCardDef
 
 instance HasField "skills" Card [SkillIcon] where
@@ -441,7 +442,11 @@ instance HasField "printedCost" Card Int where
   getField = (.printedCost) . toCardDef
 
 instance HasField "level" Card (Maybe Int) where
-  getField = cdLevel . toCardDef
+  getField c =
+    let def = toCardDef c
+     in if null (cdCustomizations def)
+          then cdLevel def
+          else Just $ (sum (map fst (IntMap.elems c.customizations)) + 1) `div` 2
 
 instance HasField "experienceCost" Card Int where
   getField c =

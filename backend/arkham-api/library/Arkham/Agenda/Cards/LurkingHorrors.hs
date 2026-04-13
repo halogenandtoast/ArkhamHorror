@@ -7,6 +7,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card.CardDef
+import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Text
 import Arkham.I18n
 import Arkham.Matcher hiding (AssetDefeated, DuringTurn)
@@ -91,6 +93,11 @@ instance RunMessage LurkingHorrors where
           selectForMaybeM
             (assetIs x.cardCode)
             (push . AssetDefeated (toSource attrs))
+
+          when (x.cardCode == Assets.danforthBrilliantStudent.cardCode) do
+            owner <- fromMaybe <$> getLead <*> getOwner Assets.danforthBrilliantStudent
+            locations <- select $ NearestLocationTo owner LocationWithAnyClues
+            chooseTargetM owner locations $ discoverAt NotInvestigate owner ScenarioSource 1
 
       advanceAgendaDeck attrs
       pure a

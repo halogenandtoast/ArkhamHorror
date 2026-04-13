@@ -907,6 +907,7 @@ newGame scenario' investigator = do
         , gamePerformTarotReadings = False
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameAsIfAtIgnored = mempty
         }
 
   liftIO $ do

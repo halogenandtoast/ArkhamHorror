@@ -7,6 +7,7 @@ import Arkham.ActiveCost.Base as X
 import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (TakenAction)
 import Arkham.Action qualified as Action
+import Arkham.Actions
 import Arkham.Asset.Types (
   Field (
     AssetCard,
@@ -35,6 +36,7 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (EventCard, EventController))
 import Arkham.Exception
+import Arkham.Exhaust (mkExhaustion)
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Ability
@@ -77,7 +79,6 @@ import Arkham.Projection
 import Arkham.Scenario.Deck (ScenarioDeckKey (TekeliliDeck))
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
-import Arkham.Exhaust (mkExhaustion)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
@@ -97,7 +98,7 @@ activeCostActions ac = case ac.target of
     [#play | isPlayAction == IsPlayAction]
       <> case ac.activeCostChosenOrAction of
         Just chosen -> [chosen]
-        Nothing -> cardActionsToList (cdActions (toCardDef c))
+        Nothing -> actionsToList (cdActions (toCardDef c))
   ForCost _ -> []
   ForAdditionalCost _ -> []
 
@@ -139,15 +140,12 @@ getActionCostModifier ac = do
   modifiers <- getModifiers iid
   pure $ foldr (applyModifier takenActions performedActions) 0 modifiers
  where
-  actions = case ac.actions of
-    [] -> error "expected action"
-    as -> as
   applyModifier takenActions performedActions (AdditionalActionCostOf match m) n =
     -- For cards we've already calculated the cost as an additional cost for
     -- the action specifically
     case ac.target of
       ForCard {} -> n
-      _ -> if any (matchTarget takenActions performedActions match) actions then n + m else n
+      _ -> if any (matchTarget takenActions performedActions match) ac.actions then n + m else n
   applyModifier _ _ _ n = n
 
 countAdditionalActionPayments :: Payment -> Int
@@ -178,15 +176,16 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ForcedAbilityWithCost {} -> push (PayCosts activeCostId)
     AbilityEffect {} -> push (PayCosts activeCostId)
     FastAbility' _ mAction ->
-      pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- toList mAction]
+      pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- actionsToList mAction]
     ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)
-    ReactionAbility  _ _ [] -> push (PayCosts activeCostId)
-    ReactionAbility  _ _ actions' -> do
-      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions']
+    ReactionAbility _ _ actions' | null (actionsToList actions') -> push (PayCosts activeCostId)
+    ReactionAbility _ _ actions' -> do
+      beforeWindowMsg <-
+        checkWindows [mkWhen $ Window.PerformAction iid action | action <- actionsToList actions']
       pushAll [beforeWindowMsg, PayCosts activeCostId]
-    ActionAbility actions' _ _ -> handleActions $ Action.Activate : actions'
+    ActionAbility actions' _ _ -> handleActions $ Action.Activate : actionsToList actions'
  where
   checkAttackOfOpportunity mods actions =
     (noAooFrom /= Just AnyEnemy)
@@ -1477,10 +1476,10 @@ instance RunMessage ActiveCost where
           pure c
         ForCard _isPlayAction card -> do
           let cardDef = toCardDef card
-          -- For OrCardActions with no prior BeforePlayEvent, create a pending event
+          -- For OrActions with no prior BeforePlayEvent, create a pending event
           -- so the event itself can ask the player before costs begin
           case (cardDef.cardActions, c.pendingEventId) of
-            (OrCardActions _, Nothing) -> do
+            (OrActions _, Nothing) -> do
               eid <- getRandom
               pushAll [CreatePendingEvent card iid eid, BeforePlayEvent iid eid acId]
               pure $ c {activeCostPendingEventId = Just eid}
@@ -1646,7 +1645,7 @@ instance RunMessage ActiveCost where
                 <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = c.investigator
-          let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] Nothing $ ActionCost 1)
+          let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility #play Nothing $ ActionCost 1)
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
           let actions = c.actions

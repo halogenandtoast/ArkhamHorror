@@ -1,10 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Effect (
-  module Arkham.Effect,
-) where
-
-import Arkham.Prelude
+module Arkham.Effect (module Arkham.Effect) where
 
 import Arkham.Card
 import Arkham.ChaosToken
@@ -20,11 +16,10 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
-
--- start importing directly
 
 import Arkham.Act.Acts (
   infiltratingTheLodgeEffect,
@@ -45,7 +40,6 @@ import Arkham.Agenda.Agendas (
  )
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
-  dreamersChronicleEffect,
   arbiterOfFatesEffect,
   armageddon4Effect,
   armageddonEffect,
@@ -54,6 +48,7 @@ import Arkham.Asset.Assets (
   daisysToteBagAdvancedEffect,
   deckOfPossibilitiesTychokineticImplementEffect,
   disciplinePrescienceOfFateEffect,
+  dreamersChronicleEffect,
   eldritchTongueEffect,
   empiricalHypothesisEffect,
   eyeOfChaos4Effect,
@@ -134,12 +129,11 @@ import Arkham.Event.Events (
   imDoneRunninEffect,
   improvisationEffect,
   marksmanship1Effect,
+  mirrorFormEffect,
   mystifyingSongEffect,
   onTheLamAdvancedEffect,
   oneInTheChamberEffect,
   prestidigitationEffect,
-  mirrorFormEffect,
-  ultimateSacrifice4Effect,
   sleightOfHandEffect,
   snipe1Effect,
   spectralRazor2Effect,
@@ -150,6 +144,7 @@ import Arkham.Event.Events (
   thirdTimesACharm2Effect,
   tidesOfFateEffect,
   toeToToeEffect,
+  ultimateSacrifice4Effect,
   vantagePointEffect,
   willToSurviveEffect,
   writtenInTheStarsEffect,

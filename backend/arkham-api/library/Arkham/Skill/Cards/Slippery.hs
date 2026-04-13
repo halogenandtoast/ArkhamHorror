@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.Slippery (slippery) where
 
-import Arkham.Helpers.SkillTest (isEvading, withSkillTestTargetedEnemy)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvading)
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -15,8 +16,10 @@ slippery = skill Slippery Cards.slippery
 instance RunMessage Slippery where
   runMessage msg s@(Slippery attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      withSkillTestTargetedEnemy \enemy ->
-        whenM (isEvading enemy) do
-          nextPhaseModifier #upkeep attrs enemy DoesNotReadyDuringUpkeep
+      runMaybeT_ do
+        enemy <- MaybeT getSkillTestTargetedEnemy
+        liftGuardM $ isEvading enemy
+        liftGuardM $ matches enemy NonEliteEnemy
+        lift $ nextPhaseModifier #upkeep attrs enemy DoesNotReadyDuringUpkeep
       pure s
     _ -> Slippery <$> liftRunMessage msg attrs

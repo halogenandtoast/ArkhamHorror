@@ -3,6 +3,7 @@ import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
+  watch,
   onMounted,
   onUpdated,
   onBeforeUnmount,
@@ -83,13 +84,14 @@ const choose = async (idx: number) => emit('choose', idx)
 //Refs
 const settingsStore = useSettings()
 const { splitView } = storeToRefs(settingsStore)
-const { toggleSplitView } = settingsStore
+const { toggleSplitView, setGameId } = settingsStore
 const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const locationMap = ref<Element | null>(null)
+const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
 const cardRowTitle = ref("")
 // Atlach Nacha specific refs
@@ -97,12 +99,53 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
-const locationsZoom = ref(1);
+const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
+const doubleZoomActive = ref(false)
+const doubleZoomPrevValue = ref(1)
+const doubleZoomPrevScroll = { left: 0, top: 0 }
+const DOUBLE_ZOOM_LEVEL = 3
+watch(locationsZoom, async (value) => {
+  localStorage.setItem(`game:${props.game.id}:locationsZoom`, String(value))
+  await updateScrollMargins()
+})
+
+function zoomStep(value: number): number {
+  const center = 1.5  // peak step around the middle of the normal range
+  const sigma = 1.0  // controls how quickly the step tapers off
+  const max = 0.15
+  const min = 0.01
+  return Math.max(min, max * Math.exp(-Math.pow(value - center, 2) / (2 * sigma * sigma)))
+}
+
+function increaseZoom() {
+  locationsZoom.value = parseFloat((locationsZoom.value + zoomStep(locationsZoom.value)).toFixed(3))
+}
+
+function decreaseZoom() {
+  locationsZoom.value = parseFloat(Math.max(0.01, locationsZoom.value - zoomStep(locationsZoom.value)).toFixed(3))
+}
+
+let holdTimer: ReturnType<typeof setTimeout> | null = null
+let holdInterval: ReturnType<typeof setInterval> | null = null
+
+function startHold(action: () => void) {
+  action()
+  holdTimer = setTimeout(() => {
+    holdInterval = setInterval(action, 80)
+  }, 400)
+}
+
+function stopHold() {
+  if (holdTimer !== null) { clearTimeout(holdTimer); holdTimer = null }
+  if (holdInterval !== null) { clearInterval(holdInterval); holdInterval = null }
+}
 
 const { isMobile } = IsMobile();
 
 // callbacks
 onMounted(() => {
+  setGameId(props.game.id)
+  updateScrollMargins()
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -347,13 +390,31 @@ const gridAreas = computed(()=>{
   return rotatedRows.map(r => `"${r.join(' ')}"`).join(' ')
 })
 
-// keep object identity stable; only its fields change
-const locationStyles = computed(()=>({
-  display:'grid',
-  gap:'20px',
+// transform: scale() is used rather than CSS zoom because it is handled consistently
+// by getBoundingClientRect() in all browsers. The scroll area doesn't follow transform
+// automatically, so we set margins after each render to compensate.
+const locationStyles = computed(() => ({
+  display: 'grid',
+  gap: '20px',
   'grid-template-areas': gridAreas.value ?? '',
-  zoom: locationsZoom.value
+  transform: `scale(${locationsZoom.value})`,
+  transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
 }))
+
+async function updateScrollMargins() {
+  await nextTick()
+  const grid = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
+  if (!grid) return
+  const z = locationsZoom.value
+  // offsetWidth/Height exclude margins, so we always read the natural grid size directly.
+  if (z >= 1) {
+    grid.style.marginRight  = `${grid.offsetWidth  * (z - 1)}px`
+    grid.style.marginBottom = `${grid.offsetHeight * (z - 1)}px`
+  } else {
+    grid.style.marginRight  = ''
+    grid.style.marginBottom = ''
+  }
+}
 
 const scenarioDeckStyles = computed(() => {
   const { decksLayout } = props.scenario
@@ -426,36 +487,31 @@ const positionToGridArea = function(pos: Position): string {
 
 
 const gridConcealed = computed<ConcealedGroup[]>(() => {
-  if (!props.scenario.meta) return
-  const { concealedCards } = props.scenario.meta
-  if (!concealedCards) return
+  const concealedCards = props.scenario.meta?.concealedCards as [[number, number], string[]][] | undefined
+  if (!concealedCards) return []
 
-  const groups = new Map<
-    string,
-    { position: Position; known: ConcealedCard[]; unknown: ConcealedCard[] }
-  >();
+  const available = Object.values(props.game.concealed)
+  const availableIds = new Set(available.map(c => c.id))
 
-  for (const details of concealedCards) {
-    const [pos, cards] = details
-    const position = { x: pos[0], y: pos[1] }
-    
-    const key = `${position.x}:${position.y}`;
-
-    let group = groups.get(key);
-    if (!group) {
-      group = { position, known: [], unknown: [] };
-      groups.set(key, group);
-    }
-
+  const cardPosition: Record<string, Position> = {}
+  for (const [[x, y], cards] of concealedCards) {
+    const position = { x, y }
     for (const cardId of cards) {
-      const card = props.game.concealed[cardId]
-      if (!card) continue
-      (card.known ? group.known : group.unknown).push(card);
+      if (availableIds.has(cardId)) cardPosition[cardId] = position
     }
   }
 
-  return [...groups.values()];
-});
+  const groups = new Map<string, ConcealedGroup>()
+  for (const card of available) {
+    const position = cardPosition[card.id]
+    if (!position) continue
+    const key = `${position.x}:${position.y}`
+    const group = groups.get(key) ?? groups.set(key, { position, known: [], unknown: [] }).get(key)!
+    ;(card.known ? group.known : group.unknown).push(card)
+  }
+
+  return [...groups.values()]
+})
 
 function isHollow(m: ModifierType): m is Hollow {
   return m.tag === "Hollow"
@@ -501,6 +557,7 @@ const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.placement === null && a.label !== "cosmos"))
+watch(locations, updateScrollMargins, { flush: 'post' })
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
@@ -685,40 +742,69 @@ function beforeLeave(e: Element) {
   el.style.height = height
 }
 
-function toggleZoom(e: MouseEvent) {
-  const el = (e.target as HTMLElement).closest('.location-cards') as HTMLElement;
-  const zoomValue = 4;
-  const isZoomedIn = el.style.zoom === String(zoomValue);
+async function toggleZoom(e: MouseEvent) {
+  const scroller = scrollerRef.value
+  const gridEl = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
+  if (!scroller || !gridEl) return
 
-  // Save scroll position before zoom change
-  const scrollLeftValue = el.scrollLeft;
-  const scrollTopValue = el.scrollTop;
+  if (doubleZoomActive.value) {
+    doubleZoomActive.value = false
+    locationsZoom.value = doubleZoomPrevValue.value
+    await updateScrollMargins()
+    scroller.scrollLeft = doubleZoomPrevScroll.left
+    scroller.scrollTop = doubleZoomPrevScroll.top
+    return
+  }
 
-  // Toggle zoom
-  el.style.zoom = isZoomedIn ? "1" : String(zoomValue);
-
-  // Adjust padding and scroll position after zoom change
-  const containerRect = el.getBoundingClientRect();
-  const target = e.target as HTMLElement; 
-  let locationImg = null;
-  if (target && target.classList.contains('card--locations')){
-    locationImg = target;
-  } else {
-    const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId);
-    if (investigator) {
-      locationImg = document.querySelector(`img[data-id="${investigator.location}"]`);      
+  // Find what to focus on: the clicked location, or the investigator's location
+  const target = e.target as HTMLElement
+  let focusEl: HTMLElement | null = target.closest('[data-id]')
+  if (!focusEl) {
+    const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+    if (investigator?.location) {
+      focusEl = document.querySelector<HTMLElement>(`[data-id="${investigator.location}"]`)
     }
   }
-  if (locationImg) {
-    const locationRect = locationImg.getBoundingClientRect();
-    const paddingValue = (containerRect.height - locationRect.height) / (2 * zoomValue) + "px"
-    el.style.paddingTop = isZoomedIn ? "" : paddingValue;
-    el.style.paddingBottom = isZoomedIn ? "" : paddingValue
-    const x = locationRect.left - containerRect.left + scrollLeftValue - (containerRect.width - locationRect.width) / 2;
-    const y = locationRect.top - containerRect.top + scrollTopValue
-    el.scrollLeft = isZoomedIn ? scrollLeftValue : x / zoomValue;
-    el.scrollTop = isZoomedIn ? scrollTopValue : y / zoomValue;
-  }
+  if (!focusEl) return
+
+  const currentZ = locationsZoom.value
+  const scrollerRect = scroller.getBoundingClientRect()
+  const gridRect = gridEl.getBoundingClientRect()
+  const focusRect = focusEl.getBoundingClientRect()
+
+  // Compute the grid's layout position in scroller content space. This is invariant across zoom
+  // levels since flex sizes items by their natural dimensions. We must account for transform-origin:
+  //   z >= 1  → origin 0 0: visual top-left === layout top-left, so read directly.
+  //   z <  1  → origin center: visual top-left is shifted inward; subtract the shift to get layout.
+  const gridW = gridEl.offsetWidth
+  const gridH = gridEl.offsetHeight
+  const gridLayoutLeft = currentZ >= 1
+    ? gridRect.left - scrollerRect.left + scroller.scrollLeft
+    : (gridRect.left - scrollerRect.left + scroller.scrollLeft) - gridW * (1 - currentZ) / 2
+  const gridLayoutTop = currentZ >= 1
+    ? gridRect.top - scrollerRect.top + scroller.scrollTop
+    : (gridRect.top - scrollerRect.top + scroller.scrollTop) - gridH * (1 - currentZ) / 2
+
+  // Natural (unscaled) center of focus within the grid.
+  // Visual delta from the grid's visual top-left = natural offset × scale, for any transform-origin.
+  const natX = (focusRect.left + focusRect.width / 2 - gridRect.left) / currentZ
+  const natY = (focusRect.top + focusRect.height / 2 - gridRect.top) / currentZ
+
+  // Save current state
+  doubleZoomPrevValue.value = currentZ
+  doubleZoomPrevScroll.left = scroller.scrollLeft
+  doubleZoomPrevScroll.top = scroller.scrollTop
+
+  // Apply new zoom and wait for margins to update
+  doubleZoomActive.value = true
+  locationsZoom.value = DOUBLE_ZOOM_LEVEL
+  await updateScrollMargins()
+
+  // At new zoom (origin 0 0), focus sits at gridLayoutLeft + natX * newZ in content space.
+  // gridLayoutLeft is invariant (flex uses natural dimensions), so it's the same before and after.
+  // Use clientWidth/Height (viewport area, excludes scrollbars) for accurate centering.
+  scroller.scrollLeft = gridLayoutLeft + natX * DOUBLE_ZOOM_LEVEL - scroller.clientWidth / 2
+  scroller.scrollTop = gridLayoutTop + natY * DOUBLE_ZOOM_LEVEL - scroller.clientHeight / 2
 }
 
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
@@ -1182,7 +1268,7 @@ async function addChaosToken(face: any){
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
         <Connections :game="game" :playerId="playerId" />
-        <input v-model="locationsZoom" type="range" min="1" max="3" step="0.25" class="zoomer" />
+        <div class="location-cards-scroller" ref="scrollerRef">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
             v-for="location in locations"
@@ -1239,6 +1325,7 @@ async function addChaosToken(face: any){
             </template>
           </template>
         </transition-group>
+        </div>
       </div>
 
       <div id="player-zone">
@@ -1250,7 +1337,13 @@ async function addChaosToken(face: any){
           :activePlayerId="activePlayerId"
           :tarotCards="props.scenario.tarotCards"
           @choose="choose"
-        />
+        >
+          <div class="zoom-control">
+            <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
+            <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
+            <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
+          </div>
+        </PlayerTabs>
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
@@ -1383,9 +1476,10 @@ async function addChaosToken(face: any){
   width: 100%;
   flex: 1;
   inset: 0;
+  position: relative;
 
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 
   &.split-view {
     grid-template-columns: 1fr 2fr;
@@ -1437,16 +1531,23 @@ async function addChaosToken(face: any){
   }
 }
 
-.location-cards {
-  width: 100%;
-  height: 100%;
-  margin: auto;
+.location-cards-scroller {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
   overflow: auto;
+  touch-action: manipulation;
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
-  place-content: safe center;
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
+}
+
+.location-cards {
   display: grid;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
 .location-cards-container {
@@ -1454,7 +1555,6 @@ async function addChaosToken(face: any){
   overflow: hidden;
   flex: 1;
   padding-top: 32px;
-  padding-bottom: 32px;
   position: relative;
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 5px;
@@ -1894,22 +1994,87 @@ async function addChaosToken(face: any){
   }
 }
 
-.zoomer {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  align-self: center;
 
-  @media (max-width: 768px) and (orientation: portrait) {
+  @media (pointer: coarse) {
     display: none;
   }
 }
 
-@media screen and (max-width: 400px) {
-  .zoomer { display: none}
+@media not screen {
+  .zoom-control { display: none }
 }
 
-@media not screen {
-  .zoomer { display: none}
+.zoom-btn {
+  background: none;
+  border: none;
+  color: var(--title);
+  font-size: 18px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--background-mid);
+    color: var(--spooky-green);
+  }
+
+  &:active {
+    background: var(--button-1-highlight);
+    color: white;
+  }
+}
+
+.zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 4px;
+  background: var(--box-border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5a9465;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: background 0.15s, transform 0.1s;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  background: #6aaa75;
+  transform: scale(1.2);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5a9465;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .barrier {
@@ -1989,9 +2154,14 @@ async function addChaosToken(face: any){
 #player-zone {
   display: flex;
   flex-direction: row;
-  background: var(--background-dark);
+  background: #181c2a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
   .player-info {
     flex: 1;
+  }
+  @media (max-width: 800px) {
+    padding-bottom: 50px;
   }
 }
 

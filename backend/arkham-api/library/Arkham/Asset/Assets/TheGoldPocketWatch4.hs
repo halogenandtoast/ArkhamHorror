@@ -26,7 +26,7 @@ instance RunMessage TheGoldPocketWatch4 where
       pushAll [RemoveFromGame (toTarget attrs), EndPhase, After EndPhase]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 [windowType -> Window.PhaseEnds phase] _ -> do
-      matchingDon't (const True) -- clear the queue
+      allMatchingDon't (const True) -- clear the queue
       pushAll [RemoveFromGame (toTarget attrs), Again (Begin phase), Begin phase]
       pure a
     _ -> TheGoldPocketWatch4 <$> liftRunMessage msg attrs

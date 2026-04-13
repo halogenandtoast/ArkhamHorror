@@ -40,6 +40,7 @@ const gate = <T extends Gateable>(items: T[]) =>
 const step = ref<Step>('ChooseMode')
 const gameMode = ref<GameMode>('Campaign')
 const includeTarotReadings = ref(false)
+const strictAsIfAt = ref(false)
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 
@@ -209,6 +210,7 @@ watch(selectedCampaign, (id) => {
   selectedScenario.value = null
   returnTo.value = false
   recommendedOptionState.value = {}
+  strictAsIfAt.value = id != null && id >= '11'
 
   if (id === '09') fullCampaign.value = 'FullCampaign'
 })
@@ -266,7 +268,8 @@ async function start() {
         currentCampaignName.value,
         multiplayerVariant.value,
         includeTarotReadings.value,
-        options
+        options,
+        strictAsIfAt.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   } else {
@@ -283,7 +286,8 @@ async function start() {
         currentCampaignName.value,
         multiplayerVariant.value,
         includeTarotReadings.value,
-        options
+        options,
+        strictAsIfAt.value
       ).then((game) => router.push(`/games/${game.id}`))
     }
   }
@@ -319,6 +323,7 @@ async function start() {
           v-model:selectedScenario="selectedScenario"
           v-model:selectedDifficulty="selectedDifficulty"
           v-model:includeTarotReadings="includeTarotReadings"
+          v-model:strictAsIfAt="strictAsIfAt"
           v-model:campaignName="campaignName"
           v-model:fullCampaignOptionKey="fullCampaignOptionKey"
           v-model:recommendedOptionState="recommendedOptionState"

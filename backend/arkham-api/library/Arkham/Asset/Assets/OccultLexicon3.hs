@@ -21,10 +21,10 @@ occultLexicon3 = asset OccultLexicon3 Cards.occultLexicon3
 
 instance HasAbilities OccultLexicon3 where
   getAbilities (OccultLexicon3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1 $ forced $ AssetEntersPlay #after (be a)
+    , controlled_ a 2
         $ freeReaction
         $ Matcher.PlayCard #when You (basic $ cardIs Events.bloodRite)
-    , controlled_ a 1 $ forced $ AssetEntersPlay #after (be a)
     ]
 
 instance RunMessage OccultLexicon3 where
@@ -35,7 +35,7 @@ instance RunMessage OccultLexicon3 where
         addToHand iid (only handBloodRite)
         shuffleCardsIntoDeck iid deckBloodRites
       OccultLexicon3 <$> liftRunMessage msg attrs
-    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 (cardPlayed -> card) _ -> do
       chooseOneM iid do
         labeled "Change each \"2\" to a \"3\"" do
           cardResolutionModifier card (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])

@@ -2,13 +2,12 @@ module Arkham.Asset.Assets.DelilahORourke3 (delilahORourke3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Cost.FieldCost
-import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype DelilahORourke3 = DelilahORourke3 AssetAttrs
@@ -23,30 +22,34 @@ instance HasModifiersFor DelilahORourke3 where
 
 instance HasAbilities DelilahORourke3 where
   getAbilities (DelilahORourke3 a) =
-    [ restricted a 1 ControlsThis
-        $ FastAbility
-        $ MaybeFieldResourceCost
-          (MaybeFieldCost (EnemyAt YourLocation) Field.EnemyEvade)
-        <> exhaust a
+    [ controlled
+        a
+        1
+        ( IfCostsAreIgnored
+            $ enemyExists
+            $ EnemyAt YourLocation
+            <> EnemyWithEvadeValue 0
+            <> EnemyCanBeDamagedBySource (a.ability 1)
+        )
+        ( FastAbility
+            $ MaybeFieldResourceCost
+              (MaybeFieldCost (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (a.ability 1)) Field.EnemyEvade)
+            <> exhaust a
+        )
     ]
 
 instance RunMessage DelilahORourke3 where
-  runMessage msg a@(DelilahORourke3 attrs) = case msg of
+  runMessage msg a@(DelilahORourke3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalResourcePayment -> n) -> do
       enemies <-
-        select (enemyAtLocationWith iid) >>= mapMaybeM \e -> do
-          exhausted <- e <=~> ExhaustedEnemy
-          runMaybeT $ do
-            evadeVal <- MaybeT $ field Field.EnemyEvade e
-            guard (evadeVal == n)
-            pure (e, exhausted)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (toAbilitySource attrs 1) x]
-          | (enemy, exhausted) <- enemies
-          , let x = if exhausted then 2 else 1
-          ]
+        select (enemyAtLocationWith iid) >>= mapMaybeM \e -> runMaybeT do
+          evadeVal <- MaybeT $ field Field.EnemyEvade e
+          guard $ evadeVal == n
+          pure e
+      chooseOneM iid do
+        targets enemies \enemy -> do
+          exhausted <- matches enemy ExhaustedEnemy
+          let x = if exhausted then 2 else 1
+          nonAttackEnemyDamage (Just iid) (attrs.ability 1) x enemy
       pure a
-    _ -> DelilahORourke3 <$> runMessage msg attrs
+    _ -> DelilahORourke3 <$> liftRunMessage msg attrs

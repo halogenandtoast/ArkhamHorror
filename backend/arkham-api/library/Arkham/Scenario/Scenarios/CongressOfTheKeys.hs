@@ -764,7 +764,7 @@ instance RunMessage CongressOfTheKeys where
       pure s
     ResolveChaosToken drawnToken ElderThing _iid -> do
       withSkillTest \sid -> do
-        skillTestModifier sid drawnToken.face sid CancelSkills
+        skillTestModifier sid drawnToken.face sid CancelEachCommittedCard
         push CancelSkillEffects
         cards <- concat <$> selectField InvestigatorCommittedCards Anyone
         for_ cards \c -> for_ c.owner (`hollow` c)

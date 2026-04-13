@@ -59,7 +59,7 @@ seekingAnswers :: CardDef
 seekingAnswers =
   (event "02023" "Seeking Answers" 1 Seeker)
     { cdSkills = [#intellect, #agility]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdCardTraits = singleton Insight
     }
 
@@ -77,7 +77,7 @@ bindMonster2 =
   (event "02031" "Bind Monster" 3 Mystic)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Spell
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 2
     }
 
@@ -86,7 +86,7 @@ baitAndSwitch =
   (event "02034" "Bait and Switch" 1 Survivor)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     }
 
 emergencyAid :: CardDef
@@ -113,7 +113,7 @@ iveGotAPlan =
   (event "02107" "\"I've got a plan!\"" 3 Seeker)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Insight, Tactic]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     }
 
 contraband :: CardDef
@@ -201,7 +201,7 @@ imOuttaHere =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Trick, Spirit]
     , cdCriteria = Just Criteria.ScenarioCardHasResignAbility
-    , cdActions = CardAction #resign
+    , cdActions = #resign
     }
 
 hypnoticGaze :: CardDef
@@ -320,7 +320,7 @@ monsterSlayer5 =
   (event "02300" "Monster Slayer" 1 Guardian)
     { cdSkills = [#combat, #wild]
     , cdCardTraits = singleton Spirit
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 5
     }
 
@@ -329,7 +329,7 @@ decipheredReality5 =
   (event "02303" "Deciphered Reality" 4 Seeker)
     { cdSkills = [#intellect, #intellect, #willpower]
     , cdCardTraits = singleton Insight
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdLevel = Just 5
     }
 

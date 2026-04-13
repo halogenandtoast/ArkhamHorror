@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SubmergedTemple (submergedTemple, SubmergedTemple (..)) where
+module Arkham.Location.Cards.SubmergedTemple (submergedTemple) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
@@ -8,7 +8,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Trait (Trait (AncientOne))
+import Arkham.Trait (Trait (AncientOne, DeepOne))
 
 newtype SubmergedTemple = SubmergedTemple LocationAttrs
   deriving anyclass IsLocation
@@ -22,7 +22,7 @@ submergedTemple =
 
 instance HasModifiersFor SubmergedTemple where
   getModifiersFor (SubmergedTemple a) =
-    modifySelect a (at_ (be a) <> EnemyWithTrait AncientOne) [EnemyFight 2]
+    modifySelect a (at_ (be a) <> EnemyWithTrait DeepOne) [EnemyFight 2]
 
 instance HasAbilities SubmergedTemple where
   getAbilities (SubmergedTemple a) =

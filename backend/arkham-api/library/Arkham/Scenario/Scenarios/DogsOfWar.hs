@@ -293,39 +293,39 @@ instance RunMessage DogsOfWar where
           push R8
         Resolution 2 -> do
           record YouHaventSeenTheLastOfTheClaretKnight
-          markTime 2
           resolutionWithXp "resolution2" $ allGainXp' attrs
           chooseBearer Keys.theLightOfPharos
+          markTime 2
           endOfScenario
         Resolution 3 -> do
           record TheCellFailedToFendOffTheBeast
           record YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
           setBearer Keys.theLightOfPharos
             $ keyWithEnemy Enemies.theBeastInACowlOfCrimsonLeavingATrailOfDestruction
-          markTime 1
           resolutionWithXp "resolution3" $ allGainXp' attrs
           selectEach (not_ DefeatedInvestigator) (`sufferMentalTrauma` 1)
+          markTime 1
           endOfScenario
         Resolution 4 -> do
           record YouHaventSeenTheLastOfTheClaretKnight
           setBearer Keys.theLightOfPharos
             $ keyWithEnemy Enemies.theClaretKnightHoldsYouInContempt
-          markTime 1
           resolutionWithXp "resolution4" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 5 -> do
           resolution "resolution5"
           push R8
         Resolution 6 -> do
           record YouHaventSeenTheLastOfTheBeastInACowlOfCrimson
-          markTime 2
           resolutionWithXp "resolution6" $ allGainXp' attrs
           chooseBearer Keys.theLightOfPharos
+          markTime 2
           endOfScenario
         Resolution 7 -> do
           record TheDogsAreAtWar
-          markTime 1
           resolutionWithXp "resolution7" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 8 -> do
           record TheCellAidedTheKnight

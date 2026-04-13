@@ -11,13 +11,12 @@ newtype Canteen2 = Canteen2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canteen2 :: AssetCard Canteen2
-canteen2 = assetWith Canteen2 Cards.canteen2 discardWhenNoUses
+canteen2 = asset Canteen2 Cards.canteen2
 
 instance HasAbilities Canteen2 where
   getAbilities (Canteen2 a) =
     [ controlled a 1 (exists $ HealableInvestigator (a.ability 1) #horror You)
-        $ FastAbility
-        $ assetUseCost a Supply 1
+        $ FastAbility (assetUseCost a Supply 1 <> exhaust a)
     ]
 
 instance RunMessage Canteen2 where

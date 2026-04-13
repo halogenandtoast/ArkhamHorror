@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.UnvisitedIsleDecayedWillow (unvisitedIsleDecayedWillow) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.GameValue
 import Arkham.Helpers.Log
@@ -32,7 +31,7 @@ instance HasAbilities UnvisitedIsleDecayedWillow where
   getAbilities (UnvisitedIsleDecayedWillow a) =
     extendRevealed
       a
-      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] Nothing $ ActionCost 1
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility #circle Nothing $ ActionCost 1
       , scenarioI18n $ hauntedI "unvisitedIsleDecayedWillow.haunted" a 2
       ]
 

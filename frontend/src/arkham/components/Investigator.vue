@@ -7,6 +7,7 @@ import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
+import type { Source } from '@/arkham/types/Source'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -211,6 +212,50 @@ watch(() => choices.value, () => {
 
 const modifiers = computed(() => props.investigator.modifiers)
 
+const blankedModifier = computed(() => {
+  return modifiers.value?.find(
+    (m) =>
+      m.type.tag === "Blank"
+      || (m.type.tag === "OtherModifier" && m.type.contents === "Blank")
+  ) ?? null
+})
+
+const isBlanked = computed(() => blankedModifier.value !== null)
+
+function blankedSourceCardCode(source: Source): string | null {
+  if (source.tag === 'AbilitySource') return blankedSourceCardCode(source.source)
+  if (source.tag === 'AssetSource') {
+    const asset = props.game.assets[source.contents]
+    if (!asset) return null
+    const mutated = asset.mutated ? `_${asset.mutated}` : ''
+    return `${asset.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'TreacherySource') {
+    const treachery = props.game.treacheries[source.contents]
+    return treachery ? treachery.cardCode.replace('c', '') : null
+  }
+  if (source.tag === 'EnemySource') {
+    const enemy = props.game.enemies[source.contents]
+    if (!enemy) return null
+    return `${enemy.cardCode.replace('c', '')}${enemy.flipped ? 'b' : ''}`
+  }
+  if (source.tag === 'EventSource') {
+    const event = props.game.events[source.contents]
+    if (!event) return null
+    const mutated = event.mutated ? `_${event.mutated}` : ''
+    return `${event.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'InvestigatorSource') return source.contents.replace('c', '')
+  return null
+}
+
+const blankedCardCode = computed<string | null>(() => {
+  const m = blankedModifier.value
+  if (!m) return null
+  if (m.card) return m.card.contents.cardCode.replace(/^c/, '')
+  return blankedSourceCardCode(m.source)
+})
+
 const captured = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "captured") ?? false
 })
@@ -275,7 +320,7 @@ const skills = computed(() => {
   }
 
   const calc = (k:'SkillWillpower'|'SkillIntellect'|'SkillCombat'|'SkillAgility') =>
-    (finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
+    Math.max(0, finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
 
   return {
     willpower: calc('SkillWillpower'),
@@ -386,64 +431,67 @@ const spadeInjury = computed(() => {
             @dragover.prevent="dragover($event)"
             @dragenter.prevent
           />
+          <span v-if="isBlanked" class="blanked-badge" :data-image-id="blankedCardCode"><font-awesome-icon icon="ban" /></span>
           <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
       <div>
         <div class="player-buttons">
-          <span v-if="!isMobile" class="action-container">
-            <i class="spade" v-if="spadeInjury"></i>
-            <i class="heart" v-if="heartInjury"></i>
-            <i class="diamond" v-if="diamondInjury"></i>
-            <i class="club" v-if="clubInjury"></i>
-            <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
-          </span>
-          <span v-if="investigator.additionalActions.length > 0">
-            <template v-for="action in investigator.additionalActions" :key="action">
-            <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
-              <i class="action"></i>
-            </button>
-            <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
+          <div class="button-group">
+            <span v-if="!isMobile" class="action-container">
+              <i class="spade" v-if="spadeInjury"></i>
+              <i class="heart" v-if="heartInjury"></i>
+              <i class="diamond" v-if="diamondInjury"></i>
+              <i class="club" v-if="clubInjury"></i>
+              <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
+            </span>
+            <span v-if="investigator.additionalActions.length > 0">
+              <template v-for="action in investigator.additionalActions" :key="action">
+              <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigatorClass.toLowerCase()}ActionButton`]">
+                <i class="action"></i>
+              </button>
+              <i v-else class="action" :class="`${investigatorClass.toLowerCase()}Action`"></i>
+              </template>
+            </span>
+            <template v-if="debug.active">
+              <button
+                @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
+                @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
+              >+</button>
             </template>
-          </span>
-          <template v-if="debug.active">
+            <AbilityButton
+              v-for="ability in abilities"
+              :key="ability.index"
+              :ability="ability.contents"
+              :game="game"
+              @click="$emit('choose', ability.index)"
+              />
             <button
-              @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
-              @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
-            >+</button>
-          </template>
-          <AbilityButton
-            v-for="ability in abilities"
-            :key="ability.index"
-            :ability="ability.contents"
-            :game="game"
-            @click="$emit('choose', ability.index)"
-            />
-          <button
-          :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
-          :disabled="endTurnAction == -1"
-          @click="$emit('choose', endTurnAction)"
-          >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
+            :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
+            :disabled="endTurnAction == -1"
+            @click="$emit('choose', endTurnAction)"
+            >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
 
-          <button
-            v-if="devoured && devoured.length > 0"
-            @click="showDevoured"
-          >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
+            <button
+              v-if="devoured && devoured.length > 0"
+              @click="showDevoured"
+            >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
 
-          <button
-            :disabled="skipTriggersAction == -1"
-            @click="$emit('choose', skipTriggersAction)"
-            class="skip-triggers-button"
-          >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
+            <button
+              :disabled="skipTriggersAction == -1"
+              @click="$emit('choose', skipTriggersAction)"
+              class="skip-triggers-button"
+            >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
 
-          <button
-            v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
-            @click="showModifiers = true"
-            >Show Modifiers</button>
+            <button
+              v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
+              @click="showModifiers = true"
+              >Show Modifiers</button>
 
-          <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
+            <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
 
-          <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+            <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+          </div>
           <Draw
             v-if="isMobile"
             :game="game"
@@ -720,6 +768,22 @@ i.action {
   display: flex;
 }
 
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    :deep(button) {
+      width: 100%;
+      height: fit-content;
+      font-size: small;
+    }
+  }
+}
+
 .player-buttons {
   margin-left: 10px;
   display: flex;
@@ -732,13 +796,8 @@ i.action {
   @media (max-width: 800px) and (orientation: portrait) {
     margin-left: 0;
     flex-direction: row;
+    align-items: flex-start;
     gap: 8px;
-    height: calc(var(--pool-token-width)*1.2);
-    overflow: hidden;
-    :deep(button) {
-      width: calc(var(--pool-token-width) * 1.2);
-      font-size:small;
-    }
     :deep(img) {
       width: calc(var(--pool-token-width) * 1.2);
     }
@@ -764,6 +823,21 @@ i.action {
 
 .investigator-image {
   position: relative;
+}
+
+.blanked-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 22px;
+  width: 24px;
+  height: 24px;
+  color: #e05252;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
+  cursor: default;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 img.card {

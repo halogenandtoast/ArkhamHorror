@@ -3,7 +3,6 @@ module Arkham.Act.Cards.CurtainCall (curtainCall) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Action qualified as Action
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
@@ -23,7 +22,7 @@ instance HasAbilities CurtainCall where
         (proxied (LocationMatcherSource $ locationIs Cards.lobby) attrs)
         1
         (Here <> not_ (exists $ InPlayEnemy $ enemyIs Enemies.theManInThePallidMask))
-        $ ActionAbility [Action.Resign] Nothing (ActionCost 1)
+        $ ActionAbility #resign Nothing (ActionCost 1)
     , restricted attrs 2 (exists $ LocationWithoutHorror <> connectedTo LocationWithAnyHorror)
         $ forced
         $ RoundEnds #when

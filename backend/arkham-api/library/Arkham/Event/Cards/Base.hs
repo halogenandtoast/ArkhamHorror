@@ -5,7 +5,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import Arkham.Criteria (Criterion, exists)
+import Arkham.Criteria (Criterion, youExist)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Id
 import Arkham.Matcher
@@ -34,7 +34,7 @@ signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
 
 canDiscoverCluesAtYourLocation :: Criterion
 canDiscoverCluesAtYourLocation =
-  Criteria.Criteria
-    [ exists $ YourLocation <> LocationWithAnyClues
-    , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
-    ]
+  youExist
+    $ InvestigatorCanDiscoverCluesAt
+    $ YourLocation
+    <> oneOf [LocationWithAnyClues, LocationWithConcealedCard]

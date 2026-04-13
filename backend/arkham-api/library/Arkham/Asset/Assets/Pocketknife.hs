@@ -16,7 +16,7 @@ instance HasAbilities Pocketknife where
   getAbilities (Pocketknife a) =
     [ skillTestAbility
         $ controlled_ a 1
-        $ ActionAbility [#fight] (Just $ OrAbilitySkills [#combat, #agility]) (ActionCost 1)
+        $ ActionAbility #fight (Just $ OrAbilitySkills [#combat, #agility]) (ActionCost 1)
     ]
 
 instance RunMessage Pocketknife where

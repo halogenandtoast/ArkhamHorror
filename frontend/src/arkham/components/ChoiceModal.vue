@@ -114,7 +114,7 @@ const title = computed(() => {
 
   if (question.value && question.value.tag === QuestionType.READ) {
     if (question.value.flavorText.title) {
-      return question.value.flavorText.title
+      return handleEmbeddedI18n(question.value.flavorText.title, t)
     }
 
     return t("Story")

@@ -149,11 +149,11 @@ instance RunMessage TheInnsmouthConspiracy where
 
       removeCampaignCard Assets.thomasDawsonSoldierInANewWar
       withOwner Assets.elinaHarperKnowsTooMuch \iid -> do
+        removeCampaignCard Assets.elinaHarperKnowsTooMuch
         chooseOneM iid do
           labeled "Add Elina Harper to your deck" do
             addCampaignCardToDeck iid DoNotShuffleIn Assets.elinaHarperKnowsTooMuch
-          labeled "Do not add Elina Harper to your deck" do
-            removeCampaignCard Assets.elinaHarperKnowsTooMuch
+          labeled "Do not add Elina Harper to your deck" nothing
 
       nextCampaignStep
       pure c

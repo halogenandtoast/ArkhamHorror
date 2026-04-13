@@ -166,27 +166,27 @@ instance RunMessage RiddlesAndRain where
           push R4
         Resolution 1 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
-          markTime 1
           resolutionWithXp "resolution1" $ allGainXp' attrs
           chooseBearer Keys.theEyeOfRavens
+          markTime 1
           endOfScenario
         Resolution 2 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
-          markTime 1
           resolutionWithXp "resolution2" $ allGainXp' attrs
           chooseBearer Keys.theEyeOfRavens
+          markTime 1
           endOfScenario
         Resolution 3 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
-          markTime 1
           setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution3" $ allGainXp' attrs
+          markTime 1
           endOfScenario
         Resolution 4 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
-          markTime 2
           setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManPurposeUnknown
           resolutionWithXp "resolution4" $ allGainXp' attrs
+          markTime 2
           endOfScenario
         _ -> error "invalid resolution"
       pure s

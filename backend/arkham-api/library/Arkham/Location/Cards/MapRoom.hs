@@ -23,14 +23,18 @@ instance HasAbilities MapRoom where
 
 instance RunMessage MapRoom where
   runMessage msg l@(MapRoom attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      doStep 3 msg
+      record TheTeamReadTheMap
+      pure l
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       ls <- select $ not_ "Hidden Tunnel" <> oneOf [UnrevealedLocation, LocationWithAnyClues]
-      chooseNM iid 3 $ targets ls \lid -> do
+      chooseTargetM iid ls \lid -> do
         reveal lid
         -- Need to delay discovering until after the location has been revealed
         -- otherwise it will be rejected
-        forTarget lid msg
-      record TheTeamReadTheMap
+        forTarget lid msg'
+      doStep (n - 1) msg'
       pure l
     ForTarget (LocationTarget lid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
       discoverAt NotInvestigate iid (attrs.ability 1) 1 lid

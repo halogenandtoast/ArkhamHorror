@@ -30,6 +30,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Helpers.CombatTarget
 import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
@@ -263,7 +264,7 @@ hasFightActions
 hasFightActions iid requestor window windows' = do
   abilities <- selectMap (setRequestor requestor) (#basic <> #fight <> AbilityWindow window)
   andM
-    [ selectAny (CanFightEnemy (toSource requestor))
+    [ hasFightTargets (toSource requestor) iid
     , anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
     ]
 
@@ -277,7 +278,7 @@ hasEvadeActions
 hasEvadeActions iid requestor window windows' = do
   abilities <- selectMap (setRequestor requestor) (#basic <> #evade <> AbilityWindow window)
   andM
-    [ selectAny (CanEvadeEnemy (toSource requestor))
+    [ hasEvadeTargets (toSource requestor) iid
     , anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1) abilities
     ]
 

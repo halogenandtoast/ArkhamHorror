@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.Actions (singleAction)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Matcher
@@ -68,14 +69,14 @@ instance Monad ActionAbilityBuilder where
 
 buildActionAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> ActionAbilityBuilder () -> Ability
-buildActionAbility entity idx body = snd $ runAbilityBuilder body $ mkAbility entity idx $ ActionAbility [] Nothing (ActionCost 1)
+buildActionAbility entity idx body = snd $ runAbilityBuilder body $ mkAbility entity idx $ ActionAbility mempty Nothing (ActionCost 1)
 
 addAction :: Action -> ActionAbilityBuilder ()
 addAction a = ActionAbilityBuilder $ \ab ->
   let
     abilityType' =
       case abilityType ab of
-        abt@ActionAbility { actions } -> abt { actions = actions <> [a] }
+        abt@ActionAbility {actions} -> abt {actions = actions <> singleAction a}
         x -> x
    in
     ((), ab {Arkham.Ability.Types.abilityType = abilityType'})

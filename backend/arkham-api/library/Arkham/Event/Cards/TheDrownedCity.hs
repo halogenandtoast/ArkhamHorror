@@ -72,7 +72,7 @@ correlateAllItsContents =
   (event "11040" "Correlate All Its Contents" 1 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     }
 
 cosmicRevelation1 :: CardDef
@@ -99,7 +99,7 @@ wheresTheParty =
   (event "11053" "\"Where's the party?\"" 0 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick, Improvised]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria = Just $ can.target.encounterDeck You
     }
 
@@ -121,7 +121,7 @@ bumsRush =
   (event "11055" "Bum's Rush" 2 Rogue)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Tactic, Trick]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     }
 
 intimidation :: CardDef
@@ -129,7 +129,7 @@ intimidation =
   (event "11056" "Intimidation" 3 Rogue)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Tactic]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithRemainingHealth (atLeast 1)
     }
 
@@ -179,7 +179,7 @@ whispersOfDoom =
   (event "11072" "Whispers of Doom" 3 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell, Cursed]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdCriteria = Just $ exists $ at_ YourLocation <> NonWeaknessEnemy
     }
 
@@ -222,7 +222,7 @@ catch =
   (event "11086" "\"Catch!\"" 0 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdAdditionalCost =
         Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
     }
@@ -232,7 +232,7 @@ unconventionalMethod =
   (event "11087" "Unconventional Method" 0 Survivor)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight, Tactic]
-    , cdActions = CardAction #investigate
+    , cdActions = #investigate
     , cdAdditionalCost =
         Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
     }
@@ -263,7 +263,7 @@ improvisedWeapon2 :: CardDef
 improvisedWeapon2 =
   (event "11092" "Improvised Weapon" 1 Survivor)
     { cdCardTraits = setFromList [Tactic, Improvised]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdPlayableFromDiscard = True
     , cdLevel = Just 2
     }
@@ -298,7 +298,7 @@ nameYourPrice2 =
     , cdCardTraits = setFromList [Favor]
     , cdCriteria = Just $ Criteria.canDamageEnemyAt ThisCard YourLocation
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Socialite]]
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     , cdLevel = Just 2
     }
 
@@ -324,7 +324,7 @@ bloodOfKnYan3 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Clairvoyant, Hunter, Sorcerer]]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdLevel = Just 3
     }
 
@@ -335,7 +335,7 @@ motivationalSpeech4 =
     , cdCardTraits = setFromList [Spirit]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Civic, Performer, Socialite]]
     , cdLevel = Just 4
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     }
 
 dimensionalVortex5 :: CardDef

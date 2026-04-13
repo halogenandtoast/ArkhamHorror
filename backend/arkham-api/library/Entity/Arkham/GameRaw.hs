@@ -14,12 +14,13 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental (ToBaseId (..))
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
+import Entity
 import Entity.Arkham.Game
 import Json
 import Orphans ()
 
-mkPersist
-  sqlSettings
+mkEntity
+  $(discoverEntities)
   [persistLowerCase|
 ArkhamGameRaw sql=arkham_games
   Id ArkhamGameId

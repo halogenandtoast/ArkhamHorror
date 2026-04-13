@@ -839,7 +839,7 @@ instance RunMessage ChaosBag where
             pure token'
           -- let tokens' = filter (not . chaosTokenCancelled) tokens''
 
-          -- If we are dealing with the skill test, then the after window will be managed by it
+          -- If we are dealing with the skill test, then the when/after windows will be managed by it
           let
             sourceIsSkillTest = case source of
               SkillTestSource _ -> True
@@ -1025,9 +1025,18 @@ instance RunMessage ChaosBag where
                 & (setAsideChaosTokensL %~ delete token)
                 & (revealedChaosTokensL %~ delete token)
     RemoveAllChaosTokens face ->
-      pure
-        $ c
-        & (chaosTokensL %~ filter ((/= face) . chaosTokenFace))
-        & (setAsideChaosTokensL %~ filter ((/= face) . chaosTokenFace))
-        & (revealedChaosTokensL %~ filter ((/= face) . chaosTokenFace))
+      case filter ((== face) . chaosTokenFace) chaosBagChaosTokens of
+        [] -> pure c
+        xs -> do
+          let shouldReturnToPool = face `elem` [#bless, #curse, #frost]
+          if shouldReturnToPool
+            then do
+              push $ ReturnChaosTokensToPool xs
+              pure c
+            else
+              pure
+                $ c
+                & (chaosTokensL %~ filter (`notElem` xs))
+                & (setAsideChaosTokensL %~ filter (`notElem` xs))
+                & (revealedChaosTokensL %~ filter (`notElem` xs))
     _ -> pure c

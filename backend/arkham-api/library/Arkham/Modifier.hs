@@ -145,6 +145,7 @@ data ModifierType
   | CancelAttacksByEnemies Card EnemyMatcher
   | CancelEffects
   | CancelSkills
+  | CancelEachCommittedCard
   | Cancelled
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotAssignDamage InvestigatorId

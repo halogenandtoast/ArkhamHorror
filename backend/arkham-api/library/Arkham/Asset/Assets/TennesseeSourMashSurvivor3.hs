@@ -41,6 +41,6 @@ instance RunMessage TennesseeSourMashSurvivor3 where
         Just (EnemyTarget eid) -> do
           nonElite <- eid <=~> NonEliteEnemy
           when nonElite $ push $ EnemyEvaded iid eid
-        _ -> error "impossible"
+        _ -> error "TennesseeSourMashSurvivor3: impossible"
       pure a
     _ -> TennesseeSourMashSurvivor3 <$> runMessage msg attrs

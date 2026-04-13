@@ -62,7 +62,7 @@ instance RunMessage TheLightOfPharos where
             cards <- withReducedCost iid attrs 3 do
               filterM
                 (getIsPlayable iid GameSource (UnpaidCost NoAction) (defaultWindows iid))
-                =<< select (inHandOf NotForPlay iid)
+                =<< select (inHandOf ForPlay iid)
 
             chooseTargetM iid cards \card -> do
               reduceCostOf attrs card 3

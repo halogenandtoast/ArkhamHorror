@@ -176,6 +176,10 @@ instance WithTrait LocationMatcher where
   withTrait = LocationWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait TreacheryMatcher where
+  withTrait = TreacheryWithTrait
+  {-# INLINE withTrait #-}
+
 -- ** Investigator Helpers **
 
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher
@@ -447,6 +451,9 @@ inDiscardOf = InDiscardOf . InvestigatorWithId . asId
 
 basic :: CardMatcher -> ExtendedCardMatcher
 basic = BasicCardMatch
+
+instance HasField "level" (CardMatcher -> ExtendedCardMatcher) (Int -> ExtendedCardMatcher) where
+  getField f n = f (CardWithLevel n)
 
 basicCardIs :: HasCardCode a => a -> ExtendedCardMatcher
 basicCardIs = basic . cardIs

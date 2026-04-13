@@ -28,7 +28,7 @@ instance HasAbilities InnsmouthJailInTooDeep where
           $ ResourceCost 3
       , groupLimit PerGame
           $ restricted attrs 2 (Here <> youExist (InvestigatorWithKey BlackKey))
-          $ FastAbility' Free [#parley]
+          $ FastAbility' Free #parley
       ]
 
 instance RunMessage InnsmouthJailInTooDeep where

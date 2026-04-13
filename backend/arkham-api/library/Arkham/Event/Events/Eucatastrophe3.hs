@@ -1,9 +1,11 @@
-module Arkham.Event.Events.Eucatastrophe3 (eucatastrophe3, Eucatastrophe3 (..)) where
+module Arkham.Event.Events.Eucatastrophe3 (eucatastrophe3) where
 
 import Arkham.ChaosToken
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Window (getChaosToken)
+import Arkham.Helpers.ChaosToken (matchChaosToken)
+import Arkham.Helpers.Window (getChaosTokens)
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Strategy
 import Arkham.Taboo
@@ -23,7 +25,9 @@ instance RunMessage Eucatastrophe3 where
         $ Eucatastrophe3
         $ attrs'
         & if tabooed TabooList19 attrs' then afterPlayL .~ RemoveThisFromGame else id
-    InvestigatorPlayEvent _ eid _ (getChaosToken -> token) _ | eid == toId attrs -> do
-      chaosTokenEffect attrs token $ ChaosTokenFaceModifier [ElderSign]
+    InvestigatorPlayEvent iid eid _ (getChaosTokens -> tokens) _ | eid == toId attrs -> do
+      valids <- tokens & filterM \t -> matchChaosToken iid t $ oneOf [#negative, WithAutoFailModifier]
+      chooseOrRunOneM iid do
+        targets valids \token -> chaosTokenEffect attrs token $ ChaosTokenFaceModifier [ElderSign]
       pure e
     _ -> Eucatastrophe3 <$> liftRunMessage msg attrs

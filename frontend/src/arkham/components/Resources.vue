@@ -300,12 +300,16 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
 
 @media (max-width: 800px) and (orientation: portrait) {
   .resources {
-    gap: 8px;
+    gap: 4px;
     margin-top: auto;
     width: fit-content;
+    align-items: center;
   }
   .resources :deep(.poolItem) {
     width: calc(var(--pool-token-width) * 1.2);
+    height: calc(var(--pool-token-width) * 1.2);
+    font-size: 0.9em;
+    overflow: hidden;
   }
 }
 

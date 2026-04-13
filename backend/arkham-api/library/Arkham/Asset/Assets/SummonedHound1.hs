@@ -2,15 +2,16 @@ module Arkham.Asset.Assets.SummonedHound1 (summonedHound1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Actions (orActions)
 import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
-import Arkham.Investigate.Types qualified as Investigate
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.CombatTarget
+import Arkham.Helpers.Investigator (getMaybeLocation)
+import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
+import Arkham.Investigate.Types
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype SummonedHound1 = SummonedHound1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,43 +22,24 @@ summonedHound1 = assetWith SummonedHound1 Cards.summonedHound1 $ healthL ?~ 3
 
 instance HasAbilities SummonedHound1 where
   getAbilities (SummonedHound1 attrs) =
-    [ controlledAbility attrs 1 (Negate DuringAction <> DuringTurn You)
-        $ FastAbility' (exhaust attrs) [#fight]
-    , controlledAbility attrs 1 (Negate DuringAction <> DuringTurn You)
-        $ FastAbility' (exhaust attrs) [#investigate]
+    [ controlled attrs 1 (not_ DuringAction <> DuringTurn You)
+        $ FastAbility' (exhaust attrs) (orActions [#fight, #investigate])
     ]
 
 instance RunMessage SummonedHound1 where
-  runMessage msg a@(SummonedHound1 attrs) = case msg of
+  runMessage msg a@(SummonedHound1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) _ -> do
-      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
-      player <- getPlayer iid
-      mLocation <- field InvestigatorLocation iid
       sid <- getRandom
-      doFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      mDoInvestigate :: Maybe Investigate.Investigate <- case mLocation of
-        Just lid -> do
-          canInvestigate <- lid <=~> InvestigatableLocation
-          doInvestigate <- mkInvestigate sid iid (toAbilitySource attrs 1)
-          pure $ guard canInvestigate $> doInvestigate
-        Nothing -> pure Nothing
-
-      case (fightableEnemies, mDoInvestigate) of
-        ([], Nothing) -> error "invalid call"
-        ([], Just doInvestigate) -> do
-          enabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
-          pushAll [enabled, toMessage doInvestigate]
-        (_ : _, Nothing) -> do
-          enabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
-          pushAll [enabled, doFight]
-        (_ : _, Just doInvestigate) -> do
-          intellectEnabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
-          combatEnabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
-          push
-            $ chooseOne
-              player
-              [ Label "Investigate" [intellectEnabled, toMessage doInvestigate]
-              , Label "Fight" [combatEnabled, doFight]
-              ]
+      canFight <- hasFightTargets (toSource attrs) iid
+      canInvestigate <- maybe (pure False) (`matches` InvestigatableLocation) =<< getMaybeLocation iid
+      chooseOrRunOneM iid do
+        when canFight do
+          labeled "Fight" do
+            skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
+            chooseFightEnemyEdit sid iid (attrs.ability 1) \cf -> cf {chooseFightIsAction = True}
+        when canInvestigate do
+          labeled "Investigate" do
+            skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
+            investigateEdit_ sid iid (attrs.ability 1) \i -> i {investigateIsAction = True}
       pure a
-    _ -> SummonedHound1 <$> runMessage msg attrs
+    _ -> SummonedHound1 <$> liftRunMessage msg attrs

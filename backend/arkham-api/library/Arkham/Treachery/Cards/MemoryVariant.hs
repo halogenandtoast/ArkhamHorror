@@ -2,24 +2,18 @@ module Arkham.Treachery.Cards.MemoryVariant (memoryVariant) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Helpers
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Window (getPlayedEvent)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Strategy
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype MemoryVariant = MemoryVariant TreacheryAttrs
-  deriving anyclass IsTreachery
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 memoryVariant :: TreacheryCard MemoryVariant
 memoryVariant = treachery MemoryVariant Cards.memoryVariant
-
-instance HasModifiersFor MemoryVariant where
-  getModifiersFor (MemoryVariant a) = do
-    modifySelect a AnyEvent [SetAfterPlay DeferDiscard]
 
 instance HasAbilities MemoryVariant where
   getAbilities (MemoryVariant a) =
@@ -32,7 +26,9 @@ instance RunMessage MemoryVariant where
     Revelation _iid (isSource attrs -> True) -> do
       place attrs NextToAgenda
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 (getPlayedEvent -> eid) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 ws@(getPlayedEvent -> eid) _ -> do
+      push $ RemoveEvent eid
+      cancelWindowBatch ws
       hollow iid =<< fetchCard eid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

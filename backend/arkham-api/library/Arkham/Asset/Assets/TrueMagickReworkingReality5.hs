@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -26,11 +27,20 @@ newtype Metadata = Metadata {currentAsset :: Maybe Asset}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TrueMagickReworkingReality5 = TrueMagickReworkingReality5 (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueMagickReworkingReality5 :: AssetCard TrueMagickReworkingReality5
 trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metadata Nothing)) Cards.trueMagickReworkingReality5
+
+instance HasModifiersFor TrueMagickReworkingReality5 where
+  getModifiersFor (TrueMagickReworkingReality5 (a `With` meta)) = do
+    for_ (currentAsset meta) \b -> do
+      let selfTraits = cdCardTraits (toCardDef a)
+      let otherTraits = cdCardTraits (toCardDef b)
+      let removals = toList $ selfTraits `difference` otherTraits
+      let additions = toList $ otherTraits `difference` selfTraits
+      modifySelf a $ map AddTrait additions <> map RemoveTrait removals
 
 -- This tooltip is handled specially
 instance HasAbilities TrueMagickReworkingReality5 where
@@ -38,7 +48,7 @@ instance HasAbilities TrueMagickReworkingReality5 where
     [ withTooltip "Use True Magick"
         $ doesNotProvokeAttacksOfOpportunity
         $ controlled attrs 1 HasTrueMagick aform
-    | aform <- [ActionAbility [] Nothing mempty, FastAbility Free, freeReaction AnyWindow]
+    | aform <- [ActionAbility mempty Nothing mempty, FastAbility Free, freeReaction AnyWindow]
     ]
   getAbilities (TrueMagickReworkingReality5 (With _ (Metadata (Just inner)))) = getAbilities inner
 
@@ -50,9 +60,10 @@ instance RunMessage TrueMagickReworkingReality5 where
       hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))
       choices <- forMaybeM hand \card -> do
-        let a = overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
-                      $ createAsset card
-                      $ unsafeFromCardId card.id
+        let a =
+              overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                $ createAsset card
+                $ unsafeFromCardId card.id
         tmpAbilities <-
           getGame >>= runReaderT do
             local (entitiesL %~ addEntity a) do

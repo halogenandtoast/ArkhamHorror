@@ -51,7 +51,7 @@ instance RunMessage RitualOfLifeAndDeath where
           flipOver lead amaranth
           locations <- select $ not_ $ LocationWithInvestigator Anyone
           case nonEmpty locations of
-            Nothing -> error "impossible"
+            Nothing -> error "RitualOfLifeAndDeath: impossible"
             Just xs -> sample xs >>= enemyMoveTo attrs amaranth
       shuffleSetAsideIntoEncounterDeck $ cardIs Enemies.ancientRaider
       advanceActDeck attrs

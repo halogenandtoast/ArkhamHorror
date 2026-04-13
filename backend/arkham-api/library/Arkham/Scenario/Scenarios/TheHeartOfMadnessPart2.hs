@@ -287,4 +287,10 @@ instance RunMessage TheHeartOfMadnessPart2 where
             PerformIntro -> modify $ overAttrs $ standaloneCampaignLogL . optionsL %~ insertSet IncludePartners
             IncludePartners -> pure ()
             _ -> error $ "Unhandled option: " <> show option
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> drawTekelili iid Tablet 1
+        ElderThing | n >= 3 -> placeDoomOnAgendaAndCheckAdvance 1
+        _ -> pure ()
+      pure s
     _ -> TheHeartOfMadnessPart2 <$> liftRunMessage msg attrs

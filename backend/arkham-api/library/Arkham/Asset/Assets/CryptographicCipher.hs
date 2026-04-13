@@ -21,7 +21,7 @@ instance HasAbilities CryptographicCipher where
     [ withTooltip
         "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets +1 shroud for this investigation."
         $ restricted x 1 ControlsThis
-        $ FastAbility' (assetUseCost x Secret 1 <> exhaust x) [#investigate]
+        $ FastAbility' (assetUseCost x Secret 1 <> exhaust x) #investigate
     , withTooltip
         "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets -2 shroud for this investigation."
         $ investigateAbility x 2 (assetUseCost x Secret 1 <> exhaust x) ControlsThis

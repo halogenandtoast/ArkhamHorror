@@ -292,6 +292,7 @@ instance RunMessage TheDoomOfEztli where
           resolution "resolution4"
           pushAll
             $ DoStep 4 msg
+            : HandleKilledOrInsaneInvestigators
             : ResetGame
             : [StandaloneSetup | standalone]
               <> [ ChooseLeadInvestigator

@@ -197,7 +197,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
       else case eventPlacement of
         Limbo -> case afterPlay of
           PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
-          DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
+          DiscardThis -> Lifted.batched \_ -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
           DeferDiscard -> pushAll [after, toDiscardBy eventController GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)

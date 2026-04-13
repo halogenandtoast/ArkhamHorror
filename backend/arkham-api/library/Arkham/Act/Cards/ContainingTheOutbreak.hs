@@ -26,7 +26,7 @@ instance HasAbilities ContainingTheOutbreak where
           (proxied (LocationMatcherSource InfestedLocation) attrs)
           1
           Here
-        $ ActionAbility [] Nothing (ActionCost 1 <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation))
+        $ ActionAbility mempty Nothing (ActionCost 1 <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation))
     , restrictedAbility attrs 2 (not_ $ exists InfestedLocation)
         $ Objective
         $ ForcedAbility AnyWindow

@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.StunningBlow (stunningBlow) where
 
 import Arkham.Action
 import Arkham.Helpers.SkillTest
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -16,7 +17,10 @@ stunningBlow = skill StunningBlow Cards.stunningBlow
 instance RunMessage StunningBlow where
   runMessage msg s@(StunningBlow attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      additionalSkillTestOption "Stunning Blow" do
-        withSkillTestEnemyTarget (automaticallyEvadeEnemy iid)
+      withSkillTestEnemyTarget \eid ->
+        additionalSkillTestOptionEdit
+          (optionWhenExists $ InPlayEnemy $ EnemyWithId eid <> enemyCanBeEvadedBy attrs)
+          "Stunning Blow"
+          (automaticallyEvadeEnemy iid eid)
       pure s
     _ -> StunningBlow <$> liftRunMessage msg attrs

@@ -2,7 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Cost, costDecoder } from '@/arkham/types/Cost';
-import { Action, actionDecoder } from '@/arkham/types/Action';
+import { Action, actionDecoder, Actions, actionsDecoder } from '@/arkham/types/Action';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 
 export type ServitorAbility = {
@@ -64,7 +64,7 @@ export const constantReactionDecoder = JsonDecoder.object<ConstantReaction>({
 
 export type ActionAbility = {
   tag: "ActionAbility"
-  actions: Action[]
+  actions: Actions
   skillTypes: AbilitySkills | null
   cost: Cost
 }
@@ -86,7 +86,7 @@ export const abilitySkillsDecoder: JsonDecoder.Decoder<AbilitySkills> = JsonDeco
 
 export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
   tag: JsonDecoder.literal("ActionAbility"),
-  actions: JsonDecoder.array(actionDecoder, 'Action[]'),
+  actions: actionsDecoder,
   skillTypes: JsonDecoder.nullable(JsonDecoder.lazy<AbilitySkills>(() => abilitySkillsDecoder)),
   cost: costDecoder,
 }, 'ActionAbility')

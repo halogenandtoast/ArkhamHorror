@@ -13,6 +13,7 @@ import KeysStatus from '@/arkham/components/TheScarletKeys/KeysStatus.vue'
 import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue'
 import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
+import type { XpBreakdownStep } from '@/arkham/types/Xp'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
@@ -133,12 +134,27 @@ const remembered = computed(() => {
   })
 })
 
-const breakdowns =
-  props.game.campaign?.xpBreakdown ||
-  (props.game.scenario && props.game.scenario.xpBreakdown
-    ? [[{ tag: 'ScenarioStep', contents: props.game.scenario.id } as any, props.game.scenario.xpBreakdown]]
-    : undefined) ||
-  []
+const allGameInvestigators = computed(() => ({
+  ...props.game.investigators,
+  ...props.game.killedInvestigators,
+}))
+
+const breakdowns = computed<XpBreakdownStep[]>(() => {
+  if (props.game.campaign?.xpBreakdown) {
+    return props.game.campaign.xpBreakdown
+  }
+  if (props.game.scenario?.xpBreakdown) {
+    return [{
+      step: { tag: 'ScenarioStep', contents: props.game.scenario.id } as any,
+      investigators: Object.keys(props.game.investigators),
+      entries: props.game.scenario.xpBreakdown as any,
+    }]
+  }
+  return []
+})
+
+const breakdownInvestigators = (breakdown: XpBreakdownStep) =>
+  breakdown.investigators.map(iid => allGameInvestigators.value[iid]).filter(Boolean)
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
@@ -602,14 +618,14 @@ const mapData = computed(() => {
       </div>
 
       <XpBreakdown
-        v-for="([step, entries], idx) in breakdowns"
+        v-for="(breakdown, idx) in breakdowns"
         :key="idx"
         :game="game"
-        :step="step"
-        :entries="entries"
+        :step="breakdown.step"
+        :entries="breakdown.entries"
         :playerId="playerId"
         :showAll="true"
-        :investigators="investigators"
+        :investigators="breakdownInvestigators(breakdown)"
         :defaultCollapsed="idx > 0"
       />
     </div>

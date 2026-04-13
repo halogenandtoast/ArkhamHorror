@@ -18,7 +18,7 @@ boundForTheHorizon2 = asset BoundForTheHorizon2 Cards.boundForTheHorizon2
 instance HasAbilities BoundForTheHorizon2 where
   getAbilities (BoundForTheHorizon2 x) =
     [ controlled x 1 (DuringTurn You <> youExist (InvestigatorCanMoveTo (x.ability 1) AccessibleLocation))
-        $ FastAbility' (exhaust x <> HandDiscardCost 1 #any) [#move]
+        $ FastAbility' (exhaust x <> HandDiscardCost 1 #any) #move
     ]
 
 instance RunMessage BoundForTheHorizon2 where

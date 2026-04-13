@@ -463,6 +463,15 @@ button {
   }
 }
 
+.free-icon {
+  &:before {
+    text-transform: none;
+    font-family: "arkham";
+    content: "\0075";
+    margin-right: 5px;
+  }
+}
+
 .reaction-icon {
   &:before {
     text-transform: none;
@@ -575,7 +584,7 @@ button {
   
   --pool-token-width: min(30px, 4vw);
   @media (max-width: 800px) and (orientation: portrait) {
-    --pool-token-width: 30px;
+    --pool-token-width: 24px;
   }
 }
 

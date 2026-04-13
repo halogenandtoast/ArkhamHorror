@@ -78,7 +78,7 @@ interrogate =
             TabooList21
             (exists $ NonEliteEnemy <> EnemyAt YourLocation <> CanParleyEnemy You)
             (exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
-    , cdActions = CardAction #parley
+    , cdActions = #parley
     }
 
 delayTheInevitable :: CardDef
@@ -146,7 +146,7 @@ actOfDesperation =
   (event "05037" "Act of Desperation" 0 Survivor)
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Tactic, Gambit]
-    , cdActions = CardAction #fight
+    , cdActions = #fight
     , cdAdditionalCost =
         Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot HandSlot)
     }
@@ -184,7 +184,7 @@ banish1 =
   (event "05113" "Banish" 2 Mystic)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = singleton Spell
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 1
     , cdCriteria = Just $ exists $ NonEliteEnemy <> CanEvadeEnemy ThisCard
     }
@@ -256,7 +256,10 @@ knowledgeIsPower =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ exists (AssetControlledBy You <> oneOf [AssetWithTrait Tome, AssetWithTrait Spell])
+            [ exists
+                $ AssetControlledBy You
+                <> oneOf [#tome, #spell]
+                <> AssetWithPerformableAbility (oneOf [AbilityIsActionAbility, AbilityIsFastAbility]) [IgnoreAllCosts]
             , Criteria.ExtendedCardExists
                 $ InHandOf NotForPlay You
                 <> basic (mapOneOf CardWithTrait [Tome, Spell] <> #asset)
@@ -271,7 +274,7 @@ decoy =
   (event "05234" "Decoy" 2 Rogue)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Favor, Service]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
@@ -363,7 +366,7 @@ baitAndSwitch3 =
   (event "05282" "Bait and Switch" 1 Survivor)
     { cdSkills = [#intellect, #agility, #agility]
     , cdCardTraits = setFromList [Trick]
-    , cdActions = CardAction #evade
+    , cdActions = #evade
     , cdLevel = Just 3
     , cdCriteria =
         Just

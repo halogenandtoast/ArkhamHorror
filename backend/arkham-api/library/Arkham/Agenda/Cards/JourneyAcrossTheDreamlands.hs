@@ -1,7 +1,6 @@
 module Arkham.Agenda.Cards.JourneyAcrossTheDreamlands (journeyAcrossTheDreamlands) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
@@ -25,7 +24,7 @@ instance HasAbilities JourneyAcrossTheDreamlands where
     [ withTooltip
         "_Resign_. Venturing into the unknown has become too dangerous, so you return to safety with the information you've gathered."
         $ restrictedAbility x 1 (exists $ You <> at_ (withTrait Port))
-        $ ActionAbility [Action.Resign] Nothing
+        $ ActionAbility #resign Nothing
         $ ActionCost 1
     ]
 

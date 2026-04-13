@@ -24,6 +24,7 @@ data ChooseFight = ChooseFight
   , chooseFightTarget :: Maybe Target
   , chooseFightSkillType :: SkillType
   , chooseFightIsAction :: Bool
+  , chooseFightPayCost :: Bool
   , chooseFightOnlyChoose :: Bool
   , chooseFightOverride :: Bool
   , chooseFightSkillTest :: SkillTestId
@@ -36,6 +37,9 @@ instance HasField "investigator" ChooseFight InvestigatorId where
 
 instance HasField "isAction" ChooseFight Bool where
   getField = chooseFightIsAction
+
+instance HasField "payCost" ChooseFight Bool where
+  getField = chooseFightPayCost
 
 instance HasField "skillType" ChooseFight SkillType where
   getField = chooseFightSkillType
@@ -66,4 +70,19 @@ instance WithTarget ChooseFight where
   setTarget t i = i {chooseFightTarget = Just (toTarget t)}
 
 $(deriveJSON defaultOptions ''ChooseFightDifficulty)
-$(deriveJSON defaultOptions ''ChooseFight)
+$(deriveToJSON defaultOptions ''ChooseFight)
+
+instance FromJSON ChooseFight where
+  parseJSON = withObject "ChooseFight" \o -> do
+    chooseFightInvestigator <- o .: "chooseFightInvestigator"
+    chooseFightEnemyMatcher <- o .: "chooseFightEnemyMatcher"
+    chooseFightSource <- o .: "chooseFightSource"
+    chooseFightTarget <- o .:? "chooseFightTarget"
+    chooseFightSkillType <- o .: "chooseFightSkillType"
+    chooseFightIsAction <- o .: "chooseFightIsAction"
+    chooseFightPayCost <- o .:? "chooseFightPayCost" .!= chooseFightIsAction
+    chooseFightOnlyChoose <- o .: "chooseFightOnlyChoose"
+    chooseFightOverride <- o .: "chooseFightOverride"
+    chooseFightSkillTest <- o .: "chooseFightSkillTest"
+    chooseFightDifficulty <- o .: "chooseFightDifficulty"
+    pure ChooseFight {..}

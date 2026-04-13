@@ -3,6 +3,7 @@ module Arkham.Helpers.Ability where
 import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
+import Arkham.Actions
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
@@ -103,13 +104,15 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
     Objective aType -> go aType
     DelayedAbility aType -> go aType
     ForcedWhen _ aType -> go aType
-    ActionAbility {actions} -> if null actions then pure True else anyM (canDoAction iid ab) actions
-    FastAbility' _ [] -> pure True
-    FastAbility' _ actions -> anyM (canDoAction iid ab) actions
+    ActionAbility {actions} ->
+      let as = actionsToList actions
+      in if null as then pure True else anyM (canDoAction iid ab) as
+    FastAbility' _ (AndActions []) -> pure True
+    FastAbility' _ actions -> anyM (canDoAction iid ab) (actionsToList actions)
     CustomizationReaction {} -> pure True
     ConstantReaction {} -> pure True
-    ReactionAbility _ _ [] -> pure True
-    ReactionAbility _ _ actions -> anyM (canDoAction iid ab) actions
+    ReactionAbility _ _ actions | null (actionsToList actions) -> pure True
+    ReactionAbility _ _ actions -> anyM (canDoAction iid ab) (actionsToList actions)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
@@ -323,15 +326,15 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     ServitorAbility _ -> pure True
     Haunted -> pure True
     Cosmos -> pure True
-    ActionAbility actions _ cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
-    ReactionAbility _ cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
+    ActionAbility actions _ cost -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
+    ReactionAbility _ cost actions -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
-    FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
+    FastAbility' cost actions -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
     ForcedAbilityWithCost _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
-    AbilityEffect actions cost -> getCanAffordCost iid (toSource a) actions ws (f cost)
+    AbilityEffect actions cost -> getCanAffordCost iid (toSource a) (actionsToList actions) ws (f cost)
     Objective inner -> go f inner
     DelayedAbility inner -> go f inner
     ForcedWhen _ aType -> go f aType

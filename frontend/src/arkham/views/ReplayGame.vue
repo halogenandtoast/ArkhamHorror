@@ -89,6 +89,7 @@ watch (play, (newPlay) => {
     clearInterval(interval.value)
   }
 })
+onUnmounted(() => clearInterval(interval.value))
 
 </script>
 

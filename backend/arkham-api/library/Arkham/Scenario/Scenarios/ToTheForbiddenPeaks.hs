@@ -98,7 +98,9 @@ instance RunMessage ToTheForbiddenPeaks where
 
       unless (eliyahIsAlive && woodenSledgeRecovered) do
         whenM hasRemainingFrostTokens $ addChaosToken #frost
-
+      doStep 1 PreScenarioSetup
+      pure s
+    DoStep 1 PreScenarioSetup -> do
       claypoolIsAlive <- getPartnerIsAlive Assets.averyClaypoolAntarcticGuide
       blueStory
         $ validateEntry claypoolIsAlive "claypool.alive"
@@ -112,7 +114,10 @@ instance RunMessage ToTheForbiddenPeaks where
           whenM hasRemainingFrostTokens do
             labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
           labeled "Each investigator suffers 1 physical trauma." $ eachInvestigator (`sufferPhysicalTrauma` 1)
-
+      doStep 2 PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> do
+      lead <- getLead
       takadaIsAlive <- getPartnerIsAlive Assets.takadaHirokoAeroplaneMechanic
       blueStory
         $ validateEntry takadaIsAlive "takada.alive"
@@ -124,7 +129,9 @@ instance RunMessage ToTheForbiddenPeaks where
           whenM hasRemainingFrostTokens do
             labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
           labeled "Each investigator suffers 1 mental trauma." $ eachInvestigator (`sufferMentalTrauma` 1)
-
+      doStep 3 PreScenarioSetup
+      pure s
+    DoStep 3 PreScenarioSetup -> do
       scoutedTheMountainPass <- getHasRecord TheInvestigatorsScoutedTheMountainPass
       blueStory
         $ validateEntry scoutedTheMountainPass "theMountainPass.scouted"

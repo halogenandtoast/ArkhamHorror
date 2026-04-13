@@ -64,7 +64,6 @@ async function submit() {
   try {
     const game = await importGame(formData)
     emit('close')
-    localStorage.setItem(`gameHost_${game.id}`, 'true')
     router.push(`/games/${game.id}`)
   } catch {
     error.value = 'Failed to import the game. Please try again.'

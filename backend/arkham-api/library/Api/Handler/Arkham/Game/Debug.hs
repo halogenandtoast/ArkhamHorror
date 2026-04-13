@@ -35,7 +35,8 @@ addC :: Text -> Text
 addC iid = if "c" `T.isPrefixOf` iid then iid else "c" <> iid
 
 -- | Replace the original player UUID with the new local ArkhamPlayer UUID.
--- Uses jsonb_set to target the exact path, avoiding accidental replacements.
+-- Looks up the original playerId at gameEntities->investigators->{code}->playerId,
+-- then performs a global quoted text replacement across current_data::text.
 remapInvestigatorUUID
   :: ArkhamGameId
   -> Text           -- ^ investigator card code, e.g. "c03004"

@@ -24,6 +24,7 @@ ArkhamPlayer sql=arkham_players
   arkhamGameId ArkhamGameId OnDeleteCascade
   investigatorId Text
   UniquePlayer userId arkhamGameId
+  UniqueInvestigatorSeat arkhamGameId investigatorId
   deriving Generic Show
 |]
 

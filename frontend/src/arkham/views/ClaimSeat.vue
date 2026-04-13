@@ -18,21 +18,27 @@ const copied = ref(false)
 
 const inviteUrl = window.location.href
 
-function copyInvite() {
-  navigator.clipboard.writeText(inviteUrl)
-  copied.value = true
-  setTimeout(() => copied.value = false, 2000)
+async function copyInvite() {
+  try {
+    await navigator.clipboard.writeText(inviteUrl)
+    copied.value = true
+    setTimeout(() => copied.value = false, 2000)
+  } catch {
+    error.value = 'Could not copy invite link.'
+  }
 }
 
-fetchOpenSeats(props.gameId).then(seats => {
-  openSeats.value = seats
-})
-
-const poll = setInterval(() => {
+function loadOpenSeats(showError = false) {
   fetchOpenSeats(props.gameId).then(seats => {
     openSeats.value = seats
-  }).catch(() => {})
-}, 3000)
+  }).catch(() => {
+    if (showError) error.value = 'Could not load open seats.'
+  })
+}
+
+loadOpenSeats(true)
+
+const poll = setInterval(() => loadOpenSeats(), 3000)
 
 onUnmounted(() => clearInterval(poll))
 

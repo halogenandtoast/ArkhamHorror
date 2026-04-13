@@ -42,7 +42,7 @@ import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
-import GameDetails from '@/arkham/components/GameDetails.vue'
+import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
@@ -924,26 +924,12 @@ onUnmounted(() => {
         <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }} </button>
       </div>
     </div>
-    <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">      <header>
-        <h2>{{ $t('waitingForMorePlayers') }}</h2>
-      </header>
-      <GameDetails :game="game" id="invite">
-        <div v-if="playerId == game.activePlayerId" class="full-width">
-          <template v-if="game.multiplayerVariant === 'WithFriends'">
-            <p>Share this link so others can pick their investigator:</p>
-            <div class="invite-link">
-              <input type="text" :value="claimSeatSource"><button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>
-            </div>
-          </template>
-          <template v-else>
-            <p>{{ $t('showInviteLink') }}</p>
-            <div class="invite-link">
-              <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
-            </div>
-          </template>
-        </div>
-      </GameDetails>
-    </div>
+    <MultiplayerLobby
+      v-if="game.gameState.tag === 'IsPending'"
+      :game-id="gameId"
+      :game="game"
+      :player-id="playerId"
+    />
     <template v-else>
       <div v-if="openSeatsCount > 0 && !gameOver && isGameHost" class="invite-banner">
         <span>Invite link:</span>

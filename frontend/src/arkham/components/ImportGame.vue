@@ -130,23 +130,27 @@ const canSubmit = computed(() => {
 
     <!-- Investigator picker for multiplayer games -->
     <div v-if="showInvestigatorPicker" class="seat-picker">
-      <p class="seat-label">Choose your investigator</p>
-      <div class="investigators-grid">
-        <button
+      <div class="investigator-rows">
+        <div
           v-for="iid in investigators"
           :key="iid"
-          class="investigator-btn"
+          class="investigator-row"
           :class="{ selected: selectedInvestigator === iid }"
-          @click="selectedInvestigator = iid"
-          type="button"
         >
-          <img
-            :src="imgsrc(`portraits/${iid.replace('c', '')}.jpg`)"
-            :alt="iid"
-            class="investigator-portrait"
-          />
-          <span class="investigator-check">✓</span>
-        </button>
+          <div class="portrait-wrap">
+            <img
+              :src="imgsrc(`portraits/${iid.replace('c', '')}.jpg`)"
+              :alt="iid"
+              class="investigator-portrait"
+            />
+          </div>
+          <button
+            class="claim-btn"
+            :class="{ claimed: selectedInvestigator === iid }"
+            @click="selectedInvestigator = iid"
+            type="button"
+          >{{ selectedInvestigator === iid ? 'Selected' : 'Select' }}</button>
+        </div>
       </div>
     </div>
 
@@ -266,60 +270,65 @@ const canSubmit = computed(() => {
   margin: 0;
 }
 
-.investigators-grid {
+/* ── Investigator select rows ── */
+.investigator-rows {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.investigator-btn {
-  position: relative;
-  background: none;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  padding: 0;
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  overflow: hidden;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
+.investigator-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.15s, border-color 0.15s;
 
   &.selected {
-    border-color: var(--spooky-green);
-    box-shadow: 0 0 0 1px var(--spooky-green), 0 4px 14px rgba(0, 0, 0, 0.5);
+    background: rgba(110, 134, 64, 0.12);
+    border-color: rgba(110, 134, 64, 0.45);
   }
+}
+
+.portrait-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .investigator-portrait {
+  width: 150px;
   display: block;
-  width: 72px;
-  height: 72px;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 4px;
-  transition: opacity 0.15s;
+  margin-left: -18px;
+  margin-top: -4px;
 }
 
-.investigator-check {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(110, 134, 64, 0.55);
-  color: #fff;
-  font-size: 1.4em;
-  opacity: 0;
-  transition: opacity 0.15s;
-  border-radius: 4px;
-  pointer-events: none;
-}
+.claim-btn {
+  margin-left: auto;
+  padding: 7px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--title);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 
-.investigator-btn.selected .investigator-check {
-  opacity: 1;
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &.claimed {
+    background: rgba(110, 134, 64, 0.85);
+    border-color: rgba(110, 134, 64, 0.6);
+    color: white;
+  }
 }
 
 /* ── Error & actions ── */

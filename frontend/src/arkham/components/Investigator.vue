@@ -320,7 +320,7 @@ const skills = computed(() => {
   }
 
   const calc = (k:'SkillWillpower'|'SkillIntellect'|'SkillCombat'|'SkillAgility') =>
-    (finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
+    Math.max(0, finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
 
   return {
     willpower: calc('SkillWillpower'),

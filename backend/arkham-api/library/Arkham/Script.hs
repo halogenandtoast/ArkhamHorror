@@ -87,6 +87,9 @@ runScript s a = execStateT (void $ runWriterT $ runReaderT (runScriptT s) initSc
 you :: (?you :: InvestigatorId) => InvestigatorId
 you = ?you
 
+owner :: (?owner :: InvestigatorId) => InvestigatorId
+owner = ?owner
+
 this :: (?this :: a) => a
 this = ?this
 
@@ -444,6 +447,15 @@ fight body = do
 
 sufferMentalTrauma :: (?you :: InvestigatorId) => Int -> ScriptT x ()
 sufferMentalTrauma = Msg.sufferMentalTrauma you
+
+withOwner
+  :: ( ?this :: this
+     , Entity this
+     , EntityAttrs this ~ attrs
+     , HasField "owner" attrs (Maybe InvestigatorId)
+     )
+  => ((?you :: InvestigatorId, ?owner :: InvestigatorId) => ScriptT x ()) -> ScriptT x ()
+withOwner body = for_ (toAttrs this).owner \iid -> let ?you = iid; ?owner = iid in body
 
 insteadOfDiscoveringClues :: (?you :: InvestigatorId) => ScriptT a () -> ScriptT a ()
 insteadOfDiscoveringClues body = do

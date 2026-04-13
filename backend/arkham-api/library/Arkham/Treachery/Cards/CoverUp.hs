@@ -25,4 +25,4 @@ instance RunMessage CoverUp where
   runMessage = script do
     revelation placeInYourThreatArea
     onAbility 1 $ insteadOfDiscoveringClues $ discardTokens #clue discoveredClues
-    onAbility 2 $ sufferMentalTrauma 1
+    onAbility 2 $ withOwner $ sufferMentalTrauma 1

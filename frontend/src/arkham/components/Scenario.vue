@@ -1533,13 +1533,13 @@ async function addChaosToken(face: any){
 .location-cards-scroller {
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
   scroll-padding: 30%;
   display: flex;
   align-items: safe center;
   justify-content: safe center;
-  padding-bottom: 160px;
 }
 
 .location-cards {
@@ -1553,7 +1553,6 @@ async function addChaosToken(face: any){
   overflow: hidden;
   flex: 1;
   padding-top: 32px;
-  padding-bottom: 32px;
   position: relative;
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 5px;
@@ -1994,18 +1993,15 @@ async function addChaosToken(face: any){
 }
 
 .zoom-control {
-  position: absolute;
-  right: 10px;
-  bottom: calc(100% + 5px);
-  z-index: 15;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--background-dark);
-  border: 1px solid var(--box-border);
-  border-radius: 20px;
   padding: 4px 10px;
-
+  align-self: flex-start;
+  margin-top: 5px;
+  flex-shrink: 0;
+  position: absolute;
+  right: 40px;
   @media (max-width: 768px) and (orientation: portrait) {
     display: none;
   }
@@ -2162,26 +2158,15 @@ async function addChaosToken(face: any){
 #player-zone {
   display: flex;
   flex-direction: row;
-  background: var(--background-dark);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
+  background: #181c2a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
   .player-info {
     flex: 1;
   }
   @media (max-width: 800px) {
     padding-bottom: 50px;
   }
-}
-
-.split-view #player-zone {
-  position: relative;
-  bottom: auto;
-  left: auto;
-  right: auto;
-  z-index: auto;
 }
 
 #totals {

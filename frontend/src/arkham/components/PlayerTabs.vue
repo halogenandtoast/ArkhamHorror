@@ -268,6 +268,7 @@ ul.tabs__header {
   margin: 0;
   user-select: none;
   padding-left: 5px;
+  padding-top: 5px;
   font-size: min(16px, 2vw);
   @media (max-width: 800px) and (orientation: portrait) {
     font-size: min(16px, 3vw);
@@ -276,11 +277,12 @@ ul.tabs__header {
 
 ul.tabs__header > li {
   margin: 0;
-  margin-right: 5px;
+  margin-right: 3px;
   cursor: pointer;
   color: white;
-  filter: contrast(50%);
-  border-radius: 5px 5px 0 0;
+  opacity: 0.5;
+  border-radius: 2px 2px 0 0;
+  position: relative;
   display: inline-flex;
   align-items: center;
   span {
@@ -292,7 +294,7 @@ ul.tabs__header > li {
 
 ul.tabs__header > li.tab--selected {
   font-weight: bold;
-  filter: contrast(100%);
+  opacity: 1;
 }
 
 .tab--Guardian {
@@ -329,9 +331,6 @@ ul.tabs__header > li.tab--selected {
   }
 }
 
-.player-info {
-  margin-top: -32px;
-}
 
 .tab--lead-player {
   &:after {
@@ -356,7 +355,7 @@ ul.tabs__header > li.tab--selected {
   border-left: 1px solid rgba(0, 0, 0, 0.5);
   padding: 4px 8px;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 0 5px 0 0;
+  border-radius: 0 2px 0 0;
   margin: 0;
   cursor: pointer;
 

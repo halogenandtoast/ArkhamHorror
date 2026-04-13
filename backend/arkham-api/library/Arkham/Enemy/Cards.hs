@@ -3819,7 +3819,7 @@ returnToHeretic_38 =
 
 returnToHeretic_39 :: CardDef
 returnToHeretic_39 =
-  doubleSided "54039"
+  doubleSided "54039b"
     $ (enemy "54039" "Heretic" ReturnToTheWagesOfSin 1)
       { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
       }

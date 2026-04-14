@@ -729,7 +729,6 @@ onUnmounted(() => {
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
-  if (seatsPollInterval) clearInterval(seatsPollInterval)
   emitter.off('playabilityResult', onPlayabilityResult)
   close()
 })

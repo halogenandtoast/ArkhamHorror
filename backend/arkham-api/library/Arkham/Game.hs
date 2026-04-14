@@ -6028,6 +6028,7 @@ runMessages gameId mLogger = do
 
               asIfLocations <- runWithEnv getAsIfLocationMap
               aloofEnemies <- runWithEnv (select AloofEnemy)
+              investigatorSanityHealth <- runWithEnv getInvestigatorSanityHealthMap
 
               let
                 shouldPreloadModifiers = \case
@@ -6067,6 +6068,7 @@ runMessages gameId mLogger = do
                       >=> withSpan_ "handleTraitRestrictedModifiers"
                       . handleTraitRestrictedModifiers
                       >=> handleBlanked
+                      >=> handleDefeatedByModifiers investigatorSanityHealth
                   else overGameM $ runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages gameId mLogger
@@ -6081,6 +6083,14 @@ getAsIfLocationMap = do
     let mods = Map.findWithDefault [] (toTarget iid) (gameModifiers g)
         mAsIf = listToMaybe [loc | (modifierType -> AsIfAt loc) <- mods]
     pure $ (iid,) <$> mAsIf
+
+getInvestigatorSanityHealthMap :: (HasGame m, Tracing m) => m (Map InvestigatorId (Int, Int))
+getInvestigatorSanityHealthMap = do
+  investigators <- select UneliminatedInvestigator
+  fmap Map.fromList $ for investigators \iid -> do
+    health <- field InvestigatorHealth iid
+    sanity <- field InvestigatorSanity iid
+    pure (iid, (health, sanity))
 
 handleAloofChanges :: [EnemyId] -> Game -> GameT Game
 handleAloofChanges aloof g = withSpan_ "handleAloofChanges" do
@@ -6192,6 +6202,15 @@ handleBlanked g = do
         Modifier _ BlankExceptForcedAbilities _ _ -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
+
+handleDefeatedByModifiers :: Map InvestigatorId (Int, Int) -> Game -> GameT Game
+handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
+  for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
+    afterHealth <- field InvestigatorHealth iid
+    afterSanity <- field InvestigatorSanity iid
+    when (afterHealth < beforeHealth || afterSanity < beforeSanity) $
+      push $ CheckDefeated GameSource (InvestigatorTarget iid)
+  getGame
 
 applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()
 applyBlank s = do

@@ -30,10 +30,6 @@ instance HasAbilities StHubertsKey where
 
 instance RunMessage StHubertsKey where
   runMessage msg a@(StHubertsKey attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | card.id == attrs.cardId -> do
-      -- since we adjust sanity we must check for defeated
-      checkDefeated attrs iid
-      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mDefeatedMessage <- lift $ findFromQueue \case
         Msg.InvestigatorIsDefeated {} -> True

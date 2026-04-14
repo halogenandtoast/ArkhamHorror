@@ -68,7 +68,6 @@ function onContinue() {
   <div class="lobby scroll-container">
     <LogIcons />
 
-    <!-- Header: scenario / campaign info, or generic waiting box -->
     <div class="next-scenario">
       <div class="next-scenario-info">
         <div class="scenario-info">
@@ -91,7 +90,6 @@ function onContinue() {
       </div>
     </div>
 
-    <!-- Investigator rows -->
     <div v-if="investigators.length > 0" class="investigators">
       <InvestigatorRow
         v-for="investigator in investigators"
@@ -135,7 +133,6 @@ function onContinue() {
   @media (max-width: 800px) { width: 90vw; }
 }
 
-/* ── Header box ── */
 .next-scenario {
   display: flex;
   justify-content: space-between;
@@ -188,7 +185,6 @@ function onContinue() {
   @media (max-width: 600px) { display: none; }
 }
 
-/* ── Invite link ── */
 .invite-section {
   display: flex;
   flex-direction: column;
@@ -232,7 +228,6 @@ function onContinue() {
   }
 }
 
-/* ── Investigators panel ── */
 .investigators {
   padding: 10px;
   background: rgba(255, 255, 255, 0.05);
@@ -242,7 +237,6 @@ function onContinue() {
   border-radius: 8px;
 }
 
-/* ── Claim button (shown in #back slot) ── */
 .claim-btn {
   background: rgba(110, 134, 64, 0.85);
   border: 0;
@@ -259,7 +253,6 @@ function onContinue() {
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
-/* ── Status pills ── */
 .status-pill {
   display: inline-block;
   padding: 5px 12px;
@@ -283,7 +276,6 @@ function onContinue() {
   }
 }
 
-/* ── Continue ── */
 .actions {
   display: flex;
   flex-direction: column;

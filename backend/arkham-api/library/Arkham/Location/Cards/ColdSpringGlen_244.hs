@@ -24,6 +24,7 @@ instance HasModifiersFor ColdSpringGlen_244 where
 instance HasAbilities ColdSpringGlen_244 where
   getAbilities (ColdSpringGlen_244 a) =
     extendRevealed1 a
+      $ groupLimit PerGame
       $ restricted
         a
         1

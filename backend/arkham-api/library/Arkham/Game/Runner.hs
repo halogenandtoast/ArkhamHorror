@@ -13,6 +13,7 @@ import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
+import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
 import Arkham.Campaigns.TheScarletKeys.Key.Id
@@ -32,7 +33,8 @@ import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..), delayEngagementL)
+import Arkham.Enemy.Runner (getPreyMatcher)
+import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), delayEngagementL)
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -42,13 +44,12 @@ import Arkham.Game.Json ()
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Campaign.Option
 import Arkham.Helpers
 import Arkham.Helpers.Criteria
-import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -1494,8 +1495,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 | otherwise -> Zone.FromPlay
           -- Check for a pending event created by BeforePlayEvent
           let
-            mPendingEvent = find (\e -> eventCardId (toAttrs e) == toCardId card)
-              $ toList (g ^. entitiesL . eventsL)
+            mPendingEvent =
+              find (\e -> eventCardId (toAttrs e) == toCardId card)
+                $ toList (g ^. entitiesL . eventsL)
           (eid, event') <- case mPendingEvent of
             Just existing -> do
               let eid = toId existing
@@ -1796,7 +1798,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               kws <- lift $ toList <$> getModifiedKeywords eid
               liftGuardM $ flip anyM kws \case
                 Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt lm))
-                Keyword.Hunter -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
+                Keyword.Hunter -> do
+                  attrs <- getAttrs @Enemy eid
+                  getPreyMatcher attrs >>= \case
+                    OnlyPrey m -> do
+                      prey <- select m
+                      matches eid (#ready <> not_ (EnemyAt $ LocationWithInvestigator $ mapOneOf InvestigatorWithId prey))
+                    _ -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
                 _ -> pure False
               pure (target, msgs)
           FailSkillTestGroup -> pure targetMap

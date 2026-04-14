@@ -236,6 +236,12 @@ getPaths a destinations =
             pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
           else pure pathIds'
 
+getActualAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
+getActualAvailablePrey a =
+  getPreyMatcher a >>= \case
+    OnlyPrey m -> select m
+    _ -> getAvailablePrey a
+
 getAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = runDefaultMaybeT [] do
   enemyLocation <- MaybeT $ field EnemyLocation a.id
@@ -726,7 +732,7 @@ instance RunMessage EnemyAttrs where
               wantsToHunt <-
                 getPreyMatcher a >>= \case
                   OnlyPrey _ -> do
-                    prey <- getAvailablePrey a
+                    prey <- getActualAvailablePrey a
                     selectNone (InvestigatorAt (locationWithEnemy enemyId) <> mapOneOf InvestigatorWithId prey)
                   _ ->
                     andM

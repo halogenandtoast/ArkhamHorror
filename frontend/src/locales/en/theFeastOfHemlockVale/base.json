@@ -220,6 +220,7 @@
     }
   },
   "key": {
+    "motherRachelShowedTheWay": "Mother Rachel Showed the Way",
     "finishedTheirMeal": "Finished Their Meal",
     "motherRachelRelationshipLevel": "Mother Rachel Relationship Level",
     "leahAtwoodRelationshipLevel": "Leah Atwood Relationship Level",
@@ -281,7 +282,8 @@
     },
     "[motherRachelNotes]": {
       "orderKey": "b",
-      "name": "Mother Rachel"
+      "name": "Mother Rachel",
+      "motherRachelIntervened": "Mother Rachel Intervened"
     },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",
@@ -297,6 +299,10 @@
     "[riverHawthorneNotes]": {
       "orderKey": "f",
       "name": "River Hawthorne"
+    },
+    "[theoPetersNotes]": {
+      "orderKey": "i",
+      "name": "Theo Peters"
     }
   }
 }

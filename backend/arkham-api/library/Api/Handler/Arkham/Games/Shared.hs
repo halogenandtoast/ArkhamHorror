@@ -144,6 +144,7 @@ data GameDetails = GameDetails
   , investigators :: [InvestigatorDetails]
   , otherInvestigators :: [InvestigatorDetails]
   , multiplayerVariant :: MultiplayerVariant
+  , hasOpenSeats :: Bool
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -275,36 +276,41 @@ publishToRoom gameId a = do
       writeChannel <- (.channel) <$> getRoom gameId
       atomically $ writeTChan writeChannel $ encode a
 
-toGameDetailsEntry :: Entity ArkhamGameRaw -> GameDetailsEntry
-toGameDetailsEntry (Entity gameId game) =
+toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
+toGameDetailsEntry (Entity gameId game) playerCount =
   case fromJSON @Game (arkhamGameRawCurrentData game) of
     Success a ->
-      SuccessGameDetails
-        $ GameDetails
-          { id = coerce gameId
-          , scenario = case a.gameMode of
-              This _ -> Nothing
-              That s -> Just $ ScenarioDetails s.id s.difficulty s.name
-              These _ s -> Just $ ScenarioDetails s.id s.difficulty s.name
-          , campaign = case a.gameMode of
-              This c -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
-              That _ -> Nothing
-              These c _ -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
-          , gameState = a.gameGameState
-          , name = arkhamGameRawName game
-          , investigators =
-              map (\(i :: Investigator) -> InvestigatorDetails i.id i.classSymbol)
-                $ toList a.gameEntities.investigators
-          , otherInvestigators =
-              let
-                ins = case a.gameMode of
-                  This c -> campaignOtherInvestigators (toJSON c.meta)
-                  That _ -> mempty
-                  These c _ -> campaignOtherInvestigators (toJSON c.meta)
-               in
-                map (\i -> InvestigatorDetails i.id i.classSymbol) ins
-          , multiplayerVariant = arkhamGameRawMultiplayerVariant game
-          }
+      let
+        investigators =
+          map (\(i :: Investigator) -> InvestigatorDetails i.id i.classSymbol)
+            $ toList a.gameEntities.investigators
+        variant = arkhamGameRawMultiplayerVariant game
+       in
+        SuccessGameDetails
+          $ GameDetails
+            { id = coerce gameId
+            , scenario = case a.gameMode of
+                This _ -> Nothing
+                That s -> Just $ ScenarioDetails s.id s.difficulty s.name
+                These _ s -> Just $ ScenarioDetails s.id s.difficulty s.name
+            , campaign = case a.gameMode of
+                This c -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
+                That _ -> Nothing
+                These c _ -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
+            , gameState = a.gameGameState
+            , name = arkhamGameRawName game
+            , investigators
+            , otherInvestigators =
+                let
+                  ins = case a.gameMode of
+                    This c -> campaignOtherInvestigators (toJSON c.meta)
+                    That _ -> mempty
+                    These c _ -> campaignOtherInvestigators (toJSON c.meta)
+                 in
+                  map (\i -> InvestigatorDetails i.id i.classSymbol) ins
+            , multiplayerVariant = variant
+            , hasOpenSeats = variant == WithFriends && playerCount < length investigators
+            }
     Error e -> FailedGameDetails ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
  where
   campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of

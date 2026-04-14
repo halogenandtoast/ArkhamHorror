@@ -29,27 +29,19 @@ import Json
 import Safe (fromJustNote)
 import UnliftIO.Exception (catch, try)
 
--- | Ensure investigator ID has the 'c' prefix (e.g. "03004" -> "c03004")
-addC :: Text -> Text
-addC iid = if "c" `T.isPrefixOf` iid then iid else "c" <> iid
+normalizeJsonInvestigatorId :: Text -> Text
+normalizeJsonInvestigatorId iid = if "c" `T.isPrefixOf` iid then iid else "c" <> iid
 
-{- | Replace the original player UUID with the new local ArkhamPlayer UUID.
-Uses jsonb_set to target the exact path, avoiding accidental replacements.
--}
-remapInvestigatorUUID
-  :: ArkhamGameId
-  -> Text
-  -- ^ investigator card code, e.g. "c03004"
-  -> ArkhamPlayerId
-  -> SqlPersistT Handler ()
+-- Swap the investigator's original player UUID for the new one by doing a
+-- text-level replace on the stored JSONB, then casting back.
+remapInvestigatorUUID :: ArkhamGameId -> Text -> ArkhamPlayerId -> DB ()
 remapInvestigatorUUID gameId iCode newPlayerId = do
   let newUUID = toPathPiece newPlayerId
-      normalizedCode = addC iCode
   results :: [Single (Maybe Text)] <-
     rawSql
       "SELECT current_data->'gameEntities'->'investigators'->?->>'playerId' \
       \FROM arkham_games WHERE id = ?"
-      [PersistText normalizedCode, PersistText (toPathPiece gameId)]
+      [PersistText iCode, PersistText (toPathPiece gameId)]
   case results of
     (Single (Just origUUID) : _) ->
       rawExecute
@@ -74,11 +66,11 @@ getApiV1ArkhamGameScenarioExportR gameId = do
 
 getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler TypedContent
 getApiV1ArkhamGameFullExportR gameId = do
-  (ge, players) <- runDB $ do
+  (ge, players) <- runDB do
     ge <- get404 gameId
-    players <- select $ do
+    players <- select do
       p <- from $ table @ArkhamPlayer
-      where_ (p ^. ArkhamPlayerArkhamGameId ==. val gameId)
+      where_ $ p.arkhamGameId ==. val gameId
       pure p
     pure (ge, players)
   let campaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
@@ -86,11 +78,11 @@ getApiV1ArkhamGameFullExportR gameId = do
     sendChunkLBS "{\"campaignPlayers\":"
     sendChunkLBS $ encode campaignPlayers
     sendChunkLBS ",\"campaignData\":{\"name\":"
-    sendChunkLBS $ encode (arkhamGameName ge)
+    sendChunkLBS $ encode ge.name
     sendChunkLBS ",\"currentData\":"
-    sendChunkLBS $ encode (arkhamGameCurrentData ge)
+    sendChunkLBS $ encode ge.currentData
     sendChunkLBS ",\"step\":"
-    sendChunkLBS $ encode (arkhamGameStep ge)
+    sendChunkLBS $ encode ge.step
     sendChunkLBS ",\"steps\":["
     sendFlush
     isFirstRef <- liftIO $ newIORef True
@@ -103,14 +95,14 @@ getApiV1ArkhamGameFullExportR gameId = do
       sendChunkLBS $ encode s
       sendFlush
     sendChunkLBS "],\"log\":[],\"multiplayerVariant\":"
-    sendChunkLBS $ encode (arkhamGameMultiplayerVariant ge)
+    sendChunkLBS $ encode ge.multiplayerVariant
     sendChunkLBS "}}"
     sendFlush
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do
   gameIds <- runDB $ selectKeysList @ArkhamGame [] []
-  for_ gameIds $ \gameId -> do
+  for_ gameIds \gameId -> do
     let handleBrokenGame :: SomeException -> Handler ()
         handleBrokenGame _ = void $ runDB (Persist.delete gameId)
     void (runDB (Persist.get gameId) :: Handler (Maybe ArkhamGame)) `catch` handleBrokenGame
@@ -118,11 +110,11 @@ postApiV1ArkhamGamesFixR = do
 getApiV1ArkhamGamesReloadR :: Handler ()
 getApiV1ArkhamGamesReloadR = do
   gameIds <- runDB $ selectKeysList @ArkhamGame [] []
-  for_ gameIds $ \gameId -> do
+  for_ gameIds \gameId -> do
     try @_ @SomeException (runDB $ Persist.get gameId >>= traverse_ (Persist.replace gameId))
 
   stepIds <- runDB $ selectKeysList @ArkhamStep [] []
-  for_ stepIds $ \stepId -> do
+  for_ stepIds \stepId -> do
     try @_ @SomeException (runDB $ Persist.get stepId >>= traverse_ (Persist.replace stepId))
 
 getApiV1ArkhamGameReloadR :: ArkhamGameId -> Handler ()
@@ -130,15 +122,16 @@ getApiV1ArkhamGameReloadR gameId = do
   _ <- try @_ @SomeException (runDB $ Persist.get gameId >>= traverse_ (Persist.replace gameId))
 
   stepIds <- runDB $ selectKeysList @ArkhamStep [ArkhamStepArkhamGameId Persist.==. gameId] []
-  for_ stepIds $ \stepId -> do
+  for_ stepIds \stepId -> do
     try @_ @SomeException (runDB $ Persist.get stepId >>= traverse_ (Persist.replace stepId))
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
   userId <- getRequestUserId
   (params, files) <- runRequestBody
-  let mInvestigatorId = fmap addC $ snd <$> find ((== "investigatorId") . fst) params
-  let mVariantOverride = snd <$> find ((== "multiplayerVariant") . fst) params
+  let
+    mInvestigatorId = fmap normalizeJsonInvestigatorId $ snd <$> find ((== "investigatorId") . fst) params
+    mVariantOverride = snd <$> find ((== "multiplayerVariant") . fst) params
   eExportData :: Either String ArkhamExport <-
     fmap eitherDecodeStrict'
       . fileSourceByteString
@@ -153,7 +146,7 @@ postApiV1ArkhamGamesImportR = do
     Right export -> do
       let
         ArkhamGameExportData {..} = aeCampaignData export
-        investigatorIds = map addC $ aeCampaignPlayers export
+        investigatorIds = map normalizeJsonInvestigatorId $ aeCampaignPlayers export
         exportVariant = agedMultiplayerVariant
         variant = case mVariantOverride of
           Just "WithFriends" -> WithFriends
@@ -187,10 +180,7 @@ postApiV1ArkhamGamesImportR = do
           \  END IF; \
           \END$$;"
           []
-        insertMany_
-          [ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
-          | s <- agedSteps
-          ]
+        insertMany_ [ArkhamStep gameId s.choice s.step s.actionDiff | s <- agedSteps]
 
         rawExecute
           "DO $$ \
@@ -214,23 +204,18 @@ postApiV1ArkhamGamesImportR = do
           (Entity key $ ArkhamGame agedName agedCurrentData agedStep variant now now)
           (GameLog $ map arkhamLogEntryBody agedLog)
 
--- | Returns investigator IDs with no player assigned yet.
 getApiV1ArkhamGameOpenSeatsR :: ArkhamGameId -> Handler [Text]
 getApiV1ArkhamGameOpenSeatsR gameId = do
   _ <- getRequestUserId
   runDB do
     g <- get404 gameId
     let allInvestigators =
-          map (addC . unCardCode . unInvestigatorId)
-            . gamePlayerOrder
-            $ arkhamGameCurrentData g
+          map (normalizeJsonInvestigatorId . unCardCode . unInvestigatorId) $ gamePlayerOrder g.currentData
     assignedInvestigators <-
-      fmap (map (arkhamPlayerInvestigatorId . entityVal))
-        . select
-        $ do
-          players <- from $ table @ArkhamPlayer
-          where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
-          pure players
+      map unValue <$> select do
+        players <- from $ table @ArkhamPlayer
+        where_ $ players.arkhamGameId ==. val gameId
+        pure players.investigatorId
     pure $ filter (`notElem` assignedInvestigators) allInvestigators
 
 data ClaimSeatPost = ClaimSeatPost
@@ -239,38 +224,29 @@ data ClaimSeatPost = ClaimSeatPost
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
--- | Claim an open seat in a WithFriends game.
 postApiV1ArkhamGameClaimSeatR :: ArkhamGameId -> Handler ()
 postApiV1ArkhamGameClaimSeatR gameId = do
   userId <- getRequestUserId
   ClaimSeatPost {investigatorId = rawId} <- requireCheckJsonBody
-  let investigatorId = addC rawId
+  let investigatorId = normalizeJsonInvestigatorId rawId
   runDB do
     g <- get404 gameId
-    when (arkhamGameMultiplayerVariant g /= WithFriends)
-      $ lift
-      $ permissionDenied "This game is not a multiplayer game"
+    when (g.multiplayerVariant /= WithFriends) do
+      lift $ permissionDenied "This game is not a multiplayer game"
     let allInvestigators =
-          map (addC . unCardCode . unInvestigatorId)
-            . gamePlayerOrder
-            $ arkhamGameCurrentData g
-    unless (investigatorId `elem` allInvestigators)
-      $ lift
-      $ invalidArgs ["Invalid investigator for this game"]
-    mTaken <- selectOne $ do
+          map (normalizeJsonInvestigatorId . unCardCode . unInvestigatorId)
+            $ gamePlayerOrder g.currentData
+    unless (investigatorId `elem` allInvestigators) do
+      lift $ invalidArgs ["Invalid investigator for this game"]
+    mTaken <- selectOne do
       players <- from $ table @ArkhamPlayer
-      where_
-        $ players
-        ^. ArkhamPlayerArkhamGameId
-        ==. val gameId
-        &&. players ^. ArkhamPlayerInvestigatorId ==. val investigatorId
+      where_ $ players.arkhamGameId ==. val gameId
+      where_ $ players.investigatorId ==. val investigatorId
       pure players
-    when (isJust mTaken)
-      $ lift
-      $ permissionDenied "This seat is already taken"
-    mAlreadyJoined <- getBy (UniquePlayer userId gameId)
-    when (isJust mAlreadyJoined)
-      $ lift
-      $ permissionDenied "You already have a seat in this game"
+    when (isJust mTaken) do
+      lift $ permissionDenied "This seat is already taken"
+    mAlreadyJoined <- getBy $ UniquePlayer userId gameId
+    when (isJust mAlreadyJoined) do
+      lift $ permissionDenied "You already have a seat in this game"
     newPlayerId <- insert $ ArkhamPlayer userId gameId investigatorId
     remapInvestigatorUUID gameId investigatorId newPlayerId

@@ -46,6 +46,7 @@ export type GameDetails = {
   investigators: InvestigatorDetails[];
   otherInvestigators: InvestigatorDetails[];
   multiplayerVariant: MultiplayerVariant;
+  hasOpenSeats: boolean;
 }
 
 export type MultiplayerVariant = 'WithFriends' | 'Solo'
@@ -188,6 +189,7 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
     investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     multiplayerVariant: multiplayerVariantDecoder,
+    hasOpenSeats: JsonDecoder.boolean(),
   },
   'GameDetails',
 );

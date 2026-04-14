@@ -65,8 +65,8 @@ function onContinue() {
 </script>
 
 <template>
-  <LogIcons />
-  <div class="continue-campaign scroll-container">
+  <div class="lobby scroll-container">
+    <LogIcons />
 
     <!-- Header: scenario / campaign info, or generic waiting box -->
     <div class="next-scenario">
@@ -92,7 +92,7 @@ function onContinue() {
     </div>
 
     <!-- Investigator rows -->
-    <div v-if="investigators.length > 0" id="investigators">
+    <div v-if="investigators.length > 0" class="investigators">
       <InvestigatorRow
         v-for="investigator in investigators"
         :key="investigator.id"
@@ -124,14 +124,13 @@ function onContinue() {
 </template>
 
 <style scoped lang="scss">
-/* Mirrors ContinueCampaign layout */
-.continue-campaign {
+.lobby {
   margin-top: 5vh;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 40vw;
+  width: min(40vw, 700px);
 
   @media (max-width: 800px) { width: 90vw; }
 }
@@ -234,7 +233,7 @@ function onContinue() {
 }
 
 /* ── Investigators panel ── */
-#investigators {
+.investigators {
   padding: 10px;
   background: rgba(255, 255, 255, 0.05);
   display: flex;

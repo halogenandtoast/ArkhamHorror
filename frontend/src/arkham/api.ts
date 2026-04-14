@@ -207,11 +207,6 @@ export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
 export const undoScenarioChoice = (gameId: string): Promise<void> =>
   api.put(`arkham/games/${gameId}/undo/scenario`)
 
-export const debugGame = async (formData: FormData): Promise<Game> => {
-  const { data } = await api.post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-  return gameDecoder.decodePromise(data)
-}
-
 export const importGame = async (formData: FormData): Promise<Game> => {
   const { data } = await api.post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return gameDecoder.decodePromise(data)

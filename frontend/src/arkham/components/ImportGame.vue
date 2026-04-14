@@ -123,10 +123,6 @@ const canSubmit = computed(() => {
 <template>
   <LogIcons />
   <div class="import-game box">
-    <p class="description">
-      Load a game exported via "Debug Export" to continue it here.
-    </p>
-
     <div class="file-section">
       <label class="file-label">
         <span>{{ selectedFile ? selectedFile.name : 'Click to choose export file…' }}</span>

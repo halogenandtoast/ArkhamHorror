@@ -20,9 +20,10 @@ const myClaimed = ref<string | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+const isHost = computed(() => localStorage.getItem(`gameHost_${props.gameId}`) === 'true')
 const allClaimed = computed(() => openSeats.value.length === 0)
 const hasPlayerClaimed = computed(() =>
-  myClaimed.value !== null || (props.playerId !== null && props.playerId in props.game.investigators)
+  isHost.value || myClaimed.value !== null || (props.playerId !== null && props.playerId in props.game.investigators)
 )
 const investigators = computed(() => Object.values(props.game.investigators))
 
@@ -107,7 +108,7 @@ function onContinue() {
             type="button"
           >Claim</button>
           <span v-else-if="investigator.id === myClaimed" class="status-pill joined">Claimed</span>
-          <span v-else-if="isOpen(investigator.id)" class="status-pill open">Open</span>
+          <span v-else-if="isOpen(investigator.id)" class="status-pill open">Waiting</span>
           <span v-else class="status-pill joined">Joined</span>
         </template>
       </InvestigatorRow>

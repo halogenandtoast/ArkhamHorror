@@ -206,6 +206,8 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
               $ Matcher.basic (Matcher.oneOf $ Matcher.CardWithTitle <$> titles)
               <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
           _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
+    Criteria.IgnoreModifiersFrom msource ictr -> do
+      withoutModifiersOf msource $ passesCriteria iid mcard source' requestor windows' ictr
     Criteria.HasTrueMagick -> do
       case source'.asset of
         Just trueMagick -> do

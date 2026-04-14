@@ -50,8 +50,6 @@ async function onFileChange(e: Event) {
     const text = await file.text()
     const json = JSON.parse(text)
     const variant = json.multiplayerVariant ?? json.campaignData?.multiplayerVariant ?? 'Solo'
-    isMultiplayer.value = variant === 'WithFriends'
-    if (isMultiplayer.value) importMode.value = 'WithFriends'
     const invMap: Record<string, Investigator> = json.campaignData?.currentData?.gameEntities?.investigators ?? {}
     const playerOrder: string[] = json.campaignData?.currentData?.gamePlayerOrder ?? []
     const fallbackIds: string[] = (json.campaignPlayers ?? []).map((id: string) =>
@@ -60,6 +58,8 @@ async function onFileChange(e: Event) {
     const orderedIds = playerOrder.length > 0 ? playerOrder : fallbackIds
     const ordered = orderedIds.map(id => invMap[id]).filter(Boolean) as Investigator[]
     investigators.value = ordered.length > 0 ? ordered : Object.values(invMap)
+    isMultiplayer.value = variant === 'WithFriends' && investigators.value.length > 1
+    if (isMultiplayer.value) importMode.value = 'WithFriends'
 
     const gameMode = json.campaignData?.currentData?.gameMode ?? {}
     const scenario = gameMode.That ?? null

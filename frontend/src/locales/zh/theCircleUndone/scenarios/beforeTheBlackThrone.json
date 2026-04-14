@@ -1,21 +1,138 @@
 {
+  "heading": "冒险 VIII",
   "tokens": {
     "easyStandard": {
-      "skull": "-X. 其中X是阿撒托斯上的一半毁灭标记数(向上取整)，至少为2。",
+      "skull": "-X。其中X是阿撒托斯上的一半毁灭标记数(向上取整)，至少为2。",
       "cultist": "再抽出1个标记。如果你失败，查找遭遇牌堆和弃牌堆，找出一张 _异教徒_ 敌人并将其抽取。混洗遭遇牌堆。",
-      "tablet": "-2. 如果你失败，阿撒托斯攻击你。",
-      "elderThing": "-4. 如果你本次检定的修正技能值为0，在阿撒托斯放置1个毁灭标记。"
+      "tablet": "-2。如果你失败，阿撒托斯攻击你。",
+      "elderThing": "-4。如果你本次检定的修正技能值为0，在阿撒托斯放置1个毁灭标记。"
     },
     "hardExpert": {
-      "skull": "-X. 其中X是阿撒托斯上的毁灭标记数，至少为2。",
+      "skull": "-X。其中X是阿撒托斯上的毁灭标记数，至少为2。",
       "cultist": "再抽出1个标记。如果你失败，查找遭遇牌堆和弃牌堆，找出一张 _异教徒_ 敌人并将其抽取。混洗遭遇牌堆。",
-      "tablet": "-3. 如果你失败，阿撒托斯攻击你。",
-      "elderThing": "-6. 如果你本次检定的修正技能值为0，在阿撒托斯放置1个毁灭标记。"
+      "tablet": "-3。如果你失败，阿撒托斯攻击你。",
+      "elderThing": "-6。如果你本次检定的修正技能值为0，在阿撒托斯放置1个毁灭标记。"
     }
   },
-  "xp": {
-    "resolution2": "拯救了世界，使世界免受吞噬",
-    "resolution3": "拯救了世界，使世界免受吞噬",
-    "resolution5": "了解了黑书最深层的秘密"
+  "tooltips": {
+    "cosmicIngress": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Cosmic Ingress"
+    },
+    "hideousPalace": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Hideous Palace"
+    },
+    "courtOfTheGreatOldOnes": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Court of the Great Old Ones"
+    },
+    "theBlackThrone": {
+      "haunted": "You must either place 1 doom on Azathoth, or Azathoth attacks you"
+    },
+    "windingGulf": {
+      "haunted": "Take 1 damage and 1 horror"
+    }
+  },
+  "label": {
+    "nightgauntSteed": "Remove 2 resources from the scenario reference card to have each investigator begin the game with a Nightgaunt Steed story asset in play?",
+    "itMustBeDone": "It must be done.",
+    "iRefuse": "I refuse.",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "moveLeft": "Move Left",
+    "moveRight": "Move Right",
+    "moveToLeftLocation": "Move to the location to your left",
+    "moveYourLocationLeftOnce": "Move the placement of your location once to the left",
+    "connectToTheRight": "Connect to the Right",
+    "connectAbove": "Connect Above",
+    "connectBelow": "Connect Below",
+    "dancersMist": {
+      "choice": "Lose 2 resources and connect to an adjacent location in a direction of your choice"
+    },
+    "flightIntoOblivion": {
+      "choice": "Take 2 horror and connect to the topmost revealed location in a direction of your choice" 
+    },
+    "chooseWhereToConnect": "Choose where to connect",
+    "theBlackThrone": {
+      "doom": "在阿撒托斯放置1个毁灭标记。",
+      "attack": "阿撒托斯攻击你。"
+    },
+    "infinityOfDarkness": {
+      "choice": "Take 2 damage and connect to the bottommost revealed location in a direction of your choice"
+    },
+    "ultimateChaos": {
+      "doom": "在阿撒托斯放置1个毁灭标记。",
+      "attack": "阿撒托斯攻击你。"
+    },
+    "whisperedBargain": {
+      "doom": "在阿撒托斯放置1个毁灭标记。",
+      "attack": "阿撒托斯攻击你。"
+    },
+    "windingGulf": {
+      "move": "Move to Winding Gulf",
+      "doNotMove": "在阿撒托斯放置1个毁灭标记。"
+    },
+    "whatMustBeDone": {
+      "R2": "R2",
+      "R3": "R3",
+      "R4": "R4",
+      "R6": "R6"
+    }
+  },
+  "intro": {
+    "title": "冒险VIII：黑色王座",
+    "body": "<p>你的坐骑带你一路前进，进入了彼端的虚空，那漆黑的噩梦，你不敢回头望向身后，因为你知道，你看到的景象可能会击垮你的内心，或是瓦解你的思维。形如水螅一般的恐怖怪物在宇宙的黑暗与孤独中缓缓移动。你本想为这片瑰丽、闪烁的星空而惊叹，但等到依然浩瀚无垠的、黑暗而寒冷的宇宙映入你的眼帘，你只觉得自己腹中传来一阵空空荡荡的感觉。远远传来一段和弦，宇宙中的任何一种已知的乐器都无法重现这段旋律；要不是此时此刻在你的耳中响起，你也根本无法理解这段音符。</p><p>你们撞毁了挡路的骇人缟玛瑙塔楼，一阵强烈的气流随即伴着你们下降到一处极大的洞穴，其中是黑色石块和不可思议的建筑。随着你坚定地穿越一座不可思议的山谷，穿过成群的无形生物，穿过在黑暗中潜伏和舞动的存在，乐声越来越强。你无法不去听这奇怪的音乐，将每一个可怕的不谐音符都留在记忆里。人类无法想到或梦到你所在的地方，这里比地球诞生的时候更为久远。你只能寄望于你的坐骑，希望它能将你带到你必须要去的地方……阿撒托斯的王座。</p>"
+  },
+  "setup": {
+    "gatherSets": "将下列遭遇组中，所有遭遇卡找出：*黑色王座*、*阿撒托斯的使徒*、*在劫难逃*、*远古恶魔*以及*黑暗异教徒*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/before-the-black-throne.png' /><img src='{setImgPath}/agents-of-azathoth.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "setLocationsAside": "找出憎恶宫殿、旧日支配者皇廷、黑色王座地点。(它们是三张宇宙地点的已揭示面。)将这些地点放在一边，位于场外。",
+    "placeStart": "将“宇宙入口”地点放置入场。每位调查员从“宇宙入口”开始游戏。",
+    "cosmos": "将剩余地点卡牌混洗，以“宇宙”面朝上单独作为一个牌库。这个牌库称为“宇宙”(*详见“宇宙”*)。",
+    "placeLocations": "拿取放在一边的“憎恶宫殿”和“宇宙”顶上的1张卡牌，将其混洗至无法分辨。然后，将这些卡牌与调查员队长牌堆顶上正面朝下的若干张玩家卡一同放置入场，如“冒险设置/地点摆放位置 - Part 1”所示。正面朝下的玩家卡表示虚空格子(*详见“虚空格子”*)。",
+    "setAside": "将阿撒托斯的吹笛手敌人放在一边，位于场外。",
+    "placeAzathoth": "将阿撒托斯放置入场，放在密谋牌库旁。直到冒险结束，阿撒托斯视为在场，但不在任何地点上。",
+    "thePathWindsBeforeYou": "检查剧本日志。*你面前的道路蜿蜒曲折*旁边每有1次记录，在冒险参考卡牌上放置1资源。"
+  },
+  "theCosmos": {
+    "title": "宇宙",
+    "body": "<p class='basic'>宇宙牌堆是包含双面地点的一个单独牌堆，本场冒险期间会有新的地点从该牌堆顶上入场。地点主要通过每个场景的能力入场：“{'{'}action{'}'} 花费X个线索：抽取‘宇宙’顶上的X张卡牌。选择其中一张卡牌，按照其‘_宇宙-_’指示放置入场，移动到其上方。将其余卡牌洗回‘宇宙’。”</p><p class='basic'>每个宇宙地点的已揭示面均有“_宇宙-_”指示，告诉调查员该地点应该连接到什么地方。(例如，“_宇宙-_与上方连接”意味着新抽出的地点应立即放在该调查员所在地点的上方，而“_宇宙-_与右方连接”则意味着新抽出的地点应立即放在该调查员所在地点的右方。)</p><p class='basic'>如果一个新地点将要放到已被另一地点占据的位置，那么该新地点不能入场。如果一个地点的“_宇宙-_”指示不可能满足，将该地点洗回宇宙牌堆并取消该次抽取并放置地点的动作。</p><p class='basic'>“_宇宙-_”指示仅在从宇宙牌堆抽出一个地点时结算。在揭示已在场上的宇宙地点时，无需遵守其“_宇宙-_”指示。</p>"
+  },
+  "emptySpace": {
+    "title": "虚空格子",
+    "body": "<p class='basic'>本场冒险期间，你有时会收到指示要放置“虚空格子”入场。收到上述指示时，你需要拿取当前调查员牌堆顶上的1张卡牌，将其正面朝下放置入场，放到指定位置。如果没有当前调查员，应改为拿取调查员队长牌堆顶的卡牌。</p><p class='basic'>虚空格子不是地点，敌人或调查员不能进入，除非有特殊说明。但是，在计算两个地点的距离时，将每个虚空格子作为一个地点计算。</p><p class='basic'>新地点可以在一个已被虚空格子占据的位置入场。如果发生了这样的情况，将该虚空格子的卡牌洗回其所有者的牌库。</p>"
+  },
+  "resolutions": {
+    "xp": {
+      "resolution2": "拯救了世界，使世界免受吞噬",
+      "resolution3": "拯救了世界，使世界免受吞噬",
+      "resolution5": "了解了黑书最深层的秘密。",
+      "resolution6": "拯救了世界，使世界免受吞噬"
+    },
+    "investigatorDefeat": {
+      "title": "调查员被击败",
+      "body": "<p>_在结算其他任何结局前，如果有调查员被击败_：被击败的调查员首先阅读_调查员被击败_。</p><p>_调查员被击败_: 你摔了下去，坐骑没有接住你。你不断下坠，穿过那片有灵识的黑暗组成的无尽虚空，继续坠落。下坠。下坠。下坠。你乞求、尖叫、恳求、祈祷，希望这无休止的下坠能够结束，甚至希望能摔到地面，但你所希望的永远都不会到来。等到宇宙终结的那一刻，你仍在下坠。</p><ul><li>每位被击败的调查员_发疯_。</li><li>如果达成了另一结局，其他调查员转至该结局。</li><li>如果未达成任何结局（每位调查员被击败）：转至_结局 1_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "结局 1",
+      "body": "<p>_结局 1_: 原初混沌苏醒了。它饥饿难忍，张开它巨大的下颚。巨口大张。宇宙都归于沉寂。度过漫长年月。一切仍无变改。在这空虚的宇宙中央，盲目痴愚之神再次入睡。它沉入梦乡。在它的梦境中，宇宙的能量爆发，向四面八方扩散。诞生了一个新宇宙。星云坍缩成为一颗颗恒星。形成了新的世界，新的生命在这些星球上进化、定居。必然，会有人知道阿撒托斯的存在。对它产生崇拜。最后，所有人都会屈服于疯狂，或是和你一起被遗忘……因为在命运的宏大计划中，我们不过是太空中漂浮的几粒尘埃，依赖着冷漠宇宙的一时兴致而活。</p><ul><li>在剧本日志中，记录下*阿撒托斯吞食宇宙*。</li><li>所有调查员_阵亡_。</li><li>调查员剧本失败。</li></ul>"
+    },
+    "resolution2": {
+      "title": "结局 2",
+      "body": "<p>_结局 2_: 直到不久前，你才明白调查过程中不绝于耳的可怕笛声究竟是什么。那是一种催眠曲，用来防止那位漠不关心的神明醒来。在一瞬间，吹笛人的乐声被打断，阿撒托斯开始活动。现在你明白为什么安娜要在那个宿命的夜晚来找你，请求给你占卜命运。她知道你来到这儿后要扮演的是什么角色。</p><p>你坐在那生物的黑色王座边缘，拿出长笛开始演奏。</p><p>在此间，一切尘世烦扰，如时间、饥饿、年龄、疲倦，都不再与你有关，你的职责就是继续演奏。不容失败。永无休止。</p><ul><li>在剧本日志中，记录下*调查员队长加入阿撒托斯的吹笛人队伍*。</li><li>在剧本日志中，记录下*阿撒托斯睡着了……暂时是的*。</li><li>调查员队长_发疯_。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。因为拯救了世界，使世界免受吞噬，每位调查员取得5点奖励经验值。</li><li>每位调查员承受2点精神创伤，因为其知道终有一天阿撒托斯会醒来。</li><li>调查员剧本胜利！</li></ul>"
+    },
+    "resolution3": {
+      "title": "结局 3",
+      "body": "<p>_结局 3_: 你无法容许这头怪物摧毁你所爱的一切。你找齐仪式需要的所有东西——从女巫斗篷上获取的一点幽暗精华、从你驱逐的鬼魂身上取到的一缕鬼灵迷雾，还有你钻研阿卡姆的历史所得到的的知识。你缓缓地、静静地编织着壁障，用鲜血缝入黑暗，用灵魂缝入鲜血，用缟玛瑙石缝入灵魂。这需要花上很长的时间。你完成壁障后，得到的回报是遗忘。这是一种静止与宁静，如此的纯净，如此的完美，一切干扰都无法穿透。这道壁障无法阻止阿撒托斯——实际上任何事物都做不到这一点——不过，当地球上有傻瓜呼唤其名讳，或是取用其力量的时候，这道壁障或许还能让阿撒托斯不为所动。任务完成后，你转身面对黑暗，召唤你的坐骑。是时候回家了。</p><ul><li>在剧本日志中，记录下*阿撒托斯睡着了……暂时是的*。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。因为拯救了世界，使世界免受吞噬，每位调查员取得5点奖励经验值。</li><li>每位调查员承受2点肉体创伤，因为其由于噩梦般的归家旅程而身受重伤。</li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution4": {
+      "title": "结局 4",
+      "body": "<p>_结局 4_: 你来到了阿撒托斯黑如深夜的王座，但从这里要到达那头怪物身边仍然十分困难——即便你成功到达，你也不知道做些什么能够阻止他。你无法将它杀死，甚至试图伤害都只是徒劳地冒险惊动它。心下绝望，你改向凯夏的黑书寻找答案。你打开书本时，一支鹅毛笔出现在你手里，一道声音从远处传进你耳中。“用你的鲜血签下姓名。重新取一个秘名，然后你的愿望就会成真。你和你的世界都将幸免于难。”你知道这是邪恶之声，沃尔特·吉尔曼听到了这声音，因其招致死亡；一开始正是凯夏·梅森受到这声音的引诱，听从其指引来到了这里……但你还有别的选择吗？</p><p class='basic'>调查员必须决定（选择一项）：</p><ul><li>*“我必须这么做。”* 转至_结局 5_。这将使你毁灭。</li><li>*“我拒绝！”* 转至_结局 1_。这将使世界毁灭。</li></ul>"
+    },
+    "resolution5": {
+      "title": "结局 5",
+      "body": "<p>_结局 5_: 你用鹅毛笔刺破自己的胳膊，蘸着鲜血签下姓名。</p><ul><li>在剧本日志中，记录下*阿撒托斯睡着……暂时是的*。</li><li>在剧本日志中，记录下*调查员在阿撒托斯的黑书上签名*。</li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。每位调查员取得10点奖励经验值，因为其了解了黑书最深层的秘密。</li><li>每位调查员承受2点肉体创伤和2点精神创伤——作为调查员与阿撒托斯的信使签订契约的后果。</li><li>调查员游戏胜利……了吗？</li></ul>"
+    },
+    "resolution6": {
+      "title": "结局 6",
+      "body": "<p>_结局 6_: This is it. The end of all things, and the nighted throne of the being known as Azathoth. You know there is no sense in harming it—if such a thing can even suffer harm—so you set about finding another way to prevent it from waking. You understand now that the spirits you saw in Hangman’s Hill were trying to warn you. Trying to drive you away from same path Keziah led them down so many years ago. Anette’s incantation served as this creature’s alarm, and so you shall transform it into a lullaby.</p><p>It takes ages for you to find within these vast timeless halls the spirit that knows how to reverse the incantation. And it takes even longer to drag the words from its hollow throat. But together, you speak aloud the rite that ends Keziah’s work once and for all. Azathoth slumbers once more, though you know it will not last forever. With your task complete, you turn and face the darkness, summoning your steed. It is time to go home.</p><ul><li>In your Campaign Log, record *Azathoth slumbers…for now*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as they have saved the universe from being devoured.</li><li>Each investigator suffers 1 physical trauma and 1 mental trauma, as their nightmarish work takes its toll on their bodies and minds.</li><li>The investigators win the campaign!</li></ul>"
+    }
   }
 }

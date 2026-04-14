@@ -61,6 +61,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
             <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           </div>
           <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{game.name}}</router-link>
+          <router-link v-else-if="game.hasOpenSeats" class="title" :to="`/games/${game.id}/claim-seat`">{{game.name}}</router-link>
           <router-link v-else class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">Solo</div>
         </div>
@@ -402,5 +403,20 @@ h2 {
 .solo {
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
+}
+
+.claim-seat-link {
+  padding: 3px 10px;
+  background: var(--spooky-green);
+  color: white !important;
+  border-radius: 3px;
+  text-decoration: none;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  font-weight: bold;
+
+  &:hover {
+    background: hsl(80, 35%, 32%);
+  }
 }
 </style>

@@ -6,31 +6,30 @@ import { useClipboard } from '@vueuse/core'
 import { imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
+import LogIcons from '@/arkham/components/LogIcons.vue'
 
 const props = defineProps<{
   gameId: string
   game: Game
   playerId: string | null
-  showContinue?: boolean
 }>()
-
-const emit = defineEmits<{ continue: [] }>()
 
 const router = useRouter()
 const openSeats = ref<string[]>([])
+const myClaimed = ref<string | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const isHost = computed(() => localStorage.getItem(`gameHost_${props.gameId}`) === 'true')
 const allClaimed = computed(() => openSeats.value.length === 0)
 const hasPlayerClaimed = computed(() =>
-  props.playerId !== null && props.playerId in props.game.investigators
+  myClaimed.value !== null || (props.playerId !== null && props.playerId in props.game.investigators)
 )
 const investigators = computed(() => Object.values(props.game.investigators))
 
-const claimSeatUrl = computed(() =>
-  `${window.location.origin}/games/${props.gameId}/claim-seat`
-)
+const claimSeatUrl = computed(() => {
+  const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
+  return window.location.origin + window.location.pathname + resolved.href
+})
 const { copy, copied } = useClipboard({ source: claimSeatUrl })
 
 function isOpen(investigatorId: string) {
@@ -51,23 +50,21 @@ async function claim(investigatorId: string) {
   const normalized = investigatorId.startsWith('c') ? investigatorId : `c${investigatorId}`
   try {
     await claimSeat(props.gameId, normalized)
-    router.push(`/games/${props.gameId}`)
+    myClaimed.value = normalized
   } catch {
     error.value = 'Could not claim this seat. It may have already been taken.'
+  } finally {
     loading.value = false
   }
 }
 
 function onContinue() {
-  if (props.showContinue) {
-    router.push(`/games/${props.gameId}`)
-  } else {
-    emit('continue')
-  }
+  router.push(`/games/${props.gameId}`)
 }
 </script>
 
 <template>
+  <LogIcons />
   <div class="continue-campaign scroll-container">
 
     <!-- Header: scenario / campaign info, or generic waiting box -->
@@ -77,7 +74,7 @@ function onContinue() {
           <h3>{{ game.scenario ? 'Scenario' : game.campaign ? 'Campaign' : 'Multiplayer' }}</h3>
           <h2>{{ game.scenario?.name.title ?? game.campaign?.name ?? 'Waiting for Players' }}</h2>
         </div>
-        <div v-if="isHost && !allClaimed" class="invite-section">
+        <div class="invite-section">
           <p class="invite-label">Invite others to join:</p>
           <div class="invite-link">
             <input type="text" :value="claimSeatUrl" readonly />
@@ -109,6 +106,7 @@ function onContinue() {
             @click="claim(investigator.id)"
             type="button"
           >Claim</button>
+          <span v-else-if="investigator.id === myClaimed" class="status-pill joined">Claimed</span>
           <span v-else-if="isOpen(investigator.id)" class="status-pill open">Open</span>
           <span v-else class="status-pill joined">Joined</span>
         </template>
@@ -117,7 +115,7 @@ function onContinue() {
 
     <p v-if="error" class="error-msg">{{ error }}</p>
 
-    <div v-if="allClaimed || showContinue && allClaimed" class="actions">
+    <div v-if="allClaimed" class="actions">
       <button class="continue-btn" @click="onContinue" type="button">Continue</button>
     </div>
 

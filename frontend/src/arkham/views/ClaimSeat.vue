@@ -28,7 +28,6 @@ fetchJoinGame(props.gameId)
     :game-id="gameId"
     :game="game"
     :player-id="null"
-    :show-continue="true"
   />
   <div v-else class="loading">Loading…</div>
 </template>

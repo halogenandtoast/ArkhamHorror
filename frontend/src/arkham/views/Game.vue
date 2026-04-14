@@ -86,7 +86,7 @@ const router = useRouter()
 const source = ref(`${window.location.href}/join`)
 const claimSeatSource = computed(() => {
   const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
-  return window.location.origin + resolved.href
+  return window.location.origin + window.location.pathname + resolved.href
 })
 const openSeatsCount = ref(0)
 

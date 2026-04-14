@@ -8,7 +8,6 @@ import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
 import ImportGame from '@/arkham/components/ImportGame.vue';
-import PrimaryButton from '@/components/PrimaryButton.vue';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute()
@@ -34,7 +33,6 @@ async function deleteGameEvent(game: GameDetails) {
 }
 
 const newGame = ref(route.path === "/new-game" || false)
-const showImport = ref(false)
 
 // View Transition helper
 function withViewTransition(fn: () => void) {
@@ -99,9 +97,8 @@ const dismissNotification = (notification: AppNotification) => {
         <section v-if="currentUser">
           <header>
             <h2>Load Game</h2>
-            <PrimaryButton v-if="!showImport" label="Load Export" @click="showImport = true" />
           </header>
-          <ImportGame v-if="showImport" @close="showImport = false" />
+          <ImportGame />
         </section>
       </div>
     </div>

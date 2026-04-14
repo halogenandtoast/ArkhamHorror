@@ -2,17 +2,31 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { importGame } from '@/arkham/api'
+import type { Investigator } from '@/arkham/types/Investigator'
+import type { Game } from '@/arkham/types/Game'
+import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
+import LogIcons from '@/arkham/components/LogIcons.vue'
 import { imgsrc } from '@/arkham/helpers'
 
-const emit = defineEmits(['close'])
 const router = useRouter()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
-const investigators = ref<string[]>([])
+type GamePreview = {
+  name: string
+  scenarioId: string | null
+  scenarioTitle: string | null
+  campaignId: string | null
+  campaignName: string | null
+  difficulty: string | null
+}
+
+const investigators = ref<Investigator[]>([])
 const isMultiplayer = ref(false)
 const importMode = ref<'Solo' | 'WithFriends'>('Solo')
 const selectedInvestigator = ref<string | null>(null)
+const gamePreview = ref<GamePreview | null>(null)
+const gameStub = { campaign: null, scenario: null } as unknown as Game
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -31,6 +45,7 @@ async function onFileChange(e: Event) {
   error.value = null
   investigators.value = []
   selectedInvestigator.value = null
+  gamePreview.value = null
   importMode.value = 'Solo'
 
   try {
@@ -39,21 +54,30 @@ async function onFileChange(e: Event) {
     const variant = json.multiplayerVariant ?? json.campaignData?.multiplayerVariant ?? 'Solo'
     isMultiplayer.value = variant === 'WithFriends'
     if (isMultiplayer.value) importMode.value = 'WithFriends'
-    // Prefer gamePlayerOrder (has proper 'c' prefix like 'c03004')
-    // campaignPlayers from arkhamhorror.app uses short IDs ('03004') which breaks seat assignment
+    const invMap: Record<string, Investigator> = json.campaignData?.currentData?.gameEntities?.investigators ?? {}
     const playerOrder: string[] = json.campaignData?.currentData?.gamePlayerOrder ?? []
-    const fallbackPlayers: string[] = (json.campaignPlayers ?? []).map((id: string) =>
+    const fallbackIds: string[] = (json.campaignPlayers ?? []).map((id: string) =>
       id.startsWith('c') ? id : `c${id}`
     )
-    investigators.value = playerOrder.length > 0 ? playerOrder : fallbackPlayers
+    const orderedIds = playerOrder.length > 0 ? playerOrder : fallbackIds
+    const ordered = orderedIds.map(id => invMap[id]).filter(Boolean) as Investigator[]
+    investigators.value = ordered.length > 0 ? ordered : Object.values(invMap)
+
+    const gameMode = json.campaignData?.currentData?.gameMode ?? {}
+    const scenario = gameMode.That ?? null
+    const campaign = gameMode.This ?? null
+    gamePreview.value = {
+      name: json.campaignData?.name ?? null,
+      scenarioId: scenario?.id ?? null,
+      scenarioTitle: scenario?.name?.title ?? null,
+      campaignId: campaign?.id ?? null,
+      campaignName: typeof campaign?.name === 'string' ? campaign.name : (campaign?.name?.title ?? null),
+      difficulty: scenario?.difficulty ?? campaign?.difficulty ?? null,
+    }
   } catch {
     error.value = 'Could not parse the export file. Make sure it is a valid Arkham Horror export.'
     selectedFile.value = null
   }
-}
-
-function onModeChange() {
-  selectedInvestigator.value = null
 }
 
 async function submit() {
@@ -68,7 +92,7 @@ async function submit() {
 
   if (multiplayer) {
     formData.append('multiplayerVariant', 'WithFriends')
-    const investigatorId = selectedInvestigator.value ?? (investigators.value.length === 1 ? investigators.value[0] : null)
+    const investigatorId = selectedInvestigator.value ?? (investigators.value.length === 1 ? investigators.value[0].id : null)
     if (investigatorId) {
       formData.append('investigatorId', investigatorId)
     }
@@ -76,11 +100,12 @@ async function submit() {
 
   try {
     const game = await importGame(formData)
-    emit('close')
-    if (multiplayer) {
+    if (multiplayer && investigators.value.length > 1) {
       localStorage.setItem(`gameHost_${game.id}`, 'true')
+      router.push(`/games/${game.id}/claim-seat`)
+    } else {
+      router.push(`/games/${game.id}`)
     }
-    router.push(`/games/${game.id}`)
   } catch {
     error.value = 'Failed to import the game. Please try again.'
     loading.value = false
@@ -96,6 +121,7 @@ const canSubmit = computed(() => {
 </script>
 
 <template>
+  <LogIcons />
   <div class="import-game box">
     <p class="description">
       Load a game exported via "Debug Export" to continue it here.
@@ -103,7 +129,7 @@ const canSubmit = computed(() => {
 
     <div class="file-section">
       <label class="file-label">
-        <span>{{ selectedFile ? selectedFile.name : 'Choose export file…' }}</span>
+        <span>{{ selectedFile ? selectedFile.name : 'Click to choose export file…' }}</span>
         <input
           type="file"
           accept="application/json"
@@ -114,12 +140,27 @@ const canSubmit = computed(() => {
       </label>
     </div>
 
+    <!-- Game preview -->
+    <div v-if="gamePreview" class="game-preview">
+      <div v-if="gamePreview.scenarioId || gamePreview.campaignId" class="preview-icon">
+        <img v-if="gamePreview.scenarioId" :src="imgsrc(`sets/${gamePreview.scenarioId.replace('c', '')}.png`)" />
+        <img v-else-if="gamePreview.campaignId" :src="imgsrc(`sets/${gamePreview.campaignId}.png`)" />
+      </div>
+      <div class="preview-info">
+        <div class="preview-name">{{ gamePreview.name }}</div>
+        <div class="preview-meta">
+          <span v-if="gamePreview.scenarioTitle && gamePreview.scenarioTitle !== gamePreview.name" class="preview-scenario">{{ gamePreview.scenarioTitle }}</span>
+          <span v-if="gamePreview.difficulty" class="preview-difficulty">{{ gamePreview.difficulty }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Import mode picker — shown only for Solo exports -->
     <div v-if="showModePicker" class="mode-section">
       <div class="mode-picker">
-        <input type="radio" v-model="importMode" value="Solo" id="mode-solo" @change="onModeChange" />
+        <input type="radio" v-model="importMode" value="Solo" id="mode-solo" />
         <label for="mode-solo">Solo</label>
-        <input type="radio" v-model="importMode" value="WithFriends" id="mode-multi" @change="onModeChange" />
+        <input type="radio" v-model="importMode" value="WithFriends" id="mode-multi" />
         <label for="mode-multi">Multiplayer</label>
       </div>
       <p class="mode-description">
@@ -128,36 +169,30 @@ const canSubmit = computed(() => {
       </p>
     </div>
 
-    <!-- Investigator picker for multiplayer games -->
-    <div v-if="showInvestigatorPicker" class="seat-picker">
-      <div class="investigator-rows">
-        <div
-          v-for="iid in investigators"
-          :key="iid"
-          class="investigator-row"
-          :class="{ selected: selectedInvestigator === iid }"
-        >
-          <div class="portrait-wrap">
-            <img
-              :src="imgsrc(`portraits/${iid.replace('c', '')}.jpg`)"
-              :alt="iid"
-              class="investigator-portrait"
-            />
-          </div>
+    <!-- Investigator rows — always shown; select button only for multiplayer -->
+    <div v-if="investigators.length > 0" class="investigator-rows">
+      <InvestigatorRow
+        v-for="investigator in investigators"
+        :key="investigator.id"
+        :investigator="investigator"
+        :game="gameStub"
+        :show-expand="false"
+      >
+        <template #back>
           <button
-            class="claim-btn"
-            :class="{ claimed: selectedInvestigator === iid }"
-            @click="selectedInvestigator = iid"
+            v-if="showInvestigatorPicker"
+            class="select-btn"
+            :class="{ selected: selectedInvestigator === investigator.id }"
+            @click="selectedInvestigator = investigator.id"
             type="button"
-          >{{ selectedInvestigator === iid ? 'Selected' : 'Select' }}</button>
-        </div>
-      </div>
+          >{{ selectedInvestigator === investigator.id ? 'Selected' : 'Select' }}</button>
+        </template>
+      </InvestigatorRow>
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
 
-    <div class="actions">
-      <button @click="emit('close')" class="btn-cancel" type="button">Cancel</button>
+    <div v-if="selectedFile" class="actions">
       <button
         @click="submit"
         :disabled="!canSubmit"
@@ -198,6 +233,63 @@ const canSubmit = computed(() => {
 
 .hidden-input {
   display: none;
+}
+
+/* ── Game preview ── */
+.game-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.preview-icon {
+  flex-shrink: 0;
+  width: 28px;
+  filter: invert(100%) brightness(60%);
+
+  img { width: 100%; display: block; }
+}
+
+.preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.preview-name {
+  font-family: teutonic, sans-serif;
+  font-size: 1.1em;
+  color: var(--title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.preview-scenario {
+  font-size: 0.8em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.preview-difficulty {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 2px 7px;
+  border-radius: 999px;
 }
 
 /* ── Mode pill toggle ── */
@@ -254,22 +346,6 @@ const canSubmit = computed(() => {
   opacity: 1;
 }
 
-/* ── Investigator picker ── */
-.seat-picker {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.seat-label {
-  color: var(--title);
-  text-transform: uppercase;
-  font-size: 0.8em;
-  letter-spacing: 0.08em;
-  opacity: 0.7;
-  margin: 0;
-}
-
 /* ── Investigator select rows ── */
 .investigator-rows {
   display: flex;
@@ -277,39 +353,7 @@ const canSubmit = computed(() => {
   gap: 6px;
 }
 
-.investigator-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: background 0.15s, border-color 0.15s;
-
-  &.selected {
-    background: rgba(110, 134, 64, 0.12);
-    border-color: rgba(110, 134, 64, 0.45);
-  }
-}
-
-.portrait-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 6px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.investigator-portrait {
-  width: 150px;
-  display: block;
-  margin-left: -18px;
-  margin-top: -4px;
-}
-
-.claim-btn {
-  margin-left: auto;
+.select-btn {
   padding: 7px 16px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -324,7 +368,7 @@ const canSubmit = computed(() => {
     background: rgba(255, 255, 255, 0.06);
   }
 
-  &.claimed {
+  &.selected {
     background: rgba(110, 134, 64, 0.85);
     border-color: rgba(110, 134, 64, 0.6);
     color: white;
@@ -345,20 +389,6 @@ const canSubmit = computed(() => {
   margin-top: 4px;
 }
 
-.btn-cancel {
-  padding: 8px 18px;
-  background: transparent;
-  border: 1px solid var(--box-border);
-  color: var(--title);
-  border-radius: 3px;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-size: 0.9em;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-}
 
 .btn-submit {
   padding: 8px 18px;
@@ -381,4 +411,6 @@ const canSubmit = computed(() => {
     cursor: not-allowed;
   }
 }
+
+.hidden { display: none; }
 </style>

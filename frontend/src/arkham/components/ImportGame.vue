@@ -26,13 +26,11 @@ const isMultiplayer = ref(false)
 const importMode = ref<'Solo' | 'WithFriends'>('Solo')
 const selectedInvestigator = ref<string | null>(null)
 const gamePreview = ref<GamePreview | null>(null)
-const gameStub = { campaign: null, scenario: null } as unknown as Game
+const gameStub = { campaign: null, scenario: null } as Partial<Game>
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const showModePicker = computed(() =>
-  !isMultiplayer.value && investigators.value.length > 0
-)
+const showModePicker = computed(() => !isMultiplayer.value && investigators.value.length > 0)
 
 const showInvestigatorPicker = computed(() =>
   (isMultiplayer.value || importMode.value === 'WithFriends') && investigators.value.length > 1
@@ -136,7 +134,6 @@ const canSubmit = computed(() => {
       </label>
     </div>
 
-    <!-- Game preview -->
     <div v-if="gamePreview" class="game-preview">
       <div v-if="gamePreview.scenarioId || gamePreview.campaignId" class="preview-icon">
         <img v-if="gamePreview.scenarioId" :src="imgsrc(`sets/${gamePreview.scenarioId.replace('c', '')}.png`)" />
@@ -151,7 +148,6 @@ const canSubmit = computed(() => {
       </div>
     </div>
 
-    <!-- Import mode picker — shown only for Solo exports -->
     <div v-if="showModePicker" class="mode-section">
       <div class="mode-picker">
         <input type="radio" v-model="importMode" value="Solo" id="mode-solo" />
@@ -165,7 +161,6 @@ const canSubmit = computed(() => {
       </p>
     </div>
 
-    <!-- Investigator rows — always shown; select button only for multiplayer -->
     <div v-if="investigators.length > 0" class="investigator-rows">
       <InvestigatorRow
         v-for="investigator in investigators"
@@ -208,7 +203,6 @@ const canSubmit = computed(() => {
   gap: 12px;
 }
 
-/* ── File picker ── */
 .file-label {
   display: flex;
   align-items: center;
@@ -231,7 +225,6 @@ const canSubmit = computed(() => {
   display: none;
 }
 
-/* ── Game preview ── */
 .game-preview {
   display: flex;
   align-items: center;
@@ -288,7 +281,6 @@ const canSubmit = computed(() => {
   border-radius: 999px;
 }
 
-/* ── Mode pill toggle ── */
 .mode-section {
   display: flex;
   flex-direction: column;
@@ -342,7 +334,6 @@ const canSubmit = computed(() => {
   opacity: 1;
 }
 
-/* ── Investigator select rows ── */
 .investigator-rows {
   display: flex;
   flex-direction: column;
@@ -371,7 +362,6 @@ const canSubmit = computed(() => {
   }
 }
 
-/* ── Error & actions ── */
 .error {
   color: #e05050;
   font-size: 0.9em;

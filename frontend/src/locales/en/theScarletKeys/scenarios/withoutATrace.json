@@ -1,4 +1,18 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of locations in play, rounded down.",
+      "cultist": "-4. If you fail, the nearest Outsider enemy readies, moves once toward you, and attacks you if it is at your location.",
+      "tablet": "-X. X is the number of set-aside hollows you own (max 5).",
+      "elderThing": "-3. If you fail, choose a non-weakness card in your hand and set it aside, as a hollow."
+    },
+    "hardExpert": {
+       "skull": "-X. X is the number of locations in play.",
+       "cultist": "-6. If you fail, the nearest Outsider enemy readies, moves once toward you, and attacks you if it is at your location.",
+       "tablet": "-X. X is 1 plus the number of set-aside hollows you own.",
+       "elderThing": "-3. Choose a non-weakness card in your hand and set it aside, as a hollow."
+    }
+  },
   "label": {
     "otherworldlyHorror": {
       "takeDamageAndHorror": "Each investigator takes 1 damage and 1 horror.",

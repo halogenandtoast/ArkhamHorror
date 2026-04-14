@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplate
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti   from '@/effects/confetti'
-import { useClipboard, useWebSocket } from '@vueuse/core'
+import { useWebSocket } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
@@ -83,39 +83,8 @@ const props = withDefaults(defineProps<Props>(), { spectate: false })
 const debug = useDebug()
 const emitter = useEmitter()
 const router = useRouter()
-const source = ref(`${window.location.href}/join`)
-const claimSeatSource = computed(() => {
-  const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
-  return window.location.origin + window.location.pathname + resolved.href
-})
-const openSeatsCount = ref(0)
-
-async function fetchOpenSeatsCount() {
-  try {
-    const seats = await Api.fetchOpenSeats(props.gameId)
-    openSeatsCount.value = seats.length
-  } catch { /* ignore */ }
-}
-
-watch(() => props.gameId, (id) => {
-  if (!id) return
-  fetchOpenSeatsCount()
-}, { immediate: true })
-
-let seatsPollInterval: ReturnType<typeof setInterval> | null = null
-
-watch(openSeatsCount, (count) => {
-  if (count > 0 && !seatsPollInterval) {
-    seatsPollInterval = setInterval(fetchOpenSeatsCount, 5000)
-  } else if (count === 0 && seatsPollInterval) {
-    clearInterval(seatsPollInterval)
-    seatsPollInterval = null
-  }
-})
 const store = useCardStore()
 const userStore = useUserStore()
-const { copy } = useClipboard({ source })
-const { copy: copyClaimSeat } = useClipboard({ source: claimSeatSource })
 const { addEntry, menuItems } = useMenu()
 const preloaded = new Set<string>()
 let mouseX = 0;
@@ -169,7 +138,6 @@ const choices = computed(() => {
   return ArkhamGame.choices(game.value, playerId.value)
 })
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
-const isGameHost = computed(() => localStorage.getItem(`gameHost_${props.gameId}`) === 'true')
 const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
 const websocketUrl = computed(() => {
   const spectatePrefix = props.spectate ? "/spectate" : ""
@@ -931,11 +899,6 @@ onUnmounted(() => {
       :player-id="playerId"
     />
     <template v-else>
-      <div v-if="openSeatsCount > 0 && !gameOver && isGameHost" class="invite-banner">
-        <span>Invite link:</span>
-        <input type="text" :value="claimSeatSource" readonly />
-        <button @click="copyClaimSeat()"><font-awesome-icon icon="copy" /></button>
-      </div>
       <Draggable v-if="showSettings">
       <Settings :game="game" :playerId="playerId" :closeSettings="() => showSettings = false" />
       </Draggable>
@@ -1120,40 +1083,6 @@ onUnmounted(() => {
   @media (max-width: 800px) and (orientation: portrait){
     width: 100%;
   }
-}
-
-.invite-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--background-dark);
-  border-bottom: 1px solid var(--box-border);
-}
-
-.invite-banner span {
-  color: var(--title);
-  font-size: 0.85em;
-  white-space: nowrap;
-}
-
-.invite-banner input {
-  flex: 1;
-  background: transparent;
-  border: 1px solid var(--box-border);
-  color: var(--title);
-  padding: 4px 8px;
-  border-radius: 3px;
-  font-size: 0.85em;
-}
-
-.invite-banner button {
-  background: var(--spooky-green);
-  border: 0;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 3px;
-  cursor: pointer;
 }
 
 .invite-container {

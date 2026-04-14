@@ -30,10 +30,10 @@ const gameStub = { campaign: null, scenario: null } as Partial<Game>
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const showModePicker = computed(() => investigators.value.length > 0)
+const showModePicker = computed(() => investigators.value.length > 1)
 
 const showInvestigatorPicker = computed(() =>
-  (isMultiplayer.value || importMode.value === 'WithFriends') && investigators.value.length > 1
+  importMode.value === 'WithFriends' && investigators.value.length > 1
 )
 
 async function onFileChange(e: Event) {
@@ -86,10 +86,7 @@ async function submit() {
   const formData = new FormData()
   formData.append('debugFile', selectedFile.value)
 
-  const multiplayer = isMultiplayer.value || importMode.value === 'WithFriends'
-
-  if (multiplayer) {
-    formData.append('multiplayerVariant', 'WithFriends')
+  if (importMode.value === 'WithFriends') {
     const investigatorId = selectedInvestigator.value ?? (investigators.value.length === 1 ? investigators.value[0].id : null)
     if (investigatorId) {
       formData.append('investigatorId', investigatorId)
@@ -97,8 +94,8 @@ async function submit() {
   }
 
   try {
-    const game = await importGame(formData)
-    if (multiplayer && investigators.value.length > 1) {
+    const game = await importGame(formData, importMode.value)
+    if (importMode.value === 'WithFriends' && investigators.value.length > 1) {
       localStorage.setItem(`gameHost_${game.id}`, 'true')
       router.push(`/games/${game.id}/claim-seat`)
     } else {
@@ -112,8 +109,7 @@ async function submit() {
 
 const canSubmit = computed(() => {
   if (!selectedFile.value) return false
-  const multiplayer = isMultiplayer.value || importMode.value === 'WithFriends'
-  if (multiplayer && investigators.value.length > 1 && !selectedInvestigator.value) return false
+  if (importMode.value === 'WithFriends' && investigators.value.length > 1 && !selectedInvestigator.value) return false
   return !loading.value
 })
 </script>

@@ -128,10 +128,10 @@ getApiV1ArkhamGameReloadR gameId = do
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
   userId <- getRequestUserId
+  mVariantOverride <- lookupGetParam "multiplayerVariant"
   (params, files) <- runRequestBody
   let
     mInvestigatorId = fmap normalizeJsonInvestigatorId $ snd <$> find ((== "investigatorId") . fst) params
-    mVariantOverride = snd <$> find ((== "multiplayerVariant") . fst) params
   eExportData :: Either String ArkhamExport <-
     fmap eitherDecodeStrict'
       . fileSourceByteString
@@ -146,19 +146,25 @@ postApiV1ArkhamGamesImportR = do
     Right export -> do
       let
         ArkhamGameExportData {..} = aeCampaignData export
-        investigatorIds = map normalizeJsonInvestigatorId $ aeCampaignPlayers export
         exportVariant = agedMultiplayerVariant
         variant = case mVariantOverride of
           Just "WithFriends" -> WithFriends
           Just "Solo" -> Solo
           _ -> exportVariant
+        allInvestigatorIds =
+          map (normalizeJsonInvestigatorId . unCardCode . unInvestigatorId)
+            $ gamePlayerOrder agedCurrentData
+        campaignInvestigatorIds = map normalizeJsonInvestigatorId $ aeCampaignPlayers export
       key <- runDB $ do
         gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now
         case variant of
-          Solo ->
-            traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
+          Solo -> do
+            iid <- case headMay allInvestigatorIds of
+              Nothing -> lift $ invalidArgs ["No investigators found in game data"]
+              Just iid -> pure iid
+            insert_ $ ArkhamPlayer userId gameId iid
           WithFriends -> do
-            let mChosen = mInvestigatorId <|> headMay investigatorIds
+            let mChosen = mInvestigatorId <|> headMay campaignInvestigatorIds
             chosenInvestigator <- case mChosen of
               Nothing -> lift $ invalidArgs ["No investigator specified"]
               Just iid -> pure iid

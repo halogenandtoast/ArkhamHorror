@@ -30,7 +30,7 @@ const gameStub = { campaign: null, scenario: null } as Partial<Game>
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const showModePicker = computed(() => !isMultiplayer.value && investigators.value.length > 0)
+const showModePicker = computed(() => investigators.value.length > 0)
 
 const showInvestigatorPicker = computed(() =>
   (isMultiplayer.value || importMode.value === 'WithFriends') && investigators.value.length > 1

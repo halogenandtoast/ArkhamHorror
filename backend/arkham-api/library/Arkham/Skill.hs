@@ -318,6 +318,7 @@ allSkills =
         SomeSkillCard slippery
       , SomeSkillCard timelyIntervention
       , SomeSkillCard onTheBrink2
+      , SomeSkillCard timelyIntervention3
       , -- Return to the Dunwich Legacy
         --- survivor [rtdwl]
         SomeSkillCard riseToTheOccasion3

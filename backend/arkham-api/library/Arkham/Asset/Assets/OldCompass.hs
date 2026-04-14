@@ -31,7 +31,6 @@ instance RunMessage OldCompass where
       when attrs.ready do
         withSkillTest \stid -> do
           sid <- getRandom
-          mloc <- getSkillTestTargetedLocation
           chooseOneM iid do
             labeled "Exhaust Old Compass" do
               exhaustThis attrs

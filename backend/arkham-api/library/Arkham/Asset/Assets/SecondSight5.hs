@@ -4,9 +4,12 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Discover
 import Arkham.ForMovement
+import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 
 newtype SecondSight5 = SecondSight5 AssetAttrs
@@ -37,13 +40,19 @@ instance RunMessage SecondSight5 where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       when (attrs.use #charge > 0) do
-        additionalSkillTestOption "Second Sight (5)" do
-          removeTokens (attrs.ability 1) attrs Charge 1
-          discoverAtMatchingLocation
-            NotInvestigate
-            iid
-            (attrs.ability 1)
-            (orConnected NotForMovement $ locationWithInvestigator iid)
-            1
+        chooseOne iid
+          $ Label "Spend 1 charge to discover 1 additional clue" [DoStep 2 msg]
+          : [Label "Do not spend charge" []]
+      pure a
+    DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
+      currentLocation <- getJustLocation iid
+      connectedLocations <- select $ ConnectedTo NotForMovement (LocationWithInvestigator $ InvestigatorWithId iid)
+      currentLocationDiscovery <- discover currentLocation (attrs.ability 1) 1
+      connectedLocationDiscoveries <- for connectedLocations \loc -> do
+        d <- discover loc (attrs.ability 1) 1
+        pure (loc, d)
+      chooseOne iid
+        $ targetLabel currentLocation [RemoveTokens (toSource attrs) (toTarget attrs) Charge 1, Msg.DiscoverClues iid currentLocationDiscovery]
+        : map (\(loc, d) -> targetLabel loc [RemoveTokens (toSource attrs) (toTarget attrs) Charge 1, Msg.DiscoverClues iid d]) connectedLocationDiscoveries
       pure a
     _ -> SecondSight5 <$> liftRunMessage msg attrs

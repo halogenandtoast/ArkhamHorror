@@ -155,7 +155,9 @@ putApiV1ArkhamGameUndoR gameId = do
       _ -> pure userId'
   withSpan_ "stepBack" do
     runDB (stepBack isDebug userId gameId) >>= \case
-      Left err -> sendStatusJSON Status.status400 err
+      Left err -> do
+        liftIO $ print err
+        sendStatusJSON Status.status400 err
       Right (ArkhamGame {..}) -> do
         publishToRoom gameId
           $ GameUpdate
@@ -191,7 +193,9 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
         pure (g, gameLog)
 
   case eResult of
-    Left err -> sendStatusJSON Status.status400 err
+    Left err -> do
+      liftIO $ print err
+      sendStatusJSON Status.status400 err
     Right (ArkhamGame {..}, gameLog) -> do
       publishToRoom gameId
         $ GameUpdate

@@ -27,7 +27,7 @@ instance HasAbilities MimeticNemesisOtherworldlySubjugator where
   getAbilities (MimeticNemesisOtherworldlySubjugator a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemyWouldTakeDamage #when SourceIsPlayerCard (be a)
+      [ mkAbility a 1 $ forced $ EnemyWouldTakeDamage #when AnySource (be a)
       , restricted a 2 (exists $ InvestigatorAt $ locationWithEnemy a) $ forced $ RoundEnds #when
       ]
 

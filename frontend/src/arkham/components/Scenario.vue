@@ -516,7 +516,7 @@ const gridConcealed = computed<ConcealedGroup[]>(() => {
 function isHollow(m: ModifierType): m is Hollow {
   return m.tag === "Hollow"
 }
-const hollowed = computed(() => Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))
+const hollowed = computed(() => [...new Set(Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))])
 
 const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
@@ -591,6 +591,13 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
 const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
 const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
+const handleHollowedChoose = (idx: number) => {
+  if (hollowed.value.length > 1) {
+    showHollowed()
+  } else {
+    choose(idx)
+  }
+}
 const hideCards = () => showCards.ref = noCards
 const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 
@@ -1248,7 +1255,7 @@ async function addChaosToken(face: any){
               :playerId="playerId"
               class="card"
               @click="showHollowed"
-              @choose="choose"
+              @choose="handleHollowedChoose"
             />
             <span class="deck-size">{{hollowed.length}}</span>
           </div>

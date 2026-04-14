@@ -326,11 +326,15 @@ handleCityOfRemnants attrs v getLocation setLocation = do
     lid <- hoistMaybe $ getLocation locationsInShadows
     lift do
       push $ Msg.PlaceGrid (GridLocation pos lid)
+      grid <- getGrid
+      let positions = filter (`notElem` invalidPositions) (emptyPositionsInDirections grid pos [minBound ..])
+      currentConcealed <- select $ ConcealedCardWithPlacement $ InPosition pos
+      scenarioSpecific "distributeConcealedLocations" (iid, currentConcealed, positions, positions)
+
       newDecoy <- mkConcealedCard Decoy
       push $ Msg.CreateConcealedCard newDecoy
       newCards <- shuffle [c, newDecoy]
-      grid <- getGrid
-      case filter (`notElem` invalidPositions) (emptyPositionsInDirections grid pos [minBound ..]) of
+      case positions of
         [] -> pure ()
         [pos'] -> for_ newCards \newCard -> do
           push $ Msg.PlaceConcealedCard iid (toId newCard) (InPosition pos')

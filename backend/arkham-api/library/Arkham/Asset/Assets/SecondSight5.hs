@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Message (optionWhenExists)
+import Arkham.Message (setOptionCriteria)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 

@@ -31,7 +31,16 @@ const claimSeatUrl = computed(() => {
   const resolved = router.resolve({ name: 'ClaimSeat', params: { gameId: props.gameId } })
   return window.location.origin + window.location.pathname + resolved.href
 })
-const { copy, copied } = useClipboard({ source: claimSeatUrl })
+const joinUrl = computed(() => {
+  const resolved = router.resolve({ name: 'JoinGame', params: { gameId: props.gameId } })
+  return window.location.origin + window.location.pathname + resolved.href
+})
+const effectiveInviteUrl = computed(() => {
+  const state = props.game.gameState
+  const useJoin = state.tag === 'IsPending' && state.contents.length > 0 && investigators.value.length === 0
+  return useJoin ? joinUrl.value : claimSeatUrl.value
+})
+const { copy, copied } = useClipboard({ source: effectiveInviteUrl })
 
 function isOpen(investigatorId: string) {
   return openSeats.value.includes(investigatorId)
@@ -77,7 +86,7 @@ function onContinue() {
         <div class="invite-section">
           <p class="invite-label">Invite others to join:</p>
           <div class="invite-link">
-            <input type="text" :value="claimSeatUrl" readonly />
+            <input type="text" :value="effectiveInviteUrl" readonly />
             <button type="button" @click="copy()">{{ copied ? '✓ Copied' : 'Copy' }}</button>
           </div>
         </div>
@@ -114,7 +123,11 @@ function onContinue() {
 
     <p v-if="error" class="error-msg">{{ error }}</p>
 
-    <div v-if="allClaimed" class="actions">
+    <div v-if="investigators.length === 0 && game.gameState.tag === 'IsPending'" class="player-count">
+      {{ `Waiting for ${game.playerCount - game.gameState.contents.length} more ${game.playerCount - game.gameState.contents.length === 1 ? 'player' : 'players'}` }}
+    </div>
+
+    <div v-else-if="allClaimed" class="actions">
       <button class="continue-btn" @click="onContinue" type="button">Continue</button>
     </div>
 
@@ -292,6 +305,13 @@ function onContinue() {
   cursor: pointer;
 
   &:hover { background: rgba(0, 0, 0, 0.5); }
+}
+
+.player-count {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9em;
+  padding: 10px;
 }
 
 .error-msg {

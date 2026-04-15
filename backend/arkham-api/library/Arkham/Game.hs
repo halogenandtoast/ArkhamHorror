@@ -6206,10 +6206,12 @@ handleBlanked g = do
 handleDefeatedByModifiers :: Map InvestigatorId (Int, Int) -> Game -> GameT Game
 handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
   for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
-    afterHealth <- field InvestigatorHealth iid
-    afterSanity <- field InvestigatorSanity iid
-    when (afterHealth < beforeHealth || afterSanity < beforeSanity) $
-      push $ CheckDefeated GameSource (InvestigatorTarget iid)
+    whenJustM (getInvestigatorMaybe iid) \_ -> do
+      afterHealth <- field InvestigatorHealth iid
+      afterSanity <- field InvestigatorSanity iid
+      when (afterHealth < beforeHealth || afterSanity < beforeSanity)
+        $ push
+        $ CheckDefeated GameSource (InvestigatorTarget iid)
   getGame
 
 applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()

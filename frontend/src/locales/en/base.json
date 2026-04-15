@@ -32,6 +32,7 @@
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
   "tooltips": {
+    "attacksYou": "{name} attacks you",
     "takeControlOfKey": "Take control of {key} key",
     "name": "{name}"
   },

@@ -2978,6 +2978,15 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
       | location <- locations
       ]
 
+discoverAtMatchingLocation_
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> LocationMatcher
+  -> Int
+  -> m ()
+discoverAtMatchingLocation_ = discoverAtMatchingLocation NotInvestigate
+
 discoverAt
   :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ LocationId)
   => IsInvestigate

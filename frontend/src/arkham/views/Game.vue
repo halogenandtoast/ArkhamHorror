@@ -896,7 +896,6 @@ onUnmounted(() => {
       :game-id="gameId"
       :game="game"
       :player-id="playerId"
-      :use-join-link="true"
     />
     <template v-else>
       <Draggable v-if="showSettings">

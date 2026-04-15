@@ -12,7 +12,6 @@ const props = defineProps<{
   gameId: string
   game: Game
   playerId: string | null
-  useJoinLink?: boolean
 }>()
 
 const router = useRouter()
@@ -36,7 +35,11 @@ const joinUrl = computed(() => {
   const resolved = router.resolve({ name: 'JoinGame', params: { gameId: props.gameId } })
   return window.location.origin + window.location.pathname + resolved.href
 })
-const effectiveInviteUrl = computed(() => props.useJoinLink ? joinUrl.value : claimSeatUrl.value)
+const effectiveInviteUrl = computed(() => {
+  const state = props.game.gameState
+  const useJoin = state.tag === 'IsPending' && state.contents.length > 0 && investigators.value.length === 0
+  return useJoin ? joinUrl.value : claimSeatUrl.value
+})
 const { copy, copied } = useClipboard({ source: effectiveInviteUrl })
 
 function isOpen(investigatorId: string) {

@@ -312,8 +312,6 @@ const handleResult = (result: ServerResult) => {
 
     case "GameCardOnly":
       if (props.spectate) return
-      console.log(uiLock.value, result)
-
       if (uiLock.value) { qPush(result); return }
 
       uiLock.value = true

@@ -71,6 +71,9 @@
   "label": {
     "deepiningDark": {
       "pursuitEnemy": "Draw an enemy in pursuit with the highest evade value"
+    },
+    "deepShadows": {
+      "lantern": "The investigator who controls the Vale Lantern flips it to its _Unlit_ side and places it at a connecting location."
     }
   }
 }

@@ -25,12 +25,42 @@ scenarioI18n a = campaignI18n $ scope "theTwistedHollow" a
 getDarknessLevel :: (HasGame m, Tracing m) => m Int
 getDarknessLevel = scenarioFieldMap ScenarioTokens (countTokens DarknessLevel)
 
+pursuitEnemiesWithHighestFight :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithHighestFight = do
+  enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithFight
+  fightValue <-
+    selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
+      (Max0 . fromMaybe 0)
+      (OutOfPlayEnemyField PursuitZone EnemyFight)
+      (OutOfPlayEnemy PursuitZone EnemyWithFight)
+  filterM
+    ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+        (OutOfPlayEnemyField PursuitZone EnemyFight)
+        (== Just fightValue)
+    )
+    enemies
+
 pursuitEnemiesWithHighestEvade :: (HasGame m, Tracing m) => m [EnemyId]
 pursuitEnemiesWithHighestEvade = do
   enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithEvade
   evadeValue <-
     selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
       (Max0 . fromMaybe 0)
+      (OutOfPlayEnemyField PursuitZone EnemyEvade)
+      (OutOfPlayEnemy PursuitZone EnemyWithEvade)
+  filterM
+    ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+        (OutOfPlayEnemyField PursuitZone EnemyEvade)
+        (== Just evadeValue)
+    )
+    enemies
+
+pursuitEnemiesWithLowestEvade :: (HasGame m, Tracing m) => m [EnemyId]
+pursuitEnemiesWithLowestEvade = do
+  enemies <- select $ OutOfPlayEnemy PursuitZone EnemyWithEvade
+  evadeValue <-
+    selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
+      (Min . fromMaybe 0)
       (OutOfPlayEnemyField PursuitZone EnemyEvade)
       (OutOfPlayEnemy PursuitZone EnemyWithEvade)
   filterM

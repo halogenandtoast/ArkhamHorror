@@ -9472,13 +9472,14 @@ bearDen =
 
 theTwistedHollow :: CardDef
 theTwistedHollow =
-  locationWithUnrevealed_
-    "10621"
-    "Western Woods"
-    [Forest, Dark]
-    "The Twisted Hollow"
-    [Forest, Dark]
-    TheTwistedHollow
+  victory 1
+    $ locationWithUnrevealed_
+      "10621"
+      "Western Woods"
+      [Forest, Dark]
+      "The Twisted Hollow"
+      [Forest, Dark]
+      TheTwistedHollow
 
 boardingHouseDay :: CardDef
 boardingHouseDay =

@@ -197,6 +197,7 @@ data WindowType
   | WouldDrawExactlyOneCard InvestigatorId CardDrawId DeckSignifier
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
+  | DrewCardsFromOwnDeck InvestigatorId
   | DrawChaosToken InvestigatorId ChaosToken
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId

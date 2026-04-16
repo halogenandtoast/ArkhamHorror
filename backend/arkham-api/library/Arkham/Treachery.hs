@@ -655,6 +655,8 @@ allTreacheries =
         SomeTreacheryCard bloom
       , SomeTreacheryCard wallOfThorns
       , SomeTreacheryCard callOfTheWild
+      , --- Myconids [fhv]
+        SomeTreacheryCard psychotropicSpores
       , -- The Drowned City
         -- signature [tdc]
         SomeTreacheryCard illDoItMyself

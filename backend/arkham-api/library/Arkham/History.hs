@@ -50,6 +50,7 @@ data History = History
   , historyEnemiesAttackedBy :: [EnemyId]
   , historyActionsSpent :: Int
   , historyResourcesGained :: Int
+  , historyCardsDrawn :: Int
   }
   deriving stock (Show, Ord, Eq, Data)
 
@@ -72,6 +73,7 @@ data HistoryField k where
   HistorySuccessfulInvestigations :: HistoryField Int
   HistoryActionsSpent :: HistoryField Int
   HistoryResourcesGained :: HistoryField Int
+  HistoryCardsDrawn :: HistoryField Int
 
 deriving stock instance Show (HistoryField k)
 deriving stock instance Eq (HistoryField k)
@@ -97,6 +99,7 @@ viewHistoryField = \case
   HistorySuccessfulInvestigations -> historySuccessfulInvestigations
   HistoryActionsSpent -> historyActionsSpent
   HistoryResourcesGained -> historyResourcesGained
+  HistoryCardsDrawn -> historyCardsDrawn
 
 instance ToJSON (HistoryField k) where
   toJSON = toJSON . show
@@ -125,6 +128,7 @@ instance FromJSON SomeHistoryField where
     "HistoryEnemiesDrawn" -> pure $ SomeHistoryField HistoryEnemiesDrawn
     "HistoryActionsSpent" -> pure $ SomeHistoryField HistoryActionsSpent
     "HistoryResourcesGained" -> pure $ SomeHistoryField HistoryResourcesGained
+    "HistoryCardsDrawn" -> pure $ SomeHistoryField HistoryCardsDrawn
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
 data HistoryItem where
@@ -186,6 +190,7 @@ insertHistoryItem (HistoryItem fld k) h =
     HistorySuccessfulInvestigations -> h {historySuccessfulInvestigations = historySuccessfulInvestigations h + k}
     HistoryActionsSpent -> h {historyActionsSpent = historyActionsSpent h + k}
     HistoryResourcesGained -> h {historyResourcesGained = historyResourcesGained h + k}
+    HistoryCardsDrawn -> h {historyCardsDrawn = historyCardsDrawn h + k}
 
 instance Semigroup History where
   h <> g =
@@ -210,10 +215,11 @@ instance Semigroup History where
       , historySuccessfulInvestigations = historySuccessfulInvestigations h + historySuccessfulInvestigations g
       , historyActionsSpent = historyActionsSpent h + historyActionsSpent g
       , historyResourcesGained = historyResourcesGained h + historyResourcesGained g
+      , historyCardsDrawn = historyCardsDrawn h + historyCardsDrawn g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] 0 mempty False 0 [] [] mempty 0 0 0 0 [] 0 0
+  mempty = History [] [] [] [] 0 mempty False 0 [] [] mempty 0 0 0 0 [] 0 0 0
 
 insertHistory
   :: InvestigatorId
@@ -247,4 +253,5 @@ instance FromJSON History where
     historyEnemiesDrawn <- o .:? "historyEnemiesDrawn" .!= []
     historyActionsSpent <- o .:? "historyActionsSpent" .!= 0
     historyResourcesGained <- o .:? "historyResourcesGained" .!= 0
+    historyCardsDrawn <- o .:? "historyCardsDrawn" .!= 0
     pure History {..}

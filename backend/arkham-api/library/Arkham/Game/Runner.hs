@@ -3240,6 +3240,16 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         (Window.Discarded miid' source card)
 
     pure g
+  UpdateHistory iid historyItem@(HistoryItem HistoryCardsDrawn n) -> do
+    let
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+      currentCount = historyCardsDrawn $ Map.findWithDefault mempty iid (view phaseHistoryL g)
+    when (currentCount == 0 && n > 0) do
+      let (whenW, _, afterW) = frame $ Window.DrewCardsFromOwnDeck iid
+      pushAll [whenW, afterW]
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g

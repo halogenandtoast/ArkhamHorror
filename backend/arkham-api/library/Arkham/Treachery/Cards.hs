@@ -502,6 +502,7 @@ allEncounterTreacheryCards =
       , psychicPull
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
+      , psychotropicSpores
       , pulledBack
       , pulledByTheStars
       , punishment
@@ -3200,10 +3201,11 @@ lurkingFear =
     }
 
 stolenLight :: CardDef
-stolenLight = peril $
-  (treachery "10624" "Stolen Light" TheTwistedHollow 1)
-    { cdCardTraits = setFromList [Scheme]
-    }
+stolenLight =
+  peril
+    $ (treachery "10624" "Stolen Light" TheTwistedHollow 1)
+      { cdCardTraits = setFromList [Scheme]
+      }
 
 swarm :: CardDef
 swarm =
@@ -3238,21 +3240,27 @@ captivatingGleam =
 
 bloom :: CardDef
 bloom =
-    (treachery "10735" "Bloom" TheForest 2)
-      { cdCardTraits = setFromList [Power]
-      }
+  (treachery "10735" "Bloom" TheForest 2)
+    { cdCardTraits = setFromList [Power]
+    }
 
 wallOfThorns :: CardDef
 wallOfThorns =
-    (treachery "10736" "Wall of Thorns" TheForest 2)
-      { cdCardTraits = setFromList [Hazard, Flora]
-      }
+  (treachery "10736" "Wall of Thorns" TheForest 2)
+    { cdCardTraits = setFromList [Hazard, Flora]
+    }
 
 callOfTheWild :: CardDef
 callOfTheWild =
-    (treachery "10737" "Call of the Wild" TheForest 2)
-      { cdCardTraits = setFromList [Terror]
-      }
+  (treachery "10737" "Call of the Wild" TheForest 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+psychotropicSpores :: CardDef
+psychotropicSpores =
+  (treachery "10740" "Psychotropic Spores" Myconids 2)
+    { cdCardTraits = setFromList [Hazard, Flora]
+    }
 
 illDoItMyself :: CardDef
 illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}

@@ -2209,6 +2209,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , gameValueMatches (length cards) valueMatcher
           ]
       _ -> noMatch
+    Matcher.DrewCardsFromOwnDeck timing whoMatcher -> guardTiming timing $ \case
+      Window.DrewCardsFromOwnDeck who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.DrawCard timing whoMatcher cardMatcher deckMatcher ->
       guardTiming timing \case
         Window.DrawCard who card deck ->

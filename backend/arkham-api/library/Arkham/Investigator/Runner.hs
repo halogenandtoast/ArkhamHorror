@@ -3446,6 +3446,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
               <> msgs'
               <> [after]
+              <> [UpdateHistory iid $ HistoryItem HistoryCardsDrawn (length allDrawn)]
               <> ( guard (discardAmount > 0)
                      *> [ FocusCards focusable
                         , chooseN

@@ -249,6 +249,7 @@ data WindowMatcher
   | WouldDrawExactlyOneCard Timing Who DeckMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | DrawsCards Timing Who CardListMatcher ValueMatcher
+  | DrewCardsFromOwnDeck Timing Who
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PlayEvent Timing Who EventMatcher

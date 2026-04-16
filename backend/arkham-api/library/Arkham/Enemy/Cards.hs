@@ -164,6 +164,7 @@ allEncounterEnemyCards =
       , cerenerianDeepOne
       , cloverClubPitBoss
       , cnidathqua
+      , cochlealStag
       , conglomerationOfSpheres
       , conspicuousStaff
       , constanceDumaine
@@ -239,6 +240,7 @@ allEncounterEnemyCards =
       , fangOfYig
       , featheredSerpent
       , fleshEater
+      , forestWatcher
       , forgottenShoggoth
       , formlessSpawn
       , fortunesDaggerA
@@ -389,6 +391,7 @@ allEncounterEnemyCards =
       , pitViper
       , pitWarden
       , pitchSpider
+      , poisonblossom
       , poleman
       , poltergeist
       , possessedExtra_19
@@ -3487,6 +3490,27 @@ crystalParasite =
     { cdCardTraits = setFromList [Monster, Insect, Blight]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
+    }
+
+poisonblossom :: CardDef
+poisonblossom =
+  (enemy "10732" "Poisonblossom" TheForest 2)
+    { cdCardTraits = setFromList [Creature, Flora, Mutated]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+forestWatcher :: CardDef
+forestWatcher =
+  (enemy "10733" "Forest Watcher" TheForest 2)
+    { cdCardTraits = setFromList [Creature, Flora, Mutated]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive]
+    }
+
+cochlealStag :: CardDef
+cochlealStag =
+  (enemy "10734" "Cochleal Stag" TheForest 1)
+    { cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Hunter]
     }
 
 blackChamberOperative :: CardDef

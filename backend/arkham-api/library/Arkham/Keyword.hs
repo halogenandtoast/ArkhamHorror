@@ -48,6 +48,7 @@ data Keyword
   | Partner
   | Concealed ConcealedCardKind GameValue
   | Starting
+  | ScenarioModifierKeyword Text Value Keyword
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

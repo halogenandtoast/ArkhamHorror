@@ -140,6 +140,7 @@ const clues = computed(() => props.enemy.tokens[TokenType.Clue])
 const resources = computed(() => props.enemy.tokens[TokenType.Resource])
 const leylines = computed(() => props.enemy.tokens[TokenType.Leyline])
 const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
+const overgrowth = computed(() => props.enemy.tokens[TokenType.Overgrowth])
 const bounties = computed(() => props.enemy.tokens[TokenType.Bounty])
 const evidence = computed(() => props.enemy.tokens[TokenType.Evidence])
 const warnings = computed(() => props.enemy.tokens[TokenType.Warning])
@@ -298,6 +299,7 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
             <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
+            <PoolItem v-if="overgrowth && overgrowth > 0" type="resource" :amount="overgrowth" />
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
             <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
             <PoolItem v-if="warnings && warnings > 0" type="resource" tooltip="Warning" :amount="warnings" />

@@ -110,6 +110,7 @@ instance RunMessage TheTwistedHollow where
       gather Set.TheForest
       gather Set.Myconids
 
+      setScenarioDayAndTime
       placeStory Stories.nightOne
 
       showedTheWay <- getHasRecord MotherRachelShowedTheWay

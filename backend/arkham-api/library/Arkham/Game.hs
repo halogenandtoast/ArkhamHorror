@@ -4565,7 +4565,14 @@ getEnemyField f e = do
         applyForced ks = \case
           ForcePatrol fs -> Keyword.Patrol fs : filter (not . isPatrol) ks
           _ -> ks
-      pure $ setFromList keywords'
+      setFromList
+        <$> ( keywords' & mapMaybeM \case
+                Keyword.ScenarioModifierKeyword k v kw -> do
+                  selectAny (ScenarioWithModifier (ScenarioModifierValue k v)) <&> \case
+                    True -> Just kw
+                    False -> Nothing
+                other -> pure $ Just other
+            )
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer}

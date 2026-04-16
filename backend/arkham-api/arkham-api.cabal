@@ -1984,6 +1984,7 @@ library
       Arkham.Enemy.Cards.CerenerianDeepOne
       Arkham.Enemy.Cards.CloverClubPitBoss
       Arkham.Enemy.Cards.Cnidathqua
+      Arkham.Enemy.Cards.CochlealStag
       Arkham.Enemy.Cards.ConglomerationOfSpheres
       Arkham.Enemy.Cards.ConspicuousStaff
       Arkham.Enemy.Cards.ConstanceDumaine
@@ -2060,6 +2061,7 @@ library
       Arkham.Enemy.Cards.FelineHybrid
       Arkham.Enemy.Cards.FleshEater
       Arkham.Enemy.Cards.FlyingPolyp
+      Arkham.Enemy.Cards.ForestWatcher
       Arkham.Enemy.Cards.ForgottenShoggoth
       Arkham.Enemy.Cards.FormlessSpawn
       Arkham.Enemy.Cards.FortunesDaggerA
@@ -2218,6 +2220,7 @@ library
       Arkham.Enemy.Cards.PitchSpider
       Arkham.Enemy.Cards.PitViper
       Arkham.Enemy.Cards.PitWarden
+      Arkham.Enemy.Cards.Poisonblossom
       Arkham.Enemy.Cards.Poleman
       Arkham.Enemy.Cards.Poltergeist
       Arkham.Enemy.Cards.PossessedExtra_19

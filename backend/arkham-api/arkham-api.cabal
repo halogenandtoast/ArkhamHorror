@@ -1951,6 +1951,7 @@ library
       Arkham.Enemy.Cards.BenignElderThing
       Arkham.Enemy.Cards.BiancaDieKatz
       Arkham.Enemy.Cards.BillyCooper
+      Arkham.Enemy.Cards.BlackAmanita
       Arkham.Enemy.Cards.BlackChamberOperative
       Arkham.Enemy.Cards.BloodDrinker
       Arkham.Enemy.Cards.BoaConstrictor
@@ -4867,6 +4868,7 @@ library
       Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BloodOnYourHands
       Arkham.Treachery.Cards.BloodthirstySpirits
+      Arkham.Treachery.Cards.Bloom
       Arkham.Treachery.Cards.BodySnatched
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BoundInRed
@@ -4885,6 +4887,7 @@ library
       Arkham.Treachery.Cards.CalledToGuinee
       Arkham.Treachery.Cards.CallingCard
       Arkham.Treachery.Cards.CallOfTheUnknown
+      Arkham.Treachery.Cards.CallOfTheWild
       Arkham.Treachery.Cards.CallToOrder
       Arkham.Treachery.Cards.CaptivatingGleam
       Arkham.Treachery.Cards.CaptiveMind
@@ -5374,6 +5377,7 @@ library
       Arkham.Treachery.Cards.VoiceOfTheMessenger
       Arkham.Treachery.Cards.VoiceOfTrunembra
       Arkham.Treachery.Cards.VortexOfTime
+      Arkham.Treachery.Cards.WallOfThorns
       Arkham.Treachery.Cards.WallsClosingIn
       Arkham.Treachery.Cards.WardOfPreservation
       Arkham.Treachery.Cards.WarpedReality

@@ -135,6 +135,7 @@ allEncounterEnemyCards =
       , beingsOfIb
       , benignElderThing
       , billyCooper
+      , blackAmanita
       , boaConstrictor
       , bogGator
       , boundNightgaunt
@@ -3503,14 +3504,28 @@ forestWatcher :: CardDef
 forestWatcher =
   (enemy "10733" "Forest Watcher" TheForest 2)
     { cdCardTraits = setFromList [Creature, Flora, Mutated]
-    , cdKeywords = setFromList [Keyword.Aloof, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive]
+    , cdKeywords =
+        setFromList [Keyword.Aloof, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive]
     }
 
 cochlealStag :: CardDef
 cochlealStag =
   (enemy "10734" "Cochleal Stag" TheForest 1)
     { cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
-    , cdKeywords = setFromList [Keyword.Elusive, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Hunter]
+    , cdKeywords =
+        setFromList
+          [Keyword.Elusive, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Hunter]
+    }
+
+blackAmanita :: CardDef
+blackAmanita =
+  (enemy "10738" "Black Amanita" TheForest 1)
+    { cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
+    , cdKeywords =
+        setFromList
+          [ Keyword.ScenarioModifierKeyword "time" (String "Day") Keyword.Aloof
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Massive
+          ]
     }
 
 blackChamberOperative :: CardDef

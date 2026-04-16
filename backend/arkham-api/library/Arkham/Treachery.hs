@@ -651,6 +651,10 @@ allTreacheries =
       , --- Horrors in the Rock [fhv]
         SomeTreacheryCard empyreanBrilliance
       , SomeTreacheryCard captivatingGleam
+      , --- The Forest [fhv]
+        SomeTreacheryCard bloom
+      , SomeTreacheryCard wallOfThorns
+      , SomeTreacheryCard callOfTheWild
       , -- The Drowned City
         -- signature [tdc]
         SomeTreacheryCard illDoItMyself

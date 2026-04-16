@@ -243,6 +243,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , bloodthirstySpirits
+      , bloom
       , bodySnatched
       , boundInRed
       , brazierEnchantment
@@ -251,6 +252,7 @@ allEncounterTreacheryCards =
       , bumpyRide
       , burdensOfThePast
       , calcification
+      , callOfTheWild
       , callToOrder
       , callingCard
       , captivatingGleam
@@ -629,7 +631,9 @@ allEncounterTreacheryCards =
       , viciousAmbush
       , violentCommands
       , violentCommandsTheMidwinterGala
+      , wallOfThorns
       , wardOfPreservation
+      , wallOfThorns
       , warpedReality
       , violentOutburst
       , visionsInYourMindDeath
@@ -3230,6 +3234,24 @@ captivatingGleam =
   surge
     $ (treachery "10731" "Captivating Gleam" Refractions 2)
       { cdCardTraits = setFromList [Power, Colour]
+      }
+
+bloom :: CardDef
+bloom =
+    (treachery "10735" "Bloom" TheForest 2)
+      { cdCardTraits = setFromList [Power]
+      }
+
+wallOfThorns :: CardDef
+wallOfThorns =
+    (treachery "10736" "Wall of Thorns" TheForest 2)
+      { cdCardTraits = setFromList [Hazard, Flora]
+      }
+
+callOfTheWild :: CardDef
+callOfTheWild =
+    (treachery "10737" "Call of the Wild" TheForest 2)
+      { cdCardTraits = setFromList [Terror]
       }
 
 illDoItMyself :: CardDef

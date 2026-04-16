@@ -3072,7 +3072,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
 
     pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
-    pure $ a & placementL .~ AtLocation lid
+    let prevLoc = case investigatorPlacement of
+          AtLocation l -> Just l
+          _ -> Nothing
+    pure $ a & placementL .~ AtLocation lid & previousLocationL .~ prevLoc
   CheckEnemyEngagement iid | iid == investigatorId -> do
     -- [AsIfAt]: enemies don't move to threat with AsIf, so we use actual location here
     -- This might not be correct and we should still check engagement and let

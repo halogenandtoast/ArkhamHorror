@@ -4046,3 +4046,9 @@ ifEnemy enemy matcher body = do
 
 clearAbilityUse :: ReverseQueue m => AbilityRef -> m ()
 clearAbilityUse = push . ClearAbilityUse
+
+removeActDeck :: ReverseQueue m => m ()
+removeActDeck = push $ SetCurrentActDeck 1 []
+
+setCurrentAgendaDeck :: (ReverseQueue m) => [Card] -> m ()
+setCurrentAgendaDeck = push . SetCurrentAgendaDeck 1

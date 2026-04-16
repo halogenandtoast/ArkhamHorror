@@ -85,6 +85,7 @@ import Arkham.Asset.Assets (
   sixthSenseEffect,
   steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
+  valeLanternBeaconOfHopeEffect,
   wellConnected3Effect,
   winchesterModel522Effect,
   wither4Effect,
@@ -561,6 +562,7 @@ allEffects =
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("10129", SomeEffect bideYourTimeEffect)
     , ("10131", SomeEffect dawnStar1Effect)
+    , ("10610a", SomeEffect valeLanternBeaconOfHopeEffect)
     , ("11018", SomeEffect grimResolveEffect)
     , ("11079", SomeEffect deliverance3Effect)
     , ("11124", SomeEffect dimensionalVortex5Effect)

@@ -3471,6 +3471,7 @@ ursineHybridGlowingAbomination =
       { cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdUnique = True
+      , cdVictoryPoints = Just 2
       }
 
 stalkingHybrid :: CardDef

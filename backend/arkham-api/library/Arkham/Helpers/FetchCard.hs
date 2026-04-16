@@ -9,6 +9,7 @@ import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Location.Types qualified as Field
 import Arkham.Matcher.Card
 import Arkham.Prelude
 import Arkham.Projection
@@ -76,6 +77,9 @@ instance FetchCard TreacheryId where
 
 instance FetchCard EnemyId where
   fetchCardMaybe_ = fieldMap Field.EnemyCard Just
+
+instance FetchCard LocationId where
+  fetchCardMaybe_ = fieldMap Field.LocationCard Just
 
 instance FetchCard CardId where
   fetchCardMaybe_ = fmap Just . getCard

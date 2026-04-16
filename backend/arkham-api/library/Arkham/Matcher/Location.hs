@@ -17,6 +17,7 @@ import Arkham.Label
 import Arkham.Location.Brazier
 import Arkham.Location.Grid
 import Arkham.LocationSymbol
+import {-# SOURCE #-} Arkham.Matcher.Ability
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
@@ -173,6 +174,7 @@ data LocationMatcher
   | LocationInColumnOf LocationMatcher
   | LocationInPosition Pos
   | LocationWhenCriteria Criterion
+  | LocationWithAbility AbilityMatcher
   | OutOfGameLocation
   | LocationWithPlacement Placement
   | -- | Must be replaced

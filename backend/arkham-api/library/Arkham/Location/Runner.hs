@@ -468,13 +468,16 @@ instance RunMessage LocationAttrs where
             | otherwise = FullyFlooded
       locationClueCount <- getModifiedRevealClueCountWithMods mods a
       revealer <- maybe getLead pure miid
+      mFromLid <- join <$> fieldMay InvestigatorPreviousLocation revealer
       whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocation revealer lid)]
+      revealForcedMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocationForcedAbilities revealer lid mFromLid)]
       afterWindowMsg <- checkWindows [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       let currentClues = countTokens Clue locationTokens
 
       pushAll
         $ [whenWindowMsg]
         <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
+        <> [revealForcedMsg]
         <> [afterWindowMsg]
       pure
         $ a

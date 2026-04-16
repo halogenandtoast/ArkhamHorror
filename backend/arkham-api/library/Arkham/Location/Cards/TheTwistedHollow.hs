@@ -17,7 +17,7 @@ theTwistedHollow = locationWith TheTwistedHollow Cards.theTwistedHollow 4 (PerPl
 instance HasAbilities TheTwistedHollow where
   getAbilities (TheTwistedHollow a) =
     extendRevealed1 a
-      $ mkAbility a 1 (Objective $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 2) (be a)))
+      $ restricted a 1 (OnAct 2) (Objective $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 2) (be a)))
 
 instance RunMessage TheTwistedHollow where
   runMessage msg l@(TheTwistedHollow attrs) = runQueueT $ case msg of

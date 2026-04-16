@@ -2705,6 +2705,8 @@ getLocationsMatching lmatcher = do
       pure $ filter (maybe False ((`elem` xs) . positionColumn) . attr locationPosition) ls
     LocationInPosition pos -> do
       pure $ filter ((== Just pos) . attr locationPosition) ls
+    LocationWithAbility abMatcher -> do
+      ls & filterM (anyM (`abilityMatches` abMatcher) . getAbilities)
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case
@@ -3475,7 +3477,7 @@ enemyMatcherFilter es matcher' = do
 
       pure $ notNull locations
     EnemyWithoutSpawn -> pure $ filter (isNothing . attr enemySpawnAt) es
-    EnemyDrawnFrom deckSig -> pure $ filter ((== Just deckSig) . attr enemyDrawnFrom) es
+    Arkham.Matcher.EnemyDrawnFrom deckSig -> pure $ filter ((== Just deckSig) . attr enemyDrawnFrom) es
     EnemyWantsToSpawnIn locationMatcher -> pure $ flip filter es \enemy ->
       case attr enemySpawnAt enemy of
         Just (SpawnAt (LocationMatchAll inner)) -> locationMatcher `elem` inner
@@ -4437,6 +4439,7 @@ getEnemyField f e = do
     EnemyPlacement -> pure enemyPlacement
     EnemyCardsUnderneath -> pure enemyCardsUnderneath
     EnemyLastKnownLocation -> pure enemyLastKnownLocation
+    Arkham.Enemy.Types.EnemyDrawnFrom -> pure enemyDrawnFrom
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
@@ -4667,6 +4670,7 @@ instance Projection Investigator where
       InvestigatorDrawing -> pure investigatorDrawing
       InvestigatorUnhealedHorrorThisRound -> pure investigatorUnhealedHorrorThisRound
       InvestigatorBeganRoundAt -> pure investigatorBeganRoundAt
+      InvestigatorPreviousLocation -> pure investigatorPreviousLocation
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> do

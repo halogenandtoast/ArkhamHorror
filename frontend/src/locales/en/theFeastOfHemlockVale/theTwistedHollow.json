@@ -1,4 +1,19 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current darkness level.",
+      "cultist": "-1. Heal 1 damage from your investigator.",
+      "tablet": "-3. If you fail, find the enemy in pursuit with the highest evade. Spawn it at your location.",
+      "elderThing": "-4. If you fail, take 1 horror."
+
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice the current darkness level.",
+      "cultist": "-3. If you succeed, heal 1 damage from your investigator.",
+      "tablet": "-4. Find the enemy in pursuit with the highest evade. Spawn it at your location.",
+      "elderThing": "-5. Take 1 horror."
+    }
+  },
   "intro": {
     "label": {
       "tellTheTruth": "Tell the truth.",

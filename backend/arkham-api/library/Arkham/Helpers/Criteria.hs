@@ -628,8 +628,9 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
     Criteria.OutOfPlayEnemyExists outOfPlayZone matcher ->
       selectAny $ Matcher.OutOfPlayEnemy outOfPlayZone matcher
     Criteria.OnAct step -> do
-      actId <- selectJust Matcher.AnyAct
-      (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
+      selectOne Matcher.AnyAct >>= \case
+        Nothing -> pure False
+        Just actId -> (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
     Criteria.AgendaExists matcher -> selectAny matcher
     Criteria.AbilityExists matcher -> selectAny matcher
     Criteria.SkillExists matcher -> selectAny matcher

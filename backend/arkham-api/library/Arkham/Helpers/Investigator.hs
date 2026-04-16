@@ -422,6 +422,7 @@ investigator f cardDef Stats {..} =
                 , investigatorLog = mkCampaignLog
                 , investigatorDeckBuildingAdjustments = mempty
                 , investigatorBeganRoundAt = Nothing
+                , investigatorPreviousLocation = Nothing
                 , investigatorTaboo = Nothing
                 , investigatorMutated = Nothing
                 , investigatorDeckUrl = Nothing

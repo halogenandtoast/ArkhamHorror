@@ -36,8 +36,8 @@ instance RunMessage DeepShadows where
 
       chooseOrRunOneM iid $ scenarioI18n do
         unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-        for_ mDetails \(lantern, owner) -> do
-          labeled' "deepShadows.lantern" do
+        labeledValidate' (isJust mDetails) "deepShadows.lantern" do
+          for_ mDetails \(lantern, owner) -> do
             flipOverBy owner attrs lantern
             connected <- select $ ConnectedFrom NotForMovement (locationWithInvestigator owner)
             chooseTargetM owner connected $ place lantern . AtLocation

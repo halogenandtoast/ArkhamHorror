@@ -9,7 +9,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelect
 import Arkham.Helpers.Window (getRevealedLocation)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Dark, Forest))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -89,5 +88,5 @@ instance RunMessage ValeLanternBeaconOfHopeEffect where
         EffectMetaTarget (LocationTarget lid) -> Just lid
         _ -> Nothing
     isRevealAfterWindow w = case w.kind of
-      Window.RevealLocation _ loc -> w.timing == Timing.After && Just loc == destLid
+      Window.RevealLocation _ loc -> w.timing == #after && Just loc == destLid
       _ -> False

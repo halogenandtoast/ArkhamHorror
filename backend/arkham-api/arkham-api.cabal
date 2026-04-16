@@ -1992,6 +1992,7 @@ library
       Arkham.Enemy.Cards.ConstrictingElderThing
       Arkham.Enemy.Cards.CorpseDweller
       Arkham.Enemy.Cards.CorpseHungryGhoul
+      Arkham.Enemy.Cards.CorpseLichen
       Arkham.Enemy.Cards.CorpseTaker
       Arkham.Enemy.Cards.CorruptedOrderly
       Arkham.Enemy.Cards.CorsairOfLeng

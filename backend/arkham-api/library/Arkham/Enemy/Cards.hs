@@ -172,6 +172,7 @@ allEncounterEnemyCards =
       , constrictingElderThing
       , corpseDweller
       , corpseHungryGhoul
+      , corpseLichen
       , corpseTaker
       , corruptedOrderly
       , corsairOfLeng
@@ -3519,12 +3520,23 @@ cochlealStag =
 
 blackAmanita :: CardDef
 blackAmanita =
-  (enemy "10738" "Black Amanita" TheForest 1)
+  (enemy "10738" "Black Amanita" Myconids 2)
     { cdCardTraits = setFromList [Creature, Monster, Flora, Mutated]
     , cdKeywords =
         setFromList
           [ Keyword.ScenarioModifierKeyword "time" (String "Day") Keyword.Aloof
           , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Massive
+          ]
+    }
+
+corpseLichen :: CardDef
+corpseLichen =
+  (enemy "10739" "Corpse Lichen" Myconids 1)
+    { cdCardTraits = setFromList [Humanoid, Monster, Flora, Mutated]
+    , cdKeywords =
+        setFromList
+          [ Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Hunter
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Alert
           ]
     }
 

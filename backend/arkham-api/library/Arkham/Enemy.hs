@@ -592,6 +592,7 @@ allEnemies =
       , SomeEnemyCard cochlealStag
       , --- Myconids [fhv]
         SomeEnemyCard blackAmanita
+      , SomeEnemyCard corpseLichen
       , -- Core 2026
         --- signature [core2026]
         SomeEnemyCard blackChamberOperative

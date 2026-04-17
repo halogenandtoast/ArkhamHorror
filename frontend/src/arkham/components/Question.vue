@@ -1192,6 +1192,7 @@ h2 {
   margin: 10px;
   img {
     border-radius: 5px;
+    height: auto;
 
     &.Reversed {
       transform: rotateZ(180deg);
@@ -1202,6 +1203,10 @@ h2 {
         transform: translate(0, -12px);
       }
     }
+  }
+
+  a {
+    display: inline-block;
   }
 
   a > img {

@@ -152,8 +152,12 @@ postApiV1ArkhamGamesImportR = do
           Just "Solo" -> Solo
           _ -> exportVariant
         allInvestigatorIds =
-          map (normalizeJsonInvestigatorId . unCardCode . unInvestigatorId)
-            $ gamePlayerOrder agedCurrentData
+          map normalizeJsonInvestigatorId
+            $ maybe [] toList
+            $ asum
+              [ nonEmpty (map (unCardCode . unInvestigatorId) (gamePlayerOrder agedCurrentData))
+              , nonEmpty (aeCampaignPlayers export)
+              ]
         campaignInvestigatorIds = map normalizeJsonInvestigatorId $ aeCampaignPlayers export
       key <- runDB $ do
         gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now

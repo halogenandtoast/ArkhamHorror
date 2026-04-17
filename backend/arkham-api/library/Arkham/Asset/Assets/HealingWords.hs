@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.HealingWords (
-  healingWords,
-  HealingWords (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.HealingWords (healingWords) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Token
 
 newtype HealingWords = HealingWords AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,19 +16,15 @@ healingWords = asset HealingWords Cards.healingWords
 
 instance HasAbilities HealingWords where
   getAbilities (HealingWords a) =
-    [ restrictedAbility
-        a
-        1
-        ( ControlsThis
-            <> exists (HealableInvestigator (toAbilitySource a 1) #damage $ colocatedWithMatch You)
-        )
+    [ controlled a 1 (exists $ HealableInvestigator (a.ability 1) #damage $ colocatedWithMatch You)
         $ actionAbilityWithCost
         $ assetUseCost a Charge 1
     ]
 
 instance RunMessage HealingWords where
-  runMessage msg a@(HealingWords attrs) = case msg of
+  runMessage msg a@(HealingWords attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ HealDamage (toTarget iid) (toSource attrs) 1
+      damageInvestigators <- select $ HealableInvestigator (attrs.ability 1) #damage $ colocatedWith iid
+      chooseOrRunOneM iid $ targets damageInvestigators $ healDamageOn (attrs.ability 1) 1
       pure a
-    _ -> HealingWords <$> runMessage msg attrs
+    _ -> HealingWords <$> liftRunMessage msg attrs

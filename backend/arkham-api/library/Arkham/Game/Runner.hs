@@ -1018,31 +1018,30 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
-    investigatorsWithClues <-
-      filter ((> 0) . snd)
-        <$> for
-          ( filter ((`elem` iids) . fst)
-              $ mapToList
-              $ g
-              ^. entitiesL
-              . investigatorsL
-          )
-          (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
+    investigatorsWithClues <- forMaybeM iids \iid' -> do
+      clues <- getSpendableClueCount iid'
+      if clues > 0
+        then do
+          name <- fieldMap Investigator.InvestigatorName toTitle iid'
+          pure $ Just (iid', name, clues)
+        else pure Nothing
     case investigatorsWithClues of
       [] -> error "someone needed to spend some clues"
-      [(x, _)] -> push $ InvestigatorSpendClues x n
-      xs -> do
-        if sum (map snd investigatorsWithClues) == n
-          then
-            pushAll
-              $ map (uncurry InvestigatorSpendClues) investigatorsWithClues
+      [(x, _, _)] -> push $ InvestigatorSpendClues x n
+      _ -> do
+        if sum (map (\(_, _, x) -> x) investigatorsWithClues) == n
+          then pushAll $ map (\(i, _, x) -> InvestigatorSpendClues i x) investigatorsWithClues
           else do
             player <- getPlayer (gameLeadInvestigatorId g)
-            pushAll
-              [ chooseOne player
-                  $ map (\(i, _) -> targetLabel i [InvestigatorSpendClues i 1]) xs
-              , SpendClues (n - 1) (map fst investigatorsWithClues)
-              ]
+            rs <- getRandoms
+            let
+              paymentOptions =
+                zipWith
+                  ( \choiceId (iid', name, clues) -> PaymentAmountChoice choiceId iid' 0 clues name $ InvestigatorSpendClues iid' 1
+                  )
+                  rs
+                  investigatorsWithClues
+            push $ Ask player $ ChoosePaymentAmounts "Clues" (Just $ TotalAmountTarget n) paymentOptions
     pure g
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. entitiesL . agendasL

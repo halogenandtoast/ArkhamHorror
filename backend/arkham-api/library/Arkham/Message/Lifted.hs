@@ -555,7 +555,7 @@ kill (toSource -> source) iid = do
 
 defeat :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 defeat (toSource -> source) iid = do
-  push $ InvestigatorWhenDefeated (attrs.ability 1) iid
+  push $ InvestigatorWhenDefeated source iid
   push CheckForRemainingInvestigators
 
 drivenInsane :: ReverseQueue m => InvestigatorId -> m ()

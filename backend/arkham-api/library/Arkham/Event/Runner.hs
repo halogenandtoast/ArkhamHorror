@@ -294,28 +294,31 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
         Lifted.checkAfter $ Window.PlacedToken source target tType n
         when (tType == Doom && a.doom == 0) do
           Lifted.checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
-    if tokenIsUse tType
-      then case eventPrintedUses of
-        NoUses -> do
+    if
+      | tokenIsUse tType -> case eventPrintedUses of
+          NoUses -> do
+            handleWindows
+            pure $ a & tokensL . at tType . non 0 %~ (+ n)
+          Uses useType'' _ | tType == useType'' -> do
+            handleWindows
+            pure $ a & tokensL . at tType . non 0 %~ (+ n)
+          UsesWithLimit useType'' _ pl | tType == useType'' -> do
+            handleWindows
+            l <- calculate pl
+            pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
+          _ ->
+            error
+              $ "Trying to add the wrong use type, has "
+              <> show eventPrintedUses
+              <> ", but got: "
+              <> show tType
+      | tType == Doom -> do
           handleWindows
-          pure $ a & tokensL . at tType . non 0 %~ (+ n)
-        Uses useType'' _ | tType == useType'' -> do
+          pure $ a & doomL %~ max 0 . (+ n)
+      | otherwise -> do
+          pushWhen (tType == Horror) $ checkDefeated source a
           handleWindows
-          pure $ a & tokensL . at tType . non 0 %~ (+ n)
-        UsesWithLimit useType'' _ pl | tType == useType'' -> do
-          handleWindows
-          l <- calculate pl
-          pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
-        _ ->
-          error
-            $ "Trying to add the wrong use type, has "
-            <> show eventPrintedUses
-            <> ", but got: "
-            <> show tType
-      else do
-        pushWhen (tType == Horror) $ checkDefeated source a
-        handleWindows
-        pure $ a & tokensL %~ addTokens tType n
+          pure $ a & tokensL %~ addTokens tType n
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg
     pure a

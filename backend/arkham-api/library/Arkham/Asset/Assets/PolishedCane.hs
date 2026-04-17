@@ -1,10 +1,8 @@
 module Arkham.Asset.Assets.PolishedCane (polishedCane) where
 
 import Arkham.Ability
-import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Fight
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
@@ -17,14 +15,15 @@ polishedCane :: AssetCard PolishedCane
 polishedCane = asset PolishedCane Cards.polishedCane
 
 instance HasAbilities PolishedCane where
-  getAbilities (PolishedCane a) = [controlled_ a 1 $ fightActionWith_ #agility]
+  getAbilities (PolishedCane a) = [controlled_ a 1 fightAction_]
 
 instance RunMessage PolishedCane where
   runMessage msg a@(PolishedCane attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
+      addSkillValue sid source iid #agility
+      chooseFightEnemy sid iid source
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       runMaybeT_ do

@@ -18,7 +18,7 @@
       "placeDoom": "Place 1 doom on a Silver Twilight enemy in play"
     },
     "trophyRoom": {
-      "spendClues": "Spend 2 resources to gain 1 clue (from the token pool)."
+      "spendResources": "Spend 2 resources to gain 1 clue (from the token pool)."
     },
     "senatorNathanielRhodesAdeptPolitician": {
       "take": "Take control of 1 of his clues",

@@ -18,7 +18,12 @@ blightedGlade = locationWith BlightedGlade Cards.blightedGlade 2 (PerPlayer 1) c
 
 instance HasAbilities BlightedGlade where
   getAbilities (BlightedGlade a) =
-    extendRevealed a [mkAbility a 1 (forced $ RevealLocation #after You $ be a)]
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        (exists $ OutOfPlayEnemy PursuitZone EnemyWithEvade)
+        (forced $ RevealLocation #after You $ be a)
 
 instance RunMessage BlightedGlade where
   runMessage msg l@(BlightedGlade attrs) = runQueueT $ case msg of

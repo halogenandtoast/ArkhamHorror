@@ -75,5 +75,29 @@
     "deepShadows": {
       "lantern": "The investigator who controls the Vale Lantern flips it to its _Unlit_ side and places it at a connecting location."
     }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "insight": "Gained insight into Hemlock Isle’s unique ecosystem.",
+        "bertie": "Resigned with Bertie Musgrave under their control."
+      }
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: Long, spindly branches stretch like grasping hands from the thick canopy overhead. You feel light-headed as strange whispers resound from deep in the surrounding dark. Summoning all your strength, you stagger to the edge of a black lake. The waxing moon is perfectly reflected on the surface of the water, distorted by oily, iridescent whisps of a strange color. Across the lake, a figure stands outlined in the mist. You call out to it, and it moves slowly toward you, over the water. As it approaches, all you can see of its face is a wide, rictus grin.</p><p>“So help me, please wake up!” Dr. Marquez shakes you awake from the nightmare. Her worry quickly turns to annoyance when you open your eyes. “I’m glad you woke up. I wasn’t prepared for the paperwork if we lost you, too.” You are in a flowering field at the edge of the woods. When you ask about Bertie, she brushes a stray hair behind her ear and looks up at the waking dawn. “He’s gone. I lost him.”</p><ul><li>In your Campaign Log, record *Bertie was lost in the woods*.</li><li>Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Long, spindly branches stretch like grasping hands as you emerge from the forest into a meadow glowing with shimmering blue wildflowers. The sight of the brilliant carpet of blue and white nearly takes your breath away after the oppressive darkness. Perhaps it is just your tired mind, but the heather and flowers seem to pulse. “Look,” Bertie points with a trembling hand. A dozen luminous stalks rise like floating lamps over the meadow, glimmering in the moonlight. “I feel almost as though we are walking amidst the cosmos. That each of us is a little god.” He plucks a glowing bud from its stalk. “And each of these, an even smaller star.”</p><p>Dr. Marquez slaps the flower out of his hand. “That poetic drivel is what got you lost in the woods. We risked life and limb for you! You’ll be lucky if I leave this incident out of the survey report.” Bertie hangs his head in shame as the professor lists a litany of woes and misdemeanors. But still, you can’t help but note the concern in Dr. Marquez’s voice as she excoriates her assistant. As you return to the Vale, the sky stirs with the coming dawn.</p><ul><li>In your Campaign Log, record 8Bertie was rescued*.</li><li>Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The canopy of trees presses in, filled with myriad eyes and the noisome beating of insect wings. You emerge into a small moonlit clearing to hear a familiar hacking cough: the bear emerges, snarling, from the darkness behind you. Bertie looks at you with wide, clear eyes. “This is my fault. I’m so sorry I caused you so much trouble. Say a word for me back in the Vale, will you?” Before you can intervene, Bertie snatches the lantern out of your hands and shouts into the darkness: “Come on, you ugly git!”</p><p>The bear roars in response. Glowing blue spores scatter in the darkness around it, wreathing the creature in pale blue light. Bertie lets out a brave yell in response and barrels toward it. Realizing the young man’s sacrifice, you take advantage of the distraction to slip away and get to safety.</p><ul><li>In your Campaign Log, record *Bertie was lost in the woods*.</li><li>Proceed to _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. An unplanned foray into the Western Woods, at night. Local flora and fauna have evolved highly specialized behavior patterns after dark, likely dictated by extreme circadian rhythms and aggressive predation. A highly toxic environment. Identified a hitherto unknown symbiosis with a new strain of parasitic fungus. Further observation necessary.”</p><ul><li>Each investigator earns 1 bonus experience as they gain insight into Hemlock Isle’s unique ecosystem.<ul><li>Each investigator earns 1 additional experience if an investigator resigned with Bertie Musgrave under their control.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>Update your Campaign Log.<ul><li>If Ursine Hybrid is in the victory display, record *the bear was wounded*.</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *Western Woods*.</li></ul></li><li>Proceed to _Prelude: Dawn of the Second Day_.</li></ul>"
+    }
   }
 }

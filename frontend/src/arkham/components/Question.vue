@@ -1171,6 +1171,7 @@ h2 {
   img {
     border: 1px solid var(--select);
     border-radius: 5px;
+    height: auto;
   }
 
   .card {

@@ -1280,6 +1280,7 @@ data Message
   | -- UI
     ClearUI
   | Priority Message
+  | Simultaneously [Message]
   | -- Debug
     ClearQueue
   | DebugAddToHand InvestigatorId CardId

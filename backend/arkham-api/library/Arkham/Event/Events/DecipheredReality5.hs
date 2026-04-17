@@ -1,13 +1,12 @@
 module Arkham.Event.Events.DecipheredReality5 (decipheredReality5) where
 
-import Arkham.Action qualified as Action
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Investigate
+import Arkham.Helpers.SkillTest.Lifted (investigate_)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Message (optionWhenExists)
 import Arkham.Modifier
 import Arkham.Projection
 
@@ -25,14 +24,19 @@ instance RunMessage DecipheredReality5 where
       maxShroud <- maximum . ncons 0 <$> traverse (fieldMap LocationShroud (fromMaybe 0)) locationIds
       sid <- getRandom
       skillTestModifier sid attrs sid (SetDifficulty maxShroud)
-      push . Msg.toMessage =<< (mkInvestigate sid iid attrs <&> setTarget attrs)
+      investigate_ sid iid attrs
       pure e
-    Successful (Action.Investigate, actionTarget) iid source target n | isTarget attrs target -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use
       -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
       -- standard rewards for successfully investigating.
-      locationIds <- select RevealedLocation
-      msgs <- for locationIds \lid' -> Msg.DiscoverClues iid <$> discover lid' (toSource attrs) 1
-      pushAll $ Successful (Action.Investigate, actionTarget) iid source actionTarget n : msgs
+      additionalSkillTestOptionEdit
+        (optionWhenExists $ RevealedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid))
+        "Deciphered Reality (5)"
+        (doStep 1 msg)
+      pure e
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
+      locationIds <- select $ RevealedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
+      simultaneously $ for_ locationIds $ discoverAt IsInvestigate iid attrs 1
       pure e
     _ -> DecipheredReality5 <$> liftRunMessage msg attrs

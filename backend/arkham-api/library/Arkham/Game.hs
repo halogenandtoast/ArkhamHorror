@@ -5860,6 +5860,51 @@ getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
+-- | Split a message sequence at its first CheckWindows.
+-- Returns (pre-messages, maybe-windows, post-messages).
+splitAtFirstCheckWindows :: [Message] -> ([Message], Maybe [Window], [Message])
+splitAtFirstCheckWindows [] = ([], Nothing, [])
+splitAtFirstCheckWindows (CheckWindows ws : rest) = ([], Just ws, rest)
+splitAtFirstCheckWindows (m : rest) =
+  let (pre, mw, post) = splitAtFirstCheckWindows rest
+   in (m : pre, mw, post)
+
+-- | Interleave results from simultaneously-run messages:
+-- - All CheckWindows at each synchronization point are merged into one.
+-- - Non-window messages before/after are grouped in nested Simultaneously blocks.
+interleaveSimultaneously :: [[Message]] -> [Message]
+interleaveSimultaneously seqs
+  | all null seqs = []
+  | otherwise =
+      let
+        splits = map splitAtFirstCheckWindows seqs
+        pres = [pre | (pre, _, _) <- splits]
+        windows = [ws | (_, Just ws, _) <- splits]
+        posts = [post | (_, _, post) <- splits]
+        nonNullPosts = filter (not . null) posts
+       in
+        case windows of
+          [] ->
+            -- No CheckWindows at this level; re-wrap so the next round can
+            -- capture and merge any windows the messages produce when run.
+            case concat pres of
+              [] -> []
+              [single] -> [single]
+              multiple -> [Simultaneously multiple]
+          _ ->
+            let
+              allPres = concat pres
+              preMsgs = case allPres of
+                [] -> []
+                [single] -> [single]
+                multiple -> [Simultaneously multiple]
+              windowMsg = CheckWindows (concat windows)
+              afterMsg = case nonNullPosts of
+                [] -> []
+                [single] -> single
+                multiple -> [Simultaneously (map Run multiple)]
+             in preMsgs ++ [windowMsg] ++ afterMsg
+
 -- finds the first message in the form `Priority msg` and returns that, otherwise returns the first message
 popMessageWithPriority :: HasQueue Message m => m (Maybe Message)
 popMessageWithPriority = withQueue \case
@@ -5952,6 +5997,27 @@ runMessages gameId mLogger = do
         for_ mLogger $ liftIO . ($ msg)
 
         let
+          shouldPreloadModifiers = \case
+            Ask {} -> False
+            BeginAction {} -> False
+            CheckAttackOfOpportunity {} -> False
+            CheckEnemyEngagement {} -> False
+            Do (CheckWindows {}) -> False
+            ClearUI {} -> False
+            CreatedCost {} -> False
+            EndCheckWindow {} -> False
+            PaidAllCosts {} -> False
+            PayForAbility {} -> False
+            PayCost {} -> False
+            PayCosts {} -> False
+            Run {} -> False
+            Simultaneously {} -> False
+            UseAbility {} -> False
+            Do (UseAbility {}) -> False
+            When {} -> False
+            WhenCanMove {} -> False
+            Would {} -> False
+            _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger
             Run msgs -> do
@@ -6012,6 +6078,41 @@ runMessages gameId mLogger = do
                 >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            Simultaneously [] -> runMessages gameId mLogger
+            Simultaneously msgs -> do
+              -- Save the rest of the queue so we can restore it after collecting results
+              savedQueue <- peekQueue
+              clearQueue
+              -- Run each message through the full pipeline and capture its queue output
+              allResults <- traverse (\m -> do
+                asIfLocations' <- runWithEnv getAsIfLocationMap
+                aloofEnemies' <- runWithEnv (select AloofEnemy)
+                investigatorSanityHealth' <- runWithEnv getInvestigatorSanityHealthMap
+                runWithEnv $ withSpan' "Root" \currentSpan -> do
+                  addAttribute currentSpan "gameId" gameId
+                  overGameM preloadEntities
+                  overGameM $ runPreGameMessage m
+                  if shouldPreloadModifiers m
+                    then do
+                      overGameM
+                        $ runMessage m
+                        >=> withSpan_ "preloadModifiers"
+                        . preloadModifiers
+                      overGameM
+                        $ handleAsIfChanges asIfLocations'
+                        >=> handleAloofChanges aloofEnemies'
+                        >=> withSpan_ "handleTraitRestrictedModifiers"
+                        . handleTraitRestrictedModifiers
+                        >=> handleBlanked
+                        >=> handleDefeatedByModifiers investigatorSanityHealth'
+                    else overGameM $ runMessage m
+                  overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
+                captured <- peekQueue
+                clearQueue
+                pure captured) msgs
+              -- Restore the saved queue with interleaved results at the front
+              setQueue (interleaveSimultaneously allResults <> savedQueue)
+              runMessages gameId mLogger
             _ -> do
               -- Hidden Library handling
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -6040,28 +6141,6 @@ runMessages gameId mLogger = do
               asIfLocations <- runWithEnv getAsIfLocationMap
               aloofEnemies <- runWithEnv (select AloofEnemy)
               investigatorSanityHealth <- runWithEnv getInvestigatorSanityHealthMap
-
-              let
-                shouldPreloadModifiers = \case
-                  Ask {} -> False
-                  BeginAction {} -> False
-                  CheckAttackOfOpportunity {} -> False
-                  CheckEnemyEngagement {} -> False
-                  Do (CheckWindows {}) -> False
-                  ClearUI {} -> False
-                  CreatedCost {} -> False
-                  EndCheckWindow {} -> False
-                  PaidAllCosts {} -> False
-                  PayForAbility {} -> False
-                  PayCost {} -> False
-                  PayCosts {} -> False
-                  Run {} -> False
-                  UseAbility {} -> False
-                  Do (UseAbility {}) -> False
-                  When {} -> False
-                  WhenCanMove {} -> False
-                  Would {} -> False
-                  _ -> True
 
               runWithEnv $ withSpan' "Root" \currentSpan -> do
                 addAttribute currentSpan "gameId" gameId

@@ -3948,6 +3948,13 @@ priority body = do
   msgs <- capture body
   push $ Priority $ Run msgs
 
+-- Just a reminder that this is new and potentially dangerous, we should
+-- consider only cases where messages will look the same roughly.
+simultaneously :: ReverseQueue m => QueueT Message m () -> m ()
+simultaneously body = do
+  msgs <- capture body
+  push $ Simultaneously msgs
+
 flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
 flipCluesToDoom target n = push $ FlipClues (toTarget target) n
 

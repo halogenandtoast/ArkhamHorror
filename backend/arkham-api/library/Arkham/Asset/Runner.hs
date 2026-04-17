@@ -172,6 +172,9 @@ instance RunMessage AssetAttrs where
                  <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
                     | horror > 0
                     ]
+                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+                    | damage > 0 || horror > 0
+                    ]
              , checkDefeated source aid
              , CheckWindows
                  $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
@@ -179,6 +182,9 @@ instance RunMessage AssetAttrs where
                    ]
                  <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
                     | horror > 0
+                    ]
+                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+                    | damage > 0 || horror > 0
                     ]
              ]
       pure a

@@ -243,6 +243,7 @@ setupKeys = do
   for_ (mapToList skeys) \(iid, cards) -> do
     for_ cards \card -> do
       when (card.kind == KeyType) do
+        replaceCard card.id card
         createScarletKeyAt_ card (AttachedToInvestigator iid)
 
 chooseBearer :: ReverseQueue m => CardDef -> m ()

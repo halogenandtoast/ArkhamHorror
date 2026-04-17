@@ -52,6 +52,7 @@ instance IsCampaign TheFeastOfHemlockVale where
             (Day2, Night) -> Nothing
             (Day3, Day) -> Nothing
             (Day3, Night) -> Nothing
+    TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

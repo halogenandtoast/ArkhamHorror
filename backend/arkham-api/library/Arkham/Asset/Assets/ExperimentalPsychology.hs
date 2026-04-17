@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ExperimentalPsychology (experimentalPsychology) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Effect.Builder
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -49,6 +50,9 @@ instance RunMessage ExperimentalPsychology where
         targets assets $ healHorrorOn (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifier iid (attrs.ability 2) iid (AnySkillValue 2)
+      effectWithSource (attrs.ability 2) iid do
+        apply $ AnySkillValue 2
+        during $ #nextSkillTest iid
+        removeOn #round
       pure a
     _ -> ExperimentalPsychology <$> liftRunMessage msg attrs

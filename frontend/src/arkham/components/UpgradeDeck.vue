@@ -61,7 +61,7 @@ const error = computed(() => {
   if(!deckInvestigator.value) return null
 
   const alreadyTaken = Object.values(props.game.investigators).some((i) => {
-    return i.id === deckInvestigator.value && i.playerId !== props.playerId
+    return i.id === `c${deckInvestigator.value}` && i.playerId !== props.playerId
   })
 
   if (alreadyTaken) {

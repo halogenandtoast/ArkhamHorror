@@ -645,6 +645,8 @@ allTreacheries =
       , SomeTreacheryCard stolenLight
       , --- The First Day [fhv]
         SomeTreacheryCard swarm
+      , --- The Second Day [fhv]
+        SomeTreacheryCard downpour
       , --- Horrors in the Rock [fhv]
         SomeTreacheryCard chromaBlight
       , SomeTreacheryCard calcification

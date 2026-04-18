@@ -98,6 +98,7 @@ allPlayerTreacheryCards =
       , disruptivePoltergeist
       , doomed
       , downAndOut
+      , downpour
       , drawingTheSign
       , dreadCurse
       , dreamsOfTheFlood
@@ -3210,6 +3211,12 @@ stolenLight =
 swarm :: CardDef
 swarm =
   (treachery "10676" "Swarm" TheFirstDay 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+downpour :: CardDef
+downpour =
+  (treachery "10678" "Downpour" TheSecondDay 3)
     { cdCardTraits = setFromList [Hazard]
     }
 

@@ -329,6 +329,8 @@ allAgendas =
     , SomeAgendaCard backToTheVale
     , --- Day of Rest
       SomeAgendaCard welcomeToHemlockVale
+    , --- Day of Rain
+      SomeAgendaCard darkClouds
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

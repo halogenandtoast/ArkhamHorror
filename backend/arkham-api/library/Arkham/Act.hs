@@ -370,6 +370,8 @@ allActs =
     , SomeActCard wheresBertie
     , --- Day of Rest
       SomeActCard dawnOfTheFirstDay
+    , --- Day of Rain
+      SomeActCard dawnOfTheSecondDay
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

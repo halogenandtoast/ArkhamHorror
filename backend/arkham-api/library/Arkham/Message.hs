@@ -1267,7 +1267,7 @@ data Message
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
-  | KonamiCode
+  | KonamiCode PlayerId
   | CreateConcealedCard ConcealedCard
   | PlaceConcealedCards InvestigatorId [ConcealedCardId] [LocationId]
   | PlaceConcealedCard InvestigatorId ConcealedCardId Placement
@@ -1302,6 +1302,7 @@ mconcat
         parseJSON = withObject "Message" \o -> do
           t :: Text <- o .: "tag"
           case t of
+            "KonamiCode" -> KonamiCode <$> (o .:? "contents" .!= PlayerId UUID.nil)
             "SkillTestResultOption" -> do
               econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               pure $ case econtents of

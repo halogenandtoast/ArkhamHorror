@@ -146,6 +146,39 @@
       "body": "<ul><li>Preludes in this campaign require investigators to set up a map, act and agenda deck and play much like they would a traditional scenario of *Arkham Horror: The Card Game*.</li><li>Hemlock Vale is generally a safe place. During these preludes, there is no encounter deck. This means that the investigators cannot use abilities that interact with the encounter deck in any way. (*For example, effects such as those that search the encounter deck, draw cards from the encounter deck, or look at cards in the encounter deck cannot be resolved.*)</li><li>Understanding the residents’ wants and needs, as well as where they go during the day, is key to building trust with each of them. Your relationship with each resident influences the story and will earn you rewards and experience in later preludes.</li><li>Hemlock Vale is a good place to stock up on supplies. At the end of a prelude, each investigator keeps the following: <ul><li>Cards in hand, up to their opening hand size. (*Note that investigators do not take a traditional mulligan for _(Day {'{'}day{'}'})_ scenarios.*)</li><li>Resources in play, up to their starting resources.</li><li>A single asset in their play area that does not normally start in play.</li><li>All clues they control.</li></ul></li><li>For more information on Preludes and Relationship Levels, refer to the Additional Rules and Clarifications on page 2 of this Campaign Guide.</li></ul>"
     }
   },
+  "prelude2": {
+    "codex": {
+      "theCurse": {
+        "title": "{'{'}codex{'}'} Codex 17: The Curse",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCurse.title </h3><p>As you lean on the stack of mirrors, you look down and see your own reflection staring back. Your features are stretched and different somehow: you look gaunt and exhausted. As you stand up, gray, flaking skin sloughs off of your forearm.</p><p class='basic right'>If it is not already in your deck, search the set-aside *Day of Rain* encounter set for the Hemlock Curse weakness and add it to your deck. It does not count toward your deck size. Otherwise, during setup for the next scenario, search your deck and discard pile for the Hemlock Curse weakness and add it to your opening hand.</p><p class='basic right'>You (*and only you*) earn 2 bonus experience.</p>"
+      }
+    },
+    "xp": {
+      "bonus": "Bonus experience"
+    },
+    "label": {
+      "theSecondEvening": "*The Second Evening.*",
+      "theThirdEvening": "*The Third Evening.*"
+    },
+    "intro": {
+      "title": "Prelude: Dawn of the Second Day",
+      "body": "<p>You wake up feeling utterly drained. A light rain falls as you walk outside, but even the rain doesn’t seem to dampen the Vale’s spirits: A ring of children in animal masks sing a lilting melody as they continue decorating.</p><ul><li>The fatigue from the long night catches up to you. Draw tokens from the chaos bag at random until you have 2 non-symbol tokens. Replace these tokens with a chaos token of a value 1 lower for the remainder of the campaign. (If you cannot replace a token, repeat this process until a total of 2 chaos tokens have been replaced.)</li><li>Check your Campaign Log. Each investigator who *finished their meal* must read _The Hemlock Curse_. Each other investigator must read _Gnawing Hunger_.</li></ul>",
+      "theHemlockCurse": "<p>_The Hemlock Curse_: Your entire body seems to thrum in time to your heartbeat, then gives way to discomfort, then delicious euphoria, as if you were made of air. The feeling passes. You touch the back of your hand. You can’t quite describe it, but you don’t feel right. You feel different.</p><ul><li>Search the *Day of Rain* encounter set for The Hemlock Curse weakness and add it to your deck. It does not count toward your deck size. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/day-of-rain.png' /></section></li><li>Proceed to _Prelude Setup_.</li></ul>",
+      "gnawingHunger": "<p>_Gnawing Hunger_: Your stomach grumbles as the smell of fresh eggs and biscuits wafts out of the Boarding House. Your hunger has caught up to you.</p><ul><li>Suffer 1 physical trauma. Proceed to _Prelude Setup_.</li></ul>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Second Day*, *Day of Rain*, *Residents*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/day-of-rain.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+      "dayTwo": "Put the _Day Two_ Time Marker card into play. Are you still hungry?",
+      "placeLocations": "Put each location from *The Vale* encounter set into play on its _(Day {'{'}day{'}'})_ side.",
+      "startAt": "Each investigator begins play at The Boarding House.",
+      "residents": "Gather the *Residents* encounter set and check the Campaign Log.",
+      "removeResidents": "Remove each resident whose name is crossed off from the game.",
+      "judithPark": "Put Judith Park into play at The Crossroads, asset side faceup.",
+      "setOutOfPlay": "Set each card from the *Residents* encounter set aside, out of play.",
+      "placeDoom": "Place doom on the agenda equal to the number of investigators.",
+      "codex": "Keep the Campaign Guide on hand as you play. Codex entries for this prelude are on the next three pages (7, 8, and 9)."
+    }
+  },
   "prelude": {
     "theFirstEvening": {
       "xp": {

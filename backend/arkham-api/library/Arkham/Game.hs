@@ -1034,6 +1034,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       selectAny (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
     InvestigatorWithScarletKey sm -> do
       as & runMatchesM \i -> selectAny (ScarletKeyWithPlacement (AttachedToInvestigator $ toId i) <> sm)
+    InvestigatorIsPlayer pid -> do
+      pure $ runMatches ((== pid) . attr investigatorPlayerId) as
     InvestigatorWithTreacheryInHand treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> flip runMatchesM as $ \i ->

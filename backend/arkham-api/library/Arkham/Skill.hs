@@ -284,6 +284,8 @@ allSkills =
       , SomeSkillCard providential2
       , --- neutral [fhv]
         SomeSkillCard wellDressed
+      , --- story [fhv]
+        SomeSkillCard theHemlockCurse
       , -- The Drowned City
         --- signature [tdc]
         SomeSkillCard determined

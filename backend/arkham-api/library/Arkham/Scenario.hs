@@ -574,7 +574,7 @@ allScenarioCards =
     (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
 
 duplicatedScenarios :: [CardCode]
-duplicatedScenarios = ["04205a", "04205b", "08501c"]
+duplicatedScenarios = ["04205a", "04205b", "08501c", "10677a"]
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =
@@ -656,6 +656,7 @@ allScenarios =
     , ("10501", SomeScenario writtenInRock)
     , ("10502", SomeScenario writtenInRock) -- duplicated for card view
     , ("10605", SomeScenario theTwistedHollow)
+    , ("10677a", SomeScenario preludeDawnOfTheSecondDay)
     , ("10704", SomeScenario preludeWelcomeToHemlockVale)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
@@ -784,6 +785,7 @@ scenarioEncounterSets =
     , ("10501", EncounterSet.WrittenInRock)
     , ("10502", EncounterSet.WrittenInRock)
     , ("10605", EncounterSet.TheTwistedHollow)
+    , ("10677a", EncounterSet.TheVale)
     , ("10704", EncounterSet.TheVale)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)

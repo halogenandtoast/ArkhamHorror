@@ -62,6 +62,7 @@ allAgendaCards =
       , confluxOfConsequence
       , crossroadsOfFate
       , dangerousRide
+      , darkClouds
       , deadOfNight
       , deathsApproach
       , decrepitDecay
@@ -895,6 +896,9 @@ backToTheVale = agenda "10609" "Back to the Vale" 2 TheTwistedHollow
 
 welcomeToHemlockVale :: CardDef
 welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest
+
+darkClouds :: CardDef
+darkClouds = agenda "10683" "Dark Clouds" 1 DayOfRain
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

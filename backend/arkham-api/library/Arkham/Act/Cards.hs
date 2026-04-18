@@ -69,6 +69,7 @@ allActCards =
       , darkKnowledgeV1
       , darkKnowledgeV2
       , dawnOfTheFirstDay
+      , dawnOfTheSecondDay
       , descentIntoDark
       , descentIntoTheMines
       , desperateSearch
@@ -1083,6 +1084,9 @@ wheresBertie = act "10608" "Where's Bertie" 2 TheTwistedHollow
 
 dawnOfTheFirstDay :: CardDef
 dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest
+
+dawnOfTheSecondDay :: CardDef
+dawnOfTheSecondDay = act "10684" "Dawn of the Second Day" 1 DayOfRain
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

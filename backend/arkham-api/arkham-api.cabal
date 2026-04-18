@@ -95,6 +95,7 @@ library
       Arkham.Act.Cards.DarkKnowledgeV1
       Arkham.Act.Cards.DarkKnowledgeV2
       Arkham.Act.Cards.DawnOfTheFirstDay
+      Arkham.Act.Cards.DawnOfTheSecondDay
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DescentIntoTheMines
       Arkham.Act.Cards.DesperateSearch
@@ -392,6 +393,7 @@ library
       Arkham.Agenda.Cards.ConfluxOfConsequence
       Arkham.Agenda.Cards.CrossroadsOfFate
       Arkham.Agenda.Cards.DangerousRide
+      Arkham.Agenda.Cards.DarkClouds
       Arkham.Agenda.Cards.DeadOfNight
       Arkham.Agenda.Cards.DeathsApproach
       Arkham.Agenda.Cards.DecrepitDecay
@@ -4299,6 +4301,7 @@ library
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.OnThinIce
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.PreludeDawnOfTheSecondDay
       Arkham.Scenario.Scenarios.PreludeWelcomeToHemlockVale
       Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
       Arkham.Scenario.Scenarios.ReturnToAtDeathsDoorstep
@@ -4611,6 +4614,7 @@ library
       Arkham.Skill.Cards.TakeHeart
       Arkham.Skill.Cards.TakeTheInitiative
       Arkham.Skill.Cards.TheEyeOfTruth5
+      Arkham.Skill.Cards.TheHemlockCurse
       Arkham.Skill.Cards.TheHomeFront
       Arkham.Skill.Cards.ThreeAces1
       Arkham.Skill.Cards.TimelyIntervention
@@ -4969,6 +4973,7 @@ library
       Arkham.Treachery.Cards.DistortedReasoning
       Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DownAndOut
+      Arkham.Treachery.Cards.Downpour
       Arkham.Treachery.Cards.DraggedUnder
       Arkham.Treachery.Cards.DraggedUnderDevilReef
       Arkham.Treachery.Cards.DrawingTheSign

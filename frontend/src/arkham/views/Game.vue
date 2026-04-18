@@ -319,6 +319,7 @@ const handleResult = (result: ServerResult) => {
         .decodePromise(result as any)
         .then((r) => {
           // if it isn't for us, immediately unlock and continue draining
+          console.log(solo.value, r.player, playerId.value)
           if (!(solo.value === true || r.player === playerId.value)) {
             uiLock.value = false
             return
@@ -379,7 +380,7 @@ const KONAMI_TIMEOUT_MS = 5000 // reset if user pauses too long
 
 const onKonami = () => {
   if (!game.value) return
-  debug.send(game.value.id, { tag: 'KonamiCode' })
+  debug.send(game.value.id, { tag: 'KonamiCode', contents: playerId.value })
 }
 
 const feedKonami = (rawKey: string): boolean => {

@@ -3,11 +3,15 @@
 
 module Arkham.Campaigns.TheFeastOfHemlockVale.Helpers where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Card.CardDef
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Criteria
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Log
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher.Scenario
@@ -83,6 +87,22 @@ afterPrelude =
     other -> other
  where
   setNextCampaignStep = push . NextCampaignStep . continueNoUpgrade
+
+getCrossedOutResidents :: (Tracing m, HasGame m) => m [CardDef]
+getCrossedOutResidents =
+  catMaybes
+    <$> sequence
+      [ check SimeonCrossedOut Assets.simeonAtwoodDedicatedTroublemaker
+      , check LeahCrossedOut Assets.leahAtwoodTheValeCook
+      , check TheoCrossedOut Assets.theoPetersJackOfAllTrades
+      , check GideonCrossedOut Assets.gideonMizrahSeasonedSailor
+      , check JudithCrossedOut Assets.judithParkTheMuscle
+      , check WilliamCrossedOut Assets.williamHemlockAspiringPoet
+      , check RiverCrossedOut Assets.riverHawthorneBigInNewYork
+      , check MotherRachelCrossedOut Assets.motherRachelKindlyMatron
+      ]
+ where
+  check k v = runMaybeT (liftGuardM (getHasRecord k) $> v)
 
 pattern Theta :: Int
 pattern Theta = 100

@@ -4,10 +4,8 @@ import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
-import Arkham.Window (defaultWindows)
 
 newtype MotivationalSpeech = MotivationalSpeech EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,8 +17,12 @@ motivationalSpeech = event MotivationalSpeech Cards.motivationalSpeech
 instance RunMessage MotivationalSpeech where
   runMessage msg e@(MotivationalSpeech attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      ts <- select $ affectsOthers $ colocatedWith iid
-      chooseOrRunOne iid $ targetLabels ts $ only . handleTargetChoice iid attrs
+      ts <-
+        select (affectsColocated iid)
+          >>= filterM
+            (\iid' -> selectAny $ PlayableCardWithCostReduction NoAction 3 $ inHandOf ForPlay iid' <> #ally)
+
+      chooseOrRunOneM iid $ targets ts $ handleTarget iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       allies <- select $ PlayableCardWithCostReduction NoAction 3 $ inHandOf ForPlay iid <> #ally
@@ -31,6 +33,6 @@ instance RunMessage MotivationalSpeech where
             targets allies \ally -> do
               unfocusCards
               costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)
-              push $ PayCardCost iid ally (defaultWindows iid)
+              playCardPayingCost iid ally
       pure e
     _ -> MotivationalSpeech <$> liftRunMessage msg attrs

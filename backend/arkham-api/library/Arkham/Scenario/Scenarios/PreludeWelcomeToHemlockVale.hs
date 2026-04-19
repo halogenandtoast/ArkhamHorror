@@ -195,6 +195,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             unscoped skip_
           boardingHouse <- getJustLocationByName "Boarding House"
           createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
+          eachInvestigator \iid' -> gameModifier source iid' (ScenarioModifier "codex9")
         10 -> do
           entry "theCrossroads"
           drawOk <- can.draw.cards iid

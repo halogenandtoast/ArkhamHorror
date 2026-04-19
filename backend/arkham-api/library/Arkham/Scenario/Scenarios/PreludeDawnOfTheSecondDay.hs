@@ -6,10 +6,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeDawnOfTheSecondDay)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
-import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
 import Arkham.Cost.Status qualified as Cost
+import Arkham.Effect.Builder
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
@@ -30,6 +30,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Strategy
@@ -99,9 +100,10 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       placeStory Stories.dayTwo
 
       startAt =<< place Locations.boardingHouseDay
+      theCrossroads <- place Locations.theCrossroadsDay
+      createAssetAt_ Assets.judithParkTheMuscle (AtLocation theCrossroads)
       placeAll
-        [ Locations.theCrossroadsDay
-        , Locations.hemlockChapelDay
+        [ Locations.hemlockChapelDay
         , Locations.theOldMillDay
         , Locations.theAtwoodHouseDay
         , Locations.tadsGeneralStoreDay
@@ -112,6 +114,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       placeDoomOnAgenda n
     DoStep 1 Setup -> do
       getCrossedOutResidents >>= traverse_ (obtainCard <=< fetchCard)
+
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid, source :: Source, n :: Int) = toResult v
@@ -172,97 +175,110 @@ instance RunMessage PreludeDawnOfTheSecondDay where
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         8 -> do
-          entry "theoPeters"
-          incrementRecordCount TheoPetersRelationshipLevel 1
+          theoDistractedTheBear <- getHasRecord TheoDistractedTheBear
+          when theoDistractedTheBear do
+            incrementRecordCount TheoPetersRelationshipLevel 1
+            eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.theoPeters") 1
+          scope "theoPeters" $ flavor do
+            setTitle "title"
+            compose.green do
+              p "header"
+              p.validate theoDistractedTheBear "distractedTheBear"
+              hr
+              p.validate (not theoDistractedTheBear) "otherwise"
           chooseOneM iid $ unscoped do
             labeled' "move" do
               locations <- getCanMoveToLocations iid source
               chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
-          entry "boardingHouse"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
-          boardingHouse <- getJustLocationByName "Boarding House"
-          createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
+          theOldMill <- getJustLocationByName "The Old Mill"
+          theCommons <- getJustLocationByName "The Commons"
+          theCrossroads <- getJustLocationByName "The Crossroads"
+          simeon <- selectNone $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
+          gideon <- selectNone $ assetIs Assets.gideonMizrahSeasonedSailor
+          scope "boardingHouse" $ storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+            labeled' "help" do
+              iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+              chooseOrRunOneM iid do
+                targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
+            labeledValidate' simeon "simeon" do
+              createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theOldMill)
+            labeledValidate' gideon "gideon" do
+              createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
         10 -> do
           entry "theCrossroads"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
-          theCrossroads <- getJustLocationByName "The Crossroads"
-          createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation theCrossroads)
+          drawCards iid source 1
+          remember YouAreRunningAnErrand
         11 -> do
           entry "hemlockChapel"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
           hemlockChapel <- getJustLocationByName "Hemlock Chapel"
           createAssetAt_ Assets.motherRachelKindlyMatron (AtLocation hemlockChapel)
         12 -> do
           entry "theOldMill"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
-          theOldMill <- getJustLocationByName "The Old Mill"
-          createAssetAt_ Assets.leahAtwoodTheValeCook (AtLocation theOldMill)
+          drawCards iid source 3
         13 -> do
-          entry "theAtwoodHouse"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
+          william <- getRelationshipLevel WilliamHemlock
+          river <- getRelationshipLevel RiverHawthorne
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
-          createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theAtwoodHouse)
+          scope "theAtwoodHouse" $ storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+            labeledValidate' (william >= 2) "william" do
+              createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theAtwoodHouse)
+            labeledValidate' (river >= 2) "river" do
+              createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation theAtwoodHouse)
+            labeled' "fight" do
+              decrementRecordCount WilliamHemlockRelationshipLevel 1
+              decrementRecordCount RiverHawthorneRelationshipLevel 1
+              flavor $ setTitle "title" >> p.green "body2"
         14 -> do
-          entry "tadsGeneralStore"
+          runningAnErrand <- remembered YouAreRunningAnErrand
+          when runningAnErrand do
+            incrementRecordCount LeahAtwoodRelationshipLevel 1
+            eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.tadsGeneralStore") 1
+          scope "tadsGeneralStore" $ flavor do
+            setTitle "title"
+            compose.green do
+              p "header"
+              p.validate runningAnErrand "runningAnErrand"
+              hr
+              p.validate (not runningAnErrand) "otherwise"
           resources <- getSpendableResources iid
-          when (resources > 0) do
-            chooseOneM iid do
-              labeled' "tadsGeneralStore.item" do
-                gameModifier source iid (ScenarioModifier "codex14")
-                spendResources iid 1
-                search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
-              unscoped skip_
-          unlessM (selectAny $ assetIs Assets.judithParkTheMuscle) do
-            tadsGeneralStore <- getJustLocationByName "Tad's General Store"
-            createAssetAt_ Assets.judithParkTheMuscle (AtLocation tadsGeneralStore)
+          unless runningAnErrand do
+            when (resources >= 3) $ scope "tadsGeneralStore" do
+              chooseOneM iid do
+                labeled' "item" do
+                  spendResources iid 3
+                  search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
+                unscoped skip_
+
+          eachInvestigator \iid' -> effectWithSource source iid' do
+            apply $ ScenarioModifier "codex14"
+            removeOn $ #remembered YouAreRunningAnErrand
         15 -> do
           entry "valeSchoolhouse"
-          drawOk <- can.draw.cards iid
-          resourceOk <- can.gain.resources iid
-          chooseOneM iid $ unscoped do
-            countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
-            unscoped skip_
           valeSchoolhouse <- getJustLocationByName "Vale Schoolhouse"
-          createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation valeSchoolhouse)
+          createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation valeSchoolhouse)
         16 -> do
           entry "theCommons"
-          search iid source iid [fromTopOfDeck 9] (basic #ally) (AddFoundToHand iid 1)
-          theCommons <- getJustLocationByName "The Commons"
-          createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
+          iids <- getInvestigators
+          residents <- filterM (fmap (<= 2) . getRelationshipLevel) [WilliamHemlock ..]
+          chooseOrRunOneM iid do
+            unscoped skip_
+            for_ iids \iid' -> do
+              assets <-
+                select $ oneOf [inDeckOf iid', inHandOf NotForPlay iid', inDiscardOf iid'] <> basic CardIsStoryAsset
+              unless (null assets) do
+                targeting iid' do
+                  focusCards assets do
+                    chooseOneM iid' do
+                      targets assets \asset -> do
+                        removeCardFromDeckForCampaign iid' asset
+                        obtainCard asset
+                        chooseOneM iid do
+                          for_ residents \resident -> do
+                            cardLabeled resident do
+                              increaseRelationshipLevel resident 1
+                              eachInvestigator \iid'' -> gainXp iid'' attrs (ikey "xp.theCommons") 1
         17 -> do
           entry "theCurse"
           gainXp iid attrs (ikey "xp.theCurse") 2

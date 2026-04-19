@@ -19,6 +19,9 @@
       "pay": "Take 1 direct horror for this test to automatically succeed"
     }
   },
+  "remembered": {
+    "youAreRunningAnErrand": "You are running an errand"
+  },
   "prologue": {
     "title": "Against Nature",
     "body": "<p>“It was just a colour out of space—a frightful messenger from unformed realms of infinity beyond all Nature as we know it; from realms whose mere existence stuns the brain and numbs us with the black extra-cosmic gulfs it throws open before our frenzied eyes.”</p><p class='basic right'>– H. P. Lovecraft, “The Colour Out of Space”</p>"
@@ -148,9 +151,67 @@
   },
   "prelude2": {
     "codex": {
+      "theoPeters": {
+        "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theoPeters.title </h3>",
+        "distractedTheBear": "<p>_If Theo distracted the bear_:</p><p>Theo stands up in the schoolyard, clutching a well-loved copy of 20,000 Leagues Under the Sea. “Sister Miriam got mad when I asked to buy her book. But I don’t want to return it,” he says. “I’ve always wanted to see the ocean floor. As long as I didn’t die.” As he drives you around the Vale, Theo looks contemplative. “I can’t stop thinking about the bear. Now I see why Mother Rachel tells us not to go out at night. Some folks have gone missing in the last few months. Benny. Sister Edie. That one kid whose name I can never remember. We don’t talk about the ones who disappear.”</p><p class='basic right'>You may immediately move to any location.</p><p class='basic right'>Increase Theo Peters’ Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "otherwise": "<p>_Otherwise:_</p><p>Theo stands up in the schoolyard, clutching a well-loved copy of 20,000 Leagues Under the Sea. “Sister Miriam got mad when I asked to buy her book. But I don’t want to return it,” he says. “I’ve always wanted to go to the ocean floor. As long as I didn’t die.”</p><p class='basic right'>You may immediately move to any location.</p>"
+      },
+      "boardingHouse": {
+        "label": {
+          "help": "“Leah was supposed to prepare the Feast in the Crossroads. If she’s there, I know she’d appreciate your help.”",
+          "simeon": "“Simeon’s probably hiding in the field.”",
+          "gideon": "“Gideon is probably at The Commons like always.”"
+        },
+        "title": "{'{'}codex{'}'} Codex 9: Boarding House",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.boardingHouse.title </h3><p>Ms. Olmstead is more than happy to answer your questions as she sets plates heaped with succulent fruit and sizzling meats. “Don’t forget to come to the dance this evening. Everyone will be there,” she smiles. Your mouth waters at the scent of the food, but you also catch the acrid undercurrent.</p><p class='basic right'>Choose one of the options below to resolve. Investigators at Boarding House may spend any number of actions, as a group, to choose that many additional options. An investigator may trigger this codex again.</p><ul><li>“Leah was supposed to prepare the Feast in the Crossroads. If she’s there, I know she’d appreciate your help.” An investigator at the Boarding House may immediately move to The Crossroads.</li><li>“Simeon’s probably hiding in the field.” Search the set-aside *Residents* encounter set for Simeon Atwood and put him into play at The Old Mill, asset side faceup.</li><li>“Gideon is probably at The Commons like always.” Search the set-aside *Residents* encounter set for Gideon Mizrah and put him into play at The Commons, asset side faceup.</li></ul>"
+      },
+      "theCrossroads": {
+        "title": "{'{'}codex{'}'} Codex 10: The Crossroads",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCrossroads.title </h3><p>Leah shouts to a cadre of workers to cover the effigy with tarps as rain falls. The dozens of small mirrors ring like chimes as the festival decorations are sheltered from the rain. In a large white tent, Leah looks up as you approach. “Ah, perfect timing. Take these over to Tad’s as soon as possible. Much obliged.” She nods to a box heaped with worn farming tools.</p><p class='basic right'> Draw 1 card. Remember that you are “running an errand.”</p>"
+      },
+      "hemlockChapel": {
+        "title": "{'{'}codex{'}'} Codex 11: Hemlock Chapel",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.hemlockChapel.title </h3><p>The entrance to Hemlock Chapel is choked with parishioners in white-gold cloaks, so you head around back. As you open the door to the rear, you hear hushed conversation. You leave the door cracked and listen. A soft voice speaks: “It’ll be done as you’ve said, Mother. But I was wondering exactly why you needed us to—”</p><p>“It is not your place to question, nor to speak, but to obey.” Mother Rachel’s stern voice cuts like a knife. “Now you must join your brethren, and I must join the procession. Simply do as I asked.”</p><p class='basic right'>Search the set-aside *Residents* encounter set for Mother Rachel and put her into play at Hemlock Chapel, asset side faceup.</p>"
+      },
+      "theOldMill": {
+        "title": "{'{'}codex{'}'} Codex 12: The Old Mill",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theOldMill.title </h3><p>The Old Mill is eerily silent as you poke around the overgrowth. As thunder rumbles overhead, a long-legged grasshopper flits through the air. You note that the insect has misshapen black wings.</p><p class='basic right'>Draw 3 cards.</p>"
+      },
+      "theAtwoodHouse": {
+        "label": {
+          "william": "“William has a point.”",
+          "river": "“River has a point.”",
+          "fight": "Let them fight it out."
+        },
+        "title": "{'{'}codex{'}'} Codex 13: The Atwood House",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theAtwoodHouse.title </h3><p>You hear William and River arguing. “This is all we have left. We can’t turn our back on our past. Our legacy,” William insists. River cuts in with a scathing look. “The Hemlock legacy is dead. And I know several buyers in Harlem who would turn this soggy island into a paradise.”</p><p class='basic'>You must decide (*choose one*):</p><ul><li>“William has a point.” (You may only choose this option if William Hemlock’s Relationship Level is 2 or higher.) Search the set-aside Residents encounter set for William Hemlock and put him into play at The Atwood House, asset side faceup.</li><li>“River has a point.” (You may only choose this option if River Hawthorne’s Relationship Level is 2 or higher.) Search the set-aside Residents encounter set for River Hawthorne and put them into play at The Atwood House, asset side faceup.</li><li>Let them fight it out. Continue reading.</li></ul>",
+        "body2": "@:theFeastOfHemlockVale.prelude2.codex.theAtwoodHouse.body <p>As the pair sling incredibly personal insults back and forth, a peal of thunder silences them both. William’s brow furrows when he sees you; River turns and grimaces as well. An uneasy silence follows, and you realize you just eavesdropped on a very sensitive conversation.</p><p class='basic right'>Decrease both William Hemlock and River Hawthorne’s Relationship Levels.</p>"
+      },
+      "tadsGeneralStore": {
+        "label": {
+          "item": "Spend 3 resources to search your deck for an Item asset and play it, ignoring its cost."
+        },
+        "title": "{'{'}codex{'}'} Codex 14: Tad's General Store",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.tadsGeneralStore.title </h3>",
+        "runningAnErrand": "<p>_If you are “running an errand”_:</p><p>You drop the box of farming tools and implements on the counter with a dull thud. The proprietor smiles as he stows them. “Leah’ll appreciate this a lot. Ready for the big feast tomorrow?” He chews on a strip of leathery jerky and spits into a bottle.</p><p class='basic right'>Increase Leah Atwood’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "otherwise": "<p>_Otherwise_:</p><p>“What’re you buyin’?” the proprietor laughs. “At least, that’s what Tad used to say.” When you ask him where Tad is, he goes quiet.</p><p class='basic right'>You may spend 3 resources to search your deck for an _Item_ asset and play it, ignoring its cost. An investigator may trigger this codex again if they are “running an errand.”</p>"
+      },
+      "valeSchoolhouse": {
+        "title": "{'{'}codex{'}'} Codex 15: Vale Schoolhouse",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.valeSchoolhouse.title </h3><p>“It’s a library, not a book shop!” An angry, red-haired teacher barks. Theo emerges from the schoolhouse and flashes a goofy smile just as he is tackled by school kids.</p><p class='basic right'>Search the set-aside *Residents* encounter set for Theo Peters and put him into play at Vale Schoolhouse, asset side faceup.</p>"
+      },
+      "theCommons": {
+        "title": "{'{'}codex{'}'} Codex 16: The Commons",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCommons.title </h3><p>“Wanna send a gift to a special someone?” Martha Jean beckons to a neat stack of woven gift boxes tied with colorful ribbons. “Anything you wanna send to the mainland will have to wait till tomorrow morning, I’m afraid. The postman got stranded again.”</p><p class='basic right'>An investigator may search their deck, discard pile, or hand for an _Item_ story asset and permanently remove it from their deck. If they do, check the Campaign Log and choose a resident with a Relationship Level of 2 or lower. Increase the chosen resident’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
       "theCurse": {
         "title": "{'{'}codex{'}'} Codex 17: The Curse",
         "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theCurse.title </h3><p>As you lean on the stack of mirrors, you look down and see your own reflection staring back. Your features are stretched and different somehow: you look gaunt and exhausted. As you stand up, gray, flaking skin sloughs off of your forearm.</p><p class='basic right'>If it is not already in your deck, search the set-aside *Day of Rain* encounter set for the Hemlock Curse weakness and add it to your deck. It does not count toward your deck size. Otherwise, during setup for the next scenario, search your deck and discard pile for the Hemlock Curse weakness and add it to your opening hand.</p><p class='basic right'>You (*and only you*) earn 2 bonus experience.</p>"
+      },
+      "xp": {
+        "tadsGeneralStore": "Tad's General Store",
+        "theCommons": "The Commons"
       }
     },
     "xp": {
@@ -324,6 +385,10 @@
       "name": "Mother Rachel",
       "motherRachelIntervened": "Mother Rachel Intervened"
     },
+    "[leahAtwoodNotes]": {
+      "orderKey": "c",
+      "name": "Leah Atwood"
+    },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",
       "name": "Simeon Atwood",
@@ -335,9 +400,21 @@
       "simeonStoodByYou": "Simeon Stood By You",
       "simeonSacrificedThemselvesForTheInvestigators": "Simeon Sacrificed Themselves For The Investigators"
     },
+    "[williamHemlockNotes]": {
+      "orderKey": "e",
+      "name": "William Hemlock"
+    },
     "[riverHawthorneNotes]": {
       "orderKey": "f",
       "name": "River Hawthorne"
+    },
+    "[gideonMizrahNotes]": {
+      "orderKey": "g",
+      "name": "Gideon Mizrah"
+    },
+    "[judithParkNotes]": {
+      "orderKey": "h",
+      "name": "Judith Park"
     },
     "[theoPetersNotes]": {
       "orderKey": "i",

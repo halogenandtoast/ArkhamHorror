@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Card
 import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
@@ -27,6 +28,8 @@ instance RunMessage DarkClouds where
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> weakness) _ -> do
       cancelCardEffects attrs weakness
-      discardCard iid attrs weakness
+      insertAfterMatching [DiscardCard iid (toSource attrs) (toCardId weakness)] \case
+        Do (InvestigatorDrewPlayerCardFrom iid' c _) | iid == iid' && c.id == weakness.id -> True
+        _ -> False
       pure a
     _ -> DarkClouds <$> liftRunMessage msg attrs

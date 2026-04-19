@@ -151,6 +151,9 @@
   },
   "prelude2": {
     "codex": {
+      "label": {
+        "additionalActions": "Any number of Actions"
+      },
       "theoPeters": {
         "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
         "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theoPeters.title </h3>",

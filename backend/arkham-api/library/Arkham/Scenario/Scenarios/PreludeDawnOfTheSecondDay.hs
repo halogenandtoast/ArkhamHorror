@@ -116,6 +116,39 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       getCrossedOutResidents >>= traverse_ (obtainCard <=< fetchCard)
 
       pure s
+    ResolveAmounts iid (getChoiceAmount "$actions" -> n) ScenarioTarget -> do
+      boardingHouseInvestigators <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+      let spendFrom 0 _ = pure ()
+          spendFrom _ [] = pure ()
+          spendFrom remaining (i : is) = do
+            iActions <- field InvestigatorRemainingActions i
+            let toSpend = min remaining iActions
+            when (toSpend > 0) $ spendActions i ScenarioSource toSpend
+            spendFrom (remaining - toSpend) is
+      spendFrom n boardingHouseInvestigators
+      doStep (n + 1) (ScenarioSpecific "codex" (toJSON (iid, ScenarioSource :: Source, 9 :: Int)))
+      pure s
+    DoStep k (ScenarioSpecific "codex" v) -> do
+      let (iid, _source :: Source, n :: Int) = toResult v
+      case n of
+        9 -> scope "codex" $ scope "boardingHouse" do
+          theOldMill <- getJustLocationByName "The Old Mill"
+          theCommons <- getJustLocationByName "The Commons"
+          theCrossroads <- getJustLocationByName "The Crossroads"
+          simeon <- selectNone $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
+          gideon <- selectNone $ assetIs Assets.gideonMizrahSeasonedSailor
+          storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+            labeled' "help" do
+              iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+              chooseOrRunOneM iid do
+                targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
+            labeledValidate' simeon "simeon" do
+              createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theOldMill)
+            labeledValidate' gideon "gideon" do
+              createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
+          when (k > 1) $ doStep (k - 1) (ScenarioSpecific "codex" v)
+        _ -> pure ()
+      pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
@@ -192,20 +225,17 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
-          theOldMill <- getJustLocationByName "The Old Mill"
-          theCommons <- getJustLocationByName "The Commons"
-          theCrossroads <- getJustLocationByName "The Crossroads"
           simeon <- selectNone $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
           gideon <- selectNone $ assetIs Assets.gideonMizrahSeasonedSailor
-          scope "boardingHouse" $ storyWithChooseOneM' (setTitle "title" >> p.green "body") do
-            labeled' "help" do
-              iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
-              chooseOrRunOneM iid do
-                targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
-            labeledValidate' simeon "simeon" do
-              createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theOldMill)
-            labeledValidate' gideon "gideon" do
-              createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
+          let optionCount = 1 + (if simeon then 1 else 0) + (if gideon then 1 else 0)
+          boardingHouseInvestigators <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
+          totalActions <- sum <$> traverse (field InvestigatorRemainingActions) boardingHouseInvestigators
+          let maxAdditional = min (optionCount - 1) totalActions
+          if maxAdditional > 0
+            then do
+              entry "boardingHouse"
+              chooseAmount' iid "additionalActions" "$actions" 0 maxAdditional attrs
+            else doStep 1 (ScenarioSpecific "codex" v)
         10 -> do
           entry "theCrossroads"
           drawCards iid source 1

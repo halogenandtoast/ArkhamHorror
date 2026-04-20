@@ -4648,7 +4648,7 @@ markOfElokoss =
 
 ashenRebirth :: CardDef
 ashenRebirth = 
-  (treachery "12176" "Ashen Rebirth" TheGathering 10)
+  (treachery "12176" "Ashen Rebirth" QueenOfAsh 2)
     {
       cdCardTraits = singleton Power
     }

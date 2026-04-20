@@ -39,7 +39,9 @@ instance RunMessage Becky2 where
       sid <- getRandom
       skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
       if active
-        then chooseFightEnemyMatch sid iid source (ignoreAloofFightOverride AnyEnemy)
+        then do
+          skillTestModifier sid source iid IgnoreRetaliate
+          chooseFightEnemyMatch sid iid source (ignoreAloofFightOverride AnyEnemy)
         else chooseFightEnemy sid iid source
       pure $ Becky2 $ attrs & setMeta False
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

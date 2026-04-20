@@ -32,6 +32,12 @@ pattern AbilityEngage <- 102
   where
     AbilityEngage = 102
 
+-- | Used by EnemyLocation for investigate (avoids collision with AbilityEvade=101)
+pattern AbilityEnemyLocationInvestigate :: Int
+pattern AbilityEnemyLocationInvestigate <- 103
+  where
+    AbilityEnemyLocationInvestigate = 103
+
 pattern VeiledAbility :: Int
 pattern VeiledAbility <- 199
   where

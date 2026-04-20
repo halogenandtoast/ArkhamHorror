@@ -14,6 +14,7 @@ data CardType
   | TreacheryType
   | EnemyType
   | LocationType
+  | EnemyLocationCardType
   | EncounterAssetType
   | EncounterEventType
   | ActType
@@ -32,6 +33,7 @@ encounterCardTypes =
   [ TreacheryType
   , EnemyType
   , LocationType
+  , EnemyLocationCardType
   , EncounterAssetType
   , EncounterEventType
   , StoryType

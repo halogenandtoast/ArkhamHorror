@@ -2417,6 +2417,10 @@ library
       Arkham.Enemy.Runner
       Arkham.Enemy.Types
       Arkham.Enemy.Types.Attrs
+      Arkham.EnemyLocation
+      Arkham.EnemyLocation.Cards
+      Arkham.EnemyLocation.Runner
+      Arkham.EnemyLocation.Types
       Arkham.Entities
       Arkham.Evade
       Arkham.Evade.Types

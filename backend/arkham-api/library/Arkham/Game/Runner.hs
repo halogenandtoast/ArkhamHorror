@@ -79,6 +79,8 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
+import Arkham.EnemyLocation hiding (EnemyLocation)
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..))
 import Arkham.Location
 import Arkham.Location.Types (Field (..), LocationAttrs (..), updateLocation)
 import Arkham.Matcher hiding (
@@ -825,6 +827,51 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         push (PlacedLocation (toName location) (toCardCode card) lid)
         pure $ g & entitiesL . locationsL . at lid ?~ location
       else pure g
+  -- Place an enemy-location card directly into play as an enemy-location entity.
+  PlaceEnemyLocation lid card ->
+    if isNothing $ g ^. entitiesL . enemyLocationsL . at lid
+      then do
+        let el = lookupEnemyLocation (toCardCode card) lid (toCardId card)
+        push (PlacedLocation (toName el) (toCardCode card) lid)
+        pure $ g & entitiesL . enemyLocationsL . at lid ?~ el
+      else pure g
+  -- Flip a location to its enemy-location side.
+  -- Removes the location entity and adds an enemy-location entity with the same ID.
+  -- All investigators, enemies, attachments, and tokens are kept per the rules.
+  FlipToEnemyLocation lid card -> do
+    mLocation <- maybeLocation lid
+    let
+      -- Carry over tokens from the location (clues, doom, etc.)
+      inheritTokens = case mLocation of
+        Nothing -> id
+        Just location ->
+          overAttrs (\a -> a {enemyLocationTokens = locationTokens (toAttrs location)})
+      el = inheritTokens $ lookupEnemyLocation (toCardCode card) lid (toCardId card)
+    push (PlacedLocation (toName el) (toCardCode card) lid)
+    pure
+      $ g
+      & (entitiesL . locationsL %~ deleteMap lid)
+      & (entitiesL . enemyLocationsL . at lid ?~ el)
+  -- Flip an enemy-location back to its location side.
+  -- Removes the enemy-location entity and adds a location entity with the same ID.
+  -- All investigators, enemies, attachments, and tokens are kept per the rules.
+  FlipToLocation lid card -> do
+    mEnemyLocation <- maybeEnemyLocation lid
+    let
+      -- Carry over tokens from the enemy-location (damage, clues, etc.)
+      inheritTokens = case mEnemyLocation of
+        Nothing -> id
+        Just el ->
+          overAttrs (\a -> a {locationTokens = enemyLocationTokens (toAttrs el)})
+      location = inheritTokens $ lookupLocation (toCardCode card) lid (toCardId card)
+    push (PlacedLocation (toName location) (toCardCode card) lid)
+    pure
+      $ g
+      & (entitiesL . enemyLocationsL %~ deleteMap lid)
+      & (entitiesL . locationsL . at lid ?~ location)
+  -- Remove an enemy-location from play (e.g. after defeat).
+  RemoveEnemyLocation lid -> do
+    pure $ g & entitiesL . enemyLocationsL %~ deleteMap lid
   ReplaceLocation lid card replaceStrategy -> do
     -- if replaceStrategy is swap we also want to copy over revealed, all tokens
     location <- getLocation lid
@@ -2100,10 +2147,18 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
     pure g
   AddToVictory miid (LocationTarget lid) -> do
-    card <- field LocationCard lid
-    pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
-    pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
-    pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
+    mEnemyLocation <- maybeEnemyLocation lid
+    case mEnemyLocation of
+      Just el -> do
+        let card = toCard el
+        pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
+        pushAll $ RemoveEnemyLocation lid : windows [Window.AddedToVictory miid card]
+        pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
+      Nothing -> do
+        card <- field LocationCard lid
+        pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]
+        pushAll $ RemoveLocation lid : windows [Window.AddedToVictory miid card]
+        pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
   PlayerWindow iid _ _ _ -> do
     player <- getPlayer iid

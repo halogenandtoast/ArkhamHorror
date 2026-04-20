@@ -27,6 +27,7 @@ import Arkham.Investigator (promoInvestigators)
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
+import Arkham.EnemyLocation.Types (EnemyLocation)
 import Arkham.Location.Types (Location)
 import Arkham.Matcher.Target (matchTarget)
 import Arkham.Prelude
@@ -395,6 +396,11 @@ maybeLocation lid = do
   pure
     $ preview (entitiesL . locationsL . ix lid) g
     <|> getRemovedEntity locationsL lid g
+
+maybeEnemyLocation :: HasGame m => LocationId -> m (Maybe EnemyLocation)
+maybeEnemyLocation lid = do
+  g <- getGame
+  pure $ preview (entitiesL . enemyLocationsL . ix lid) g
 
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case

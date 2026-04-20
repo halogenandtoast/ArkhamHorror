@@ -20,6 +20,8 @@ import Arkham.Effect ()
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy ()
 import Arkham.Enemy.Types (Enemy)
+import Arkham.EnemyLocation ()
+import Arkham.EnemyLocation.Types (EnemyLocation)
 import Arkham.Event
 import Arkham.Event.Types (Event)
 import Arkham.GameT
@@ -50,6 +52,7 @@ data Entities = Entities
   { entitiesLocations :: EntityMap Location
   , entitiesInvestigators :: EntityMap Investigator
   , entitiesEnemies :: EntityMap Enemy
+  , entitiesEnemyLocations :: EntityMap EnemyLocation
   , entitiesAssets :: EntityMap Asset
   , entitiesActs :: EntityMap Act
   , entitiesAgendas :: EntityMap Agenda
@@ -80,6 +83,7 @@ instance FromJSON Entities where
     entitiesLocations <- o .: "locations"
     entitiesInvestigators <- o .: "investigators"
     entitiesEnemies <- o .:? "enemies" .!= mempty
+    entitiesEnemyLocations <- o .:? "enemyLocations" .!= mempty
     entitiesAssets <- o .:? "assets" .!= mempty
     entitiesActs <- o .:? "acts" .!= mempty
     entitiesAgendas <- o .:? "agendas" .!= mempty
@@ -105,6 +109,7 @@ defaultEntities =
     { entitiesLocations = mempty
     , entitiesInvestigators = mempty
     , entitiesEnemies = mempty
+    , entitiesEnemyLocations = mempty
     , entitiesAssets = mempty
     , entitiesActs = mempty
     , entitiesAgendas = mempty
@@ -126,6 +131,7 @@ instance Semigroup Entities where
       { entitiesLocations = entitiesLocations a <> entitiesLocations b
       , entitiesInvestigators = entitiesInvestigators a <> entitiesInvestigators b
       , entitiesEnemies = entitiesEnemies a <> entitiesEnemies b
+      , entitiesEnemyLocations = entitiesEnemyLocations a <> entitiesEnemyLocations b
       , entitiesAssets = entitiesAssets a <> entitiesAssets b
       , entitiesActs = entitiesActs a <> entitiesActs b
       , entitiesAgendas = entitiesAgendas a <> entitiesAgendas b
@@ -143,6 +149,7 @@ instance HasAbilities Entities where
     concatMap getAbilities (toList entitiesLocations)
       <> concatMap getAbilities (toList entitiesInvestigators)
       <> concatMap getAbilities (toList entitiesEnemies)
+      <> concatMap getAbilities (toList entitiesEnemyLocations)
       <> concatMap getAbilities (toList entitiesAssets)
       <> concatMap getAbilities (toList entitiesActs)
       <> concatMap getAbilities (toList entitiesAgendas)
@@ -179,6 +186,7 @@ toSomeEntities Entities {..} =
   map SomeEntity (toList entitiesLocations)
     <> map SomeEntity (toList entitiesInvestigators)
     <> map SomeEntity (toList entitiesEnemies)
+    <> map SomeEntity (toList entitiesEnemyLocations)
     <> map SomeEntity (toList entitiesAssets)
     <> map SomeEntity (toList entitiesActs)
     <> map SomeEntity (toList entitiesAgendas)
@@ -250,6 +258,7 @@ instance RunMessage Entities where
     entitiesEvents <- runEntities eventsL
     entitiesLocations <- runEntities locationsL
     entitiesEnemies <- runEntities enemiesL
+    entitiesEnemyLocations <- runEntities enemyLocationsL
     entitiesEffects <- runEntities effectsL
     entitiesAssets <- runEntities assetsL
     entitiesSkills <- runEntities skillsL

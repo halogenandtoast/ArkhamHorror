@@ -63,6 +63,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (cardResolutionModifiers)
 import Arkham.Helpers.Playable
+import Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getIsCommittable)
@@ -647,7 +648,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           Nothing -> a
       _ -> pure a
   AddToVictory _ (LocationTarget lid) -> do
-    card <- field LocationCard lid
+    mEnemyLocation <- maybeEnemyLocation lid
+    card <- case mEnemyLocation of
+      Just el -> pure $ toCard el
+      Nothing -> field LocationCard lid
     pure $ a & (victoryDisplayL %~ nub . (card :))
   Do (AddToVictory _ (EnemyTarget eid)) -> do
     card <- field EnemyCard eid

@@ -110,6 +110,7 @@ messageType EnemySpawn {} = Just EnemySpawnMessage
 messageType EnemySpawnAtLocationMatching {} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
 messageType Arkham.Message.EnemyDefeated {} = Just EnemyDefeatedMessage
+messageType Arkham.Message.EnemyLocationDefeated {} = Just EnemyDefeatedMessage
 messageType (Discard _ GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
 messageType RevealChaosToken {} = Just RevealChaosTokenMessage
 messageType InvestigatorDamage {} = Just DamageMessage
@@ -757,6 +758,7 @@ data Message
   | EnemyDamaged EnemyId DamageAssignment -- INTERNAL ONLY
   | DefeatEnemy EnemyId InvestigatorId Source -- use `defeatEnemy`
   | EnemyDefeated EnemyId CardId Source [Trait]
+  | EnemyLocationDefeated LocationId CardId Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyMove EnemyId LocationId
@@ -957,6 +959,10 @@ data Message
   | PlaceLocation LocationId Card
   | PlaceLocationWith LocationId Card (Update Location)
   | PlaceLocationMatching CardMatcher
+  | PlaceEnemyLocation LocationId Card
+  | FlipToEnemyLocation LocationId Card
+  | FlipToLocation LocationId Card
+  | RemoveEnemyLocation LocationId
   | PlaceTokens Source Target Token Int
   | RemoveTokens Source Target Token Int
   | ClearTokens Target

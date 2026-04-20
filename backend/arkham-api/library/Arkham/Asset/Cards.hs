@@ -218,6 +218,7 @@ allPlayerAssetCards =
       , combatTraining3
       , cookiesCustom32
       , cornered2
+      , cornHuskDoll
       , cosmicFlame
       , cosmicFlame5
       , covertOpsInTheShadows

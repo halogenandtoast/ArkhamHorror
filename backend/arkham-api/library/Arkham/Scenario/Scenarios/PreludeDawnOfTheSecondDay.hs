@@ -135,8 +135,8 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           theOldMill <- getJustLocationByName "The Old Mill"
           theCommons <- getJustLocationByName "The Commons"
           theCrossroads <- getJustLocationByName "The Crossroads"
-          simeon <- selectNone $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
-          gideon <- selectNone $ assetIs Assets.gideonMizrahSeasonedSailor
+          simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
+          gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           storyWithChooseOneM' (setTitle "title" >> p.green "body") do
             labeled' "help" do
               iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
@@ -154,37 +154,49 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
         1 -> do
-          entry "motherRachel"
-          cards <-
-            getPlayableCardsMatch
+          let motherRachelEntry k = setTitle "title" >> compose.green (p "header" >> p k)
+          scope "motherRachel" $ flavor $ motherRachelEntry "motherRachel1"
+          increaseRelationshipLevel MotherRachel 1
+          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.motherRachel") 1
+
+          intervened <- getHasRecord MotherRachelIntervened
+          if intervened
+            then do
+              scope "motherRachel" $ flavor $ motherRachelEntry "motherRachel2"
+              addCampaignCardToDeck iid ShuffleIn Assets.cornHuskDoll
+            else do
+              scope "motherRachel" $ flavor $ motherRachelEntry "motherRachel3"
+              drawCards iid source 1
+              cards <-
+                getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ $ oneOf [#charm, #spell])
+              chooseOrRunOneM iid do
+                targets cards $ putCardIntoPlay iid
+                unscoped skip_
+        3 -> do
+          hatchedAPlan <- getHasRecord SimeonHatchedAPlan
+          scope "simeonAtwood" $ flavor do
+            setTitle "title"
+            compose.green do
+              p "header"
+              p.validate hatchedAPlan "hatchedAPlan"
+              hr
+              p.validate (not hatchedAPlan) "otherwise"
+
+          unless hatchedAPlan do
+            drawCards iid source 1
+            search
+              iid
               source
               iid
-              Cost.PaidCost
-              (defaultWindows iid)
-              (card_ $ oneOf [#spell, #charm])
-          chooseOrRunOneM iid do
-            targets cards $ putCardIntoPlay iid
-            unscoped skip_
-        2 -> do
-          entry "leahAtwood"
-          incrementRecordCount LeahAtwoodRelationshipLevel 1
-          cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #tool)
-          chooseOrRunOneM iid do
-            targets cards $ putCardIntoPlay iid
-            unscoped skip_
-        3 -> do
-          entry "simeonAtwood"
-          incrementRecordCount SimeonAtwoodRelationshipLevel 1
-          search
-            iid
-            source
-            iid
-            [fromTopOfDeck 9]
-            (basic $ oneOf [#tactic, #trick])
-            (AddFoundToHand iid 1)
+              [fromTopOfDeck 9]
+              (basic $ oneOf [#tactic, #trick])
+              (AddFoundToHand iid 1)
         4 -> do
+          record WilliamTookHeart
           entry "williamHemlock"
-          incrementRecordCount WilliamHemlockRelationshipLevel 1
+          increaseRelationshipLevel WilliamHemlock 1
+          decreaseRelationshipLevel RiverHawthorne 1
+          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.williamHemlock") 2
           search
             iid
             source
@@ -193,20 +205,47 @@ instance RunMessage PreludeDawnOfTheSecondDay where
             (basic $ oneOf [#tome, #talent])
             (AddFoundToHand iid 1)
         5 -> do
+          record TheSchemeIsInMotion
+          increaseRelationshipLevel RiverHawthorne 2
+          decreaseRelationshipLevel WilliamHemlock 1
+          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.riverHawthorne") 2
           entry "riverHawthorne"
-          incrementRecordCount GideonMizrahRelationshipLevel 1
           gainResources iid source 3
         6 -> do
-          entry "gideonMizrah"
-          incrementRecordCount GideonMizrahRelationshipLevel 1
+          let gideonEntry k = setTitle "title" >> compose.green (p "header" >> p k)
+          scope "gideonMizrah" $ flavor $ gideonEntry "gideon1"
+          increaseRelationshipLevel GideonMizrah 1
+          eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.gideonMizrah") 1
+
+          toldStory <- getHasRecord GideonToldTheStoryOfCaptainHemlock
+          if toldStory
+            then do
+              record GideonToldTheTaleOfTheAnnabelleLee
+              scope "gideonMizrah" $ flavor $ gideonEntry "gideon2"
+            else scope "gideonMizrah" $ flavor $ gideonEntry "gideon3"
+
           drawCards iid source 3
         7 -> do
-          entry "judithPark"
-          incrementRecordCount JudithParkRelationshipLevel 1
-          cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
-          chooseOrRunOneM iid do
-            targets cards $ putCardIntoPlay iid
-            unscoped skip_
+          let judithEntry k = setTitle "title" >> compose.green (p "header" >> p k)
+          scope "judithPark" $ flavor $ judithEntry "judith1"
+
+          savedYourAss <- getHasRecord JudithSavedYourAss
+          if savedYourAss
+            then do
+              scope "judithPark" $ storyWithChooseOneM' (judithEntry "judith2") do
+                labeled' "iCanHandleMyself" do
+                  increaseRelationshipLevel JudithPark 1
+                  flavor $ judithEntry "judith3"
+                labeled' "thanksForSavingUs" do
+                  decreaseRelationshipLevel JudithPark 1
+                  flavor $ judithEntry "judith4"
+              eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.judithPark") 1
+            else do
+              drawCards iid source 1
+              cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
+              chooseOrRunOneM iid do
+                targets cards $ putCardIntoPlay iid
+                unscoped skip_
         8 -> do
           theoDistractedTheBear <- getHasRecord TheoDistractedTheBear
           when theoDistractedTheBear do
@@ -225,8 +264,8 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               chooseTargetM iid locations $ moveTo source iid
             skip_
         9 -> do
-          simeon <- selectNone $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
-          gideon <- selectNone $ assetIs Assets.gideonMizrahSeasonedSailor
+          simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
+          gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           let optionCount = 1 + (if simeon then 1 else 0) + (if gideon then 1 else 0)
           boardingHouseInvestigators <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
           totalActions <- sum <$> traverse (field InvestigatorRemainingActions) boardingHouseInvestigators
@@ -322,6 +361,12 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       case r of
         Resolution 1 -> do
           resolution "resolution1"
+          push R3
+        Resolution 2 -> do
+          resolution "resolution2"
+          push R3
+        Resolution 3 -> do
+          resolution "resolution3"
           eachInvestigator \iid -> do
             assets <- select $ assetControlledBy iid
             chooseOrRunOneM iid do
@@ -336,7 +381,6 @@ instance RunMessage PreludeDawnOfTheSecondDay where
             rs <- getStartingResources iid
             n <- field InvestigatorResources iid
             when (n > rs) $ loseResources iid ScenarioSource (n - rs)
-          addChaosToken AutoFail
           keepCardCache
           endOfScenario
         _ -> error "invalid resolution"
@@ -350,12 +394,19 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       if standalone
         then push GameOver
         else do
+          areas <- getAreasSurveyed
+          let survey k = unless (k `elem` areas)
           leadChooseOneM do
             questionLabeled' "survey"
-            scenarioLabeled' "writtenInRock" "10501-day1" $ afterPrelude WrittenInRock
-            scenarioLabeled' "hemlockHouse" "10523-day1" $ afterPrelude HemlockHouse
-            scenarioLabeled' "theSilentHeath" "10549-day1" $ afterPrelude TheSilentHeath
-            scenarioLabeled' "theLostSister" "10569-day1" $ afterPrelude TheLostSister
-            scenarioLabeled' "theThingInTheDepths" "10588-day1" $ afterPrelude TheThingInTheDepths
+            survey NorthPointMine do
+              scenarioLabeled' "writtenInRock" "10501-day2" $ afterPrelude WrittenInRock
+            survey HemlockHarbor do
+              scenarioLabeled' "hemlockHouse" "10523-day2" $ afterPrelude HemlockHouse
+            survey PearlRidge do
+              scenarioLabeled' "theSilentHeath" "10549-day2" $ afterPrelude TheSilentHeath
+            survey AkwanShoreline do
+              scenarioLabeled' "theLostSister" "10569-day2" $ afterPrelude TheLostSister
+            survey EastwickBog do
+              scenarioLabeled' "theThingInTheDepths" "10588-day2" $ afterPrelude TheThingInTheDepths
       pure s
     _ -> PreludeDawnOfTheSecondDay <$> liftRunMessage msg attrs

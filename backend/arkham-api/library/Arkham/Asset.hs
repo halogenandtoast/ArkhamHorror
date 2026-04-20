@@ -1101,6 +1101,7 @@ allAssets =
       , SomeAssetCard helenPetersTheEldestSister
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
+      , SomeAssetCard cornHuskDoll
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook

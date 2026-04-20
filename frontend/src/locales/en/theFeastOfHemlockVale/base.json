@@ -154,6 +154,46 @@
       "label": {
         "additionalActions": "Any number of Actions"
       },
+      "motherRachel": {
+        "title": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.motherRachel.title </h3>",
+        "motherRachel1": "<p>_Mother Rachel 1:_ Mother Rachel stands at the head of a procession. Her train wave bright colorful ribbons as they sing a lilting song: “The night is long, the woods are dark / The starborn child is clothed in bark / Silent, we wait for summer rain / The cleansing wash to end all pain.” The procession halts as Mother Rachel breaks from the group to walk to your side.</p><p class='basic'>Check Mother Rachel’s Notes.</p><ul><li>*If Mother Rachel intervened*, proceed to _Mother Rachel 2_.</li><li>Otherwise, skip to _Mother Rachel 3_.</li></ul>",
+        "motherRachel2": "<p>_Mother Rachel 2_: Mother Rachel’s eyes well with tears. “I could feel the hand of death was upon you, and so I followed you into the woods. When the beast appeared, I knew it was my place to help you. Just as it is your place to witness the miracles of Hemlock Isle in all their fearsome, terrifying glory.” She presses a small, handmade doll into your hands. “A gift from my daughter,” she gestures to a young girl in a rabbit mask in the midst of the procession. Strings of flowering garlands are roped around her hands and ankles.</p><p class='basic right'>Increase Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>Search the Heirlooms encounter set for the Corn Husk Doll story asset and add it to your deck. It does not count toward your deck size. This set is indicated by the following encounter set icon:<section class='encounter-sets'><img src='{setImgPath}/heirlooms.png' /></section></p>",
+        "motherRachel3": "<p>_Mother Rachel 3_: Mother Rachel grips your hands tightly in hers as she looks down at you with a magnanimous smile. “There is so much that you do not yet understand. And yet, I believe you will understand it once the Feast begins.” As the matron returns to the procession, a young girl in a rabbit mask peers out from the midst of the crowd. Strings of flowering garlands are roped around her hands and ankles.</p><p class='basic right'>Increase Mother Rachel’s Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>Draw 1 card. You may play a _*Charm*_ or _*Spell*_ asset from your hand, ignoring its cost.</p>"
+      },
+      "simeonAtwood": {
+        "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.simeonAtwood.title </h3>",
+        "hatchedAPlan": "<p>_If Simeon hatched a plan:_:</p><p>“For the Secret Miners!” Simeon tosses a firecracker at your feet, but the rain extinguishes the fuse. “Consider that a warning,” he laughs. The young man then opens a bag full of fireworks as he outlines a convoluted plan. “Tomorrow morning, hide these fireworks somewhere in the crossroads, the chapel, the store, and the school. Where people won’t find them. Then, on the night of the Feast, we’ll meet behind the schoolhouse.” When you ask him why he won’t place the fireworks himself, he smirks. “I’ve gotta get more gunpowder from my secret underground lair. But don’t worry, I’ll be back tomorrow.”</p><p class='basic right'>In Simeon Atwood’s Notes, record *The plan is underway*. (*Hint: Tomorrow, you need to hide 1 {'{'}perPlayer{'}'} fireworks around Hemlock Vale.*)</p>",
+        "otherwise": "<p>_Otherwise:_</p><p>“Scram!” Simeon shouts from a small burrow at the base of the mill. The young man is clearly hiding something, but you have no idea what. A firecracker flies out of the foliage but doesn’t go off.</p><p class='basic right'>Draw 1 card. Search the top 9 cards of your deck for a _*Tactic*_ or _*Trick*_ card and add it to your hand (*shuffle your deck*).</p>"
+      },
+      "williamHemlock": {
+        "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.williamHemlock.title </h3><p>River walks off in a huff after you come to their cousin’s defense. William smiles. “Thank you, my friend. I have plenty to reflect on.”</p><p class='basic right'>In William Hemlock’s Notes, record *William took heart*.</p><p class='basic right'>Increase William Hemlock’s Relationship Level. Decrease River Hawthorne’s Relationship Level. Each investigator earns 1 bonus experience.</p><p class='basic right'>Search the top 9 cards of your deck for a Tome or Talent card and add it to your hand (shuffle your deck).</p>"
+      },
+      "riverHawthorne": {
+        "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+        "body": "<h3>@:theFeastOfHemlockVale.prelude2.codex.riverHawthorne.title </h3><p>“I appreciate your support,” River smirks as William storms off. “My idiot cousin entrusted all the family bonds and deeds to the Atwoods. I just need to find where they’ve hidden them.”</p><p class='basic right'>In River Hawthorne’s Notes, record *The scheme is in motion*.</p><p class='basic right'>Increase River Hawthorne’s Relationship Level by 2. Decrease William Hemlock’s Relationship Level. Each investigator earns 2 bonus experience.</p><p class='basic right'>Gain 4 resources.</p>"
+      },
+      "gideonMizrah": {
+        "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.gideonMizrah.title </h3>",
+        "gideon1": "<p>_Gideon 1_: Gideon is seated at a long table. “I heard some talk on the northern shore about a right queer thing. A heap of weeds and shellfish rolling on the north beach. They said it moved on its own.” The old man’s story soon threatens to spiral into an explanation of whale anatomy.</p><p class='basic'>Check Gideon Mizrah’s Notes.</p><ul><li>*If Gideon told the story of Captain Hemlock*, proceed to _Gideon 2_.</li><li>Otherwise, skip to _Gideon 3_.</li></ul>",
+        "gideon2": "<p>_Gideon 2_: Sensing another of the old sailor’s wandering tales, you ask Gideon about the shipwreck he and Captain Hemlock found in the Atlantic. The old man’s face lights up at the question, and he gives a grim account detailing how the crew of his ship—the Annabelle Lee— grew gravely ill following their visit to the shipwreck. As he tells the story, you are joined by Dr. Marquez, who listens intently. You can sense an old fear in the grizzled sailor’s tone, but don’t press it further.</p><p class='basic right'>In Gideon Mizrah’s Notes, record Gideon *told the tale of the Annabelle Lee*.</p><p class='basic right'>Draw 3 cards. Increase Gideon Mizrah’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "gideon3": "<p>_Gideon 3_: The conversation instead devolves into a soliloquy about barnacle removal. As Gideon waxes eloquent about a delicious abalone stew he once enjoyed, you politely excuse yourself.</p><p class='basic right'>Draw 3 cards. Increase Gideon Mizrah’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
+      "judithPark": {
+        "label": {
+          "iCanHandleMyself": "“I can handle myself.”",
+          "thanksForSavingUs": "“Thanks for saving us.”"
+        },
+        "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.judithPark.title </h3>",
+        "judith1": "<p>_Judith 1:_ Judith leans against the side of the Atwood House, polishing her rifle as she observes passers-by. “These sweet little lambs don’t even know what I have to go through to keep them safe. And hopefully they never will, Jomo.” You realize she is addressing her rifle, and not you. She stop suddenly, as if aware of your presence, and locks eyes with you.</p><p class='basic'>Check Judith Park’s Notes.</p><ul><li>*If Judith saved your ass*, proceed to _Judith 2_.</li><li>Otherwise, draw 1 card. You may play a _*Weapon*_ card from your hand, ignoring its cost.</li></ul>",
+        "judith2": "<p>_Judith 2:_: “You can bet that bear is alive and has your scent,” Judith says grimly. “Some of the animals here are incredibly smart. Too smart. I can guarantee that thing’s out for blood tonight. Don’t go near the woods again.”</p><p class='basic'>You must decide (choose one):</p><ul><li>“I can handle myself.” Proceed to _Judith 3_.</li><li>“Thanks for saving us.” Skip to _Judith 4_.</li></ul>",
+        "judith3": "<p>_Judith 3_: Judith looks you over, sizing you up. “I figured the survey had to bring someone like you along. Someone who can stay cool under pressure.” She puts her hands on her hips. “I might be impressed.”</p><p class='basic right'>Increase Judith Park’s Relationship Level. Each investigator earns 1 bonus experience.</p>",
+        "judith4": "<p>_Judith 4_: “Thank me? For saving you?” Judith cocks an eyebrow. “You’re welcome, I guess. Just doing what I’m paid to do.”</p><p class='basic right'>Decrease Judith Park’s Relationship Level. Each investigator earns 1 bonus experience.</p>"
+      },
       "theoPeters": {
         "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
         "header": "<h3>@:theFeastOfHemlockVale.prelude2.codex.theoPeters.title </h3>",
@@ -214,7 +254,11 @@
       },
       "xp": {
         "tadsGeneralStore": "Tad's General Store",
-        "theCommons": "The Commons"
+        "theCommons": "The Commons",
+        "judithPark": "Judith Park",
+        "gideonMizrah": "Gideon Mizrah",
+        "riverHawthorne": "River Hawthorne",
+        "williamHemlock": "William Hemlock"
       }
     },
     "xp": {
@@ -222,7 +266,13 @@
     },
     "label": {
       "theSecondEvening": "*The Second Evening.*",
-      "theThirdEvening": "*The Third Evening.*"
+      "theThirdEvening": "*The Third Evening.*",
+      "survey": "The investigators must choose where to survey today! You will have the opportunity to survey multiple areas over the course of the campaign.",
+      "writtenInRock": "Brave the decaying North Point Mine in _Written in Rock_",
+      "hemlockHouse": "Investigate the long-abandoned _Hemlock House_",
+      "theSilentHeath": "Explore the eerily quiet Pearl Ridge in _The Silent Heath_",
+      "theLostSister": "Explore the Awkwan Shoreline up north in _The Lost Sister_",
+      "theThingInTheDepths": "Survey Eastwick Bog and risk an encounter with _The Thing in the Depths_"
     },
     "intro": {
       "title": "Prelude: Dawn of the Second Day",
@@ -241,6 +291,20 @@
       "setOutOfPlay": "Set each card from the *Residents* encounter set aside, out of play.",
       "placeDoom": "Place doom on the agenda equal to the number of investigators.",
       "codex": "Keep the Campaign Guide on hand as you play. Codex entries for this prelude are on the next three pages (7, 8, and 9)."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: Dr. Marquez emerges from upstairs with a stony look on her face. Bertie follows, nursing a bandaged arm. His face is ashen as he recounts his experience: “I was walking at the edge of the woods—I think at midday—when I felt the most delicious, erm.” He struggles to put it into words. “An absolute joy. And then I suppose I lost myself. When I came to, it was night and I was quite lost. And now that I’ve returned, I can’t help but reflect on that breathless feeling. ‘Emotion recollected in tranquility,’ eh?” The professor rolls her eyes but doesn’t comment.</p><ul><li>Skip to _Resolution 3_.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: Dr. Marquez slams the screen door as she enters. “Mother Rachel told me she found Bertie wandering around this morning. I saw him recovering at the Atwood House, and he looks just fine. Babbling nonsense and reading some of the local poetry.”</p><ul><li>Proceed to _Resolution 3_.</li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>_Resolution 3_: Dr. Marquez pours herself a strong cup of coffee. “I’m going to take advantage of the cooling rain and head up to Pearl Ridge. Join me if you like,” she takes a bite of her eggs and wrinkles her nose. “Is that a metal taste?” She discretely spits the eggs into a handkerchief as Ms. Olmstead emerges from the kitchen with a stack of flapjacks and serves several hungry guests.</p><ul><li>Do not record the Victory X value of each card in the victory display. Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>Make preparations for your next survey.<ul><li>Choose 1 asset in your play area to keep for the next scenario. It must be one that does not normally start in play. Discard each other asset and attachment in your play area, except for those that start each game in play.</li><li>Discard down to your opening hand size. Shuffle your discard pile into your deck. (*Your current hand is your opening hand for the next scenario; you will not draw a new opening hand or take a mulligan.8)</li><li>Discard down to your starting resources.</li></ul></li><li>When setting up the next scenario, skip steps 1-8 of ‘Setting Up the Game” on page 27 of the Rules Reference.</li></ul><p class='basic'>Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off.</p><ul><li>To brave the decaying North Point Mine in Written in Rock, turn to page 10.</li><li>To investigate the long-abandoned Hemlock House, turn to page 14.</li><li>To explore the eerily quiet Pearl Ridge in The Silent Heath, turn to page 19.</li><li>To explore the Akwan Shoreline up north in The Lost Sister, turn to page 23.</li><li>To survey Eastwick Bog and risk an encounter with The Thing in the Depths, turn to page 27.</li></ul>"
+      }
     }
   },
   "prelude": {
@@ -405,19 +469,24 @@
     },
     "[williamHemlockNotes]": {
       "orderKey": "e",
-      "name": "William Hemlock"
+      "name": "William Hemlock",
+      "williamTookHeart": "William Took Heart"
     },
     "[riverHawthorneNotes]": {
       "orderKey": "f",
-      "name": "River Hawthorne"
+      "name": "River Hawthorne",
+      "theSchemeIsInMotion": "The Scheme Is In Motion"
     },
     "[gideonMizrahNotes]": {
       "orderKey": "g",
-      "name": "Gideon Mizrah"
+      "name": "Gideon Mizrah",
+      "gideonToldTheStoryOfCaptainHemlock": "Gideon Told The Story Of Captain Hemlock",
+      "gideonToldTheTaleOfTheAnnabelleLee": "Gideon Told The Tale Of The Annabelle Lee"
     },
     "[judithParkNotes]": {
       "orderKey": "h",
-      "name": "Judith Park"
+      "name": "Judith Park",
+      "judithSavedYourAss": "Judith Saved Your Ass"
     },
     "[theoPetersNotes]": {
       "orderKey": "i",

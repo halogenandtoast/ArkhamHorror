@@ -5,7 +5,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.CampaignSteps hiding (PreludeWelcomeToHemlockVale)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
-import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasQueue (clearQueue)
@@ -22,7 +21,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Placement
@@ -135,15 +133,15 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         2 -> do
+          increaseRelationshipLevel LeahAtwood 1
           entry "leahAtwood"
-          incrementRecordCount LeahAtwoodRelationshipLevel 1
           cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #tool)
           chooseOrRunOneM iid do
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         3 -> do
+          increaseRelationshipLevel SimeonAtwood 1
           entry "simeonAtwood"
-          incrementRecordCount SimeonAtwoodRelationshipLevel 1
           search
             iid
             source
@@ -153,7 +151,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             (AddFoundToHand iid 1)
         4 -> do
           entry "williamHemlock"
-          incrementRecordCount WilliamHemlockRelationshipLevel 1
+          increaseRelationshipLevel WilliamHemlock 1
           search
             iid
             source
@@ -162,23 +160,23 @@ instance RunMessage PreludeWelcomeToHemlockVale where
             (basic $ oneOf [#tome, #talent])
             (AddFoundToHand iid 1)
         5 -> do
+          increaseRelationshipLevel RiverHawthorne 1
           entry "riverHawthorne"
-          incrementRecordCount GideonMizrahRelationshipLevel 1
           gainResources iid source 3
         6 -> do
+          increaseRelationshipLevel GideonMizrah 1
           entry "gideonMizrah"
-          incrementRecordCount GideonMizrahRelationshipLevel 1
           drawCards iid source 3
         7 -> do
+          increaseRelationshipLevel JudithPark 1
           entry "judithPark"
-          incrementRecordCount JudithParkRelationshipLevel 1
           cards <- getPlayableCardsMatch source iid Cost.PaidCost (defaultWindows iid) (card_ #weapon)
           chooseOrRunOneM iid do
             targets cards $ putCardIntoPlay iid
             unscoped skip_
         8 -> do
+          increaseRelationshipLevel TheoPeters 1
           entry "theoPeters"
-          incrementRecordCount TheoPetersRelationshipLevel 1
           chooseOneM iid $ unscoped do
             labeled' "move" do
               locations <- getCanMoveToLocations iid source

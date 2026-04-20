@@ -170,3 +170,6 @@ increaseRelationshipLevel r = incrementRecordCount (relationshipKey r)
 
 decreaseRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
 decreaseRelationshipLevel r = decrementRecordCount (relationshipKey r)
+
+getAreasSurveyed :: (HasGame m, Tracing m) => m [AreasSurveyed]
+getAreasSurveyed = filterM (getHasRecord . AreasSurveyed) [NorthPointMine ..]

@@ -23,6 +23,7 @@ data Trait
   | Assistant
   | Augury
   | Avatar
+  | Bane
   | Basement
   | Bayou
   | Bazaar
@@ -50,6 +51,7 @@ data Trait
   | Circle
   | City
   | Civic
+  | Civilian
   | Clairvoyant
   | Clothing
   | CloverClub
@@ -186,6 +188,7 @@ data Trait
   | Mountain
   | Mountains
   | Mutated
+  | Mutation
   | Mystery
   | NewOrleans
   | Nightgaunt

@@ -298,6 +298,26 @@ data EncounterSet
   | CosmicJourney
   | ForgottenIsland
   | AbominableContessa
+  | SpreadingFlames
+  | AshenPilgrims
+  | Bystanders
+  | CosmicEvils
+  | EldritchLore
+  | Hallucinations
+  | Fire1
+  | MadScience
+  | ArcaneLock
+  | BadWeather
+  | DeadEnds
+  | Torment
+  | GangsOfArkham
+  | Cultists
+  | ReekingDecay
+  | FlyingTerrors
+  | MiskatonicUniversity
+  | ArkhamCore2026
+  | PeopleOfArkham
+  | QueenOfAsh
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

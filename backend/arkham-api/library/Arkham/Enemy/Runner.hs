@@ -58,6 +58,7 @@ import Arkham.History
 import Arkham.I18n
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
+import Data.Set qualified as Set
 import Arkham.Matcher (
   AssetMatcher (..),
   EnemyMatcher (..),
@@ -1620,12 +1621,16 @@ instance RunMessage EnemyAttrs where
           guard (not a.placement.isInVictory) *> [AddToVictory miid $ toTarget a | placeInVictory]
         defeatMsgs =
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
+        -- Doomed keyword: when defeated, place 1 doom on the agenda (can advance)
+        doomedMsgs =
+          guard (Set.member Keyword.Doomed (cdKeywords (toCardDef a))) *> [PlaceDoomOnAgenda 1 CanAdvance]
 
       pushAll
         $ afterDefeatMsg
         : victoryMsgs
           <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
           <> defeatMsgs
+          <> doomedMsgs
           <> [afterMsg]
 
       case a.placement of

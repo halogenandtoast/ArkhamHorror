@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Downpour (downpour) where
+module Arkham.Treachery.Cards.Downpour_c2026 (downpour_c2026) where
 
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -7,15 +7,15 @@ import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
-newtype Downpour = Downpour TreacheryAttrs
+newtype Downpour_c2026 = Downpour_c2026 TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-downpour :: TreacheryCard Downpour
-downpour = treachery Downpour Cards.downpour
+downpour_c2026 :: TreacheryCard Downpour_c2026
+downpour_c2026 = treachery Downpour_c2026 Cards.downpour_c2026
 
-instance RunMessage Downpour where
-  runMessage msg t@(Downpour attrs) = runQueueT $ case msg of
+instance RunMessage Downpour_c2026 where
+  runMessage msg t@(Downpour_c2026 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       revelationSkillTest sid iid attrs #intellect (Fixed 3)
@@ -34,4 +34,4 @@ instance RunMessage Downpour where
           placeCluesOnLocation iid attrs 1
           doStep (n - 1) msg'
       pure t
-    _ -> Downpour <$> liftRunMessage msg attrs
+    _ -> Downpour_c2026 <$> liftRunMessage msg attrs

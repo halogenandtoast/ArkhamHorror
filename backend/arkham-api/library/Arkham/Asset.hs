@@ -1226,6 +1226,8 @@ allAssets =
       , SomeAssetCard handCrankFlashlight
       , --- basic weakness [core2026]
         SomeAssetCard theGoldBug
+      , --- story [core2026]
+        SomeAssetCard drHenryArmitage_c2026
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeAssetCard physicalTraining2

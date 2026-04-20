@@ -1047,6 +1047,7 @@ allPlayerAssetCards =
       , zebulonWhateley
       , zoeysCross
       , zoeysCrossAdvanced
+      , drHenryArmitage_c2026
       ]
 
 -- with encounter backs

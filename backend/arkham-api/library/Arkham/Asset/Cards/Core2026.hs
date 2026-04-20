@@ -337,3 +337,12 @@ theGoldBug =
     { cdCardTraits = setFromList [Item, Relic, Alchemy, Cursed]
     , cdSlots = [#accessory]
     }
+
+drHenryArmitage_c2026 :: CardDef
+drHenryArmitage_c2026 =
+  (storyAsset "12115" ("Dr. Henry Armitage" <:> "The Head Librarian") 3 SpreadingFlames)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }

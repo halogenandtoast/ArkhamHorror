@@ -778,4 +778,25 @@ allEnemies =
       , SomeEnemyCard theContessaEnraged
       , SomeEnemyCard vampireThrall
       , SomeEnemyCard werewolf
+      , --- Spreading Flames
+        SomeEnemyCard servantOfFlameRagingFury
+      , --- Ashen Pilgrims
+        SomeEnemyCard cantorOfFlame
+      , SomeEnemyCard hellhound
+      , --- Bystanders
+        SomeEnemyCard bystander
+      , --- Mad Science
+        SomeEnemyCard mutatedExperiment
+      , --- Torment
+        SomeEnemyCard batHorror
+      , --- Gangs Of Arkham
+        SomeEnemyCard rogueGangster
+      , --- Cultists
+        SomeEnemyCard zealot
+      , SomeEnemyCard darkMagician
+      , --- Queen of Ash
+        SomeEnemyCard queensKnight
+      , SomeEnemyCard heraldOfFlame
+      , SomeEnemyCard elokossFaintEmbers
+      , SomeEnemyCard elokossMotherOfFlame
       ]

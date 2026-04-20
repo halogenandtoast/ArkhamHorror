@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
-import Arkham.Card
 import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher

@@ -107,7 +107,7 @@ const handlePointerMove = (e: PointerEvent) => {
   const el = targetFromEvent(e)
   hoverTimer = clearTimer(hoverTimer)
   if (!el || el.classList.contains('dragging') || el.classList.contains('no-overlay')) {
-    if (!isMobile.value) hoveredElement.value = null
+    hoveredElement.value = null
     return
   }
   queueHover(el)

@@ -1226,6 +1226,7 @@ h2 {
   justify-content: center;
   .portrait {
     min-width: fit-content;
+    height: auto;
   }
 }
 
@@ -1399,6 +1400,7 @@ h2 {
       width: calc(var(--card-width) * 4);
       flex-basis: unset;
       flex-shrink: unset;
+      height: auto;
     }
   }
   > .question-content {
@@ -1419,7 +1421,11 @@ h2 {
     .portrait {
       display: flex;
       margin: 0;
-      img { min-width: fit-content; };
+      img {
+        width: auto;
+        height: max(calc(var(--card-width) * 2));
+      };
+
     }
     .portrait-choices {
       justify-items: flex-start;

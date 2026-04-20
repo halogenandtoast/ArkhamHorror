@@ -2791,7 +2791,10 @@ getAssetsMatching matcher = do
       mods <- getModifiers (toId a)
       let isSpirit = notNull [() | IsSpirit _ <- mods]
       pure $ not isSpirit && isJust (attr assetSanity a)
-    AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
+    AssetWithDamage -> as & filterM \a -> do
+      current <- field AssetDamage a.id
+      let totalHeal = sum $ Map.elems (attr assetAssignedHealthHeal a)
+      pure $ current - totalHeal > 0
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
     AssetWithClues valueMatcher ->
@@ -2809,7 +2812,10 @@ getAssetsMatching matcher = do
             | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 pType) s
           _ -> pure 0
       gameValueMatches (n + fromOtherSources) valueMatcher
-    AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
+    AssetWithHorror -> as & filterM \a -> do
+      current <- field AssetHorror a.id
+      let totalHeal = sum $ Map.elems (attr assetAssignedSanityHeal a)
+      pure $ current - totalHeal > 0
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetWithKeyword k -> pure $ filter (member k . cdKeywords . toCardDef) as
     AssetInSlot slot -> do

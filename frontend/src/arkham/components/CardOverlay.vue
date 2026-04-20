@@ -86,6 +86,7 @@ const CARD_SELECTOR = '.card,[data-image-id],[data-target],[data-image]'
 let hoverTimer: number | null = null
 let pressTimer: number | null = null
 let canDisablePress = false
+let currentPointerType = 'mouse'
 
 const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) : null)
 
@@ -103,7 +104,8 @@ const queueHover = (el: HTMLElement) => {
   }, delay)
 }
 
-const handlePointerMove = (e: PointerEvent) => {
+const onMouseOver = (e: MouseEvent) => {
+  if (currentPointerType === 'touch') return
   const el = targetFromEvent(e)
   hoverTimer = clearTimer(hoverTimer)
   if (!el || el.classList.contains('dragging') || el.classList.contains('no-overlay')) {
@@ -113,7 +115,14 @@ const handlePointerMove = (e: PointerEvent) => {
   queueHover(el)
 }
 
+const onMouseLeave = () => {
+  if (currentPointerType === 'touch') return
+  hoverTimer = clearTimer(hoverTimer)
+  hoveredElement.value = null
+}
+
 const onPointerDown = (e: PointerEvent) => {
+  currentPointerType = e.pointerType
   if (e.pointerType === 'touch') {
     const el = targetFromEvent(e)
     if (!el) return
@@ -123,13 +132,12 @@ const onPointerDown = (e: PointerEvent) => {
 }
 
 const onPointerMove = (e: PointerEvent) => {
+  currentPointerType = e.pointerType
   if (e.pointerType === 'touch') {
     if (hoveredElement.value?.classList.contains('card--locations')) {
       hoveredElement.value = null
     }
     pressTimer = clearTimer(pressTimer)
-  } else {
-    handlePointerMove(e)
   }
 }
 
@@ -146,6 +154,8 @@ onMounted(() => {
   document.addEventListener('pointerdown', onPointerDown, { passive: true })
   document.addEventListener('pointermove', onPointerMove, { passive: true })
   document.addEventListener('pointerup', onPointerUp, { passive: true })
+  document.addEventListener('mouseover', onMouseOver)
+  document.addEventListener('mouseleave', onMouseLeave)
   // only block context menu inside the overlay, not globally
   cardOverlay.value?.addEventListener('contextmenu', (e) => {
     const t = e.target as HTMLElement
@@ -156,6 +166,8 @@ onUnmounted(() => {
   document.removeEventListener('pointerdown', onPointerDown)
   document.removeEventListener('pointermove', onPointerMove)
   document.removeEventListener('pointerup', onPointerUp)
+  document.removeEventListener('mouseover', onMouseOver)
+  document.removeEventListener('mouseleave', onMouseLeave)
   hoverTimer = clearTimer(hoverTimer)
   pressTimer = clearTimer(pressTimer)
 })

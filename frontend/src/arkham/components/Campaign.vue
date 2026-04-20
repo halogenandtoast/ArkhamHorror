@@ -110,7 +110,15 @@ const questionHash = computed(() => {
 })
 
 const continueScenario = computed(() => {
-  if (props.game.scenario?.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario?.campaignStep.contents
+  const step = props.game.scenario?.campaignStep
+  if (!step) return null
+  if (step.tag === 'ContinueCampaignStep') return step.contents
+
+  // ContinueCampaignStep was already unwrapped by the backend but question is still pending
+  const question = props.game.question[props.playerId] ?? Object.values(props.game.question)[0]
+  if (question?.tag === 'ContinueCampaign') {
+    return { nextStep: step, canUpgradeDecks: false, chooseSideStory: false, canChooseSideStory: false }
+  }
   return null
 })
 

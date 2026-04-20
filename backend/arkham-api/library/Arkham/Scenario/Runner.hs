@@ -1837,6 +1837,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     lead <- getLeadPlayer
     push $ Ask lead ContinueCampaign
     pure $ a & campaignStepL ?~ cs
+  ScenarioCampaignStep (ScenarioStepWithOptions sid _opts) -> do
+    push $ ScenarioCampaignStep (ScenarioStep sid)
+    pure a
   NextScenarioCampaignStep (Just step) -> do
     pushAll [HandleKilledOrInsaneInvestigators, ScenarioCampaignStep step]
     pure $ a & campaignStepL ?~ step

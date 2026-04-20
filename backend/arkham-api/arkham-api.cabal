@@ -4291,6 +4291,7 @@ library
       Arkham.Scenario.Scenarios.ForTheGreaterGood
       Arkham.Scenario.Scenarios.FortuneAndFolly
       Arkham.Scenario.Scenarios.HeartOfTheElders
+      Arkham.Scenario.Scenarios.HemlockHouse
       Arkham.Scenario.Scenarios.HorrorInHighGear
       Arkham.Scenario.Scenarios.IceAndDeathPart1
       Arkham.Scenario.Scenarios.IceAndDeathPart2
@@ -4417,6 +4418,7 @@ library
       Arkham.Scenarios.FortuneAndFolly.Helpers
       Arkham.Scenarios.FortuneAndFolly.PlayingCard
       Arkham.Scenarios.HeartOfTheElders.Helpers
+      Arkham.Scenarios.HemlockHouse.Helpers
       Arkham.Scenarios.HorrorInHighGear.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers

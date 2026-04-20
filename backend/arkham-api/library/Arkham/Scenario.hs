@@ -655,6 +655,7 @@ allScenarios =
     , ("09694", SomeScenario congressOfTheKeys)
     , ("10501", SomeScenario writtenInRock)
     , ("10502", SomeScenario writtenInRock) -- duplicated for card view
+    , ("10523", SomeScenario hemlockHouse)
     , ("10605", SomeScenario theTwistedHollow)
     , ("10677a", SomeScenario preludeDawnOfTheSecondDay)
     , ("10704", SomeScenario preludeWelcomeToHemlockVale)
@@ -784,6 +785,7 @@ scenarioEncounterSets =
     , ("09694", EncounterSet.CongressOfTheKeys)
     , ("10501", EncounterSet.WrittenInRock)
     , ("10502", EncounterSet.WrittenInRock)
+    , ("10523", EncounterSet.HemlockHouse)
     , ("10605", EncounterSet.TheTwistedHollow)
     , ("10677a", EncounterSet.TheVale)
     , ("10704", EncounterSet.TheVale)

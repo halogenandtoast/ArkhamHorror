@@ -28,8 +28,7 @@ instance RunMessage DarkClouds where
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> weakness) _ -> do
       cancelCardEffects attrs weakness
-      insertAfterMatching [DiscardCard iid (toSource attrs) (toCardId weakness)] \case
-        Do (InvestigatorDrewPlayerCardFrom iid' c _) | iid == iid' && c.id == weakness.id -> True
-        _ -> False
+      quietCancelCardDraw weakness
+      discardCard iid attrs weakness
       pure a
     _ -> DarkClouds <$> liftRunMessage msg attrs

@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -53,6 +53,7 @@ library
       Arkham.Act.Cards.ACosmicJourney
       Arkham.Act.Cards.AFamiliarPattern
       Arkham.Act.Cards.AfterHours
+      Arkham.Act.Cards.AgainstTheHouse
       Arkham.Act.Cards.AlejandrosPlight
       Arkham.Act.Cards.AlejandrosPrison
       Arkham.Act.Cards.AllIn
@@ -241,6 +242,7 @@ library
       Arkham.Act.Cards.SprawlingCityV3
       Arkham.Act.Cards.StalkedByShadows
       Arkham.Act.Cards.StoppingTheRitual
+      Arkham.Act.Cards.StrangeInfestation
       Arkham.Act.Cards.StrangeOccurences
       Arkham.Act.Cards.StrangeRelicsMariaDeSilva
       Arkham.Act.Cards.StrangeRelicsMariasInformation
@@ -275,6 +277,7 @@ library
       Arkham.Act.Cards.TheGreatSeal
       Arkham.Act.Cards.TheGuardedRuins
       Arkham.Act.Cards.TheGuardiansInquiry
+      Arkham.Act.Cards.TheHeartOfTheHouse
       Arkham.Act.Cards.TheIsleOfOriab
       Arkham.Act.Cards.TheKingInTatters
       Arkham.Act.Cards.TheKingsDecree
@@ -401,6 +404,7 @@ library
       Arkham.Agenda.Cards.DoomFromBelow
       Arkham.Agenda.Cards.DrawnIn
       Arkham.Agenda.Cards.EasyPrey
+      Arkham.Agenda.Cards.EerieSilence
       Arkham.Agenda.Cards.EmpireOfTheDead
       Arkham.Agenda.Cards.EmpireOfTheUndead
       Arkham.Agenda.Cards.EmptyStreets
@@ -443,6 +447,7 @@ library
       Arkham.Agenda.Cards.JusticeXI
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
+      Arkham.Agenda.Cards.LivingWalls
       Arkham.Agenda.Cards.LockedInside
       Arkham.Agenda.Cards.LostAndForgotten
       Arkham.Agenda.Cards.LostMemories
@@ -530,6 +535,8 @@ library
       Arkham.Agenda.Cards.TheHermitIX
       Arkham.Agenda.Cards.TheHierophantV
       Arkham.Agenda.Cards.TheHouseAlwaysWatches
+      Arkham.Agenda.Cards.TheHouseStirsV1
+      Arkham.Agenda.Cards.TheHouseStirsV2
       Arkham.Agenda.Cards.TheHouseWithNoName
       Arkham.Agenda.Cards.TheInfestationSpreads
       Arkham.Agenda.Cards.TheInitiationV1
@@ -3265,6 +3272,10 @@ library
       Arkham.Location.Cards.Bathroom
       Arkham.Location.Cards.BearDen
       Arkham.Location.Cards.Bedroom
+      Arkham.Location.Cards.BedroomHemlockHouse32
+      Arkham.Location.Cards.BedroomHemlockHouse33
+      Arkham.Location.Cards.BedroomHemlockHouse34
+      Arkham.Location.Cards.BedroomHemlockHouse35
       Arkham.Location.Cards.BedroomTheMidwinterGala
       Arkham.Location.Cards.BetweenWorlds
       Arkham.Location.Cards.BigBen
@@ -3431,6 +3442,7 @@ library
       Arkham.Location.Cards.DimStreetsTheKingsParade
       Arkham.Location.Cards.DiningCar
       Arkham.Location.Cards.DiningRoom
+      Arkham.Location.Cards.DiningRoomHemlockHouse
       Arkham.Location.Cards.DoorwayToTheDepths
       Arkham.Location.Cards.Dormitories
       Arkham.Location.Cards.DownstairsDoorwayDen
@@ -3518,6 +3530,7 @@ library
       Arkham.Location.Cards.FoulCorridors
       Arkham.Location.Cards.FoulSwamp
       Arkham.Location.Cards.Foyer
+      Arkham.Location.Cards.FoyerHemlockHouse
       Arkham.Location.Cards.FoyerMurderAtTheExcelsiorHotel
       Arkham.Location.Cards.FrankElwoodsRoom
       Arkham.Location.Cards.FreightCar
@@ -3673,6 +3686,8 @@ library
       Arkham.Location.Cards.LeMarais217
       Arkham.Location.Cards.LeMarais218
       Arkham.Location.Cards.Library
+      Arkham.Location.Cards.LibraryHemlockHouse39
+      Arkham.Location.Cards.LibraryHemlockHouse40
       Arkham.Location.Cards.LibraryOfEbla
       Arkham.Location.Cards.LibraryOfKos
       Arkham.Location.Cards.LibraryTheMidwinterGala
@@ -3786,6 +3801,7 @@ library
       Arkham.Location.Cards.PalacioErrazuriz
       Arkham.Location.Cards.Parlor
       Arkham.Location.Cards.ParlorCar
+      Arkham.Location.Cards.ParlorHemlockHouse
       Arkham.Location.Cards.ParlorTheMidwinterGala
       Arkham.Location.Cards.PassengerCar_167
       Arkham.Location.Cards.PassengerCar_168
@@ -4151,6 +4167,9 @@ library
       Arkham.Location.Cards.WarpedRailA
       Arkham.Location.Cards.WarpedRailB
       Arkham.Location.Cards.WarrenObservatory
+      Arkham.Location.Cards.WashroomHemlockHouse36
+      Arkham.Location.Cards.WashroomHemlockHouse37
+      Arkham.Location.Cards.WashroomHemlockHouse38
       Arkham.Location.Cards.Waterfall
       Arkham.Location.Cards.WavewornIsland
       Arkham.Location.Cards.WayangKulitTheater

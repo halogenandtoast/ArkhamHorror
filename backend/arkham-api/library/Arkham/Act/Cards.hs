@@ -27,6 +27,7 @@ allActCards =
       , aCosmicJourney
       , aFamiliarPattern
       , afterHours
+      , againstTheHouse
       , alejandrosPlight
       , alejandrosPrison
       , allIn
@@ -215,6 +216,7 @@ allActCards =
       , sprawlingCityV3
       , stalkedByShadows
       , stoppingTheRitual
+      , strangeInfestation
       , strangeOccurences
       , strangeRelicsMariaDeSilva
       , strangeRelicsMariasInformation
@@ -249,6 +251,7 @@ allActCards =
       , theGreatSeal
       , theGuardedRuins
       , theGuardiansInquiry
+      , theHeartOfTheHouse
       , theIsleOfOriab
       , theLadyWithTheRedParasol
       , theLighthouse
@@ -1075,6 +1078,15 @@ descentIntoTheMines = act "10505" "Descent into the Mines" 1 WrittenInRock
 
 theUndergroundMaze :: CardDef
 theUndergroundMaze = act "10506" "The Underground Maze" 2 WrittenInRock
+
+strangeInfestation :: CardDef
+strangeInfestation = act "10529" "Strange Infestation" 1 HemlockHouse
+
+againstTheHouse :: CardDef
+againstTheHouse = act "10530" "Against the House" 2 HemlockHouse
+
+theHeartOfTheHouse :: CardDef
+theHeartOfTheHouse = act "10531" "Heart of the House" 2 HemlockHouse
 
 desperateSearch :: CardDef
 desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherSide = Just "10607b"}

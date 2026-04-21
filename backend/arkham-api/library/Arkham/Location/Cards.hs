@@ -115,10 +115,10 @@ allLocationCards =
       , administrationOffice_131
       , airfield
       , alaskanWilds
+      , alchemyLabs
       , alienConservatory
       , alienFrontierA
       , alienFrontierB
-      , alchemyLabs
       , alkalineForest
       , alkalineRailA
       , alkalineRailB
@@ -180,6 +180,10 @@ allLocationCards =
       , bathroom
       , bearDen
       , bedroom
+      , bedroomHemlockHouse32
+      , bedroomHemlockHouse33
+      , bedroomHemlockHouse34
+      , bedroomHemlockHouse35
       , bedroomTheMidwinterGala
       , bigBen
       , billiardsRoom
@@ -237,8 +241,8 @@ allLocationCards =
       , cavernsBeneathTheMoonLightSide
       , cavernsOfYoth
       , celephais
-      , cementarioDeLaRecoleta
       , cellar
+      , cementarioDeLaRecoleta
       , centralLotBlurred
       , centralLotQuietOnSet
       , chamberOfTime
@@ -267,9 +271,9 @@ allLocationCards =
       , cityOfTheSerpents
       , cityOfTheUnseen
       , cityWhichAppearsOnNoMap
-      , cliffsOfInsanity
       , cliffsideRoad_a
       , cliffsideRoad_b
+      , cliffsOfInsanity
       , clockTowerIncessantlyTicking
       , cloister
       , cloudForest
@@ -345,6 +349,7 @@ allLocationCards =
       , dimStreetsTheKingsParade
       , diningCar
       , diningRoom
+      , diningRoomHemlockHouse
       , doorwayToTheDepths
       , dormitories
       , downstairsDoorwayDen
@@ -364,8 +369,8 @@ allLocationCards =
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
-      , elMalecon
       , elderChamber
+      , elMalecon
       , emergencyRoom
       , enchantedWoodsFungalForest
       , enchantedWoodsGreatStoneCircle
@@ -431,6 +436,7 @@ allLocationCards =
       , foulCorridors
       , foulSwamp
       , foyer
+      , foyerHemlockHouse
       , foyerMurderAtTheExcelsiorHotel
       , frankElwoodsRoom
       , freightCar
@@ -456,7 +462,6 @@ allLocationCards =
       , glimmeringMeadow
       , gondola
       , gothicSet
-      , granTeatroDeLaHabana
       , grandBazaarBusyWalkway
       , grandBazaarCrowdedShops
       , grandBazaarDarkenedAlley
@@ -469,6 +474,7 @@ allLocationCards =
       , grandEntryway
       , grandGuignol
       , grandRue
+      , granTeatroDeLaHabana
       , graveyard
       , gravityDefyingClimb
       , greatHallOfCeleano
@@ -581,11 +587,13 @@ allLocationCards =
       , landlordsQuarters
       , lanternChamber
       , lanternRoom
-      , leMarais217
-      , leMarais218
       , leftTurnA
       , leftTurnB
+      , leMarais217
+      , leMarais218
       , library
+      , libraryHemlockHouse39
+      , libraryHemlockHouse40
       , libraryOfEbla
       , libraryOfKos
       , libraryTheMidwinterGala
@@ -699,6 +707,7 @@ allLocationCards =
       , palacioErrazuriz
       , parlor
       , parlorCar
+      , parlorHemlockHouse
       , parlorTheMidwinterGala
       , passengerCar_167
       , passengerCar_168
@@ -844,9 +853,9 @@ allLocationCards =
       , seaOfSkulls
       , secondFloorHall
       , secretPassage
+      , securityOffice
       , securityOffice_128
       , securityOffice_129
-      , securityOffice
       , selangorClub
       , selangorClubPadang
       , sentinelPeak
@@ -913,9 +922,9 @@ allLocationCards =
       , tanneries
       , tanneriesAbandoned
       , tarPit
-      , teatroColon
       , tearThroughSpace
       , tearThroughTime
+      , teatroColon
       , teetawnPassage
       , templeOfRlyeh
       , templeOfTheElderThings
@@ -931,9 +940,9 @@ allLocationCards =
       , temploMayor_175
       , tenAcreMeadow_246
       , tenAcreMeadow_247
+      , the9thWard
       , theatre
       , theatreLounge
-      , the9thWard
       , theAtwoodHouseDay
       , theAtwoodHouseNight
       , theBlackCore
@@ -1064,6 +1073,9 @@ allLocationCards =
       , warpedRailA
       , warpedRailB
       , warrenObservatory
+      , washroomHemlockHouse36
+      , washroomHemlockHouse37
+      , washroomHemlockHouse38
       , waterfall
       , wavewornIsland
       , wayangKulitTheater
@@ -1075,11 +1087,11 @@ allLocationCards =
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
+      , windingGulf
       , windsorPalaceHotel
+      , windsweptPath
       , wineCellar
       , wineCellarSpectral
-      , windingGulf
-      , windsweptPath
       , witchesCircle
       , witchHauntedWoodsAbandonedMine
       , witchHauntedWoodsCairnStones
@@ -9375,6 +9387,66 @@ railBridge :: CardDef
 railBridge =
   locationWithUnrevealed_ "10516" "Rail Tunnel" [Rail] "Rail Bridge" [Rail] WrittenInRock
     & railIcons [North, South]
+
+bedroomHemlockHouse32 :: CardDef
+bedroomHemlockHouse32 =
+  otherSideIs "10532b" 
+    $ location_ "10532" "Bedroom" [Room, Dormant] HemlockHouse
+
+bedroomHemlockHouse33 :: CardDef
+bedroomHemlockHouse33 =
+  otherSideIs "10533b" 
+    $ location_ "10533" "Bedroom" [Room, Dormant] HemlockHouse
+
+bedroomHemlockHouse34 :: CardDef
+bedroomHemlockHouse34 =
+  otherSideIs "10534b" 
+    $ location_ "10534" "Bedroom" [Room, Dormant] HemlockHouse
+
+bedroomHemlockHouse35 :: CardDef
+bedroomHemlockHouse35 =
+  otherSideIs "10535b" 
+    $ location_ "10535" "Bedroom" [Room, Dormant] HemlockHouse
+
+washroomHemlockHouse36 :: CardDef
+washroomHemlockHouse36 =
+  otherSideIs "10536b" 
+    $ location_ "10536" "Washroom" [Room, Dormant] HemlockHouse
+
+washroomHemlockHouse37 :: CardDef
+washroomHemlockHouse37 =
+  otherSideIs "10537b" 
+    $ location_ "10537" "Washroom" [Room, Dormant] HemlockHouse
+
+washroomHemlockHouse38 :: CardDef
+washroomHemlockHouse38 =
+  otherSideIs "10538b" 
+    $ location_ "10538" "Washroom" [Room, Dormant] HemlockHouse
+
+libraryHemlockHouse39 :: CardDef
+libraryHemlockHouse39 =
+  otherSideIs "10539b" 
+    $ location_ "10539" "Library" [Room, Dormant] HemlockHouse
+
+libraryHemlockHouse40 :: CardDef
+libraryHemlockHouse40 =
+  otherSideIs "10540b" 
+    $ location_ "10540" "Library" [Room, Dormant] HemlockHouse
+
+parlorHemlockHouse :: CardDef
+parlorHemlockHouse =
+  otherSideIs "10541b" 
+    $ location_ "10541" "Parlor" [Room, Dormant] HemlockHouse
+
+diningRoomHemlockHouse :: CardDef
+diningRoomHemlockHouse =
+  otherSideIs "10542b" 
+    $ location_ "10542" "Dining Room" [Room, Dormant] HemlockHouse
+
+foyerHemlockHouse :: CardDef
+foyerHemlockHouse =
+  otherSideIs "10543b" 
+    $ location_ "10543" "Dining Room" [Room, Dormant] HemlockHouse
 
 glimmeringMeadow :: CardDef
 glimmeringMeadow =

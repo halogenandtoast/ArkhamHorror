@@ -911,6 +911,19 @@ allLocations =
     , SomeLocationCard sunkenRailB
     , SomeLocationCard forkedRail
     , SomeLocationCard railBridge
+    , --- Hemlock House
+      SomeLocationCard bedroomHemlockHouse32
+    , SomeLocationCard bedroomHemlockHouse33
+    , SomeLocationCard bedroomHemlockHouse34
+    , SomeLocationCard bedroomHemlockHouse35
+    , SomeLocationCard washroomHemlockHouse36
+    , SomeLocationCard washroomHemlockHouse37
+    , SomeLocationCard washroomHemlockHouse38
+    , SomeLocationCard libraryHemlockHouse39
+    , SomeLocationCard libraryHemlockHouse40
+    , SomeLocationCard parlorHemlockHouse
+    , SomeLocationCard diningRoomHemlockHouse
+    , SomeLocationCard foyerHemlockHouse
     , --- The Twisted Hollow
       SomeLocationCard glimmeringMeadow
     , SomeLocationCard blightedGlade

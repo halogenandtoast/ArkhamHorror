@@ -365,6 +365,10 @@ allActs =
       --- Written in Stone
       SomeActCard descentIntoTheMines
     , SomeActCard theUndergroundMaze
+    , --- Hemlock House
+      SomeActCard strangeInfestation
+    , SomeActCard againstTheHouse
+    , SomeActCard theHeartOfTheHouse
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie

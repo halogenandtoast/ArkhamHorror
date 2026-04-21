@@ -1,5 +1,5 @@
 {
-  "heading": "Scenario VI",
+  "heading": "Scenario V",
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the amount of doom in play (max 5).",
@@ -33,7 +33,7 @@
         "dream12": "“What exactly am I looking at?”"
       }
     },
-    "title": "Scenario VI: A Phantom of Truth",
+    "title": "Scenario V: A Phantom of Truth",
     "readIntro1": "Check Campaign Log. *If the King claimed its victims*: Read _Intro 1_.",
     "readIntro2": "Otherwise, skip to _Intro 2_.",
     "intro1": "<p>_Intro 1_: Several months have passed since The King in Yellow came to the Ward Theatre. You and your companions have been investigating the strange incidents that followed in its wake. What you have found makes you question the wisdom of continuing your investigation, but the truth calls out to you, and you cannot help but answer. It seems you weren’t the first to piece together the strange happenings surrounding The King in Yellow. Another group of investigators had been researching these events as well. Just a matter of days after the performance in Arkham, they were admitted to the asylum, ranting about the King’s return and the “monsters” that had attacked them. Somehow this doesn’t surprise you. Their fate makes you all the more certain you are on the right trail... And all the more certain that you should stop while you still have the chance.</p><p>You’ve found the records those investigators kept before their incarceration, and picked up the trail where they left off. They had interviewed some of the cast and crew of The King in Yellow, and discovered several pieces of vital information. Their research also contains notes about their discoveries in Arkham’s Historical Society, and accounts from their time spent in the asylum, including interactions with a patient named “Daniel Chesterfield.” After a long night of compiling and comparing notes, you fall into a deep slumber. In your dreams, you are subjected to visions of Carcosa—its black stars, twin suns, shattered moons, and twisted spires.</p><p class='basic right'>Continue to _Dream 1_. Don’t get lost.</p>",

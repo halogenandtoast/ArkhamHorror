@@ -144,9 +144,9 @@ const title = computed(() => {
 
 <template>
   <Draggable v-if="requiresModal">
-    <template #handle><h1 v-html="label($t(title))"></h1></template>
+    <template #handle><h1 v-html="label(title)"></h1></template>
     <div class='choice-modal-wrapper'>
-      <p class="body" v-if="body" v-html="label($t(body))"></p>
+      <p class="body" v-if="body" v-html="label(body)"></p>
       <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />
     </div>
   </Draggable>

@@ -7,7 +7,6 @@ import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 
-
 defineProps<{
   game: Game
   choices: [Message, number][]

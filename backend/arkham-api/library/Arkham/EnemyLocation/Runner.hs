@@ -27,20 +27,19 @@ import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.DamageEffect (DamageAssignment (..))
 import Arkham.DefeatedBy
-import Arkham.Fight.Types
+import Arkham.Fight
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.History
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame)
 import Arkham.Investigate
+import Arkham.Location.Grid
+import Arkham.Matcher (LocationMatcher (..), pattern YourLocation)
+import Arkham.Name (display, toName)
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Projection
-import Arkham.SkillTest.Base
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Window qualified as Window
@@ -67,10 +66,8 @@ instance HasAbilities EnemyLocationAttrs where
         $ restricted a AbilityEvade OnSameLocation
         $ ActionAbility #evade #agility (ActionCost 1)
     , -- Investigate ability: investigators may investigate enemy-locations.
-      -- Uses AbilityEnemyLocationInvestigate (103) instead of AbilityInvestigate (101)
-      -- to avoid collision with AbilityEvade (101) on the same entity.
       basicAbility
-        $ investigateAbility a AbilityEnemyLocationInvestigate mempty (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
+        $ investigateAbility a AbilityInvestigate mempty (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
     ]
 
 instance RunMessage EnemyLocationAttrs where
@@ -90,7 +87,7 @@ instance RunMessage EnemyLocationAttrs where
       let target = maybe (toTarget a) (ProxyTarget (toTarget a)) choose.target
       let skillType = choose.skillType
       let difficulty = case choose.difficulty of
-            DefaultChooseFightDifficulty -> maybe (Fixed 0) id enemyLocationFight
+            DefaultChooseFightDifficulty -> fromMaybe (Fixed 0) enemyLocationFight
             CalculatedChooseFightDifficulty ccfd -> ccfd
       push $ fight sid iid source target skillType difficulty
       pure a
@@ -102,12 +99,12 @@ instance RunMessage EnemyLocationAttrs where
     -- The evade system routes TryEvadeEnemy to us via our coerced EnemyId.
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == asEnemyId a -> do
       let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) mTarget
-      let difficulty = maybe (Fixed 0) id enemyLocationEvade
+      let difficulty = fromMaybe (Fixed 0) enemyLocationEvade
       push $ evade sid iid source target skillType difficulty
       pure a
     -- Investigate: investigator uses the investigate ability.
-    UseCardAbility iid (isSource a -> True) AbilityEnemyLocationInvestigate _ _ -> do
-      let triggerSource = a.ability AbilityEnemyLocationInvestigate
+    UseCardAbility iid (isSource a -> True) AbilityInvestigate _ _ -> do
+      let triggerSource = a.ability AbilityInvestigate
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource enemyLocationId
       pure a
@@ -127,18 +124,17 @@ instance RunMessage EnemyLocationAttrs where
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       push
         $ SkillTestResultOption
-          ( SkillTestOption
-              { option =
-                  Label ("Discover Clue at " <> display (toName a))
-                    $ [before | clues == 0]
-                    <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
-                       , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
-                       ]
-                    <> [after | clues == 0]
-              , kind = OriginalOptionKind
-              , criteria = Nothing
-              }
-          )
+        $ SkillTestOption
+            { option =
+                Label ("Discover Clue at " <> display (toName a))
+                  $ [before | clues == 0]
+                  <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
+                      , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
+                      ]
+                  <> [after | clues == 0]
+            , kind = OriginalOptionKind
+            , criteria = Nothing
+            }
       pure a
     -- Successful fight: apply damage to the enemy-location.
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isEnemyTarget a target -> do
@@ -174,8 +170,8 @@ instance RunMessage EnemyLocationAttrs where
       mHealth <- traverse (getGameValue . unGameCalculation) enemyLocationHealth
       for_ mHealth \health -> do
         when (enemyLocationDamage a >= health) do
-          whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated (asEnemyId a)]
-          afterMsg <- checkWindows [mkAfter $ Window.EnemyWouldBeDefeated (asEnemyId a)]
+          whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyWouldBeDefeated (asEnemyId a)]
+          afterMsg <- checkWindows [Window.mkAfter $ Window.EnemyWouldBeDefeated (asEnemyId a)]
           pushAll
             [ whenMsg
             , afterMsg
@@ -186,40 +182,33 @@ instance RunMessage EnemyLocationAttrs where
     Msg.EnemyLocationDefeated lid _ source _ | lid == enemyLocationId -> do
       miid <- getSourceController source
       let defeatedBy = DefeatedByOther source
-      whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
-      afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
+      whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
+      afterMsg <- checkWindows [Window.mkAfter $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
       pushAll
         [ whenMsg
         , Do (Msg.EnemyLocationDefeated lid (toCardId a) source (setToList $ toTraits (toCardDef a)))
         , afterMsg
         ]
       pure $ a & defeatedL .~ True
-    Do (Msg.EnemyLocationDefeated lid _ source _ ) | lid == enemyLocationId -> do
-      miid <- getSourceController source
-      push $ AddToVictory miid (LocationTarget lid)
+    Do (Msg.EnemyLocationDefeated lid _ _ _) | lid == enemyLocationId -> do
+      push $ ScenarioSpecific "enemyLocationDefeated" (toJSON lid)
       pure a
     -- Add/remove tokens on the enemy-location as a location target.
-    AddToken token (isTarget a -> True) -> do
-      pure $ a & tokensL %~ addTokens token 1
-    RemoveToken token (isTarget a -> True) -> do
-      pure $ a & tokensL %~ removeTokens token 1
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n
     RemoveTokens _ (isTarget a -> True) token n -> do
-      pure $ a & tokensL %~ removeTokens token n
+      pure $ a & tokensL %~ subtractTokens token n
     -- EnemyLocation cannot be moved by card effects; ignore EnemyMove messages.
     EnemyMove eid _ | eid == asEnemyId a -> pure a
     -- Track position updates (for grid-based scenarios).
-    SetLocationPosition lid pos | lid == enemyLocationId -> do
+    PlaceGrid (GridLocation pos lid) | lid == enemyLocationId -> do
       pure $ a & positionL ?~ pos
     -- Meta update
-    SetGlobal (isTarget a -> True) key value -> do
-      pure $ a & metaL .~ Object (insertMap key value mempty)
     _ -> pure a
    where
     applyDamageMod (DamageDealt n) acc = acc + n
     applyDamageMod (DamageTaken n) acc = acc + n
-    applyDamageMod (NoDamageDealt) _ = 0
+    applyDamageMod NoDamageDealt _ = 0
     applyDamageMod _ acc = acc
 
     unGameCalculation :: GameCalculation -> GameValue
@@ -230,7 +219,7 @@ instance RunMessage EnemyLocationAttrs where
 
 -- | Determine if an investigator is allowed to investigate this enemy-location.
 getInvestigateAllowed :: (HasGame m) => InvestigatorId -> EnemyLocationAttrs -> m Bool
-getInvestigateAllowed iid attrs = do
+getInvestigateAllowed _iid attrs = do
   modifiers' <- getModifiers (LocationTarget attrs.id)
   let cannotInvestigate = flip any modifiers' \case
         CannotInvestigateLocation lid -> lid == attrs.id

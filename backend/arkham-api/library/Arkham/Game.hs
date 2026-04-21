@@ -138,6 +138,7 @@ import Arkham.Investigator.Types (
 import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..))
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
@@ -446,6 +447,55 @@ withLocationConnectionData inner@(With target _) = do
         ]
   pure $ inner `with` LocationMetadata {..}
 
+withEnemyLocationAsLocationData :: (HasGame m, Tracing m) => EnemyLocation -> m Value
+withEnemyLocationAsLocationData el = do
+  let lid = toId el
+      attrs = toAttrs el :: EnemyLocationAttrs
+  lInvestigators <- select $ InvestigatorAt $ IncludeEmptySpace $ LocationWithId lid
+  lEnemies <-
+    select $ IncludeOmnipotent $ oneOf
+      [ EnemyAt $ IncludeEmptySpace $ LocationWithId lid
+      , EnemyWithPlacement $ AttachedToLocation lid
+      ]
+  lTreacheries <- select $ oneOf
+    [ TreacheryWithPlacement $ AtLocation lid
+    , TreacheryWithPlacement $ AttachedToLocation lid
+    ]
+  lAssets <- select $ IgnoreVisibility $ oneOf
+    [ AssetWithPlacement $ AtLocation lid
+    , AssetWithPlacement $ AttachedToLocation lid
+    ]
+  lEvents <- select $ oneOf
+    [ EventWithPlacement $ AtLocation lid
+    , EventWithPlacement $ AttachedToLocation lid
+    ]
+  pure $ object
+    [ "id" .= lid
+    , "cardId" .= toCardId el
+    , "cardCode" .= toCardCode el
+    , "label" .= enemyLocationLabel attrs
+    , "tokens" .= enemyLocationTokens attrs
+    , "shroud" .= enemyLocationShroud attrs
+    , "revealed" .= True
+    , "investigators" .= lInvestigators
+    , "enemies" .= lEnemies
+    , "treacheries" .= lTreacheries
+    , "assets" .= lAssets
+    , "events" .= lEvents
+    , "scarletKeys" .= emptyArray
+    , "cardsUnderneath" .= emptyArray
+    , "modifiers" .= emptyArray
+    , "connectedLocations" .= emptyArray
+    , "placement" .= enemyLocationPlacement attrs
+    , "brazier" .= (Nothing :: Maybe Text)
+    , "breaches" .= (Nothing :: Maybe Text)
+    , "floodLevel" .= (Nothing :: Maybe Text)
+    , "keys" .= emptyArray
+    , "seals" .= emptyArray
+    , "sealedChaosTokens" .= emptyArray
+    , "concealedCards" .= emptyArray
+    ]
+
 withAssetMetadata :: (HasGame m, Tracing m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
@@ -559,6 +609,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -585,7 +637,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("mode" .= gameMode)
       <> ("modifiers" .= Map.filter notNull gameModifiers)
       <> ("encounterDeckSize" .= maybe 0 (length . attr scenarioEncounterDeck) (modeScenario gameMode))
-      <> ("locations" .= locations)
+      <> ("locations" .= allLocations')
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
       <> ("killedInvestigators" .= killedInvestigators)
@@ -680,6 +732,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews' <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews'
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -707,7 +761,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
         , "encounterDeckSize"
             .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
-        , "locations" .= toJSON locations
+        , "locations" .= toJSON allLocations'
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
         , "killedInvestigators" .= toJSON killedInvestigators

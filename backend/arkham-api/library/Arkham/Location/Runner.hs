@@ -576,12 +576,12 @@ instance RunMessage LocationAttrs where
             $ "Not expecting a player card or empty set, but got "
             <> tshow locationCardsUnderneath
     Blanked msg' -> liftRunMessage msg' a
-    UseCardAbility iid source 101 _ _ | isSource a source -> do
+    UseCardAbility iid source AbilityInvestigate _ _ | isSource a source -> do
       let
         triggerSource = case source of
           ProxySource _ s -> s
           IndexedSource _ s -> s
-          _ -> a.ability 101
+          _ -> a.ability AbilityInvestigate
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
       pure a
@@ -665,7 +665,7 @@ withDrawCardUnderneathAction x =
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ basicAbility $ investigateAbility l 101 mempty (onLocation l)
+    [ basicAbility $ investigateAbility l AbilityInvestigate mempty (onLocation l)
     , basicAbility
         $ restricted
           l

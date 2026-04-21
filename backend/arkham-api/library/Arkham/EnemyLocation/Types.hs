@@ -15,6 +15,8 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Grid
 import Arkham.Matcher (LocationMatcher (..))
+import Arkham.Name
+import Data.Text qualified as T
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
@@ -273,7 +275,7 @@ data SomeEnemyLocationCard = forall a. IsEnemyLocation a => SomeEnemyLocationCar
 someEnemyLocationCardCode :: SomeEnemyLocationCard -> CardCode
 someEnemyLocationCardCode (SomeEnemyLocationCard a) = toCardCode a
 
-makeLensesWith suffixedFields ''EnemyLocationAttrs
+makeLensesWith (suffixedWithFields "enemyLocation") ''EnemyLocationAttrs
 
 -- | Create an enemy-location from attrs given fight/health/evade stats and damage stats
 enemyLocation

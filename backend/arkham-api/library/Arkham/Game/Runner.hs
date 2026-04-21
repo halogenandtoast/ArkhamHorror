@@ -80,7 +80,7 @@ import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.EnemyLocation hiding (EnemyLocation)
-import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..))
+import Arkham.EnemyLocation.Types (EnemyLocationAttrs (..))
 import Arkham.Location
 import Arkham.Location.Types (Field (..), LocationAttrs (..), updateLocation)
 import Arkham.Matcher hiding (

@@ -292,6 +292,8 @@ instance Eq DifferentAbility where
       100 -> b.index == 100 && sameSource
       101 -> b.index == 101 && sameSource
       102 -> b.index == 102 && sameSource
+      103 -> b.index == 103 && sameSource
+      104 -> b.index == 104 && sameSource
       _ -> (a.source == b.source) && (a.index == b.index)
    where
     sameSource = case a.source of

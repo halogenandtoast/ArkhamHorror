@@ -173,6 +173,7 @@ displayCardType = \case
   EncounterEventType -> "event"
   InvestigatorType -> "investigator"
   KeyType -> "key"
+  EnemyLocationCardType -> "enemy-location"
 
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do

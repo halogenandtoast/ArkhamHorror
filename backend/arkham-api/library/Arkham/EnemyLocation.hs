@@ -8,7 +8,6 @@ module Arkham.EnemyLocation (
 import Arkham.Card
 import Arkham.EnemyLocation.Runner
 import Arkham.EnemyLocation.Types as X (EnemyLocation (..))
-import Arkham.Id
 import Arkham.Prelude
 
 -- | Create an enemy-location entity from a card and location id.

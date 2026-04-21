@@ -2,6 +2,7 @@ module Arkham.Matcher.Patterns where
 
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
+import Arkham.Constants
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Id
@@ -493,6 +494,6 @@ pattern SuccessfulParley timing who <- SkillTestResult timing who WhileParleying
 -- * Ability Helpers
 
 pattern BasicInvestigate :: LocationId -> AbilityMatcher
-pattern BasicInvestigate lid <- AbilityIs (LocationSource lid) 101
+pattern BasicInvestigate lid <- AbilityIs (LocationSource lid) AbilityInvestigate
   where
-    BasicInvestigate lid = AbilityIs (LocationSource lid) 101
+    BasicInvestigate lid = AbilityIs (LocationSource lid) AbilityInvestigate

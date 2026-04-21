@@ -8,7 +8,7 @@ newtype WashroomHemlockHouse36 = WashroomHemlockHouse36 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 washroomHemlockHouse36 :: LocationCard WashroomHemlockHouse36
-washroomHemlockHouse36 = symbolLabel $ location WashroomHemlockHouse36 Cards.washroomHemlockHouse36 4 (PerPlayer 1)
+washroomHemlockHouse36 = locationWith WashroomHemlockHouse36 Cards.washroomHemlockHouse36 4 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities WashroomHemlockHouse36 where
   getAbilities (WashroomHemlockHouse36 a) =

@@ -4442,6 +4442,7 @@ library
       Arkham.Scenarios.FortuneAndFolly.PlayingCard
       Arkham.Scenarios.HeartOfTheElders.Helpers
       Arkham.Scenarios.HemlockHouse.Helpers
+      Arkham.Scenarios.HemlockHouse.PredationBag
       Arkham.Scenarios.HorrorInHighGear.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
@@ -4803,6 +4804,7 @@ library
       Arkham.Story.Cards.TheLikenessOfOld
       Arkham.Story.Cards.ThePalaceOfRainbows
       Arkham.Story.Cards.ThePattern
+      Arkham.Story.Cards.ThePredatoryHouse
       Arkham.Story.Cards.TheSentry
       Arkham.Story.Cards.TheStakeout
       Arkham.Story.Cards.TheSyndicateAllied

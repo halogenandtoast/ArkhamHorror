@@ -8,7 +8,7 @@ newtype LibraryHemlockHouse39 = LibraryHemlockHouse39 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 libraryHemlockHouse39 :: LocationCard LibraryHemlockHouse39
-libraryHemlockHouse39 = symbolLabel $ location LibraryHemlockHouse39 Cards.libraryHemlockHouse39 3 (PerPlayer 1)
+libraryHemlockHouse39 = locationWith LibraryHemlockHouse39 Cards.libraryHemlockHouse39 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities LibraryHemlockHouse39 where
   getAbilities (LibraryHemlockHouse39 a) =

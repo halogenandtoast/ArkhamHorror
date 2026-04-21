@@ -77,7 +77,7 @@ instance RunMessage HemlockHouse where
       foyer <- placeInGrid (Pos 0 0) Locations.foyerHemlockHouse
       placeInGrid_ (Pos 1 0) Locations.diningRoomHemlockHouse
 
-      bedroom <- placeInGrid (Pos 3 0) topBedroom
+      bedroom <- placeInGrid (Pos 0 3) topBedroom
 
       for_ (zip [Pos x y | x <- [-1 .. 1], y <- [1, 2]] locations) (uncurry placeInGrid_)
 
@@ -103,4 +103,6 @@ instance RunMessage HemlockHouse where
       startAt $ if day == Day3 then bedroom else foyer
 
       setAside [Acts.againstTheHouse]
+
+      placeStory Stories.thePredatoryHouse
     _ -> HemlockHouse <$> liftRunMessage msg attrs

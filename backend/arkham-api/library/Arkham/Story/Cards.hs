@@ -162,6 +162,7 @@ allStoryCards =
       , exhumeTheBones
       , sympathyPain
       , familialPain
+      , thePredatoryHouse
       , dayOne
       , nightOne
       , dayTwo
@@ -548,6 +549,9 @@ sympathyPain = story "09676b" "Sympathy Pain" ShadesOfSuffering & otherSideIs "0
 
 familialPain :: CardDef
 familialPain = story "09676d" "Familial Pain" ShadesOfSuffering & otherSideIs "09676c"
+
+thePredatoryHouse :: CardDef
+thePredatoryHouse = story "10524" "The Predatory House" HemlockHouse & otherSideIs "10524b"
 
 dayOne :: CardDef
 dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"

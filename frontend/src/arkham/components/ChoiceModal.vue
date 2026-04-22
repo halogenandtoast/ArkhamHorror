@@ -146,7 +146,7 @@ const title = computed(() => {
   <Draggable v-if="requiresModal">
     <template #handle><h1 v-html="label(title)"></h1></template>
     <div class='choice-modal-wrapper'>
-      <p class="body" v-if="body" v-html="label(body)"></p>
+      <p class="body" v-if="body" v-html="label(t(body))"></p>
       <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />
     </div>
   </Draggable>
@@ -167,5 +167,10 @@ const title = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.choice-modal-wrapper .body {
+  text-align: center;
+  margin: 0;
 }
 </style>

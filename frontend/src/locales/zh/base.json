@@ -130,7 +130,7 @@
   },
   "upgradeDecks": "升级牌组",
   "addSideScenario": "添加支线剧本",
-  "lead": "主角/领袖",
+  "lead": "调查员队长",
   "or2": "{0} 或 {1}",
   "or3": "{0}、{1} 或 {2}",
   "slashOr": "{0}/{1}",
@@ -150,5 +150,7 @@
   "label": {
     "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
     "takeControlOfKey": "控制钥匙"
-  }
+  },
+  "cluesPerPlayerAsGroup": "分配线索数量（全队共同花费 {total} 个线索）",
+  "Choose lead investigator": "选择调查员队长"
 }

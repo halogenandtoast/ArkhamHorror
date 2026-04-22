@@ -1,0 +1,96 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of charges on 形影死神, rounded up (X cannot be greater than 6).",
+      "cultist": "-4. If you fail by 2 or more, place 1 charge on 形影死神.",
+      "tablet": "-1. If you are at a location with a _灵怪_ enemy, reveal an additional chaos token.",
+      "elderThing": "-4. You may place 1 charge on 形影死神 to treat this token's modifier as 0 instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of charges on 形影死神.",
+      "cultist": "-5. Place 1 charge on 形影死神.",
+      "tablet": "-3. If you are at a location with a _灵怪_ enemy, you automatically fail.",
+      "elderThing": "-6. You may place 1 charge on 形影死神 to treat this token's modifier as -3 instead."
+    }
+  },
+  "label": {
+    "elderThing": {
+      "easyStandard": "Place 1 charge on 形影死神 to treat this token's modifier as 0 instead",
+      "hardExpert": "Place 1 charge on 形影死神 to treat this token's modifier as -3 instead"
+    },
+    "painfulHistory": {
+      "ally": "<p>Discard the _Ally_ asset in play with the highest printed cost. Test {'{'}willpower{'}'} (X), where X is that asset's printed cost. If you fail, place charges on 形影死神 equal to the discarded asset's printed cost.</p>",
+      "doom": "Place 1 doom on 梓三娘."
+    },
+    "harvesterOfWoe": {
+      "useTheParasol": "Use the parasol against her.",
+      "letHerGo": "Let her go."
+    },
+    "spiritHarvest": {
+      "damage": "Each investigator takes 1 damage and 1 horror.",
+      "tzuSanNiang": "梓三娘 shifts 形影死神 and then places 2 charges on it."
+    }
+  },
+  "remembered": {
+    "tradedForAKitten": "Traded for a kitten",
+    "foundACheapMemento": "Found a cheap memento",
+    "embarrassedTheConsulate": "Embarrassed the consulate",
+    "peeredBeyond": "Peered beyond",
+    "sharedADeepPain": "Shared a deep pain",
+    "foundHiddenBones": "Found hidden bones"
+  },
+  "intro": {
+    "title": "File #46–Q: Shades of Suffering",
+    "body": "Check your Campaign Log.",
+    "flintTraveledToKualaLumpur": "*如果弗林特前往吉隆坡*, proceed to _引言1_.",
+    "agentFlintIsMissing": "*If 弗林特探员失踪*, skip to _引言2_.",
+    "intro1": "<p class='file'>_引言1_: 你与弗林特在皇家雪兰莪俱乐部碰面，这座尖顶建筑旁有一大片精心维护的草地。当你与弗林特正在讨论梓三娘可能的目标时，一场俱乐部会员间的板球赛正在下方的草坪上进行。“等等。”弗林特停下举到嘴边的杯子突然看向一群富有的外国人，你转头也看向人群，刚好看见一名有著白皙皮肤，留着乌黑长发的女子转身，旋转着手中鲜红色的阳伞。</p><p>“好吧，得来全不费工夫。”弗林特笑了出来。他谨慎的站起身，留下一笔慷慨的小费。“走吧，我们去看看她想搞什么鬼。”你从他的声音中听到了坚毅的决心。</p><ul><li>In your Campaign Log, record *弗林特归队*.任意一位调查员可以选择将弗林特警探剧情支援加入自己牌库。这张卡牌不计入该调查员的牌库卡牌张数。这张卡牌可以在环球情资遭遇组中找到, indicated by the following encounter set icon:<section class='encounter-sets'><img src='{setImgPath}/globetrotting.png'></section></li><li>进入_冒险设置_.</li></ul>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Shades of Suffering*, *Dark Veiling*, *Mysteries Abound*, *Scarlet Sorcery*, *Spreading Corruption*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/shades-of-suffering.png'><img src='{setImgPath}/dark-veiling.png'><img src='{setImgPath}/mysteries-abound.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/striking-fear.png'></section>",
+    "placeLocations": "将下列地点放置入场：吉隆坡火车总站 (*东翼*), 、吉隆坡火车总站 (*西翼*)、雪兰莪俱乐部、雪兰莪俱乐部草场。",
+    "setAsideOtherLocations": "将每张其他地点(梅拉蒂小舖、锡矿脉、皮影戏院)放在一旁，置于场外。",
+    "checkCampaignLog": "检查剧本日志。",
+    "flintRejoinedTheCell": "如果*弗林特归队*, 每位调查员从雪兰莪俱乐部开始游戏。 如果有调查员将弗林特剧情支援加入自己牌组，他可以从牌组中查找弗林特警探，并将他放置入场，置于自己控制之下，然后混洗牌库。在这场冒险结束前，他不占用任何盟友槽位。",
+    "agentFlintIsMissing": "如果*弗林特探员失踪*, 每位调查员从吉隆坡火车总站 (*西翼*)开始游戏。",
+    "geists": "在每张 _灵怪_ 敌人中分别随机选择一张(怪诞之影、被活埋的矿工、被杀害的领班)，将他们放在一旁，置于场外。从游戏中移除每张其他的 _灵怪_ 敌人. 这些卡牌是双面的，且在另一面是剧情卡牌。为了最佳的游戏体验，不要查看另一面的剧情卡牌，除非你被指示要这么做。",
+    "tzuSanNiang": "将梓三娘敌人 (*鲜红阳伞的女子*)面朝上生成到阴影中。将形影死神附属到她身上， _不稳定_ 面朝上。结算她的隐蔽关键字，将她的隐蔽小卡放到起始地点以外的每个其他地点上。",
+    "time": "Check how much _时间_ has passed in the Campaign Log.",
+    "elevenOrFewerTime": "如果经过小于等于11 _时间_ ，不作任何改变。",
+    "betweenTwelveAndEighteenTime": "如果经过如果经过 12-18 _时间_ ，将三资源放到形影死神上，作为充能。",
+    "betweenNineteenAndTwentySixTime": "如果经过如果经过 19-26 _时间_ ，将六资源放到形影死神上，作为充能。",
+    "twentySevenOrMoreTime": "如果经过大于等于 27 _时间_ ，将九资源放到形影死神上，作为充能。在密谋上放置1个毁灭标记。"
+  },
+  "theBomoh": {
+    "title": "萨满",
+    "theBomoh1Part1": "<p>_The Bomoh 1_: 踏进店铺前你已经闻到一股强烈的药味，无数干燥的花束与药草悬挂在天花板上，味道宜人。当你的眼睛适应昏暗的灯光后，你看见一名矮小的中年女子，她穿着装饰繁杂的连身裙，从角落的凳子起身迎接你。</p><p>“你有一点来晚了，但我想比你早到要好一点。”她用理所当然的口吻说。你问她是什么意思，但她只是摇摇头。“我叫梅拉蒂，我预见过这场会面。”她解释自己是一名波霍姆，或叫做萨满。而她被魂灵告知你与她将有一次会面。你询问她关于红伞女子的事。</p><p>“对，这就是我很高兴你没有早来的原因。”她做了个鬼脸，然后点燃一束药草，你感到一阵强烈的晕眩感，但晕眩过去后马上变成了一阵舒畅的平静。梅拉蒂继续说：“她叫梓三娘，有个邪秽的东西跟着她，这就是为什么我要净化我的店。也许她的温柔婉约就是要用来掩饰那个不洁的魂灵。”当梅拉蒂讲话的同时，脸上闪过一丝模糊的迟疑，好像她无法想起某事一样。你问她梓三娘想要什么。</p><p>“我真的不记得她想从我这里得到什么了。”</p>",
+    "sorcererOrClairvoyant": "<p class='red'>_如果有法师或预知属性的调查员，阅读_: 你研究梅拉蒂的灵气，发现她受到某种强力的影响，可能是用来抹除她跟红伞女子谈话记忆的咒语。效果看似不会永远持续，但你很好奇红伞女子到底想掩盖什么事。</p>",
+    "theBomoh1Part2": "<p>萨满低声吟诵一段祷文，完成了净化仪式。然后她突然按住太阳穴，眉头一皱跌在地上，痛苦的颤抖着。你走上前将她扶起，让她靠在低矮的木桌上，将她扶进座位，她挥手示意你在对面入座。</p><p>“现在我懂为什么祂们要宣告你会来了。”她坚强的微笑，昏暗的灯光在她脸上深刻的线条留下阴影。萨满帮你倒了一杯热气腾腾的茶，然后说道：“魂灵们在躁动。某种存在搅动了痛苦的深渊，城市也随之开始产生变化。在这之中，我感应到一股黑暗的灵气，一团由不幸组成的阴云。而一切的中心就是那个拿着鲜红阳伞的女子，她是毁灭的预兆，她收割着各大产业的利润，同时造成无数的痛苦与悲伤。”</p><p>即使她握着茶杯的手颤抖不止，但她的语气坚定而清晰。你啜了一口充满大地香气的茶，边分析着情况。梓三娘正在进行一个大计画，但是什么呢？你问梅拉蒂魂灵是否有告诉她其他事情，但她摇摇头。</p><p>“我只感应到巨大的痛苦，而这些苦痛与那位红伞女士是有某种关联的。就好像她以苦难为食，正在吞噬它们。”</p><p class='basic'>Check your Campaign Log.</p>",
+    "flintRejoinedTheCell": "如果*弗林特归队*, proceed to _萨满 2_.",
+    "agentFlintIsMissing": "如果*弗林特探员失踪*, skip to _萨满 3_.",
+    "theBomoh2": "<p>_The Bomoh 2_: 梅拉蒂再度抽搐，一手抓着胸口，你试着帮助她，而弗林特不知从哪拿出了一个小急救箱准备进行急救。但萨满摇了摇头。</p><p>“别担心我，我比任何一个灵魂都坚强。虽然我感受到如此深层、切身的痛苦，这个城市充斥着悲痛。”她叹口气并坐直身子。“就像我刚才说的，我们的会面不是偶然。也许我们可以与灵魂沟通，并让祂们安息。也许我们可以得知梓小姐的目标并阻止她，你们会帮我吗？”</p><p>弗林特看看你跟萨满，微笑着说：“我们会帮助你直到最后。”</p><p>跳到_萨满 4_.</p>",
+    "theBomoh3": "<p>_The Bomoh 3_: 梅拉蒂再度抽搐，一手抓着胸口。你上前想帮助她，她脉搏加速，眼睛上翻。痉挛终于结束，她放松下来，沉重的喘着气说：“你的朋友在对我说话，李，李·弗林特。”听见名字时你全身的血液彷佛冻结了，萨满的眼睛在烛光中发亮。</p><p>“我很抱歉带来这个糟糕的消息。他的灵魂正在受苦，控诉着梓小姐的残忍。就在这个当下，她仍畅饮着他的绝望，就如同进食一般，现在我懂了。”她停顿，啜了一口茶，然后沉重的看着你说道：“梓小姐以苦痛为食，受其滋养，而这座城市充斥着悲痛。我知道我们刚才认识，但你可以帮我吗？”</p><p>你缓缓点头，心中充满了悲愤与决心。</p><ul><li>在剧本日志划掉 *弗林特探员失踪*. ，在该位置上记录 *弗林特探员死亡*.</li><li>将二充能放到形影死神上。</li><li>进入_萨满 4_.</li></ul>",
+    "theBomoh4": "<p>_The Bomoh 4_: 离开店铺前，梅拉蒂告知你三个城市中魂灵特别动荡的地点。</p><ul><li>将锡矿脉和皮影戏院地点放置入场。</li><li>找出三张放在一旁的 _灵怪_ 敌人，将他们生成到以下地点：<ul><li>将被杀害的领班生成到吉隆坡火车总站 (西翼).</li><li>将怪诞之影生成到皮影戏院。</li><li>将被活埋的矿工生成到锡矿脉。</li></ul></li><li>将梓三娘 (*鲜红阳伞的女子*) 返回到阴影中，并结算她的隐蔽关键字，将那些隐蔽小卡尽可能均匀分配到有非弱点 _灵怪_ 敌人的每个地点上。</li><li>移除梓三娘上外所有场上卡牌的毁灭标记。如果当前是密谋1a，直接推进到密谋2a (*不要结算密谋1b*).</li></ul>"
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Mastered the Shade Reaper."
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: 恐惧将你包围，你逃离了吉隆坡。梓三娘对城市施加的影响也渗入你的脑袋跟梦境中。接连数晚，你冒着冷汗从睡梦中惊醒，想像自己臣服在她面前，跪倒在鲜红的阳伞之下。你还发现自己会无意识地哼起她在吉隆坡向你逼近时哼着的小调。你怀疑自己是否永远无法将这一切抛诸脑后……</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知梓三娘最后的下落*.</li><li>梓三娘是形影死神承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log.</li><li>你可以_出发_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 一道爆裂的能量划破空气，一阵可怕却令人沉醉的力量在你的手臂上流窜。梓三娘发出一声恸哭倒在地上，全身因剧痛而抽搐。</p><p>“滚，”你用一个不完全属于你的声音说，“离开这里，永远不准回来。”</p><p>能量逐渐消散时你低头看向她。梓三娘的脸上挂着泪痕，颤抖着起身。她用恶毒的眼神看了你一眼，转身走进浓雾之中。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>每位调查员获得1点奖励经验值，因为其掌握了形影死神。每位调查员受到1点肉体创伤，因为形影死神抽出了你灵魂中的精华。</li><li>In your Campaign Log, record *掌握梓三娘的生死*.</li><li>选择一位调查员成为形影死神承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log.</li><li>你可以_出发_。</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 你向梓三娘挥舞着形影死神的同时感觉到它似乎想挣脱你的掌握。“滚，”你坚定地说，“离开这里，永远不准回来。”但你的声音被她嘲讽的笑声掩盖。</p><p>“真可悲。”她对你吐口水，然后看向鲜红色的阳伞。用银铃般的声音说：“别担心，我会回来找你的。”她转身离开后你才意识到她不是在对你说话。你手中的形影死神散发着充满力量的脉动，你不禁想像其中吸收了多少痛苦与悲伤，其中又有多少灵魂仍受尽折磨……</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知梓三娘最后的下落*.</li><li>选择一位调查员成为形影死神承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log.</li><li>你可以_出发_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 你在一个黑暗的房间醒来。空气中充满焚香的味道，架上的蜡烛正明亮的燃烧着。你一瞬间怀疑梓三娘施加在你身上的剧痛是否只是一场梦。但接着你看见她就坐在房间远处，带着残忍的笑容看着你。</p><p>“起来。”她命令到。你不由自主的起身。</p><p>“过来。”她的声音在房间中回荡，其中蕴藏着可怕但令人沉醉的力量。你走过黑暗的房间，站在她面前。</p><p>“跪下。”你照做。眼角瞄到梅拉蒂也站在一旁，同样受到控制。她看着这糟糕的一幕，脸庞因专注而皱起。.</p><p>“人都会犯错。”梓三娘倾身向前温柔的拍着你说：“而你犯了个天大的错，你伤害到我了，夺走某些我需要的东西。但，你同时也证明自己对我有用处。我能感受到你牺牲奉献的精神，你准备好为我服务了不是吗？”即使你的心灵奋力抵抗，但答案还是脱口而出：“是的。”梓三娘微笑着点头。“我想这会是我们新关系的好开始。”</p><p>突然，梅拉蒂冲向前，挥舞着仪式匕首，当她攻击红伞女子的同时，你感到她对你的控制减弱了。萨满大喊：“快走！”你趁双方扭打时逃出生天。</p><p>你在吉隆坡的街道上奔跑，感到一阵阵深沉的闷痛。即使在你逃回旅馆后，你依然甩不掉那股想对红伞女子效忠的奇异感觉。你希望永远不要再见到她。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *生死于梓三娘掌握中。*.</li><li>梓三娘是形影死神承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log.</li><li>你可以_出发_。</li></ul>"
+    }
+  }
+}

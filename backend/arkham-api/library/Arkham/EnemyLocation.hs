@@ -7,6 +7,7 @@ module Arkham.EnemyLocation (
 
 import Arkham.Card
 import Arkham.EnemyLocation.Runner
+import Arkham.EnemyLocation.EnemyLocations
 import Arkham.EnemyLocation.Types as X (EnemyLocation (..))
 import Arkham.Prelude
 
@@ -40,4 +41,4 @@ withEnemyLocationCardCode cCode f = case lookup cCode allEnemyLocations of
 -- | All registered enemy-location cards across all scenarios.
 -- New enemy-location cards are registered here as they are implemented.
 allEnemyLocations :: Map CardCode SomeEnemyLocationCard
-allEnemyLocations = mapFrom someEnemyLocationCardCode []
+allEnemyLocations = mapFrom someEnemyLocationCardCode [SomeEnemyLocationCard foyerHemlockHouse]

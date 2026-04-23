@@ -58,13 +58,14 @@ const emits = defineEmits<{
 const choose = (n: number) => emits('choose', n)
 
 const image = computed(() => {
-  const { cardCode, revealed } = props.location
+  const { cardCode, revealed, enemyLocation } = props.location
+  if (enemyLocation) return imgsrc(`cards/${cardCode.replace(/^c/, '')}.avif`)
   const suffix = revealed ? '' : 'b'
-
   return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
 })
 
 const id = computed(() => props.location.id)
+const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const locationStory = computed(() => {
@@ -97,7 +98,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
+    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 104 && abilities.value.length == 1
   }
 
   return false
@@ -398,7 +399,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner" :class="{ highlighted }">
+          <div class="card-frame-inner" :class="{ highlighted, exhausted: isExhausted }">
             <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
             <template v-else>
               <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -788,6 +789,9 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     }
     &.highlighted {
       transform: scale(1.1);
+    }
+    &.exhausted {
+      transform: rotate(90deg) translateX(-10px);
     }
     --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
   }

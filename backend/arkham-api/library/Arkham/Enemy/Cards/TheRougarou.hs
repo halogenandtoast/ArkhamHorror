@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.TheRougarou (TheRougarou (..), theRougarou) where
 
 import Arkham.Ability
+import Arkham.Constants
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -32,7 +33,7 @@ instance HasAbilities TheRougarou where
       then do
         let
           engageAction =
-            restricted a 102 (OnSameLocation <> not_ (thisEnemy $ EnemyIsEngagedWith You))
+            restricted a AbilityEngage (OnSameLocation <> not_ (thisEnemy $ EnemyIsEngagedWith You))
               $ ActionAbility #engage Nothing (GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere <> ActionCost 1)
         firstAbility : filter (not . (`abilityIs` #engage)) actions' <> [engageAction]
       else firstAbility : actions'

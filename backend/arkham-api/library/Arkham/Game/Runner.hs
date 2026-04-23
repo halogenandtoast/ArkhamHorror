@@ -35,6 +35,8 @@ import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Runner (getPreyMatcher)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), delayEngagementL)
+import Arkham.EnemyLocation hiding (EnemyLocation)
+import Arkham.EnemyLocation.Types (EnemyLocationAttrs (..))
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -79,8 +81,6 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
-import Arkham.EnemyLocation hiding (EnemyLocation)
-import Arkham.EnemyLocation.Types (EnemyLocationAttrs (..))
 import Arkham.Location
 import Arkham.Location.Types (Field (..), LocationAttrs (..), updateLocation)
 import Arkham.Matcher hiding (
@@ -841,13 +841,25 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   FlipToEnemyLocation lid card -> do
     mLocation <- maybeLocation lid
     let
-      -- Carry over tokens from the location (clues, doom, etc.)
-      inheritTokens = case mLocation of
+      inheritLocationData = case mLocation of
         Nothing -> id
         Just location ->
-          overAttrs (\a -> a {enemyLocationTokens = locationTokens (toAttrs location)})
-      el = inheritTokens $ lookupEnemyLocation (toCardCode card) lid (toCardId card)
-    push (PlacedLocation (toName el) (toCardCode card) lid)
+          let la = toAttrs location
+          in overAttrs \a ->
+                a
+                  { enemyLocationId = locationId la
+                  , enemyLocationCardId = locationCardId la
+                  , enemyLocationTokens = locationTokens la
+                  , enemyLocationLabel = locationLabel la
+                  , enemyLocationPosition = locationPosition la
+                  , enemyLocationPlacement = locationPlacement la
+                  , enemyLocationConnectedMatchers = locationConnectedMatchers la
+                  , enemyLocationConnectsTo = locationConnectsTo la
+                  , enemyLocationDirections = locationDirections la
+                  , enemyLocationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                  }
+      el = inheritLocationData $ lookupEnemyLocation (toCardCode card) lid (toCardId card)
+    -- push (PlacedLocation (toName el) (toCardCode card) lid)
     pure
       $ g
       & (entitiesL . locationsL %~ deleteMap lid)
@@ -856,8 +868,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   -- Removes the enemy-location entity and adds a location entity with the same ID.
   -- All investigators, enemies, attachments, and tokens are kept per the rules.
   FlipToLocation lid card -> do
-    mEnemyLocation <- maybeEnemyLocation lid
     let
+      mEnemyLocation = preview (entitiesL . enemyLocationsL . ix lid) g
       -- Carry over tokens from the enemy-location (damage, clues, etc.)
       inheritTokens = case mEnemyLocation of
         Nothing -> id
@@ -2147,8 +2159,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
     pure g
   AddToVictory miid (LocationTarget lid) -> do
-    mEnemyLocation <- maybeEnemyLocation lid
-    case mEnemyLocation of
+    case preview (entitiesL . enemyLocationsL . ix lid) g of
       Just el -> do
         let card = toCard el
         pushM $ checkWindows [mkAfter (Window.LeavePlay $ toTarget lid)]

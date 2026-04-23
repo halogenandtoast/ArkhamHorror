@@ -31,6 +31,8 @@ export type Location = {
   tokens: Tokens;
   shroud: number | null;
   revealed: boolean;
+  enemyLocation: boolean;
+  exhausted: boolean;
   investigators: string[];
   enemies: string[];
   treacheries: string[];
@@ -83,6 +85,8 @@ export const locationDecoder = JsonDecoder.object<Location>(
     seals: JsonDecoder.array<Seal>(sealDecoder, 'Seal[]'),
     sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     concealedCards: JsonDecoder.array<string>(JsonDecoder.string(), 'ConcealedCardId[]'),
+    enemyLocation: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
+    exhausted: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
   },
   'Location',
 );

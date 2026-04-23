@@ -79,7 +79,7 @@ const stories = computed(() =>
 
 const engagedEnemies = computed(() =>
   props.investigator.engagedEnemies.map((e) => props.game.enemies[e]).filter((e) =>
-    e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value
+    e && e.placement.tag === "InThreatArea" && e.placement.contents === investigatorId.value
   )
 )
 

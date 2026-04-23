@@ -187,6 +187,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
       pure $ enemies || locations || concealed || assets
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
+    LocationSource _ -> pure True
     ConcealedCardSource _ -> pure True
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab.ref)

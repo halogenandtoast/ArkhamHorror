@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Card (
   module Arkham.Card,
@@ -292,7 +292,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ actionsToList $ cdActions $ toCardDef a
   CardWithoutAction -> null $ actionsToList $ cdActions $ toCardDef a
-  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a),  toCardType a == AssetType]
+  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a), toCardType a == AssetType]
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
@@ -476,15 +476,28 @@ instance Eq Card where
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
-  if cdDoubleSided (toCardDef ec)
-    then case cdOtherSide (toCardDef ec) of
-      Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
-      Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
-    else EncounterCard ec {ecIsFlipped = Just False}
+  let
+    def = toCardDef ec
+   in
+    if cdDoubleSided def
+      then case cdOtherSide def of
+        Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
+        Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+      else EncounterCard ec {ecIsFlipped = Just False}
 flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
   Nothing -> PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
+
+forceFlipCard :: Card -> Card
+forceFlipCard (EncounterCard ec) =
+  case cdOtherSide (toCardDef ec) of
+    Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
+    Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+forceFlipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
+  Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
+  Nothing -> PlayerCard pc
+forceFlipCard (VengeanceCard c) = VengeanceCard c
 
 showRevealed :: Card -> Card
 showRevealed card@(EncounterCard ec) =

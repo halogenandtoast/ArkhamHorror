@@ -27,7 +27,8 @@ import Arkham.Investigator (promoInvestigators)
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
-import Arkham.EnemyLocation.Types (EnemyLocation)
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.Location.Types (Location)
 import Arkham.Matcher.Target (matchTarget)
 import Arkham.Prelude
@@ -213,6 +214,9 @@ maybeEnemy eid = do
     <|> getInDiscardEntity enemiesL eid g
     <|> getInEncounterDiscardEntity enemiesL eid g
     <|> getRemovedEntity enemiesL eid g
+    <|> ( let lid = LocationId (coerce (unEnemyId eid))
+           in fmap (toEnemyLocationEnemyProxy . toAttrs) $ preview (entitiesL . enemyLocationsL . ix lid) g
+        )
 
 getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
 getSkill sid = fromJustNote missingSkill <$> maybeSkill sid
@@ -393,14 +397,14 @@ getLocation lid = fromMaybe missingLocation <$> maybeLocation lid
 maybeLocation :: HasGame m => LocationId -> m (Maybe Location)
 maybeLocation lid = do
   g <- getGame
-  pure
-    $ preview (entitiesL . locationsL . ix lid) g
-    <|> getRemovedEntity locationsL lid g
+  case preview (entitiesL . locationsL . ix lid) g <|> getRemovedEntity locationsL lid g of
+    Just l -> pure (Just l)
+    Nothing -> pure $ fmap (toEnemyLocationProxy . toAttrs) $ preview (entitiesL . enemyLocationsL . ix lid) g
 
-maybeEnemyLocation :: HasGame m => LocationId -> m (Maybe EnemyLocation)
+maybeEnemyLocation :: HasGame m => LocationId -> m (Maybe EnemyLocationId)
 maybeEnemyLocation lid = do
   g <- getGame
-  pure $ preview (entitiesL . enemyLocationsL . ix lid) g
+  pure $ EnemyLocationId . toId <$> preview (entitiesL . enemyLocationsL . ix lid) g
 
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case

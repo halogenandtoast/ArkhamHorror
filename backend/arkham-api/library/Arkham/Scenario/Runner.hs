@@ -1572,6 +1572,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         investigatorIds
     push $ RemovedLocation lid
     pure $ a & gridL %~ deleteInGrid lid
+  RemoveEnemyLocation lid ->
+    pure $ a & gridL %~ deleteInGrid lid
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     xs <-
@@ -1754,7 +1756,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ReportXp breakdown -> do
     pure $ a & xpBreakdownL ?~ breakdown
   PlaceGrid gloc@(GridLocation pos lid) -> do
-    let grid = insertGrid gloc scenarioGrid
+    let gridCleared = case findInGrid lid scenarioGrid of
+          Nothing -> scenarioGrid
+          Just oldPos -> clearGrid oldPos scenarioGrid
+        grid = insertGrid gloc gridCleared
     let getAdjacent = selectOne . Matcher.LocationWithLabel . mkLabel . gridLabel . updatePosition pos
     mTopLocation <- getAdjacent GridUp
     mBottomLocation <- getAdjacent GridDown

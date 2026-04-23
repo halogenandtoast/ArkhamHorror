@@ -138,6 +138,8 @@ import Arkham.Investigator.Types (
 import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..))
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
@@ -451,10 +453,15 @@ withEnemyLocationAsLocationData :: (HasGame m, Tracing m) => EnemyLocation -> m 
 withEnemyLocationAsLocationData el = do
   let lid = toId el
       attrs = toAttrs el :: EnemyLocationAttrs
-  lInvestigators <- select $ InvestigatorAt $ IncludeEmptySpace $ LocationWithId lid
+  -- InvestigatorAt (LocationWithId lid) fails because enemy locations aren't in locationsL;
+  -- check each investigator's location directly instead.
+  lInvestigators <-
+    filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
+      =<< select UneliminatedInvestigator
+  -- EnemyAt (LocationWithId lid) has the same problem; use EnemyWithPlacement directly.
   lEnemies <-
     select $ IncludeOmnipotent $ oneOf
-      [ EnemyAt $ IncludeEmptySpace $ LocationWithId lid
+      [ EnemyWithPlacement $ AtLocation lid
       , EnemyWithPlacement $ AttachedToLocation lid
       ]
   lTreacheries <- select $ oneOf
@@ -469,6 +476,14 @@ withEnemyLocationAsLocationData el = do
     [ EventWithPlacement $ AtLocation lid
     , EventWithPlacement $ AttachedToLocation lid
     ]
+  -- Enemy locations are always revealed. Connections come from two sources:
+  -- (1) explicit revealed matchers, and (2) directional connections stored in
+  -- enemyLocationDirections (the grid-based mechanism used by most scenarios).
+  let directionConnectedIds = concatMap snd $ mapToList $ enemyLocationDirections attrs
+      connectedMatchers =
+        enemyLocationRevealedConnectedMatchers attrs
+          <> map LocationWithId directionConnectedIds
+  lConnectedLocations <- select $ LocationMatchAny connectedMatchers
   pure $ object
     [ "id" .= lid
     , "cardId" .= toCardId el
@@ -477,6 +492,8 @@ withEnemyLocationAsLocationData el = do
     , "tokens" .= enemyLocationTokens attrs
     , "shroud" .= enemyLocationShroud attrs
     , "revealed" .= True
+    , "enemyLocation" .= True
+    , "exhausted" .= enemyLocationExhausted attrs
     , "investigators" .= lInvestigators
     , "enemies" .= lEnemies
     , "treacheries" .= lTreacheries
@@ -485,7 +502,7 @@ withEnemyLocationAsLocationData el = do
     , "scarletKeys" .= emptyArray
     , "cardsUnderneath" .= emptyArray
     , "modifiers" .= emptyArray
-    , "connectedLocations" .= emptyArray
+    , "connectedLocations" .= lConnectedLocations
     , "placement" .= enemyLocationPlacement attrs
     , "brazier" .= (Nothing :: Maybe Text)
     , "breaches" .= (Nothing :: Maybe Text)
@@ -1791,7 +1808,7 @@ abilityMatches a@Ability {..} = \case
     _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
-  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)
+  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 105)
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
   AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
   AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a
@@ -1883,7 +1900,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIsAction Action.Activate -> pure $ filter abilityIsActivate as
     AbilityIsAction action -> pure $ filter (elem action . abilityActions) as
     AbilityIsActionAbility ->
-      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 102)) as
+      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 105)) as
     AbilityIsFastAbility -> pure $ filter abilityIsFastAbility as
     AbilityIsForcedAbility -> pure $ filter abilityIsForcedAbility as
     AbilityIsReactionAbility -> pure $ filter abilityIsReactionAbility as
@@ -1920,6 +1937,7 @@ getGameAbilities = do
   locationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities locationsL)
   blankedLocationAbilities <-
     concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities locationsL)
+  enemyLocationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities enemyLocationsL)
   assetAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities assetsL)
   treacheryAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities treacheriesL)
   actAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities actsL)
@@ -1943,6 +1961,7 @@ getGameAbilities = do
     <> blankedEnemyAbilities
     <> locationAbilities
     <> blankedLocationAbilities
+    <> enemyLocationAbilities
     <> assetAbilities
     <> treacheryAbilities
     <> eventAbilities
@@ -1987,12 +2006,18 @@ getLocationsMatching lmatcher = do
       IncludeEmptySpace inner -> (True, inner, const True)
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
-  ls <-
-    filter (not . attr locationOutOfGame)
-      . filter isEmptySpaceFilter
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+  let regularLs =
+        filter (not . attr locationOutOfGame)
+          . filter isEmptySpaceFilter
+          . toList
+          . view (entitiesL . locationsL)
+          $ g
+  let enemyProxies =
+        map (toEnemyLocationProxy . toAttrs)
+          . toList
+          . view (entitiesL . enemyLocationsL)
+          $ g
+  let ls = regularLs <> enemyProxies
   flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
  where
   go [] = const (pure [])
@@ -3385,7 +3410,15 @@ getEnemiesMatching matcher' = do
       enemyMatcherFilter allGameEnemies matcher
     matcher -> do
       let isOutOfGame e = e.placement.outOfGame
-      allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
+      g <- getGame
+      let regularEnemies = filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) $ g
+      let enemyLocationProxies =
+            map (toEnemyLocationEnemyProxy . toAttrs)
+              . filter (not . (.defeated))
+              . toList
+              . view (entitiesL . enemyLocationsL)
+              $ g
+      let allGameEnemies = regularEnemies <> enemyLocationProxies
       enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m, Tracing m) => [Enemy] -> EnemyMatcher -> m [Enemy]

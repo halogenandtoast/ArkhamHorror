@@ -585,7 +585,7 @@ instance RunMessage LocationAttrs where
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
       pure a
-    UseCardAbility iid source 102 _ _ | isSource a source -> do
+    UseCardAbility iid source AbilityMove _ _ | isSource a source -> do
       -- free because already paid for by ability
       push $ MoveAction iid locationId Free False
       pure a
@@ -669,7 +669,7 @@ instance HasAbilities LocationAttrs where
     , basicAbility
         $ restricted
           l
-          102
+          AbilityMove
           ( CanMoveTo (LocationWithId l.id)
               <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))

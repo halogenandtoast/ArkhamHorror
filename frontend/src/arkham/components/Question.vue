@@ -19,6 +19,7 @@ import ExchangeTokens from '@/arkham/components/ExchangeTokens.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 export interface Props {
   game: Game

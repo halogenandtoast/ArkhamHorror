@@ -2,10 +2,19 @@ module Arkham.Scenario.Scenarios.HemlockHouse (hemlockHouse) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack (enemyAttack)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
+import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
+import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Matcher
+import Arkham.Message.Lifted.Story (resolveStoryWithPlacement)
+import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -104,5 +113,78 @@ instance RunMessage HemlockHouse where
 
       setAside [Acts.againstTheHouse]
 
-      placeStory Stories.thePredatoryHouse
+      lead <- getLead
+      thePredatoryHouse <- genCard Stories.thePredatoryHouse
+      resolveStoryWithPlacement lead thePredatoryHouse Global
+    ScenarioSpecific "enemyLocationDefeated" (maybeResult -> Just lid) -> do
+      grid <- getGrid
+      lead <- getLead
+      investigators <- select $ InvestigatorAt (LocationWithId lid)
+      enemies <- select $ EnemyAt (LocationWithId lid)
+      storyAssets <- select $ AssetAt (LocationWithId lid) <> StoryAsset
+      push $ AddToVictory Nothing (LocationTarget lid)
+      case findInGrid lid grid of
+        Nothing -> pure s
+        Just (Pos col row) -> do
+          let locationsAbove =
+                [ (y, locLid)
+                | y <- [row + 1 .. row + 20]
+                , Just (GridLocation _ locLid) <- [viewGrid (Pos col y) grid]
+                ]
+          if null locationsAbove
+            then do
+              let adjPositions =
+                    [ Pos (col + 1) row
+                    , Pos (col - 1) row
+                    , Pos col (row + 1)
+                    , Pos col (row - 1)
+                    ]
+                  adjacentLids =
+                    [ locLid
+                    | adjp <- adjPositions
+                    , Just (GridLocation _ locLid) <- [viewGrid adjp grid]
+                    ]
+                  hasEntities =
+                    not (null investigators && null enemies && null storyAssets)
+              when (not (null adjacentLids) && hasEntities)
+                $ chooseOrRunOne
+                  lead
+                  [ targetLabel targetLid
+                      $ [PlaceInvestigator iid (AtLocation targetLid) | iid <- investigators]
+                      <> [EnemyMove eid targetLid | eid <- enemies]
+                      <> [PlaceAsset aid (AtLocation targetLid) | aid <- storyAssets]
+                  | targetLid <- adjacentLids
+                  ]
+            else do
+              pushAll
+                [ PlaceGrid (GridLocation (Pos col (y - 1)) locLid)
+                | (y, locLid) <- locationsAbove
+                ]
+              case locationsAbove of
+                (_, targetLid) : _ ->
+                  pushAll
+                    $ [PlaceInvestigator iid (AtLocation targetLid) | iid <- investigators]
+                    <> [EnemyMove eid targetLid | eid <- enemies]
+                    <> [PlaceAsset aid (AtLocation targetLid) | aid <- storyAssets]
+                [] -> pure ()
+          let middleColEmpty =
+                col == 0 && null [l | GridLocation (Pos 0 _) l <- flattenGrid grid, l /= lid]
+          when middleColEmpty
+            $ pushAll
+              [ PlaceGrid (GridLocation (Pos 0 y) locLid)
+              | GridLocation (Pos (-1) y) locLid <- flattenGrid grid
+              ]
+          pure s
+    ScenarioSpecific "predationTablet" (maybeResult -> Just lead) -> do
+      investigators <- select UneliminatedInvestigator
+      attackPairs <-
+        investigators & mapMaybeM \iid -> runMaybeT do
+          lid <- MaybeT $ getLocationOf iid
+          el <- MaybeT $ maybeEnemyLocation lid
+          pure (enemyLocationAsEnemyId el, iid)
+      for_ attackPairs \(eid, iid) ->
+        push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
+      when (null attackPairs)
+        $ drawEncounterCard lead attrs
+      pure s
     _ -> HemlockHouse <$> liftRunMessage msg attrs

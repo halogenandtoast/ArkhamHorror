@@ -2426,6 +2426,11 @@ library
       Arkham.Enemy.Types.Attrs
       Arkham.EnemyLocation
       Arkham.EnemyLocation.Cards
+      Arkham.EnemyLocation.Cards.FoyerHemlockHouse
+      Arkham.EnemyLocation.EnemyLocations
+      Arkham.EnemyLocation.EnemyProxy
+      Arkham.EnemyLocation.Import.Lifted
+      Arkham.EnemyLocation.Proxy
       Arkham.EnemyLocation.Runner
       Arkham.EnemyLocation.Types
       Arkham.Entities

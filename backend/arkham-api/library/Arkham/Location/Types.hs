@@ -20,6 +20,7 @@ import Arkham.Label qualified as L
 import Arkham.Location.Base as X
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
+import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.Location.Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -263,7 +264,7 @@ instance HasCardCode LocationAttrs where
   toCardCode = locationCardCode
 
 instance HasCardDef LocationAttrs where
-  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards) of
+  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards <> allEnemyLocationCards) of
     Just def -> def
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)

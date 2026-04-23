@@ -9,14 +9,14 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.DamageEffect
+import Arkham.Direction
 import Arkham.EnemyLocation.Cards
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Grid
-import Arkham.Matcher (LocationMatcher (..))
+import Arkham.Matcher
 import Arkham.Name
-import Data.Text qualified as T
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
@@ -24,6 +24,7 @@ import Arkham.Target
 import Arkham.Token
 import Data.Aeson.TH
 import Data.Data
+import Data.Text qualified as T
 import GHC.Records
 
 class
@@ -44,31 +45,35 @@ class
 
 type EnemyLocationCard a = CardBuilder LocationId a
 
--- | An enemy-location is both an enemy and a location.
--- Investigators may fight, evade, and investigate enemy-locations.
--- Enemy-locations cannot be moved by card effects.
+{- | An enemy-location is both an enemy and a location.
+Investigators may fight, evade, and investigate enemy-locations.
+Enemy-locations cannot be moved by card effects.
+-}
 data EnemyLocationAttrs = EnemyLocationAttrs
   { enemyLocationId :: LocationId
-  , enemyLocationCardId :: CardId
   , enemyLocationCardCode :: CardCode
-  , enemyLocationOriginalCardCode :: CardCode
+  , enemyLocationCardId :: CardId
   , enemyLocationLabel :: Text
-  -- Location properties
-  , enemyLocationTokens :: Tokens
+  , -- Location properties
+    enemyLocationTokens :: Tokens
   , enemyLocationShroud :: Maybe GameValue
   , enemyLocationConnectedMatchers :: [LocationMatcher]
   , enemyLocationRevealedConnectedMatchers :: [LocationMatcher]
   , enemyLocationPosition :: Maybe Pos
   , enemyLocationPlacement :: Maybe Placement
   , enemyLocationMeta :: Value
-  -- Enemy properties
-  , enemyLocationFight :: Maybe GameCalculation
+  , enemyLocationDirections :: Map Direction [LocationId]
+  , enemyLocationConnectsTo :: Set Direction
+  , -- Enemy properties
+    enemyLocationFight :: Maybe GameCalculation
   , enemyLocationHealth :: Maybe GameCalculation
   , enemyLocationEvade :: Maybe GameCalculation
   , enemyLocationHealthDamage :: Int
   , enemyLocationSanityDamage :: Int
   , enemyLocationAssignedDamage :: Map Source DamageAssignment
   , enemyLocationDefeated :: Bool
+  , enemyLocationExhausted :: Bool
+  , enemyLocationOriginalCardCode :: CardCode
   }
   deriving stock (Show, Eq)
 
@@ -108,6 +113,9 @@ instance HasField "position" EnemyLocationAttrs (Maybe Pos) where
 
 instance HasField "defeated" EnemyLocationAttrs Bool where
   getField = enemyLocationDefeated
+
+instance HasField "exhausted" EnemyLocationAttrs Bool where
+  getField = enemyLocationExhausted
 
 instance HasField "fight" EnemyLocationAttrs (Maybe GameCalculation) where
   getField = enemyLocationFight
@@ -173,8 +181,8 @@ enemyLocationDamage :: EnemyLocationAttrs -> Int
 enemyLocationDamage = countTokens Damage . enemyLocationTokens
 
 -- | The coerced EnemyId for fight/evade targeting
-enemyLocationAsEnemyId :: EnemyLocationAttrs -> EnemyId
-enemyLocationAsEnemyId = EnemyId . coerce . unLocationId . enemyLocationId
+enemyLocationAsEnemyId :: EnemyLocationId -> EnemyId
+enemyLocationAsEnemyId (EnemyLocationId lid) = EnemyId $ coerce $ unLocationId lid
 
 $(deriveToJSON (aesonOptions $ Just "enemyLocation") ''EnemyLocationAttrs)
 
@@ -199,6 +207,9 @@ instance FromJSON EnemyLocationAttrs where
     enemyLocationSanityDamage <- o .: "sanityDamage"
     enemyLocationAssignedDamage <- o .:? "assignedDamage" .!= mempty
     enemyLocationDefeated <- o .:? "defeated" .!= False
+    enemyLocationExhausted <- o .:? "exhausted" .!= False
+    enemyLocationDirections <- o .: "directions"
+    enemyLocationConnectsTo <- o .: "connectsTo"
     pure EnemyLocationAttrs {..}
 
 data EnemyLocation = forall a. IsEnemyLocation a => EnemyLocation a
@@ -234,6 +245,9 @@ instance HasField "position" EnemyLocation (Maybe Pos) where
 
 instance HasField "defeated" EnemyLocation Bool where
   getField = (.defeated) . toAttrs
+
+instance HasField "exhausted" EnemyLocation Bool where
+  getField = (.exhausted) . toAttrs
 
 instance HasCardCode EnemyLocation where
   toCardCode (EnemyLocation a) = toCardCode (toAttrs a)
@@ -319,5 +333,8 @@ enemyLocationWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) 
             , enemyLocationSanityDamage = sanityDamage
             , enemyLocationAssignedDamage = mempty
             , enemyLocationDefeated = False
+            , enemyLocationExhausted = False
+            , enemyLocationDirections = mempty
+            , enemyLocationConnectsTo = mempty
             }
     }

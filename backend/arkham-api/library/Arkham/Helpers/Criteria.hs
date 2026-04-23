@@ -482,6 +482,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
               EnemySource eid -> maybe (pure False) (onSameLocation iid) =<< fieldMay EnemyPlacement eid
               ConcealedCardSource cid -> maybe (pure False) (onSameLocation iid) =<< fieldMay ConcealedCardPlacement cid
               TreacherySource tid -> maybe (pure False) (onSameLocation iid) =<< fieldMay TreacheryPlacement tid
+              LocationSource lid -> maybe (pure False) (onSameLocation iid) (Just $ AtLocation lid)
               ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
               ProxySource (CardCodeSource _) (AssetSource aid) -> go (AssetSource aid)
               ProxySource inner _ -> go inner

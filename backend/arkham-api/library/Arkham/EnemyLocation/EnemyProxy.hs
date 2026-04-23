@@ -35,10 +35,13 @@ instance HasCardDef EnemyLocationEnemyProxy where
       Nothing -> error $ "missing card def for enemy-location enemy proxy " <> show (enemyLocationCardCode a)
 
 instance HasAbilities EnemyLocationEnemyProxy where
+  -- Expose fight and evade abilities so CanFightEnemy/CanEvadeEnemy matchers
+  -- can find this proxy. OnSameLocation captures the Massive rule.
   getAbilities (EnemyLocationEnemyProxy a) =
-    -- Expose the evade ability so CanEvadeEnemy matches this proxy.
-    -- OnSameLocation captures the Massive rule: investigators at the location are engaged.
     [ basicAbility
+        $ restricted a AbilityAttack (OnSameLocation <> CanAttack)
+        $ ActionAbility #fight #combat (ActionCost 1)
+    , basicAbility
         $ restricted a AbilityEvade OnSameLocation
         $ ActionAbility #evade #agility (ActionCost 1)
     ]
@@ -74,7 +77,7 @@ toProxyEnemyAttrs ela =
     , enemySanityDamage = enemyLocationSanityDamage ela
     , enemyPrey = Prey Anyone
     , enemyModifiers = mempty
-    , enemyExhausted = False
+    , enemyExhausted = enemyLocationExhausted ela
     , enemyTokens = enemyLocationTokens ela
     , enemySpawnAt = Nothing
     , enemySurgeIfUnableToSpawn = False

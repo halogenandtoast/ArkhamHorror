@@ -11,9 +11,7 @@ import Arkham.Prelude
 enemyLocation :: CardCode -> Name -> CardDef
 enemyLocation cardCode name =
   (emptyCardDef cardCode name EnemyLocationCardType)
-    { cdEncounterSet = Just HemlockHouse
-    , cdEncounterSetQuantity = Just 1
-    , cdDoubleSided = True
+    { cdDoubleSided = True
     , cdOtherSide = Just $ flippedCardCode cardCode
     , cdLevel = Nothing
     , cdKeywords = setFromList [Keyword.Massive]
@@ -24,4 +22,8 @@ allEnemyLocationCards :: Map CardCode CardDef
 allEnemyLocationCards = mapFrom toCardCode [foyerHemlockHouse]
 
 foyerHemlockHouse :: CardDef
-foyerHemlockHouse = enemyLocation "10543b" "Foyer"
+foyerHemlockHouse =
+  (enemyLocation "10543b" "Foyer")
+    { cdEncounterSet = Just HemlockHouse
+    , cdEncounterSetQuantity = Just 1
+    }

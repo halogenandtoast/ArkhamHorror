@@ -71,27 +71,22 @@ instance HasModifiersFor EnemyLocationAttrs where
 
 instance HasAbilities EnemyLocationAttrs where
   getAbilities a =
-    [ -- Fight ability: investigators may fight enemy-locations
-      basicAbility
+    [ basicAbility
         $ restricted a AbilityAttack (OnSameLocation <> CanAttack)
         $ ActionAbility #fight #combat (ActionCost 1)
-    , -- Evade ability: investigators may evade enemy-locations
-      basicAbility
+    , basicAbility
         $ restricted a AbilityEvade OnSameLocation
         $ ActionAbility #evade #agility (ActionCost 1)
-    , -- Investigate ability: investigators may investigate enemy-locations.
-      basicAbility
+    , basicAbility
         $ investigateAbility
           a
           AbilityInvestigate
           mempty
           (OnSameLocation <> exists (YourLocation <> InvestigatableLocation))
-    , -- Move ability: investigators may move to enemy-locations from adjacent locations.
-      -- Index 102 matches EmptySpace convention; frontend requires this exact index for click-to-move.
-      basicAbility
+    , basicAbility
         $ restricted
           a
-          102
+          AbilityMove
           ( CanMoveTo (LocationWithId a.id)
               <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement a)
               <> exists (You <> can.move <> noModifier (CannotEnter a.id))
@@ -101,18 +96,14 @@ instance HasAbilities EnemyLocationAttrs where
 
 instance RunMessage EnemyLocationAttrs where
   runMessage msg a@EnemyLocationAttrs {..} = runQueueT $ case msg of
-    -- Forward UseAbility to the active-investigator path (same as Location/Runner.hs).
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
-    -- Fight: investigator uses the fight ability on this enemy-location.
-    -- Pushes FightEnemy with the coerced EnemyId so the fight system handles it.
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       sid <- getRandom
       push $ FightEnemy (asEnemyId a) $ mkChooseFightPure sid iid (a.ability AbilityAttack)
       pure a
-    -- The fight system routes AttackEnemy to us via our coerced EnemyId.
-    -- Resolve the fight skill test against our fight value.
+    -- Fight system routes AttackEnemy via coerced EnemyId.
     AttackEnemy eid choose | eid == asEnemyId a -> do
       let iid = choose.investigator
       let source = choose.source
@@ -124,28 +115,24 @@ instance RunMessage EnemyLocationAttrs where
             CalculatedChooseFightDifficulty ccfd -> ccfd
       push $ fight sid iid source target skillType difficulty
       pure a
-    -- Evade: investigator uses the evade ability.
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
       sid <- getRandom
       push $ EvadeEnemy sid iid (asEnemyId a) (a.ability AbilityEvade) Nothing #agility False
       pure a
-    -- Move: investigator moves to this enemy-location.
-    UseCardAbility iid (isSource a -> True) 102 _ _ -> do
+    UseCardAbility iid (isSource a -> True) AbilityMove _ _ -> do
       push $ MoveAction iid enemyLocationId Free False
       pure a
-    -- The evade system routes TryEvadeEnemy to us via our coerced EnemyId.
+    -- Evade system routes TryEvadeEnemy via coerced EnemyId.
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == asEnemyId a -> do
       let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) mTarget
       let difficulty = fromMaybe (Fixed 0) enemyLocationEvade
       push $ evade sid iid source target skillType difficulty
       pure a
-    -- Investigate: investigator uses the investigate ability.
     UseCardAbility iid (isSource a -> True) AbilityInvestigate _ _ -> do
       let triggerSource = a.ability AbilityInvestigate
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource enemyLocationId
       pure a
-    -- Investigate message from the Investigate system targeting this location.
     Investigate investigation | investigation.location == enemyLocationId && not investigation.isAction -> do
       let iid = investigation.investigator
       allowed <- getInvestigateAllowed iid a
@@ -155,7 +142,6 @@ instance RunMessage EnemyLocationAttrs where
           $ investigate investigation.skillTest iid investigation.source target investigation.skillType
           $ maybe (Fixed 0) GameValueCalculation enemyLocationShroud
       pure a
-    -- Successful investigation: discover clues at this enemy-location.
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = a.clues
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
@@ -173,7 +159,6 @@ instance RunMessage EnemyLocationAttrs where
           , criteria = Nothing
           }
       pure a
-    -- Successful fight: apply damage to the enemy-location.
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isEnemyTarget a target -> do
       let eid = asEnemyId a
       whenMsg <- checkWhen $ Window.SuccessfulAttackEnemy iid source eid n
@@ -185,30 +170,22 @@ instance RunMessage EnemyLocationAttrs where
         , afterMsg
         ]
       pure a
-    -- Successful evade: push EnemyEvaded (which will exhaust).
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isEnemyTarget a target -> do
       let eid = asEnemyId a
       whenMsg <- checkWhen $ Window.SuccessfulEvadeEnemy iid source eid n
       afterMsg <- checkAfter $ Window.SuccessfulEvadeEnemy iid source eid n
       pushAll [whenMsg, EnemyEvaded iid eid, afterMsg]
       pure a
-    -- Evaded: exhaust this enemy-location.
-    EnemyEvaded _ eid
-      | eid == asEnemyId a ->
-          pure $ a & exhaustedL .~ True
-    -- Upkeep: ready this enemy-location if it is exhausted.
+    EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
     ReadyExhausted | not enemyLocationDefeated -> do
       when enemyLocationExhausted $ push $ Ready (toTarget a)
       pure a
-    -- Ready: unexhaust this enemy-location.
-    Ready target
-      | isEnemyTarget a target ->
-          pure $ a & exhaustedL .~ False
-    -- Enemy phase: attack all investigators at this location.
-    -- We push EnemyAttack directly (not EnemyWillAttack) because EnemyWillAttack
-    -- routes through Game/Runner.hs which wraps attacks in chooseOneAtATime with
-    -- an EnemyTarget label — the frontend can't resolve the coerced EnemyId for
-    -- a location entity, so the choice would never be rendered or auto-resolved.
+    Ready target | isEnemyTarget a target -> pure $ a & exhaustedL .~ False
+    -- Push EnemyAttack directly rather than EnemyWillAttack: EnemyWillAttack routes
+    -- through chooseOneAtATime with an EnemyTarget label the frontend can't resolve
+    -- for a coerced EnemyId that doesn't exist in enemiesL.
+    -- Use field InvestigatorLocation rather than InvestigatorAt: enemy-locations live
+    -- in enemyLocationsL, not locationsL, so InvestigatorAt always returns empty.
     Do EnemiesAttack | not enemyLocationExhausted && not enemyLocationDefeated -> do
       let eid = asEnemyId a
       iids <-
@@ -225,11 +202,12 @@ instance RunMessage EnemyLocationAttrs where
               [] -> error "unreachable"
         push $ EnemyAttack details
       pure a
-    -- EnemyAttack for a coerced EnemyId won't match any real enemy; handle here.
+    -- EnemyAttack for a coerced EnemyId has no real enemy entity to route to; handle here.
     EnemyAttack details | details.enemy == asEnemyId a -> do
       push $ Do (EnemyAttack details)
       pure a
-    -- Apply damage directly (PerformEnemyAttack relies on real enemy entity fields).
+    -- PerformEnemyAttack reads EnemyHealthDamage/EnemySanityDamage fields from a real
+    -- enemy entity — apply damage directly from attrs instead.
     Do (EnemyAttack details) | attackEnemy details == asEnemyId a -> do
       let eid = asEnemyId a
       let hDmg = if attackDealDamage details then enemyLocationHealthDamage else 0
@@ -247,11 +225,9 @@ instance RunMessage EnemyLocationAttrs where
         <> [dmgMsg iid' | not details.cancelled, iid' <- targets]
         <> [afterWindow]
       pure a
-    -- Attack via card effect: skip if exhausted.
     InitiateEnemyAttack details | details.enemy == asEnemyId a -> do
       unless enemyLocationExhausted $ push $ EnemyAttack details
       pure a
-    -- Damage applied to this enemy-location (via coerced EnemyId).
     EnemyDamage eid da | eid == asEnemyId a && not enemyLocationDefeated -> do
       let amount = da.amount
       let source = da.source
@@ -261,7 +237,6 @@ instance RunMessage EnemyLocationAttrs where
         push $ Msg.EnemyDamaged eid da {damageAssignmentAmount = modifiedAmount}
         push $ CheckDefeated source (toTarget a)
       pure $ a & tokensL %~ addTokens Damage modifiedAmount
-    -- Check if the enemy-location has been defeated.
     CheckDefeated source (isTarget a -> True) | not enemyLocationDefeated -> do
       mHealth <- traverse (getGameValue . unGameCalculation) enemyLocationHealth
       for_ mHealth \health -> do
@@ -274,7 +249,6 @@ instance RunMessage EnemyLocationAttrs where
             , Msg.EnemyLocationDefeated enemyLocationId (toCardId a) source (setToList $ toTraits (toCardDef a))
             ]
       pure a
-    -- The enemy-location has been defeated. Add to victory display and remove.
     Msg.EnemyLocationDefeated lid _ source _ | lid == enemyLocationId -> do
       miid <- getSourceController source
       let defeatedBy = DefeatedByOther source
@@ -289,22 +263,12 @@ instance RunMessage EnemyLocationAttrs where
     Do (Msg.EnemyLocationDefeated lid _ _ _) | lid == enemyLocationId -> do
       push $ ScenarioSpecific "enemyLocationDefeated" (toJSON lid)
       pure a
-    -- Add/remove tokens on the enemy-location as a location target.
-    PlaceTokens _ (isTarget a -> True) token n -> do
-      pure $ a & tokensL %~ addTokens token n
-    RemoveTokens _ (isTarget a -> True) token n -> do
-      pure $ a & tokensL %~ subtractTokens token n
-    -- EnemyLocation cannot be moved by card effects; ignore EnemyMove messages.
+    PlaceTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ addTokens token n
+    RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
+    -- Enemy-locations are fixed in the grid and cannot be moved by card effects.
     EnemyMove eid _ | eid == asEnemyId a -> pure a
-    -- Sync label when the grid slides this enemy-location.
-    SetLocationLabel lid label'
-      | lid == enemyLocationId ->
-          pure $ a & labelL .~ label'
-    -- Clear directions when this enemy-location is repositioned in the grid.
-    LocationMoved lid
-      | lid == enemyLocationId ->
-          pure $ a & directionsL .~ mempty
-    -- Update direction map when this enemy-location gains a neighbour.
+    SetLocationLabel lid label' | lid == enemyLocationId -> pure $ a & labelL .~ label'
+    LocationMoved lid | lid == enemyLocationId -> pure $ a & directionsL .~ mempty
     PlacedLocationDirection lid direction lid2
       | lid2 == enemyLocationId ->
           pure $ a & directionsL %~ Map.insertWith (<>) direction [lid]
@@ -316,10 +280,7 @@ instance RunMessage EnemyLocationAttrs where
                 Above -> Below
                 Below -> Above
            in pure $ a & directionsL %~ Map.insertWith (<>) reversedDirection [lid2]
-    -- Track position updates (for grid-based scenarios).
-    PlaceGrid (GridLocation pos lid) | lid == enemyLocationId -> do
-      pure $ a & positionL ?~ pos
-    -- Meta update
+    PlaceGrid (GridLocation pos lid) | lid == enemyLocationId -> pure $ a & positionL ?~ pos
     _ -> pure a
    where
     applyDamageMod (DamageDealt n) acc = acc + n

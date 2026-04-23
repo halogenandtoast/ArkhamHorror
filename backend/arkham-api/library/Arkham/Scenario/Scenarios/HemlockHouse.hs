@@ -10,6 +10,8 @@ import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Projection
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -119,7 +121,10 @@ instance RunMessage HemlockHouse where
     ScenarioSpecific "enemyLocationDefeated" (maybeResult -> Just lid) -> do
       grid <- getGrid
       lead <- getLead
-      investigators <- select $ InvestigatorAt (LocationWithId lid)
+      -- InvestigatorAt (LocationWithId lid) returns empty for enemy-locations because
+      -- they are in enemyLocationsL, not locationsL.
+      investigators <- filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
+        =<< select UneliminatedInvestigator
       enemies <- select $ EnemyAt (LocationWithId lid)
       storyAssets <- select $ AssetAt (LocationWithId lid) <> StoryAsset
       push $ AddToVictory Nothing (LocationTarget lid)

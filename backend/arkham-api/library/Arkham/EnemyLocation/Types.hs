@@ -8,21 +8,24 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Cost (Cost (Free))
 import Arkham.DamageEffect
 import Arkham.Direction
 import Arkham.EnemyLocation.Cards
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
+import Arkham.Location.Base
 import Arkham.Location.Grid
+import Arkham.LocationSymbol (LocationSymbol (NoSymbol))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.SkillType (SkillType (SkillIntellect))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Data.Aeson.TH
 import Data.Data
 import Data.Text qualified as T
 import GHC.Records
@@ -50,20 +53,7 @@ Investigators may fight, evade, and investigate enemy-locations.
 Enemy-locations cannot be moved by card effects.
 -}
 data EnemyLocationAttrs = EnemyLocationAttrs
-  { enemyLocationId :: LocationId
-  , enemyLocationCardCode :: CardCode
-  , enemyLocationCardId :: CardId
-  , enemyLocationLabel :: Text
-  , -- Location properties
-    enemyLocationTokens :: Tokens
-  , enemyLocationShroud :: Maybe GameValue
-  , enemyLocationConnectedMatchers :: [LocationMatcher]
-  , enemyLocationRevealedConnectedMatchers :: [LocationMatcher]
-  , enemyLocationPosition :: Maybe Pos
-  , enemyLocationPlacement :: Maybe Placement
-  , enemyLocationMeta :: Value
-  , enemyLocationDirections :: Map Direction [LocationId]
-  , enemyLocationConnectsTo :: Set Direction
+  { enemyLocationBase :: LocationAttrs
   , -- Enemy properties
     enemyLocationFight :: Maybe GameCalculation
   , enemyLocationHealth :: Maybe GameCalculation
@@ -77,39 +67,91 @@ data EnemyLocationAttrs = EnemyLocationAttrs
   }
   deriving stock (Show, Eq)
 
+-- | Construct the location-side base of an enemy-location.
+-- Fills in all fixed values that never apply to enemy-locations (symbol,
+-- revealClues, etc.) and accepts only the fields that vary per-instance.
+mkEnemyLocationBase :: LocationId -> CardId -> CardCode -> Text -> LocationAttrs
+mkEnemyLocationBase lid cardId cardCode label =
+  LocationAttrs
+    { locationId = lid
+    , locationCardCode = cardCode
+    , locationCardId = cardId
+    , locationLabel = label
+    , locationRevealClues = Static 0
+    , locationTokens = mempty
+    , locationShroud = Nothing
+    , locationRevealed = True
+    , locationSymbol = NoSymbol
+    , locationRevealedSymbol = NoSymbol
+    , locationConnectedMatchers = []
+    , locationRevealedConnectedMatchers = []
+    , locationDirections = mempty
+    , locationConnectsTo = mempty
+    , locationCardsUnderneath = []
+    , locationCostToEnterUnrevealed = Free
+    , locationCanBeFlipped = False
+    , locationInvestigateSkill = SkillIntellect
+    , locationPlacement = Nothing
+    , locationKeys = mempty
+    , locationSeals = mempty
+    , locationSealedChaosTokens = []
+    , locationFloodLevel = Nothing
+    , locationBrazier = Nothing
+    , locationBreaches = Nothing
+    , locationWithoutClues = True
+    , locationMeta = Null
+    , locationGlobalMeta = mempty
+    , locationPosition = Nothing
+    , locationBeingRemoved = False
+    , locationConcealedCards = []
+    , locationOutOfGame = False
+    }
+
 instance AsId EnemyLocationAttrs where
   type IdOf EnemyLocationAttrs = LocationId
-  asId = enemyLocationId
+  asId = locationId . enemyLocationBase
 
 instance HasField "id" EnemyLocationAttrs LocationId where
-  getField = enemyLocationId
+  getField = locationId . enemyLocationBase
 
 instance HasField "cardId" EnemyLocationAttrs CardId where
-  getField = enemyLocationCardId
+  getField = locationCardId . enemyLocationBase
 
 instance HasField "cardCode" EnemyLocationAttrs CardCode where
-  getField = enemyLocationCardCode
+  getField = locationCardCode . enemyLocationBase
 
 instance HasField "label" EnemyLocationAttrs Text where
-  getField = enemyLocationLabel
+  getField = locationLabel . enemyLocationBase
 
 instance HasField "meta" EnemyLocationAttrs Value where
-  getField = enemyLocationMeta
+  getField = locationMeta . enemyLocationBase
 
 instance HasField "tokens" EnemyLocationAttrs Tokens where
-  getField = enemyLocationTokens
+  getField = locationTokens . enemyLocationBase
 
 instance HasField "token" EnemyLocationAttrs (Token -> Int) where
   getField a tType = countTokens tType a.tokens
 
 instance HasField "clues" EnemyLocationAttrs Int where
-  getField = countTokens Clue . enemyLocationTokens
+  getField = locationClues . enemyLocationBase
 
 instance HasField "placement" EnemyLocationAttrs (Maybe Placement) where
-  getField = enemyLocationPlacement
+  getField = locationPlacement . enemyLocationBase
 
 instance HasField "position" EnemyLocationAttrs (Maybe Pos) where
-  getField = enemyLocationPosition
+  getField = locationPosition . enemyLocationBase
+
+instance HasField "shroud" EnemyLocationAttrs (Maybe GameValue) where
+  getField = locationShroud . enemyLocationBase
+
+instance HasField "directions" EnemyLocationAttrs (Map Direction [LocationId]) where
+  getField = locationDirections . enemyLocationBase
+
+instance HasField "connectedMatchers" EnemyLocationAttrs [LocationMatcher] where
+  getField = locationConnectedMatchers . enemyLocationBase
+
+instance HasField "revealedConnectedMatchers" EnemyLocationAttrs [LocationMatcher] where
+  getField = locationRevealedConnectedMatchers . enemyLocationBase
 
 instance HasField "defeated" EnemyLocationAttrs Bool where
   getField = enemyLocationDefeated
@@ -126,13 +168,19 @@ instance HasField "health" EnemyLocationAttrs (Maybe GameCalculation) where
 instance HasField "evade" EnemyLocationAttrs (Maybe GameCalculation) where
   getField = enemyLocationEvade
 
+instance HasField "healthDamage" EnemyLocationAttrs Int where
+  getField = enemyLocationHealthDamage
+
+instance HasField "sanityDamage" EnemyLocationAttrs Int where
+  getField = enemyLocationSanityDamage
+
 instance HasField "ability" EnemyLocationAttrs (Int -> Source) where
   getField = toAbilitySource
 
 instance Entity EnemyLocationAttrs where
   type EntityId EnemyLocationAttrs = LocationId
   type EntityAttrs EnemyLocationAttrs = EnemyLocationAttrs
-  toId = enemyLocationId
+  toId = locationId . enemyLocationBase
   toAttrs = id
   overAttrs f = f
 
@@ -140,22 +188,22 @@ instance Named EnemyLocationAttrs where
   toName = toName . toCardDef
 
 instance HasCardCode EnemyLocationAttrs where
-  toCardCode = enemyLocationCardCode
+  toCardCode = locationCardCode . enemyLocationBase
 
 instance HasCardDef EnemyLocationAttrs where
-  toCardDef e = case lookup (enemyLocationCardCode e) allEnemyLocationCards of
+  toCardDef e = case lookup (toCardCode e) allEnemyLocationCards of
     Just def -> def
-    Nothing -> error $ "missing card def for enemy-location " <> show (enemyLocationCardCode e)
+    Nothing -> error $ "missing card def for enemy-location " <> show (toCardCode e)
 
 instance IsCard EnemyLocationAttrs where
-  toCardId = enemyLocationCardId
+  toCardId = locationCardId . enemyLocationBase
   toCard e =
     EncounterCard
       MkEncounterCard
-        { ecId = enemyLocationCardId e
-        , ecCardCode = enemyLocationCardCode e
+        { ecId = toCardId e
+        , ecCardCode = toCardCode e
         , ecOriginalCardCode = enemyLocationOriginalCardCode e
-        , ecIsFlipped = Nothing
+        , ecIsFlipped = Just True
         , ecAddedPeril = False
         , ecOwner = Nothing
         }
@@ -163,54 +211,103 @@ instance IsCard EnemyLocationAttrs where
 
 instance Targetable EnemyLocationAttrs where
   toTarget = LocationTarget . toId
-  isTarget EnemyLocationAttrs {enemyLocationId} (LocationTarget lid) = enemyLocationId == lid
-  isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
-  isTarget attrs (CardIdTarget cardId) = toCardId attrs == cardId
+  isTarget a (LocationTarget lid) = toId a == lid
+  isTarget a (CardCodeTarget cardCode) = toCardCode a == cardCode
+  isTarget a (CardIdTarget cardId) = toCardId a == cardId
   isTarget _ _ = False
 
 instance Sourceable EnemyLocationAttrs where
   toSource = LocationSource . toId
-  isSource EnemyLocationAttrs {enemyLocationId} (LocationSource lid) = enemyLocationId == lid
-  isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
-  isSource attrs (AbilitySource source _) = isSource attrs source
-  isSource attrs (UseAbilitySource _ source _) = isSource attrs source
+  isSource a (LocationSource lid) = toId a == lid
+  isSource a (CardCodeSource cardCode) = toCardCode a == cardCode
+  isSource a (AbilitySource source _) = isSource a source
+  isSource a (UseAbilitySource _ source _) = isSource a source
   isSource _ _ = False
 
 -- | The damage on this enemy-location
 enemyLocationDamage :: EnemyLocationAttrs -> Int
-enemyLocationDamage = countTokens Damage . enemyLocationTokens
+enemyLocationDamage = countTokens Damage . locationTokens . enemyLocationBase
 
 -- | The coerced EnemyId for fight/evade targeting
 enemyLocationAsEnemyId :: EnemyLocationId -> EnemyId
 enemyLocationAsEnemyId (EnemyLocationId lid) = EnemyId $ coerce $ unLocationId lid
 
-$(deriveToJSON (aesonOptions $ Just "enemyLocation") ''EnemyLocationAttrs)
+instance ToJSON EnemyLocationAttrs where
+  toJSON a =
+    let base = enemyLocationBase a
+     in object
+          [ "id" .= locationId base
+          , "cardCode" .= locationCardCode base
+          , "cardId" .= locationCardId base
+          , "originalCardCode" .= enemyLocationOriginalCardCode a
+          , "label" .= locationLabel base
+          , "tokens" .= locationTokens base
+          , "shroud" .= locationShroud base
+          , "connectedMatchers" .= locationConnectedMatchers base
+          , "revealedConnectedMatchers" .= locationRevealedConnectedMatchers base
+          , "position" .= locationPosition base
+          , "placement" .= locationPlacement base
+          , "meta" .= locationMeta base
+          , "directions" .= locationDirections base
+          , "connectsTo" .= locationConnectsTo base
+          , "fight" .= enemyLocationFight a
+          , "health" .= enemyLocationHealth a
+          , "evade" .= enemyLocationEvade a
+          , "healthDamage" .= enemyLocationHealthDamage a
+          , "sanityDamage" .= enemyLocationSanityDamage a
+          , "assignedDamage" .= enemyLocationAssignedDamage a
+          , "defeated" .= enemyLocationDefeated a
+          , "exhausted" .= enemyLocationExhausted a
+          ]
 
 instance FromJSON EnemyLocationAttrs where
   parseJSON = withObject "EnemyLocationAttrs" \o -> do
-    enemyLocationId <- o .: "id"
-    enemyLocationCardId <- o .: "cardId"
-    enemyLocationCardCode <- o .: "cardCode"
-    enemyLocationOriginalCardCode <- o .: "originalCardCode"
-    enemyLocationLabel <- o .: "label"
-    enemyLocationTokens <- o .: "tokens"
-    enemyLocationShroud <- o .:? "shroud"
-    enemyLocationConnectedMatchers <- o .: "connectedMatchers"
-    enemyLocationRevealedConnectedMatchers <- o .: "revealedConnectedMatchers"
-    enemyLocationPosition <- o .:? "position"
-    enemyLocationPlacement <- o .:? "placement"
-    enemyLocationMeta <- o .:? "meta" .!= Null
-    enemyLocationFight <- o .:? "fight"
-    enemyLocationHealth <- o .:? "health"
-    enemyLocationEvade <- o .:? "evade"
-    enemyLocationHealthDamage <- o .: "healthDamage"
-    enemyLocationSanityDamage <- o .: "sanityDamage"
-    enemyLocationAssignedDamage <- o .:? "assignedDamage" .!= mempty
-    enemyLocationDefeated <- o .:? "defeated" .!= False
-    enemyLocationExhausted <- o .:? "exhausted" .!= False
-    enemyLocationDirections <- o .: "directions"
-    enemyLocationConnectsTo <- o .: "connectsTo"
-    pure EnemyLocationAttrs {..}
+    lid <- o .: "id"
+    cardId <- o .: "cardId"
+    cardCode <- o .: "cardCode"
+    originalCardCode <- o .: "originalCardCode"
+    label <- o .: "label"
+    tokens <- o .: "tokens"
+    shroud <- o .:? "shroud"
+    connectedMatchers <- o .: "connectedMatchers"
+    revealedConnectedMatchers <- o .: "revealedConnectedMatchers"
+    position <- o .:? "position"
+    placement <- o .:? "placement"
+    meta <- o .:? "meta" .!= Null
+    directions <- o .: "directions"
+    connectsTo <- o .: "connectsTo"
+    fight <- o .:? "fight"
+    health <- o .:? "health"
+    evade <- o .:? "evade"
+    healthDamage <- o .: "healthDamage"
+    sanityDamage <- o .: "sanityDamage"
+    assignedDamage <- o .:? "assignedDamage" .!= mempty
+    defeated <- o .:? "defeated" .!= False
+    exhausted <- o .:? "exhausted" .!= False
+    pure
+      EnemyLocationAttrs
+        { enemyLocationBase =
+            (mkEnemyLocationBase lid cardId cardCode label)
+              { locationTokens = tokens
+              , locationShroud = shroud
+              , locationConnectedMatchers = connectedMatchers
+              , locationRevealedConnectedMatchers = revealedConnectedMatchers
+              , locationPosition = position
+              , locationPlacement = placement
+              , locationMeta = meta
+              , locationDirections = directions
+              , locationConnectsTo = connectsTo
+              }
+        , enemyLocationFight = fight
+        , enemyLocationHealth = health
+        , enemyLocationEvade = evade
+        , enemyLocationHealthDamage = healthDamage
+        , enemyLocationSanityDamage = sanityDamage
+        , enemyLocationAssignedDamage = assignedDamage
+        , enemyLocationDefeated = defeated
+        , enemyLocationExhausted = exhausted
+        , enemyLocationOriginalCardCode = originalCardCode
+        }
 
 data EnemyLocation = forall a. IsEnemyLocation a => EnemyLocation a
 
@@ -235,7 +332,7 @@ instance AsId EnemyLocation where
   asId = toId
 
 instance HasField "id" EnemyLocation LocationId where
-  getField (EnemyLocation e) = attr enemyLocationId e
+  getField (EnemyLocation e) = attr (locationId . enemyLocationBase) e
 
 instance HasField "placement" EnemyLocation (Maybe Placement) where
   getField = (.placement) . toAttrs
@@ -311,21 +408,14 @@ enemyLocationWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) 
   CardBuilder
     { cbCardDef = cardDef
     , cbCardBuilder = \cardId lid ->
-        f
-          . g
-          $ EnemyLocationAttrs
-            { enemyLocationId = lid
-            , enemyLocationCardId = cardId
-            , enemyLocationCardCode = toCardCode cardDef
-            , enemyLocationOriginalCardCode = toCardCode cardDef
-            , enemyLocationLabel = T.toLower . T.replace " " "_" $ display cardDef.name
-            , enemyLocationTokens = mempty
-            , enemyLocationShroud = Nothing
-            , enemyLocationConnectedMatchers = []
-            , enemyLocationRevealedConnectedMatchers = []
-            , enemyLocationPosition = Nothing
-            , enemyLocationPlacement = Nothing
-            , enemyLocationMeta = Null
+        f . g $
+          EnemyLocationAttrs
+            { enemyLocationBase =
+                mkEnemyLocationBase
+                  lid
+                  cardId
+                  (toCardCode cardDef)
+                  (T.toLower . T.replace " " "_" $ display cardDef.name)
             , enemyLocationFight = Just $ Fixed fight
             , enemyLocationHealth = Just $ GameValueCalculation health
             , enemyLocationEvade = Just $ Fixed evade
@@ -334,7 +424,6 @@ enemyLocationWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) 
             , enemyLocationAssignedDamage = mempty
             , enemyLocationDefeated = False
             , enemyLocationExhausted = False
-            , enemyLocationDirections = mempty
-            , enemyLocationConnectsTo = mempty
+            , enemyLocationOriginalCardCode = toCardCode cardDef
             }
     }

@@ -847,18 +847,23 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           let la = toAttrs location
           in overAttrs \a ->
                 a
-                  { enemyLocationId = locationId la
-                  , enemyLocationCardId = locationCardId la
-                  , enemyLocationTokens = locationTokens la
-                  , enemyLocationLabel = locationLabel la
-                  , enemyLocationPosition = locationPosition la
-                  , enemyLocationPlacement = locationPlacement la
-                  , enemyLocationConnectedMatchers = locationConnectedMatchers la
-                  , enemyLocationConnectsTo = locationConnectsTo la
-                  , enemyLocationDirections = locationDirections la
-                  , enemyLocationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                  { enemyLocationBase = (enemyLocationBase a)
+                      { locationId = locationId la
+                      , locationCardId = locationCardId la
+                      , locationTokens = locationTokens la
+                      , locationLabel = locationLabel la
+                      , locationPosition = locationPosition la
+                      , locationPlacement = locationPlacement la
+                      , locationConnectedMatchers = locationConnectedMatchers la
+                      , locationConnectsTo = locationConnectsTo la
+                      , locationDirections = locationDirections la
+                      , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                      }
                   }
-      el = inheritLocationData $ lookupEnemyLocation (toCardCode card) lid (toCardId card)
+      el = inheritLocationData $ lookupEnemyLocation (flippedCardCode $ toCardCode card) lid (toCardId card)
+
+    replaceCard card.id (forceFlipCard card)
+
     -- push (PlacedLocation (toName el) (toCardCode card) lid)
     pure
       $ g
@@ -874,7 +879,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       inheritTokens = case mEnemyLocation of
         Nothing -> id
         Just el ->
-          overAttrs (\a -> a {locationTokens = enemyLocationTokens (toAttrs el)})
+          overAttrs (\a -> a {locationTokens = (toAttrs el).tokens})
       location = inheritTokens $ lookupLocation (toCardCode card) lid (toCardId card)
     push (PlacedLocation (toName location) (toCardCode card) lid)
     pure

@@ -6,30 +6,23 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities (HasAbilities (..))
 import Arkham.Classes.HasModifiersFor (HasModifiersFor (..))
 import Arkham.Classes.RunMessage.Internal (RunMessage (..))
-import Arkham.Cost (Cost (Free))
 import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.EnemyLocation.Types
-import Arkham.GameValue (GameValue (Static))
-import Arkham.Location.Types (
-  IsLocation (..),
-  Location,
-  LocationAttrs (..),
- )
-import Arkham.LocationSymbol (LocationSymbol (NoSymbol))
+import Arkham.Location.Base (LocationAttrs)
+import Arkham.Location.Types (IsLocation (..), Location, toLocation)
 import Arkham.Prelude
-import Arkham.SkillType (SkillType (SkillIntellect))
 
 newtype EnemyLocationProxy = EnemyLocationProxy LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasCardCode EnemyLocationProxy where
-  toCardCode (EnemyLocationProxy a) = locationCardCode a
+  toCardCode (EnemyLocationProxy a) = a.cardCode
 
 instance HasCardDef EnemyLocationProxy where
   toCardDef (EnemyLocationProxy a) =
-    case lookup (locationCardCode a) allEnemyLocationCards of
+    case lookup a.cardCode allEnemyLocationCards of
       Just def -> def
-      Nothing -> error $ "missing card def for enemy-location proxy " <> show (locationCardCode a)
+      Nothing -> error $ "missing card def for enemy-location proxy " <> show a.cardCode
 
 instance HasAbilities EnemyLocationProxy where
   getAbilities _ = []
@@ -42,42 +35,5 @@ instance RunMessage EnemyLocationProxy where
 
 instance IsLocation EnemyLocationProxy
 
-toProxyLocationAttrs :: EnemyLocationAttrs -> LocationAttrs
-toProxyLocationAttrs ela =
-  LocationAttrs
-    { locationId = enemyLocationId ela
-    , locationCardCode = enemyLocationCardCode ela
-    , locationCardId = enemyLocationCardId ela
-    , locationLabel = enemyLocationLabel ela
-    , locationRevealClues = Static 0
-    , locationTokens = enemyLocationTokens ela
-    , locationShroud = enemyLocationShroud ela
-    , locationRevealed = True
-    , locationSymbol = NoSymbol
-    , locationRevealedSymbol = NoSymbol
-    , locationConnectedMatchers = enemyLocationConnectedMatchers ela
-    , locationRevealedConnectedMatchers = enemyLocationRevealedConnectedMatchers ela
-    , locationDirections = enemyLocationDirections ela
-    , locationConnectsTo = enemyLocationConnectsTo ela
-    , locationCardsUnderneath = []
-    , locationCostToEnterUnrevealed = Free
-    , locationCanBeFlipped = False
-    , locationInvestigateSkill = SkillIntellect
-    , locationPlacement = enemyLocationPlacement ela
-    , locationKeys = mempty
-    , locationSeals = mempty
-    , locationSealedChaosTokens = []
-    , locationFloodLevel = Nothing
-    , locationBrazier = Nothing
-    , locationBreaches = Nothing
-    , locationWithoutClues = True
-    , locationMeta = Null
-    , locationGlobalMeta = mempty
-    , locationPosition = enemyLocationPosition ela
-    , locationBeingRemoved = False
-    , locationConcealedCards = []
-    , locationOutOfGame = False
-    }
-
 toEnemyLocationProxy :: EnemyLocationAttrs -> Location
-toEnemyLocationProxy = toLocation . EnemyLocationProxy . toProxyLocationAttrs
+toEnemyLocationProxy = toLocation . EnemyLocationProxy . enemyLocationBase

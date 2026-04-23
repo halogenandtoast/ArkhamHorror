@@ -26,13 +26,13 @@ newtype EnemyLocationEnemyProxy = EnemyLocationEnemyProxy EnemyLocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 instance HasCardCode EnemyLocationEnemyProxy where
-  toCardCode (EnemyLocationEnemyProxy a) = enemyLocationCardCode a
+  toCardCode (EnemyLocationEnemyProxy a) = toCardCode a
 
 instance HasCardDef EnemyLocationEnemyProxy where
   toCardDef (EnemyLocationEnemyProxy a) =
-    case lookup (enemyLocationCardCode a) allEnemyLocationCards of
+    case lookup (toCardCode a) allEnemyLocationCards of
       Just def -> def
-      Nothing -> error $ "missing card def for enemy-location enemy proxy " <> show (enemyLocationCardCode a)
+      Nothing -> error $ "missing card def for enemy-location enemy proxy " <> show (toCardCode a)
 
 instance HasAbilities EnemyLocationEnemyProxy where
   -- Expose fight and evade abilities so CanFightEnemy/CanEvadeEnemy matchers
@@ -57,28 +57,28 @@ instance IsEnemy EnemyLocationEnemyProxy
 instance Entity EnemyLocationEnemyProxy where
   type EntityId EnemyLocationEnemyProxy = EnemyId
   type EntityAttrs EnemyLocationEnemyProxy = EnemyAttrs
-  toId (EnemyLocationEnemyProxy a) = enemyLocationAsEnemyId (EnemyLocationId (enemyLocationId a))
+  toId (EnemyLocationEnemyProxy a) = enemyLocationAsEnemyId (EnemyLocationId a.id)
   toAttrs (EnemyLocationEnemyProxy a) = toProxyEnemyAttrs a
   overAttrs _ p = p
 
 toProxyEnemyAttrs :: EnemyLocationAttrs -> EnemyAttrs
 toProxyEnemyAttrs ela =
   EnemyAttrs
-    { enemyId = enemyLocationAsEnemyId (EnemyLocationId (enemyLocationId ela))
-    , enemyCardId = enemyLocationCardId ela
-    , enemyCardCode = enemyLocationCardCode ela
+    { enemyId = enemyLocationAsEnemyId (EnemyLocationId ela.id)
+    , enemyCardId = ela.cardId
+    , enemyCardCode = ela.cardCode
     , enemyOriginalCardCode = enemyLocationOriginalCardCode ela
-    , enemyPlacement = AtLocation (enemyLocationId ela)
-    , enemyFight = enemyLocationFight ela
-    , enemyHealth = enemyLocationHealth ela
-    , enemyEvade = enemyLocationEvade ela
+    , enemyPlacement = AtLocation ela.id
+    , enemyFight = ela.fight
+    , enemyHealth = ela.health
+    , enemyEvade = ela.evade
     , enemyAssignedDamage = mempty
-    , enemyHealthDamage = enemyLocationHealthDamage ela
-    , enemySanityDamage = enemyLocationSanityDamage ela
+    , enemyHealthDamage = ela.healthDamage
+    , enemySanityDamage = ela.sanityDamage
     , enemyPrey = Prey Anyone
     , enemyModifiers = mempty
-    , enemyExhausted = enemyLocationExhausted ela
-    , enemyTokens = enemyLocationTokens ela
+    , enemyExhausted = ela.exhausted
+    , enemyTokens = ela.tokens
     , enemySpawnAt = Nothing
     , enemySurgeIfUnableToSpawn = False
     , enemyAsSelfLocation = Nothing

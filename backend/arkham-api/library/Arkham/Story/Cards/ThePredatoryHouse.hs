@@ -3,7 +3,6 @@
 module Arkham.Story.Cards.ThePredatoryHouse (thePredatoryHouse) where
 
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
-import Arkham.Card (forceFlipCard)
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Helpers.Modifiers
@@ -94,8 +93,8 @@ instance RunMessage ThePredatoryHouse where
         ElderThing -> do
           mLid <- selectOne $ NearestLocationTo lead (LocationWithTrait Dormant)
           for_ mLid \lid -> do
-            card <- traceShowId <$> field LocationCard lid
-            push $ FlipToEnemyLocation lid (forceFlipCard card)
+            card <- field LocationCard lid
+            push $ FlipToEnemyLocation lid card
           pure bag
         _ -> error "Invalid predation token"
 

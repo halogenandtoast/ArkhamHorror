@@ -479,21 +479,21 @@ withEnemyLocationAsLocationData el = do
   -- Enemy locations are always revealed. Connections come from two sources:
   -- (1) explicit revealed matchers, and (2) directional connections stored in
   -- enemyLocationDirections (the grid-based mechanism used by most scenarios).
-  let directionConnectedIds = concatMap snd $ mapToList $ enemyLocationDirections attrs
+  let directionConnectedIds = concatMap snd $ mapToList attrs.directions
       connectedMatchers =
-        enemyLocationRevealedConnectedMatchers attrs
+        attrs.revealedConnectedMatchers
           <> map LocationWithId directionConnectedIds
   lConnectedLocations <- select $ LocationMatchAny connectedMatchers
   pure $ object
     [ "id" .= lid
     , "cardId" .= toCardId el
     , "cardCode" .= toCardCode el
-    , "label" .= enemyLocationLabel attrs
-    , "tokens" .= enemyLocationTokens attrs
-    , "shroud" .= enemyLocationShroud attrs
+    , "label" .= attrs.label
+    , "tokens" .= attrs.tokens
+    , "shroud" .= attrs.shroud
     , "revealed" .= True
     , "enemyLocation" .= True
-    , "exhausted" .= enemyLocationExhausted attrs
+    , "exhausted" .= attrs.exhausted
     , "investigators" .= lInvestigators
     , "enemies" .= lEnemies
     , "treacheries" .= lTreacheries
@@ -503,7 +503,7 @@ withEnemyLocationAsLocationData el = do
     , "cardsUnderneath" .= emptyArray
     , "modifiers" .= emptyArray
     , "connectedLocations" .= lConnectedLocations
-    , "placement" .= enemyLocationPlacement attrs
+    , "placement" .= attrs.placement
     , "brazier" .= (Nothing :: Maybe Text)
     , "breaches" .= (Nothing :: Maybe Text)
     , "floodLevel" .= (Nothing :: Maybe Text)

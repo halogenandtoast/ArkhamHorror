@@ -40,6 +40,7 @@ import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame)
 import Arkham.History
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Base (directionsL, labelL, positionL, tokensL)
 import Arkham.Location.Grid
 import Arkham.Matcher (
   InvestigatorMatcher (UneliminatedInvestigator, You),
@@ -95,7 +96,7 @@ instance HasAbilities EnemyLocationAttrs where
     ]
 
 instance RunMessage EnemyLocationAttrs where
-  runMessage msg a@EnemyLocationAttrs {..} = runQueueT $ case msg of
+  runMessage msg a = runQueueT $ case msg of
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
@@ -108,10 +109,10 @@ instance RunMessage EnemyLocationAttrs where
       let iid = choose.investigator
       let source = choose.source
       let sid = choose.skillTest
-      let target = maybe (toTarget a) (ProxyTarget (toTarget a)) choose.target
+      let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) choose.target
       let skillType = choose.skillType
       let difficulty = case choose.difficulty of
-            DefaultChooseFightDifficulty -> fromMaybe (Fixed 0) enemyLocationFight
+            DefaultChooseFightDifficulty -> fromMaybe (Fixed 0) a.fight
             CalculatedChooseFightDifficulty ccfd -> ccfd
       push $ fight sid iid source target skillType difficulty
       pure a
@@ -120,27 +121,27 @@ instance RunMessage EnemyLocationAttrs where
       push $ EvadeEnemy sid iid (asEnemyId a) (a.ability AbilityEvade) Nothing #agility False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityMove _ _ -> do
-      push $ MoveAction iid enemyLocationId Free False
+      push $ MoveAction iid a.id Free False
       pure a
     -- Evade system routes TryEvadeEnemy via coerced EnemyId.
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == asEnemyId a -> do
       let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) mTarget
-      let difficulty = fromMaybe (Fixed 0) enemyLocationEvade
+      let difficulty = fromMaybe (Fixed 0) a.evade
       push $ evade sid iid source target skillType difficulty
       pure a
     UseCardAbility iid (isSource a -> True) AbilityInvestigate _ _ -> do
       let triggerSource = a.ability AbilityInvestigate
       sid <- getRandom
-      pushM $ mkInvestigateLocation sid iid triggerSource enemyLocationId
+      pushM $ mkInvestigateLocation sid iid triggerSource a.id
       pure a
-    Investigate investigation | investigation.location == enemyLocationId && not investigation.isAction -> do
+    Investigate investigation | investigation.location == a.id && not investigation.isAction -> do
       let iid = investigation.investigator
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
         push
           $ investigate investigation.skillTest iid investigation.source target investigation.skillType
-          $ maybe (Fixed 0) GameValueCalculation enemyLocationShroud
+          $ maybe (Fixed 0) GameValueCalculation a.shroud
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = a.clues
@@ -177,8 +178,8 @@ instance RunMessage EnemyLocationAttrs where
       pushAll [whenMsg, EnemyEvaded iid eid, afterMsg]
       pure a
     EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
-    ReadyExhausted | not enemyLocationDefeated -> do
-      when enemyLocationExhausted $ push $ Ready (toTarget a)
+    ReadyExhausted | not a.defeated -> do
+      when a.exhausted $ push $ Ready (toTarget a)
       pure a
     Ready target | isEnemyTarget a target -> pure $ a & exhaustedL .~ False
     -- Push EnemyAttack directly rather than EnemyWillAttack: EnemyWillAttack routes
@@ -186,10 +187,10 @@ instance RunMessage EnemyLocationAttrs where
     -- for a coerced EnemyId that doesn't exist in enemiesL.
     -- Use field InvestigatorLocation rather than InvestigatorAt: enemy-locations live
     -- in enemyLocationsL, not locationsL, so InvestigatorAt always returns empty.
-    Do EnemiesAttack | not enemyLocationExhausted && not enemyLocationDefeated -> do
+    Do EnemiesAttack | not a.exhausted && not a.defeated -> do
       let eid = asEnemyId a
       iids <-
-        filterM (\iid -> (== Just enemyLocationId) <$> field InvestigatorLocation iid)
+        filterM (\iid -> (== Just a.id) <$> field InvestigatorLocation iid)
           =<< select UneliminatedInvestigator
       unless (null iids) do
         let details = case iids of
@@ -210,8 +211,8 @@ instance RunMessage EnemyLocationAttrs where
     -- enemy entity — apply damage directly from attrs instead.
     Do (EnemyAttack details) | attackEnemy details == asEnemyId a -> do
       let eid = asEnemyId a
-      let hDmg = if attackDealDamage details then enemyLocationHealthDamage else 0
-      let sDmg = enemyLocationSanityDamage
+      let hDmg = if attackDealDamage details then a.healthDamage else 0
+      let sDmg = a.sanityDamage
       whenWindow <- checkWindows [Window.mkWhen $ Window.EnemyAttacks details]
       afterWindow <- checkWindows [Window.mkAfter $ Window.EnemyAttacksEvenIfCancelled details]
       let dmgMsg iid' =
@@ -226,19 +227,19 @@ instance RunMessage EnemyLocationAttrs where
         <> [afterWindow]
       pure a
     InitiateEnemyAttack details | details.enemy == asEnemyId a -> do
-      unless enemyLocationExhausted $ push $ EnemyAttack details
+      unless a.exhausted $ push $ EnemyAttack details
       pure a
-    EnemyDamage eid da | eid == asEnemyId a && not enemyLocationDefeated -> do
+    EnemyDamage eid da | eid == asEnemyId a && not a.defeated -> do
       let amount = da.amount
       let source = da.source
-      modifiers' <- getModifiers (LocationTarget enemyLocationId)
+      modifiers' <- getModifiers (LocationTarget a.id)
       let modifiedAmount = foldr applyDamageMod amount modifiers'
       when (modifiedAmount > 0) do
         push $ Msg.EnemyDamaged eid da {damageAssignmentAmount = modifiedAmount}
         push $ CheckDefeated source (toTarget a)
-      pure $ a & tokensL %~ addTokens Damage modifiedAmount
-    CheckDefeated source (isTarget a -> True) | not enemyLocationDefeated -> do
-      mHealth <- traverse (getGameValue . unGameCalculation) enemyLocationHealth
+      pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
+    CheckDefeated source (isTarget a -> True) | not a.defeated -> do
+      mHealth <- traverse (getGameValue . unGameCalculation) a.health
       for_ mHealth \health -> do
         when (enemyLocationDamage a >= health) do
           whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyWouldBeDefeated (asEnemyId a)]
@@ -246,10 +247,10 @@ instance RunMessage EnemyLocationAttrs where
           pushAll
             [ whenMsg
             , afterMsg
-            , Msg.EnemyLocationDefeated enemyLocationId (toCardId a) source (setToList $ toTraits (toCardDef a))
+            , Msg.EnemyLocationDefeated a.id (toCardId a) source (setToList $ toTraits (toCardDef a))
             ]
       pure a
-    Msg.EnemyLocationDefeated lid _ source _ | lid == enemyLocationId -> do
+    Msg.EnemyLocationDefeated lid _ source _ | lid == a.id -> do
       miid <- getSourceController source
       let defeatedBy = DefeatedByOther source
       whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
@@ -260,27 +261,27 @@ instance RunMessage EnemyLocationAttrs where
         , afterMsg
         ]
       pure $ a & defeatedL .~ True
-    Do (Msg.EnemyLocationDefeated lid _ _ _) | lid == enemyLocationId -> do
+    Do (Msg.EnemyLocationDefeated lid _ _ _) | lid == a.id -> do
       push $ ScenarioSpecific "enemyLocationDefeated" (toJSON lid)
       pure a
-    PlaceTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ addTokens token n
-    RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
+    PlaceTokens _ (isTarget a -> True) token n -> pure $ a & baseL . tokensL %~ addTokens token n
+    RemoveTokens _ (isTarget a -> True) token n -> pure $ a & baseL . tokensL %~ subtractTokens token n
     -- Enemy-locations are fixed in the grid and cannot be moved by card effects.
     EnemyMove eid _ | eid == asEnemyId a -> pure a
-    SetLocationLabel lid label' | lid == enemyLocationId -> pure $ a & labelL .~ label'
-    LocationMoved lid | lid == enemyLocationId -> pure $ a & directionsL .~ mempty
+    SetLocationLabel lid label' | lid == a.id -> pure $ a & baseL . labelL .~ label'
+    LocationMoved lid | lid == a.id -> pure $ a & baseL . directionsL .~ mempty
     PlacedLocationDirection lid direction lid2
-      | lid2 == enemyLocationId ->
-          pure $ a & directionsL %~ Map.insertWith (<>) direction [lid]
+      | lid2 == a.id ->
+          pure $ a & baseL . directionsL %~ Map.insertWith (<>) direction [lid]
     PlacedLocationDirection lid direction lid2
-      | lid == enemyLocationId ->
+      | lid == a.id ->
           let reversedDirection = case direction of
                 LeftOf -> RightOf
                 RightOf -> LeftOf
                 Above -> Below
                 Below -> Above
-           in pure $ a & directionsL %~ Map.insertWith (<>) reversedDirection [lid2]
-    PlaceGrid (GridLocation pos lid) | lid == enemyLocationId -> pure $ a & positionL ?~ pos
+           in pure $ a & baseL . directionsL %~ Map.insertWith (<>) reversedDirection [lid2]
+    PlaceGrid (GridLocation pos lid) | lid == a.id -> pure $ a & baseL . positionL ?~ pos
     _ -> pure a
    where
     applyDamageMod (DamageDealt n) acc = acc + n

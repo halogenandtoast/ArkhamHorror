@@ -26,6 +26,11 @@ const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
 })
 
+const isEnemyLocationCard = computed(() => {
+  const id = cardContents.value.id
+  return Object.values(props.game.locations).some(loc => loc.enemyLocation && loc.cardId === id)
+})
+
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
     const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
@@ -51,7 +56,8 @@ const image = computed(() => {
   if (cardCode === "c05178l" && !isFlipped) {
     return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/l$/, 'k')}.avif`)
   }
-  const suffix = !props.revealed && isFlipped ? 'b' : ''
+  const revealed = props.revealed && !isEnemyLocationCard.value
+  const suffix = !revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.avif`)
 })

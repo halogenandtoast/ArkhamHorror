@@ -61,6 +61,7 @@ newtype ValidateDeckPost = ValidateDeckPost
 data UpgradeDeckPost = UpgradeDeckPost
   { udpInvestigatorId :: InvestigatorId
   , udpDeckUrl :: Maybe Text
+  , udpDeckList :: Maybe ArkhamDBDecklist
   }
   deriving stock (Show, Generic)
 
@@ -118,17 +119,19 @@ putApiV1ArkhamGameDecksR gameId = do
       playerId <- getPlayer investigatorId
       let question' = Map.delete (coerce playerId) gameQuestion
       unless (Map.null question') (push $ AskMap question')
-      for_ (udpDeckUrl postData) \deckUrl -> do
-        getDeckList deckUrl >>= either (error . show) \decklist -> do
-          push
-            $ if investigatorId /= decklist.investigator
-              then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
-                Nothing -> ReplaceInvestigator investigatorId decklist
-                Just def -> do
-                  if toCardCode investigatorId `elem` def.cardCodes
-                    then UpgradeDecklist investigatorId decklist
-                    else ReplaceInvestigator investigatorId decklist
-              else UpgradeDecklist investigatorId decklist
+      let pushUpgrade decklist =
+            push
+              $ if investigatorId /= decklist.investigator
+                then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
+                  Nothing -> ReplaceInvestigator investigatorId decklist
+                  Just def -> do
+                    if toCardCode investigatorId `elem` def.cardCodes
+                      then UpgradeDecklist investigatorId decklist
+                      else ReplaceInvestigator investigatorId decklist
+                else UpgradeDecklist investigatorId decklist
+      case udpDeckList postData of
+        Just decklist -> pushUpgrade decklist
+        Nothing -> for_ (udpDeckUrl postData) $ getDeckList >=> either (error . show) pushUpgrade
       runMessages (gameIdToText gameId) Nothing
     ge <- liftIO $ readIORef gameRef
 

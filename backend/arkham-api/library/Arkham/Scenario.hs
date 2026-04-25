@@ -704,6 +704,9 @@ allScenarios =
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
     , ("88001", SomeScenario fortuneAndFolly)
     , ("88001b", SomeScenario fortuneAndFollyPart2)
+    , ("12105", SomeScenario spreadingFlames)
+    , ("12133", SomeScenario smokeAndMirrors)
+    , ("12168", SomeScenario queenOfAsh)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -834,4 +837,7 @@ scenarioEncounterSets =
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)
     , ("88001", EncounterSet.FortuneAndFolly)
     , ("88001b", EncounterSet.FortuneAndFolly)
+    , ("12105", EncounterSet.SpreadingFlames)
+    , ("12133", EncounterSet.SmokeAndMirrors)
+    , ("12168", EncounterSet.QueenOfAsh)
     ]

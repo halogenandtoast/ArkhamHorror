@@ -10,7 +10,8 @@ import theCircleUndone from '@/locales/zh/theCircleUndone'
 import theDreamEaters from '@/locales/zh/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/zh/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/zh/edgeOfTheEarth'
+import brethrenOfAsh from '@/locales/zh/brethrenOfAsh'
 import standalone from '@/locales/zh/standalone'
 import gameBoard from '@/locales/zh/gameBoard/gameBoard'
 
-export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, label, ...campaignLog, ...investigators, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, brethrenOfAsh, standalone}

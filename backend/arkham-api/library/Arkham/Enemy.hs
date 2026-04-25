@@ -780,6 +780,15 @@ allEnemies =
       , SomeEnemyCard werewolf
       , --- Spreading Flames
         SomeEnemyCard servantOfFlameRagingFury
+      , SomeEnemyCard servantOfFlameOnTheRun
+      , SomeEnemyCard servantOfFlameAWillingSacrifice
+      , --- People Of Arkham
+        SomeEnemyCard davidRenfieldDisillusionedEschatologist
+      , SomeEnemyCard corneliaAkelyExhaustedSupervisor
+      , SomeEnemyCard naomiOBannionRunsThisTown
+      , SomeEnemyCard sgtEarlMonroeDirtyCop
+      , SomeEnemyCard abigailForemanWaryLibrarian
+      , SomeEnemyCard margaretLiuBeguilingLoungeSinger
       , --- Ashen Pilgrims
         SomeEnemyCard cantorOfFlame
       , SomeEnemyCard hellhound

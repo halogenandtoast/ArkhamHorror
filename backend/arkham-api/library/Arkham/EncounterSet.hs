@@ -315,8 +315,10 @@ data EncounterSet
   | ReekingDecay
   | FlyingTerrors
   | MiskatonicUniversity
-  | ArkhamCore2026
+  | Arkham_C2026
   | PeopleOfArkham
+  | Sewers
+  | SmokeAndMirrors
   | QueenOfAsh
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)

@@ -1,0 +1,30 @@
+module Arkham.Location.Cards.Southside_c2026 (southside_c2026) where
+
+import Arkham.Ability
+import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards (southside_c2026)
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+
+newtype Southside_c2026 = Southside_c2026 LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+southside_c2026 :: LocationCard Southside_c2026
+southside_c2026 = location Southside_c2026 Cards.southside_c2026 2 (PerPlayer 2)
+
+instance HasAbilities Southside_c2026 where
+  getAbilities (Southside_c2026 a) =
+    extendRevealed1 a
+      $ groupLimit PerRound
+      $ restricted a 1 (Here <> exists (investigatorAt a)) $ ActionAbility mempty Nothing (ActionCost 2)
+
+instance RunMessage Southside_c2026 where
+  runMessage msg l@(Southside_c2026 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- select (investigatorAt attrs)
+      let drawOne = chooseOneM iid $ for investigators \iid' -> targeting iid' $ drawCards iid' (attrs.ability 1) 1
+      drawOne >> drawOne >> drawOne
+      pure l
+    _ -> Southside_c2026 <$> liftRunMessage msg attrs

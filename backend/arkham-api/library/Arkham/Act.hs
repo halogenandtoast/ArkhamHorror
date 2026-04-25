@@ -439,4 +439,15 @@ allActs =
     , --- Abominable Contessa
       SomeActCard theAbominableContessa
     , SomeActCard bloodbath
+    , --- Core2026
+      --- Spreading Flames
+      SomeActCard whereTheresSmoke_c2026
+    , SomeActCard escapeTheDorms
+    , SomeActCard searchingForDrArmitage
+    , SomeActCard blazeOfGlory
+      --- Smoke And Mirrors
+    , SomeActCard augursOfFlame
+      --- Queen of Ash
+    , SomeActCard searchTheSewers
+    , SomeActCard stopTheRIte
     ]

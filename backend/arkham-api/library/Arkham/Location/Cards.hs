@@ -1099,6 +1099,38 @@ allLocationCards =
       , zanEtElSettat
       , zocalo
       , zulanThek
+      --- Core 2026
+      --- Spreading Flames
+      , yourFriendsRoom
+      --- Arkham
+      , downtownFirstBankOfArkham_c2026
+      , downtownArkhamSanatorium
+      , uptownStMarrysHospital
+      , uptownYeOldeMagickShoppe
+      , northside_c2026
+      , easttown_c2026
+      , merchantDistrict_c2026
+      , waterfrontDistrict
+      , southside_c2026
+      , frenchHill_c2026
+      , miskatonicUniversityInFlames
+      , miskatonicUniversityQuietCampus
+        --- MiskatonicUniversity
+      , miskatonicQuad_c2026
+      , dormitories_c2026
+      , scienceHall
+      , warrenObservatory_c2026
+      , orneLibrary_c2026
+        --- Sewers
+      , sewerCulvert
+      , sewerTunnelsInfestedPipes
+      , sewerTunnelsOvergrownTunnels
+      , sewerTunnelsFloodedCrypt
+      , sewerTunnelsSmugglersCache
+      , sewerTunnelsToxicWastePit
+        --- Queen of Ash
+      , undergroundCistern
+      , sluiceControl
       ]
 
 withMeta :: ToJSON a => (Text, a) -> CardDef -> CardDef
@@ -11599,3 +11631,294 @@ betweenWorlds =
 emptySpace :: CardDef
 emptySpace =
   location "xempty" "EmptySpace" [] NoSymbol [] BeforeTheBlackThrone
+
+yourFriendsRoom :: CardDef
+yourFriendsRoom =
+  location
+    "12113"
+    "Your Friend's Room"
+    [Miskatonic]
+    Spade
+    [Triangle]
+    SpreadingFlames
+
+downtownFirstBankOfArkham_c2026 :: CardDef
+downtownFirstBankOfArkham_c2026 =
+  victory 1
+    $ location
+        "12145"
+        ("Downtown" <:> "First Bank of Arkham")
+        [Arkham]
+        Triangle
+        [Moon, T]
+        Arkham_C2026
+
+downtownArkhamSanatorium :: CardDef
+downtownArkhamSanatorium =
+  location
+    "12146"
+    ("Downtown" <:> "Arkham Sanatorium")
+    [Arkham]
+    Triangle
+    [Moon, T]
+    Arkham_C2026
+
+uptownStMarrysHospital :: CardDef
+uptownStMarrysHospital =
+  location
+    "12147"
+    ("Uptown" <:> "St. Marry's Hospital")
+    [Arkham]
+    Plus
+    [Diamond, Square]
+    Arkham_C2026
+
+uptownYeOldeMagickShoppe :: CardDef
+uptownYeOldeMagickShoppe =
+  location
+    "12148"
+    ("Uptown" <:> "Ye Olde Magick Shoppe")
+    [Arkham]
+    Plus
+    [Diamond, Square]
+    Arkham_C2026
+
+northside_c2026 :: CardDef
+northside_c2026 =
+  location
+    "12149"
+    "Northside"
+    [Arkham]
+    T
+    [Diamond, Triangle]
+    Arkham_C2026
+
+easttown_c2026 :: CardDef
+easttown_c2026 =
+  location
+    "12150"
+    "Easttown"
+    [Arkham]
+    Moon
+    [Circle, Triangle, Spade]
+    Arkham_C2026
+
+merchantDistrict_c2026 :: CardDef
+merchantDistrict_c2026 =
+  location
+    "12151"
+    "Merchant District"
+    [Arkham]
+    Circle
+    [Moon, Diamond, Square, Spade]
+    Arkham_C2026
+    
+waterfrontDistrict :: CardDef
+waterfrontDistrict =
+  victory 1
+    $ location
+      "12152"
+      "Waterfront District"
+      [Arkham]
+      Spade
+      [Circle, Moon]
+      Arkham_C2026
+
+southside_c2026 :: CardDef
+southside_c2026 =
+  location
+    "12153"
+    "Southside"
+    [Arkham]
+    Square
+    [Plus, Hourglass, Circle]
+    Arkham_C2026
+
+frenchHill_c2026 :: CardDef
+frenchHill_c2026 =
+  victory 1
+    $ location
+      "12154"
+      "French Hill"
+      [Arkham]
+      Hourglass
+      [Square]
+      Arkham_C2026
+
+miskatonicUniversityInFlames :: CardDef
+miskatonicUniversityInFlames =
+  victory 1
+    $ location
+      "12155"
+      ("Miskatonic University" <:> "In Flames")
+      [Arkham]
+      Diamond
+      [T, Plus, Circle]
+      Arkham_C2026
+
+miskatonicUniversityQuietCampus :: CardDef
+miskatonicUniversityQuietCampus =
+  victory 1
+    $ location
+      "12156"
+      ("Miskatonic University" <:> "Quiet Campus")
+      [Arkham]
+      Diamond
+      [T, Plus, Circle]
+      Arkham_C2026
+
+miskatonicQuad_c2026 :: CardDef
+miskatonicQuad_c2026 =
+  location
+    "12116"
+    "Miskatonic Quad"
+    [Miskatonic, Central]
+    Plus
+    [Triangle, Hourglass, Circle, Heart, Square, Diamond]
+    MiskatonicUniversity
+
+dormitories_c2026 :: CardDef
+dormitories_c2026 =
+  location
+    "12117"
+    "Dormitories"
+    [Miskatonic]
+    Triangle
+    [Spade, Plus]
+    MiskatonicUniversity
+
+scienceHall :: CardDef
+scienceHall =
+  victory 1
+    $ location
+      "12118"
+      "Science Hall"
+      [Miskatonic]
+      Hourglass
+      [Plus]
+      MiskatonicUniversity
+
+warrenObservatory_c2026 :: CardDef
+warrenObservatory_c2026 =
+  location
+    "12119"
+    "Warren Observatory"
+    [Miskatonic]
+    Square
+    [Plus]
+    MiskatonicUniversity
+
+orneLibrary_c2026 :: CardDef
+orneLibrary_c2026 =
+  victory 1
+    $ location
+        "12120"
+        "Orne Library"
+        [Miskatonic]
+        Diamond
+        [Plus]
+        MiskatonicUniversity
+
+sewerCulvert :: CardDef
+sewerCulvert =
+  location
+    "12182"
+    "Sewer Culvert"
+    [Sewer, Central]
+    Hourglass
+    [Triangle]
+    Sewers
+
+sewerTunnelsInfestedPipes :: CardDef
+sewerTunnelsInfestedPipes =
+  locationWithUnrevealed
+    "12183"
+    "Sewer Tunnels"
+    [Sewer]
+    Triangle
+    [Hourglass, Circle]
+    ("Sewer Tunnels" <:> "InfestedPipes")
+    [Sewer]
+    Spade
+    [Hourglass, Circle]
+    Sewers
+
+sewerTunnelsOvergrownTunnels :: CardDef
+sewerTunnelsOvergrownTunnels =
+  locationWithUnrevealed
+    "12184"
+    "Sewer Tunnels"
+    [Sewer]
+    Triangle
+    [Hourglass, Circle]
+    ("Sewer Tunnels" <:> "Overgrown Tunnels")
+    [Sewer]
+    Square
+    [Hourglass]
+    Sewers
+
+sewerTunnelsFloodedCrypt :: CardDef
+sewerTunnelsFloodedCrypt =
+  victory 1
+    $ locationWithUnrevealed
+      "12185"
+      "Sewer Tunnels"
+      [Sewer]
+      Triangle
+      [Hourglass, Circle]
+      ("Sewer Tunnels" <:> "Flooded Crypt")
+      [Sewer]
+      Star
+      [Hourglass, Circle]
+      Sewers
+
+sewerTunnelsSmugglersCache :: CardDef
+sewerTunnelsSmugglersCache =
+  locationWithUnrevealed
+    "12186"
+    "Sewer Tunnels"
+    [Sewer]
+    Triangle
+    [Hourglass, Circle]
+    ("Sewer Tunnels" <:> "Smugglers Cache")
+    [Sewer]
+    Trefoil
+    [Hourglass]
+    Sewers
+
+sewerTunnelsToxicWastePit :: CardDef
+sewerTunnelsToxicWastePit =
+  victory 1
+    $ locationWithUnrevealed
+      "12187"
+      "Sewer Tunnels"
+      [Sewer]
+      Triangle
+      [Hourglass, Circle]
+      ("Sewer Tunnels" <:> "Toxic Waste Pit")
+      [Sewer]
+      Equals
+      [Hourglass, Circle]
+      Sewers
+
+undergroundCistern :: CardDef
+undergroundCistern =
+  location
+    "12174"
+    "Underground Cistern"
+    [RitualSite]
+    Circle
+    [Triangle, Plus, Spade, Star, Equals]
+    QueenOfAsh
+
+sluiceControl :: CardDef
+sluiceControl =
+  location
+    "12175"
+    "Sluice Control"
+    [Sewer]
+    Plus
+    [Circle]
+    QueenOfAsh
+
+

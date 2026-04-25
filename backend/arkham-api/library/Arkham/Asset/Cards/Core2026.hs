@@ -346,3 +346,11 @@ drHenryArmitage_c2026 =
     , cdUnique = True
     , cdSlots = [#ally]
     }
+
+collector :: CardDef
+collector =
+  (asset "12181" "Collector" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdUnique = True
+    , cdLevel = Just 0
+    }

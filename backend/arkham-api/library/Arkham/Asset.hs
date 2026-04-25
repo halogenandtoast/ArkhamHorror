@@ -1228,6 +1228,7 @@ allAssets =
         SomeAssetCard theGoldBug
       , --- story [core2026]
         SomeAssetCard drHenryArmitage_c2026
+      , SomeAssetCard collector
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeAssetCard physicalTraining2

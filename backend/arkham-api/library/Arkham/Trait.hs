@@ -250,6 +250,7 @@ data Trait
   | Service
   | Servitor
   | Set
+  | Sewer
   | Shantak
   | Shattered
   | Ship

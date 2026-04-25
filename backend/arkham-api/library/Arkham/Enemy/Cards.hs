@@ -573,6 +573,12 @@ allEncounterEnemyCards =
       , heraldOfFlame
       , elokossFaintEmbers
       , elokossMotherOfFlame
+      , davidRenfieldDisillusionedEschatologist
+      , corneliaAkelyExhaustedSupervisor
+      , naomiOBannionRunsThisTown
+      , sgtEarlMonroeDirtyCop
+      , abigailForemanWaryLibrarian
+      , margaretLiuBeguilingLoungeSinger
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef
@@ -4661,7 +4667,7 @@ mutatedExperiment =
 servantOfFlameOnTheRun :: CardDef
 servantOfFlameOnTheRun = 
   unique
-    $ (enemy "12138" ("Servant of Flame" <:> "On the Run") SpreadingFlames 1)
+    $ (enemy "12138" ("Servant of Flame" <:> "On the Run") SmokeAndMirrors 1)
       {
         cdCardTraits = setFromList [Humanoid, Cultist, Elite],
         cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter, Keyword.Retaliate],
@@ -4767,8 +4773,8 @@ heraldOfFlame =
 
 elokossFaintEmbers :: CardDef
 elokossFaintEmbers = 
-  -- doubleSided "12179b"
-  --   $ 
+  doubleSided "12179b"
+    $ 
     (enemy "12179" ("Elokoss" <:> "Faint Embers") QueenOfAsh 1)
       {
         cdCardTraits = setFromList [AncientOne, Flora, Elite],
@@ -4778,8 +4784,8 @@ elokossFaintEmbers =
 
 elokossMotherOfFlame :: CardDef
 elokossMotherOfFlame = 
-  -- doubleSided "12179"
-  --   $
+  doubleSided "12179"
+    $
      (enemy "12179b" ("Elokoss" <:> "Mother of Flame") QueenOfAsh 1)
       {
         cdCardTraits = setFromList [AncientOne, Flora, Elite],
@@ -4790,7 +4796,7 @@ elokossMotherOfFlame =
 servantOfFlameAWillingSacrifice :: CardDef
 servantOfFlameAWillingSacrifice = 
   unique
-    $ (enemy "12180" ("Servant of Flame" <:> "A Willing Sacrifice") SpreadingFlames 1)
+    $ (enemy "12180" ("Servant of Flame" <:> "A Willing Sacrifice") QueenOfAsh 1)
       {
         cdCardTraits = setFromList [Humanoid, Cultist, Elite],
         cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate],

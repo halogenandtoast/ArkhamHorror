@@ -139,12 +139,10 @@ const inScenarioStep = computed(() => {
     <ContinueCampaign
       :game="game"
       :campaign="campaign"
-      :playerId="playerId"
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
       :canChooseSideStory="continueCampaign.canChooseSideStory"
-      @choose="choose"
     />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
@@ -155,12 +153,10 @@ const inScenarioStep = computed(() => {
       v-if="continueScenario"
       :game="game"
       :scenario="game.scenario ?? undefined"
-      :playerId="playerId"
       :canUpgradeDecks="continueScenario.canUpgradeDecks"
       :step="continueScenario.nextStep"
       :chooseSideStory="continueScenario.chooseSideStory"
       :canChooseSideStory="continueScenario.canChooseSideStory"
-      @choose="choose"
     />
     <Scenario
       v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0 && !inScenarioStep"

@@ -124,8 +124,8 @@ export const updateGamePaymentAmounts = (gameId: string, amounts: Record<string,
 export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
   api.put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
 
-export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId });
+export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string, deckList?: ArkhamDbDecklist | null): Promise<void> =>
+  api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId, deckList });
 
 export const updateStandaloneSettings = (gameId: string, settings: StandaloneSetting[]): Promise<void> =>
   api.put(`arkham/games/${gameId}`, {tag: 'StandaloneSettingsAnswer', contents: settings })

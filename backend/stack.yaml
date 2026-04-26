@@ -10,13 +10,16 @@ build:
   jobs: 16
 
 ghc-options:
-  "$targets":       -j
+  "$targets":       -j +RTS -A128M -n4m -RTS
   "$locals":
     -O0
     -fwrite-ide-info
     -hiedir=.hie
     -fhide-source-paths
     -fignore-optim-changes
+    -fwrite-if-simplified-core
+    -fprefer-byte-code
+    -fwrite-if-compression=1
     -Weverything
     -Wno-unused-packages
     -Wno-missing-exported-signatures

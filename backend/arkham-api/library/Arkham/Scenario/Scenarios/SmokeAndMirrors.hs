@@ -24,7 +24,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Name (nameTitle)
 import Arkham.Helpers (Deck (..))
-import Arkham.Matcher (pattern AnyCards, pattern Anywhere, pattern AssetWithTitle, pattern CardWithTrait, pattern EliteEnemy, pattern EnemyAt, pattern EnemyWithoutTrait, pattern LocationWithCardsUnderneath, enemyIs, investigatorAt)
+import Arkham.Matcher (pattern HealableAsset, pattern HealableInvestigator, pattern AnyAsset, pattern AnyCards, pattern Anyone, pattern Anywhere, pattern AssetWithTitle, pattern CardWithTrait, pattern EliteEnemy, pattern EnemyAt, pattern EnemyWithoutTrait, pattern LocationWithCardsUnderneath, enemyIs, investigatorAt)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Trait (Trait (Elite, Humanoid))
 import Arkham.Message.Lifted.Choose
@@ -151,7 +151,8 @@ setupSmokeAndMirrors _attrs = do
 
   mBearer <- getOwner Assets.drHenryArmitage_c2026
   for_ mBearer \iid -> do
-    beginWithStoryAsset iid Assets.drHenryArmitage_c2026
+    mcard <- findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDeck iid
+    for_ mcard \card -> putCardIntoPlay iid card
 
   setAside [Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss]
 
@@ -211,7 +212,11 @@ instance RunMessage SmokeAndMirrors where
             placeUnderneath ActDeckTarget [card]
         2 -> do
           entry "corneliaAkely"
-          healHorror iid source 1
+          healableInvestigators <- select $ HealableInvestigator (toSource source) #horror Anyone
+          healableAssets <- select $ HealableAsset (toSource source) #horror AnyAsset
+          chooseOneM iid do
+            targets healableInvestigators \target -> healHorror target source 1
+            targets healableAssets \target -> healHorror target source 1
           eid <- selectJust $ enemyIs Enemies.corneliaAkelyExhaustedSupervisor
           placeTokens source (toTarget eid) Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
@@ -237,7 +242,11 @@ instance RunMessage SmokeAndMirrors where
             placeUnderneath ActDeckTarget [card]
         4 -> do
           entry "sgtEarlMonroe"
-          healDamage iid source 1
+          healableInvestigators <- select $ HealableInvestigator (toSource source) #damage Anyone
+          healableAssets <- select $ HealableAsset (toSource source) #damage AnyAsset
+          chooseOneM iid do
+            targets healableInvestigators \target -> healDamage target source 1
+            targets healableAssets \target -> healDamage target source 1
           eid <- selectJust $ enemyIs Enemies.sgtEarlMonroeDirtyCop
           placeTokens source (toTarget eid) Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
@@ -262,7 +271,7 @@ instance RunMessage SmokeAndMirrors where
           deck <- scenarioField ScenarioEncounterDeck
           for_ (headMay $ unDeck deck) \card -> do
             focusCards [card] $ chooseOneM iid do
-              labeled "Discard it" $ lift $ discardTopOfDeck iid source 1
+              labeled "Discard it" $ push $ DiscardTopOfEncounterDeck iid 1 (toSource source) Nothing
               labeled "Leave it" nothing
           eid <- selectJust $ enemyIs Enemies.margaretLiuBeguilingLoungeSinger
           placeTokens source (toTarget eid) Resource 1

@@ -10,7 +10,6 @@ import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SpreadingFlames.Helpers
 
 newtype PastCurfew = PastCurfew AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -39,10 +38,10 @@ instance RunMessage PastCurfew where
         EnemyTarget eid -> toDiscardBy iid (attrs.ability 1) eid
         _ -> pure ()
       pure a
-    AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         sid <- getRandom
-        beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 3)
+        beginSkillTest sid iid attrs iid #willpower (Fixed 3)
       advanceAgendaDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do

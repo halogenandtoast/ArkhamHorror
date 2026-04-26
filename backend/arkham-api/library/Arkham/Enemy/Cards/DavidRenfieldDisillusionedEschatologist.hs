@@ -12,7 +12,7 @@ newtype DavidRenfieldDisillusionedEschatologist = DavidRenfieldDisillusionedEsch
 
 davidRenfieldDisillusionedEschatologist :: EnemyCard DavidRenfieldDisillusionedEschatologist
 davidRenfieldDisillusionedEschatologist =
-  enemy DavidRenfieldDisillusionedEschatologist Cards.davidRenfieldDisillusionedEschatologist (1, Static 5, 4) (1, 1)
+  enemy DavidRenfieldDisillusionedEschatologist Cards.davidRenfieldDisillusionedEschatologist (1, Static 5, 4) (0, 1)
 
 instance HasAbilities DavidRenfieldDisillusionedEschatologist where
   getAbilities (DavidRenfieldDisillusionedEschatologist a) =

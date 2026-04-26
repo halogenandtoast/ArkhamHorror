@@ -31,6 +31,7 @@ instance RunMessage UptownYeOldeMagickShoppe where
       chooseTargetM iid cards \card -> addToHand iid (only card)
       pure l
     SearchNoneFound iid (isTarget attrs -> True) -> do
+      shuffleDeck iid
       drawCards iid (attrs.ability 1) 1
       pure l
     _ -> UptownYeOldeMagickShoppe <$> liftRunMessage msg attrs

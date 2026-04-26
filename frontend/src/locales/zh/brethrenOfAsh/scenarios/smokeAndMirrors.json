@@ -3,7 +3,7 @@
     "gatherSets": "收齐以下遭遇组的所有卡牌：_迷烟重重_、_奥术锁_、_阿卡姆_、_坏天气_、_死路_、_飞天恐怖_、_阿卡姆帮派_、_阿卡姆居民_、_夜鹰_。这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/smoke-and-mirrors.png' /><img src='{setImgPath}/arcane-lock.png' /><img src='{setImgPath}/arkham-ch2.png' /><img src='{setImgPath}/bad-weather.png' /><img src='{setImgPath}/dead-ends.png' /><img src='{setImgPath}/flying-terrors.png' /><img src='{setImgPath}/gangs-of-arkham.png' /><img src='{setImgPath}/people-of-arkham.png' /><img src='{setImgPath}/whippoorwills-ch2.png' /></section>",
     "placeLocations": "在两张【商业区】地点和两张【住宅区】地点中各随机选择一张放置入场<i>（参见地点摆放位置建议）</i>。将其他版本的【商业区】和【住宅区】从游戏中移除。将【北区】、【东城区】、【商人区】、【滨水区】、【南区】、【法兰西山】地点放置入场。",
     "setOutOfPlay": "收齐<b>阿卡姆居民</b>遭遇组的所有卡牌。从中随机选择一张，将其放在一边，位于场外，不要查看。将该遭遇组的剩余每张卡牌和【烈焰仆从】敌人一同混洗，在【北区】、【商业区】、【南区】、【法兰西山】、【住宅区】、【滨水区】底下正面朝下各分发1张。",
-    "checkCampaignLog": "检查剧本日志。<ul><li>如果*米斯卡塔尼克大学化为火海*，将【米斯卡塔尼克大学（一片火海）】放置入场，将另一张【米斯卡塔尼克大学】从游戏中移除。</li><li>如果*米斯卡塔尼克大学化为火海*，将【米斯卡塔尼克大学（宁静校园）】放置入场，将另一张【米斯卡塔尼克大学】从游戏中移除。在密谋上放置1个毁灭标记。</li><li>每位调查员从【米斯卡塔尼克大学】开始游戏。</li></ul>",
+    "checkCampaignLog": "检查剧本日志。<ul><li>如果_*米斯卡塔尼克大学化为火海*_，将【米斯卡塔尼克大学（一片火海）】放置入场，将另一张【米斯卡塔尼克大学】从游戏中移除。</li><li>如果_*米斯卡塔尼克大学化为火海*_，将【米斯卡塔尼克大学（宁静校园）】放置入场，将另一张【米斯卡塔尼克大学】从游戏中移除。在密谋上放置1个毁灭标记。</li><li>每位调查员从【米斯卡塔尼克大学】开始游戏。</li></ul>",
     "bearerOfDrHenryArmitage": "如果一位调查员是【亨利·阿米蒂奇博士】剧情支援的持有者，在其牌库中搜寻该卡牌并将其放置入场，位于其持有者的控制下。在本场冒险中，他不占用盟友槽位。",
     "placeDoom": "游戏中每有一位调查员，在密谋上放置1个毁灭标记。",
     "setAsideMarkOfElokoss": "将每张【俄洛寇斯的印记】弱点放在一边，位于场外。",

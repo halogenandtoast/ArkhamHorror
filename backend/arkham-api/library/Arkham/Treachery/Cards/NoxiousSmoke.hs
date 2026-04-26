@@ -17,8 +17,8 @@ instance RunMessage NoxiousSmoke where
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       chooseOneM iid do
-        labeled "Test Intellect (3)" do
-          beginSkillTest sid iid (toSource attrs) iid #intellect (Fixed 3)
+        labeled "Test Willpower (3)" do
+          beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 3)
         labeled "Test Agility (3)" do
           beginSkillTest sid iid (toSource attrs) iid #agility (Fixed 3)
       pure t

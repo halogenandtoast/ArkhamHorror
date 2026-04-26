@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card (filterCards)
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Scenario (getEncounterDeck, getEncounterDiscard)
@@ -14,6 +15,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -38,17 +40,36 @@ instance RunMessage SearchingForDrArmitage where
       advanceVia #clues attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      drArmitage <- getSetAsideCard Assets.drHenryArmitage_c2026
       lead <- getLead
       iids <- select UneliminatedInvestigator
       chooseOrRunOneM lead do
         targets iids \iid -> do
-          armitage <- createAssetAt drArmitage (InPlayArea iid)
-          gameModifier attrs (AssetTarget armitage) (DoNotTakeUpSlot #ally)
+          drArmitage <- createAsset =<< getSetAsideCard Assets.drHenryArmitage_c2026
+          gameModifier attrs drArmitage (DoNotTakeUpSlot #ally)
+          takeControlOfAsset iid drArmitage
 
       miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad_c2026
-      createSetAsideEnemy_ Enemies.servantOfFlameRagingFury miskatonicQuad
-      placeCluesOn attrs 3 miskatonicQuad
+
+      mInPlay <- selectOne $ enemyIs Enemies.servantOfFlameRagingFury
+      case mInPlay of
+        Just eid -> push $ PlaceEnemy eid (AtLocation miskatonicQuad)
+        Nothing -> do
+          mOutOfPlay <- selectOne $ IncludeOutOfPlayEnemy $ enemyIs Enemies.servantOfFlameRagingFury
+          case mOutOfPlay of
+            Just eid -> do
+              placement <- field EnemyPlacement eid
+              case placement of
+                OutOfPlay zone -> push $ EnemySpawnFromOutOfPlay zone Nothing miskatonicQuad eid
+                _ -> push $ PlaceEnemy eid (AtLocation miskatonicQuad)
+            Nothing -> do
+              mcard <- fetchCardMaybe_ $ UniqueFetchCard Enemies.servantOfFlameRagingFury
+              case mcard of
+                Just card -> do
+                  obtainCard card
+                  createEnemyAt_ card miskatonicQuad
+                Nothing -> createSetAsideEnemy_ Enemies.servantOfFlameRagingFury miskatonicQuad
+      placeCluesCount <- perPlayer 3
+      placeCluesOn attrs placeCluesCount miskatonicQuad
 
       n <- perPlayer 1
       deck <- unDeck <$> getEncounterDeck

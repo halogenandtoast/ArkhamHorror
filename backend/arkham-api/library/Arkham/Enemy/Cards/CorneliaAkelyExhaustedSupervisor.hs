@@ -12,7 +12,7 @@ newtype CorneliaAkelyExhaustedSupervisor = CorneliaAkelyExhaustedSupervisor Enem
 
 corneliaAkelyExhaustedSupervisor :: EnemyCard CorneliaAkelyExhaustedSupervisor
 corneliaAkelyExhaustedSupervisor =
-  enemy CorneliaAkelyExhaustedSupervisor Cards.corneliaAkelyExhaustedSupervisor (3, Static 4, 3) (1, 1)
+  enemy CorneliaAkelyExhaustedSupervisor Cards.corneliaAkelyExhaustedSupervisor (3, Static 4, 3) (1, 0)
 
 instance HasAbilities CorneliaAkelyExhaustedSupervisor where
   getAbilities (CorneliaAkelyExhaustedSupervisor a) =

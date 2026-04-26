@@ -1189,6 +1189,7 @@
   {
     "id": "12",
     "name": "Brethren of Ash",
+    "beta": true,
     "difficultyLevels": {
       "Easy":
         [ "PlusOne", "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo"

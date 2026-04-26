@@ -20,16 +20,17 @@ instance RunMessage SurvivalInstinct where
     PassedSkillTest iid (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
       enemies <- select $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
-
-      when (notNull enemies && canDisengage) do
-        additionalSkillTestOption "Survival Instinct" do
-          chooseOneM iid do
-            labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
-            labeled "Skip" nothing
-
       locations <- getConnectedMoveLocations iid (toSource attrs)
-      chooseOrRunOneM iid do
-        labeled "Do not move to a connecting location" nothing
-        targets locations (moveTo attrs iid)
+
+      when ((notNull enemies && canDisengage) || notNull locations) do
+        skillTestCardOption attrs do
+          when (notNull enemies && canDisengage) do
+            chooseOneM iid do
+              labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
+              labeled "Skip" nothing
+
+          chooseOrRunOneM iid do
+            labeled "Do not move to a connecting location" nothing
+            targets locations (moveTo attrs iid)
       pure s
     _ -> SurvivalInstinct <$> liftRunMessage msg attrs

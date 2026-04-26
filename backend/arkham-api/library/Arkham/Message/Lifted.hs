@@ -3957,7 +3957,7 @@ addToSpecificEncounterDiscard dkey =
 priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do
   msgs <- capture body
-  push $ Priority $ Run msgs
+  traverse_ (push . Priority) msgs
 
 -- Just a reminder that this is new and potentially dangerous, we should
 -- consider only cases where messages will look the same roughly.

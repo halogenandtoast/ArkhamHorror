@@ -100,14 +100,6 @@ instance RunMessage ThePredatoryHouse where
 
       leadChooseOneM $ labeled "Continue" nothing
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
-
-    -- if count ((== Cultist) . predationTokenFace) (predationSetAside bag) == 2
-    --   then do
-    --     bag' <- initPredationBag
-    --     pure
-    --       $ ThepredationBegins
-    --       $ attrs {storyMeta = toJSON bag'}
-    --   else pure $ ThepredationBegins $ attrs {storyMeta = toJSON bag}
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = predationBag attrs
       tokenId <- getRandom

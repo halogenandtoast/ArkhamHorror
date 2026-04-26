@@ -401,7 +401,7 @@ instance RunMessage SkillTest where
       let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
       let
         handleChoice resolver player =
-          let failed target = Priority $ FailedSkillTest resolver skillTestAction skillTestSource target skillTestType difficulty
+          let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType difficulty
            in SkillTestResults resultsData
                 : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
                   <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
@@ -580,13 +580,13 @@ instance RunMessage SkillTest where
 
         case modifiedSkillTestResult of
           SucceededBy _ n -> do
-            let passed target = Priority $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+            let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
             pushAll
               $ [AfterSkillTest $ passed target | target <- skillTestSubscribers <> tokenSubscribers]
               <> [AfterSkillTest $ passed (SkillTestInitiatorTarget skillTestTarget)]
           FailedBy _ n -> do
             let resolver = skillTestResolveFailureInvestigator
-            let failed target = Priority $ FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
+            let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
             pushAll
               $ [AfterSkillTest $ failed target | target <- skillTestSubscribers <> tokenSubscribers]
               <> [AfterSkillTest $ failed (SkillTestInitiatorTarget skillTestTarget)]
@@ -786,7 +786,7 @@ instance RunMessage SkillTest where
         pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
-          let passed target = Priority $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+          let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
           pushAll
             $ [When (passed target) | target <- skillTestSubscribers <> tokenSubscribers]
             <> [When (passed (SkillTestInitiatorTarget skillTestTarget))]
@@ -804,7 +804,7 @@ instance RunMessage SkillTest where
           let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
           let
             handleChoice resolver player =
-              let failed target = Priority $ FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
+              let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
                in [When (failed (Initiator skillTestTarget))]
                     <> [When (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
                     <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] [] | ab <- hauntedAbilities]

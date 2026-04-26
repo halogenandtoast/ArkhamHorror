@@ -456,6 +456,7 @@ data Message
   | ClearAbilityUse AbilityRef
   | SkillTestResultOption SkillTestOption -- Text [Message]
   | SkillTestResultOptions [SkillTestOption]
+  | CollectSkillTestOptions
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfAtIgnored InvestigatorId Bool

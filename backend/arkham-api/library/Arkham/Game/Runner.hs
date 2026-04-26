@@ -1952,45 +1952,61 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             push $ AskMap askMap
     pure g
   SkillTestResultOption opt -> do
-    push $ SkillTestResultOptions [opt]
+    fromQueue (elem CollectSkillTestOptions) >>= \case
+      True -> pushEnd $ SkillTestResultOption opt
+      False -> push $ SkillTestResultOptions [opt]
     pure g
   SkillTestResultOptions opts -> do
-    peekMessage >>= \case
-      Just (SkillTestResultOption opt) -> do
-        _ <- popMessage
-        push $ SkillTestResultOptions (opt : opts)
-      Just (SkillTestResultOptions opts') -> do
-        _ <- popMessage
-        push $ SkillTestResultOptions (opts <> opts')
-      Just msg'@(PassedSkillTest {}) -> do
-        _ <- popMessage
-        pushAll [msg', msg]
-      Just msg'@(DisableEffect {}) -> do
-        _ <- popMessage
-        pushAll [msg', msg]
-      _ ->
-        getSkillTest >>= \case
-          Just st -> do
-            case opts of
-              [opt] -> case opt.criteria of
-                Nothing -> push $ uiToRun opt.option
-                Just c -> do
-                  ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                  when ok $ push $ uiToRun opt.option
-              _ -> do
-                opts' <-
-                  opts & mapMaybeM \opt -> do
-                    case opt.criteria of
-                      Nothing -> pure $ Just opt
-                      Just c -> do
-                        ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                        pure $ if ok then Just opt else Nothing
-                let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
-                pid <- getPlayer st.investigator
-                push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->
-                  guard (elem opt opts' && (not blocked || opt.kind /= OriginalOptionKind))
-                    $> uiAnd opt.option (SkillTestResultOptions rest)
-          Nothing -> error "missing skill test"
+    fromQueue (elem CollectSkillTestOptions) >>= \case
+      True -> pushEnd $ SkillTestResultOptions opts
+      False ->
+        peekMessage >>= \case
+          Just (SkillTestResultOption opt) -> do
+            _ <- popMessage
+            push $ SkillTestResultOptions (opt : opts)
+          Just (SkillTestResultOptions opts') -> do
+            _ <- popMessage
+            push $ SkillTestResultOptions (opts <> opts')
+          Just msg'@(PassedSkillTest {}) -> do
+            _ <- popMessage
+            pushAll [msg', msg]
+          Just msg'@(DisableEffect {}) -> do
+            _ <- popMessage
+            pushAll [msg', msg]
+          _ ->
+            getSkillTest >>= \case
+              Just st -> do
+                case opts of
+                  [opt] -> case opt.criteria of
+                    Nothing -> push $ uiToRun opt.option
+                    Just c -> do
+                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                      when ok $ push $ uiToRun opt.option
+                  _ -> do
+                    opts' <-
+                      opts & mapMaybeM \opt -> do
+                        case opt.criteria of
+                          Nothing -> pure $ Just opt
+                          Just c -> do
+                            ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                            pure $ if ok then Just opt else Nothing
+                    let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
+                    pid <- getPlayer st.investigator
+                    push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->
+                      guard (elem opt opts' && (not blocked || opt.kind /= OriginalOptionKind))
+                        $> uiAnd opt.option (SkillTestResultOptions rest)
+              Nothing -> error "missing skill test"
+    pure g
+  CollectSkillTestOptions -> do
+    collected <- withQueue \q ->
+      let gather (SkillTestResultOption o) = [o]
+          gather (SkillTestResultOptions os) = os
+          gather _ = []
+          isOpt (SkillTestResultOption _) = True
+          isOpt (SkillTestResultOptions _) = True
+          isOpt _ = False
+       in (filter (not . isOpt) q, concatMap gather q)
+    unless (null collected) $ push $ SkillTestResultOptions collected
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card

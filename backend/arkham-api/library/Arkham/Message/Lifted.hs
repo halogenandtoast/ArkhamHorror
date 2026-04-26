@@ -2210,6 +2210,12 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
+skillTestCardOption :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
+skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+
+tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
+tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
+
 additionalSkillTestOptionEdit
   :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
 additionalSkillTestOptionEdit f = skillTestResultOptionEdit AdditionalOptionKind f

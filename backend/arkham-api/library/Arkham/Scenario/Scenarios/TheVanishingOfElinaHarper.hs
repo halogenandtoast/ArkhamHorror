@@ -133,7 +133,8 @@ instance RunMessage TheVanishingOfElinaHarper where
           if isEasyStandard attrs
             then assignHorror iid Tablet 1
             else assignDamageAndHorror iid Tablet 1 1
-        ElderThing -> placeCluesOnLocation iid ElderThing amount
+        ElderThing -> tokenSkillTestOption ElderThing do
+          placeCluesOnLocation iid ElderThing amount
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

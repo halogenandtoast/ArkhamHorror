@@ -36,13 +36,11 @@
     "takeControlOfKey": "Take control of {key} key",
     "name": "{name}"
   },
+  "name": "{name}",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",
-
   "Yes": "Yes",
   "No": "No",
-
-
   "Parley": "Parley",
   "Resign": "Resign",
   "Investigate": "Investigate",
@@ -54,7 +52,6 @@
   "Delayed": "Delayed",
   "Objective": "Objective",
   "Haunted": "Haunted",
-
   "Results": "Results",
   "Story": "Story",
   "ChooseOne": "Choose one",

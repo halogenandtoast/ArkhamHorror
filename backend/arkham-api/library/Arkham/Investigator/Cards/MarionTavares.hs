@@ -13,6 +13,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Slot
 import Arkham.Strategy
+import Arkham.Window (defaultWindows)
 
 newtype MarionTavares = MarionTavares InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -54,7 +55,7 @@ instance RunMessage MarionTavares where
     DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card) _) -> do
       cards <-
         filterCards (#event <> not_ (CardWithTitle card.title))
-          <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) ws
+          <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (nub $ ws <> defaultWindows iid)
       when (notNull cards) do
         chooseOneM iid do
           labeled "Do not play another event" nothing

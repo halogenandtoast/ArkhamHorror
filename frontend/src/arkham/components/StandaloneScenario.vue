@@ -84,12 +84,10 @@ const inStep = computed(() => {
       v-if="continueCampaign"
       :game="game"
       :scenario="game.scenario ?? undefined"
-      :playerId="playerId"
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
       :canChooseSideStory="continueCampaign.canChooseSideStory"
-      @choose="choose"
     />
     <Scenario
       v-else-if="game.scenario && game.phase !== 'CampaignPhase' && !inStep"

@@ -55,7 +55,6 @@ import Data.UUID.V4 as X
 import Helpers.Message as X hiding (playEvent)
 import Test.Hspec as X
 
-import Arkham.CampaignLogKey
 import Arkham.ActiveCost
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
@@ -64,6 +63,7 @@ import Arkham.Agenda.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types
 import Arkham.Calculation
+import Arkham.CampaignLogKey
 import Arkham.Classes.HasGame
 import Arkham.Debug
 import Arkham.Difficulty
@@ -100,6 +100,7 @@ import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import OpenTelemetry.Attributes qualified as A
@@ -718,6 +719,12 @@ chooseFirstOption _reason = do
       ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
+
+chooseCardSkillTestOption :: (HasCallStack, HasCardCode code) => code -> TestAppT ()
+chooseCardSkillTestOption (toCardCode -> code) = do
+  chooseOptionMatching "use card option" \case
+    Label str _ -> tshow code `T.isInfixOf` str
+    _ -> False
 
 chooseOptionMatching :: HasCallStack => String -> (UI Message -> Bool) -> TestAppT ()
 chooseOptionMatching _reason f = do

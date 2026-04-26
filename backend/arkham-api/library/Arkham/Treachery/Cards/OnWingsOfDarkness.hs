@@ -21,7 +21,10 @@ instance RunMessage OnWingsOfDarkness where
       sid <- getRandom
       revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
-    FailedThisSkillTest iid (isSource attrs -> True) -> do
+    FailedThisSkillTest _iid (isSource attrs -> True) -> do
+      skillTestCardOption attrs $ do_ msg
+      pure t
+    Do (FailedThisSkillTest iid (isSource attrs -> True)) -> do
       assignDamageAndHorror iid attrs 1 1
       enemiesToDisengage <- select $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
       for_ enemiesToDisengage (disengageEnemy iid)

@@ -2210,6 +2210,12 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
+skillTestCardOption :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
+skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+
+tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
+tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
+
 additionalSkillTestOptionEdit
   :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
 additionalSkillTestOptionEdit f = skillTestResultOptionEdit AdditionalOptionKind f
@@ -3951,7 +3957,7 @@ addToSpecificEncounterDiscard dkey =
 priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do
   msgs <- capture body
-  push $ Priority $ Run msgs
+  traverse_ (push . Priority) msgs
 
 -- Just a reminder that this is new and potentially dangerous, we should
 -- consider only cases where messages will look the same roughly.

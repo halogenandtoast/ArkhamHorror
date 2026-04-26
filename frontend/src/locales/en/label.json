@@ -58,6 +58,7 @@
   "minusToYourNextSkillTestThisRound": "You get -{count} to your next skill test this round",
   "move": "Move",
   "moveTo": "Move to {name}",
+  "name": "{name}",
   "neither": "Neither",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",

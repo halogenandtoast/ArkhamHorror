@@ -82,3 +82,5 @@ terraform.tfvars
 # Local env / secrets
 secrets.*
 kubeconfig*
+
+.pi/

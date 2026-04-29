@@ -1139,12 +1139,13 @@ payCost msg c iid skipAdditionalCosts cost = do
       x <- perPlayer 1
       if mVal == x
         then push $ pay (GroupClueCost (PerPlayer 1) Anywhere)
-        else
+        else do
+          let maxX = mVal `div` x
           push
-            $ questionLabel ("Spend 1-" <> tshow mVal <> " {perPlayer} clues, as a group") player
+            $ questionLabel ("Spend 1-" <> tshow maxX <> " {perPlayer} clues, as a group") player
             $ DropDown
               [ (tshow n, pay (GroupClueCost (PerPlayer n) Anywhere))
-              | n <- [1 .. (mVal `div` x)]
+              | n <- [1 .. maxX]
               ]
       pure c
     PlaceClueOnLocationCost x -> do

@@ -32,6 +32,9 @@ multiClassEvent cCode name cost classSymbols = baseEvent cCode name cost (setFro
 signature :: InvestigatorId -> CardDef -> CardDef
 signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
 
+fast :: CardDef -> CardDef
+fast cd = cd {cdFastWindow = Just FastPlayerWindow}
+
 canDiscoverCluesAtYourLocation :: Criterion
 canDiscoverCluesAtYourLocation =
   youExist

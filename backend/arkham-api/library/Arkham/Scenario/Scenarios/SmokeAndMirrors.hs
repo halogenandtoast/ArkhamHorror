@@ -151,7 +151,10 @@ setupSmokeAndMirrors _attrs = do
 
   mBearer <- getOwner Assets.drHenryArmitage_c2026
   for_ mBearer \iid -> do
-    mcard <- findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDeck iid
+    deckCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDeck iid
+    handCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorHand iid
+    discardCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDiscard iid
+    let mcard = asum [deckCard', handCard', discardCard']
     for_ mcard \card -> putCardIntoPlay iid card
 
   setAside [Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss]

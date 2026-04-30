@@ -22,9 +22,9 @@ instance RunMessage ExtraplanarVisions where
       sid <- getRandom
       chooseOneM iid do
         labeled "Test Intellect (X)" do
-          beginSkillTest sid iid (toSource attrs) iid #intellect (Fixed handCount)
-        labeled "Test Willpower (X)" do
           beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed handCount)
+        labeled "Test Willpower (X)" do
+          beginSkillTest sid iid (toSource attrs) iid #intellect (Fixed handCount)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignDamage iid attrs 1

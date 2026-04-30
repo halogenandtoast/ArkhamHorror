@@ -29,7 +29,7 @@ instance RunMessage Mutated1 where
   runMessage msg t@(Mutated1 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      revelationSkillTest sid iid attrs #intellect (Fixed 2)
+      revelationSkillTest sid iid attrs #willpower (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       mLoc <- field InvestigatorLocation iid

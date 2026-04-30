@@ -4,20 +4,15 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card (filterCards)
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers (unDeck)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Scenario (getEncounterDeck, getEncounterDiscard)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
-import Arkham.Placement
-import Arkham.Projection
-import Arkham.Scenario.Deck
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
+import Arkham.Scenarios.SpreadingFlames.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SearchingForDrArmitage = SearchingForDrArmitage ActAttrs
@@ -50,43 +45,26 @@ instance RunMessage SearchingForDrArmitage where
 
       miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad_c2026
 
-      mInPlay <- selectOne $ enemyIs Enemies.servantOfFlameRagingFury
-      case mInPlay of
-        Just eid -> push $ PlaceEnemy eid (AtLocation miskatonicQuad)
+      selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.servantOfFlameRagingFury) >>= \case
+        Just eid -> place eid (AtLocation miskatonicQuad)
         Nothing -> do
-          mOutOfPlay <- selectOne $ IncludeOutOfPlayEnemy $ enemyIs Enemies.servantOfFlameRagingFury
-          case mOutOfPlay of
-            Just eid -> do
-              placement <- field EnemyPlacement eid
-              case placement of
-                OutOfPlay zone -> push $ EnemySpawnFromOutOfPlay zone Nothing miskatonicQuad eid
-                _ -> push $ PlaceEnemy eid (AtLocation miskatonicQuad)
-            Nothing -> do
-              mcard <- fetchCardMaybe_ $ UniqueFetchCard Enemies.servantOfFlameRagingFury
-              case mcard of
-                Just card -> do
-                  obtainCard card
-                  createEnemyAt_ card miskatonicQuad
-                Nothing -> createSetAsideEnemy_ Enemies.servantOfFlameRagingFury miskatonicQuad
+          card <- fetchCard Enemies.servantOfFlameRagingFury
+          obtainCard card
+          createEnemyAt_ card miskatonicQuad
       placeCluesCount <- perPlayer 3
       placeCluesOn attrs placeCluesCount miskatonicQuad
 
       n <- perPlayer 1
-      deck <- unDeck <$> getEncounterDeck
-      encounterDiscard <- getEncounterDiscard RegularEncounterDeck
-      let allFire = filterCards (cardIs Treacheries.fire1) (deck <> encounterDiscard)
-      let toDraw = take n allFire
+      inDiscard <- select $ InEncounterDiscard <> basic (cardIs Treacheries.fire1)
 
-      for_ toDraw $ \ec -> do
-        if ec `elem` deck
-          then do
-            push $ RemoveFromEncounterDeck ec
-            push $ InvestigatorDrewEncounterCard lead ec
-          else do
-            push $ RemoveFromEncounterDiscard ec
-            push $ InvestigatorDrewEncounterCard lead ec
-
-      when (any (`elem` deck) toDraw) $ push $ ShuffleDeck Deck.EncounterDeck
+      chooseOrRunOneM lead $ scenarioI18n do
+        when (length inDiscard >= n) do
+          labeled' "searchingForDrArmitage.drawFromDiscard"
+            $ for_ (take n inDiscard)
+            $ drawCardFrom lead Deck.EncounterDiscard
+        labeled' "searchingForDrArmitage.drawFromBoth"
+          $ repeated n
+          $ findAndDrawEncounterCard lead (cardIs Treacheries.fire1)
 
       advanceActDeck attrs
       pure a

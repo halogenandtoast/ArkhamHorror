@@ -3,18 +3,17 @@ module Arkham.Act.Cards.EscapeTheDorms (escapeTheDorms) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Enemy.Types (Field(..))
-import Arkham.Helpers.Query (getJustLocationByName)
-import Arkham.Projection
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 
 newtype EscapeTheDorms = EscapeTheDorms ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 escapeTheDorms :: ActCard EscapeTheDorms
-escapeTheDorms = act (2, A) EscapeTheDorms Cards.escapeTheDorms (groupClueCost $ PerPlayer 2)
+escapeTheDorms = act (2, A) EscapeTheDorms Cards.escapeTheDorms Nothing
 
 instance HasAbilities EscapeTheDorms where
   getAbilities = actAbilities \a ->
@@ -29,30 +28,30 @@ instance RunMessage EscapeTheDorms where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- 1. Search all in-play and out-of-play Servant of Flame,
-      --    heal all damage, and set them aside
-      servants <- select $ EnemyWithTitle "Servant of Flame"
-      for_ servants $ \eid -> do
-        healAllDamage attrs eid
-        card <- field EnemyCard eid
-        removeEnemy eid
-        setCardAside card
+      selectOne (IncludeOutOfPlayEnemy $ EnemyWithTitle "Servant of Flame") >>= \case
+        Just servant -> do
+          healAllDamage attrs servant
+          obtainCard =<< fetchCard Enemies.servantOfFlameRagingFury
+          place servant SetAsideZone
+        Nothing -> do
+          card <- fetchCard Enemies.servantOfFlameRagingFury
+          obtainCard card
+          createEnemyWithM_ card (OutOfPlay SetAsideZone) \c ->
+            setAfter c (healAllDamage attrs c.enemy)
 
-      -- 2. Discard each enemy in play
-      discardEach attrs AnyEnemy
+      doStep 1 msg
 
-      -- 3. Discard all tokens and attachments from Your Friend's Room
-      --    and remove it from the game
-      yfroom <- getJustLocationByName "Your Friend's Room"
-      push $ RemoveAllTokens (toSource attrs) (toTarget yfroom)
-      push $ RemoveAllAttachments (toSource attrs) (toTarget yfroom)
-      removeLocation yfroom
+      selectEach (locationIs Locations.yourFriendsRoom) removeLocation
 
-      -- 4. Put each remaining set-aside location into play
-      placeSetAsideLocation_ Locations.orneLibrary_c2026
-      placeSetAsideLocation_ Locations.scienceHall
-      placeSetAsideLocation_ Locations.warrenObservatory_c2026
+      placeSetAsideLocations_
+        [ Locations.orneLibrary_c2026
+        , Locations.scienceHall
+        , Locations.warrenObservatory_c2026
+        ]
 
       advanceActDeck attrs
+      pure a
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      discardEach attrs (InPlayEnemy AnyEnemy)
       pure a
     _ -> EscapeTheDorms <$> liftRunMessage msg attrs

@@ -316,7 +316,7 @@ allActCards =
       , worshippersOfTheDeep
       --- Core2026
       --- Spreading Flames
-      , whereTheresSmoke_c2026
+      , whereTheresSmoke
       , escapeTheDorms
       , searchingForDrArmitage
       , blazeOfGlory
@@ -1222,8 +1222,8 @@ theAbominableContessa = act "72048" "The Abominable Contessa" 2 AbominableContes
 bloodbath :: CardDef
 bloodbath = act "72049" "Bloodbath" 3 AbominableContessa
 
-whereTheresSmoke_c2026 :: CardDef
-whereTheresSmoke_c2026 = act "12109" "Where There's Smoke..." 1 SpreadingFlames
+whereTheresSmoke :: CardDef
+whereTheresSmoke = act "12109" "Where There's Smoke..." 1 SpreadingFlames
 
 escapeTheDorms :: CardDef
 escapeTheDorms = act "12110" "Escape The Dorms" 2 SpreadingFlames

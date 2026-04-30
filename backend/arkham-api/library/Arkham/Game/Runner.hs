@@ -726,6 +726,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         mEffect
   FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
   UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
+  FoundCards cards -> pure $ g & foundCardsL .~ cards
   ClearFound FromDeck -> do
     pure $ g & foundCardsL %~ Map.filterWithKey (\k _ -> not (zoneIsFromDeck k))
   ClearFound zone -> pure $ g & foundCardsL . at zone ?~ mempty
@@ -2764,8 +2765,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty)
-  FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty)
+  FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
+  FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
     investigatorClass <- field Investigator.InvestigatorClass iid
     playerCount <- getPlayerCount

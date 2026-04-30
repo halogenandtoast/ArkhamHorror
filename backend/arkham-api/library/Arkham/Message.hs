@@ -1085,7 +1085,7 @@ data Message
   | ResolveSearch Target
   | PreSearchFound InvestigatorId (Maybe Target) DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card]) -- Deprecated
+  | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int

@@ -227,6 +227,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
     EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
     ActSource _ -> pure True
+    AgendaSource _ -> pure True
     IndexedSource _ (AssetSource _) -> pure True
     IndexedSource _ (LocationSource _) -> pure True
     ProxySource (AssetSource _) _ -> pure True

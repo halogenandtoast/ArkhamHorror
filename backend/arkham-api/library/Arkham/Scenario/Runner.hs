@@ -1444,11 +1444,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     if null matches
       then chooseOne iid [Label "No matches found" []]
       else do
-        -- TODO: show where focused cards are from
-        push
-          $ FocusCards
-          $ map EncounterCard matchingDeckCards
-          <> map EncounterCard matchingDiscards
+        let
+          deckEntry =
+            [ (Zone.FromDeck, map EncounterCard matchingDeckCards)
+            | not (null matchingDeckCards)
+            ]
+          discardEntry =
+            [ (Zone.FromDiscard, map EncounterCard matchingDiscards)
+            | includeDiscard == IncludeDiscard, not (null matchingDiscards)
+            ]
+        push $ FoundCards $ Map.fromList (deckEntry <> discardEntry)
         chooseOne iid matches
     pure a
   DrawEncounterCards target n -> do

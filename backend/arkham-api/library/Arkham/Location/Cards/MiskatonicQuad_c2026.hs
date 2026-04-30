@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Location.Cards qualified as Cards (miskatonicQuad_c2026)
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
@@ -21,7 +21,14 @@ instance HasAbilities MiskatonicQuad_c2026 where
   getAbilities (MiskatonicQuad_c2026 a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (Here <> oneOf (map PlayerCountIs [1, 2]) <> DuringTurn You <> CanMoveTo (ConnectedLocation ForMovement))
+      $ restricted
+        a
+        1
+        ( Here
+            <> oneOf (map PlayerCountIs [1, 2])
+            <> DuringTurn You
+            <> CanMoveTo (ConnectedLocation ForMovement)
+        )
       $ FastAbility' Free #move
 
 instance RunMessage MiskatonicQuad_c2026 where

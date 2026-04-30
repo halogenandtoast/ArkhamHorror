@@ -441,7 +441,7 @@ allActs =
     , SomeActCard bloodbath
     , --- Core2026
       --- Spreading Flames
-      SomeActCard whereTheresSmoke_c2026
+      SomeActCard whereTheresSmoke
     , SomeActCard escapeTheDorms
     , SomeActCard searchingForDrArmitage
     , SomeActCard blazeOfGlory

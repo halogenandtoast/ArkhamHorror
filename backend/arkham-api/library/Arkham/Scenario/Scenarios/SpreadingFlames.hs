@@ -15,13 +15,12 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.I18n (ikey, popScope)
+import Arkham.I18n (ikey)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (cardIs)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)
-import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.SpreadingFlames.Helpers
@@ -95,16 +94,15 @@ instance RunMessage SpreadingFlames where
 
       setAgendaDeck [Agendas.pastCurfew, Agendas.litUp, Agendas.wildFlames]
       setActDeck
-        [Acts.whereTheresSmoke_c2026, Acts.escapeTheDorms, Acts.searchingForDrArmitage, Acts.blazeOfGlory]
+        [Acts.whereTheresSmoke, Acts.escapeTheDorms, Acts.searchingForDrArmitage, Acts.blazeOfGlory]
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
-        Tablet -> assignDamage iid (ChaosTokenSource token) (byDifficulty attrs 1 1)
-        ElderThing | isEasyStandard attrs -> do
-          when (n >= 2) $ do
-            findTopOfDiscard (cardIs Treacheries.fire1) >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
+        Tablet -> assignDamage iid Tablet 1
+        ElderThing | isEasyStandard attrs && n >= 2 -> do
+          findTopOfDiscard (cardIs Treacheries.fire1) >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
         ElderThing | isHardExpert attrs -> do
           findTopOfDiscard (cardIs Treacheries.fire1) >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
         _ -> pure ()
@@ -113,26 +111,29 @@ instance RunMessage SpreadingFlames where
       case r of
         NoResolution -> do
           record MiskatonicUniversityBurned
-          eachInvestigator \iid -> sufferMentalTrauma iid 1
+          eachInvestigator (`sufferMentalTrauma` 1)
           resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
+          endOfScenario
         Resolution 1 -> do
           record InvestigatorsDefeatedTheirMaskedPursuer
+          resolution "resolution1"
           addCampaignCardToDeckChoice_ Assets.drHenryArmitage_c2026
           resolutionWithXpAndChooseOne "resolution1" (allGainXpWithBonus' attrs $ toBonus "bonus" 3) do
-            popScope $ labeled' "r2" $ push $ ScenarioResolution $ Resolution 2
-            popScope $ labeled' "r3" $ push $ ScenarioResolution $ Resolution 3
+            labeled' "r2" $ push $ ScenarioResolution $ Resolution 2
+            labeled' "r3" $ push $ ScenarioResolution $ Resolution 3
         Resolution 2 -> do
           record InvestigatorsSavedMiskatonicUniversity
-          resolutionWithXp "resolution2" $ pure 1
+          resolution "resolution2"
           eachInvestigator \iid -> do
             gainXp iid attrs (ikey "xp.resolution2") 1
             sufferPhysicalTrauma iid 1
+          endOfScenario
         Resolution 3 -> do
           record MiskatonicUniversityBurned
-          resolutionWithXp "resolution3" $ pure 0
-          eachInvestigator \iid -> sufferMentalTrauma iid 1
+          resolution "resolution3"
+          eachInvestigator (`sufferMentalTrauma` 1)
+          endOfScenario
         other -> throwIO $ UnknownResolution other
 
-      endOfScenario
       pure s
     _ -> SpreadingFlames <$> liftRunMessage msg attrs

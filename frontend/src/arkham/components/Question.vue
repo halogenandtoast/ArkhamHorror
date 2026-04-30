@@ -79,31 +79,21 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
+  const encounterCards = Object.entries({
+    ...(props.game.scenario?.foundCards ?? {}),
+    ...props.game.foundCards,
+  })
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
 })
 
 const focusedCards = computed(() => {
-  const {focusedCards, foundCards} = props.game
-
-  if (focusedCards.length == 0) {
-    if (Object.values(foundCards).some((v) => v.length > 0)) {
-      return Object.values(foundCards).flat()
-    }
-  }
-
-  const searchedCardIds = searchedCards.value.map(([, cards]) => {
-    return cards.map((card) => toCardContents(card).id)
-  }).flat()
-
-  if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
+  if (searchedCards.value.length > 0) {
     return []
   }
 
-
-  return focusedCards
+  return props.game.focusedCards
 })
 
 

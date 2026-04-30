@@ -1,9 +1,11 @@
 module Arkham.Location.Cards.OrneLibrary_c2026 (orneLibrary_c2026) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (orneLibrary_c2026)
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype OrneLibrary_c2026 = OrneLibrary_c2026 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,8 +18,7 @@ instance HasAbilities OrneLibrary_c2026 where
   getAbilities (OrneLibrary_c2026 a) =
     extendRevealed1 a
       $ playerLimit PerGame
-      $ restricted a 1 (Here <> CanDrawCards)
-      $ ActionAbility mempty Nothing (ActionCost 2)
+      $ restricted a 1 (Here <> can.draw.cards You) doubleActionAbility
 
 instance RunMessage OrneLibrary_c2026 where
   runMessage msg l@(OrneLibrary_c2026 attrs) = runQueueT $ case msg of

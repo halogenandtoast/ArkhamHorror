@@ -101,7 +101,16 @@
   "takeHorrorForEachPointOfFailure": "Take 1 horror for each point you failed by | Take {count} horror for each point you failed by",
   "takeHorrorUpTo": "Take up to {count} horror",
   "test": "Test {'{'}{skill}{'}'} ({count})",
+  "testX": "Test {'{'}{skill}{'}'} (X)",
   "useSkill": "Use {'{'}{skill}{'}'}",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "core2": {
+    "cosmicEvils": {
+      "option": "Take 1 direct damage and 1 direct horror, gain surge"
+    },
+    "mutated": {
+      "option": "Each investigator at your location takes 1 horror"
+    }
+  }
 }

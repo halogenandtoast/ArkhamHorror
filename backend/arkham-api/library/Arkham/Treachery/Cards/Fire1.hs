@@ -19,39 +19,33 @@ instance HasAbilities Fire1 where
   getAbilities (Fire1 a) = case a.attached.location of
     Just lid ->
       [ forcedAbility a 1 $ PhaseEnds #when #investigation
-      , skillTestAbility $ restrictedAbility a 2 (OnLocation $ LocationWithId lid) 
-          $ ActionAbility mempty (Just $ AbilitySkill #agility) $ ActionCost 1
+      , skillTestAbility $ restricted a 2 (OnLocation $ LocationWithId lid) actionAbility
       ]
     _ -> []
 
 instance RunMessage Fire1 where
   runMessage msg t@(Fire1 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      -- Find nearest location without Fire! attached
-      locationsWithoutFire <- select $ NearestLocationTo iid $ NotLocation 
-        $ LocationWithTreachery (treacheryIs Cards.fire1)
-      case locationsWithoutFire of
-        [] -> pure ()
-        [loc] -> attachTreachery attrs loc
-        locs -> chooseTargetM iid locs $ attachTreachery attrs
+      validLocations <-
+        select $ NearestLocationTo iid $ not_ $ LocationWithTreachery (treacheryIs Cards.fire1)
+      chooseOrRunOneM iid $ targets validLocations $ attachTreachery attrs
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- Deal 1 direct damage to each non-Elite card with health at this location (including investigators)
-      case attrs.attached.location of
-        Nothing -> pure ()
-        Just lid -> do
-          assets <- select $ AssetAt (LocationWithId lid) <> not_ (AssetWithTrait Elite) <> AssetWithHealth
-          enemies <- select $ EnemyAt (LocationWithId lid) <> NonEliteEnemy
-          investigators <- select $ InvestigatorAt (LocationWithId lid)
-          for_ assets $ \aid -> dealAssetDamage aid attrs 1
-          for_ enemies $ \eid -> nonAttackEnemyDamage Nothing (toSource attrs) 1 eid
-          for_ investigators $ \iid' -> assignDamage iid' (toSource attrs) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ attrs.attached.location \lid -> do
+        assets <- select $ at_ (LocationWithId lid) <> not_ (AssetWithTrait Elite) <> AssetWithHealth
+        enemies <-
+          select $ at_ (LocationWithId lid) <> NonEliteEnemy <> EnemyCanBeDamagedBySource (attrs.ability 1)
+        investigators <- select $ InvestigatorAt (LocationWithId lid)
+        chooseOneAtATimeM iid do
+          targets assets \aid -> dealAssetDamage aid (attrs.ability 1) 1
+          targets enemies $ nonAttackEnemyDamage Nothing (attrs.ability 1) 1
+          targets investigators \iid' -> assignDamage iid' (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 3)
       pure t
-    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
-      toDiscard (toSource attrs) (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
     _ -> Fire1 <$> liftRunMessage msg attrs

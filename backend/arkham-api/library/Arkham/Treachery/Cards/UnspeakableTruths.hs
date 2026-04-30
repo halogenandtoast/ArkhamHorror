@@ -14,26 +14,19 @@ unspeakableTruths = treachery UnspeakableTruths Cards.unspeakableTruths
 
 instance HasAbilities UnspeakableTruths where
   getAbilities (UnspeakableTruths a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) 
-        $ forced 
+    [ restricted a 1 (InThreatAreaOf You)
+        $ forced
         $ DiscoverClues #after You Anywhere (atLeast 1)
-    , restrictedAbility a 2 (InThreatAreaOf You)
-        $ ActionAbility mempty Nothing
-        $ ActionCost 2
+    , restricted a 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage UnspeakableTruths where
   runMessage msg t@(UnspeakableTruths attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      -- Limit 1 per investigator: check if already in threat area
-      alreadyHasOne <- selectAny $ 
-        TreacheryInThreatAreaOf (InvestigatorWithId iid) 
-        <> treacheryIs Cards.unspeakableTruths
+      alreadyHasOne <- selectAny $ treacheryInThreatAreaOf iid <> treacheryIs Cards.unspeakableTruths
       if alreadyHasOne
-        then -- Already has one, discard this copy
-          toDiscardBy iid (toSource attrs) attrs
-        else -- Place in threat area
-          placeInThreatArea attrs iid
+        then toDiscardBy iid (toSource attrs) attrs
+        else placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 1

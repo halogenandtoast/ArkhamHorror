@@ -14,12 +14,12 @@ dormitories_c2026 :: LocationCard Dormitories_c2026
 dormitories_c2026 = location Dormitories_c2026 Cards.dormitories_c2026 3 (PerPlayer 1)
 
 instance HasAbilities Dormitories_c2026 where
-  getAbilities (Dormitories_c2026 attrs) =
-    extendRevealed1 attrs
+  getAbilities (Dormitories_c2026 a) =
+    extendRevealed1 a
       $ playerLimit PerGame
       $ withCriteria
-        (mkAbility attrs 1 actionAbility)
-        (Here <> any_ [HealableInvestigator (toSource attrs) kind You | kind <- [#horror, #damage]])
+        (mkAbility a 1 actionAbility)
+        (Here <> any_ [HealableInvestigator (toSource a) kind You | kind <- [#horror, #damage]])
 
 instance RunMessage Dormitories_c2026 where
   runMessage msg l@(Dormitories_c2026 attrs) = runQueueT $ case msg of

@@ -666,6 +666,26 @@ ul, :deep(ul) {
     align-self: center;
     width: 40px;
   }
+
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 20px;
+    justify-content: stretch;
+    > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      img {
+        width: 36px;
+        flex-shrink: 0;
+      }
+      span {
+        font-weight: bold;
+      }
+    }
+  }
 }
 
 :deep(hr) {

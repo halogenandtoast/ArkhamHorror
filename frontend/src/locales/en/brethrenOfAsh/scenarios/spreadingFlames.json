@@ -1,7 +1,8 @@
 {
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: Spreading Flames, Ashen Pilgrims, Bystanders, Cosmic Evils, Eldritch Lore, Fire!, Hallucinations, Mad Science, and Miskatonic University.",
-    "placeLocations": "Put the Your Friend's Room location card into play. Set each other location aside, out of play. Each investigator begins play at Your Friend's Room.",
+    "gatherSets": "Gather all cards from the following encounter sets:<section class='encounter-sets grid'><div><img src='{setImgPath}/spreading-flames.png' /><span>Spreading Flames</span></div><div><img src='{setImgPath}/ashen-pilgrims.png' /><span>Ashen Pilgrims</span></div><div><img src='{setImgPath}/bystanders.png' /><span>Bystanders</span></div><div><img src='{setImgPath}/cosmic-evils.png' /><span>Cosmic Evils</span></div><div><img src='{setImgPath}/eldritch-lore.png' /><span>Eldritch Lore</span></div><div><img src='{setImgPath}/fire.png' /><span>Fire!</span></div><div><img src='{setImgPath}/hallucinations.png' /><span>Hallucinations</span></div><div><img src='{setImgPath}/mad-science.png' /><span>Mad Science</span></div><div><img src='{setImgPath}/miskatonic-university.png' /><span>Miskatonic University</span></div></section>",
+    "placeLocations": "Put the Your Friend's Room location card into play. Set each other location aside, out of play.",
+    "startAt": "Each investigator begins play at Your Friend's Room.",
     "setOutOfPlay": "Set all 5 copies of the Fire! treachery, the Dr. Henry Armitage story asset, and the Servant of Flame enemy aside, out of play."
   },
   "tokens": {

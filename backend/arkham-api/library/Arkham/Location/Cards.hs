@@ -1099,11 +1099,11 @@ allLocationCards =
       , zanEtElSettat
       , zocalo
       , zulanThek
-      --- Core 2026
-      --- Spreading Flames
-      , yourFriendsRoom
-      --- Arkham
-      , downtownFirstBankOfArkham_c2026
+      , --- Core 2026
+        --- Spreading Flames
+        yourFriendsRoom
+      , --- Arkham
+        downtownFirstBankOfArkham_c2026
       , downtownArkhamSanatorium
       , uptownStMarrysHospital
       , uptownYeOldeMagickShoppe
@@ -1115,21 +1115,21 @@ allLocationCards =
       , frenchHill_c2026
       , miskatonicUniversityInFlames
       , miskatonicUniversityQuietCampus
-        --- MiskatonicUniversity
-      , miskatonicQuad_c2026
+      , --- MiskatonicUniversity
+        miskatonicQuad_c2026
       , dormitories_c2026
       , scienceHall
       , warrenObservatory_c2026
       , orneLibrary_c2026
-        --- Sewers
-      , sewerCulvert
+      , --- Sewers
+        sewerCulvert
       , sewerTunnelsInfestedPipes
       , sewerTunnelsOvergrownTunnels
       , sewerTunnelsFloodedCrypt
       , sewerTunnelsSmugglersCache
       , sewerTunnelsToxicWastePit
-        --- Queen of Ash
-      , undergroundCistern
+      , --- Queen of Ash
+        undergroundCistern
       , sluiceControl
       ]
 
@@ -11642,131 +11642,6 @@ yourFriendsRoom =
     [Triangle]
     SpreadingFlames
 
-downtownFirstBankOfArkham_c2026 :: CardDef
-downtownFirstBankOfArkham_c2026 =
-  victory 1
-    $ location
-        "12145"
-        ("Downtown" <:> "First Bank of Arkham")
-        [Arkham]
-        Triangle
-        [Moon, T]
-        Arkham_C2026
-
-downtownArkhamSanatorium :: CardDef
-downtownArkhamSanatorium =
-  location
-    "12146"
-    ("Downtown" <:> "Arkham Sanatorium")
-    [Arkham]
-    Triangle
-    [Moon, T]
-    Arkham_C2026
-
-uptownStMarrysHospital :: CardDef
-uptownStMarrysHospital =
-  location
-    "12147"
-    ("Uptown" <:> "St. Marry's Hospital")
-    [Arkham]
-    Plus
-    [Diamond, Square]
-    Arkham_C2026
-
-uptownYeOldeMagickShoppe :: CardDef
-uptownYeOldeMagickShoppe =
-  location
-    "12148"
-    ("Uptown" <:> "Ye Olde Magick Shoppe")
-    [Arkham]
-    Plus
-    [Diamond, Square]
-    Arkham_C2026
-
-northside_c2026 :: CardDef
-northside_c2026 =
-  location
-    "12149"
-    "Northside"
-    [Arkham]
-    T
-    [Diamond, Triangle]
-    Arkham_C2026
-
-easttown_c2026 :: CardDef
-easttown_c2026 =
-  location
-    "12150"
-    "Easttown"
-    [Arkham]
-    Moon
-    [Circle, Triangle, Spade]
-    Arkham_C2026
-
-merchantDistrict_c2026 :: CardDef
-merchantDistrict_c2026 =
-  location
-    "12151"
-    "Merchant District"
-    [Arkham]
-    Circle
-    [Moon, Diamond, Square, Spade]
-    Arkham_C2026
-    
-waterfrontDistrict :: CardDef
-waterfrontDistrict =
-  victory 1
-    $ location
-      "12152"
-      "Waterfront District"
-      [Arkham]
-      Spade
-      [Circle, Moon]
-      Arkham_C2026
-
-southside_c2026 :: CardDef
-southside_c2026 =
-  location
-    "12153"
-    "Southside"
-    [Arkham]
-    Square
-    [Plus, Hourglass, Circle]
-    Arkham_C2026
-
-frenchHill_c2026 :: CardDef
-frenchHill_c2026 =
-  victory 1
-    $ location
-      "12154"
-      "French Hill"
-      [Arkham]
-      Hourglass
-      [Square]
-      Arkham_C2026
-
-miskatonicUniversityInFlames :: CardDef
-miskatonicUniversityInFlames =
-  victory 1
-    $ location
-      "12155"
-      ("Miskatonic University" <:> "In Flames")
-      [Arkham]
-      Diamond
-      [T, Plus, Circle]
-      Arkham_C2026
-
-miskatonicUniversityQuietCampus :: CardDef
-miskatonicUniversityQuietCampus =
-  victory 1
-    $ location
-      "12156"
-      ("Miskatonic University" <:> "Quiet Campus")
-      [Arkham]
-      Diamond
-      [T, Plus, Circle]
-      Arkham_C2026
-
 miskatonicQuad_c2026 :: CardDef
 miskatonicQuad_c2026 =
   location
@@ -11812,12 +11687,150 @@ orneLibrary_c2026 :: CardDef
 orneLibrary_c2026 =
   victory 1
     $ location
-        "12120"
-        "Orne Library"
-        [Miskatonic]
-        Diamond
-        [Plus]
-        MiskatonicUniversity
+      "12120"
+      "Orne Library"
+      [Miskatonic]
+      Diamond
+      [Plus]
+      MiskatonicUniversity
+
+downtownFirstBankOfArkham_c2026 :: CardDef
+downtownFirstBankOfArkham_c2026 =
+  victory 1
+    $ singleSided
+    $ location
+      "12145"
+      ("Downtown" <:> "First Bank of Arkham")
+      [Arkham]
+      Triangle
+      [Moon, T]
+      Arkham_C2026
+
+downtownArkhamSanatorium :: CardDef
+downtownArkhamSanatorium =
+  victory 1
+    $ singleSided
+    $ location
+      "12146"
+      ("Downtown" <:> "Arkham Sanatorium")
+      [Arkham]
+      Triangle
+      [Moon, T]
+      Arkham_C2026
+
+uptownStMarrysHospital :: CardDef
+uptownStMarrysHospital =
+  singleSided
+    $ location
+      "12147"
+      ("Uptown" <:> "St. Marry's Hospital")
+      [Arkham]
+      Plus
+      [Diamond, Square]
+      Arkham_C2026
+
+uptownYeOldeMagickShoppe :: CardDef
+uptownYeOldeMagickShoppe =
+  singleSided
+    $ location
+      "12148"
+      ("Uptown" <:> "Ye Olde Magick Shoppe")
+      [Arkham]
+      Plus
+      [Diamond, Square]
+      Arkham_C2026
+
+northside_c2026 :: CardDef
+northside_c2026 =
+  singleSided
+    $ location
+      "12149"
+      "Northside"
+      [Arkham]
+      T
+      [Diamond, Triangle]
+      Arkham_C2026
+
+easttown_c2026 :: CardDef
+easttown_c2026 =
+  singleSided
+    $ location
+      "12150"
+      "Easttown"
+      [Arkham]
+      Moon
+      [Circle, Triangle, Spade]
+      Arkham_C2026
+
+merchantDistrict_c2026 :: CardDef
+merchantDistrict_c2026 =
+  singleSided
+    $ location
+      "12151"
+      "Merchant District"
+      [Arkham]
+      Circle
+      [Moon, Diamond, Square, Spade]
+      Arkham_C2026
+
+waterfrontDistrict :: CardDef
+waterfrontDistrict =
+  victory 1
+    $ singleSided
+    $ location
+      "12152"
+      "Waterfront District"
+      [Arkham]
+      Spade
+      [Circle, Moon]
+      Arkham_C2026
+
+southside_c2026 :: CardDef
+southside_c2026 =
+  singleSided
+    $ location
+      "12153"
+      "Southside"
+      [Arkham]
+      Square
+      [Plus, Hourglass, Circle]
+      Arkham_C2026
+
+frenchHill_c2026 :: CardDef
+frenchHill_c2026 =
+  victory 1
+    $ singleSided
+    $ location
+      "12154"
+      "French Hill"
+      [Arkham]
+      Hourglass
+      [Square]
+      Arkham_C2026
+
+miskatonicUniversityInFlames :: CardDef
+miskatonicUniversityInFlames =
+  victory 1
+    $ singleSided
+    $ location
+      "12155"
+      ("Miskatonic University" <:> "In Flames")
+      [Arkham]
+      Diamond
+      [T, Plus, Circle]
+      Arkham_C2026
+
+miskatonicUniversityQuietCampus :: CardDef
+miskatonicUniversityQuietCampus =
+  victory 1
+    $ singleSided
+    $ location
+      "12156"
+      ("Miskatonic University" <:> "Quiet Campus")
+      [Arkham]
+      Diamond
+      [T, Plus, Circle]
+      Arkham_C2026
 
 sewerCulvert :: CardDef
 sewerCulvert =
@@ -11920,5 +11933,3 @@ sluiceControl =
     Plus
     [Circle]
     QueenOfAsh
-
-

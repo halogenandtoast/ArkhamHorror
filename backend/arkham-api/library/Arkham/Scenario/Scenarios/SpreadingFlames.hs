@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.SpreadingFlames (setupSpreadingFlames, spreadingFlames, SpreadingFlames (..)) where
+module Arkham.Scenario.Scenarios.SpreadingFlames (spreadingFlames) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -34,16 +34,15 @@ newtype SpreadingFlames = SpreadingFlames ScenarioAttrs
 
 spreadingFlames :: Difficulty -> SpreadingFlames
 spreadingFlames difficulty =
-    scenario
-        SpreadingFlames
-        "12105"
-        "Spreading Flames"
-        difficulty
-        [ ".                orneLibrary     ."
-        , "dormitories      miskatonicQuad  warrenObservatory"
-        , "yourFriendsRoom  scienceHall     ."
-        ]
-
+  scenario
+    SpreadingFlames
+    "12105"
+    "Spreading Flames"
+    difficulty
+    [ ".                orneLibrary     ."
+    , "dormitories      miskatonicQuad  warrenObservatory"
+    , "yourFriendsRoom  scienceHall     ."
+    ]
 
 instance HasChaosTokenValue SpreadingFlames where
   getChaosTokenValue iid chaosTokenFace (SpreadingFlames attrs) = case chaosTokenFace of
@@ -54,61 +53,49 @@ instance HasChaosTokenValue SpreadingFlames where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-setupSpreadingFlames :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
-setupSpreadingFlames _attrs = do
-  setup $ ul do
-    li "gatherSets"
-    li "placeLocations"
-    li "setOutOfPlay"
-    unscoped $ li "shuffleRemainder"
-
-  gather Set.SpreadingFlames
-  gather Set.AshenPilgrims
-  gather Set.Bystanders
-  gather Set.CosmicEvils
-  gather Set.EldritchLore
-  gather Set.Hallucinations
-  gather Set.Fire1
-  gather Set.MadScience
-  gather Set.MiskatonicUniversity
-
-  setAside 
-    [
-      Enemies.servantOfFlameRagingFury
-    , Assets.drHenryArmitage_c2026
-    --- Locations
-    , Locations.miskatonicQuad_c2026
-    , Locations.dormitories_c2026
-    , Locations.scienceHall
-    , Locations.warrenObservatory_c2026
-    , Locations.orneLibrary_c2026
-    ]
-  setAside 
-    [ Treacheries.fire1
-    , Treacheries.fire1
-    , Treacheries.fire1
-    , Treacheries.fire1
-    , Treacheries.fire1
-    ]
-
-
-  startAt =<< place Locations.yourFriendsRoom
-
-  setAgendaDeck [Agendas.pastCurfew, Agendas.litUp, Agendas.wildFlames]
-  setActDeck [Acts.whereTheresSmoke_c2026, Acts.escapeTheDorms, Acts.searchingForDrArmitage, Acts.blazeOfGlory]
-
-
 instance RunMessage SpreadingFlames where
   runMessage msg s@(SpreadingFlames attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
+      flavor $ scope "intro" $ h "title" >> p "body"
       pure s
-    Setup -> runScenarioSetup SpreadingFlames attrs $ setupSpreadingFlames attrs
+    Setup -> runScenarioSetup SpreadingFlames attrs do
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "startAt"
+        li "setOutOfPlay"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
+      gather Set.SpreadingFlames
+      gather Set.AshenPilgrims
+      gather Set.Bystanders
+      gather Set.CosmicEvils
+      gather Set.EldritchLore
+      gather Set.Hallucinations
+      gather Set.Fire1
+      gather Set.MadScience
+      gather Set.MiskatonicUniversity
+
+      setAside
+        [ Enemies.servantOfFlameRagingFury
+        , Assets.drHenryArmitage_c2026
+        , --- Locations
+          Locations.miskatonicQuad_c2026
+        , Locations.dormitories_c2026
+        , Locations.scienceHall
+        , Locations.warrenObservatory_c2026
+        , Locations.orneLibrary_c2026
+        ]
+      setAside =<< amongGathered (cardIs Treacheries.fire1)
+      startAt =<< place Locations.yourFriendsRoom
+
+      setAgendaDeck [Agendas.pastCurfew, Agendas.litUp, Agendas.wildFlames]
+      setActDeck
+        [Acts.whereTheresSmoke_c2026, Acts.escapeTheDorms, Acts.searchingForDrArmitage, Acts.blazeOfGlory]
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid
       pure s
@@ -128,26 +115,22 @@ instance RunMessage SpreadingFlames where
           record MiskatonicUniversityBurned
           eachInvestigator \iid -> sufferMentalTrauma iid 1
           resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
-
         Resolution 1 -> do
           record InvestigatorsDefeatedTheirMaskedPursuer
           addCampaignCardToDeckChoice_ Assets.drHenryArmitage_c2026
           resolutionWithXpAndChooseOne "resolution1" (allGainXpWithBonus' attrs $ toBonus "bonus" 3) do
             popScope $ labeled' "r2" $ push $ ScenarioResolution $ Resolution 2
             popScope $ labeled' "r3" $ push $ ScenarioResolution $ Resolution 3
-
         Resolution 2 -> do
           record InvestigatorsSavedMiskatonicUniversity
           resolutionWithXp "resolution2" $ pure 1
           eachInvestigator \iid -> do
             gainXp iid attrs (ikey "xp.resolution2") 1
             sufferPhysicalTrauma iid 1
-
         Resolution 3 -> do
           record MiskatonicUniversityBurned
           resolutionWithXp "resolution3" $ pure 0
           eachInvestigator \iid -> sufferMentalTrauma iid 1
-
         other -> throwIO $ UnknownResolution other
 
       endOfScenario

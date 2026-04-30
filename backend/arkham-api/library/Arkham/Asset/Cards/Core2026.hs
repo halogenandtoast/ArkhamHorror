@@ -199,6 +199,7 @@ cosmicFlame =
     , cdCardTraits = setFromList [Spell]
     , cdSlots = [#arcane]
     , cdUses = uses Charge 3
+    , cdAlternateCardCodes = ["60459"]
     }
 
 jimCulverHauntedMusician :: CardDef

@@ -196,7 +196,7 @@ viciousBlow :: CardDef
 viciousBlow =
   (skill "01025" "Vicious Blow" [#combat] Guardian)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01525", "60119", "12025"]
+    , cdAlternateCardCodes = ["01525", "60119", "12025", "60169"]
     }
 
 deduction :: CardDef

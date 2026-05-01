@@ -16,14 +16,11 @@ servantOfFlameOnTheRun =
 
 instance HasAbilities ServantOfFlameOnTheRun where
   getAbilities (ServantOfFlameOnTheRun a) =
-    extend1 a
-      $ mkAbility a 1
-      $ SilentForcedAbility
-      $ EnemyDefeated #after You ByAny (be a)
+    extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #after You ByAny (be a)
 
 instance RunMessage ServantOfFlameOnTheRun where
   runMessage msg e@(ServantOfFlameOnTheRun attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      codex iid (attrs.ability 1) 7
+      codex iid (attrs.ability 1) Phi
       pure e
     _ -> ServantOfFlameOnTheRun <$> liftRunMessage msg attrs

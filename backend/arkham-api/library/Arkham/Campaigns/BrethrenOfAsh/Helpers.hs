@@ -11,3 +11,7 @@ campaignI18n a = withI18n $ scope "brethrenOfAsh" a
 
 codex :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 codex iid (toSource -> source) n = scenarioSpecific "codex" (iid, source, n)
+
+pattern Phi :: Int
+pattern Phi <- 103 where
+  Phi = 103

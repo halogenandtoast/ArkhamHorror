@@ -301,31 +301,34 @@ instance RunMessage SmokeAndMirrors where
             card <- field EnemyCard eid
             removeEnemy eid
             placeUnderneath ActDeckTarget [card]
-        7 -> do
-          investigatorStoryWithChooseOneM' iid (scope "servantOfFlame" $ setTitle "title" >> p "body") do
-            labeled' "addToVictory" do
-              victoryDisplay <- getVictoryDisplay
-              let inVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
-              unless inVictory do
-                meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                for_ meid $ addToVictory iid
-              eachInvestigator \iid' -> drawCards iid' source 3
-            labeled' "placeUnderAct" do
-              victoryDisplay <- getVictoryDisplay
-              mcard <- case find ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay of
-                Just c -> pure (Just c)
-                Nothing -> do
+        Phi -> do
+          investigatorStoryWithChooseOneM'
+            iid
+            (scope "servantOfFlame" $ setTitle "title" >> compose.codex (h "title" >> p "body"))
+            do
+              labeled' "addToVictory" do
+                victoryDisplay <- getVictoryDisplay
+                let inVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
+                unless inVictory do
                   meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                  case meid of
-                    Just eid -> Just <$> field EnemyCard eid
-                    Nothing -> pure Nothing
-              case mcard of
-                Just card -> do
-                  meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                  for_ meid $ push . QuietlyRemoveFromGame . toTarget
-                  placeUnderneath ActDeckTarget [card]
-                  eachInvestigator \iid' -> gainClues iid' source 1
-                Nothing -> error "missing servant of flame"
+                  for_ meid $ addToVictory iid
+                eachInvestigator \iid' -> drawCards iid' source 3
+              labeled' "placeUnderAct" do
+                victoryDisplay <- getVictoryDisplay
+                mcard <- case find ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay of
+                  Just c -> pure (Just c)
+                  Nothing -> do
+                    meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
+                    case meid of
+                      Just eid -> Just <$> field EnemyCard eid
+                      Nothing -> pure Nothing
+                case mcard of
+                  Just card -> do
+                    meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
+                    for_ meid $ push . QuietlyRemoveFromGame . toTarget
+                    placeUnderneath ActDeckTarget [card]
+                    eachInvestigator \iid' -> gainClues iid' source 1
+                  Nothing -> error "missing servant of flame"
         _ -> error "invalid codex entry"
       pure s
     ScenarioResolution r -> scope "resolutions" do
@@ -361,12 +364,10 @@ instance RunMessage SmokeAndMirrors where
 
           let drawnCardName = maybe "unknown" (nameTitle . cdName . lookupEncounterCardDef . toCardCode) mDrawnCard
 
-          -- Check if Servant of Flame is in the victory display
           victoryDisplay <- getVictoryDisplay
           let servantInVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
           when servantInVictory $ record InvestigatorsKilledTheServantOfFlame
 
-          -- Experience: victory X + 1 per enemy beneath the act
           underAct <- scenarioFieldMap ScenarioCardsUnderActDeck id
           let underActEnemyCount = length $ filter ((== EnemyType) . toCardType) underAct
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
@@ -376,7 +377,6 @@ instance RunMessage SmokeAndMirrors where
             $ setTitle "noResolution.title"
             >> p "noResolution.body"
 
-          -- Check if Servant of Flame was beneath the act
           let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
           if servantUnderAct then push R2 else endOfScenario
         Resolution 1 -> do

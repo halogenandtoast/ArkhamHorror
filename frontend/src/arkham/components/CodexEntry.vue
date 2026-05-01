@@ -180,4 +180,8 @@ export default defineComponent({
   margin-block: 0.6em;
   margin-inline: 0;
 }
+
+.codex-content :deep(li) {
+  font-family: 'Arno', serif;
+}
 </style>

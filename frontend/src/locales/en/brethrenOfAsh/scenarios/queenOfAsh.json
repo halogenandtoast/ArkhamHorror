@@ -1,24 +1,44 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of Fire! treacheries in play.",
+      "cultist": "-2. If this is an attack or evasion targeting a _Cultist_ enemy, reveal another token.",
+      "tablet": "-2 (-4 instead if you are at a _Ritual Site_ location).",
+      "elderThing": "-3. If you fail, draw the topmost copy of Fire! in the encounter discard pile."
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice the number of Fire! treacheries in play.",
+      "cultist": "-3. If this is an attack or evasion targeting a _Cultist_ enemy, reveal another token.",
+      "tablet": "-4. If you are at a _Ritual Site_ location, you automatically fail instead.",
+      "elderThing": "-5. If you fail, draw the topmost copy of Fire! in the encounter discard pile."
+    }
+  },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: Queen of Ash, Ashen Pilgrims, Cosmic Evils, Cultists, Fire!, Hallucinations, Reeking Decay, Sewers, and Torment.",
-    "placeLocations": "Put Underground Cistern into play. Shuffle each location in the Sewers encounter set so you do not know which is which and put each of them into play, unrevealed. Set Sluice Control aside, out of play. Each investigator begins play at Sewer Culvert.",
-    "setOutOfPlay": "Gather the Fire! encounter set and set each copy of Fire! aside, out of play, along with both copies of the Collector reward asset and the Elokoss, Queen's Knight, and Herald of Flame enemies.",
-    "checkCampaignLog": "Check the campaign log. If the investigators scoured Arkham for answers, each investigator begins the game with 1 clue. If the investigators stirred up trouble, find each Cultist enemy in the Ashen Pilgrims and Cultists encounter sets, shuffle them together and put 1 per player enemies from that set into play, each at a different Sewer Tunnels location. If the investigators killed the Servant of Flame, remove the Servant of Flame enemy from the game. Otherwise, set it aside, out of play.",
+    "gatherSets": "Gather all cards from the following encounter sets:<section class='encounter-sets grid'><div><img src='{setImgPath}/queen-of-ash.png' /><span>Queen of Ash</span></div><div><img src='{setImgPath}/ashen-pilgrims.png' /><span>Ashen Pilgrims</span></div><div><img src='{setImgPath}/cosmic-evils.png' /><span>Cosmic Evils</span></div><div><img src='{setImgPath}/cultists.png' /><span>Cultists</span></div><div><img src='{setImgPath}/fire.png' /><span>Fire!</span></div><div><img src='{setImgPath}/hallucinations.png' /><span>Hallucinations</span></div><div><img src='{setImgPath}/reeking-decay.png' /><span>Reeking Decay</span></div><div><img src='{setImgPath}/sewers.png' /><span>Sewers</span></div><div><img src='{setImgPath}/torment.png' /><span>Torment</span></div></section>",
+    "placeUndergroundCistern": "Put Underground Cistern into play.",
+    "sewers": "Shuffle each location in the _Sewers_ encounter set so you do not know which is which and put each of them into play, unrevealed.",
+    "sluiceControl": "Set Sluice Control aside, out of play.",
+    "startAt": "Each investigator begins play at Sewer Culvert.",
+    "checkCampaignLog": "Check the campaign log.",
+    "scouredArkhamForAnswers": "If the investigators scoured Arkham for answers, each investigator begins the game with 1 clue.",
+    "stirredUpTrouble": "*If the investigators stirred up trouble*, find each _Cultist_ enemy in the _Ashen Pilgrims_ and _Cultists_ encounter sets, shuffle them together and put 1 {'{'}perPlayer{'}'} enemies from that set into play, each at a different Sewer Tunnels location.",
+    "killedTheServantOfFlame": "*If the investigators killed the Servant of Flame*, remove the Servant of Flame enemy from the game. Otherwise, set it aside, out of play.",
     "placeDoom": "If there are 3 or 4 players in the game, place 1 doom on the agenda. During setup, place 1 doom on the agenda.",
-    "shuffleRemainder": "Shuffle the remaining encounter cards to create the encounter deck.",
-    "readyToBegin": "You are now ready to begin."
+    "setOutOfPlay": "Gather the _Fire!_ encounter set and set each copy of Fire! aside, out of play, along with both copies of the Collector reward asset and the Elokoss, Queen's Knight, and Herald of Flame enemies."
   },
-  "intro1": {
+  "intro": {
     "title": "Scenario III: Queen of Ash",
-    "body": "Dr. Armitage thanks the waitress at Velma's Diner as she sets two pieces of warm apple pie between you. The head librarian pushes one toward you with a strained smile. \"Arkham is changing. The world is changing—for the worse, I fear—but at least we have pie.\"\n\nTogether, you and Dr. Armitage piece together a disturbing picture of the situation at hand. \"The Brethren of Ash are not conspirators,\" Armitage says. \"They are thralls, all of them. Thralls of an ancient goddess, one they call 'Elokoss'.\" Dr. Armitage shows you a grotesque woodcut of a gnarled tree with burning branches before continuing.\n\n\"After attending one of the cult's secret gatherings, some prospective followers develop a strange bruise that marks them as one of Elokoss's own. These followers are from all walks of life: rich and poor, weak and strong. Most importantly, these thralls have no idea that they are under her sway. Your mysterious pursuer is one such thrall. According to prophecy, the 'Servant of Flame' who attacked us at the university is the harbinger of the queen's return. The servant gathers sacrifices to make way for their queen's glorious rebirth. A rebirth they predict will happen this very evening.\""
-  },
-  "intro2": {
-    "title": "Scenario III: Queen of Ash",
-    "body": "The thought of your friend being sacrificed chills you to your core. Rather than piece together circumstantial evidence, you suggest that you search the Servant of Flame's residence for some clue. Your search turns up several leads. An invitation to a secret meeting. A pair of scuffed muddy boots. A record of bootlegging operations in the Waterfront District. A photo of three faces lit by candlelight in the dark. Everything points to the Arkham sewers.\n\n\"A bit foolish, wouldn't you think, for a cult that worships fire to conduct their business in the sewers?\" Armitage chuckles. \"But I believe you are correct.\" Together, you resolve to scour the sewers for any trace of your friend."
-  },
-  "intro3": {
-    "title": "Scenario III: Queen of Ash",
-    "body": "The thought of your friend being sacrificed chills you to your core. Together, you and Dr. Armitage pore over the precious few clues you have gathered. After several hours of mind-numbing analysis, Armitage theorizes that the Brethren of Ash are conducting their ritual in the Arkham sewers.\n\n\"A bit foolish, wouldn't you think, for a cult that worships fire to conduct their business in the sewers?\" Armitage chuckles. \"But it's the only lead we've got.\" Together, you resolve to scour the sewers for any trace of your friend."
+    "intro1": "<p>_Intro 1_: Dr. Armitage thanks the waitress at Velma’s Diner as she sets two pieces of warm apple pie between you. The head librarian pushes one toward you with a strained smile. “Arkham is changing. The world is changing—for the worse, I fear—but at least we have pie.”</p><p>Together, you and Dr. Armitage piece together a disturbing picture of the situation at hand. “The Brethren of Ash are not conspirators,” Armitage says. “They are thralls, all of them. Thralls of an ancient goddess, one they call ‘Elokoss’.” Dr. Armitage shows you a grotesque woodcut of a gnarled tree with burning branches before continuing.</p><p>“After attending one of the cult’s secret gatherings, some prospective followers develop a strange bruise that marks them as one of Elokoss’s own. These followers are from all walks of life: rich and poor, weak and strong. Most importantly, these thralls have no idea that they are under her sway. Your mysterious pursuer is one such thrall. According to prophecy, the ‘Servant of Flame’ who attacked us at the university is the harbinger of the queen’s return. The servant gathers sacrifices to make way for their queen’s glorious rebirth. A rebirth they predict will happen this very evening.”</p>",
+    "addTokens": "Based on your campaign difficulty, perform the following. If you are playing on…",
+    "easy": "…Easy difficulty, add an {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.",
+    "standard": "…Standard difficulty, add an {'{'}elderThing{'}'} and a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.",
+    "hard": "…Hard difficulty, add an {'{'}elderThing{'}'}, {'{'}tablet{'}'}, and a {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.",
+    "expert": "…Expert difficulty, add an {'{'}elderThing{'}'}, {'{'}tablet{'}'}, {'{'}cultist{'}'}, and a {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.",
+    "checkCampaignLog": "Check your campaign log.",
+    "discovered": "*If the investigators discovered the cult’s whereabouts*, proceed to _Intro 2_.",
+    "otherwise": "Otherwise, skip to _Intro 3_.",
+    "intro2": "<p>_Intro 2_: The thought of your friend being sacrificed chills you to your core. Rather than piece together circumstantial evidence, you suggest that you search the Servant of Flame’s residence for some clue. Your search turns up several leads. An invitation to a secret meeting. A pair of scuffed muddy boots. A record of bootlegging operations in the Waterfront District. A photo of three faces lit by candlelight in the dark. Everything points to the Arkham sewers.</p><p>“A bit foolish, wouldn’t you think, for a cult that worships fire to conduct their business in the sewers?” Armitage chuckles. “But I believe you are correct.” Together, you resolve to scour the sewers for any trace of your friend.</p><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: The thought of your friend being sacrificed chills you to your core. Together, you and Dr. Armitage pore over the precious few clues you have gathered. After several hours of mind-numbing analysis, Armitage theorizes that the Brethren of Ash are conducting their ritual in the Arkham sewers.</p><p>“A bit foolish, wouldn’t you think, for a cult that worships fire to conduct their business in the sewers?” Armitage chuckles. “But it’s the only lead we’ve got.”</p><p>Together, you resolve to scour the sewers for any trace of your friend.</p><ul><li>During setup, place 1 doom on the agenda.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
   },
   "resolutions": {
     "noResolution": {

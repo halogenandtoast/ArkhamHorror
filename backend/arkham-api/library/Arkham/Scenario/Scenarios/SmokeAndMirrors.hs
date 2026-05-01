@@ -23,7 +23,7 @@ import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest.Target (withSkillTestEnemyTarget)
 import Arkham.Helpers.Xp
-import Arkham.I18n (ikey)
+import Arkham.I18n (ikey, nameVar)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -232,7 +232,7 @@ instance RunMessage SmokeAndMirrors where
           enemies <- select $ EnemyWithoutTrait Humanoid <> EnemyAt Anywhere
           chooseOrRunOneM iid do
             targets enemies \eid' -> defeatEnemy eid' iid source
-            skip_
+            unscoped skip_
           eid <- selectJust $ enemyIs Enemies.naomiOBannionRunsThisTown
           placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
@@ -269,7 +269,7 @@ instance RunMessage SmokeAndMirrors where
           for_ (headMay $ unDeck deck) \card -> do
             focusCards [card] $ chooseOneM iid do
               unscoped $ labeled' "discard" $ discardTopOfEncounterDeck iid source 1
-              skip_
+              unscoped skip_
           eid <- selectJust $ enemyIs Enemies.margaretLiuBeguilingLoungeSinger
           placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
@@ -373,7 +373,8 @@ instance RunMessage SmokeAndMirrors where
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
 
           resolutionFlavor
-            $ withVars ["xp" .= xp, "servantName" .= servantName]
+            $ nameVar servantDef
+            $ withVars ["xp" .= xp]
             $ setTitle "resolution1.title"
             >> p "resolution1.body"
 

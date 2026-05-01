@@ -1,7 +1,9 @@
 module Arkham.Location.Cards.SewerCulvert (sewerCulvert) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (sewerCulvert)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -9,7 +11,7 @@ import Control.Monad.Writer.Class (tell)
 import Data.Map.Monoidal.Strict
 
 newtype SewerCulvert = SewerCulvert LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass (IsLocation, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sewerCulvert :: LocationCard SewerCulvert
@@ -26,8 +28,4 @@ instance HasModifiersFor SewerCulvert where
 
 instance HasAbilities SewerCulvert where
   getAbilities (SewerCulvert a) =
-    extendRevealed1 a $ locationResignAction a
-
-instance RunMessage SewerCulvert where
-  runMessage msg (SewerCulvert attrs) = runQueueT $ case msg of
-    _ -> SewerCulvert <$> liftRunMessage msg attrs
+    extendRevealed1 a $ withI18n $ withI18nTooltip "core2.sewerCulvert.resign" $ locationResignAction a

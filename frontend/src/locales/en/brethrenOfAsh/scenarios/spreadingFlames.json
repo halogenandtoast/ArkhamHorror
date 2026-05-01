@@ -1,4 +1,16 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current act number.",
+      "tablet": "-1. Reveal another token. If you fail, take 1 damage.",
+      "elderThing": "-3. If you fail by 2 or more, draw the topmost copy of Fire! in the encounter discard pile, if able."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current act number.",
+      "tablet": "-2. Reveal another token. If you fail, take 1 damage.",
+      "elderThing": "-4. If you fail, draw the topmost copy of Fire! in the encounter discard pile, if able."
+    }
+  },
   "label": {
     "searchingForDrArmitage": {
       "drawFromDiscard": "Only search discard",

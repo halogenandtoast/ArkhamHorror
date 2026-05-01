@@ -16,7 +16,7 @@ instance RunMessage PutridVapors where
   runMessage msg t@(PutridVapors attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 3)
+      beginSkillTest sid iid (toSource attrs) iid #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 1

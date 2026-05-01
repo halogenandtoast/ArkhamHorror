@@ -17,7 +17,7 @@ instance RunMessage UnnaturalDecay where
   runMessage msg t@(UnnaturalDecay attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      beginSkillTest sid iid (toSource attrs) iid #intellect (Fixed 4)
+      beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assets <- select $ AssetControlledBy (InvestigatorWithId iid)

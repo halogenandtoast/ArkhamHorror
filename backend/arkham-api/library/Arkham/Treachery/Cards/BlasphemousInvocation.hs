@@ -18,7 +18,7 @@ instance RunMessage BlasphemousInvocation where
   runMessage msg t@(BlasphemousInvocation attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      revelationSkillTest sid iid attrs #intellect (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n | n > 0 -> do
       cultistsWithNoDoom <- select $ EnemyWithTrait Cultist <> EnemyWithDoom (EqualTo $ Static 0)

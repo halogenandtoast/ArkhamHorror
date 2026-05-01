@@ -61,7 +61,7 @@ const topDecorations = `${extractPathRange(48, 59)}\n${extractPathRange(72, 83)}
 const bottomDecorations = `${extractPathRange(60, 71)}\n${extractPathRange(84, 95)}`
 
 // y=160 above content (matches foreignObject y) + 102 below content (1282 - 1180) = 262
-const VERTICAL_PADDING = 262
+const VERTICAL_PADDING = 182
 const MIN_HEIGHT = 500
 
 export default defineComponent({
@@ -162,7 +162,6 @@ export default defineComponent({
 
 .codex-content :deep(p) {
   margin-block: 0.4em;
-  text-indent: 1.5em;
   word-break: auto-phrase;
   color: var(--codex-ink);
 }
@@ -173,5 +172,12 @@ export default defineComponent({
 
 .codex-content :deep(.composite) {
   display: contents;
+}
+
+.codex-content :deep(hr) {
+  border: 0;
+  border-bottom: 4px solid var(--codex-ink);
+  margin-block: 0.6em;
+  margin-inline: 0;
 }
 </style>

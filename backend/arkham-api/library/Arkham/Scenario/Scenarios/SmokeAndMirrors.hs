@@ -210,11 +210,10 @@ instance RunMessage SmokeAndMirrors where
               >> compose.codex (h "title" >> p "body")
       let successEntry x =
             scope x
-              $ scope "success"
               $ withVars ["perPlayerCount" .= playerCount]
               $ flavor
               $ setTitle "title"
-              >> p.green "body"
+              >> compose.codex (h "title" >> p "success")
       case n of
         1 -> do
           entry "davidRenfield"

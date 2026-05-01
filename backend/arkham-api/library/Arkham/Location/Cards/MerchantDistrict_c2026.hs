@@ -19,10 +19,13 @@ merchantDistrict_c2026 = location MerchantDistrict_c2026 Cards.merchantDistrict_
 
 instance HasAbilities MerchantDistrict_c2026 where
   getAbilities (MerchantDistrict_c2026 a) =
-    extendRevealed1 a
-      $ groupLimit PerRound
-      $ restricted a 1 (Here <> oneOf (map PlayerCountIs [1, 2]) <> DuringTurn You <> CanMoveTo (ConnectedLocation ForMovement))
-      $ FastAbility' Free #move
+    extendRevealed1 a $ groupLimit PerRound $ restricted a 1 restriction $ FastAbility' Free #move
+   where
+    restriction =
+      Here
+        <> oneOf (map PlayerCountIs [1, 2])
+        <> DuringTurn You
+        <> CanMoveTo (ConnectedLocation ForMovement)
 
 instance RunMessage MerchantDistrict_c2026 where
   runMessage msg l@(MerchantDistrict_c2026 attrs) = runQueueT $ case msg of

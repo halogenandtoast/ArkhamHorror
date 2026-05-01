@@ -6,7 +6,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (northside_c2026)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 
@@ -27,9 +26,7 @@ instance HasAbilities Northside_c2026 where
 instance RunMessage Northside_c2026 where
   runMessage msg l@(Northside_c2026 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select (RevealedLocation <> LocationWithTrait Arkham)
-      chooseTargetM iid locations \lid -> do
-        did <- getRandom
-        push $ Msg.DiscoverClues iid $ discoverPure did lid (attrs.ability 1) 1
+      locations <- select $ RevealedLocation <> LocationWithTrait Arkham
+      chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure l
     _ -> Northside_c2026 <$> liftRunMessage msg attrs

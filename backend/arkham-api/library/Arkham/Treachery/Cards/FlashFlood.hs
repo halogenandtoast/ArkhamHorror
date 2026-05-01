@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,14 +15,12 @@ flashFlood :: TreacheryCard FlashFlood
 flashFlood = treachery FlashFlood Cards.flashFlood
 
 instance HasModifiersFor FlashFlood where
-  getModifiersFor (FlashFlood attrs) = case attrs.placement of
-    AttachedToLocation lid -> modified_ attrs lid [ShroudModifier 4]
+  getModifiersFor (FlashFlood attrs) = case attrs.attached.location of
+    Just lid -> modified_ attrs lid [ShroudModifier 4]
     _ -> pure mempty
 
 instance HasAbilities FlashFlood where
-  getAbilities (FlashFlood a) = 
-    [ mkAbility a 1 $ forced $ RoundEnds #when
-    ]
+  getAbilities (FlashFlood a) = [mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage FlashFlood where
   runMessage msg t@(FlashFlood attrs) = runQueueT $ case msg of

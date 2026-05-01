@@ -25,10 +25,16 @@ instance HasAbilities UptownYeOldeMagickShoppe where
 instance RunMessage UptownYeOldeMagickShoppe where
   runMessage msg l@(UptownYeOldeMagickShoppe attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 9] (basic $ #asset <> oneOf [#spell, CardWithTrait Ritual]) (defer attrs IsNotDraw)
+      search
+        iid
+        (attrs.ability 1)
+        iid
+        [fromTopOfDeck 9]
+        (basic $ #asset <> oneOf [#spell, CardWithTrait Ritual])
+        (defer attrs IsNotDraw)
       pure l
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      chooseTargetM iid cards \card -> addToHand iid (only card)
+      chooseTargetM iid cards $ addToHand iid . only
       pure l
     SearchNoneFound iid (isTarget attrs -> True) -> do
       shuffleDeck iid

@@ -959,6 +959,8 @@ allTreacheries =
         SomeTreacheryCard aerialPursuit
       , --- Gangs of Arkham
         SomeTreacheryCard crossfire
+      , --- Whippoorwills (Chapter 2)
+        SomeTreacheryCard eagerForDeath2
       , --- Cultists
         SomeTreacheryCard blasphemousInvocation
       , --- Reeking Decay
@@ -967,7 +969,7 @@ allTreacheries =
       , --- Flying Terrors
         SomeTreacheryCard languor
       , SomeTreacheryCard dissonance
-      , SomeTreacheryCard torment 
+      , SomeTreacheryCard torment
       , SomeTreacheryCard markOfElokoss
       , SomeTreacheryCard ashenRebirth
       ]

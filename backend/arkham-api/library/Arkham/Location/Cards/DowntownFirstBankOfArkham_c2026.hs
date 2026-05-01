@@ -11,7 +11,8 @@ newtype DowntownFirstBankOfArkham_c2026 = DowntownFirstBankOfArkham_c2026 Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham_c2026 :: LocationCard DowntownFirstBankOfArkham_c2026
-downtownFirstBankOfArkham_c2026 = location DowntownFirstBankOfArkham_c2026 Cards.downtownFirstBankOfArkham_c2026 4 (PerPlayer 2)
+downtownFirstBankOfArkham_c2026 =
+  location DowntownFirstBankOfArkham_c2026 Cards.downtownFirstBankOfArkham_c2026 4 (PerPlayer 2)
 
 instance HasAbilities DowntownFirstBankOfArkham_c2026 where
   getAbilities (DowntownFirstBankOfArkham_c2026 a) =

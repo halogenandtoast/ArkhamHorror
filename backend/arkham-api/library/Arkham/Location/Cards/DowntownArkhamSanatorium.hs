@@ -25,9 +25,9 @@ instance RunMessage DowntownArkhamSanatorium where
   runMessage msg l@(DowntownArkhamSanatorium attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select (investigatorAt attrs)
-      allies <- select (AllyAsset <> assetAt attrs)
+      allies <- select $ #ally <> assetAt attrs
       chooseOrRunOneM iid do
-        targets investigators \iid' -> healHorror iid' (attrs.ability 1) 1
-        targets allies \aid -> healHorror aid (attrs.ability 1) 1
+        targets investigators $ healHorrorOn (attrs.ability 1) 1
+        targets allies $ healHorrorOn (attrs.ability 1) 1
       pure l
     _ -> DowntownArkhamSanatorium <$> liftRunMessage msg attrs

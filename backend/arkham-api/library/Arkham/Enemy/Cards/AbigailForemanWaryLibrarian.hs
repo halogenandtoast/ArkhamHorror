@@ -4,9 +4,8 @@ import Arkham.Ability
 import Arkham.Campaigns.BrethrenOfAsh.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Location
 import Arkham.Location.Types (Field (..))
-import Arkham.Projection
 
 newtype AbigailForemanWaryLibrarian = AbigailForemanWaryLibrarian EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,22 +17,17 @@ abigailForemanWaryLibrarian =
 
 instance HasAbilities AbigailForemanWaryLibrarian where
   getAbilities (AbigailForemanWaryLibrarian a) =
-    extend1 a
-      $ restricted a 1 OnSameLocation
-      $ ActionAbility #parley (Just $ AbilitySkill #intellect) (ActionCost 1)
+    extend1 a $ restricted a 1 OnSameLocation $ ActionAbility #parley #intellect (ActionCost 1)
 
 instance RunMessage AbigailForemanWaryLibrarian where
   runMessage msg e@(AbigailForemanWaryLibrarian attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mLoc <- field EnemyLocation attrs.id
-      for_ mLoc \loc -> do
-        clues <- field LocationClues loc
-        sid <- getRandom
-        beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed clues)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) attrs #intellect
+        $ EnemyLocationFieldCalculation attrs.id LocationClues
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      mLoc <- field EnemyLocation attrs.id
-      for_ mLoc \loc -> placeClues (attrs.ability 1) loc 1
+      withLocationOf attrs.id $ placeCluesOn (attrs.ability 1) 1
       codex iid (attrs.ability 1) 5
       pure e
     _ -> AbigailForemanWaryLibrarian <$> liftRunMessage msg attrs

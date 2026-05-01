@@ -317,7 +317,7 @@ data EncounterSet
   | MiskatonicUniversity
   | Arkham_C2026
   | PeopleOfArkham
-  | Whippoorwills_c2026
+  | Whippoorwills2
   | Sewers
   | SmokeAndMirrors
   | QueenOfAsh

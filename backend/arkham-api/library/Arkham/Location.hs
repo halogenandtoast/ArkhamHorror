@@ -1198,7 +1198,7 @@ allLocations =
       --- Arkham_c2026
     , SomeLocationCard downtownFirstBankOfArkham_c2026
     , SomeLocationCard downtownArkhamSanatorium
-    , SomeLocationCard uptownStMarrysHospital
+    , SomeLocationCard uptownStMarysHospital
     , SomeLocationCard uptownYeOldeMagickShoppe
     , SomeLocationCard northside_c2026
     , SomeLocationCard easttown_c2026

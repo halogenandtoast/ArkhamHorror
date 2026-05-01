@@ -800,6 +800,8 @@ allEnemies =
         SomeEnemyCard batHorror
       , --- Gangs Of Arkham
         SomeEnemyCard rogueGangster
+      , --- Whippoorwills (Chapter 2)
+        SomeEnemyCard whippoorwill2
       , --- Cultists
         SomeEnemyCard zealot
       , SomeEnemyCard darkMagician

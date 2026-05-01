@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (frenchHill_c2026)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -20,24 +21,27 @@ instance HasAbilities FrenchHill_c2026 where
   getAbilities (FrenchHill_c2026 a) =
     extendRevealed1 a
       $ playerLimit PerRound
-      $ restricted a 1 (Here <> exists (AssetControlledBy You <> mapOneOf AssetWithUseType [Charge, Secret])) actionAbility
+      $ restricted
+        a
+        1
+        (Here <> exists (AssetControlledBy You <> mapOneOf AssetCanHaveUses [Charge, Secret]))
+        actionAbility
 
 instance RunMessage FrenchHill_c2026 where
   runMessage msg l@(FrenchHill_c2026 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseAndDiscardCards iid attrs 1
-      assets <- select (AssetControlledBy You <> mapOneOf AssetWithUseType [Charge, Secret])
-      chooseOneM iid do
-        targets assets \asset -> do
-          hasCharge <- asset <=~> AssetWithUseType Charge
-          hasSecret <- asset <=~> AssetWithUseType Secret
-          if
-            | hasCharge && hasSecret ->
-                chooseOneM iid do
-                  labeled "Place 1 charge" $ push $ AddUses (attrs.ability 1) asset Charge 1
-                  labeled "Place 1 secret" $ push $ AddUses (attrs.ability 1) asset Secret 1
-            | hasCharge -> push $ AddUses (attrs.ability 1) asset Charge 1
-            | hasSecret -> push $ AddUses (attrs.ability 1) asset Secret 1
-            | otherwise -> pure ()
+      assets <- select $ assetControlledBy iid <> mapOneOf AssetCanHaveUses [Charge, Secret]
+      chooseTargetM iid assets \asset -> do
+        canHaveCharge <- asset <=~> AssetCanHaveUses Charge
+        canHaveSecret <- asset <=~> AssetCanHaveUses Secret
+        if
+          | canHaveCharge && canHaveSecret ->
+              chooseOneM iid $ withI18n do
+                tokenVar Charge $ labeled' "placeToken" $ addUses (attrs.ability 1) asset Charge 1
+                tokenVar Secret $ labeled' "placeToken" $ addUses (attrs.ability 1) asset Secret 1
+          | canHaveCharge -> addUses (attrs.ability 1) asset Charge 1
+          | canHaveSecret -> addUses (attrs.ability 1) asset Secret 1
+          | otherwise -> pure ()
       pure l
     _ -> FrenchHill_c2026 <$> liftRunMessage msg attrs

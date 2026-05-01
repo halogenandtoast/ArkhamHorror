@@ -12,14 +12,18 @@ newtype DavidRenfieldDisillusionedEschatologist = DavidRenfieldDisillusionedEsch
 
 davidRenfieldDisillusionedEschatologist :: EnemyCard DavidRenfieldDisillusionedEschatologist
 davidRenfieldDisillusionedEschatologist =
-  enemy DavidRenfieldDisillusionedEschatologist Cards.davidRenfieldDisillusionedEschatologist (1, Static 5, 4) (0, 1)
+  enemy
+    DavidRenfieldDisillusionedEschatologist
+    Cards.davidRenfieldDisillusionedEschatologist
+    (1, Static 5, 4)
+    (0, 1)
 
 instance HasAbilities DavidRenfieldDisillusionedEschatologist where
   getAbilities (DavidRenfieldDisillusionedEschatologist a) =
     extend1 a
       $ mkAbility a 1
       $ freeReaction
-      $ SkillTestResult #after You (WhileInvestigating $ LocationWithEnemy $ be a) (SuccessResult AnyValue)
+      $ SkillTestResult #after You (WhileInvestigating $ LocationWithEnemy $ be a) #success
 
 instance RunMessage DavidRenfieldDisillusionedEschatologist where
   runMessage msg e@(DavidRenfieldDisillusionedEschatologist attrs) = runQueueT $ case msg of

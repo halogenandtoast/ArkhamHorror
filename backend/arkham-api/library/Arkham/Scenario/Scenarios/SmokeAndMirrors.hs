@@ -31,22 +31,19 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   enemyIs,
   investigatorAt,
-  pattern AnyAsset,
   pattern AnyCards,
-  pattern Anyone,
   pattern Anywhere,
   pattern AssetWithTitle,
   pattern CardWithTrait,
   pattern EliteEnemy,
   pattern EnemyAt,
   pattern EnemyWithoutTrait,
-  pattern HealableAsset,
-  pattern HealableInvestigator,
   pattern LocationWithCardsUnderneath,
  )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (record)
+import Arkham.Message.Lifted.Log (record, recordSetInsert)
+import Arkham.Message.Lifted.Move (enemyMoveTo)
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
 import Arkham.Name (nameTitle)
 import Arkham.Prelude
@@ -75,9 +72,9 @@ smokeAndMirrors difficulty =
     "12133"
     "Smoke and Mirrors"
     difficulty
-    [ "northside              downtown          easttown"
-    , "miskatonicUniversity   merchantDistrict  waterfrontDistrict"
-    , "uptown                 southside         frenchHill"
+    [ "northside            downtown         easttown"
+    , "miskatonicUniversity merchantDistrict waterfrontDistrict"
+    , "uptown               southside        frenchHill"
     ]
 
 instance HasChaosTokenValue SmokeAndMirrors where
@@ -85,7 +82,7 @@ instance HasChaosTokenValue SmokeAndMirrors where
     Skull -> do
       victoryDisplay <- scenarioFieldMap ScenarioVictoryDisplay (filter ((== EnemyType) . toCardType))
       underAct <- scenarioFieldMap ScenarioCardsUnderActDeck (filter ((== EnemyType) . toCardType))
-      let eliteCount = length $ filter (\c -> cardMatch c (CardWithTrait Elite)) (victoryDisplay <> underAct)
+      let eliteCount = count (\c -> cardMatch c (CardWithTrait Elite)) (victoryDisplay <> underAct)
       pure $ toChaosTokenValue attrs Skull eliteCount (eliteCount + 2)
     Cultist -> pure $ toChaosTokenValue attrs Cultist 1 3
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
@@ -131,7 +128,7 @@ instance RunMessage SmokeAndMirrors where
       gather Set.FlyingTerrors
       gather Set.GangsOfArkham
       gather Set.PeopleOfArkham
-      gather Set.Whippoorwills_c2026
+      gather Set.Whippoorwills2
 
       setAgendaDeck [Agendas.arkhamAlive, Agendas.emergentEvils]
       setActDeck [Acts.augursOfFlame]
@@ -141,7 +138,7 @@ instance RunMessage SmokeAndMirrors where
           =<< sampleOneOf (Locations.downtownFirstBankOfArkham_c2026, Locations.downtownArkhamSanatorium)
       uptown <-
         placeLabeled "uptown"
-          =<< sampleOneOf (Locations.uptownStMarrysHospital, Locations.uptownYeOldeMagickShoppe)
+          =<< sampleOneOf (Locations.uptownStMarysHospital, Locations.uptownYeOldeMagickShoppe)
 
       place_ Locations.easttown_c2026
       place_ Locations.merchantDistrict_c2026
@@ -162,7 +159,6 @@ instance RunMessage SmokeAndMirrors where
              ]
       setAsideFacedown [setAsidePerson]
       setMeta (toCardDef setAsidePerson)
-      -- recordSetInsert ServantOfElokoss [toCardCode setAsidePerson]
 
       servantOfFlame <- fromGathered1 Enemies.servantOfFlameOnTheRun
       shuffled <- shuffle $ servantOfFlame : remainingPeople
@@ -202,43 +198,29 @@ instance RunMessage SmokeAndMirrors where
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       playerCount <- getPlayerCount
       let needTokenCount = playerCount - 1
-      let entry x =
-            scope x
-              $ withVars ["perPlayerCount" .= playerCount]
-              $ flavor
-              $ setTitle "title"
-              >> compose.codex (h "title" >> p "body")
-      let successEntry x =
-            scope x
-              $ withVars ["perPlayerCount" .= playerCount]
-              $ flavor
-              $ setTitle "title"
-              >> compose.codex (h "title" >> p "success")
+      let entry x = scope x $ flavor $ setTitle "title" >> compose.codex (h "title" >> p "body")
+      let successEntry x = scope x $ flavor $ setTitle "title" >> compose.codex (h "title" >> p "success")
       case n of
         1 -> do
           entry "davidRenfield"
           eid <- selectJust $ enemyIs Enemies.davidRenfieldDisillusionedEschatologist
           withLocationOf eid \loc -> do
             connected <- getConnectedLocations loc
-            emptyConnected <- filterM (fmap null . select . investigatorAt) connected
+            emptyConnected <- filterM (selectNone . investigatorAt) connected
             let targetLocs = maybe connected toList (nonEmpty emptyConnected)
-            chooseOneM iid $ targets targetLocs $ push . EnemyMove eid
-          placeTokens source (toTarget eid) Resource 1
+            chooseOneM iid $ targets targetLocs $ enemyMoveTo ScenarioSource eid
+          placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
           when (currentTokens >= needTokenCount) do
             successEntry "davidRenfield"
-            card <- field EnemyCard eid
             removeEnemy eid
+            card <- field EnemyCard eid
             placeUnderneath ActDeckTarget [card]
         2 -> do
           entry "corneliaAkely"
-          healableInvestigators <- select $ HealableInvestigator (toSource source) #horror Anyone
-          healableAssets <- select $ HealableAsset (toSource source) #horror AnyAsset
-          chooseOneM iid do
-            targets healableInvestigators $ healHorrorOn source 1
-            targets healableAssets $ healHorrorOn source 1
+          healHorrorIfCan iid ScenarioSource 1
           eid <- selectJust $ enemyIs Enemies.corneliaAkelyExhaustedSupervisor
-          placeTokens source (toTarget eid) Resource 1
+          placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
           when (currentTokens >= needTokenCount) do
             successEntry "corneliaAkely"
@@ -248,10 +230,9 @@ instance RunMessage SmokeAndMirrors where
         3 -> do
           entry "naomiOBannion"
           enemies <- select $ EnemyWithoutTrait Humanoid <> EnemyAt Anywhere
-          unless (null enemies) do
-            chooseOrRunOneM iid do
-              labeled "Do not choose an enemy" nothing
-              targets enemies \eid' -> defeatEnemy eid' iid source
+          chooseOrRunOneM iid do
+            targets enemies \eid' -> defeatEnemy eid' iid source
+            skip_
           eid <- selectJust $ enemyIs Enemies.naomiOBannionRunsThisTown
           placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
@@ -262,13 +243,9 @@ instance RunMessage SmokeAndMirrors where
             placeUnderneath ActDeckTarget [card]
         4 -> do
           entry "sgtEarlMonroe"
-          healableInvestigators <- select $ HealableInvestigator (toSource source) #damage Anyone
-          healableAssets <- select $ HealableAsset (toSource source) #damage AnyAsset
-          chooseOneM iid do
-            targets healableInvestigators $ healDamageOn source 1
-            targets healableAssets $ healDamageOn source 1
+          healDamageIfCan iid ScenarioSource 1
           eid <- selectJust $ enemyIs Enemies.sgtEarlMonroeDirtyCop
-          placeTokens source (toTarget eid) Resource 1
+          placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
           when (currentTokens >= needTokenCount) do
             successEntry "sgtEarlMonroe"
@@ -279,7 +256,7 @@ instance RunMessage SmokeAndMirrors where
           entry "abigailForeman"
           drawCards iid source 1
           eid <- selectJust $ enemyIs Enemies.abigailForemanWaryLibrarian
-          placeTokens source (toTarget eid) Resource 1
+          placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
           when (currentTokens >= needTokenCount) do
             successEntry "abigailForeman"
@@ -291,10 +268,10 @@ instance RunMessage SmokeAndMirrors where
           deck <- scenarioField ScenarioEncounterDeck
           for_ (headMay $ unDeck deck) \card -> do
             focusCards [card] $ chooseOneM iid do
-              labeled "Discard it" $ push $ DiscardTopOfEncounterDeck iid 1 (toSource source) Nothing
-              labeled "Leave it" nothing
+              unscoped $ labeled' "discard" $ discardTopOfEncounterDeck iid source 1
+              skip_
           eid <- selectJust $ enemyIs Enemies.margaretLiuBeguilingLoungeSinger
-          placeTokens source (toTarget eid) Resource 1
+          placeTokens source eid Resource 1
           currentTokens <- fieldMap EnemyTokens (countTokens Resource) eid
           when (currentTokens >= needTokenCount) do
             successEntry "margaretLiu"
@@ -310,22 +287,18 @@ instance RunMessage SmokeAndMirrors where
                 victoryDisplay <- getVictoryDisplay
                 let inVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
                 unless inVictory do
-                  meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                  for_ meid $ addToVictory iid
+                  selectEach (enemyIs Enemies.servantOfFlameOnTheRun) (addToVictory iid)
                 eachInvestigator \iid' -> drawCards iid' source 3
               labeled' "placeUnderAct" do
                 victoryDisplay <- getVictoryDisplay
                 mcard <- case find ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay of
                   Just c -> pure (Just c)
-                  Nothing -> do
-                    meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                    case meid of
-                      Just eid -> Just <$> field EnemyCard eid
-                      Nothing -> pure Nothing
+                  Nothing -> runMaybeT do
+                    eid <- MaybeT $ selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
+                    lift $ field EnemyCard eid
                 case mcard of
                   Just card -> do
-                    meid <- selectOne $ enemyIs Enemies.servantOfFlameOnTheRun
-                    for_ meid $ push . QuietlyRemoveFromGame . toTarget
+                    selectEach (enemyIs Enemies.servantOfFlameOnTheRun) (push . QuietlyRemoveFromGame . toTarget)
                     placeUnderneath ActDeckTarget [card]
                     eachInvestigator \iid' -> gainClues iid' source 1
                   Nothing -> error "missing servant of flame"
@@ -336,7 +309,7 @@ instance RunMessage SmokeAndMirrors where
       let servantName = nameTitle $ cdName servantDef
       case r of
         NoResolution -> do
-          -- Gather Elite enemies in play and/or beneath locations, shuffle with harbinger, and draw
+          recordSetInsert ServantOfElokoss [toCardCode servantDef]
           eliteInPlay <- select $ EliteEnemy <> EnemyAt Anywhere
           eliteInPlayCards <- traverse (field EnemyCard) eliteInPlay
 
@@ -369,7 +342,7 @@ instance RunMessage SmokeAndMirrors where
           when servantInVictory $ record InvestigatorsKilledTheServantOfFlame
 
           underAct <- scenarioFieldMap ScenarioCardsUnderActDeck id
-          let underActEnemyCount = length $ filter ((== EnemyType) . toCardType) underAct
+          let underActEnemyCount = count ((== EnemyType) . toCardType) underAct
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
 
           resolutionFlavor
@@ -380,6 +353,7 @@ instance RunMessage SmokeAndMirrors where
           let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
           if servantUnderAct then push R2 else endOfScenario
         Resolution 1 -> do
+          recordSetInsert ServantOfElokoss [toCardCode servantDef]
           record InvestigatorsDiscoveredTheCultsWhereabouts
 
           victoryDisplay <- getVictoryDisplay
@@ -392,11 +366,10 @@ instance RunMessage SmokeAndMirrors where
           when (eliteUnderAct >= 6) $ record InvestigatorsScouredArkhamForAnswers
 
           let eliteInVictory =
-                length
-                  $ filter (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) victoryDisplay
+                count (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) victoryDisplay
           when (eliteInVictory >= 6) $ record InvestigatorsStirredUpTrouble
 
-          let underActEnemyCount = length $ filter ((== EnemyType) . toCardType) underAct
+          let underActEnemyCount = count ((== EnemyType) . toCardType) underAct
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
 
           resolutionFlavor

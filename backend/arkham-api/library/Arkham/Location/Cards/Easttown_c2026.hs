@@ -6,7 +6,6 @@ import Arkham.Location.Cards qualified as Cards (easttown_c2026)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Strategy
-import Arkham.Trait
 
 newtype Easttown_c2026 = Easttown_c2026 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -26,6 +25,6 @@ instance HasAbilities Easttown_c2026 where
 instance RunMessage Easttown_c2026 where
   runMessage msg l@(Easttown_c2026 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromDeck] (basic $ #asset <> CardWithTrait Ally) (PlayFound iid 1)
+      search iid (attrs.ability 1) iid [fromDeck] (basic $ #asset <> #ally) (PlayFound iid 1)
       pure l
     _ -> Easttown_c2026 <$> liftRunMessage msg attrs

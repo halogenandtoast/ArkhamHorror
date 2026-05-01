@@ -69,6 +69,7 @@
   "placeDamageOn": "Place 1 damage on {name} | Place {count} damage on {name}",
   "placeDoom": "Place 1 doom | Place {count} doom",
   "placeDoomOn": "Place 1 doom on {name} | Place {count} doom on {name}",
+  "placeToken": "Place 1 @:{token} | Place {count} @:{token}",
   "play": "Play",
   "putIntoPlay": "Put {name} into play",
   "playIt": "Play it",

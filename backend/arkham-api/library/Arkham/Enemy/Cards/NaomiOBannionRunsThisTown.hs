@@ -18,15 +18,11 @@ instance HasAbilities NaomiOBannionRunsThisTown where
   getAbilities (NaomiOBannionRunsThisTown a) =
     extend1 a
       $ restricted a 1 OnSameLocation
-      $ ActionAbility #parley (Just $ AbilitySkill #intellect) (ActionCost 1 <> CalculatedResourceCost (GameValueCalculation $ PerPlayer 1))
+      $ parleyAction (CalculatedResourceCost (GameValueCalculation $ PerPlayer 1))
 
 instance RunMessage NaomiOBannionRunsThisTown where
   runMessage msg e@(NaomiOBannionRunsThisTown attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
-      pure e
-    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       codex iid (attrs.ability 1) 3
       pure e
     _ -> NaomiOBannionRunsThisTown <$> liftRunMessage msg attrs

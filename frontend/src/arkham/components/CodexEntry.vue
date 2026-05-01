@@ -106,11 +106,26 @@ export default defineComponent({
 })
 </script>
 
+<style>
+/*
+  Unscoped: when a containing `.intro-text` wraps a codex, drop its
+  `max-width: 50vw` so the codex isn't clipped to half the viewport.
+*/
+.intro-text:has(.codex-svg) {
+  max-width: none;
+}
+</style>
+
 <style scoped>
 .codex-svg {
   display: block;
-  width: 100%;
-  max-width: 600px;
+  /*
+    Size the codex against the viewport rather than the parent so a parent
+    constraint like `.intro-text { max-width: 50vw }` doesn't shrink it.
+    - At least 600px on viewports that can spare it (capped at 95vw on tiny screens)
+    - Prefers 80vw, capped at 1000px
+  */
+  width: clamp(min(95vw, 600px), 80vw, 1000px);
   height: auto;
   margin-inline: auto;
 }

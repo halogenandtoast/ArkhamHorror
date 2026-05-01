@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.Southside_c2026 (southside_c2026) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (southside_c2026)
 import Arkham.Location.Import.Lifted
@@ -18,13 +19,16 @@ instance HasAbilities Southside_c2026 where
   getAbilities (Southside_c2026 a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (Here <> exists (investigatorAt a)) $ ActionAbility mempty Nothing (ActionCost 2)
+      $ restricted a 1 (Here <> exists (investigatorAt a <> can.draw.cards)) doubleActionAbility
 
 instance RunMessage Southside_c2026 where
   runMessage msg l@(Southside_c2026 attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select (investigatorAt attrs)
-      let drawOne = chooseOneM iid $ for investigators \iid' -> targeting iid' $ drawCards iid' (attrs.ability 1) 1
-      drawOne >> drawOne >> drawOne
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      doStep 3 msg
+      pure l
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
+      investigators <- select (investigatorAt attrs <> can.draw.cards)
+      chooseTargetM iid investigators \iid' -> drawCards iid' (attrs.ability 1) 1
+      doStep (n - 1) msg'
       pure l
     _ -> Southside_c2026 <$> liftRunMessage msg attrs

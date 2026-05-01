@@ -12,14 +12,18 @@ newtype MargaretLiuBeguilingLoungeSinger = MargaretLiuBeguilingLoungeSinger Enem
 
 margaretLiuBeguilingLoungeSinger :: EnemyCard MargaretLiuBeguilingLoungeSinger
 margaretLiuBeguilingLoungeSinger =
-  enemy MargaretLiuBeguilingLoungeSinger Cards.margaretLiuBeguilingLoungeSinger (1, Static 3, 5) (0, 1)
+  enemy
+    MargaretLiuBeguilingLoungeSinger
+    Cards.margaretLiuBeguilingLoungeSinger
+    (1, Static 3, 5)
+    (0, 1)
 
 instance HasAbilities MargaretLiuBeguilingLoungeSinger where
   getAbilities (MargaretLiuBeguilingLoungeSinger a) =
     extend1 a
       $ mkAbility a 1
       $ freeReaction
-      $ SkillTestResult #after You (SkillTestAt $ LocationWithEnemy $ be a) (SuccessResult $ AtLeast $ Static 2)
+      $ SkillTestResult #after You (SkillTestAt $ locationWithEnemy a) (SuccessResult $ atLeast 2)
 
 instance RunMessage MargaretLiuBeguilingLoungeSinger where
   runMessage msg e@(MargaretLiuBeguilingLoungeSinger attrs) = runQueueT $ case msg of

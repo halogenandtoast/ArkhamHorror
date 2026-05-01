@@ -1105,7 +1105,7 @@ allLocationCards =
       , --- Arkham
         downtownFirstBankOfArkham_c2026
       , downtownArkhamSanatorium
-      , uptownStMarrysHospital
+      , uptownStMarysHospital
       , uptownYeOldeMagickShoppe
       , northside_c2026
       , easttown_c2026
@@ -11716,11 +11716,11 @@ downtownArkhamSanatorium =
       [Moon, T]
       Arkham_C2026
 
-uptownStMarrysHospital :: CardDef
-uptownStMarrysHospital =
+uptownStMarysHospital :: CardDef
+uptownStMarysHospital =
   location
     "12147"
-    ("Uptown" <:> "St. Marry's Hospital")
+    ("Uptown" <:> "St. Mary's Hospital")
     [Arkham]
     Plus
     [Diamond, Square]

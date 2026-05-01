@@ -11,7 +11,8 @@ newtype MiskatonicUniversityInFlames = MiskatonicUniversityInFlames LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversityInFlames :: LocationCard MiskatonicUniversityInFlames
-miskatonicUniversityInFlames = location MiskatonicUniversityInFlames Cards.miskatonicUniversityInFlames 4 (PerPlayer 1)
+miskatonicUniversityInFlames =
+  location MiskatonicUniversityInFlames Cards.miskatonicUniversityInFlames 4 (PerPlayer 1)
 
 instance HasAbilities MiskatonicUniversityInFlames where
   getAbilities (MiskatonicUniversityInFlames a) =
@@ -23,8 +24,8 @@ instance HasAbilities MiskatonicUniversityInFlames where
 instance RunMessage MiskatonicUniversityInFlames where
   runMessage msg l@(MiskatonicUniversityInFlames attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigators <- select (investigatorAt attrs.id)
-      assets <- select (AssetAt (LocationWithId attrs.id) <> AssetWithHealth)
+      investigators <- select $ investigatorAt attrs.id
+      assets <- select $ assetAt attrs <> AssetWithHealth
       for_ investigators \iid -> directDamage iid (attrs.ability 1) 1
       for_ assets \asset -> dealAssetDamage asset (attrs.ability 1) 1
       pure l

@@ -11,8 +11,7 @@ newtype ServantOfFlameOnTheRun = ServantOfFlameOnTheRun EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfFlameOnTheRun :: EnemyCard ServantOfFlameOnTheRun
-servantOfFlameOnTheRun =
-  enemy ServantOfFlameOnTheRun Cards.servantOfFlameOnTheRun (4, PerPlayer 5, 4) (2, 2)
+servantOfFlameOnTheRun = enemy ServantOfFlameOnTheRun Cards.servantOfFlameOnTheRun (4, PerPlayer 5, 4) (2, 2)
 
 instance HasAbilities ServantOfFlameOnTheRun where
   getAbilities (ServantOfFlameOnTheRun a) =

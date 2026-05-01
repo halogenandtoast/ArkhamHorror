@@ -2434,6 +2434,7 @@ library
       Arkham.Enemy.Cards.WeepingYurei
       Arkham.Enemy.Cards.Werewolf
       Arkham.Enemy.Cards.Whippoorwill
+      Arkham.Enemy.Cards.Whippoorwill2
       Arkham.Enemy.Cards.WhippoorwillUnionAndDisillusion
       Arkham.Enemy.Cards.WilliamBainDefiantToTheLast
       Arkham.Enemy.Cards.WingedOne
@@ -4189,7 +4190,7 @@ library
       Arkham.Location.Cards.UpstairsHallway
       Arkham.Location.Cards.Uptown_296
       Arkham.Location.Cards.Uptown_297
-      Arkham.Location.Cards.UptownStMarrysHospital
+      Arkham.Location.Cards.UptownStMarysHospital
       Arkham.Location.Cards.UptownYeOldeMagickShoppe
       Arkham.Location.Cards.ValeOfPnath
       Arkham.Location.Cards.ValeSchoolhouseDay
@@ -5071,6 +5072,7 @@ library
       Arkham.Treachery.Cards.DreamsOfTheFlood
       Arkham.Treachery.Cards.DrivenToMadness
       Arkham.Treachery.Cards.EagerForDeath
+      Arkham.Treachery.Cards.EagerForDeath2
       Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion
       Arkham.Treachery.Cards.EldritchAccord
       Arkham.Treachery.Cards.ElectrostaticDischarge

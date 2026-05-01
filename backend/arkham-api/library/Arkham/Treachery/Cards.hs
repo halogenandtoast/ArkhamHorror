@@ -326,6 +326,7 @@ allEncounterTreacheryCards =
       , dreamsOfRlyeh
       , drivenToMadness
       , eagerForDeath
+      , eagerForDeath2
       , eagerForDeathUnionAndDisillusion
       , eldritchAccord
       , empyreanBrilliance
@@ -4581,7 +4582,7 @@ redHerring =
 aerialPursuit :: CardDef
 aerialPursuit =
   surge
-    $ (treachery "12163" "Aerial Pursuit" Torment 2)
+    $ (treachery "12163" "Aerial Pursuit" FlyingTerrors 2)
       { cdCardTraits = singleton Scheme
       }
 
@@ -4589,6 +4590,12 @@ crossfire :: CardDef
 crossfire =
   (treachery "12165" "Crossfire" GangsOfArkham 2)
     { cdCardTraits = singleton Hazard
+    }
+
+eagerForDeath2 :: CardDef
+eagerForDeath2 =
+  (treachery "12167" "Eager for Death" Whippoorwills2 2)
+    { cdCardTraits = setFromList [Omen]
     }
 
 blasphemousInvocation :: CardDef

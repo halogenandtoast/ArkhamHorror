@@ -12,14 +12,15 @@ newtype CorneliaAkelyExhaustedSupervisor = CorneliaAkelyExhaustedSupervisor Enem
 
 corneliaAkelyExhaustedSupervisor :: EnemyCard CorneliaAkelyExhaustedSupervisor
 corneliaAkelyExhaustedSupervisor =
-  enemy CorneliaAkelyExhaustedSupervisor Cards.corneliaAkelyExhaustedSupervisor (3, Static 4, 3) (1, 0)
+  enemy
+    CorneliaAkelyExhaustedSupervisor
+    Cards.corneliaAkelyExhaustedSupervisor
+    (3, Static 4, 3)
+    (1, 0)
 
 instance HasAbilities CorneliaAkelyExhaustedSupervisor where
   getAbilities (CorneliaAkelyExhaustedSupervisor a) =
-    extend1 a
-      $ mkAbility a 1
-      $ freeReaction
-      $ EnemyEvaded #after You (be a)
+    extend1 a $ mkAbility a 1 $ freeReaction $ EnemyEvaded #after You (be a)
 
 instance RunMessage CorneliaAkelyExhaustedSupervisor where
   runMessage msg e@(CorneliaAkelyExhaustedSupervisor attrs) = runQueueT $ case msg of

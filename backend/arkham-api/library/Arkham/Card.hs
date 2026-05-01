@@ -350,6 +350,17 @@ setTaboo mtaboo card = do
     PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc})
     other -> other
 
+setFacedown :: CardGen m => Bool -> Card -> m Card
+setFacedown b card = do
+  let result = go card
+  replaceCard (toCardId result) result
+  pure result
+ where
+  go = \case
+    EncounterCard ec -> EncounterCard ec {ecFacedown = Just b}
+    VengeanceCard vc -> VengeanceCard (go vc)
+    other -> other
+
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard

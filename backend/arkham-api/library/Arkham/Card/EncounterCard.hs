@@ -21,6 +21,7 @@ data EncounterCard = MkEncounterCard
   , ecCardCode :: CardCode
   , ecOriginalCardCode :: CardCode
   , ecIsFlipped :: Maybe Bool
+  , ecFacedown :: Maybe Bool
   , ecAddedPeril :: Bool
   , ecOwner :: Maybe InvestigatorId
   }
@@ -69,6 +70,7 @@ lookupEncounterCard cardDef cardId =
     , ecOriginalCardCode = toCardCode cardDef
     , ecIsFlipped =
         Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
+    , ecFacedown = Nothing
     , ecAddedPeril = False
     , ecOwner = Nothing
     }

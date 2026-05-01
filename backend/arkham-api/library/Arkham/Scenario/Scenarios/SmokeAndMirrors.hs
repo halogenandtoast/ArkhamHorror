@@ -1,52 +1,69 @@
-module Arkham.Scenario.Scenarios.SmokeAndMirrors (setupSmokeAndMirrors, smokeAndMirrors, SmokeAndMirrors (..)) where
+module Arkham.Scenario.Scenarios.SmokeAndMirrors (smokeAndMirrors) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.BrethrenOfAsh.Import
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterCard (lookupEncounterCardDef)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.EncounterCard (lookupEncounterCardDef)
-import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers (Deck (..))
+import Arkham.Helpers.Campaign (withOwner)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location (getConnectedLocations)
 import Arkham.Helpers.Log (getRecordedCardCodes)
 import Arkham.Helpers.Modifiers (modifySelect)
-import Arkham.Id
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest.Target (withSkillTestEnemyTarget)
 import Arkham.Helpers.Xp
 import Arkham.I18n (ikey)
+import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
-import Arkham.Name (nameTitle)
-import Arkham.Helpers (Deck (..))
-import Arkham.Matcher (pattern HealableAsset, pattern HealableInvestigator, pattern AnyAsset, pattern AnyCards, pattern Anyone, pattern Anywhere, pattern AssetWithTitle, pattern CardWithTrait, pattern EliteEnemy, pattern EnemyAt, pattern EnemyWithoutTrait, pattern LocationWithCardsUnderneath, enemyIs, investigatorAt)
+import Arkham.Matcher (
+  cardIs,
+  enemyIs,
+  investigatorAt,
+  pattern AnyAsset,
+  pattern AnyCards,
+  pattern Anyone,
+  pattern Anywhere,
+  pattern AssetWithTitle,
+  pattern CardWithTrait,
+  pattern EliteEnemy,
+  pattern EnemyAt,
+  pattern EnemyWithoutTrait,
+  pattern HealableAsset,
+  pattern HealableInvestigator,
+  pattern LocationWithCardsUnderneath,
+ )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
-import Arkham.Trait (Trait (Elite, Humanoid))
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (record, recordSetInsert)
+import Arkham.Message.Lifted.Log (record)
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
-import Arkham.Card
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.Location (getConnectedLocations)
-import Arkham.Helpers.SkillTest.Target (withSkillTestEnemyTarget)
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Name (nameTitle)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Types (Field (..))
-import Arkham.Token
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.SmokeAndMirrors.Helpers
+import Arkham.Token
+import Arkham.Trait (Trait (Elite, Humanoid))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SmokeAndMirrors = SmokeAndMirrors ScenarioAttrs
   deriving stock Generic
-  deriving anyclass (IsScenario)
+  deriving anyclass IsScenario
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 instance HasModifiersFor SmokeAndMirrors where
@@ -55,15 +72,15 @@ instance HasModifiersFor SmokeAndMirrors where
 
 smokeAndMirrors :: Difficulty -> SmokeAndMirrors
 smokeAndMirrors difficulty =
-    scenario
-        SmokeAndMirrors
-        "12133"
-        "Smoke and Mirrors"
-        difficulty
-        [ "northside              downtown          easttown"
-        , "miskatonicUniversity   merchantDistrict  waterfrontDistrict"
-        , "uptown                 southside         frenchHill"
-        ]
+  scenario
+    SmokeAndMirrors
+    "12133"
+    "Smoke and Mirrors"
+    difficulty
+    [ "northside              downtown          easttown"
+    , "miskatonicUniversity   merchantDistrict  waterfrontDistrict"
+    , "uptown                 southside         frenchHill"
+    ]
 
 instance HasChaosTokenValue SmokeAndMirrors where
   getChaosTokenValue iid chaosTokenFace (SmokeAndMirrors attrs) = case chaosTokenFace of
@@ -79,105 +96,97 @@ instance HasChaosTokenValue SmokeAndMirrors where
       pure $ toChaosTokenValue attrs ElderThing clues (clues * 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-setupSmokeAndMirrors :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
-setupSmokeAndMirrors _attrs = do
-  setup $ ul do
-    li "gatherSets"
-    li "placeLocations"
-    li "setOutOfPlay"
-    li "checkCampaignLog"
-    li "placeDoom"
-    li "bearerOfDrHenryArmitage"
-    li "setAsideMarkOfElokoss"
-    li "shuffleRemainder"
-    li "readyToBegin"
-
-  gather Set.SmokeAndMirrors
-  gather Set.ArcaneLock
-  gather Set.Arkham_C2026
-  gather Set.BadWeather
-  gather Set.DeadEnds
-  gather Set.FlyingTerrors
-  gather Set.GangsOfArkham
-  gather Set.PeopleOfArkham
-  gather Set.Whippoorwills
-
-  downtown <- placeLabeled "downtown" =<< sampleOneOf (Locations.downtownFirstBankOfArkham_c2026, Locations.downtownArkhamSanatorium)
-  uptown <- placeLabeled "uptown" =<< sampleOneOf (Locations.uptownStMarrysHospital, Locations.uptownYeOldeMagickShoppe)
-
-  northside <- place Locations.northside_c2026
-  _ <- place Locations.easttown_c2026
-  _ <- place Locations.merchantDistrict_c2026
-  waterfrontDistrict <- place Locations.waterfrontDistrict
-  southside <- place Locations.southside_c2026
-  frenchHill <- place Locations.frenchHill_c2026
-
-  miskatonicUniversityBurned <- getHasRecord MiskatonicUniversityBurned
-  miskatonicUniversitySaved <- getHasRecord InvestigatorsSavedMiskatonicUniversity
-
-  miskatonicUniversity <-
-    if miskatonicUniversityBurned
-      then place Locations.miskatonicUniversityInFlames
-      else place Locations.miskatonicUniversityQuietCampus
-
-  setAgendaDeck [Agendas.arkhamAlive, Agendas.emergentEvils]
-  setActDeck [Acts.augursOfFlame]
-
-  when miskatonicUniversityBurned $ removeEvery [Locations.miskatonicUniversityQuietCampus]
-  when miskatonicUniversitySaved $ do
-    removeEvery [Locations.miskatonicUniversityInFlames]
-    placeDoomOnAgenda 1
-
-  n <- getPlayerCount
-  placeDoomOnAgenda n
-
-  let peopleOfArkham =
-        [ Enemies.davidRenfieldDisillusionedEschatologist
-        , Enemies.corneliaAkelyExhaustedSupervisor
-        , Enemies.naomiOBannionRunsThisTown
-        , Enemies.sgtEarlMonroeDirtyCop
-        , Enemies.abigailForemanWaryLibrarian
-        , Enemies.margaretLiuBeguilingLoungeSinger
-        ]
-  peopleCards <- for peopleOfArkham fromGathered1
-  (setAsidePerson, remainingPeople) <- sampleWithRest $ fromMaybe (error "impossible") $ nonEmpty peopleCards
-  setAside [setAsidePerson]
-  recordSetInsert ServantOfElokoss [toCardCode setAsidePerson]
-
-  servantOfFlame <- fromGathered1 Enemies.servantOfFlameOnTheRun
-  shuffled <- shuffle (servantOfFlame : remainingPeople)
-  for_ (zip [northside, downtown, southside, frenchHill, uptown, waterfrontDistrict] shuffled) \(loc, card) ->
-    placeUnderneath loc [card]
-
-  mBearer <- getOwner Assets.drHenryArmitage_c2026
-  for_ mBearer \iid -> do
-    deckCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDeck iid
-    handCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorHand iid
-    discardCard' <- fmap toCard . findCardMatch Assets.drHenryArmitage_c2026 <$> field InvestigatorDiscard iid
-    let mcard = asum [deckCard', handCard', discardCard']
-    for_ mcard \card -> putCardIntoPlay iid card
-
-  setAside [Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss, Treacheries.markOfElokoss]
-
-  startAt miskatonicUniversity
-
-
-
-
 instance RunMessage SmokeAndMirrors where
   runMessage msg s@(SmokeAndMirrors attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      flavor $ scope "intro" do
-        h "title"
-        p "body"
-        p "cultistTokens"
-      addChaosToken Cultist
-      addChaosToken Cultist
+      flavor $ scope "intro" $ h "title" >> p "body"
+      twice $ addChaosToken Cultist
+
+      withOwner Assets.drHenryArmitage_c2026 \iid -> do
+        card <- fetchCard Assets.drHenryArmitage_c2026
+        obtainCard card
+        putCardIntoPlay iid card
+
       pure s
-    Setup -> runScenarioSetup SmokeAndMirrors attrs $ setupSmokeAndMirrors attrs
+    Setup -> runScenarioSetup SmokeAndMirrors attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "setOutOfPlay"
+        li.nested "checkCampaignLog" do
+          li "miskatonicUniversityBurned"
+          li "savedMiskatonicUniversity"
+          li "startAt"
+        li "placeDoom"
+        li "bearerOfDrHenryArmitage"
+        li "setAsideMarkOfElokoss"
+        li "shuffleRemainder"
+        li "readyToBegin"
+
+      gather Set.SmokeAndMirrors
+      gather Set.ArcaneLock
+      gather Set.Arkham_C2026
+      gather Set.BadWeather
+      gather Set.DeadEnds
+      gather Set.FlyingTerrors
+      gather Set.GangsOfArkham
+      gather Set.PeopleOfArkham
+      gather Set.Whippoorwills_c2026
+
+      setAgendaDeck [Agendas.arkhamAlive, Agendas.emergentEvils]
+      setActDeck [Acts.augursOfFlame]
+
+      downtown <-
+        placeLabeled "downtown"
+          =<< sampleOneOf (Locations.downtownFirstBankOfArkham_c2026, Locations.downtownArkhamSanatorium)
+      uptown <-
+        placeLabeled "uptown"
+          =<< sampleOneOf (Locations.uptownStMarrysHospital, Locations.uptownYeOldeMagickShoppe)
+
+      northside <- place Locations.northside_c2026
+      place_ Locations.easttown_c2026
+      place_ Locations.merchantDistrict_c2026
+      waterfrontDistrict <- place Locations.waterfrontDistrict
+      southside <- place Locations.southside_c2026
+      frenchHill <- place Locations.frenchHill_c2026
+
+      miskatonicUniversityBurned <- getHasRecord MiskatonicUniversityBurned
+      miskatonicUniversitySaved <- getHasRecord InvestigatorsSavedMiskatonicUniversity
+
+      startAt
+        =<< if miskatonicUniversityBurned
+          then place Locations.miskatonicUniversityInFlames
+          else place Locations.miskatonicUniversityQuietCampus
+
+      when miskatonicUniversityBurned $ removeEvery [Locations.miskatonicUniversityQuietCampus]
+      when miskatonicUniversitySaved do
+        removeEvery [Locations.miskatonicUniversityInFlames]
+        placeDoomOnAgenda 1
+
+      placeDoomOnAgenda =<< perPlayer 1
+
+      let peopleOfArkham =
+            Enemies.davidRenfieldDisillusionedEschatologist
+              :| [ Enemies.corneliaAkelyExhaustedSupervisor
+                 , Enemies.naomiOBannionRunsThisTown
+                 , Enemies.sgtEarlMonroeDirtyCop
+                 , Enemies.abigailForemanWaryLibrarian
+                 , Enemies.margaretLiuBeguilingLoungeSinger
+                 ]
+      peopleCards <- for peopleOfArkham fromGathered1
+      (setAsidePerson, remainingPeople) <- sampleWithRest peopleCards
+      setAsideFacedown [setAsidePerson]
+      -- recordSetInsert ServantOfElokoss [toCardCode setAsidePerson]
+
+      servantOfFlame <- fromGathered1 Enemies.servantOfFlameOnTheRun
+      shuffled <- shuffle (servantOfFlame : remainingPeople)
+      for_ (zip [northside, downtown, southside, frenchHill, uptown, waterfrontDistrict] shuffled) \(loc, card) ->
+        placeUnderneath loc [card]
+
+      setAsideEvery $ cardIs Treacheries.markOfElokoss
     ResolveChaosToken _ Cultist iid -> do
       withSkillTestEnemyTarget \eid -> do
         whenM (eid <=~> EliteEnemy) $ drawAnotherChaosToken iid
@@ -191,8 +200,15 @@ instance RunMessage SmokeAndMirrors where
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       playerCount <- getPlayerCount
       let needTokenCount = playerCount - 1
-      let entry x = scope x $ withVars ["perPlayerCount" .= playerCount] $ flavor $ setTitle "title" >> p.green "body"
-      let successEntry x = scope x $ scope "success" $ withVars ["perPlayerCount" .= playerCount] $ flavor $ setTitle "title" >> p.green "body"
+      let entry x =
+            scope x $ withVars ["perPlayerCount" .= playerCount] $ flavor $ setTitle "title" >> p.green "body"
+      let successEntry x =
+            scope x
+              $ scope "success"
+              $ withVars ["perPlayerCount" .= playerCount]
+              $ flavor
+              $ setTitle "title"
+              >> p.green "body"
       case n of
         1 -> do
           entry "davidRenfield"
@@ -335,9 +351,11 @@ instance RunMessage SmokeAndMirrors where
             Just cards -> do
               shuffled <- shuffle $ toList cards
               case listToMaybe shuffled of
-                Just drawnCard | Just harbingerCode <- mHarbingerCode, toCardCode drawnCard == harbingerCode -> do
-                  record InvestigatorsDiscoveredTheCultsWhereabouts
-                  pure $ Just drawnCard
+                Just drawnCard
+                  | Just harbingerCode <- mHarbingerCode
+                  , toCardCode drawnCard == harbingerCode -> do
+                      record InvestigatorsDiscoveredTheCultsWhereabouts
+                      pure $ Just drawnCard
                 Just drawnCard -> do
                   record InvestigatorsFailedInTheirSearch
                   pure $ Just drawnCard
@@ -357,12 +375,14 @@ instance RunMessage SmokeAndMirrors where
           let underActEnemyCount = length $ filter ((== EnemyType) . toCardType) underAct
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
 
-          resolutionFlavor $ withVars ["xp" .= xp, "servantName" .= servantName, "drawnCard" .= drawnCardName] $ setTitle "noResolution.title" >> p "noResolution.body"
+          resolutionFlavor
+            $ withVars ["xp" .= xp, "servantName" .= servantName, "drawnCard" .= drawnCardName]
+            $ setTitle "noResolution.title"
+            >> p "noResolution.body"
 
           -- Check if Servant of Flame was beneath the act
           let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
           when servantUnderAct $ push $ ScenarioResolution $ Resolution 2
-
         Resolution 1 -> do
           record InvestigatorsDiscoveredTheCultsWhereabouts
 
@@ -379,21 +399,24 @@ instance RunMessage SmokeAndMirrors where
           let eliteUnderAct = length $ filter (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) underAct
           when (eliteUnderAct >= 6) $ record InvestigatorsScouredArkhamForAnswers
 
-          let eliteInVictory = length $ filter (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) victoryDisplay
+          let eliteInVictory =
+                length
+                  $ filter (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) victoryDisplay
           when (eliteInVictory >= 6) $ record InvestigatorsStirredUpTrouble
 
           let underActEnemyCount = length $ filter ((== EnemyType) . toCardType) underAct
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
 
-          resolutionFlavor $ withVars ["xp" .= xp, "servantName" .= servantName] $ setTitle "resolution1.title" >> p "resolution1.body"
+          resolutionFlavor
+            $ withVars ["xp" .= xp, "servantName" .= servantName]
+            $ setTitle "resolution1.title"
+            >> p "resolution1.body"
 
           let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
           when servantUnderAct $ push $ ScenarioResolution $ Resolution 2
-
         Resolution 2 -> do
           record TheServantOfFlameEscaped
           eachInvestigator \iid -> gainXp iid attrs (ikey "xp.resolution2") 1
-
         other -> throwIO $ UnknownResolution other
 
       markedCodes <- getRecordedCardCodes InvestigatorsWereMarkedByElokoss

@@ -11697,7 +11697,6 @@ orneLibrary_c2026 =
 downtownFirstBankOfArkham_c2026 :: CardDef
 downtownFirstBankOfArkham_c2026 =
   victory 1
-    $ singleSided
     $ location
       "12145"
       ("Downtown" <:> "First Bank of Arkham")
@@ -11709,7 +11708,6 @@ downtownFirstBankOfArkham_c2026 =
 downtownArkhamSanatorium :: CardDef
 downtownArkhamSanatorium =
   victory 1
-    $ singleSided
     $ location
       "12146"
       ("Downtown" <:> "Arkham Sanatorium")
@@ -11720,63 +11718,57 @@ downtownArkhamSanatorium =
 
 uptownStMarrysHospital :: CardDef
 uptownStMarrysHospital =
-  singleSided
-    $ location
-      "12147"
-      ("Uptown" <:> "St. Marry's Hospital")
-      [Arkham]
-      Plus
-      [Diamond, Square]
-      Arkham_C2026
+  location
+    "12147"
+    ("Uptown" <:> "St. Marry's Hospital")
+    [Arkham]
+    Plus
+    [Diamond, Square]
+    Arkham_C2026
 
 uptownYeOldeMagickShoppe :: CardDef
 uptownYeOldeMagickShoppe =
-  singleSided
-    $ location
-      "12148"
-      ("Uptown" <:> "Ye Olde Magick Shoppe")
-      [Arkham]
-      Plus
-      [Diamond, Square]
-      Arkham_C2026
+  location
+    "12148"
+    ("Uptown" <:> "Ye Olde Magick Shoppe")
+    [Arkham]
+    Plus
+    [Diamond, Square]
+    Arkham_C2026
 
 northside_c2026 :: CardDef
 northside_c2026 =
-  singleSided
-    $ location
-      "12149"
-      "Northside"
-      [Arkham]
-      T
-      [Diamond, Triangle]
-      Arkham_C2026
+  location
+    "12149"
+    "Northside"
+    [Arkham]
+    T
+    [Diamond, Triangle]
+    Arkham_C2026
 
 easttown_c2026 :: CardDef
 easttown_c2026 =
-  singleSided
-    $ location
-      "12150"
-      "Easttown"
-      [Arkham]
-      Moon
-      [Circle, Triangle, Spade]
-      Arkham_C2026
+  location
+    "12150"
+    "Easttown"
+    [Arkham]
+    Moon
+    [Circle, Triangle, Spade]
+    Arkham_C2026
 
 merchantDistrict_c2026 :: CardDef
 merchantDistrict_c2026 =
-  singleSided
-    $ location
-      "12151"
-      "Merchant District"
-      [Arkham]
-      Circle
-      [Moon, Diamond, Square, Spade]
-      Arkham_C2026
+  location
+    "12151"
+    "Merchant District"
+    [Arkham]
+    Circle
+    [Moon, Diamond, Square, Spade]
+    Arkham_C2026
 
 waterfrontDistrict :: CardDef
 waterfrontDistrict =
   victory 1
-    $ singleSided
     $ location
       "12152"
       "Waterfront District"
@@ -11787,19 +11779,17 @@ waterfrontDistrict =
 
 southside_c2026 :: CardDef
 southside_c2026 =
-  singleSided
-    $ location
-      "12153"
-      "Southside"
-      [Arkham]
-      Square
-      [Plus, Hourglass, Circle]
-      Arkham_C2026
+  location
+    "12153"
+    "Southside"
+    [Arkham]
+    Square
+    [Plus, Hourglass, Circle]
+    Arkham_C2026
 
 frenchHill_c2026 :: CardDef
 frenchHill_c2026 =
   victory 1
-    $ singleSided
     $ location
       "12154"
       "French Hill"
@@ -11811,7 +11801,6 @@ frenchHill_c2026 =
 miskatonicUniversityInFlames :: CardDef
 miskatonicUniversityInFlames =
   victory 1
-    $ singleSided
     $ location
       "12155"
       ("Miskatonic University" <:> "In Flames")
@@ -11823,7 +11812,6 @@ miskatonicUniversityInFlames =
 miskatonicUniversityQuietCampus :: CardDef
 miskatonicUniversityQuietCampus =
   victory 1
-    $ singleSided
     $ location
       "12156"
       ("Miskatonic University" <:> "Quiet Campus")

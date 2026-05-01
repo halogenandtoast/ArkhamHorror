@@ -16,6 +16,18 @@ function cardIsFlipped(card: Card) {
   }
 }
 
+export function cardFacedown(card: Card | CardContents): boolean {
+  if (card.tag === 'CardContents') return card.facedown ?? false
+  switch (card.tag) {
+    case 'PlayerCard':
+      return card.contents.facedown ?? false;
+    case 'EncounterCard':
+      return card.contents.facedown ?? false;
+    case 'VengeanceCard':
+      return cardFacedown(card.contents);
+  }
+}
+
 function cardArt(card: Card): string | undefined {
   switch (card.tag) {
     case 'PlayerCard':
@@ -43,6 +55,9 @@ export function cardId(card: Card): string {
 }
 
 export function cardImage(card: Card) {
+  if (cardFacedown(card)) {
+    return card.tag === 'PlayerCard' ? 'player_back.jpg' : 'encounter_back.jpg'
+  }
   const side = cardIsFlipped(card) ? 'b' : ''
   // TODO, send art with cards next to
   const art = cardArt(card) || asCardCode(card).replace('c', '')
@@ -69,10 +84,11 @@ export type CardContents = {
   id: string
   cardCode: string
   isFlipped?: boolean
+  facedown?: boolean
   tokens: Tokens
   art?: string
   customizations?: Customization[]
-  mutated?: string 
+  mutated?: string
 }
 
 export type VengeanceCard = {
@@ -96,6 +112,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     id: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),
     isFlipped: v2Optional(JsonDecoder.boolean()),
+    facedown: v2Optional(JsonDecoder.boolean()),
     tokens: JsonDecoder.constant({}),
     art: v2Optional(JsonDecoder.string()),
     customizations: v2Optional(customizationsDecoder),

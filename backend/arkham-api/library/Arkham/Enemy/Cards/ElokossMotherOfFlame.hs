@@ -23,7 +23,6 @@ instance HasAbilities ElokossMotherOfFlame where
   getAbilities (ElokossMotherOfFlame a) =
     extend1 a $ mkAbility a 1 $ forced $ EnemyEvaded #after You (be a)
 
-
 instance RunMessage ElokossMotherOfFlame where
   runMessage msg e@(ElokossMotherOfFlame attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do

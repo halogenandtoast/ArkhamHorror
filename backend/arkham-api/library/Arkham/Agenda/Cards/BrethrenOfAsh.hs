@@ -5,7 +5,6 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated, InvestigatorDefeated)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Window (getBatchId)
 
 newtype BrethrenOfAsh = BrethrenOfAsh AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -31,8 +30,8 @@ instance HasAbilities BrethrenOfAsh where
 
 instance RunMessage BrethrenOfAsh where
   runMessage msg a@(BrethrenOfAsh attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
-      push $ IgnoreBatch batchId
+    UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
+      cancelWindowBatch ws
       eachInvestigator \iid -> directDamage iid attrs 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
@@ -42,6 +41,6 @@ instance RunMessage BrethrenOfAsh where
       push R1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
-      eachInvestigator \iid -> investigatorDefeated attrs iid
+      eachInvestigator $ kill attrs
       pure a
     _ -> BrethrenOfAsh <$> liftRunMessage msg attrs

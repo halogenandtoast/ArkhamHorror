@@ -9,21 +9,15 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose (chooseBeginSkillTest)
 
 newtype SluiceControl = SluiceControl LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sluiceControl :: LocationCard SluiceControl
 sluiceControl = location SluiceControl Cards.sluiceControl 4 (PerPlayer 2)
 
-instance HasModifiersFor SluiceControl where
-  getModifiersFor _ = pure mempty
-
 instance HasAbilities SluiceControl where
   getAbilities (SluiceControl a) =
-    extendRevealed
-      a
-      [ skillTestAbility $ restricted a 1 Here actionAbility
-      ]
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage SluiceControl where
   runMessage msg l@(SluiceControl attrs) = runQueueT $ case msg of
@@ -33,7 +27,8 @@ instance RunMessage SluiceControl where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       enemies <- select AnyEnemy
-      for_ enemies \eid -> defeatEnemy eid iid (attrs.ability 1)
+      withoutRunWindows do
+        for_ enemies \eid -> defeatEnemy eid iid (attrs.ability 1)
       push R3
       pure l
     _ -> SluiceControl <$> liftRunMessage msg attrs

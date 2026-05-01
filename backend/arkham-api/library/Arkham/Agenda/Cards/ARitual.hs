@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.ARitual (aRitual) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Card (flipCard)
+import Arkham.Card (flipCard, replaceCard)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act (getCurrentActStep)
@@ -10,13 +10,13 @@ import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Projection (field)
 import Arkham.Message (ReplaceStrategy (Swap))
-import Arkham.Modifier (ModifierType (Blank, CannotBeDamaged))
+import Arkham.Modifier (ModifierType (CannotBeDamaged))
+import Arkham.Projection (field)
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ARitual = ARitual AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aRitual :: AgendaCard ARitual
@@ -37,11 +37,12 @@ instance RunMessage ARitual where
       if step == 1
         then do
           undergroundCistern <- selectJust $ locationIs Locations.undergroundCistern
-          elokoss <- getSetAsideCard Enemies.elokossMotherOfFlame
+          reveal undergroundCistern
+          elokoss <- flipCard <$> getSetAsideCard Enemies.elokossFaintEmbers
+          replaceCard elokoss.id elokoss
           createEnemyAt_ elokoss undergroundCistern
         else do
-          melokoss <- selectOne $ enemyIs Enemies.elokossFaintEmbers
-          case melokoss of
+          selectOne (enemyIs Enemies.elokossFaintEmbers) >>= \case
             Just eid -> do
               card <- field EnemyCard eid
               push $ ReplaceEnemy eid (flipCard card) Swap
@@ -50,9 +51,7 @@ instance RunMessage ARitual where
               undergroundCistern <- selectJust $ locationIs Locations.undergroundCistern
               createEnemyAt_ elokoss undergroundCistern
 
-      actId <- selectJust AnyAct
-      gameModifier attrs (ActTarget actId) Blank
-
       advanceAgendaDeck attrs
+      removeActDeck
       pure a
     _ -> ARitual <$> liftRunMessage msg attrs

@@ -28,4 +28,4 @@ instance HasModifiersFor SewerCulvert where
 
 instance HasAbilities SewerCulvert where
   getAbilities (SewerCulvert a) =
-    extendRevealed1 a $ withI18n $ withI18nTooltip "core2.sewerCulvert.resign" $ locationResignAction a
+    extendRevealed1 a $ withI18n $ scope "core2" $ withI18nTooltip "sewerCulvert.resign" $ locationResignAction a

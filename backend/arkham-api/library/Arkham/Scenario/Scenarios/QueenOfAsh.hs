@@ -285,7 +285,7 @@ instance RunMessage QueenOfAsh where
               then do
                 sufferMentalTrauma iid 3
                 push $ GainXP iid (toSource attrs) (victoryXp + 3)
-              else investigatorDefeated attrs iid
+              else kill attrs iid
           resignedIids <- select ResignedInvestigator
           let xpDetails =
                 concat

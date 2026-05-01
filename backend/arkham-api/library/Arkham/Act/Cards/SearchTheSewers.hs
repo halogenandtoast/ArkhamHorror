@@ -31,26 +31,23 @@ instance RunMessage SearchTheSewers where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       undergroundCistern <- selectJust $ locationIs Locations.undergroundCistern
-
-      -- 1. Spawn the set-aside Elokoss enemy at Underground Cistern
       elokoss <- getSetAsideCard Enemies.elokossFaintEmbers
       createEnemyAt_ elokoss undergroundCistern
 
-      -- 2. The investigator at Underground Cistern draws one Fire! treachery
       fireCard <- getSetAsideCard Treacheries.fire1
       miid <- selectOne $ InvestigatorAt (LocationWithId undergroundCistern)
-      for_ miid \iid -> push $ DrewTreachery iid Nothing fireCard
+      for_ miid (`drawCard` fireCard)
 
-      -- 3. Shuffle remaining Fire! + Queen's Knight + Herald of Flame into encounter deck
-      remainingFires <- getSetAsideCardsMatching $ cardIs Treacheries.fire1
-      mQueensKnight <- getSetAsideCardMaybe Enemies.queensKnight
-      mHeraldOfFlame <- getSetAsideCardMaybe Enemies.heraldOfFlame
-      let cardsToShuffle = remainingFires <> maybeToList mQueensKnight <> maybeToList mHeraldOfFlame
-      shuffleCardsIntoDeck Deck.EncounterDeck cardsToShuffle
+      doStep 1 msg
 
-      -- 4. Put Sluice Control into play
       placeSetAsideLocation_ Locations.sluiceControl
 
       advanceActDeck attrs
+      pure a
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      remainingFires <- getSetAsideCardsMatching $ cardIs Treacheries.fire1
+      queensKnight <- maybeToList <$> getSetAsideCardMaybe Enemies.queensKnight
+      heraldOfFlame <- maybeToList <$> getSetAsideCardMaybe Enemies.heraldOfFlame
+      shuffleCardsIntoDeck Deck.EncounterDeck $ remainingFires <> queensKnight <> heraldOfFlame
       pure a
     _ -> SearchTheSewers <$> liftRunMessage msg attrs

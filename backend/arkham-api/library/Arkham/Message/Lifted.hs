@@ -121,6 +121,11 @@ import Data.Typeable
 capture :: MonadIO m => QueueT msg m a -> m [msg]
 capture = evalQueueT
 
+withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
+withoutRunWindows body = do
+  msgs <- capture body
+  pushAll $ SetGameRunWindows False : msgs <> [SetGameRunWindows True]
+
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
 

@@ -460,6 +460,7 @@ data Message
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfAtIgnored InvestigatorId Bool
+  | SetGameRunWindows Bool
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
   | MoveWithSkillTest Message

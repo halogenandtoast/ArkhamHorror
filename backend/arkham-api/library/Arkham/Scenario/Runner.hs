@@ -303,16 +303,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ a
       & (actStackL . at n ?~ actStack')
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
-  SetCurrentActDeck n stack@(current : _) -> do
+  SetCurrentActDeck n stack -> do
     selectEach (Matcher.ActWithDeckId n) $ toDiscard GameSource
-    push $ AddAct n current
+    for_ (headMay stack) $ push . AddAct n
     pure
       $ a
       & (actStackL . at n ?~ stack)
       & (setAsideCardsL %~ filter (`notElem` stack))
-  SetCurrentAgendaDeck n stack@(current : _) -> do
+  SetCurrentAgendaDeck n stack -> do
     selectEach (Matcher.AgendaWithDeckId n) $ toDiscard GameSource
-    push $ AddAgenda n current
+    for_ (headMay stack) $ push . AddAgenda n
     pure
       $ a
       & (agendaStackL . at n ?~ stack)
@@ -1451,7 +1451,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             ]
           discardEntry =
             [ (Zone.FromDiscard, map EncounterCard matchingDiscards)
-            | includeDiscard == IncludeDiscard, not (null matchingDiscards)
+            | includeDiscard == IncludeDiscard
+            , not (null matchingDiscards)
             ]
         push $ FoundCards $ Map.fromList (deckEntry <> discardEntry)
         chooseOne iid matches

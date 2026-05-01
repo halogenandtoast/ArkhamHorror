@@ -194,5 +194,12 @@
   "skip": "Skip",
   "handSize": "Hand Size",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "core2": {
+    "tooltips": {
+      "sewerCulvert": {
+        "resign": "\"I can't take it any more!\" You flee the sewers."
+      }
+    }
+  }
 }

@@ -350,8 +350,9 @@ drHenryArmitage_c2026 =
 
 collector :: CardDef
 collector =
-  (asset "12181" "Collector" 2 Neutral)
-    { cdCardTraits = setFromList [Item, Relic]
-    , cdUnique = True
-    , cdLevel = Just 0
-    }
+  permanent
+    $ (asset "12181" "Collector" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdLevel = Just 0
+      }

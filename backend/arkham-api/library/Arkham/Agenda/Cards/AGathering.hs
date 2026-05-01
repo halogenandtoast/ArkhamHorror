@@ -3,16 +3,15 @@ module Arkham.Agenda.Cards.AGathering (aGathering) where
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
-import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Modifier (ModifierType (CannotBeDamaged))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype AGathering = AGathering AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aGathering :: AgendaCard AGathering
@@ -42,12 +41,9 @@ instance RunMessage AGathering where
               createEnemyAt_ card undergroundCistern
             Nothing -> pure ()
 
-      iids <- select UneliminatedInvestigator
-      for_ iids \iid -> do
+      eachInvestigator \iid -> do
         sid <- getRandom
-        chooseOneM iid do
-          labeled "Test {willpower} (4)" $ beginSkillTest sid iid attrs iid #willpower (Fixed 4)
-          labeled "Automatically fail" $ directHorror iid attrs 1
+        beginSkillTest sid iid attrs iid #willpower (Fixed 4)
 
       advanceAgendaDeck attrs
       pure a

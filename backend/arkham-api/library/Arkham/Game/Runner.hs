@@ -166,6 +166,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   SetAsIfAtIgnored iid True -> pure $ g & asIfAtIgnoredL %~ insertSet iid
   SetAsIfAtIgnored iid False -> pure $ g & asIfAtIgnoredL %~ deleteSet iid
+  SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
   UpgradingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)

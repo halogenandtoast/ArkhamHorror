@@ -19,18 +19,18 @@ augursOfFlame = act (1, A) AugursOfFlame Cards.augursOfFlame Nothing
 instance HasAbilities AugursOfFlame where
   getAbilities = actAbilities \a ->
     [ restricted a 1 (exists $ You <> at_ (LocationWithCardsUnderneath AnyCards))
-        $ FastAbility (GroupClueCost (PerPlayer 2) Anywhere)
+        $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
     , restricted
         a
         2
         ( ExtendedCardCount (atLeast 6)
             $ ExtendedCardWithOneOf
-                [ VictoryDisplayCardMatch $ basic (#enemy <> withTrait Elite)
-                , ExtendedCardMatches
-                    [ CardIsBeneathActDeck
-                    , basic (#enemy <> withTrait Elite)
-                    ]
-                ]
+              [ VictoryDisplayCardMatch $ basic (#enemy <> withTrait Elite)
+              , ExtendedCardMatches
+                  [ CardIsBeneathActDeck
+                  , basic (#enemy <> withTrait Elite)
+                  ]
+              ]
         )
         $ Objective
         $ forced AnyWindow

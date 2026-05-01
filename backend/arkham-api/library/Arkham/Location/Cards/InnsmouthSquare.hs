@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.InnsmouthSquare (innsmouthSquare) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)

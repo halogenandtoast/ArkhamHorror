@@ -4499,156 +4499,136 @@ cosmicEvils =
     }
 
 unspeakableTruths :: CardDef
-unspeakableTruths = 
+unspeakableTruths =
   (treachery "12125" "Unspeakable Truths" EldritchLore 2)
-    {
-      cdCardTraits = singleton Terror
+    { cdCardTraits = singleton Terror
     }
 
 forbiddenSecrets :: CardDef
-forbiddenSecrets = 
+forbiddenSecrets =
   (treachery "12126" "Forbidden Secrets" EldritchLore 2)
-    {
-      cdCardTraits = singleton Pact
+    { cdCardTraits = singleton Pact
     }
 
 extraplanarVisions :: CardDef
 extraplanarVisions =
   (treachery "12127" "Extraplanar Visions" Hallucinations 2)
-    {
-      cdCardTraits = singleton Power
+    { cdCardTraits = singleton Power
     }
 
 wildCompulsion :: CardDef
 wildCompulsion =
   (treachery "12128" "Wild Compulsion" Hallucinations 2)
-    {
-      cdCardTraits = setFromList [Madness, Bane]
+    { cdCardTraits = setFromList [Madness, Bane]
     }
 
 fire1 :: CardDef
-fire1 = 
+fire1 =
   (treachery "12129" "Fire!" Fire1 5)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 noxiousSmoke :: CardDef
-noxiousSmoke = 
+noxiousSmoke =
   (treachery "12130" "Noxious Smoke" Fire1 2)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 mutated1 :: CardDef
-mutated1 = 
+mutated1 =
   (treachery "12131" "Mutated!" MadScience 2)
-    {
-      cdCardTraits = singleton Mutation
+    { cdCardTraits = singleton Mutation
+    }
+
+markOfElokoss :: CardDef
+markOfElokoss =
+  (weakness "12137" "Mark of Elokoss")
+    { cdCardTraits = singleton Curse
+    , cdEncounterSet = Just SmokeAndMirrors
+    , cdEncounterSetQuantity = Just 4
     }
 
 arcaneLock :: CardDef
 arcaneLock =
   (treachery "12157" "Arcane Lock" ArcaneLock 2)
-    {
-      cdCardTraits = setFromList [Hex, Obstacle]
+    { cdCardTraits = setFromList [Hex, Obstacle]
     }
 
 downpour_c2026 :: CardDef
 downpour_c2026 =
   (treachery "12158" "Downpour" BadWeather 2)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 flashFlood :: CardDef
 flashFlood =
   (treachery "12159" "Flash Flood" BadWeather 2)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 raisingSuspicions :: CardDef
 raisingSuspicions =
   (treachery "12160" "Raising Suspicions" DeadEnds 2)
-    {
-      cdCardTraits = singleton Blunder
+    { cdCardTraits = singleton Blunder
     }
 
 redHerring :: CardDef
 redHerring =
   (treachery "12161" "Red Herring" DeadEnds 2)
-    {
-      cdCardTraits = singleton Scheme
+    { cdCardTraits = singleton Scheme
     }
 
 aerialPursuit :: CardDef
 aerialPursuit =
   surge
     $ (treachery "12163" "Aerial Pursuit" Torment 2)
-      {
-        cdCardTraits = singleton Scheme
+      { cdCardTraits = singleton Scheme
       }
 
 crossfire :: CardDef
 crossfire =
   (treachery "12165" "Crossfire" GangsOfArkham 2)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 blasphemousInvocation :: CardDef
-blasphemousInvocation = 
+blasphemousInvocation =
   (treachery "12190" "Blasphemous Invocation" Cultists 2)
-    {
-      cdCardTraits = singleton Hex
+    { cdCardTraits = singleton Hex
     }
 
 unnaturalDecay :: CardDef
 unnaturalDecay =
   (treachery "12191" "Unnatural Decay" ReekingDecay 2)
-    {
-      cdCardTraits = singleton Curse
+    { cdCardTraits = singleton Curse
     }
 
 putridVapors :: CardDef
 putridVapors =
   (treachery "12192" "Putrid Vapors" ReekingDecay 2)
-    {
-      cdCardTraits = singleton Hazard
+    { cdCardTraits = singleton Hazard
     }
 
 languor :: CardDef
 languor =
   (treachery "12193" "Languor" FlyingTerrors 2)
-    {
-      cdCardTraits = setFromList [Hex, Bane]
+    { cdCardTraits = setFromList [Hex, Bane]
     }
 
 dissonance :: CardDef
 dissonance =
   (treachery "12194" "Dissonance" FlyingTerrors 2)
-    {
-      cdCardTraits = setFromList [Curse, Bane]
+    { cdCardTraits = setFromList [Curse, Bane]
     }
 
 torment :: CardDef
 torment =
   (peril $ treachery "12195" "Torment" FlyingTerrors 2)
-    {
-      cdCardTraits = setFromList [Power, Bane]
-    }
-
-markOfElokoss :: CardDef
-markOfElokoss =
-  (weakness "12137" "Mark of Elokoss")
-    { 
-      cdCardTraits = singleton Curse
+    { cdCardTraits = setFromList [Power, Bane]
     }
 
 ashenRebirth :: CardDef
-ashenRebirth = 
+ashenRebirth =
   (treachery "12176" "Ashen Rebirth" QueenOfAsh 2)
-    {
-      cdCardTraits = singleton Power
+    { cdCardTraits = singleton Power
     }

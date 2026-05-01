@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.RailroadStation (railroadStation, RailroadStation (..)) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted

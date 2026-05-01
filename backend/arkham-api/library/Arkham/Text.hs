@@ -32,6 +32,7 @@ data FlavorTextModifier
   | InterludeEntry
   | NestedEntry
   | NoUnderline
+  | CodexEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry

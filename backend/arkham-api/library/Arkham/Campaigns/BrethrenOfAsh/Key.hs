@@ -17,6 +17,5 @@ data BrethrenOfAshKey
   | InvestigatorsDefeatedElokossAndTheBrethrenOfAsh
   | InvestigatorsStoppedElokosssGloriousRebirth
   | InvestigatorsFloodedTheBrethrenOfAshsSummoningRitual
-  | InvestigatorsWereMarkedByElokoss
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

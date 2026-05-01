@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.TheGateOfYquaa (theGateOfYquaa) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Investigator.Types (Field (..))

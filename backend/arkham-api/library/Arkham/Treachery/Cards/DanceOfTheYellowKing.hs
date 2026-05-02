@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.DanceOfTheYellowKing (danceOfTheYellowKing) where
 
 import Arkham.Attack
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -31,7 +32,12 @@ instance RunMessage DanceOfTheYellowKing where
         chooseOrRunOneM iid do
           targets lunatics \lunatic -> do
             readyThis lunatic
-            moveUntil lunatic lid
+            -- Force iid to be the prey for the duration of the move so any
+            -- engagement check along the path picks iid (no choice prompt) when
+            -- iid is at that location, and falls through to normal engagement
+            -- otherwise.
+            temporaryModifier lunatic attrs (ForcePrey $ Prey $ InvestigatorWithId iid) do
+              moveUntil lunatic lid
             push
               $ IfEnemyExists
                 (enemyAtLocationWith iid <> EnemyWithId lunatic)

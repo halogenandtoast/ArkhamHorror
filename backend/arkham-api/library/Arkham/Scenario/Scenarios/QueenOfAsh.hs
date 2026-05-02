@@ -257,23 +257,20 @@ instance RunMessage QueenOfAsh where
       case r of
         NoResolution -> do
           record ElokossWasReborn
-          eachInvestigator \iid -> investigatorDefeated attrs iid
-          xp <- allGainXp' attrs
-          resolutionFlavor $ withVars ["xp" .= xp] $ setTitle "noResolution.title" >> p "noResolution.body"
+          eachInvestigator $ kill attrs
+          resolution "noResolution"
         Resolution 1 -> do
           record InvestigatorsDefeatedElokossAndTheBrethrenOfAsh
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 5
           eachInvestigator \iid -> do
             sufferMentalTrauma iid 2
             sufferPhysicalTrauma iid 2
-          resolutionFlavor $ withVars ["xp" .= xp] $ setTitle "resolution1.title" >> p "resolution1.body"
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 5
         Resolution 2 -> do
           record InvestigatorsStoppedElokosssGloriousRebirth
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 5
           eachInvestigator \iid -> do
             sufferMentalTrauma iid 2
             sufferPhysicalTrauma iid 2
-          resolutionFlavor $ withVars ["xp" .= xp] $ setTitle "resolution2.title" >> p "resolution2.body"
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 5
         Resolution 3 -> do
           record InvestigatorsFloodedTheBrethrenOfAshsSummoningRitual
           victoryXp <- getInitialVictory
@@ -293,8 +290,7 @@ instance RunMessage QueenOfAsh where
                   | iid <- resignedIids
                   ]
           push $ ReportXp $ XpBreakdown xpDetails
-          let totalXp = victoryXp + 3
-          resolutionFlavor $ withVars ["xp" .= totalXp] $ setTitle "resolution3.title" >> p "resolution3.body"
+          resolution "resolution3"
         other -> throwIO $ UnknownResolution other
 
       endOfScenario

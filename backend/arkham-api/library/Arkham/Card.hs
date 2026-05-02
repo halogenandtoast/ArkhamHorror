@@ -309,6 +309,9 @@ isNonWeakness = (`cardMatch` NonWeakness)
 filterCards :: (IsCardMatcher a, IsCard b) => a -> [b] -> [b]
 filterCards matcher = filter ((`cardMatch` matcher) . toCard)
 
+countCards :: (IsCardMatcher a, IsCard b) => a -> [b] -> Int
+countCards matcher = count ((`cardMatch` matcher) . toCard)
+
 findCardMatch
   :: (IsCardMatcher a, IsCard card, Element cards ~ card, MonoFoldable cards)
   => a

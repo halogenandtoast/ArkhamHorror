@@ -8,7 +8,6 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.EncounterCard (lookupEncounterCardDef)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -23,12 +22,14 @@ import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest.Target (withSkillTestEnemyTarget)
 import Arkham.Helpers.Xp
-import Arkham.I18n (ikey, nameVar)
+import Arkham.I18n (cardNameVar, ikey)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
+  EnemyMatcher (InPlayEnemy),
+  cardIs,
   enemyIs,
   investigatorAt,
   pattern AnyCards,
@@ -45,7 +46,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record, recordSetInsert)
 import Arkham.Message.Lifted.Move (enemyMoveTo)
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
-import Arkham.Name (nameTitle)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -279,18 +279,17 @@ instance RunMessage SmokeAndMirrors where
             removeEnemy eid
             placeUnderneath ActDeckTarget [card]
         Phi -> do
+          victoryDisplay <- getVictoryDisplay
           investigatorStoryWithChooseOneM'
             iid
             (scope "servantOfFlame" $ setTitle "title" >> compose.codex (h "title" >> p "body"))
             do
               labeled' "addToVictory" do
-                victoryDisplay <- getVictoryDisplay
                 let inVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
                 unless inVictory do
                   selectEach (enemyIs Enemies.servantOfFlameOnTheRun) (addToVictory iid)
                 eachInvestigator \iid' -> drawCards iid' source 3
               labeled' "placeUnderAct" do
-                victoryDisplay <- getVictoryDisplay
                 mcard <- case find ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay of
                   Just c -> pure (Just c)
                   Nothing -> runMaybeT do
@@ -306,83 +305,74 @@ instance RunMessage SmokeAndMirrors where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       let servantDef = toResult @CardDef attrs.meta
-      let servantName = nameTitle $ cdName servantDef
       case r of
         NoResolution -> do
-          recordSetInsert ServantOfElokoss [toCardCode servantDef]
-          eliteInPlay <- select $ EliteEnemy <> EnemyAt Anywhere
-          eliteInPlayCards <- traverse (field EnemyCard) eliteInPlay
+          recordSetInsert ServantOfElokoss [servantDef.cardCode]
+          eliteInPlay <- selectField EnemyCard $ InPlayEnemy $ EliteEnemy <> EnemyAt Anywhere
 
-          locationsWithCards <- select $ LocationWithCardsUnderneath AnyCards
-          cardsUnderLocations <- concatMapM (field LocationCardsUnderneath) locationsWithCards
-          let eliteUnderLocations = filter (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) cardsUnderLocations
+          cardsUnderLocations <-
+            concatMapM (field LocationCardsUnderneath) =<< select (LocationWithCardsUnderneath AnyCards)
+          let eliteUnderLocations = filterCards (#enemy <> CardWithTrait Elite) cardsUnderLocations
 
-          harbingerCard <- fetchCard servantDef
+          harbinger <- fetchCard servantDef
+          drawnCard <- sample $ harbinger :| eliteInPlay <> eliteUnderLocations
 
-          let allCards = eliteInPlayCards <> eliteUnderLocations <> [harbingerCard]
-          mDrawnCard <- case nonEmpty allCards of
-            Nothing -> pure Nothing
-            Just cards -> do
-              shuffled <- shuffle $ toList cards
-              case listToMaybe shuffled of
-                Just drawnCard | toCardCode drawnCard == toCardCode servantDef -> do
-                  record InvestigatorsDiscoveredTheCultsWhereabouts
-                  pure $ Just drawnCard
-                Just drawnCard -> do
-                  record InvestigatorsFailedInTheirSearch
-                  pure $ Just drawnCard
-                Nothing -> do
-                  record InvestigatorsFailedInTheirSearch
-                  pure Nothing
+          let isHarbinger = drawnCard.cardCode == servantDef.cardCode
 
-          let drawnCardName = maybe "unknown" (nameTitle . cdName . lookupEncounterCardDef . toCardCode) mDrawnCard
+          record
+            $ if isHarbinger
+              then InvestigatorsDiscoveredTheCultsWhereabouts
+              else InvestigatorsFailedInTheirSearch
 
-          victoryDisplay <- getVictoryDisplay
-          let servantInVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
-          when servantInVictory $ record InvestigatorsKilledTheServantOfFlame
+          whenM (inVictoryDisplay $ cardIs Enemies.servantOfFlameOnTheRun) do
+            record InvestigatorsKilledTheServantOfFlame
 
-          underAct <- scenarioFieldMap ScenarioCardsUnderActDeck id
-          let underActEnemyCount = count ((== EnemyType) . toCardType) underAct
+          underAct <- scenarioField ScenarioCardsUnderActDeck
+          let underActEnemyCount = countCards (card_ #enemy) underAct
+
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
+          resolutionFlavor $ scope "noResolution" do
+            setTitle "title"
+            p "body"
+            ul do
+              cardNameVar servantDef $ li "harbingerOfElokoss"
+              cardNameVar drawnCard $ li.nested "drawnCard" do
+                li.validate isHarbinger "isHarbinger"
+                li.validate (not isHarbinger) "otherwise"
+              li "servantOfFlame"
+              withVars ["xp" .= xp] $ li "victory"
+              li "proceed"
 
-          resolutionFlavor
-            $ withVars ["xp" .= xp, "servantName" .= servantName, "drawnCard" .= drawnCardName]
-            $ setTitle "noResolution.title"
-            >> p "noResolution.body"
-
-          let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
+          let servantUnderAct = any (isCardCode Enemies.servantOfFlameOnTheRun) underAct
           if servantUnderAct then push R2 else endOfScenario
         Resolution 1 -> do
           recordSetInsert ServantOfElokoss [toCardCode servantDef]
           record InvestigatorsDiscoveredTheCultsWhereabouts
 
-          victoryDisplay <- getVictoryDisplay
-          underAct <- scenarioFieldMap ScenarioCardsUnderActDeck id
+          whenM (inVictoryDisplay $ cardIs Enemies.servantOfFlameOnTheRun) do
+            record InvestigatorsKilledTheServantOfFlame
 
-          let servantInVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
-          when servantInVictory $ record InvestigatorsKilledTheServantOfFlame
+          underAct <- scenarioField ScenarioCardsUnderActDeck
 
-          let eliteUnderAct = count (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) underAct
+          let eliteUnderAct = countCards (#enemy <> CardWithTrait Elite) underAct
           when (eliteUnderAct >= 6) $ record InvestigatorsScouredArkhamForAnswers
 
-          let eliteInVictory =
-                count (\c -> toCardType c == EnemyType && c `cardMatch` CardWithTrait Elite) victoryDisplay
+          eliteInVictory <- countCards (#enemy <> CardWithTrait Elite) <$> getVictoryDisplay
           when (eliteInVictory >= 6) $ record InvestigatorsStirredUpTrouble
 
-          let underActEnemyCount = count ((== EnemyType) . toCardType) underAct
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" underActEnemyCount
+          let underActEnemyCount = countCards (card_ #enemy) underAct
 
-          resolutionFlavor
-            $ nameVar servantDef
-            $ withVars ["xp" .= xp]
-            $ setTitle "resolution1.title"
-            >> p "resolution1.body"
+          cardNameVar servantDef
+            $ resolutionWithXp "resolution1"
+            $ allGainXpWithBonus' attrs
+            $ toBonus "bonus" underActEnemyCount
 
-          let servantUnderAct = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) underAct
+          let servantUnderAct = any (isCardCode Enemies.servantOfFlameOnTheRun) underAct
           if servantUnderAct then push R2 else endOfScenario
         Resolution 2 -> do
           record TheServantOfFlameEscaped
           eachInvestigator \iid -> gainXp iid attrs (ikey "xp.resolution2") 1
+          resolution "resolution2"
           endOfScenario
         other -> throwIO $ UnknownResolution other
       pure s

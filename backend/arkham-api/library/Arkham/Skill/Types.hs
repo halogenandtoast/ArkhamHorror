@@ -102,6 +102,9 @@ instance HasField "customizations" SkillAttrs Customizations where
 instance HasField "cardId" SkillAttrs CardId where
   getField = skillCardId
 
+instance HasField "cardCode" SkillAttrs CardCode where
+  getField = skillCardCode
+
 instance HasField "id" SkillAttrs SkillId where
   getField = skillId
 

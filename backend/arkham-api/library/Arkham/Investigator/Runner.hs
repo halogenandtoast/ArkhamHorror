@@ -125,6 +125,7 @@ import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
+  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -985,7 +986,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
     discardableHand <-
-      select $ inHandOf NotForPlay investigatorId <> CardWithoutModifier CannotLeaveYourHand
+      select $ inHandOf NotForPlay investigatorId
+        <> CardWithoutModifier CannotLeaveYourHand
+        <> basic handDiscard.filter
     when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull discardableHand)) do
       wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
       pushAll [wouldDiscard, Do msg]
@@ -1008,7 +1011,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               pushWhen (n > 0)
                 $ chooseN player n
                 $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-                  | c <- cs
+                  | c <- cs'
                   ]
               for_ handDiscard.target \target ->
                 push $ DiscardedCards investigatorId handDiscard.source target cs'

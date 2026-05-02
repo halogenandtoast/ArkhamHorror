@@ -456,14 +456,35 @@ drawsCard i cd = do
   runAll [PutCardOnTopOfDeck (toId i) (Deck.InvestigatorDeck $ toId i) c, drawing]
 
 startSkillTest :: HasCallStack => TestAppT ()
-startSkillTest = chooseOptionMatching "start skill test" \case
+startSkillTest = chooseOptionAcrossQuestions "start skill test" \case
   StartSkillTestButton {} -> True
   _ -> False
 
 applyResults :: TestAppT ()
-applyResults = chooseOptionMatching "apply skill test results" \case
+applyResults = chooseOptionAcrossQuestions "apply skill test results" \case
   SkillTestApplyResultsButton {} -> True
   _ -> False
+
+chooseOptionAcrossQuestions
+  :: HasCallStack => String -> (UI Message -> Bool) -> TestAppT ()
+chooseOptionAcrossQuestions reason f = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    findIn = \case
+      QuestionLabel _ _ q -> findIn q
+      ChooseOne msgs -> find f msgs
+      PlayerWindowChooseOne msgs -> find f msgs
+      ChooseOneAtATime msgs -> find f msgs
+      ChooseN _ msgs -> find f msgs
+      _ -> Nothing
+  case mapMaybe (findIn . snd) (mapToList questionMap) of
+    [msg] -> push (uiToRun msg) <* runMessages
+    [] -> liftIO $ expectationFailure $ "could not find a matching message for: " <> reason
+    _ ->
+      liftIO
+        $ expectationFailure
+        $ "found multiple matching messages for: "
+        <> reason
 
 inWindow :: Investigator -> TestAppT () -> TestAppT ()
 inWindow self body = do

@@ -1,12 +1,10 @@
 module Arkham.Treachery.Cards.Dissonance (dissonance) where
 
-import Arkham.Card.CardType
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Helpers.SkillTest.Lifted (beginSkillTest)
-import Arkham.Matcher
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted hiding (beginSkillTest)
+import Arkham.Treachery.Import.Lifted
 
 newtype Dissonance = Dissonance TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,16 +17,13 @@ instance RunMessage Dissonance where
   runMessage msg t@(Dissonance attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       loseActions iid attrs 1
-      chooseOneM iid do
-        labeled "Discard all non-weakness assets from your hand" do
-          discardAll iid attrs (CardWithType AssetType <> not_ WeaknessCard)
-        labeled "Discard all non-weakness events from your hand" do
-          discardAll iid attrs (CardWithType EventType <> not_ WeaknessCard)
-        labeled "Discard all non-weakness skills from your hand" do
-          discardAll iid attrs (CardWithType SkillType <> not_ WeaknessCard)
+      chooseOneM iid $ withI18n do
+        labeled' "assets" $ discardAll iid attrs $ #asset <> not_ #weakness
+        labeled' "events" $ discardAll iid attrs $ #event <> not_ #weakness
+        labeled' "skills" $ discardAll iid attrs $ #skill <> not_ #weakness
       pure t
     _ -> Dissonance <$> liftRunMessage msg attrs

@@ -3,9 +3,9 @@ module Arkham.Enemy.Cards.DarkMagician (darkMagician) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
 
 newtype DarkMagician = DarkMagician EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -16,22 +16,28 @@ darkMagician = enemy DarkMagician Cards.darkMagician (4, Static 4, 2) (1, 1)
 
 instance HasAbilities DarkMagician where
   getAbilities (DarkMagician a) =
-    extend1 a $ restricted a 1 OnSameLocation $ forced $ RoundEnds #when
+    extend1 a
+      $ restricted
+        a
+        1
+        ( exists
+            $ NearestEnemyToLocationMatch
+              (locationWithEnemy a)
+              (EnemyWithoutDoom <> CanPlaceDoomOnEnemy <> not_ (be a))
+        )
+      $ forced
+      $ RoundEnds #when
 
 instance RunMessage DarkMagician where
   runMessage msg e@(DarkMagician attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- Find enemy with no doom nearest to Dark Magician
-      mLoc <- field EnemyLocation (toId attrs)
-      case mLoc of
-        Nothing -> pure ()
-        Just loc -> do
-          nearestEnemies <- select 
-            $ NearestEnemyToLocation loc 
-            $ EnemyWithDoom (EqualTo $ Static 0) 
-            <> NotEnemy (be attrs)
-          case nearestEnemies of
-            [] -> pure ()
-            (targetEnemy : _) -> placeDoom (attrs.ability 1) targetEnemy 1
+      lead <- getLead
+      enemies <-
+        select
+          $ NearestEnemyToLocationMatch (locationWithEnemy attrs)
+          $ EnemyWithoutDoom
+          <> CanPlaceDoomOnEnemy
+          <> not_ (be attrs)
+      chooseTargetM lead enemies $ placeDoomOn (attrs.ability 1) 1
       pure e
     _ -> DarkMagician <$> liftRunMessage msg attrs

@@ -2,11 +2,10 @@ module Arkham.Location.Cards.SewerTunnelsToxicWastePit (sewerTunnelsToxicWastePi
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Location.Cards qualified as Cards (sewerTunnelsToxicWastePit)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (toMessage)
 
 newtype SewerTunnelsToxicWastePit = SewerTunnelsToxicWastePit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,6 +21,6 @@ instance HasAbilities SewerTunnelsToxicWastePit where
 instance RunMessage SewerTunnelsToxicWastePit where
   runMessage msg l@(SewerTunnelsToxicWastePit attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toMessage $ chooseAndDiscardCard iid (attrs.ability 1)
+      chooseAndDiscardCard iid (attrs.ability 1)
       pure l
     _ -> SewerTunnelsToxicWastePit <$> liftRunMessage msg attrs

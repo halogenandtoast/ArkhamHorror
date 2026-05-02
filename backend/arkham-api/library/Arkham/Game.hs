@@ -3596,6 +3596,13 @@ enemyMatcherFilter es matcher' = do
     NearestEnemyToLocationFallback lid inner -> do
       xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyToLocation lid inner)
       if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
+    NearestEnemyToLocationMatch matcher inner -> do
+      locs <- select matcher
+      case locs of
+        [lid] -> do
+          xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyToLocation lid inner)
+          if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
+        _ -> error "Expected exactly one location to match"
     NearestEnemyToAnInvestigator enemyMatcher -> do
       eids <- select (InPlayEnemy enemyMatcher)
       mins <$> flip mapMaybeM es \enemy -> runMaybeT do

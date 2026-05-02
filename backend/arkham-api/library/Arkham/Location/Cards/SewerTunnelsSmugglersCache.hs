@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.SewerTunnelsSmugglersCache (sewerTunnelsSmugglersCache) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (sewerTunnelsSmugglersCache)
 import Arkham.Location.Import.Lifted
@@ -15,7 +16,10 @@ sewerTunnelsSmugglersCache = location SewerTunnelsSmugglersCache Cards.sewerTunn
 
 instance HasAbilities SewerTunnelsSmugglersCache where
   getAbilities (SewerTunnelsSmugglersCache a) =
-    extendRevealed1 a $ restricted a 1 Here $ freeReaction $ TurnEnds #when You
+    extendRevealed1 a
+      $ restricted a 1 (Here <> can.gain.resources You)
+      $ freeReaction
+      $ TurnEnds #when You
 
 instance RunMessage SewerTunnelsSmugglersCache where
   runMessage msg l@(SewerTunnelsSmugglersCache attrs) = runQueueT $ case msg of

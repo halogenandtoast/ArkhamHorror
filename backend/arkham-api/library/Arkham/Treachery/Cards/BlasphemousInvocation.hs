@@ -1,8 +1,8 @@
 module Arkham.Treachery.Cards.BlasphemousInvocation (blasphemousInvocation) where
 
-import Arkham.GameValue (GameValue (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (beginSkillTest)
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -21,14 +21,15 @@ instance RunMessage BlasphemousInvocation where
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n | n > 0 -> do
-      cultistsWithNoDoom <- select $ EnemyWithTrait Cultist <> EnemyWithDoom (EqualTo $ Static 0)
-      placed <- if notNull cultistsWithNoDoom
-        then do
-          targets <- take n <$> shuffleM cultistsWithNoDoom
-          for_ targets $ \target -> placeDoom (toSource attrs) target 1
-          pure $ length targets
-        else pure 0
-      when (placed == 0) $ 
-        findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
+      cultists <- selectCount $ #cultist <> EnemyWithoutDoom <> CanPlaceDoomOnEnemy
+      if cultists > 0
+        then findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
+        else doStep n msg
+      pure t
+    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+      cultists <- select $ #cultist <> EnemyWithoutDoom <> CanPlaceDoomOnEnemy
+      chooseTargetM iid cultists \cultist -> do
+        placeDoom attrs cultist 1
+        doStep (n - 1) msg'
       pure t
     _ -> BlasphemousInvocation <$> liftRunMessage msg attrs

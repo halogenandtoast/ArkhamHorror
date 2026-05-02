@@ -14,7 +14,7 @@ zealot = enemy Zealot Cards.zealot (2, Static 1, 2) (1, 0)
 
 instance HasAbilities Zealot where
   getAbilities (Zealot a) =
-    extend1 a $ restricted a 1 OnSameLocation $ forced $ EnemyEntersPlay #after (be a)
+    extend1 a $ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemyEntersPlay #after (be a)
 
 instance RunMessage Zealot where
   runMessage msg e@(Zealot attrs) = runQueueT $ case msg of

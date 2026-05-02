@@ -61,7 +61,9 @@ import Arkham.Classes.HasGame
 import Arkham.Helpers.History
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Matcher (TreacheryMatcher(..), treacheryInThreatAreaOf)
 import Arkham.Message.Lifted.Placement
+import Arkham.Name
 import Arkham.SkillType
 import Arkham.Tracing
 import Arkham.Treachery.Helpers qualified as Msg
@@ -95,6 +97,15 @@ placeInThreatArea
   -> InvestigatorId
   -> m ()
 placeInThreatArea t = push . Msg.placeInThreatArea t
+
+placeInThreatAreaOnlyOne
+  :: (ReverseQueue m, AsId a, IdOf a ~ TreacheryId, Named a)
+  => a
+  -> InvestigatorId
+  -> m ()
+placeInThreatAreaOnlyOne t iid = do
+  alreadyHasOne <- selectAny $ treacheryInThreatAreaOf iid <> TreacheryWithTitle (toTitle t)
+  unless alreadyHasOne $ placeInThreatArea t iid
 
 placeTreachery
   :: (ReverseQueue m, AsId a, IdOf a ~ TreacheryId)

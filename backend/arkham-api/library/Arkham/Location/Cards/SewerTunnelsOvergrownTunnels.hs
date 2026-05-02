@@ -15,7 +15,7 @@ sewerTunnelsOvergrownTunnels = location SewerTunnelsOvergrownTunnels Cards.sewer
 
 instance HasAbilities SewerTunnelsOvergrownTunnels where
   getAbilities (SewerTunnelsOvergrownTunnels a) =
-    extendRevealed1 a $ restricted a 1 Here $ forced $ Enters #after You ThisLocation
+    extendRevealed1 a $ restricted a 1 Here $ forced $ Enters #after You (be a)
 
 instance RunMessage SewerTunnelsOvergrownTunnels where
   runMessage msg l@(SewerTunnelsOvergrownTunnels attrs) = runQueueT $ case msg of

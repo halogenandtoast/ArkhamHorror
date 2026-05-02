@@ -17,7 +17,7 @@ instance HasAbilities HeraldOfFlame where
     extend1 a
       $ restricted a 1 (exists $ EnemyAt (locationWithEnemy a) <> EnemyWithAnyDamage)
       $ forced
-      $ EnemyAttacks #when Anyone AnyEnemyAttack (be a)
+      $ EnemyAttacks #after Anyone AnyEnemyAttack (be a)
 
 instance RunMessage HeraldOfFlame where
   runMessage msg e@(HeraldOfFlame attrs) = runQueueT $ case msg of

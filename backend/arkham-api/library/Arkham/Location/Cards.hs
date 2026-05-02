@@ -5,7 +5,8 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Direction
-import Arkham.EncounterSet hiding (Blight, Dreamlands, Dunwich)
+import Arkham.EncounterSet hiding (Arkham, Blight, Dreamlands, Dunwich)
+import Arkham.EncounterSet qualified as Set
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
@@ -1103,24 +1104,24 @@ allLocationCards =
         --- Spreading Flames
         yourFriendsRoom
       , --- Arkham
-        downtownFirstBankOfArkham_c2026
+        downtownFirstBankOfArkham_Arkham
       , downtownArkhamSanatorium
       , uptownStMarysHospital
       , uptownYeOldeMagickShoppe
-      , northside_c2026
-      , easttown_c2026
-      , merchantDistrict_c2026
+      , northside_Arkham
+      , easttown_Arkham
+      , merchantDistrict_Arkham
       , waterfrontDistrict
-      , southside_c2026
-      , frenchHill_c2026
+      , southside_Arkham
+      , frenchHill_Arkham
       , miskatonicUniversityInFlames
       , miskatonicUniversityQuietCampus
       , --- MiskatonicUniversity
-        miskatonicQuad_c2026
-      , dormitories_c2026
+        miskatonicQuad_MiskatonicUniversity
+      , dormitories_MiskatonicUniversity
       , scienceHall
-      , warrenObservatory_c2026
-      , orneLibrary_c2026
+      , warrenObservatory_MiskatonicUniversity
+      , orneLibrary_MiskatonicUniversity
       , --- Sewers
         sewerCulvert
       , sewerTunnelsInfestedPipes
@@ -11642,8 +11643,8 @@ yourFriendsRoom =
     [Triangle]
     SpreadingFlames
 
-miskatonicQuad_c2026 :: CardDef
-miskatonicQuad_c2026 =
+miskatonicQuad_MiskatonicUniversity :: CardDef
+miskatonicQuad_MiskatonicUniversity =
   location
     "12116"
     "Miskatonic Quad"
@@ -11652,8 +11653,8 @@ miskatonicQuad_c2026 =
     [Triangle, Hourglass, Circle, Heart, Square, Diamond]
     MiskatonicUniversity
 
-dormitories_c2026 :: CardDef
-dormitories_c2026 =
+dormitories_MiskatonicUniversity :: CardDef
+dormitories_MiskatonicUniversity =
   location
     "12117"
     "Dormitories"
@@ -11673,8 +11674,8 @@ scienceHall =
       [Plus]
       MiskatonicUniversity
 
-warrenObservatory_c2026 :: CardDef
-warrenObservatory_c2026 =
+warrenObservatory_MiskatonicUniversity :: CardDef
+warrenObservatory_MiskatonicUniversity =
   location
     "12119"
     "Warren Observatory"
@@ -11683,8 +11684,8 @@ warrenObservatory_c2026 =
     [Plus]
     MiskatonicUniversity
 
-orneLibrary_c2026 :: CardDef
-orneLibrary_c2026 =
+orneLibrary_MiskatonicUniversity :: CardDef
+orneLibrary_MiskatonicUniversity =
   victory 1
     $ location
       "12120"
@@ -11694,8 +11695,8 @@ orneLibrary_c2026 =
       [Plus]
       MiskatonicUniversity
 
-downtownFirstBankOfArkham_c2026 :: CardDef
-downtownFirstBankOfArkham_c2026 =
+downtownFirstBankOfArkham_Arkham :: CardDef
+downtownFirstBankOfArkham_Arkham =
   victory 1
     $ location
       "12145"
@@ -11703,7 +11704,7 @@ downtownFirstBankOfArkham_c2026 =
       [Arkham]
       Triangle
       [Moon, T]
-      Arkham_C2026
+      Set.Arkham
 
 downtownArkhamSanatorium :: CardDef
 downtownArkhamSanatorium =
@@ -11714,7 +11715,7 @@ downtownArkhamSanatorium =
       [Arkham]
       Triangle
       [Moon, T]
-      Arkham_C2026
+      Set.Arkham
 
 uptownStMarysHospital :: CardDef
 uptownStMarysHospital =
@@ -11724,7 +11725,7 @@ uptownStMarysHospital =
     [Arkham]
     Plus
     [Diamond, Square]
-    Arkham_C2026
+    Set.Arkham
 
 uptownYeOldeMagickShoppe :: CardDef
 uptownYeOldeMagickShoppe =
@@ -11734,37 +11735,37 @@ uptownYeOldeMagickShoppe =
     [Arkham]
     Plus
     [Diamond, Square]
-    Arkham_C2026
+    Set.Arkham
 
-northside_c2026 :: CardDef
-northside_c2026 =
+northside_Arkham :: CardDef
+northside_Arkham =
   location
     "12149"
     "Northside"
     [Arkham]
     T
     [Diamond, Triangle]
-    Arkham_C2026
+    Set.Arkham
 
-easttown_c2026 :: CardDef
-easttown_c2026 =
+easttown_Arkham :: CardDef
+easttown_Arkham =
   location
     "12150"
     "Easttown"
     [Arkham]
     Moon
     [Circle, Triangle, Spade]
-    Arkham_C2026
+    Set.Arkham
 
-merchantDistrict_c2026 :: CardDef
-merchantDistrict_c2026 =
+merchantDistrict_Arkham :: CardDef
+merchantDistrict_Arkham =
   location
     "12151"
     "Merchant District"
     [Arkham]
     Circle
     [Moon, Diamond, Square, Spade]
-    Arkham_C2026
+    Set.Arkham
 
 waterfrontDistrict :: CardDef
 waterfrontDistrict =
@@ -11775,20 +11776,20 @@ waterfrontDistrict =
       [Arkham]
       Spade
       [Circle, Moon]
-      Arkham_C2026
+      Set.Arkham
 
-southside_c2026 :: CardDef
-southside_c2026 =
+southside_Arkham :: CardDef
+southside_Arkham =
   location
     "12153"
     "Southside"
     [Arkham]
     Square
     [Plus, Hourglass, Circle]
-    Arkham_C2026
+    Set.Arkham
 
-frenchHill_c2026 :: CardDef
-frenchHill_c2026 =
+frenchHill_Arkham :: CardDef
+frenchHill_Arkham =
   victory 1
     $ location
       "12154"
@@ -11796,7 +11797,7 @@ frenchHill_c2026 =
       [Arkham]
       Hourglass
       [Square]
-      Arkham_C2026
+      Set.Arkham
 
 miskatonicUniversityInFlames :: CardDef
 miskatonicUniversityInFlames =
@@ -11807,7 +11808,7 @@ miskatonicUniversityInFlames =
       [Arkham]
       Diamond
       [T, Plus, Circle]
-      Arkham_C2026
+      Set.Arkham
 
 miskatonicUniversityQuietCampus :: CardDef
 miskatonicUniversityQuietCampus =
@@ -11818,7 +11819,7 @@ miskatonicUniversityQuietCampus =
       [Arkham]
       Diamond
       [T, Plus, Circle]
-      Arkham_C2026
+      Set.Arkham
 
 sewerCulvert :: CardDef
 sewerCulvert =

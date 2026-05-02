@@ -15,7 +15,7 @@ raisingSuspicions = treachery RaisingSuspicions Cards.raisingSuspicions
 instance RunMessage RaisingSuspicions where
   runMessage msg t@(RaisingSuspicions attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ NearestEnemyTo iid EnemyWithoutDoom
+      enemies <- select $ NearestEnemyTo iid $ EnemyWithoutDoom <> CanPlaceDoomOnEnemy
       if null enemies
         then gainSurge attrs
         else chooseTargetM iid enemies $ placeDoomOn attrs 1

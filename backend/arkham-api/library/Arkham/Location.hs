@@ -1190,22 +1190,22 @@ allLocations =
       --- Spreading Flames
       SomeLocationCard yourFriendsRoom
       --- Miskatonic University
-    , SomeLocationCard miskatonicQuad_c2026
-    , SomeLocationCard dormitories_c2026
+    , SomeLocationCard miskatonicQuad_MiskatonicUniversity
+    , SomeLocationCard dormitories_MiskatonicUniversity
     , SomeLocationCard scienceHall
-    , SomeLocationCard warrenObservatory_c2026
-    , SomeLocationCard orneLibrary_c2026
-      --- Arkham_c2026
-    , SomeLocationCard downtownFirstBankOfArkham_c2026
+    , SomeLocationCard warrenObservatory_MiskatonicUniversity
+    , SomeLocationCard orneLibrary_MiskatonicUniversity
+      --- Arkham
+    , SomeLocationCard downtownFirstBankOfArkham_Arkham
     , SomeLocationCard downtownArkhamSanatorium
     , SomeLocationCard uptownStMarysHospital
     , SomeLocationCard uptownYeOldeMagickShoppe
-    , SomeLocationCard northside_c2026
-    , SomeLocationCard easttown_c2026
-    , SomeLocationCard merchantDistrict_c2026
+    , SomeLocationCard northside_Arkham
+    , SomeLocationCard easttown_Arkham
+    , SomeLocationCard merchantDistrict_Arkham
     , SomeLocationCard waterfrontDistrict
-    , SomeLocationCard southside_c2026
-    , SomeLocationCard frenchHill_c2026
+    , SomeLocationCard southside_Arkham
+    , SomeLocationCard frenchHill_Arkham
     , SomeLocationCard miskatonicUniversityInFlames
     , SomeLocationCard miskatonicUniversityQuietCampus
       --- Queen of Flames

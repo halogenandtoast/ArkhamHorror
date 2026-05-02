@@ -339,8 +339,8 @@ theGoldBug =
     , cdSlots = [#accessory]
     }
 
-drHenryArmitage_c2026 :: CardDef
-drHenryArmitage_c2026 =
+drHenryArmitage_SpreadingFlames :: CardDef
+drHenryArmitage_SpreadingFlames =
   (storyAsset "12115" ("Dr. Henry Armitage" <:> "The Head Librarian") 3 SpreadingFlames)
     { cdSkills = [#willpower, #intellect, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]

@@ -4,11 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Builder
+import Arkham.Helpers.Window (healedInvestigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype ExperimentalPsychology = ExperimentalPsychology AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,15 +29,9 @@ instance HasAbilities ExperimentalPsychology where
         actionAbility
     , controlled_ a 2
         $ triggered
-          ( InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You)
-          )
+          (InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You))
           (exhaust a)
     ]
-
-getHealedInvestigator :: [Window] -> InvestigatorId
-getHealedInvestigator [] = error "invalid call"
-getHealedInvestigator ((windowType -> Window.Healed _ (InvestigatorTarget iid) _ _) : _) = iid
-getHealedInvestigator (_ : xs) = getHealedInvestigator xs
 
 instance RunMessage ExperimentalPsychology where
   runMessage msg a@(ExperimentalPsychology attrs) = runQueueT $ case msg of
@@ -53,10 +46,10 @@ instance RunMessage ExperimentalPsychology where
         targets investigators $ healHorrorOn (attrs.ability 1) 1
         targets assets $ healHorrorOn (attrs.ability 1) 1
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (getHealedInvestigator -> healedId) _ -> do
-      effectWithSource (attrs.ability 2) healedId do
+    UseCardAbility _ (isSource attrs -> True) 2 (healedInvestigator -> iid) _ -> do
+      effectWithSource (attrs.ability 2) iid do
         apply $ AnySkillValue 2
-        during $ #nextSkillTest healedId
+        during $ #nextSkillTest iid
         removeOn #round
       pure a
     _ -> ExperimentalPsychology <$> liftRunMessage msg attrs

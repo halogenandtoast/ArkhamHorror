@@ -4555,8 +4555,8 @@ arcaneLock =
     { cdCardTraits = setFromList [Hex, Obstacle]
     }
 
-downpour_c2026 :: CardDef
-downpour_c2026 =
+downpour_BadWeather :: CardDef
+downpour_BadWeather =
   (treachery "12158" "Downpour" BadWeather 2)
     { cdCardTraits = singleton Hazard
     }

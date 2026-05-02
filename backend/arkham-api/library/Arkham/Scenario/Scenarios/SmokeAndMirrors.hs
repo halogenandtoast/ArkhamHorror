@@ -100,8 +100,8 @@ instance RunMessage SmokeAndMirrors where
       flavor $ scope "intro" $ h "title" >> p "body"
       twice $ addChaosToken Cultist
 
-      withOwner Assets.drHenryArmitage_c2026 \iid -> do
-        card <- fetchCard Assets.drHenryArmitage_c2026
+      withOwner Assets.drHenryArmitage_SpreadingFlames \iid -> do
+        card <- fetchCard Assets.drHenryArmitage_SpreadingFlames
         obtainCard card
         putCardIntoPlay iid card
       pure s
@@ -122,7 +122,7 @@ instance RunMessage SmokeAndMirrors where
 
       gather Set.SmokeAndMirrors
       gather Set.ArcaneLock
-      gather Set.Arkham_C2026
+      gather Set.Arkham
       gather Set.BadWeather
       gather Set.DeadEnds
       gather Set.FlyingTerrors
@@ -135,17 +135,17 @@ instance RunMessage SmokeAndMirrors where
 
       downtown <-
         placeLabeled "downtown"
-          =<< sampleOneOf (Locations.downtownFirstBankOfArkham_c2026, Locations.downtownArkhamSanatorium)
+          =<< sampleOneOf (Locations.downtownFirstBankOfArkham_Arkham, Locations.downtownArkhamSanatorium)
       uptown <-
         placeLabeled "uptown"
           =<< sampleOneOf (Locations.uptownStMarysHospital, Locations.uptownYeOldeMagickShoppe)
 
-      place_ Locations.easttown_c2026
-      place_ Locations.merchantDistrict_c2026
-      northside <- place Locations.northside_c2026
+      place_ Locations.easttown_Arkham
+      place_ Locations.merchantDistrict_Arkham
+      northside <- place Locations.northside_Arkham
       waterfrontDistrict <- place Locations.waterfrontDistrict
-      southside <- place Locations.southside_c2026
-      frenchHill <- place Locations.frenchHill_c2026
+      southside <- place Locations.southside_Arkham
+      frenchHill <- place Locations.frenchHill_Arkham
 
       (setAsidePerson, remainingPeople) <-
         sampleWithRest

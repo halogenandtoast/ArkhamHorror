@@ -258,6 +258,11 @@ healedAmount = sum . mapMaybe toHealedAmount
     (windowType -> Healed _ _ _ n) -> Just n
     _ -> Nothing
 
+healedInvestigator :: [Window] -> InvestigatorId
+healedInvestigator [] = error "invalid call"
+healedInvestigator ((windowType -> Window.Healed _ (InvestigatorTarget iid) _ _) : _) = iid
+healedInvestigator (_ : xs) = healedInvestigator xs
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case

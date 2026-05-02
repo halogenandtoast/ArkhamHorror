@@ -1,4 +1,5 @@
-module Arkham.Treachery.Cards.Downpour_c2026 (downpour_c2026) where
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Treachery.Cards.Downpour_BadWeather (downpour_BadWeather) where
 
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -7,15 +8,15 @@ import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
-newtype Downpour_c2026 = Downpour_c2026 TreacheryAttrs
+newtype Downpour_BadWeather = Downpour_BadWeather TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-downpour_c2026 :: TreacheryCard Downpour_c2026
-downpour_c2026 = treachery Downpour_c2026 Cards.downpour_c2026
+downpour_BadWeather :: TreacheryCard Downpour_BadWeather
+downpour_BadWeather = treachery Downpour_BadWeather Cards.downpour_BadWeather
 
-instance RunMessage Downpour_c2026 where
-  runMessage msg t@(Downpour_c2026 attrs) = runQueueT $ case msg of
+instance RunMessage Downpour_BadWeather where
+  runMessage msg t@(Downpour_BadWeather attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       revelationSkillTest sid iid attrs #agility (Fixed 3)
@@ -34,4 +35,4 @@ instance RunMessage Downpour_c2026 where
           placeCluesOnLocation iid attrs 1
           doStep (n - 1) msg'
       pure t
-    _ -> Downpour_c2026 <$> liftRunMessage msg attrs
+    _ -> Downpour_BadWeather <$> liftRunMessage msg attrs

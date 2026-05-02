@@ -1,24 +1,25 @@
-module Arkham.Location.Cards.MerchantDistrict_c2026 (merchantDistrict_c2026) where
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Location.Cards.MerchantDistrict_Arkham (merchantDistrict_Arkham) where
 
 import Arkham.Ability
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Location.Cards qualified as Cards (merchantDistrict_c2026)
+import Arkham.Location.Cards qualified as Cards (merchantDistrict_Arkham)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
-newtype MerchantDistrict_c2026 = MerchantDistrict_c2026 LocationAttrs
+newtype MerchantDistrict_Arkham = MerchantDistrict_Arkham LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-merchantDistrict_c2026 :: LocationCard MerchantDistrict_c2026
-merchantDistrict_c2026 = location MerchantDistrict_c2026 Cards.merchantDistrict_c2026 3 (PerPlayer 1)
+merchantDistrict_Arkham :: LocationCard MerchantDistrict_Arkham
+merchantDistrict_Arkham = location MerchantDistrict_Arkham Cards.merchantDistrict_Arkham 3 (PerPlayer 1)
 
-instance HasAbilities MerchantDistrict_c2026 where
-  getAbilities (MerchantDistrict_c2026 a) =
+instance HasAbilities MerchantDistrict_Arkham where
+  getAbilities (MerchantDistrict_Arkham a) =
     extendRevealed1 a $ groupLimit PerRound $ restricted a 1 restriction $ FastAbility' Free #move
    where
     restriction =
@@ -27,10 +28,10 @@ instance HasAbilities MerchantDistrict_c2026 where
         <> DuringTurn You
         <> CanMoveTo (ConnectedLocation ForMovement)
 
-instance RunMessage MerchantDistrict_c2026 where
-  runMessage msg l@(MerchantDistrict_c2026 attrs) = runQueueT $ case msg of
+instance RunMessage MerchantDistrict_Arkham where
+  runMessage msg l@(MerchantDistrict_Arkham attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <- getAccessibleLocations iid (attrs.ability 1)
       chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure l
-    _ -> MerchantDistrict_c2026 <$> liftRunMessage msg attrs
+    _ -> MerchantDistrict_Arkham <$> liftRunMessage msg attrs

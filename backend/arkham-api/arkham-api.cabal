@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -905,7 +905,7 @@ library
       Arkham.Asset.Assets.DrElliHorowitz
       Arkham.Asset.Assets.DrFrancisMorgan
       Arkham.Asset.Assets.DrHenryArmitage
-      Arkham.Asset.Assets.DrHenryArmitage_c2026
+      Arkham.Asset.Assets.DrHenryArmitage_SpreadingFlames
       Arkham.Asset.Assets.DrMalaSinhaDaringPhysician
       Arkham.Asset.Assets.DrMalaSinhaDaringPhysicianResolute
       Arkham.Asset.Assets.DrMilanChristopher
@@ -3474,13 +3474,13 @@ library
       Arkham.Location.Cards.DiningRoom
       Arkham.Location.Cards.DoorwayToTheDepths
       Arkham.Location.Cards.Dormitories
-      Arkham.Location.Cards.Dormitories_c2026
+      Arkham.Location.Cards.Dormitories_MiskatonicUniversity
       Arkham.Location.Cards.DownstairsDoorwayDen
       Arkham.Location.Cards.DownstairsDoorwayParlor
       Arkham.Location.Cards.DowntownArkhamAsylum
       Arkham.Location.Cards.DowntownArkhamSanatorium
       Arkham.Location.Cards.DowntownFirstBankOfArkham
-      Arkham.Location.Cards.DowntownFirstBankOfArkham_c2026
+      Arkham.Location.Cards.DowntownFirstBankOfArkham_Arkham
       Arkham.Location.Cards.DreamGatePointlessReality
       Arkham.Location.Cards.DreamGateWondrousJourney
       Arkham.Location.Cards.DressingRoom
@@ -3492,7 +3492,7 @@ library
       Arkham.Location.Cards.DylathLeen
       Arkham.Location.Cards.EasternRidge
       Arkham.Location.Cards.Easttown
-      Arkham.Location.Cards.Easttown_c2026
+      Arkham.Location.Cards.Easttown_Arkham
       Arkham.Location.Cards.EasttownArkhamPoliceStation
       Arkham.Location.Cards.EerieGlade
       Arkham.Location.Cards.ElderChamber
@@ -3568,7 +3568,7 @@ library
       Arkham.Location.Cards.FreightCar
       Arkham.Location.Cards.FrenchHill_290
       Arkham.Location.Cards.FrenchHill_291
-      Arkham.Location.Cards.FrenchHill_c2026
+      Arkham.Location.Cards.FrenchHill_Arkham
       Arkham.Location.Cards.FrigidCave
       Arkham.Location.Cards.FrontPorchEntryway
       Arkham.Location.Cards.FrozenLake
@@ -3754,13 +3754,13 @@ library
       Arkham.Location.Cards.MelatisShop
       Arkham.Location.Cards.MerchantDistrict_300
       Arkham.Location.Cards.MerchantDistrict_301
-      Arkham.Location.Cards.MerchantDistrict_c2026
+      Arkham.Location.Cards.MerchantDistrict_Arkham
       Arkham.Location.Cards.MessHall
       Arkham.Location.Cards.MetropolitanCathedral
       Arkham.Location.Cards.MineralTunnel
       Arkham.Location.Cards.MiramarYachtClub
       Arkham.Location.Cards.MiskatonicQuad
-      Arkham.Location.Cards.MiskatonicQuad_c2026
+      Arkham.Location.Cards.MiskatonicQuad_MiskatonicUniversity
       Arkham.Location.Cards.MiskatonicRiver
       Arkham.Location.Cards.MiskatonicUniversity
       Arkham.Location.Cards.MiskatonicUniversityInFlames
@@ -3807,7 +3807,7 @@ library
       Arkham.Location.Cards.NexusOfNKai
       Arkham.Location.Cards.NightmareBreach
       Arkham.Location.Cards.Northside
-      Arkham.Location.Cards.Northside_c2026
+      Arkham.Location.Cards.Northside_Arkham
       Arkham.Location.Cards.NorthsideTrainStation
       Arkham.Location.Cards.NorthTower_287
       Arkham.Location.Cards.NorthTower_288
@@ -3822,7 +3822,7 @@ library
       Arkham.Location.Cards.OperaGarnier213
       Arkham.Location.Cards.OperatingRoom
       Arkham.Location.Cards.OrneLibrary
-      Arkham.Location.Cards.OrneLibrary_c2026
+      Arkham.Location.Cards.OrneLibrary_MiskatonicUniversity
       Arkham.Location.Cards.OsbornsGeneralStore_206
       Arkham.Location.Cards.OsbornsGeneralStore_207
       Arkham.Location.Cards.OttomanFront
@@ -4022,7 +4022,7 @@ library
       Arkham.Location.Cards.SouthChurch_299
       Arkham.Location.Cards.Southside_294
       Arkham.Location.Cards.Southside_295
-      Arkham.Location.Cards.Southside_c2026
+      Arkham.Location.Cards.Southside_Arkham
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Location.Cards.SpaceSet
@@ -4215,7 +4215,7 @@ library
       Arkham.Location.Cards.WarpedRailA
       Arkham.Location.Cards.WarpedRailB
       Arkham.Location.Cards.WarrenObservatory
-      Arkham.Location.Cards.WarrenObservatory_c2026
+      Arkham.Location.Cards.WarrenObservatory_MiskatonicUniversity
       Arkham.Location.Cards.Waterfall
       Arkham.Location.Cards.WaterfrontDistrict
       Arkham.Location.Cards.WavewornIsland
@@ -5061,7 +5061,7 @@ library
       Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DownAndOut
       Arkham.Treachery.Cards.Downpour
-      Arkham.Treachery.Cards.Downpour_c2026
+      Arkham.Treachery.Cards.Downpour_BadWeather
       Arkham.Treachery.Cards.DraggedUnder
       Arkham.Treachery.Cards.DraggedUnderDevilReef
       Arkham.Treachery.Cards.DrawingTheSign

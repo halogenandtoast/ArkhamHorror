@@ -950,7 +950,7 @@ allTreacheries =
       , --- Arcane Lock
         SomeTreacheryCard arcaneLock
       , --- Bad Weather
-        SomeTreacheryCard downpour_c2026
+        SomeTreacheryCard downpour_BadWeather
       , SomeTreacheryCard flashFlood
       , --- Dead Ends
         SomeTreacheryCard raisingSuspicions

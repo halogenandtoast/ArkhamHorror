@@ -39,11 +39,11 @@ instance RunMessage SearchingForDrArmitage where
       iids <- select UneliminatedInvestigator
       chooseOrRunOneM lead do
         targets iids \iid -> do
-          drArmitage <- createAsset =<< getSetAsideCard Assets.drHenryArmitage_c2026
+          drArmitage <- createAsset =<< getSetAsideCard Assets.drHenryArmitage_SpreadingFlames
           gameModifier attrs drArmitage (DoNotTakeUpSlot #ally)
           takeControlOfAsset iid drArmitage
 
-      miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad_c2026
+      miskatonicQuad <- selectJust $ locationIs Locations.miskatonicQuad_MiskatonicUniversity
 
       selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.servantOfFlameRagingFury) >>= \case
         Just eid -> place eid (AtLocation miskatonicQuad)

@@ -1,24 +1,25 @@
-module Arkham.Location.Cards.FrenchHill_c2026 (frenchHill_c2026) where
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Location.Cards.FrenchHill_Arkham (frenchHill_Arkham) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Cards (frenchHill_c2026)
+import Arkham.Location.Cards qualified as Cards (frenchHill_Arkham)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
-newtype FrenchHill_c2026 = FrenchHill_c2026 LocationAttrs
+newtype FrenchHill_Arkham = FrenchHill_Arkham LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-frenchHill_c2026 :: LocationCard FrenchHill_c2026
-frenchHill_c2026 = location FrenchHill_c2026 Cards.frenchHill_c2026 4 (PerPlayer 2)
+frenchHill_Arkham :: LocationCard FrenchHill_Arkham
+frenchHill_Arkham = location FrenchHill_Arkham Cards.frenchHill_Arkham 4 (PerPlayer 2)
 
-instance HasAbilities FrenchHill_c2026 where
-  getAbilities (FrenchHill_c2026 a) =
+instance HasAbilities FrenchHill_Arkham where
+  getAbilities (FrenchHill_Arkham a) =
     extendRevealed1 a
       $ playerLimit PerRound
       $ restricted
@@ -27,8 +28,8 @@ instance HasAbilities FrenchHill_c2026 where
         (Here <> exists (AssetControlledBy You <> mapOneOf AssetCanHaveUses [Charge, Secret]))
         actionAbility
 
-instance RunMessage FrenchHill_c2026 where
-  runMessage msg l@(FrenchHill_c2026 attrs) = runQueueT $ case msg of
+instance RunMessage FrenchHill_Arkham where
+  runMessage msg l@(FrenchHill_Arkham attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseAndDiscardCards iid attrs 1
       assets <- select $ assetControlledBy iid <> mapOneOf AssetCanHaveUses [Charge, Secret]
@@ -44,4 +45,4 @@ instance RunMessage FrenchHill_c2026 where
           | canHaveSecret -> addUses (attrs.ability 1) asset Secret 1
           | otherwise -> pure ()
       pure l
-    _ -> FrenchHill_c2026 <$> liftRunMessage msg attrs
+    _ -> FrenchHill_Arkham <$> liftRunMessage msg attrs

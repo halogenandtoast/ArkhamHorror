@@ -315,7 +315,7 @@ data EncounterSet
   | ReekingDecay
   | FlyingTerrors
   | MiskatonicUniversity
-  | Arkham_C2026
+  | Arkham
   | PeopleOfArkham
   | Whippoorwills2
   | Sewers

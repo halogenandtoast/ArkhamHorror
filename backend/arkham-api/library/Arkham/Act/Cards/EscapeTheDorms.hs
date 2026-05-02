@@ -17,7 +17,7 @@ escapeTheDorms = act (2, A) EscapeTheDorms Cards.escapeTheDorms Nothing
 
 instance HasAbilities EscapeTheDorms where
   getAbilities = actAbilities \a ->
-    [ restricted a 1 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.miskatonicQuad_c2026)
+    [ restricted a 1 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.miskatonicQuad_MiskatonicUniversity)
         $ Objective
         $ forced AnyWindow
     ]
@@ -44,9 +44,9 @@ instance RunMessage EscapeTheDorms where
       selectEach (locationIs Locations.yourFriendsRoom) removeLocation
 
       placeSetAsideLocations_
-        [ Locations.orneLibrary_c2026
+        [ Locations.orneLibrary_MiskatonicUniversity
         , Locations.scienceHall
-        , Locations.warrenObservatory_c2026
+        , Locations.warrenObservatory_MiskatonicUniversity
         ]
 
       advanceActDeck attrs

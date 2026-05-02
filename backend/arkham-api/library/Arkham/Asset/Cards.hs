@@ -1048,7 +1048,7 @@ allPlayerAssetCards =
       , zebulonWhateley
       , zoeysCross
       , zoeysCrossAdvanced
-      , drHenryArmitage_c2026
+      , drHenryArmitage_SpreadingFlames
       , collector
       ]
 

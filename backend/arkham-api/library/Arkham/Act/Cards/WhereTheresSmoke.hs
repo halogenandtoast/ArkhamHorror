@@ -33,8 +33,8 @@ instance RunMessage WhereTheresSmoke where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       selectEach (InPlayEnemy AnyEnemy) $ toDiscard attrs
 
-      placeSetAsideLocation_ Locations.dormitories_c2026
-      placeSetAsideLocation_ Locations.miskatonicQuad_c2026
+      placeSetAsideLocation_ Locations.dormitories_MiskatonicUniversity
+      placeSetAsideLocation_ Locations.miskatonicQuad_MiskatonicUniversity
 
       createSetAsideEnemy_ Enemies.servantOfFlameRagingFury (location_ "Dormitories")
 

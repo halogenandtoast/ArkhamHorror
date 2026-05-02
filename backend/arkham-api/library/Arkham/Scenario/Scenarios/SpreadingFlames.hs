@@ -81,13 +81,13 @@ instance RunMessage SpreadingFlames where
 
       setAside
         [ Enemies.servantOfFlameRagingFury
-        , Assets.drHenryArmitage_c2026
+        , Assets.drHenryArmitage_SpreadingFlames
         , --- Locations
-          Locations.miskatonicQuad_c2026
-        , Locations.dormitories_c2026
+          Locations.miskatonicQuad_MiskatonicUniversity
+        , Locations.dormitories_MiskatonicUniversity
         , Locations.scienceHall
-        , Locations.warrenObservatory_c2026
-        , Locations.orneLibrary_c2026
+        , Locations.warrenObservatory_MiskatonicUniversity
+        , Locations.orneLibrary_MiskatonicUniversity
         ]
       setAside =<< amongGathered (cardIs Treacheries.fire1)
       startAt =<< place Locations.yourFriendsRoom
@@ -117,7 +117,7 @@ instance RunMessage SpreadingFlames where
         Resolution 1 -> do
           record InvestigatorsDefeatedTheirMaskedPursuer
           resolution "resolution1"
-          addCampaignCardToDeckChoice_ Assets.drHenryArmitage_c2026
+          addCampaignCardToDeckChoice_ Assets.drHenryArmitage_SpreadingFlames
           resolutionWithXpAndChooseOne "resolution1" (allGainXpWithBonus' attrs $ toBonus "bonus" 3) do
             labeled' "r2" $ push $ ScenarioResolution $ Resolution 2
             labeled' "r3" $ push $ ScenarioResolution $ Resolution 3

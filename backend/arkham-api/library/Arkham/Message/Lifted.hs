@@ -87,7 +87,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
-import Arkham.Message as X (AndThen (..), getChoiceAmount)
+import Arkham.Message as X (AndThen (..), getChoiceAmount, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
@@ -2215,8 +2215,16 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
-skillTestCardOption :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
+skillTestCardOption
+  :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
 skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+
+skillTestCardOptionEdit
+  :: (ReverseQueue m, HasCardCode card, Named card)
+  => card -> (SkillTestOption -> SkillTestOption) -> QueueT Message m () -> m ()
+skillTestCardOptionEdit card f body =
+  withI18n
+    $ additionalSkillTestOptionEdit f (cardNameVar card $ ikey' "name") body
 
 tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
 tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
@@ -4073,5 +4081,5 @@ clearAbilityUse = push . ClearAbilityUse
 removeActDeck :: ReverseQueue m => m ()
 removeActDeck = push $ SetCurrentActDeck 1 []
 
-setCurrentAgendaDeck :: (ReverseQueue m) => [Card] -> m ()
+setCurrentAgendaDeck :: ReverseQueue m => [Card] -> m ()
 setCurrentAgendaDeck = push . SetCurrentAgendaDeck 1

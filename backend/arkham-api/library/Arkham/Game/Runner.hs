@@ -1977,26 +1977,28 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             pushAll [msg', msg]
           _ ->
             getSkillTest >>= \case
-              Just st -> do
-                case opts of
-                  [opt] -> case opt.criteria of
+              Just st -> case opts of
+                [opt] -> when (opt.kind /= PreOriginalOptionKind) do
+                  case opt.criteria of
                     Nothing -> push $ uiToRun opt.option
                     Just c -> do
                       ok <- passesCriteria st.investigator Nothing st.source st.source [] c
                       when ok $ push $ uiToRun opt.option
-                  _ -> do
-                    opts' <-
-                      opts & mapMaybeM \opt -> do
-                        case opt.criteria of
-                          Nothing -> pure $ Just opt
-                          Just c -> do
-                            ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                            pure $ if ok then Just opt else Nothing
-                    let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
-                    pid <- getPlayer st.investigator
-                    push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->
-                      guard (elem opt opts' && (not blocked || opt.kind /= OriginalOptionKind))
-                        $> uiAnd opt.option (SkillTestResultOptions rest)
+                _ -> do
+                  opts' <-
+                    opts & mapMaybeM \opt -> do
+                      case opt.criteria of
+                        Nothing -> pure $ Just opt
+                        Just c -> do
+                          ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                          pure $ if ok then Just opt else Nothing
+                  let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
+                  pid <- getPlayer st.investigator
+                  push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) -> do
+                    guard $ elem opt opts'
+                    guard $ not blocked || opt.kind /= OriginalOptionKind
+                    guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
+                    pure $ uiAnd opt.option (SkillTestResultOptions rest)
               Nothing -> error "missing skill test"
     pure g
   CollectSkillTestOptions -> do

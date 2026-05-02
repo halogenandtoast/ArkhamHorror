@@ -24,7 +24,7 @@ instance RunMessage UnnaturalDecay where
       if null assets
         then assignDamage iid attrs 2
         else chooseOneM iid $ withI18n do
-          countVar 1 $ labeled "placeDoom" do
+          countVar 1 $ labeled' "placeDoom" do
             chooseTargetM iid assets $ placeDoomOn attrs 1
           countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
       pure t

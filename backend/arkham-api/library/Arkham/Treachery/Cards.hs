@@ -4618,19 +4618,19 @@ putridVapors =
 
 languor :: CardDef
 languor =
-  (treachery "12193" "Languor" FlyingTerrors 2)
+  (treachery "12193" "Languor" Torment 2)
     { cdCardTraits = setFromList [Hex, Bane]
     }
 
 dissonance :: CardDef
 dissonance =
-  (treachery "12194" "Dissonance" FlyingTerrors 2)
+  (treachery "12194" "Dissonance" Torment 2)
     { cdCardTraits = setFromList [Curse, Bane]
     }
 
 torment :: CardDef
 torment =
-  (peril $ treachery "12195" "Torment" FlyingTerrors 2)
+  (peril $ treachery "12195" "Torment" Torment 2)
     { cdCardTraits = setFromList [Power, Bane]
     }
 

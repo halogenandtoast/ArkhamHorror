@@ -1356,7 +1356,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           ]
       pure c
     SkillIconCost x skillTypes -> do
-      handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+      handCards <-
+        mapMaybe (preview _PlayerCard) <$> select (inHandOf NotForPlay iid <> basic DiscardableCard)
       let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
       let
         cards =

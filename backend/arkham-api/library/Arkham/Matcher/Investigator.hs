@@ -188,6 +188,7 @@ data InvestigatorMatcher
   | InvestigatorCanAddCardsToDeck
   | InvestigatorCanGainXp
   | InvestigatorWithScarletKey ScarletKeyMatcher
+  | InvestigatorIsPlayer PlayerId
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher

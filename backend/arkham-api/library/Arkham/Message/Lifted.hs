@@ -87,7 +87,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
-import Arkham.Message as X (AndThen (..), getChoiceAmount)
+import Arkham.Message as X (AndThen (..), getChoiceAmount, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
@@ -120,6 +120,11 @@ import Data.Typeable
 
 capture :: MonadIO m => QueueT msg m a -> m [msg]
 capture = evalQueueT
+
+withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
+withoutRunWindows body = do
+  msgs <- capture body
+  pushAll $ SetGameRunWindows False : msgs <> [SetGameRunWindows True]
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -551,6 +556,11 @@ gameOver = push GameOver
 kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 kill (toSource -> source) iid = do
   push $ InvestigatorKilled source iid
+  push CheckForRemainingInvestigators
+
+defeat :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
+defeat (toSource -> source) iid = do
+  push $ InvestigatorWhenDefeated source iid
   push CheckForRemainingInvestigators
 
 drivenInsane :: ReverseQueue m => InvestigatorId -> m ()
@@ -2205,6 +2215,20 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
+skillTestCardOption
+  :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
+skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+
+skillTestCardOptionEdit
+  :: (ReverseQueue m, HasCardCode card, Named card)
+  => card -> (SkillTestOption -> SkillTestOption) -> QueueT Message m () -> m ()
+skillTestCardOptionEdit card f body =
+  withI18n
+    $ additionalSkillTestOptionEdit f (cardNameVar card $ ikey' "name") body
+
+tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
+tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
+
 additionalSkillTestOptionEdit
   :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
 additionalSkillTestOptionEdit f = skillTestResultOptionEdit AdditionalOptionKind f
@@ -2977,6 +3001,15 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
           ]
       | location <- locations
       ]
+
+discoverAtMatchingLocation_
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> LocationMatcher
+  -> Int
+  -> m ()
+discoverAtMatchingLocation_ = discoverAtMatchingLocation NotInvestigate
 
 discoverAt
   :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ LocationId)
@@ -3937,7 +3970,14 @@ addToSpecificEncounterDiscard dkey =
 priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do
   msgs <- capture body
-  push $ Priority $ Run msgs
+  traverse_ (push . Priority) msgs
+
+-- Just a reminder that this is new and potentially dangerous, we should
+-- consider only cases where messages will look the same roughly.
+simultaneously :: ReverseQueue m => QueueT Message m () -> m ()
+simultaneously body = do
+  msgs <- capture body
+  push $ Simultaneously msgs
 
 flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
 flipCluesToDoom target n = push $ FlipClues (toTarget target) n
@@ -4037,3 +4077,9 @@ ifEnemy enemy matcher body = do
 
 clearAbilityUse :: ReverseQueue m => AbilityRef -> m ()
 clearAbilityUse = push . ClearAbilityUse
+
+removeActDeck :: ReverseQueue m => m ()
+removeActDeck = push $ SetCurrentActDeck 1 []
+
+setCurrentAgendaDeck :: ReverseQueue m => [Card] -> m ()
+setCurrentAgendaDeck = push . SetCurrentAgendaDeck 1

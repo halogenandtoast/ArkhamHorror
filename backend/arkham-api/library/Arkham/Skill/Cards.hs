@@ -6,6 +6,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.Customization
+import Arkham.EncounterSet (EncounterSet (DayOfRain))
 import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Id
@@ -159,6 +160,7 @@ allPlayerSkillCards =
       , takeHeart
       , takeTheInitiative
       , theEyeOfTruth5
+      , theHemlockCurse
       , theHomeFront
       , threeAces1
       , timelyIntervention
@@ -194,7 +196,7 @@ viciousBlow :: CardDef
 viciousBlow =
   (skill "01025" "Vicious Blow" [#combat] Guardian)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01525", "60119", "12025"]
+    , cdAlternateCardCodes = ["01525", "60119", "12025", "60169"]
     }
 
 deduction :: CardDef
@@ -932,6 +934,17 @@ wellDressed :: CardDef
 wellDressed =
   (skill "10130" "Well-Dressed" [#wild] Neutral)
     { cdCardTraits = setFromList [Practiced, Fortune]
+    }
+
+theHemlockCurse :: CardDef
+theHemlockCurse =
+  (skill "10685" "The Hemlock Curse" [#wildMinus] Neutral)
+    { cdCardTraits = setFromList [Blight, Colour]
+    , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
+    , cdEncounterSet = Just DayOfRain
+    , cdEncounterSetQuantity = Just 4
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 determined :: CardDef

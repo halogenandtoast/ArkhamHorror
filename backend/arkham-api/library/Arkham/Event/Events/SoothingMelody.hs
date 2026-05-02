@@ -41,8 +41,10 @@ instance RunMessage SoothingMelody where
             select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthers Anyone))
       damageAssets <- assetFor #damage
       horrorAssets <- assetFor #horror
-      treacheryIsDamage <- select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfDamage
-      treacheryIsHorror <- select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfHorror
+      treacheryIsDamage <-
+        select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfDamage
+      treacheryIsHorror <-
+        select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfHorror
 
       chooseOneM iid do
         for_ damageInvestigators \i -> damageLabeled i $ healDamageDelayed i attrs 1

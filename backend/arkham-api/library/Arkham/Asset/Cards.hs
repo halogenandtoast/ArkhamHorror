@@ -26,6 +26,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
 
+
 allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards =
   mapFromList
@@ -218,6 +219,7 @@ allPlayerAssetCards =
       , combatTraining3
       , cookiesCustom32
       , cornered2
+      , cornHuskDoll
       , cosmicFlame
       , cosmicFlame5
       , covertOpsInTheShadows
@@ -1046,6 +1048,8 @@ allPlayerAssetCards =
       , zebulonWhateley
       , zoeysCross
       , zoeysCrossAdvanced
+      , drHenryArmitage_SpreadingFlames
+      , collector
       ]
 
 -- with encounter backs

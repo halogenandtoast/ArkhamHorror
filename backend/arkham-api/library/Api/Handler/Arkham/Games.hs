@@ -36,6 +36,7 @@ import Conduit
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.Coerce
+import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Entity.Answer
@@ -74,7 +75,7 @@ getApiV1ArkhamGameSpectateR gameId = do
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- getRequestUserId
-  fmap (map toGameDetailsEntry) . runDB $ select do
+  games <- runDB $ select do
     (players :& games) <-
       distinct
         $ from
@@ -84,6 +85,14 @@ getApiV1ArkhamGamesR = do
     where_ $ players.userId ==. val userId
     orderBy [desc games.updatedAt]
     pure games
+  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
+  playerCounts <- runDB $ select do
+    p <- from $ table @ArkhamPlayer
+    where_ $ p.arkhamGameId `in_` valList gameIds
+    groupBy p.arkhamGameId
+    pure (p.arkhamGameId, countRows @Int)
+  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
+  pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

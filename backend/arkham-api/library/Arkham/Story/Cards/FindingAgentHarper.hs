@@ -33,6 +33,7 @@ instance RunMessage FindingAgentHarper where
         .~ toJSON (meta {crossedOff = toTitle card : crossedOff meta})
     Flip _ _ (isTarget attrs -> True) -> do
       let angryMob = lookupCard Enemies.angryMob (toCardId attrs)
+      replaceCard (toCardId attrs) angryMob
       push $ RemoveStory (toId attrs)
       innsmouthSquare <- selectJust $ location_ "Innsmouth Square"
       createEnemyAt_ angryMob innsmouthSquare

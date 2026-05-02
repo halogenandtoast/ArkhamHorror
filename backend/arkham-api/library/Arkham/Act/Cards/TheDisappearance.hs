@@ -23,7 +23,7 @@ instance HasAbilities TheDisappearance where
 
 instance RunMessage TheDisappearance where
   runMessage msg a@(TheDisappearance attrs) = runQueueT $ case msg of
-    KonamiCode -> do
+    KonamiCode _ -> do
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

@@ -258,6 +258,11 @@ healedAmount = sum . mapMaybe toHealedAmount
     (windowType -> Healed _ _ _ n) -> Just n
     _ -> Nothing
 
+healedInvestigator :: [Window] -> InvestigatorId
+healedInvestigator [] = error "invalid call"
+healedInvestigator ((windowType -> Window.Healed _ (InvestigatorTarget iid) _ _) : _) = iid
+healedInvestigator (_ : xs) = healedInvestigator xs
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case
@@ -450,6 +455,7 @@ getRevealedLocation :: [Window] -> LocationId
 getRevealedLocation = \case
   [] -> error "No location revealed"
   ((windowType -> Window.RevealLocation _ lid) : _) -> lid
+  ((windowType -> Window.RevealLocationForcedAbilities _ lid _) : _) -> lid
   (_ : rest) -> getRevealedLocation rest
 
 getTreacheryResolver :: HasCallStack => [Window] -> InvestigatorId
@@ -1428,6 +1434,19 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , locationMatches iid source window' locationId locationMatcher
             ]
         _ -> noMatch
+    Matcher.RevealLocationForcedAbilities timing whoMatcher locationMatcher fromLocationMatcher ->
+      guardTiming timing \case
+        Window.RevealLocationForcedAbilities who locationId mFromLid ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            , case (fromLocationMatcher, mFromLid) of
+                (Nothing, _) -> pure True
+                (Just _, Nothing) -> noMatch
+                (Just fromMatcher, Just fromLid) ->
+                  locationMatches iid source window' fromLid fromMatcher
+            ]
+        _ -> noMatch
     Matcher.UnrevealedRevealLocation timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.UnrevealedRevealLocation who locationId ->
@@ -2194,6 +2213,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , cardListMatches cards cardListMatcher
           , gameValueMatches (length cards) valueMatcher
           ]
+      _ -> noMatch
+    Matcher.DrewCardsFromOwnDeck timing whoMatcher -> guardTiming timing $ \case
+      Window.DrewCardsFromOwnDeck who -> matchWho iid who whoMatcher
       _ -> noMatch
     Matcher.DrawCard timing whoMatcher cardMatcher deckMatcher ->
       guardTiming timing \case

@@ -69,7 +69,7 @@ getApiV1AdminR = do
         pure (countDistinct users.id)
 
     activeGames <-
-      map toGameDetailsEntry <$> select do
+      map (`toGameDetailsEntry` 0) <$> select do
         games <- from $ table @ArkhamGameRaw
         where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
         pure games
@@ -91,7 +91,7 @@ getApiV1AdminFindGameR playerId = do
   runDB do
     player <- get404 playerId
     g <- getEntity404 $ coerce player.arkhamGameId
-    pure $ toGameDetailsEntry g
+    pure $ toGameDetailsEntry g 0
 
 getRecentGames :: Int64 -> DB [GameDetailsEntry]
 getRecentGames n = do
@@ -100,7 +100,7 @@ getRecentGames n = do
     orderBy [desc games.updatedAt]
     limit n
     pure games
-  pure $ map toGameDetailsEntry games
+  pure $ map (`toGameDetailsEntry` 0) games
 
 getApiV1AdminGamesR :: Handler [GameDetailsEntry]
 getApiV1AdminGamesR = runDB $ getRecentGames 20

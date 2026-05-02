@@ -68,8 +68,23 @@ preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
+  -- logic here is a bit awkward, but in the case of forced abilities we still
+  -- want `CannotTriggerAbilityMatching` to apply, BUT to retain the existing
+  -- logic (not 100% sure why we exclude forced here) we need to check
+  -- `CannotTriggerAbilityMatching` first and then fallback
   isForced <- isForcedAbility iid ability
-  if isForced then pure False else anyM (prevents modifiers) modifiers
+  let cannotTriggerMatchers =
+        modifiers & mapMaybe \case
+          CannotTriggerAbilityMatching m -> Just m
+          _ -> Nothing
+  suppressedByMatcher <-
+    if null cannotTriggerMatchers
+      then pure False
+      else elem ability <$> select (Matcher.AbilityOneOf cannotTriggerMatchers)
+  if
+    | suppressedByMatcher -> pure True
+    | isForced -> pure False
+    | otherwise -> anyM (prevents modifiers) modifiers
  where
   prevents modifiers = \case
     CannotPerformAction x -> preventsAbility x
@@ -106,7 +121,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
     ForcedWhen _ aType -> go aType
     ActionAbility {actions} ->
       let as = actionsToList actions
-      in if null as then pure True else anyM (canDoAction iid ab) as
+       in if null as then pure True else anyM (canDoAction iid ab) as
     FastAbility' _ (AndActions []) -> pure True
     FastAbility' _ actions -> anyM (canDoAction iid ab) (actionsToList actions)
     CustomizationReaction {} -> pure True
@@ -212,6 +227,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
     EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
     ActSource _ -> pure True
+    AgendaSource _ -> pure True
     IndexedSource _ (AssetSource _) -> pure True
     IndexedSource _ (LocationSource _) -> pure True
     ProxySource (AssetSource _) _ -> pure True
@@ -460,7 +476,9 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         -- let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
         -- So if we have depth issue investigate here
         depth <- getWindowDepth
-        let wasUsedThisWindow = maybe False (\u -> usedDepth u == depth && depth > 0) $ find ((== ability) . usedAbility) usedAbilities'
+        let wasUsedThisWindow =
+              maybe False (\u -> usedDepth u == depth && depth > 0)
+                $ find ((== ability) . usedAbility) usedAbilities'
 
         pure
           . (&& not wasUsedThisWindow)

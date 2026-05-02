@@ -4,6 +4,7 @@ import Deck from '@/arkham/views/Deck.vue';
 import Decks from '@/arkham/views/Decks.vue';
 import Cards from '@/arkham/views/Cards.vue';
 import JoinGame from '@/arkham/views/JoinGame.vue';
+import ClaimSeat from '@/arkham/views/ClaimSeat.vue';
 import ReplayGame from '@/arkham/views/ReplayGame.vue';
 import NewCampaign from '@/arkham/views/NewCampaign.vue';
 import { RouteLocationNormalized } from 'vue-router';
@@ -70,6 +71,13 @@ export default [
     name: 'JoinGame',
     component: JoinGame,
     meta: { requiresAuth: true, title: "Arkham Horror: Join Game" },
+    props: true,
+  },
+  {
+    path: '/games/:gameId/claim-seat',
+    name: 'ClaimSeat',
+    component: ClaimSeat,
+    meta: { requiresAuth: true, title: "Arkham Horror: Claim Seat" },
     props: true,
   },
   {

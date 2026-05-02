@@ -729,7 +729,7 @@ instance RunMessage SkillTest where
         pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
-          let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+          let passed target = Priority $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
           pushAll
             $ cycleN
               successTimes
@@ -744,9 +744,10 @@ instance RunMessage SkillTest where
           let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
           let
             handleChoice resolver =
-              let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
+              let failed target = Priority $ FailedSkillTest resolver skillTestAction skillTestSource target skillTestType n
                in [failed target | target <- skillTestSubscribers <> tokenSubscribers]
                     <> [failed (Initiator skillTestTarget)]
+                    <> [CollectSkillTestOptions]
 
           targetMods <- getModifiers skillTestTarget
           let cancelled = CancelEffects `elem` modifiers' && EffectsCannotBeCanceled `notElem` targetMods

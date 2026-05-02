@@ -80,9 +80,9 @@ motivationalSpeech =
     , cdCriteria =
         Just
           $ exists
-          $ PlayableCard
-            (UnpaidCost NoAction)
-            (InHandOf ForPlay (affectsOthers $ colocatedWithMatch You <> can.have.cards.leaveDiscard) <> #ally)
+          $ PlayableCardWithCostReduction NoAction 3
+          $ InHandOf ForPlay (affectsOthers $ colocatedWithMatch You <> can.have.cards.leaveDiscard)
+          <> #ally
     }
 
 oneInTheChamber :: CardDef

@@ -124,3 +124,4 @@ runMessages
 preloadModifiers :: (HasCallStack, Monad m, Tracing m) => Game -> m Game
 handleTraitRestrictedModifiers :: (Monad m, Tracing m) => Game -> m Game
 handleBlanked :: Monad m => Game -> m Game
+getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator

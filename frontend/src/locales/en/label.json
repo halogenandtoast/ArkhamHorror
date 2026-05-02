@@ -58,6 +58,7 @@
   "minusToYourNextSkillTestThisRound": "You get -{count} to your next skill test this round",
   "move": "Move",
   "moveTo": "Move to {name}",
+  "name": "{name}",
   "neither": "Neither",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",
@@ -68,6 +69,7 @@
   "placeDamageOn": "Place 1 damage on {name} | Place {count} damage on {name}",
   "placeDoom": "Place 1 doom | Place {count} doom",
   "placeDoomOn": "Place 1 doom on {name} | Place {count} doom on {name}",
+  "placeToken": "Place 1 @:{token} | Place {count} @:{token}",
   "play": "Play",
   "putIntoPlay": "Put {name} into play",
   "playIt": "Play it",
@@ -78,6 +80,7 @@
   "removeTokensFrom": "Remove 1 {token} from {name} | Remove {count} {token} from {name}",
   "removeAgendaDoom": "Remove 1 doom from the current agenda | Remove {count} doom from the current agenda",
   "removeDoom": "Remove 1 doom | Remove {count} doom",
+  "search": "Search",
   "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
   "skip": "Skip",
@@ -100,7 +103,16 @@
   "takeHorrorForEachPointOfFailure": "Take 1 horror for each point you failed by | Take {count} horror for each point you failed by",
   "takeHorrorUpTo": "Take up to {count} horror",
   "test": "Test {'{'}{skill}{'}'} ({count})",
+  "testX": "Test {'{'}{skill}{'}'} (X)",
   "useSkill": "Use {'{'}{skill}{'}'}",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "core2": {
+    "cosmicEvils": {
+      "option": "Take 1 direct damage and 1 direct horror, gain surge"
+    },
+    "mutated": {
+      "option": "Each investigator at your location takes 1 horror"
+    }
+  }
 }

@@ -29,7 +29,6 @@ instance RunMessage VowOfDrzytelech where
       chooseOrRunOneM iid do
         labeled "Put Vow of Drzytelech into play in your threat area" do
           place attrs (InThreatArea iid)
-          checkDefeated attrs iid
         whenM (lift $ can.shuffle.deck iid) do
           labeled "Take 1 horror and shuffle it into your deck" do
             assignHorror iid attrs 1

@@ -434,6 +434,7 @@ data SkillTestOptionKind
   = OriginalOptionKind -- the original option
   | AdditionalOptionKind -- an additional option added by an effect
   | BlockingOptionKind -- an option that blocks the original option (e.g. Mariner's Compass should happen before original)
+  | PreOriginalOptionKind -- an option that can only be chosen if th OriginalOptionKind is still available
   deriving stock (Show, Ord, Eq, Generic, Data)
 
 data SkillTestOption = SkillTestOption
@@ -449,6 +450,9 @@ setOptionCriteria c sto = sto { criteria = Just c }
 optionWhenExists :: Exists a => a -> SkillTestOption -> SkillTestOption
 optionWhenExists a = setOptionCriteria (exists a)
 
+preOriginalOption :: SkillTestOption -> SkillTestOption
+preOriginalOption sto = sto {Arkham.Message.kind = PreOriginalOptionKind}
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
@@ -456,9 +460,11 @@ data Message
   | ClearAbilityUse AbilityRef
   | SkillTestResultOption SkillTestOption -- Text [Message]
   | SkillTestResultOptions [SkillTestOption]
+  | CollectSkillTestOptions
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfAtIgnored InvestigatorId Bool
+  | SetGameRunWindows Bool
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
   | MoveWithSkillTest Message
@@ -1084,7 +1090,7 @@ data Message
   | ResolveSearch Target
   | PreSearchFound InvestigatorId (Maybe Target) DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card]) -- Deprecated
+  | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
@@ -1267,7 +1273,7 @@ data Message
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
-  | KonamiCode
+  | KonamiCode PlayerId
   | CreateConcealedCard ConcealedCard
   | PlaceConcealedCards InvestigatorId [ConcealedCardId] [LocationId]
   | PlaceConcealedCard InvestigatorId ConcealedCardId Placement
@@ -1280,6 +1286,7 @@ data Message
   | -- UI
     ClearUI
   | Priority Message
+  | Simultaneously [Message]
   | -- Debug
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
@@ -1301,6 +1308,7 @@ mconcat
         parseJSON = withObject "Message" \o -> do
           t :: Text <- o .: "tag"
           case t of
+            "KonamiCode" -> KonamiCode <$> (o .:? "contents" .!= PlayerId UUID.nil)
             "SkillTestResultOption" -> do
               econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
               pure $ case econtents of

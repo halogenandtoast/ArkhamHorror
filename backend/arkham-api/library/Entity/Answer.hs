@@ -338,6 +338,7 @@ handleAnswer Game {..} playerId = \case
         _ -> handled []
       These c s -> case s.step of
         Just (CS.ContinueCampaignStep {}) -> handled [NextScenarioCampaignStep (Just k)]
+        Just (CS.ScenarioStepWithOptions {}) -> handled [ScenarioCampaignStep k.normalize]
         _ -> case c.step of
           CS.ContinueCampaignStep {} -> handled [NextCampaignStep (Just k)]
           _ -> handled []

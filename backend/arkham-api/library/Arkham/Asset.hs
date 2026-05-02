@@ -1101,6 +1101,7 @@ allAssets =
       , SomeAssetCard helenPetersTheEldestSister
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
+      , SomeAssetCard cornHuskDoll
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook
@@ -1225,6 +1226,9 @@ allAssets =
       , SomeAssetCard handCrankFlashlight
       , --- basic weakness [core2026]
         SomeAssetCard theGoldBug
+      , --- story [core2026]
+        SomeAssetCard drHenryArmitage_SpreadingFlames
+      , SomeAssetCard collector
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeAssetCard physicalTraining2

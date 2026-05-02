@@ -353,9 +353,6 @@ keywordsL = lens cdKeywords $ \m x -> m {cdKeywords = x}
 cardTraitsL :: Lens' CardDef (Set Trait)
 cardTraitsL = lens cdCardTraits $ \m x -> m {cdCardTraits = x}
 
-class GetCardDef m a where
-  getCardDef :: a -> m CardDef
-
 class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
 

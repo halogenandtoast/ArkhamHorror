@@ -28,15 +28,16 @@ instance RunMessage OldCompass2 where
       investigate_ sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      withSkillTest \stid -> do
-        sid <- getRandom
-        mloc <- getSkillTestTargetedLocation
-        chooseOneM iid do
-          labeled "Exhaust Old Compass" do
-            exhaustThis attrs
-            -- the -1 from above will be retained so we add another -1 to get to -2
-            for_ mloc \loc -> skillTestModifier sid (attrs.ability 1) loc (ShroudModifier (-1))
-            push $ RepeatSkillTest sid stid
-          withI18n skip_
+      when attrs.ready do
+        withSkillTest \stid -> do
+          sid <- getRandom
+          mloc <- getSkillTestTargetedLocation
+          chooseOneM iid do
+            labeled "Exhaust Old Compass" do
+              exhaustThis attrs
+              -- the -1 from above will be retained so we add another -1 to get to -2
+              for_ mloc \loc -> skillTestModifier sid (attrs.ability 1) loc (ShroudModifier (-1))
+              push $ RepeatSkillTest sid stid
+            withI18n skip_
       pure a
     _ -> OldCompass2 <$> liftRunMessage msg attrs

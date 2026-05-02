@@ -1,0 +1,97 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of Fire! treacheries in play.",
+      "cultist": "-2. If this is an attack or evasion targeting a _Cultist_ enemy, reveal another token.",
+      "tablet": "-2 (-4 instead if you are at a _Ritual Site_ location).",
+      "elderThing": "-3. If you fail, draw the topmost copy of Fire! in the encounter discard pile."
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice the number of Fire! treacheries in play.",
+      "cultist": "-3. If this is an attack or evasion targeting a _Cultist_ enemy, reveal another token.",
+      "tablet": "-4. If you are at a _Ritual Site_ location, you automatically fail instead.",
+      "elderThing": "-5. If you fail, draw the topmost copy of Fire! in the encounter discard pile."
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets:<section class='encounter-sets grid'><div><img src='{setImgPath}/queen-of-ash.png' /><span>Queen of Ash</span></div><div><img src='{setImgPath}/ashen-pilgrims.png' /><span>Ashen Pilgrims</span></div><div><img src='{setImgPath}/cosmic-evils.png' /><span>Cosmic Evils</span></div><div><img src='{setImgPath}/cultists.png' /><span>Cultists</span></div><div><img src='{setImgPath}/fire.png' /><span>Fire!</span></div><div><img src='{setImgPath}/hallucinations.png' /><span>Hallucinations</span></div><div><img src='{setImgPath}/reeking-decay.png' /><span>Reeking Decay</span></div><div><img src='{setImgPath}/sewers.png' /><span>Sewers</span></div><div><img src='{setImgPath}/torment.png' /><span>Torment</span></div></section>",
+    "placeUndergroundCistern": "Put Underground Cistern into play.",
+    "sewers": "Shuffle each location in the _Sewers_ encounter set so you do not know which is which and put each of them into play, unrevealed.",
+    "sluiceControl": "Set Sluice Control aside, out of play.",
+    "startAt": "Each investigator begins play at Sewer Culvert.",
+    "checkCampaignLog": "Check the campaign log.",
+    "scouredArkhamForAnswers": "If the investigators scoured Arkham for answers, each investigator begins the game with 1 clue.",
+    "stirredUpTrouble": "*If the investigators stirred up trouble*, find each _Cultist_ enemy in the _Ashen Pilgrims_ and _Cultists_ encounter sets, shuffle them together and put 1 {'{'}perPlayer{'}'} enemies from that set into play, each at a different Sewer Tunnels location.",
+    "killedTheServantOfFlame": "*If the investigators killed the Servant of Flame*, remove the Servant of Flame enemy from the game. Otherwise, set it aside, out of play.",
+    "placeDoom": "If there are 3 or 4 players in the game, place 1 doom on the agenda. During setup, place 1 doom on the agenda.",
+    "setOutOfPlay": "Gather the _Fire!_ encounter set and set each copy of Fire! aside, out of play, along with both copies of the Collector reward asset and the Elokoss, Queen's Knight, and Herald of Flame enemies."
+  },
+  "intro": {
+    "title": "Scenario III: Queen of Ash",
+    "intro1": "<p>_Intro 1_: Dr. Armitage thanks the waitress at Velma’s Diner as she sets two pieces of warm apple pie between you. The head librarian pushes one toward you with a strained smile. “Arkham is changing. The world is changing—for the worse, I fear—but at least we have pie.”</p><p>Together, you and Dr. Armitage piece together a disturbing picture of the situation at hand. “The Brethren of Ash are not conspirators,” Armitage says. “They are thralls, all of them. Thralls of an ancient goddess, one they call ‘Elokoss’.” Dr. Armitage shows you a grotesque woodcut of a gnarled tree with burning branches before continuing.</p><p>“After attending one of the cult’s secret gatherings, some prospective followers develop a strange bruise that marks them as one of Elokoss’s own. These followers are from all walks of life: rich and poor, weak and strong. Most importantly, these thralls have no idea that they are under her sway. Your mysterious pursuer is one such thrall. According to prophecy, the ‘Servant of Flame’ who attacked us at the university is the harbinger of the queen’s return. The servant gathers sacrifices to make way for their queen’s glorious rebirth. A rebirth they predict will happen this very evening.”</p>",
+    "addTokens": "Based on your campaign difficulty, perform the following. If you are playing on…",
+    "easy": "…Easy difficulty, add an {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.",
+    "standard": "…Standard difficulty, add an {'{'}elderThing{'}'} and a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.",
+    "hard": "…Hard difficulty, add an {'{'}elderThing{'}'}, {'{'}tablet{'}'}, and a {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.",
+    "expert": "…Expert difficulty, add an {'{'}elderThing{'}'}, {'{'}tablet{'}'}, {'{'}cultist{'}'}, and a {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.",
+    "checkCampaignLog": "Check your campaign log.",
+    "discovered": "*If the investigators discovered the cult’s whereabouts*, proceed to _Intro 2_.",
+    "otherwise": "Otherwise, skip to _Intro 3_.",
+    "intro2": "<p>_Intro 2_: The thought of your friend being sacrificed chills you to your core. Rather than piece together circumstantial evidence, you suggest that you search the Servant of Flame’s residence for some clue. Your search turns up several leads. An invitation to a secret meeting. A pair of scuffed muddy boots. A record of bootlegging operations in the Waterfront District. A photo of three faces lit by candlelight in the dark. Everything points to the Arkham sewers.</p><p>“A bit foolish, wouldn’t you think, for a cult that worships fire to conduct their business in the sewers?” Armitage chuckles. “But I believe you are correct.” Together, you resolve to scour the sewers for any trace of your friend.</p><p class='basic right'>Proceed to _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: The thought of your friend being sacrificed chills you to your core. Together, you and Dr. Armitage pore over the precious few clues you have gathered. After several hours of mind-numbing analysis, Armitage theorizes that the Brethren of Ash are conducting their ritual in the Arkham sewers.</p><p>“A bit foolish, wouldn’t you think, for a cult that worships fire to conduct their business in the sewers?” Armitage chuckles. “But it’s the only lead we’ve got.”</p><p>Together, you resolve to scour the sewers for any trace of your friend.</p><ul><li>During setup, place 1 doom on the agenda.</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: Dr. Armitage barely escapes the sewers alive, wracked with guilt at leaving his companions behind. By dawn, an unquenchable fire has spread through all of Easttown, claiming countless lives. Although the Arkham Fire Department tries its best, the flames rage for three days before finally dying out. Those who fled whisper of unspeakable visions—a terrifying, ghoulish face staring out of the flames—that still haunt them. Doctors and nurses are still unable to identify the source of the victims' strange bruises, which will not heal. Any trace of Armitage's companions, as well as the Brethren of Ash, has been eradicated in the inferno.</p><ul><li>In your campaign log, record that *Elokoss was reborn*.</li><li>Each investigator is _killed_.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Against all odds, the vessel of the ancient evil Elokoss has been destroyed, and the cult's plans to bring her to this plane foiled. Dr. Armitage tends to the cultists as they reawaken. You find your friend among them, frightened and confused, but otherwise unharmed. As you explain the awful events of the evening, they listen intently. While escorting them and the rest of the innocents out of the sewers, you notice a strange, familiar mark on their neck. The bruise has lightened, and is only faintly visible, but it is still there.</p><p>It may only be a matter of time until the mark reawakens, and more followers of the Queen of Ash rise again to resurrect their goddess. You vow you will be ready, should that day come again.</p><ul><li>In your campaign log, record that *the investigators defeated Elokoss and the Brethren of Ash*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>Each investigator earns 5 bonus experience for defeating Elokoss and for saving their friend.</li></ul></li><li>The investigators have earned the Collector campaign reward card. Add both copies of this card to the player card pool.</li><li>Each investigator suffers 2 mental trauma and 2 physical trauma from their horrific experiences.</li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: A howling wind pelts you with cinders. Dr. Armitage pulls a battered tome out of the hands of a fallen cultist and chants a guttural, inhuman language. A loud crack, as of splitting timber, resounds through the cistern, and the flaming tree turns to powdery ash before your very eyes. All around you, the cultists drop their weapons and stop in their tracks, looking suddenly lost. They are no longer under Elokoss's sway.</p><p>You find your friend among them, frightened and confused, but otherwise unharmed. All trace of the mark on their neck has vanished, and the rest of the cult seem to have returned to normal, with no memory of the events of the evening. Still, your experience tonight leaves you fearful. In the months ahead, the slightest hint of smoke sets your pulse racing. The flames have subsided, but you can't shake the nagging feeling that somewhere deep below the city, the embers of Elokoss's rage continue to smolder.</p><ul><li>In your campaign log, record that *the investigators stopped Elokoss's glorious rebirth*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.</li><li>Each investigator earns 5 bonus experience for stopping a blasphemous ritual.</li><li>The investigators have earned the Collector campaign reward card. Add both copies of this card to the player card pool.</li><li>Each investigator suffers 2 mental trauma and 2 physical trauma from the events of the evening.</li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: The old sluice gate screeches open, loosing a deluge of fetid sewage. Down the corridors, you hear the torrent of water accompanied by the screams of countless cultists. Rather than try to run, you accept your fate. It is clear that there is no escape. You did what had to be done. As the muck rises rapidly to your ankles, then your knees, then your neck, you think of your friend and Dr. Armitage, and the countless others who have likely drowned. You sacrificed yourself and them to stop the return of an ancient evil. You only hope your sacrifice was not in vain.</p><ul><li>In your campaign log, record that *the investigators flooded the Brethren of Ash's summoning ritual*.</li><li>Each investigator who did not resign is _killed_.</li><li>Each investigator who did resign earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>Each investigator earns 3 bonus experience for escaping the deluge.</li></ul></li><li>The investigators have earned the Collector campaign reward card. Add both copies of this card to the player card pool.</li><li>Each surviving investigator suffers 3 mental trauma, as they are wracked with guilt for leaving their friends behind.</li><li>The investigators win the campaign, but it is only a matter of time until the followers of Elokoss rise again…</li></ul>"
+    },
+    "xp": {
+      "resolution3": "for escaping the deluge",
+      "bonus": "bonus experience"
+    }
+  },
+  "codex": {
+    "servantOfFlame": {
+      "title": "{'{'}codex{'}'} Codex Φ: Servant of Flame",
+      "intro": "<p>By defeating the Servant of Flame, you have brought them to their senses. As you take off their mask, they look up at you, confused.</p><p class='basic'>_Check your campaign log and resolve one of the following:_</p>",
+      "davidRenfield": {
+        "body": "<p>_If David Renfield is the harbinger of Elokoss:_</p><p>David snarls as you try to help him stand. “Leave me. I am a willing servant. I welcomed her into me. And now she will purge all in her cleansing flame,” he laughs weakly before drawing his last breath.</p><p class='basic right'>Each investigator may search their deck for a _Tome_ or _Spell_ card and play it, ignoring all costs.</p>"
+      },
+      "corneliaAkely": {
+        "body": "<p>_If Cornelia Akely is the harbinger of Elokoss:_</p><p>Cornelia stares, bewildered, at her bloody hands. “I thought it was all a nightmare,” she says as you help her to her feet. She looks you over and her face furrows. “You’re hurt. I can help.”</p><p class='basic right'>Each investigator heals 3 damage.</p>"
+      },
+      "naomiOBannion": {
+        "body": "<p>_If Naomi O’Bannion is the harbinger of Elokoss:_</p><p>“What kind of party is this?” Naomi bellows, then gives you a murderous look. “And who the hell are you?” You do your best to explain the situation as you help her to her feet.</p><p class='basic right'>Each investigator gains 5 resources.</p>"
+      },
+      "sgtEarlMonroe": {
+        "body": "<p>_If Sgt. Earl Munroe is the harbinger of Elokoss:_</p><p>The officer’s face is frozen in a look of terror as you take off the mask. “Where am I?” he asks, almost childlike. “And what did I do?” he looks at his blood-splattered clothing in horror.</p><p class='basic right'>Each investigator may search their deck for a _Weapon_ asset and play it, ignoring all costs.</p>"
+      },
+      "abigailForeman": {
+        "body": "<p>_If Abigail Foreman is the harbinger of Elokoss:_</p><p>Abigail clasps your hands tightly as you pull off her mask. “Finish her. Elokoss must not awaken,” she coughs. The librarian hands you a crumpled note before passing out.</p><p class='basic right'>Each investigator may draw up to 3 cards.</p>"
+      },
+      "margaretLiu": {
+        "body": "<p>_If Margaret Liu is the harbinger of Elokoss:_</p><p>“This is just like that debacle at the Tick Tock Club,” Ms. Liu seethes as you help her to her feet. The singer is remarkably unfazed by the surrounding chaos. Rather than ask about the debacle, you point her in the direction of the exit.</p><p class='basic right'>Each investigator heals 3 horror.</p>"
+      },
+      "label": {
+        "davidRenfield": {
+          "search": "Search your deck for a _Tome_ or _Spell_ card and play it, ignoring all costs."
+        },
+        "sgtEarlMonroe": {
+          "search": "Search your deck for a _Weapon_ asset and play it, ignoring all costs."
+        }
+      }
+    }
+  }
+}

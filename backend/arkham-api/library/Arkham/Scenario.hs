@@ -574,7 +574,7 @@ allScenarioCards =
     (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
 
 duplicatedScenarios :: [CardCode]
-duplicatedScenarios = ["04205a", "04205b", "08501c"]
+duplicatedScenarios = ["04205a", "04205b", "08501c", "10677a"]
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =
@@ -655,7 +655,9 @@ allScenarios =
     , ("09694", SomeScenario congressOfTheKeys)
     , ("10501", SomeScenario writtenInRock)
     , ("10502", SomeScenario writtenInRock) -- duplicated for card view
+    , ("10523", SomeScenario hemlockHouse)
     , ("10605", SomeScenario theTwistedHollow)
+    , ("10677a", SomeScenario preludeDawnOfTheSecondDay)
     , ("10704", SomeScenario preludeWelcomeToHemlockVale)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
@@ -702,6 +704,9 @@ allScenarios =
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
     , ("88001", SomeScenario fortuneAndFolly)
     , ("88001b", SomeScenario fortuneAndFollyPart2)
+    , ("12105", SomeScenario spreadingFlames)
+    , ("12133", SomeScenario smokeAndMirrors)
+    , ("12168", SomeScenario queenOfAsh)
     ]
 
 scenarioEncounterSets :: Map CardCode EncounterSet
@@ -783,7 +788,9 @@ scenarioEncounterSets =
     , ("09694", EncounterSet.CongressOfTheKeys)
     , ("10501", EncounterSet.WrittenInRock)
     , ("10502", EncounterSet.WrittenInRock)
+    , ("10523", EncounterSet.HemlockHouse)
     , ("10605", EncounterSet.TheTwistedHollow)
+    , ("10677a", EncounterSet.TheVale)
     , ("10704", EncounterSet.TheVale)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
@@ -830,4 +837,7 @@ scenarioEncounterSets =
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)
     , ("88001", EncounterSet.FortuneAndFolly)
     , ("88001b", EncounterSet.FortuneAndFolly)
+    , ("12105", EncounterSet.SpreadingFlames)
+    , ("12133", EncounterSet.SmokeAndMirrors)
+    , ("12168", EncounterSet.QueenOfAsh)
     ]

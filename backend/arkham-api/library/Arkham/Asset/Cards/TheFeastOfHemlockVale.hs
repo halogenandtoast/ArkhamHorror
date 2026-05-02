@@ -725,3 +725,13 @@ worryRockTokenOfSafety =
       , cdSlots = [#accessory]
       , cdOutOfPlayEffects = [InHandEffect]
       }
+
+cornHuskDoll :: CardDef
+cornHuskDoll =
+  fast
+    (storyAsset "10714" ("Corn Husk Doll" <:> "Symbol of Innocence") 1 Heirlooms)
+      { cdCardTraits = setFromList [Item, Charm]
+      , cdSlots = [#accessory]
+      , cdUses = uses Wish 3
+      , cdSkills = [#willpower, #agility]
+      }

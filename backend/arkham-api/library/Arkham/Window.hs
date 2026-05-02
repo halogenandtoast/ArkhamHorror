@@ -197,6 +197,7 @@ data WindowType
   | WouldDrawExactlyOneCard InvestigatorId CardDrawId DeckSignifier
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
+  | DrewCardsFromOwnDeck InvestigatorId
   | DrawChaosToken InvestigatorId ChaosToken
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
@@ -299,6 +300,7 @@ data WindowType
   | PutLocationIntoPlay InvestigatorId LocationId
   | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId
+  | RevealLocationForcedAbilities InvestigatorId LocationId (Maybe LocationId)
   | UnrevealedRevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken

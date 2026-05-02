@@ -1034,6 +1034,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       selectAny (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
     InvestigatorWithScarletKey sm -> do
       as & runMatchesM \i -> selectAny (ScarletKeyWithPlacement (AttachedToInvestigator $ toId i) <> sm)
+    InvestigatorIsPlayer pid -> do
+      pure $ runMatches ((== pid) . attr investigatorPlayerId) as
     InvestigatorWithTreacheryInHand treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> flip runMatchesM as $ \i ->
@@ -2705,6 +2707,8 @@ getLocationsMatching lmatcher = do
       pure $ filter (maybe False ((`elem` xs) . positionColumn) . attr locationPosition) ls
     LocationInPosition pos -> do
       pure $ filter ((== Just pos) . attr locationPosition) ls
+    LocationWithAbility abMatcher -> do
+      ls & filterM (anyM (`abilityMatches` abMatcher) . getAbilities)
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case
@@ -2787,7 +2791,11 @@ getAssetsMatching matcher = do
       mods <- getModifiers (toId a)
       let isSpirit = notNull [() | IsSpirit _ <- mods]
       pure $ not isSpirit && isJust (attr assetSanity a)
-    AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
+    AssetWithDamage ->
+      as & filterM \a -> do
+        current <- field AssetDamage a.id
+        let totalHeal = sum $ Map.elems (attr assetAssignedHealthHeal a)
+        pure $ current - totalHeal > 0
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
     AssetWithClues valueMatcher ->
@@ -2805,7 +2813,11 @@ getAssetsMatching matcher = do
             | uType' == tokenType -> fieldMap AssetUses (findWithDefault 0 pType) s
           _ -> pure 0
       gameValueMatches (n + fromOtherSources) valueMatcher
-    AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
+    AssetWithHorror ->
+      as & filterM \a -> do
+        current <- field AssetHorror a.id
+        let totalHeal = sum $ Map.elems (attr assetAssignedSanityHeal a)
+        pure $ current - totalHeal > 0
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetWithKeyword k -> pure $ filter (member k . cdKeywords . toCardDef) as
     AssetInSlot slot -> do
@@ -3475,7 +3487,7 @@ enemyMatcherFilter es matcher' = do
 
       pure $ notNull locations
     EnemyWithoutSpawn -> pure $ filter (isNothing . attr enemySpawnAt) es
-    EnemyDrawnFrom deckSig -> pure $ filter ((== Just deckSig) . attr enemyDrawnFrom) es
+    Arkham.Matcher.EnemyDrawnFrom deckSig -> pure $ filter ((== Just deckSig) . attr enemyDrawnFrom) es
     EnemyWantsToSpawnIn locationMatcher -> pure $ flip filter es \enemy ->
       case attr enemySpawnAt enemy of
         Just (SpawnAt (LocationMatchAll inner)) -> locationMatcher `elem` inner
@@ -3584,6 +3596,13 @@ enemyMatcherFilter es matcher' = do
     NearestEnemyToLocationFallback lid inner -> do
       xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyToLocation lid inner)
       if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
+    NearestEnemyToLocationMatch matcher inner -> do
+      locs <- select matcher
+      case locs of
+        [lid] -> do
+          xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyToLocation lid inner)
+          if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
+        _ -> error "Expected exactly one location to match"
     NearestEnemyToAnInvestigator enemyMatcher -> do
       eids <- select (InPlayEnemy enemyMatcher)
       mins <$> flip mapMaybeM es \enemy -> runMaybeT do
@@ -4437,6 +4456,7 @@ getEnemyField f e = do
     EnemyPlacement -> pure enemyPlacement
     EnemyCardsUnderneath -> pure enemyCardsUnderneath
     EnemyLastKnownLocation -> pure enemyLastKnownLocation
+    Arkham.Enemy.Types.EnemyDrawnFrom -> pure enemyDrawnFrom
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
@@ -4562,7 +4582,14 @@ getEnemyField f e = do
         applyForced ks = \case
           ForcePatrol fs -> Keyword.Patrol fs : filter (not . isPatrol) ks
           _ -> ks
-      pure $ setFromList keywords'
+      setFromList
+        <$> ( keywords' & mapMaybeM \case
+                Keyword.ScenarioModifierKeyword k v kw -> do
+                  selectAny (ScenarioWithModifier (ScenarioModifierValue k v)) <&> \case
+                    True -> Just kw
+                    False -> Nothing
+                other -> pure $ Just other
+            )
     EnemyAbilities -> pure $ getAbilities e
     EnemyCard -> pure $ case lookupCard enemyOriginalCardCode enemyCardId of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = enemyBearer}
@@ -4667,6 +4694,7 @@ instance Projection Investigator where
       InvestigatorDrawing -> pure investigatorDrawing
       InvestigatorUnhealedHorrorThisRound -> pure investigatorUnhealedHorrorThisRound
       InvestigatorBeganRoundAt -> pure investigatorBeganRoundAt
+      InvestigatorPreviousLocation -> pure investigatorPreviousLocation
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> do
@@ -5849,12 +5877,62 @@ getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
+{- | Split a message sequence at its first CheckWindows.
+Returns (pre-messages, maybe-windows, post-messages).
+-}
+splitAtFirstCheckWindows :: [Message] -> ([Message], Maybe [Window], [Message])
+splitAtFirstCheckWindows [] = ([], Nothing, [])
+splitAtFirstCheckWindows (CheckWindows ws : rest) = ([], Just ws, rest)
+splitAtFirstCheckWindows (m : rest) =
+  let (pre, mw, post) = splitAtFirstCheckWindows rest
+   in (m : pre, mw, post)
+
+{- | Interleave results from simultaneously-run messages:
+- All CheckWindows at each synchronization point are merged into one.
+- Non-window messages before/after are grouped in nested Simultaneously blocks.
+-}
+interleaveSimultaneously :: [[Message]] -> [Message]
+interleaveSimultaneously seqs
+  | all null seqs = []
+  | otherwise =
+      let
+        splits = map splitAtFirstCheckWindows seqs
+        pres = [pre | (pre, _, _) <- splits]
+        windows = [ws | (_, Just ws, _) <- splits]
+        posts = [post | (_, _, post) <- splits]
+        nonNullPosts = filter (not . null) posts
+       in
+        case windows of
+          [] ->
+            -- No CheckWindows at this level; re-wrap so the next round can
+            -- capture and merge any windows the messages produce when run.
+            case concat pres of
+              [] -> []
+              [single] -> [single]
+              multiple -> [Simultaneously multiple]
+          _ ->
+            let
+              allPres = concat pres
+              preMsgs = case allPres of
+                [] -> []
+                [single] -> [single]
+                multiple -> [Simultaneously multiple]
+              windowMsg = CheckWindows (concat windows)
+              afterMsg = case nonNullPosts of
+                [] -> []
+                [single] -> single
+                multiple -> [Simultaneously (map Run multiple)]
+             in
+              preMsgs ++ [windowMsg] ++ afterMsg
+
 -- finds the first message in the form `Priority msg` and returns that, otherwise returns the first message
 popMessageWithPriority :: HasQueue Message m => m (Maybe Message)
 popMessageWithPriority = withQueue \case
   [] -> ([], Nothing)
+  (Priority m : ms) -> (ms, Just m)
   (m : ms) -> case find isPriority ms of
     Nothing -> (ms, Just m)
+    Just p@(Priority pm) -> (m : delete p ms, Just pm)
     Just p -> (m : delete p ms, Just p)
  where
   isPriority (Priority _) = True
@@ -5941,6 +6019,27 @@ runMessages gameId mLogger = do
         for_ mLogger $ liftIO . ($ msg)
 
         let
+          shouldPreloadModifiers = \case
+            Ask {} -> False
+            BeginAction {} -> False
+            CheckAttackOfOpportunity {} -> False
+            CheckEnemyEngagement {} -> False
+            Do (CheckWindows {}) -> False
+            ClearUI {} -> False
+            CreatedCost {} -> False
+            EndCheckWindow {} -> False
+            PaidAllCosts {} -> False
+            PayForAbility {} -> False
+            PayCost {} -> False
+            PayCosts {} -> False
+            Run {} -> False
+            Simultaneously {} -> False
+            UseAbility {} -> False
+            Do (UseAbility {}) -> False
+            When {} -> False
+            WhenCanMove {} -> False
+            Would {} -> False
+            _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger
             Run msgs -> do
@@ -6001,6 +6100,45 @@ runMessages gameId mLogger = do
                 >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            Simultaneously [] -> runMessages gameId mLogger
+            Simultaneously msgs -> do
+              -- Save the rest of the queue so we can restore it after collecting results
+              savedQueue <- peekQueue
+              clearQueue
+              -- Run each message through the full pipeline and capture its queue output
+              allResults <-
+                traverse
+                  ( \m -> do
+                      asIfLocations' <- runWithEnv getAsIfLocationMap
+                      aloofEnemies' <- runWithEnv (select AloofEnemy)
+                      investigatorSanityHealth' <- runWithEnv getInvestigatorSanityHealthMap
+                      runWithEnv $ withSpan' "Root" \currentSpan -> do
+                        addAttribute currentSpan "gameId" gameId
+                        overGameM preloadEntities
+                        overGameM $ runPreGameMessage m
+                        if shouldPreloadModifiers m
+                          then do
+                            overGameM
+                              $ runMessage m
+                              >=> withSpan_ "preloadModifiers"
+                              . preloadModifiers
+                            overGameM
+                              $ handleAsIfChanges asIfLocations'
+                              >=> handleAloofChanges aloofEnemies'
+                              >=> withSpan_ "handleTraitRestrictedModifiers"
+                              . handleTraitRestrictedModifiers
+                              >=> handleBlanked
+                              >=> handleDefeatedByModifiers investigatorSanityHealth'
+                          else overGameM $ runMessage m
+                        overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
+                      captured <- peekQueue
+                      clearQueue
+                      pure captured
+                  )
+                  msgs
+              -- Restore the saved queue with interleaved results at the front
+              setQueue (interleaveSimultaneously allResults <> savedQueue)
+              runMessages gameId mLogger
             _ -> do
               -- Hidden Library handling
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -6028,28 +6166,7 @@ runMessages gameId mLogger = do
 
               asIfLocations <- runWithEnv getAsIfLocationMap
               aloofEnemies <- runWithEnv (select AloofEnemy)
-
-              let
-                shouldPreloadModifiers = \case
-                  Ask {} -> False
-                  BeginAction {} -> False
-                  CheckAttackOfOpportunity {} -> False
-                  CheckEnemyEngagement {} -> False
-                  Do (CheckWindows {}) -> False
-                  ClearUI {} -> False
-                  CreatedCost {} -> False
-                  EndCheckWindow {} -> False
-                  PaidAllCosts {} -> False
-                  PayForAbility {} -> False
-                  PayCost {} -> False
-                  PayCosts {} -> False
-                  Run {} -> False
-                  UseAbility {} -> False
-                  Do (UseAbility {}) -> False
-                  When {} -> False
-                  WhenCanMove {} -> False
-                  Would {} -> False
-                  _ -> True
+              investigatorSanityHealth <- runWithEnv getInvestigatorSanityHealthMap
 
               runWithEnv $ withSpan' "Root" \currentSpan -> do
                 addAttribute currentSpan "gameId" gameId
@@ -6067,6 +6184,7 @@ runMessages gameId mLogger = do
                       >=> withSpan_ "handleTraitRestrictedModifiers"
                       . handleTraitRestrictedModifiers
                       >=> handleBlanked
+                      >=> handleDefeatedByModifiers investigatorSanityHealth
                   else overGameM $ runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages gameId mLogger
@@ -6081,6 +6199,14 @@ getAsIfLocationMap = do
     let mods = Map.findWithDefault [] (toTarget iid) (gameModifiers g)
         mAsIf = listToMaybe [loc | (modifierType -> AsIfAt loc) <- mods]
     pure $ (iid,) <$> mAsIf
+
+getInvestigatorSanityHealthMap :: (HasGame m, Tracing m) => m (Map InvestigatorId (Int, Int))
+getInvestigatorSanityHealthMap = do
+  investigators <- select UneliminatedInvestigator
+  fmap Map.fromList $ for investigators \iid -> do
+    health <- field InvestigatorHealth iid
+    sanity <- field InvestigatorSanity iid
+    pure (iid, (health, sanity))
 
 handleAloofChanges :: [EnemyId] -> Game -> GameT Game
 handleAloofChanges aloof g = withSpan_ "handleAloofChanges" do
@@ -6192,6 +6318,17 @@ handleBlanked g = do
         Modifier _ BlankExceptForcedAbilities _ _ -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
+
+handleDefeatedByModifiers :: Map InvestigatorId (Int, Int) -> Game -> GameT Game
+handleDefeatedByModifiers beforeMap g = flip runReaderT g $ do
+  for_ (mapToList beforeMap) \(iid, (beforeHealth, beforeSanity)) -> do
+    whenJustM (getInvestigatorMaybe iid) \_ -> do
+      afterHealth <- field InvestigatorHealth iid
+      afterSanity <- field InvestigatorSanity iid
+      when (afterHealth < beforeHealth || afterSanity < beforeSanity)
+        $ push
+        $ CheckDefeated GameSource (InvestigatorTarget iid)
+  getGame
 
 applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()
 applyBlank s = do

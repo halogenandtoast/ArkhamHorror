@@ -5,6 +5,7 @@ import { baseUrl, formatContent } from '@/arkham/helpers'
 import { I18n, useI18n } from 'vue-i18n'
 import { imgsrc } from '@/arkham/helpers'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
+import CodexEntry from '@/arkham/components/CodexEntry.vue'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
@@ -38,6 +39,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'
     case 'GreenEntry': return 'green'
+    case 'CodexEntry': return 'codex'
     case 'RedEntry': return 'red'
     case 'BorderedEntry': return 'bordered'
     case 'NestedEntry': return 'nested'
@@ -69,9 +71,13 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
       }
     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': {
+      const styles = entryStyles(entry)
+      if (styles.codex) {
+        return h(CodexEntry, null, { default: () => [formatEntry(t, entry.entry)] })
+      }
       // HeaderEntry is handled specially to avoid wrapping it in a div
-      if (entry.entry.tag === 'HeaderEntry') return formatEntry(t, entry.entry, entryStyles(entry))
-      return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
+      if (entry.entry.tag === 'HeaderEntry') return formatEntry(t, entry.entry, styles)
+      return h('div', { class: styles }, [formatEntry(t, entry.entry)])
     }
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
@@ -226,6 +232,7 @@ export default defineComponent({
     margin-left: 35px;
   }
 }
+
 
 .right, :deep(.right) {
   text-align: right !important;
@@ -665,6 +672,29 @@ ul, :deep(ul) {
   img {
     align-self: center;
     width: 40px;
+  }
+  span {
+    text-align: left;
+  }
+
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 20px;
+    justify-content: stretch;
+    > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      img {
+        width: 36px;
+        flex-shrink: 0;
+      }
+      span {
+        font-weight: bold;
+      }
+    }
   }
 }
 

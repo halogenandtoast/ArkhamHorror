@@ -333,7 +333,7 @@ instance RunMessage APhantomOfTruth where
     UseCardAbility _ ScenarioSource 1 _ _ -> do
       shuffleSetAsideIntoEncounterDeck $ cardIs Treacheries.figureInTheShadows
       pure s
-    KonamiCode -> do
+    KonamiCode _ -> do
       dream5Already <- fromQueue (elem (DoStep 5 PreScenarioSetup))
       unless dream5Already do
         insteadOf (DoStep 1 PreScenarioSetup) do

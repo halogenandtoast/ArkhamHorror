@@ -6,13 +6,12 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.ForMovement
 import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
-import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
-import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.TheTwistedHollow.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Dark))
 
@@ -38,7 +37,7 @@ instance RunMessage BackToTheVale where
       doStep 1 msg
       pure a
     DoStep 1 msg'@(AdvanceAgenda (isSide B attrs -> True)) -> do
-      darknessLevel <- scenarioFieldMap ScenarioTokens (countTokens DarknessLevel)
+      darknessLevel <- getDarknessLevel
       if darknessLevel >= 6
         then do
           eachInvestigator \iid -> do

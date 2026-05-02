@@ -744,8 +744,7 @@ function toggleHandAreaMarginBottom(event: Event) {
 .in-play {
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto;
   gap: 5px;
   background: var(--background-dark);
   padding: 10px;

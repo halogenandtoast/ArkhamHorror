@@ -4,13 +4,19 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card.CardDef
 import Arkham.ForMovement
 import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Scenario.Deck
 
 newtype WheresBertie = WheresBertie ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -37,10 +43,51 @@ instance RunMessage WheresBertie where
           $ questionLabeled' "chooseInvestigatorToTakeControlOf"
         questionLabeledCard def
         portraits investigators (`takeControlOfSetAsideAsset` bertie)
+
+      selectEach UnengagedEnemy (`place` OutOfPlay PursuitZone)
+
+      locations <- select (not_ $ locationIs Locations.theTwistedHollow)
+      cards <- traverse fetchCard locations
+      for_ locations removeLocation
+      shuffleCardsIntoDeck WoodsDeck cards
+
+      selectEach (locationIs Locations.theTwistedHollow) \loc -> do
+        push $ PlaceGrid (GridLocation (Pos 0 0) loc)
+
+      doStep 2 msg
+      doStep 3 msg
+
       backToTheVale <- getSetAsideCard Agendas.backToTheVale
-      push $ SetCurrentActDeck 1 []
-      push $ SetCurrentAgendaDeck 1 [backToTheVale]
+      removeActDeck
+      setCurrentAgendaDeck [backToTheVale]
       selectEach AnyAct (toDiscard attrs)
+      pure a
+    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      locations <- getScenarioDeck WoodsDeck
+      let positions =
+            [ Pos (-1) 0
+            , Pos 1 0
+            , Pos (-2) (-1)
+            , Pos (-1) (-1)
+            , Pos 0 (-1)
+            , Pos 1 (-1)
+            , Pos 2 (-1)
+            , Pos (-2) 1
+            , Pos (-1) 1
+            , Pos 0 1
+            , Pos 1 1
+            , Pos 2 1
+            , Pos 0 2
+            ]
+      for_ (zip positions locations) (uncurry placeLocationInGrid_)
+      pure a
+    DoStep 3 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      ursineHybrid <- selectJust $ IncludeOutOfPlayEnemy $ enemyIs Enemies.ursineHybridGlowingAbomination
+      healAllDamage ScenarioSource ursineHybrid
+
+      selectEach (locationIs Locations.theTwistedHollow) \loc -> do
+        place ursineHybrid (AtLocation loc)
+
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <-

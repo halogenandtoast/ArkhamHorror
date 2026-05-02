@@ -13,6 +13,7 @@ import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
+import Arkham.Campaign.Option
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
 import Arkham.Campaigns.TheScarletKeys.Key.Id
@@ -32,7 +33,8 @@ import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..), delayEngagementL)
+import Arkham.Enemy.Runner (getPreyMatcher)
+import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), delayEngagementL)
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -42,13 +44,12 @@ import Arkham.Game.Json ()
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Campaign.Option
 import Arkham.Helpers
 import Arkham.Helpers.Criteria
-import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
+import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -165,6 +166,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   SetAsIfAtIgnored iid True -> pure $ g & asIfAtIgnoredL %~ insertSet iid
   SetAsIfAtIgnored iid False -> pure $ g & asIfAtIgnoredL %~ deleteSet iid
+  SetGameRunWindows b -> pure $ g & runWindowsL .~ b
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
   UpgradingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)
@@ -725,6 +727,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         mEffect
   FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
   UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
+  FoundCards cards -> pure $ g & foundCardsL .~ cards
   ClearFound FromDeck -> do
     pure $ g & foundCardsL %~ Map.filterWithKey (\k _ -> not (zoneIsFromDeck k))
   ClearFound zone -> pure $ g & foundCardsL . at zone ?~ mempty
@@ -1017,31 +1020,30 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
-    investigatorsWithClues <-
-      filter ((> 0) . snd)
-        <$> for
-          ( filter ((`elem` iids) . fst)
-              $ mapToList
-              $ g
-              ^. entitiesL
-              . investigatorsL
-          )
-          (\(iid, i) -> (iid,) <$> getSpendableClueCount (toAttrs i))
+    investigatorsWithClues <- forMaybeM iids \iid' -> do
+      clues <- getSpendableClueCount iid'
+      if clues > 0
+        then do
+          name <- fieldMap Investigator.InvestigatorName toTitle iid'
+          pure $ Just (iid', name, clues)
+        else pure Nothing
     case investigatorsWithClues of
       [] -> error "someone needed to spend some clues"
-      [(x, _)] -> push $ InvestigatorSpendClues x n
-      xs -> do
-        if sum (map snd investigatorsWithClues) == n
-          then
-            pushAll
-              $ map (uncurry InvestigatorSpendClues) investigatorsWithClues
+      [(x, _, _)] -> push $ InvestigatorSpendClues x n
+      _ -> do
+        if sum (map (\(_, _, x) -> x) investigatorsWithClues) == n
+          then pushAll $ map (\(i, _, x) -> InvestigatorSpendClues i x) investigatorsWithClues
           else do
             player <- getPlayer (gameLeadInvestigatorId g)
-            pushAll
-              [ chooseOne player
-                  $ map (\(i, _) -> targetLabel i [InvestigatorSpendClues i 1]) xs
-              , SpendClues (n - 1) (map fst investigatorsWithClues)
-              ]
+            rs <- getRandoms
+            let
+              paymentOptions =
+                zipWith
+                  ( \choiceId (iid', name, clues) -> PaymentAmountChoice choiceId iid' 0 clues name $ InvestigatorSpendClues iid' 1
+                  )
+                  rs
+                  investigatorsWithClues
+            push $ Ask player $ ChoosePaymentAmounts "Clues" (Just $ TotalAmountTarget n) paymentOptions
     pure g
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. entitiesL . agendasL
@@ -1494,8 +1496,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 | otherwise -> Zone.FromPlay
           -- Check for a pending event created by BeforePlayEvent
           let
-            mPendingEvent = find (\e -> eventCardId (toAttrs e) == toCardId card)
-              $ toList (g ^. entitiesL . eventsL)
+            mPendingEvent =
+              find (\e -> eventCardId (toAttrs e) == toCardId card)
+                $ toList (g ^. entitiesL . eventsL)
           (eid, event') <- case mPendingEvent of
             Just existing -> do
               let eid = toId existing
@@ -1796,7 +1799,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               kws <- lift $ toList <$> getModifiedKeywords eid
               liftGuardM $ flip anyM kws \case
                 Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt lm))
-                Keyword.Hunter -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
+                Keyword.Hunter -> do
+                  attrs <- getAttrs @Enemy eid
+                  getPreyMatcher attrs >>= \case
+                    OnlyPrey m -> do
+                      prey <- select m
+                      matches eid (#ready <> not_ (EnemyAt $ LocationWithInvestigator $ mapOneOf InvestigatorWithId prey))
+                    _ -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
                 _ -> pure False
               pure (target, msgs)
           FailSkillTestGroup -> pure targetMap
@@ -1945,45 +1954,63 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             push $ AskMap askMap
     pure g
   SkillTestResultOption opt -> do
-    push $ SkillTestResultOptions [opt]
+    fromQueue (elem CollectSkillTestOptions) >>= \case
+      True -> pushEnd $ SkillTestResultOption opt
+      False -> push $ SkillTestResultOptions [opt]
     pure g
   SkillTestResultOptions opts -> do
-    peekMessage >>= \case
-      Just (SkillTestResultOption opt) -> do
-        _ <- popMessage
-        push $ SkillTestResultOptions (opt : opts)
-      Just (SkillTestResultOptions opts') -> do
-        _ <- popMessage
-        push $ SkillTestResultOptions (opts <> opts')
-      Just msg'@(PassedSkillTest {}) -> do
-        _ <- popMessage
-        pushAll [msg', msg]
-      Just msg'@(DisableEffect {}) -> do
-        _ <- popMessage
-        pushAll [msg', msg]
-      _ ->
-        getSkillTest >>= \case
-          Just st -> do
-            case opts of
-              [opt] -> case opt.criteria of
-                Nothing -> push $ uiToRun opt.option
-                Just c -> do
-                  ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                  when ok $ push $ uiToRun opt.option
-              _ -> do
-                opts' <-
-                  opts & mapMaybeM \opt -> do
-                    case opt.criteria of
-                      Nothing -> pure $ Just opt
-                      Just c -> do
-                        ok <- passesCriteria st.investigator Nothing st.source st.source [] c
-                        pure $ if ok then Just opt else Nothing
-                let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
-                pid <- getPlayer st.investigator
-                push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) ->
-                  guard (elem opt opts' && (not blocked || opt.kind /= OriginalOptionKind))
-                    $> uiAnd opt.option (SkillTestResultOptions rest)
-          Nothing -> error "missing skill test"
+    fromQueue (elem CollectSkillTestOptions) >>= \case
+      True -> pushEnd $ SkillTestResultOptions opts
+      False ->
+        peekMessage >>= \case
+          Just (SkillTestResultOption opt) -> do
+            _ <- popMessage
+            push $ SkillTestResultOptions (opt : opts)
+          Just (SkillTestResultOptions opts') -> do
+            _ <- popMessage
+            push $ SkillTestResultOptions (opts <> opts')
+          Just msg'@(PassedSkillTest {}) -> do
+            _ <- popMessage
+            pushAll [msg', msg]
+          Just msg'@(DisableEffect {}) -> do
+            _ <- popMessage
+            pushAll [msg', msg]
+          _ ->
+            getSkillTest >>= \case
+              Just st -> case opts of
+                [opt] -> when (opt.kind /= PreOriginalOptionKind) do
+                  case opt.criteria of
+                    Nothing -> push $ uiToRun opt.option
+                    Just c -> do
+                      ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                      when ok $ push $ uiToRun opt.option
+                _ -> do
+                  opts' <-
+                    opts & mapMaybeM \opt -> do
+                      case opt.criteria of
+                        Nothing -> pure $ Just opt
+                        Just c -> do
+                          ok <- passesCriteria st.investigator Nothing st.source st.source [] c
+                          pure $ if ok then Just opt else Nothing
+                  let blocked = any (\opt -> opt.kind == BlockingOptionKind) opts'
+                  pid <- getPlayer st.investigator
+                  push $ Ask pid $ ChooseOne $ opts & eachWithRest & mapMaybe \(opt, rest) -> do
+                    guard $ elem opt opts'
+                    guard $ not blocked || opt.kind /= OriginalOptionKind
+                    guard $ opt.kind /= PreOriginalOptionKind || any (\o -> o.kind == OriginalOptionKind) rest
+                    pure $ uiAnd opt.option (SkillTestResultOptions rest)
+              Nothing -> error "missing skill test"
+    pure g
+  CollectSkillTestOptions -> do
+    collected <- withQueue \q ->
+      let gather (SkillTestResultOption o) = [o]
+          gather (SkillTestResultOptions os) = os
+          gather _ = []
+          isOpt (SkillTestResultOption _) = True
+          isOpt (SkillTestResultOptions _) = True
+          isOpt _ = False
+       in (filter (not . isOpt) q, concatMap gather q)
+    unless (null collected) $ push $ SkillTestResultOptions collected
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card
@@ -2741,8 +2768,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty)
-  FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty)
+  FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
+  FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
     investigatorClass <- field Investigator.InvestigatorClass iid
     playerCount <- getPlayerCount
@@ -3232,6 +3259,16 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         (Window.Discarded miid' source card)
 
     pure g
+  UpdateHistory iid historyItem@(HistoryItem HistoryCardsDrawn n) -> do
+    let
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+      currentCount = historyCardsDrawn $ Map.findWithDefault mempty iid (view phaseHistoryL g)
+    when (currentCount == 0 && n > 0) do
+      let (whenW, _, afterW) = frame $ Window.DrewCardsFromOwnDeck iid
+      pushAll [whenW, afterW]
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   UpdateHistory iid historyItem -> do
     let
       turn = isJust $ view turnPlayerInvestigatorIdL g

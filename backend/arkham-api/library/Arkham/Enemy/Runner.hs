@@ -58,6 +58,7 @@ import Arkham.History
 import Arkham.I18n
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
+import Data.Set qualified as Set
 import Arkham.Matcher (
   AssetMatcher (..),
   EnemyMatcher (..),
@@ -235,6 +236,12 @@ getPaths a destinations =
                 . ClosestUnbarricadedPathLocation loc
             pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
           else pure pathIds'
+
+getActualAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
+getActualAvailablePrey a =
+  getPreyMatcher a >>= \case
+    OnlyPrey m -> select m
+    _ -> getAvailablePrey a
 
 getAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = runDefaultMaybeT [] do
@@ -726,7 +733,7 @@ instance RunMessage EnemyAttrs where
               wantsToHunt <-
                 getPreyMatcher a >>= \case
                   OnlyPrey _ -> do
-                    prey <- getAvailablePrey a
+                    prey <- getActualAvailablePrey a
                     selectNone (InvestigatorAt (locationWithEnemy enemyId) <> mapOneOf InvestigatorWithId prey)
                   _ ->
                     andM
@@ -1614,12 +1621,16 @@ instance RunMessage EnemyAttrs where
           guard (not a.placement.isInVictory) *> [AddToVictory miid $ toTarget a | placeInVictory]
         defeatMsgs =
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
+        -- Doomed keyword: when defeated, place 1 doom on the agenda (can advance)
+        doomedMsgs =
+          guard (Set.member Keyword.Doomed (cdKeywords (toCardDef a))) *> [PlaceDoomOnAgenda 1 CanAdvance]
 
       pushAll
         $ afterDefeatMsg
         : victoryMsgs
           <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
           <> defeatMsgs
+          <> doomedMsgs
           <> [afterMsg]
 
       case a.placement of

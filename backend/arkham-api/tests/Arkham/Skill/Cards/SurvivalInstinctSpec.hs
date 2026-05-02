@@ -24,6 +24,7 @@ spec = describe "Survival Instinct" $ do
         commit survivalInstinct
         startSkillTest
         applyResults
+        chooseCardSkillTestOption survivalInstinct
         chooseOptionMatching "disengage each other enemy" \case
           Label _ [] -> False
           Label _ _ -> True

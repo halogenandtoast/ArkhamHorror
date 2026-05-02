@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.TheSummit (theSummit) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards

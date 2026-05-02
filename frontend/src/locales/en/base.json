@@ -32,16 +32,15 @@
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
   "tooltips": {
+    "attacksYou": "{name} attacks you",
     "takeControlOfKey": "Take control of {key} key",
     "name": "{name}"
   },
+  "name": "{name}",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",
-
   "Yes": "Yes",
   "No": "No",
-
-
   "Parley": "Parley",
   "Resign": "Resign",
   "Investigate": "Investigate",
@@ -53,14 +52,68 @@
   "Delayed": "Delayed",
   "Objective": "Objective",
   "Haunted": "Haunted",
-
   "Results": "Results",
   "Story": "Story",
   "ChooseOne": "Choose one",
   "Choose": "Choose",
   "setup": "Setup",
   "addToken": "Add 1 {'{'}{token}{'}'} chaos token to the chaos bag for the remainder of the campaign.",
+  "token": {
+    "Aether": "Aether",
+    "AlarmLevel": "Alarm Level",
+    "Ammo": "Ammo",
+    "Antiquity": "Antiquity",
+    "Bounty": "Bounty",
+    "Brilliance": "Brilliance",
+    "Charge": "Charge",
+    "Civilian": "Civilian",
+    "Clue": "Clue",
+    "Corruption": "Corruption",
+    "Damage": "Damage",
+    "DarknessLevel": "Darkness Level",
+    "Depletion": "Depletion",
+    "Depth": "Depth",
+    "Doom": "Doom",
+    "Durability": "Durability",
+    "Eclipse": "Eclipse",
+    "Empowerment": "Empowerment",
+    "Evidence": "Evidence",
+    "Growth": "Growth",
+    "Horror": "Horror",
+    "Inspiration": "Inspiration",
+    "Key": "Key",
+    "Lead": "Lead",
+    "Leyline": "Leyline",
+    "Lock": "Lock",
+    "LostSoul": "Lost Soul",
+    "Offering": "Offering",
+    "Overgrowth": "Overgrowth",
+    "Pillar": "Pillar",
+    "Portent": "Portent",
+    "Renown": "Renown",
+    "Resource": "Resource",
+    "Rumor": "Rumor",
+    "ScoutingReport": "Scouting Report",
+    "Scrap": "Scrap",
+    "Seal": "Seal",
+    "Secret": "Secret",
+    "Shard": "Shard",
+    "Shell": "Shell",
+    "Study": "Study",
+    "Supply": "Supply",
+    "Suspicion": "Suspicion",
+    "Switch": "Switch",
+    "Target": "Target",
+    "Ticket": "Ticket",
+    "Time": "Time",
+    "Truth": "Truth",
+    "Try": "Try",
+    "Warning": "Warning",
+    "Whistle": "Whistle",
+    "Wish": "Wish"
+  },
   "choice": {
+    "actions": "Actions",
     "ammo": "Ammo",
     "breaches": "Breaches",
     "cards": "Cards",
@@ -141,5 +194,12 @@
   "skip": "Skip",
   "handSize": "Hand Size",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "core2": {
+    "tooltips": {
+      "sewerCulvert": {
+        "resign": "\"I can't take it any more!\" You flee the sewers."
+      }
+    }
+  }
 }

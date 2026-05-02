@@ -7,6 +7,7 @@ import Arkham.Helpers.SkillTest.Lifted hiding (beginSkillTest)
 import Arkham.History
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
@@ -25,7 +26,7 @@ instance HasModifiersFor Wracked where
       InThreatArea iid -> maybeModified_ a iid do
         isSkillTestInvestigator iid
         liftGuardM $ null . historySkillTestsPerformed <$> getHistory RoundHistory iid
-        pure [AnySkillValue (-1)]
+        pure [SkillModifier sType (-1) | sType <- allSkills]
       _ -> pure ()
 
     getSkillTest >>= traverse_ \st -> do

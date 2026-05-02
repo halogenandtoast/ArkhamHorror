@@ -411,6 +411,10 @@ a.button {
     flex: 1;
   }
 
+  img {
+    height: auto;
+  }
+
   &:has(.card) {
     flex-direction: row;
     gap: 20px;

@@ -92,31 +92,21 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
+  const encounterCards = Object.entries({
+    ...(props.game.scenario?.foundCards ?? {}),
+    ...props.game.foundCards,
+  })
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
 })
 
 const focusedCards = computed(() => {
-  const {focusedCards, foundCards} = props.game
-
-  if (focusedCards.length == 0) {
-    if (Object.values(foundCards).some((v) => v.length > 0)) {
-      return Object.values(foundCards).flat()
-    }
-  }
-
-  const searchedCardIds = searchedCards.value.map(([, cards]) => {
-    return cards.map((card) => toCardContents(card).id)
-  }).flat()
-
-  if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
+  if (searchedCards.value.length > 0) {
     return []
   }
 
-
-  return focusedCards
+  return props.game.focusedCards
 })
 
 
@@ -1184,6 +1174,7 @@ h2 {
   img {
     border: 1px solid var(--select);
     border-radius: 5px;
+    height: auto;
   }
 
   .card {
@@ -1205,6 +1196,7 @@ h2 {
   margin: 10px;
   img {
     border-radius: 5px;
+    height: auto;
 
     &.Reversed {
       transform: rotateZ(180deg);
@@ -1215,6 +1207,10 @@ h2 {
         transform: translate(0, -12px);
       }
     }
+  }
+
+  a {
+    display: inline-block;
   }
 
   a > img {
@@ -1233,6 +1229,7 @@ h2 {
   justify-content: center;
   .portrait {
     min-width: fit-content;
+    height: auto;
   }
 }
 
@@ -1406,6 +1403,7 @@ h2 {
       width: calc(var(--card-width) * 4);
       flex-basis: unset;
       flex-shrink: unset;
+      height: auto;
     }
   }
   > .question-content {
@@ -1426,7 +1424,11 @@ h2 {
     .portrait {
       display: flex;
       margin: 0;
-      img { min-width: fit-content; };
+      img {
+        width: auto;
+        height: max(calc(var(--card-width) * 2));
+      };
+
     }
     .portrait-choices {
       justify-items: flex-start;

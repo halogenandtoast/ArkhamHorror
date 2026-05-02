@@ -20,6 +20,7 @@ import Arkham.Helpers.Query (
   getSetAsideCard,
   getSetAsideCardMaybe,
  )
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
@@ -30,6 +31,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement qualified as Placement
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheTwistedHollow.Helpers
@@ -110,6 +112,7 @@ instance RunMessage TheTwistedHollow where
       gather Set.TheForest
       gather Set.Myconids
 
+      setScenarioDayAndTime
       placeStory Stories.nightOne
 
       showedTheWay <- getHasRecord MotherRachelShowedTheWay
@@ -283,5 +286,33 @@ instance RunMessage TheTwistedHollow where
                 Just pos -> emptyPositionsInDirections grid pos [GridUp ..]
             for_ (zip locationPositions woodsDeck) (uncurry placeLocationInGrid)
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          record BertieWasLostInTheWoods
+          resolution "noResolution"
+          push R3
+        Resolution 1 -> do
+          record BertieWasRescued
+          resolution "resolution1"
+          push R3
+        Resolution 2 -> do
+          record BertieWasLostInTheWoods
+          resolution "resolution2"
+          push R3
+        Resolution 3 -> do
+          let
+            bonus =
+              if toCardCode Assets.bertieMusgraveATrueAesthete `elem` attrs.resignedCardCodes
+                then toBonus "bonus.insight" 1 <> toBonus "bonus.bertie" 1
+                else toBonus "bonus.insight" 1
+
+          hybridWounded <- inVictoryDisplay $ cardIs Enemies.ursineHybridGlowingAbomination
+          when hybridWounded $ record TheBearWasWounded
+          record $ AreasSurveyed WesternWoods
+          resolutionWithXp "resolution3" $ allGainXpWithBonus' attrs bonus
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> TheTwistedHollow <$> liftRunMessage msg attrs

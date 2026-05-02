@@ -62,6 +62,7 @@ allAgendaCards =
       , confluxOfConsequence
       , crossroadsOfFate
       , dangerousRide
+      , darkClouds
       , deadOfNight
       , deathsApproach
       , decrepitDecay
@@ -263,6 +264,18 @@ allAgendaCards =
       , whenItRains
       , whereIsShe
       , whereTheresSmoke
+      --- Core2026
+      --- Spreading Flames
+      , pastCurfew
+      , litUp
+      , wildFlames
+      --- Smoke and Mirrors
+      , arkhamAlive
+      , emergentEvils
+      --- Queen of Ash
+      , aGathering
+      , aRitual
+      , brethrenOfAsh
       ]
 
 whatsGoingOn :: CardDef
@@ -896,6 +909,9 @@ backToTheVale = agenda "10609" "Back to the Vale" 2 TheTwistedHollow
 welcomeToHemlockVale :: CardDef
 welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest
 
+darkClouds :: CardDef
+darkClouds = agenda "10683" "Dark Clouds" 1 DayOfRain
+
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
   agenda "50026a" "Predator or Prey?" 1 ReturnToTheMidnightMasks
@@ -995,3 +1011,27 @@ showbusinessAsUsual = agenda "72002" "Showbusiness As Usual" 1 FilmFatale
 
 collidingRealities :: CardDef
 collidingRealities = agenda "72003" "Colliding Realities" 2 FilmFatale
+
+pastCurfew :: CardDef
+pastCurfew = agenda "12106" "Past Curfew" 1 SpreadingFlames
+
+litUp :: CardDef
+litUp = agenda "12107" "Lit Up" 2 SpreadingFlames
+
+wildFlames :: CardDef
+wildFlames = agenda "12108" "Wild Flames" 3 SpreadingFlames
+
+arkhamAlive :: CardDef
+arkhamAlive = agenda "12134" "Arkham Alive" 1 SmokeAndMirrors
+
+emergentEvils :: CardDef
+emergentEvils = agenda "12135" "Emergent Evils" 2 SmokeAndMirrors
+
+aGathering :: CardDef
+aGathering = agenda "12169" "A Gathering" 1 QueenOfAsh
+
+aRitual :: CardDef
+aRitual = agenda "12170" "A Ritual" 2 QueenOfAsh
+
+brethrenOfAsh :: CardDef
+brethrenOfAsh = agenda "12171" "Brethren of Ash" 3 QueenOfAsh

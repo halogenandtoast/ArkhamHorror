@@ -168,7 +168,15 @@ placeStory def = do
   push $ StoryMessage $ PlaceStory card Global
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()
-setAside as = do
+setAside = setAsideWith pure
+
+setAsideFacedown :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()
+setAsideFacedown = setAsideWith (setFacedown True)
+
+setAsideWith
+  :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack)
+  => (Card -> ScenarioBuilderT m Card) -> [a] -> ScenarioBuilderT m ()
+setAsideWith f as = do
   cards <- for as \a -> do
     deck <- use (attrsL . encounterDeckL)
     case findInDeck a deck of
@@ -185,8 +193,12 @@ setAside as = do
 
         pure card
 
-  attrsL . setAsideCardsL %= (<> cards)
+  cards' <- traverse f cards
+  attrsL . setAsideCardsL %= (<> cards')
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (map toCardDef cards)
+
+setAsideEvery :: (ReverseQueue m, HasCallStack) => CardMatcher -> ScenarioBuilderT m ()
+setAsideEvery = amongGathered >=> setAside
 
 -- setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 -- setAside defs = do

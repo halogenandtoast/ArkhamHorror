@@ -16,13 +16,19 @@ leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
 instance HasModifiersFor LeadingTheWay where
   getModifiersFor (LeadingTheWay attrs) = do
-    modifySelect attrs (locationIs Locations.blockedPassage) [Blank]
+    modifySelect
+      attrs
+      Anyone
+      [ CannotTriggerAbilityMatching
+          $ AbilityOnLocation (locationIs Locations.blockedPassage)
+          <> AbilityIsForcedAbility
+      ]
 
 instance HasAbilities LeadingTheWay where
   getAbilities (LeadingTheWay a) =
     [ restricted a 1 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.blockedPassage)
-      $ Objective
-      $ forced AnyWindow
+        $ Objective
+        $ forced AnyWindow
     | onSide A a
     ]
 

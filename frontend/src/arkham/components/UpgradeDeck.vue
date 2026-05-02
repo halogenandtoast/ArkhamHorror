@@ -2,7 +2,8 @@
 import { displayTabooList } from '@/arkham/taboo';
 import { ref, computed, inject } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
-import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
+import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
 import { baseKey } from '@/arkham/types/Log';
@@ -30,6 +31,7 @@ const choose = (idx: number) => emit('choose', idx)
 const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
+const deckList = ref<ArkhamDbDecklist | null>(null)
 const solo = inject('solo', false)
 const deckInvestigator = ref<string | null>(null)
 const investigator = computed(() => {
@@ -61,7 +63,7 @@ const error = computed(() => {
   if(!deckInvestigator.value) return null
 
   const alreadyTaken = Object.values(props.game.investigators).some((i) => {
-    return i.id === deckInvestigator.value && i.playerId !== props.playerId
+    return i.id === `c${deckInvestigator.value}` && i.playerId !== props.playerId
   })
 
   if (alreadyTaken) {
@@ -130,13 +132,13 @@ async function syncUpgrade() {
     const matches = nextUrl.match(arkhamDbApiRegex);
 
     if (matches) {
-      let content: { url: string; next_deck: string } | null = null;
+      let content: ArkhamDbDecklist | null = null;
       fetching.value = true;
 
       do {
         try {
           const response = await fetch(nextUrl);
-          const data = await response.json();
+          const data = (await response.json()) as ArkhamDbDecklist & { next_deck: string | number | null };
           content = { ...data, url: nextUrl };
 
           if (data.next_deck != null) {
@@ -151,6 +153,7 @@ async function syncUpgrade() {
 
       if (content && content.url) {
         model.value = content;
+        deckList.value = content;
         deck.value = content.url;
         deckUrl.value = content.url;
         upgrade();
@@ -161,14 +164,14 @@ async function syncUpgrade() {
     const arkhamBuildApiRegex = /https:\/\/api.arkham\.build\/v1\/public\/share\/([^/]+)/
     const abmatches = nextUrl.match(arkhamBuildApiRegex)
     if (abmatches) {
-      let content: { url: string; next_deck: string } | null = null;
+      let content: ArkhamDbDecklist | null = null;
       fetching.value = true;
 
       do {
         try {
           const response = await fetch(nextUrl);
-          const data = await response.json();
-          content = { ...data, url: nextUrl };
+          const data = (await response.json()) as ArkhamDbDecklist & { next_deck: string | number | null };
+          content = processArkhamBuildDeck(data, nextUrl);
 
           if (data.next_deck != null) {
             nextUrl = `https://api.arkham.build/v1/public/share/${data.next_deck}`;
@@ -182,6 +185,7 @@ async function syncUpgrade() {
 
       if (content && content.url) {
         model.value = content;
+        deckList.value = content;
         deck.value = content.url;
         deckUrl.value = content.url;
         upgrade();
@@ -193,25 +197,34 @@ async function syncUpgrade() {
 function loadDeck() {
   if (!deck.value) return
   model.value = null
+  deckList.value = null
 
   const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
   const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/
-  
+
   let matches
+  let isArkhamBuild = false
   if ((matches = deck.value.match(arkhamDbRegex))) {
     deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
+    isArkhamBuild = true
   } else {
     return
   }
 
-  fetch(deckUrl.value)
-    .then((response) => response.json(), () => model.value = null)
+  const url = deckUrl.value
+  fetch(url)
+    .then((response) => response.json() as Promise<ArkhamDbDecklist>, () => { model.value = null; deckList.value = null })
     .then((data) => {
-      model.value = {...data, url: deckUrl.value}
-      deckInvestigator.value = data.investigator_code
-    }, () => model.value = null)
+      if (!data) return
+      const processed: ArkhamDbDecklist = isArkhamBuild
+        ? processArkhamBuildDeck(data, url)
+        : { ...data, url }
+      model.value = processed
+      deckList.value = processed
+      deckInvestigator.value = processed.investigator_code
+    }, () => { model.value = null; deckList.value = null })
 }
 
 function pasteDeck(evt: ClipboardEvent) {
@@ -225,7 +238,7 @@ async function upgrade() {
   if(error.value) return
   if (deckUrl.value && originalInvestigatorId.value) {
    fetching.value = true
-   upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value).then(() => {
+   upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value, deckList.value).then(() => {
       if(!solo) {
         waiting.value = true
       }
@@ -235,6 +248,7 @@ async function upgrade() {
     });
     deckUrl.value = null;
     deck.value = null;
+    deckList.value = null;
   }
 }
 

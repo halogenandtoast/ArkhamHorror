@@ -24,6 +24,7 @@ instance RunMessage WelcomeToHemlockVale where
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> weakness) _ -> do
       cancelCardEffects attrs weakness
+      quietCancelCardDraw weakness
       discardCard iid attrs weakness
       pure a
     _ -> WelcomeToHemlockVale <$> liftRunMessage msg attrs

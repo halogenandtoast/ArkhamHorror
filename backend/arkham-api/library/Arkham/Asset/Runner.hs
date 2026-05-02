@@ -46,6 +46,7 @@ import Arkham.Matcher (
   EventMatcher (EventAttachedToAsset),
  )
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted (withBatched)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
@@ -171,6 +172,9 @@ instance RunMessage AssetAttrs where
                  <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
                     | horror > 0
                     ]
+                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+                    | damage > 0 || horror > 0
+                    ]
              , checkDefeated source aid
              , CheckWindows
                  $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
@@ -178,6 +182,9 @@ instance RunMessage AssetAttrs where
                    ]
                  <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
                     | horror > 0
+                    ]
+                 <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
+                    | damage > 0 || horror > 0
                     ]
              ]
       pure a
@@ -568,7 +575,8 @@ instance RunMessage AssetAttrs where
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
       pure $ a & exiledL .~ True
-    RemoveFromPlay source | isSource a source -> do
+    RemoveFromPlay source | isSource a source -> runQueueT do
+      batchId <- getCurrentBatchId >>= maybe getRandom pure
       attachedAssets <- select $ AssetAttachedToAsset $ AssetWithId (toId a)
       attachedEvents <- select $ EventAttachedToAsset $ AssetWithId (toId a)
       windowMsg <-
@@ -576,13 +584,14 @@ instance RunMessage AssetAttrs where
           ( (`mkWindow` Window.LeavePlay (toTarget a))
               <$> [Timing.When, Timing.AtIf, Timing.After]
           )
-      pushAll
-        $ windowMsg
-        : [UnsealChaosToken token | token <- assetSealedChaosTokens]
-          <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
-          <> [Discard Nothing GameSource (toTarget a') | a' <- attachedEvents]
-          <> map (DiscardedCard . toCardId) a.cardsUnderneath
-          <> [RemovedFromPlay source]
+      withBatched batchId \_ ->
+        pushAll
+          $ windowMsg
+          : [UnsealChaosToken token | token <- assetSealedChaosTokens]
+            <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
+            <> [Discard Nothing GameSource (toTarget a') | a' <- attachedEvents]
+            <> map (DiscardedCard . toCardId) a.cardsUnderneath
+            <> [RemovedFromPlay source]
       pure $ a & cardsUnderneathL .~ []
     When (PlaceInBonded _iid card) | toCardId a == card.id -> do
       removeAllMessagesMatching \case

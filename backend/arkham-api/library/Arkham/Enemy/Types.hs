@@ -14,13 +14,14 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Constants
+import Arkham.Deck
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword
-import Arkham.Matcher
+import Arkham.Matcher hiding (EnemyDrawnFrom)
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Placement
@@ -91,6 +92,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyBearer :: Field Enemy (Maybe InvestigatorId)
   EnemyCardsUnderneath :: Field Enemy [Card]
   EnemyLastKnownLocation :: Field Enemy (Maybe LocationId)
+  EnemyDrawnFrom :: Field Enemy (Maybe DeckSignifier)
 
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
@@ -143,6 +145,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyBearer" -> pure $ SomeField EnemyBearer
     "EnemyCardsUnderneath" -> pure $ SomeField EnemyCardsUnderneath
     "EnemyLastKnownLocation" -> pure $ SomeField EnemyLastKnownLocation
+    "EnemyDrawnFrom" -> pure $ SomeField EnemyDrawnFrom
     _ -> error "no such field"
 
 data instance Field (OutOfPlayEntity _ Enemy) :: Type -> Type where
@@ -512,6 +515,7 @@ fieldLens = \case
   EnemyBearer -> bearerL
   EnemyCardsUnderneath -> cardsUnderneathL
   EnemyLastKnownLocation -> lastKnownLocationL
+  EnemyDrawnFrom -> drawnFromL
  where
   virtual = error "virtual attribute can not be set directly"
 

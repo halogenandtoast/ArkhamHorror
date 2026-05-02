@@ -69,6 +69,7 @@ allActCards =
       , darkKnowledgeV1
       , darkKnowledgeV2
       , dawnOfTheFirstDay
+      , dawnOfTheSecondDay
       , descentIntoDark
       , descentIntoTheMines
       , desperateSearch
@@ -313,6 +314,17 @@ allActCards =
       , witchHauntings
       , worldsBeyond
       , worshippersOfTheDeep
+      --- Core2026
+      --- Spreading Flames
+      , whereTheresSmoke
+      , escapeTheDorms
+      , searchingForDrArmitage
+      , blazeOfGlory
+      --- Smoke and Mirrors
+      , augursOfFlame
+      --- Queen of Ash
+      , searchTheSewers
+      , stopTheRite
       ]
 
 trapped :: CardDef
@@ -1084,6 +1096,9 @@ wheresBertie = act "10608" "Where's Bertie" 2 TheTwistedHollow
 dawnOfTheFirstDay :: CardDef
 dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest
 
+dawnOfTheSecondDay :: CardDef
+dawnOfTheSecondDay = act "10684" "Dawn of the Second Day" 1 DayOfRain
+
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering
 
@@ -1209,3 +1224,24 @@ theAbominableContessa = act "72048" "The Abominable Contessa" 2 AbominableContes
 
 bloodbath :: CardDef
 bloodbath = act "72049" "Bloodbath" 3 AbominableContessa
+
+whereTheresSmoke :: CardDef
+whereTheresSmoke = act "12109" "Where There's Smoke..." 1 SpreadingFlames
+
+escapeTheDorms :: CardDef
+escapeTheDorms = act "12110" "Escape The Dorms" 2 SpreadingFlames
+
+searchingForDrArmitage :: CardDef
+searchingForDrArmitage = act "12111" "Searching for Dr. Armitage" 3 SpreadingFlames
+
+blazeOfGlory :: CardDef
+blazeOfGlory = act "12112" "Blaze of Glory" 4 SpreadingFlames
+
+augursOfFlame :: CardDef
+augursOfFlame = act "12136" "Augurs of Flame" 1 SmokeAndMirrors
+
+searchTheSewers :: CardDef
+searchTheSewers = act "12172" "Search the Sewers" 1 QueenOfAsh
+
+stopTheRite :: CardDef
+stopTheRite = act "12173" "Stop the Rite" 2 QueenOfAsh

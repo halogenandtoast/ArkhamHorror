@@ -12,8 +12,9 @@ overpower = skill Overpower Cards.overpower
 
 instance RunMessage Overpower where
   runMessage msg s@(Overpower attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+      let drawer = if attrs.cardCode.isChapterTwo then iid else attrs.owner
       additionalSkillTestOption "Overpower" do
-        drawCards attrs.owner attrs 1
+        drawCards drawer attrs 1
       pure s
     _ -> Overpower <$> liftRunMessage msg attrs

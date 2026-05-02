@@ -91,6 +91,7 @@ data EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
   | NearestEnemyToFallback InvestigatorId EnemyMatcher
   | NearestEnemyToLocation LocationId EnemyMatcher
+  | NearestEnemyToLocationMatch LocationMatcher EnemyMatcher
   | NearestEnemyToLocationFallback LocationId EnemyMatcher
   | NearestEnemyToAnInvestigator EnemyMatcher
   | EnemyIs CardCode

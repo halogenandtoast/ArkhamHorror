@@ -23,8 +23,8 @@ instance RunMessage BlasphemousInvocation where
     FailedThisSkillTestBy iid (isSource attrs -> True) n | n > 0 -> do
       cultists <- selectCount $ #cultist <> EnemyWithoutDoom <> CanPlaceDoomOnEnemy
       if cultists > 0
-        then findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
-        else doStep n msg
+        then doStep n msg
+        else findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       cultists <- select $ #cultist <> EnemyWithoutDoom <> CanPlaceDoomOnEnemy

@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Asset.Cards.Core2026 where
 
 import Arkham.Asset.Cards.Import
@@ -355,4 +356,6 @@ collector =
       { cdCardTraits = setFromList [Item, Relic]
       , cdUnique = True
       , cdLevel = Just 0
+      , cdEncounterSet = Just QueenOfAsh
+      , cdEncounterSetQuantity = Just 2
       }

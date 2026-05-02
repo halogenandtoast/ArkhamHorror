@@ -449,5 +449,5 @@ allActs =
     , SomeActCard augursOfFlame
       --- Queen of Ash
     , SomeActCard searchTheSewers
-    , SomeActCard stopTheRIte
+    , SomeActCard stopTheRite
     ]

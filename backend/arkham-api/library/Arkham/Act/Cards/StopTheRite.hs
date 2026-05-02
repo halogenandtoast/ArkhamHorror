@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.StopTheRite (stopTheRIte) where
+module Arkham.Act.Cards.StopTheRite (stopTheRite) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -14,8 +14,8 @@ newtype StopTheRite = StopTheRite ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stopTheRIte :: ActCard StopTheRite
-stopTheRIte = act (2, A) StopTheRite Cards.stopTheRIte Nothing
+stopTheRite :: ActCard StopTheRite
+stopTheRite = act (2, A) StopTheRite Cards.stopTheRite Nothing
 
 instance HasAbilities StopTheRite where
   getAbilities = actAbilities \a ->

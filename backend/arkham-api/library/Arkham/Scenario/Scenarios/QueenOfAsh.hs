@@ -150,7 +150,7 @@ instance RunMessage QueenOfAsh where
       gather Set.Torment
 
       setAgendaDeck [Agendas.aGathering, Agendas.aRitual, Agendas.brethrenOfAsh]
-      setActDeck [Acts.searchTheSewers, Acts.stopTheRIte]
+      setActDeck [Acts.searchTheSewers, Acts.stopTheRite]
 
       place_ Locations.undergroundCistern
 

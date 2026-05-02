@@ -322,6 +322,9 @@ allActCards =
       , blazeOfGlory
       --- Smoke and Mirrors
       , augursOfFlame
+      --- Queen of Ash
+      , searchTheSewers
+      , stopTheRite
       ]
 
 trapped :: CardDef
@@ -1240,5 +1243,5 @@ augursOfFlame = act "12136" "Augurs of Flame" 1 SmokeAndMirrors
 searchTheSewers :: CardDef
 searchTheSewers = act "12172" "Search the Sewers" 1 QueenOfAsh
 
-stopTheRIte :: CardDef
-stopTheRIte = act "12173" "Stop the Rite" 2 QueenOfAsh
+stopTheRite :: CardDef
+stopTheRite = act "12173" "Stop the Rite" 2 QueenOfAsh

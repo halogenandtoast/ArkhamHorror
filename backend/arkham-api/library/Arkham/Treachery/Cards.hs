@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Treachery.Cards where
 
 import Arkham.Prelude
@@ -691,7 +692,7 @@ allEncounterTreacheryCards =
       , dissonance
       , torment
       , arcaneLock
-      , downpour
+      , downpour_BadWeather
       , flashFlood
       , raisingSuspicions
       , redHerring

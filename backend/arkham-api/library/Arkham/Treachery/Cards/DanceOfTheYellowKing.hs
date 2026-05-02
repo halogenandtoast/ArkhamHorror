@@ -4,6 +4,7 @@ import Arkham.Attack
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -30,7 +31,7 @@ instance RunMessage DanceOfTheYellowKing where
         chooseOrRunOneM iid do
           targets lunatics \lunatic -> do
             readyThis lunatic
-            push $ MoveUntil lid (toTarget lunatic)
+            moveUntil lunatic lid
             push
               $ IfEnemyExists
                 (enemyAtLocationWith iid <> EnemyWithId lunatic)

@@ -5,12 +5,10 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.BrethrenOfAsh.Import
 
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
-import Arkham.EncounterCard (lookupEncounterCardDef)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -30,7 +28,6 @@ import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (getRecordedCardCodes, record, whenHasRecord)
 import Arkham.Modifier (ModifierType (RevealAnotherChaosToken))
-import Arkham.Name (nameTitle)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -211,48 +208,49 @@ instance RunMessage QueenOfAsh where
       case n of
         Phi -> do
           servantCodes <- getRecordedCardCodes ServantOfElokoss
-          let mHarbingerCode = listToMaybe servantCodes
-          let servantName = maybe "unknown" (nameTitle . cdName . lookupEncounterCardDef) mHarbingerCode
-          scope "servantOfFlame" do
-            flavor $ withVars ["servantName" .= servantName] $ setTitle "title" >> p "intro"
-            case mHarbingerCode of
-              Just code
-                | code == toCardCode Enemies.davidRenfieldDisillusionedEschatologist ->
-                    scope "davidRenfield" $ flavor $ p "body"
-              Just code
-                | code == toCardCode Enemies.corneliaAkelyExhaustedSupervisor ->
-                    scope "corneliaAkely" $ flavor $ p "body"
-              Just code
-                | code == toCardCode Enemies.naomiOBannionRunsThisTown ->
-                    scope "naomiOBannion" $ flavor $ p "body"
-              Just code
-                | code == toCardCode Enemies.sgtEarlMonroeDirtyCop ->
-                    scope "sgtEarlMonroe" $ flavor $ p "body"
-              Just code
-                | code == toCardCode Enemies.abigailForemanWaryLibrarian ->
-                    scope "abigailForeman" $ flavor $ p "body"
-              Just code
-                | code == toCardCode Enemies.margaretLiuBeguilingLoungeSinger ->
-                    scope "margaretLiu" $ flavor $ p "body"
-              _ -> pure ()
-            eachInvestigator \iid' -> case mHarbingerCode of
-              Just code | code == toCardCode Enemies.davidRenfieldDisillusionedEschatologist -> do
-                search iid' source iid' [fromDeck] (basic $ #tome <> #spell) (PlayFoundNoCost iid' 1)
-              Just code | code == toCardCode Enemies.corneliaAkelyExhaustedSupervisor -> do
-                healDamage iid' source 3
-              Just code | code == toCardCode Enemies.naomiOBannionRunsThisTown -> do
-                gainResources iid' source 5
-              Just code | code == toCardCode Enemies.sgtEarlMonroeDirtyCop -> do
-                search iid' source iid' [fromDeck] (basic #weapon) (PlayFoundNoCost iid' 1)
-              Just code | code == toCardCode Enemies.abigailForemanWaryLibrarian -> do
-                chooseOneM iid' do
-                  labeled "Draw 1 card" $ drawCards iid' source 1
-                  labeled "Draw 2 cards" $ drawCards iid' source 2
-                  labeled "Draw 3 cards" $ drawCards iid' source 3
-                  labeled "Draw 0 cards" nothing
-              Just code | code == toCardCode Enemies.margaretLiuBeguilingLoungeSinger -> do
-                healHorror iid' source 3
-              _ -> pure ()
+          for_ (headMay servantCodes) \code -> do
+            scope "servantOfFlame" do
+              flavor
+                $ setTitle "title"
+                >> compose.codex
+                  ( h_ "title"
+                      >> p "intro"
+                      >> hr
+                      >> if
+                        | code == Enemies.davidRenfieldDisillusionedEschatologist.cardCode ->
+                            p "davidRenfield.body"
+                        | code == Enemies.corneliaAkelyExhaustedSupervisor.cardCode ->
+                            p "corneliaAkely.body"
+                        | code == Enemies.naomiOBannionRunsThisTown.cardCode ->
+                            p "naomiOBannion.body"
+                        | code == Enemies.sgtEarlMonroeDirtyCop.cardCode ->
+                            p "sgtEarlMonroe.body"
+                        | code == Enemies.abigailForemanWaryLibrarian.cardCode ->
+                            p "abigailForeman.body"
+                        | otherwise -> p "margaretLiu.body"
+                  )
+              eachInvestigator \iid' ->
+                if
+                  | code == Enemies.davidRenfieldDisillusionedEschatologist.cardCode -> do
+                      chooseOneM iid' do
+                        labeled' "davidRenfield.search" do
+                          search iid' source iid' [fromDeck] (basic $ #tome <> #spell) (PlayFoundNoCost iid' 1)
+                        unscoped skip_
+                  | code == Enemies.corneliaAkelyExhaustedSupervisor.cardCode -> do
+                      healDamageIfCan iid' source 3
+                  | code == Enemies.naomiOBannionRunsThisTown.cardCode -> do
+                      gainResources iid' source 5
+                  | code == Enemies.sgtEarlMonroeDirtyCop.cardCode -> do
+                      chooseOneM iid' do
+                        labeled' "sgtEarlMonroe.search"
+                          $ search iid' source iid' [fromDeck] (basic #weapon) (PlayFoundNoCost iid' 1)
+                        unscoped skip_
+                  | code == Enemies.abigailForemanWaryLibrarian.cardCode -> do
+                      chooseOneM iid' $ unscoped do
+                        for_ [1 .. 3] \x -> do
+                          countVar x $ labeled' "drawCards" $ drawCards iid' source x
+                        countVar 0 $ labeled' "drawCards" nothing
+                  | otherwise -> healHorror iid' source 3
         _ -> error "invalid codex entry"
       pure s
     ScenarioResolution r -> scope "resolutions" do

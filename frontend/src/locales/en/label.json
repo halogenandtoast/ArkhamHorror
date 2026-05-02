@@ -80,6 +80,7 @@
   "removeTokensFrom": "Remove 1 {token} from {name} | Remove {count} {token} from {name}",
   "removeAgendaDoom": "Remove 1 doom from the current agenda | Remove {count} doom from the current agenda",
   "removeDoom": "Remove 1 doom | Remove {count} doom",
+  "search": "Search",
   "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
   "skip": "Skip",

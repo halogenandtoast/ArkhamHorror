@@ -64,25 +64,33 @@
   },
   "codex": {
     "servantOfFlame": {
-      "title": "Codex Φ: Servant of Flame",
-      "intro": "<p>By defeating the Servant of Flame, you have brought them to their senses. As you take off their mask, they look up at you, confused.</p><p>Check your campaign log</p>",
+      "title": "{'{'}codex{'}'} Codex Φ: Servant of Flame",
+      "intro": "<p>By defeating the Servant of Flame, you have brought them to their senses. As you take off their mask, they look up at you, confused.</p><p class='basic'>_Check your campaign log and resolve one of the following:_</p>",
       "davidRenfield": {
-        "body": "<p><b>If David Renfield is the harbinger of Elokoss:</b> David snarls as you try to help him stand. “Leave me. I am a willing servant. I welcomed her into me. And now she will purge all in her cleansing flame,” he laughs weakly before drawing his last breath.</p><p>Each investigator may search their deck for a [[Tome]] or [[Spell]] card and play it, ignoring all costs.</p>"
+        "body": "<p>_If David Renfield is the harbinger of Elokoss:_</p><p>David snarls as you try to help him stand. “Leave me. I am a willing servant. I welcomed her into me. And now she will purge all in her cleansing flame,” he laughs weakly before drawing his last breath.</p><p class='basic right'>Each investigator may search their deck for a _Tome_ or _Spell_ card and play it, ignoring all costs.</p>"
       },
       "corneliaAkely": {
-        "body": "<p><b>If Cornelia Akely is the harbinger of Elokoss:</b> Cornelia stares, bewildered, at her bloody hands. “I thought it was all a nightmare,” she says as you help her to her feet. She looks you over and her face furrows. “You’re hurt. I can help.”</p><p>Each investigator heals 3 damage.</p>"
+        "body": "<p>_If Cornelia Akely is the harbinger of Elokoss:_</p><p>Cornelia stares, bewildered, at her bloody hands. “I thought it was all a nightmare,” she says as you help her to her feet. She looks you over and her face furrows. “You’re hurt. I can help.”</p><p class='basic right'>Each investigator heals 3 damage.</p>"
       },
       "naomiOBannion": {
-        "body": "<p><b>If Naomi O’Bannion is the harbinger of Elokoss:</b> “What kind of party is this?” Naomi bellows, then gives you a murderous look. “And who the hell are you?” You do your best to explain the situation as you help her to her feet.</p><p>Each investigator gains 5 resources.</p>"
+        "body": "<p>_If Naomi O’Bannion is the harbinger of Elokoss:_</p><p>“What kind of party is this?” Naomi bellows, then gives you a murderous look. “And who the hell are you?” You do your best to explain the situation as you help her to her feet.</p><p class='basic right'>Each investigator gains 5 resources.</p>"
       },
       "sgtEarlMonroe": {
-        "body": "<p><b>If Sgt. Earl Munroe is the harbinger of Elokoss:</b> The officer’s face is frozen in a look of terror as you take off the mask. “Where am I?” he asks, almost childlike. “And what did I do?” he looks at his blood-splattered clothing in horror.</p><p>Each investigator may search their deck for a [[Weapon]] asset and play it, ignoring all costs.</p>"
+        "body": "<p>_If Sgt. Earl Munroe is the harbinger of Elokoss:_</p><p>The officer’s face is frozen in a look of terror as you take off the mask. “Where am I?” he asks, almost childlike. “And what did I do?” he looks at his blood-splattered clothing in horror.</p><p class='basic right'>Each investigator may search their deck for a _Weapon_ asset and play it, ignoring all costs.</p>"
       },
       "abigailForeman": {
-        "body": "<p><b>If Abigail Foreman is the harbinger of Elokoss:</b> Abigail clasps your hands tightly as you pull off her mask. “Finish her. Elokoss must not awaken,” she coughs. The librarian hands you a crumpled note before passing out.</p><p>Each investigator may draw up to 3 cards.</p>"
+        "body": "<p>_If Abigail Foreman is the harbinger of Elokoss:_</p><p>Abigail clasps your hands tightly as you pull off her mask. “Finish her. Elokoss must not awaken,” she coughs. The librarian hands you a crumpled note before passing out.</p><p class='basic right'>Each investigator may draw up to 3 cards.</p>"
       },
       "margaretLiu": {
-        "body": "<p><b>If Margaret Liu is the harbinger of Elokoss:</b> “This is just like that debacle at the Tick Tock Club,” Ms. Liu seethes as you help her to her feet. The singer is remarkably unfazed by the surrounding chaos. Rather than ask about the debacle, you point her in the direction of the exit.</p><p>Each investigator heals 3 horror.</p>"
+        "body": "<p>_If Margaret Liu is the harbinger of Elokoss:_</p><p>“This is just like that debacle at the Tick Tock Club,” Ms. Liu seethes as you help her to her feet. The singer is remarkably unfazed by the surrounding chaos. Rather than ask about the debacle, you point her in the direction of the exit.</p><p class='basic right'>Each investigator heals 3 horror.</p>"
+      },
+      "label": {
+        "davidRenfield": {
+          "search": "Search your deck for a _Tome_ or _Spell_ card and play it, ignoring all costs."
+        },
+        "sgtEarlMonroe": {
+          "search": "Search your deck for a _Weapon_ asset and play it, ignoring all costs."
+        }
       }
     }
   }

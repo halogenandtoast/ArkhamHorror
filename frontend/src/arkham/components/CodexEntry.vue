@@ -196,6 +196,10 @@ export default defineComponent({
   margin-inline: 0;
 }
 
+.codex-content :deep(.right) {
+  margin-left: 25%;
+}
+
 .codex-content :deep(li) {
   font-family: 'Arno', serif;
 }

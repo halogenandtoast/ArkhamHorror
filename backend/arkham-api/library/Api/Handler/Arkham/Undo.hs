@@ -153,15 +153,19 @@ putApiV1ArkhamGameUndoR gameId = do
         player <- get404 @_ @_ @ArkhamPlayer $ coerce $ gameActivePlayerId game.currentData
         pure player.userId
       _ -> pure userId'
-  withSpan_ "stepBack" do
-    runDB (stepBack isDebug userId gameId) >>= \case
-      Left err -> do
-        liftIO $ print err
-        sendStatusJSON Status.status400 err
-      Right (ArkhamGame {..}) -> do
-        publishToRoom gameId
-          $ GameUpdate
-          $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
+  -- NOTE: do not call sendStatusJSON inside withSpan_. withSpan_'s bracket-style
+  -- exception handling rewraps Yesod's HCContent control-flow exception in an
+  -- AnnotatedException, which Yesod cannot unwrap, so the response degrades to
+  -- a generic 500 and the actual error JSON is lost.
+  result <- withSpan_ "stepBack" $ runDB (stepBack isDebug userId gameId)
+  case result of
+    Left err -> do
+      liftIO $ print err
+      sendStatusJSON Status.status400 err
+    Right (ArkhamGame {..}) -> do
+      publishToRoom gameId
+        $ GameUpdate
+        $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
 
 putApiV1ArkhamGameUndoScenarioR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoScenarioR gameId = do

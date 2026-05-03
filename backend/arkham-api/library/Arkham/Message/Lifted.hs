@@ -1185,7 +1185,7 @@ questionLabel lbl iid q = do
   push $ Ask pid (QuestionLabel lbl Nothing q)
 
 questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
-questionLabel' lbl = questionLabel ("$" <> lbl)
+questionLabel' lbl = Arkham.Message.Lifted.questionLabel ("$" <> lbl)
 
 questionLabelWithCard
   :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()

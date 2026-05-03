@@ -293,17 +293,18 @@ getCostForCard iid card isPlayAction = do
             pure $ Cost.OrCost $ map Cost.ResourceCost $ nubOrd values
           _ ->
             pure
-              $ if resources == 0
+              $ if isDynamic card
                 then
-                  if isDynamic card
-                    then case maxDynamic card of
-                      Nothing -> Cost.UpTo (Fixed $ investigatorResources $ toAttrs investigator') (Cost.ResourceCost 1)
-                      Just c ->
-                        Cost.UpTo
-                          (MaxCalculation c (Fixed $ investigatorResources $ toAttrs investigator'))
-                          (Cost.ResourceCost 1)
-                    else Cost.Free
-                else Cost.ResourceCost resources
+                  let
+                    availableForX = max 0 (investigatorResources (toAttrs investigator') - resources)
+                    dynamicPart = case maxDynamic card of
+                      Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
+                      Just c -> Cost.UpTo (MaxCalculation c (Fixed availableForX)) (Cost.ResourceCost 1)
+                  in
+                    if resources == 0
+                      then dynamicPart
+                      else Cost.ResourceCost resources <> dynamicPart
+                else if resources == 0 then Cost.Free else Cost.ResourceCost resources
 
       investigateCosts <- runDefaultMaybeT [] do
         guard isInvestigate

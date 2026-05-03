@@ -159,23 +159,26 @@ instance RunMessage HorrorInHighGear where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
-        Cultist | n > 0 -> do
-          field InvestigatorPlacement iid >>= \case
-            InVehicle aid -> do
-              loc <- fieldJust AssetLocation aid
-              passengers <-
-                selectWithField InvestigatorClues $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
-              case passengers of
-                [] -> pure ()
-                [(x, c)] -> placeClues x loc (min c n)
-                xs ->
-                  if sum (map snd xs) <= n
-                    then for_ xs \(x, c) -> placeClues x loc c
-                    else chooseNM iid n do
-                      for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
-            _ -> pure ()
+        Cultist | n > 0 -> doStep n msg
         Tablet | n > 0 -> doStep n msg
         ElderThing | isEasyStandard attrs -> push HuntersMove
+        _ -> pure ()
+      pure s
+    DoStep n msg'@(FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == Cultist && n > 0 -> do
+      field InvestigatorPlacement iid >>= \case
+        InVehicle aid -> do
+          loc <- fieldJust AssetLocation aid
+          passengers <-
+            selectWithField InvestigatorClues $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
+          case passengers of
+            [] -> pure ()
+            [(x, c)] -> placeClues x loc (min c n)
+            xs ->
+              if sum (map snd xs) <= n
+                then for_ xs \(x, c) -> placeClues x loc c
+                else do
+                  chooseOneM iid $ for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
+                  doStep (n - 1) msg'
         _ -> pure ()
       pure s
     DoStep n msg'@(FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == Tablet && n > 0 -> do

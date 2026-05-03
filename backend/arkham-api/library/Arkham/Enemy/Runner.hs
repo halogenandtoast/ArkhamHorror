@@ -1379,8 +1379,12 @@ instance RunMessage EnemyAttrs where
                ]
         _ -> error $ "Unhandled attack target: " <> show (attackTarget details)
 
-      whenM (eid <=~> ReadyEnemy) do
-        pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
+      -- Retaliate happens inside an investigator's fight action, so the
+      -- AttackEnemy handler already pushes HandleElusive — skip here to
+      -- avoid moving the enemy twice.
+      when (attackType details /= RetaliateAttack) do
+        whenM (eid <=~> ReadyEnemy) do
+          pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
 
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do

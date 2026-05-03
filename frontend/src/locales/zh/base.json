@@ -144,13 +144,17 @@
   "Skip": "跳过",
   "skipTriggers": "跳过触发能力",
   "Apply Results": "应用结果",
-  "Succeeded by {amount}": "成功，超过难度 {amount} 点",
-  "Failed by {amount}": "失败，低于难度 {amount} 点",
+  "submit": "确定",
+  "succeededBy": "成功，超过难度 {amount} 点",
+  "failedBy": "失败，低于难度 {amount} 点",
   "skillValue": "技能值",
   "label": {
     "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
     "takeControlOfKey": "控制钥匙"
   },
   "cluesPerPlayerAsGroup": "分配线索数量（全队共同花费 {total} 个线索）",
-  "Choose lead investigator": "选择调查员队长"
+  "chooseLeadInvestigator": "选择调查员队长",
+  "fromDeck": "从牌库中",
+  "fromHand": "从手牌中",
+  "fromDiscard": "从弃牌堆中"
 }

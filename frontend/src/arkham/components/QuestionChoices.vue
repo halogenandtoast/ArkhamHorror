@@ -20,10 +20,6 @@ const choose = (idx: number) => emit('choose', idx)
 
 const { t } = useI18n()
 const label = function(body: string) {
-  if (body.startsWith('Discover Clue at ')) {
-    const rawLocation = body.replace('Discover Clue at ', '').trim();
-    return t('discover_clue_at_template', { location: t(rawLocation) });
-  }
   return formatContent(handleEmbeddedI18n(t(body), t))
 }
 </script>

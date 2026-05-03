@@ -2,12 +2,10 @@ module Arkham.Asset.Assets.CrystalPendulum (crystalPendulum, crystalPendulumEffe
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype CrystalPendulum = CrystalPendulum AssetAttrs
   deriving anyclass IsAsset
@@ -21,22 +19,21 @@ instance HasModifiersFor CrystalPendulum where
 
 instance HasAbilities CrystalPendulum where
   getAbilities (CrystalPendulum a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
-          (InitiatedSkillTest Timing.After (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
+          (InitiatedSkillTest #after (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
           (exhaust a)
     ]
 
 instance RunMessage CrystalPendulum where
-  runMessage msg a@(CrystalPendulum attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      player <- getPlayer iid
-      pushM $ chooseAmounts player "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
+  runMessage msg a@(CrystalPendulum attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseAmounts iid "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Number" -> n) (isTarget attrs -> True) -> do
-      push =<< createCardEffect Cards.crystalPendulum (Just $ EffectInt n) (toAbilitySource attrs 1) iid
+      createCardEffect Cards.crystalPendulum (effectInt n) (attrs.ability 1) iid
       pure a
-    _ -> CrystalPendulum <$> runMessage msg attrs
+    _ -> CrystalPendulum <$> liftRunMessage msg attrs
 
 newtype CrystalPendulumEffect = CrystalPendulumEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -46,22 +43,18 @@ crystalPendulumEffect :: EffectArgs -> CrystalPendulumEffect
 crystalPendulumEffect = cardEffect CrystalPendulumEffect Cards.crystalPendulum
 
 instance RunMessage CrystalPendulumEffect where
-  runMessage msg e@(CrystalPendulumEffect attrs) = case msg of
+  runMessage msg e@(CrystalPendulumEffect attrs) = runQueueT $ case msg of
     PassedThisSkillTestBy _ _ n | Just (EffectInt n) == attrs.meta -> do
       case attrs.target of
         InvestigatorTarget iid -> do
-          let drawing = drawCards iid (toAbilitySource attrs.source 1) 1
-          pushAll [drawing, DisableEffect $ toId attrs]
-        _ -> error "Invalid target"
-      pure e
+          drawCards iid (toAbilitySource attrs.source 1) 1
+          disableReturn e
+        _ -> pure e
     FailedThisSkillTestBy _ _ n | Just (EffectInt n) == attrs.meta -> do
       case attrs.target of
         InvestigatorTarget iid -> do
-          let drawing = drawCards iid (toAbilitySource attrs.source 1) 1
-          pushAll [drawing, DisableEffect $ toId attrs]
-        _ -> error "Invalid target"
-      pure e
-    SkillTestEnds {} -> do
-      push $ DisableEffect $ toId attrs
-      pure e
-    _ -> CrystalPendulumEffect <$> runMessage msg attrs
+          drawCards iid (toAbilitySource attrs.source 1) 1
+          disableReturn e
+        _ -> pure e
+    SkillTestEnds {} -> disableReturn e
+    _ -> CrystalPendulumEffect <$> liftRunMessage msg attrs

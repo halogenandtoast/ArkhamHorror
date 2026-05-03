@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Treachery.Cards where
 
 import Arkham.Prelude
@@ -98,6 +99,7 @@ allPlayerTreacheryCards =
       , disruptivePoltergeist
       , doomed
       , downAndOut
+      , downpour
       , drawingTheSign
       , dreadCurse
       , dreamsOfTheFlood
@@ -190,6 +192,7 @@ allPlayerTreacheryCards =
       , unbrokenWeb
       , calledToGuinee
       , hemophobia
+      , markOfElokoss
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -243,6 +246,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , bloodthirstySpirits
+      , bloom
       , bodySnatched
       , boundInRed
       , brazierEnchantment
@@ -251,6 +255,7 @@ allEncounterTreacheryCards =
       , bumpyRide
       , burdensOfThePast
       , calcification
+      , callOfTheWild
       , callToOrder
       , callingCard
       , captivatingGleam
@@ -322,6 +327,7 @@ allEncounterTreacheryCards =
       , dreamsOfRlyeh
       , drivenToMadness
       , eagerForDeath
+      , eagerForDeath2
       , eagerForDeathUnionAndDisillusion
       , eldritchAccord
       , empyreanBrilliance
@@ -500,6 +506,7 @@ allEncounterTreacheryCards =
       , psychicPull
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
+      , psychotropicSpores
       , pulledBack
       , pulledByTheStars
       , punishment
@@ -629,7 +636,9 @@ allEncounterTreacheryCards =
       , viciousAmbush
       , violentCommands
       , violentCommandsTheMidwinterGala
+      , wallOfThorns
       , wardOfPreservation
+      , wallOfThorns
       , warpedReality
       , violentOutburst
       , visionsInYourMindDeath
@@ -672,6 +681,28 @@ allEncounterTreacheryCards =
       , yithianPresence
       , zeroVisibility
       , zoogBurrow
+      , cosmicEvils
+      , blasphemousInvocation
+      , unspeakableTruths
+      , forbiddenSecrets
+      , mutated1
+      , extraplanarVisions
+      , wildCompulsion
+      , languor
+      , dissonance
+      , torment
+      , arcaneLock
+      , downpour_BadWeather
+      , flashFlood
+      , raisingSuspicions
+      , redHerring
+      , aerialPursuit
+      , crossfire
+      , unnaturalDecay
+      , putridVapors
+      , fire1
+      , noxiousSmoke
+      , ashenRebirth
       ]
 
 coverUp :: CardDef
@@ -3196,14 +3227,21 @@ lurkingFear =
     }
 
 stolenLight :: CardDef
-stolenLight = peril $
-  (treachery "10624" "Stolen Light" TheTwistedHollow 1)
-    { cdCardTraits = setFromList [Scheme]
-    }
+stolenLight =
+  peril
+    $ (treachery "10624" "Stolen Light" TheTwistedHollow 1)
+      { cdCardTraits = setFromList [Scheme]
+      }
 
 swarm :: CardDef
 swarm =
   (treachery "10676" "Swarm" TheFirstDay 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+downpour :: CardDef
+downpour =
+  (treachery "10678" "Downpour" TheSecondDay 3)
     { cdCardTraits = setFromList [Hazard]
     }
 
@@ -3231,6 +3269,30 @@ captivatingGleam =
     $ (treachery "10731" "Captivating Gleam" Refractions 2)
       { cdCardTraits = setFromList [Power, Colour]
       }
+
+bloom :: CardDef
+bloom =
+  (treachery "10735" "Bloom" TheForest 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+wallOfThorns :: CardDef
+wallOfThorns =
+  (treachery "10736" "Wall of Thorns" TheForest 2)
+    { cdCardTraits = setFromList [Hazard, Flora]
+    }
+
+callOfTheWild :: CardDef
+callOfTheWild =
+  (treachery "10737" "Call of the Wild" TheForest 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+psychotropicSpores :: CardDef
+psychotropicSpores =
+  (treachery "10740" "Psychotropic Spores" Myconids 2)
+    { cdCardTraits = setFromList [Hazard, Flora]
+    }
 
 illDoItMyself :: CardDef
 illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
@@ -4429,4 +4491,152 @@ vampiresKiss :: CardDef
 vampiresKiss =
   (treachery "72059" "Vampire's Kiss" AbominableContessa 2)
     { cdCardTraits = singleton Scheme
+    }
+
+cosmicEvils :: CardDef
+cosmicEvils =
+  (treachery "12124" "Cosmic Evils" CosmicEvils 3)
+    { cdCardTraits = setFromList [Omen]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+unspeakableTruths :: CardDef
+unspeakableTruths =
+  (treachery "12125" "Unspeakable Truths" EldritchLore 2)
+    { cdCardTraits = singleton Terror
+    }
+
+forbiddenSecrets :: CardDef
+forbiddenSecrets =
+  (treachery "12126" "Forbidden Secrets" EldritchLore 2)
+    { cdCardTraits = singleton Pact
+    }
+
+extraplanarVisions :: CardDef
+extraplanarVisions =
+  (treachery "12127" "Extraplanar Visions" Hallucinations 2)
+    { cdCardTraits = singleton Power
+    }
+
+wildCompulsion :: CardDef
+wildCompulsion =
+  (treachery "12128" "Wild Compulsion" Hallucinations 2)
+    { cdCardTraits = setFromList [Madness, Bane]
+    }
+
+fire1 :: CardDef
+fire1 =
+  (treachery "12129" "Fire!" Fire1 5)
+    { cdCardTraits = singleton Hazard
+    }
+
+noxiousSmoke :: CardDef
+noxiousSmoke =
+  (treachery "12130" "Noxious Smoke" Fire1 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+mutated1 :: CardDef
+mutated1 =
+  (treachery "12131" "Mutated!" MadScience 2)
+    { cdCardTraits = singleton Mutation
+    }
+
+markOfElokoss :: CardDef
+markOfElokoss =
+  (weakness "12137" "Mark of Elokoss")
+    { cdCardTraits = singleton Curse
+    , cdEncounterSet = Just SmokeAndMirrors
+    , cdEncounterSetQuantity = Just 4
+    }
+
+arcaneLock :: CardDef
+arcaneLock =
+  (treachery "12157" "Arcane Lock" ArcaneLock 2)
+    { cdCardTraits = setFromList [Hex, Obstacle]
+    }
+
+downpour_BadWeather :: CardDef
+downpour_BadWeather =
+  (treachery "12158" "Downpour" BadWeather 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+flashFlood :: CardDef
+flashFlood =
+  (treachery "12159" "Flash Flood" BadWeather 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+raisingSuspicions :: CardDef
+raisingSuspicions =
+  (treachery "12160" "Raising Suspicions" DeadEnds 2)
+    { cdCardTraits = singleton Blunder
+    }
+
+redHerring :: CardDef
+redHerring =
+  (treachery "12161" "Red Herring" DeadEnds 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+aerialPursuit :: CardDef
+aerialPursuit =
+  surge
+    $ (treachery "12163" "Aerial Pursuit" FlyingTerrors 2)
+      { cdCardTraits = singleton Scheme
+      }
+
+crossfire :: CardDef
+crossfire =
+  (treachery "12165" "Crossfire" GangsOfArkham 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+eagerForDeath2 :: CardDef
+eagerForDeath2 =
+  (treachery "12167" "Eager for Death" Whippoorwills2 2)
+    { cdCardTraits = setFromList [Omen]
+    }
+
+blasphemousInvocation :: CardDef
+blasphemousInvocation =
+  (treachery "12190" "Blasphemous Invocation" Cultists 2)
+    { cdCardTraits = singleton Hex
+    }
+
+unnaturalDecay :: CardDef
+unnaturalDecay =
+  (treachery "12191" "Unnatural Decay" ReekingDecay 2)
+    { cdCardTraits = singleton Curse
+    }
+
+putridVapors :: CardDef
+putridVapors =
+  (treachery "12192" "Putrid Vapors" ReekingDecay 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+languor :: CardDef
+languor =
+  (treachery "12193" "Languor" Torment 2)
+    { cdCardTraits = setFromList [Hex, Bane]
+    }
+
+dissonance :: CardDef
+dissonance =
+  (treachery "12194" "Dissonance" Torment 2)
+    { cdCardTraits = setFromList [Curse, Bane]
+    }
+
+torment :: CardDef
+torment =
+  (peril $ treachery "12195" "Torment" Torment 2)
+    { cdCardTraits = setFromList [Power, Bane]
+    }
+
+ashenRebirth :: CardDef
+ashenRebirth =
+  (treachery "12176" "Ashen Rebirth" QueenOfAsh 2)
+    { cdCardTraits = singleton Power
     }

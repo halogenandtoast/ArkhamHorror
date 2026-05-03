@@ -1,4 +1,19 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current darkness level.",
+      "cultist": "-1. Heal 1 damage from your investigator.",
+      "tablet": "-3. If you fail, find the enemy in pursuit with the highest evade. Spawn it at your location.",
+      "elderThing": "-4. If you fail, take 1 horror."
+
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice the current darkness level.",
+      "cultist": "-3. If you succeed, heal 1 damage from your investigator.",
+      "tablet": "-4. Find the enemy in pursuit with the highest evade. Spawn it at your location.",
+      "elderThing": "-5. Take 1 horror."
+    }
+  },
   "intro": {
     "label": {
       "tellTheTruth": "Tell the truth.",
@@ -51,6 +66,38 @@
       "theBear1": "<p>_The Bear 1_: You find a scrap of torn tweed caught on a branch that is unmistakably Bertie’s. A wretched, wheezing cough sounds behind you, accompanied by the scent of rot. You turn around. A hulking bear glows like ghost fire in the darkness. A colony of shimmering fungus on the creature’s back lights up the murk with an eerie incandescence. The creature roars, then charges.</p><p class='basic'>Check the set-aside cards.<p><ul><li>If either Judith Park or Theo Peters are set aside, choose one of them to put into play under your control and immediately resolve their codex entry.</li><li>Otherwise, proceed to _The Bear 2_.</li></ul>",
       "theBear2": "<p>_The Bear 2_: Before you can react, the bear swipes at you with razor sharp claws. Its rancid, wheezing breath floods your senses as it presses a gargantuan paw to your chest. Your vision begins to dim as the thing’s weight threatens to snap your ribcage.</p><p class='basic'>You must either (*choose one*), then continue reading:</p><ul><li>Suffer 1 physical trauma and take 1 direct damage.</li><li>Suffer 1 mental trauma and take 1 direct horror.</li></ul><p>Suddenly, a shot rings out, cracking the bear’s exposed skull. It whines in pain as two more shots impact its soft, molting body. The thing lets out a pitiful grunt, then melts into the shadows. You hear Mother Rachel’s voice from somewhere close: “Run!”</p><p class='basic right'>In Mother Rachel’s Notes, record *Mother Rachel intervened*.</p><p class='basic right'>Proceed to _The Bear 3_.</p>",
       "theBear3": "<p>_The Bear 3_: You flee the scene into a copse of dying trees and hold the lantern up, expecting to see the bear’s ghoulish blue eyes reflected back in the dark. The forest is deathly quiet as you struggle to get your bearings.</p><ul><li>Move each unengaged enemy to the pursuit area.</li><li>Spawn the Ursine Hybrid enemy at your location, exhausted, and deal 1 damage to it.</li><li>If it is not under the control of an investigator, choose an investigator to take control of Vale Lantern.</li><li>Set aside each empty _Dark_ location to remake the Woods deck. To do this, perform the following:<ul><li>Shuffle the set-aside Twisted Hollow location with 3 random Western Woods locations together to form the bottom 4 locations of the Woods deck, Western Woods side faceup.</li><li>Then, place all of the other Western Woods locations on top in a random order. All of the cards in the Woods deck should be showing only the Western Woods side, so that the investigators do not know which is which.</li></ul></li><li>Put locations from the top of the Woods deck into play above, below, and to the left and right of the investigators’ location.</li></ul>"
+    }
+  },
+  "label": {
+    "deepiningDark": {
+      "pursuitEnemy": "Draw an enemy in pursuit with the highest evade value"
+    },
+    "deepShadows": {
+      "lantern": "The investigator who controls the Vale Lantern flips it to its _Unlit_ side and places it at a connecting location."
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "insight": "Gained insight into Hemlock Isle’s unique ecosystem.",
+        "bertie": "Resigned with Bertie Musgrave under their control."
+      }
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: Long, spindly branches stretch like grasping hands from the thick canopy overhead. You feel light-headed as strange whispers resound from deep in the surrounding dark. Summoning all your strength, you stagger to the edge of a black lake. The waxing moon is perfectly reflected on the surface of the water, distorted by oily, iridescent whisps of a strange color. Across the lake, a figure stands outlined in the mist. You call out to it, and it moves slowly toward you, over the water. As it approaches, all you can see of its face is a wide, rictus grin.</p><p>“So help me, please wake up!” Dr. Marquez shakes you awake from the nightmare. Her worry quickly turns to annoyance when you open your eyes. “I’m glad you woke up. I wasn’t prepared for the paperwork if we lost you, too.” You are in a flowering field at the edge of the woods. When you ask about Bertie, she brushes a stray hair behind her ear and looks up at the waking dawn. “He’s gone. I lost him.”</p><ul><li>In your Campaign Log, record *Bertie was lost in the woods*.</li><li>Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Long, spindly branches stretch like grasping hands as you emerge from the forest into a meadow glowing with shimmering blue wildflowers. The sight of the brilliant carpet of blue and white nearly takes your breath away after the oppressive darkness. Perhaps it is just your tired mind, but the heather and flowers seem to pulse. “Look,” Bertie points with a trembling hand. A dozen luminous stalks rise like floating lamps over the meadow, glimmering in the moonlight. “I feel almost as though we are walking amidst the cosmos. That each of us is a little god.” He plucks a glowing bud from its stalk. “And each of these, an even smaller star.”</p><p>Dr. Marquez slaps the flower out of his hand. “That poetic drivel is what got you lost in the woods. We risked life and limb for you! You’ll be lucky if I leave this incident out of the survey report.” Bertie hangs his head in shame as the professor lists a litany of woes and misdemeanors. But still, you can’t help but note the concern in Dr. Marquez’s voice as she excoriates her assistant. As you return to the Vale, the sky stirs with the coming dawn.</p><ul><li>In your Campaign Log, record 8Bertie was rescued*.</li><li>Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: The canopy of trees presses in, filled with myriad eyes and the noisome beating of insect wings. You emerge into a small moonlit clearing to hear a familiar hacking cough: the bear emerges, snarling, from the darkness behind you. Bertie looks at you with wide, clear eyes. “This is my fault. I’m so sorry I caused you so much trouble. Say a word for me back in the Vale, will you?” Before you can intervene, Bertie snatches the lantern out of your hands and shouts into the darkness: “Come on, you ugly git!”</p><p>The bear roars in response. Glowing blue spores scatter in the darkness around it, wreathing the creature in pale blue light. Bertie lets out a brave yell in response and barrels toward it. Realizing the young man’s sacrifice, you take advantage of the distraction to slip away and get to safety.</p><ul><li>In your Campaign Log, record *Bertie was lost in the woods*.</li><li>Proceed to _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. An unplanned foray into the Western Woods, at night. Local flora and fauna have evolved highly specialized behavior patterns after dark, likely dictated by extreme circadian rhythms and aggressive predation. A highly toxic environment. Identified a hitherto unknown symbiosis with a new strain of parasitic fungus. Further observation necessary.”</p><ul><li>Each investigator earns 1 bonus experience as they gain insight into Hemlock Isle’s unique ecosystem.<ul><li>Each investigator earns 1 additional experience if an investigator resigned with Bertie Musgrave under their control.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>Update your Campaign Log.<ul><li>If Ursine Hybrid is in the victory display, record *the bear was wounded*.</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *Western Woods*.</li></ul></li><li>Proceed to _Prelude: Dawn of the Second Day_.</li></ul>"
     }
   }
 }

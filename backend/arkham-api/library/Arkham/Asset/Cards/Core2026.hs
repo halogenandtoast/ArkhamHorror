@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Asset.Cards.Core2026 where
 
 import Arkham.Asset.Cards.Import
@@ -199,6 +200,7 @@ cosmicFlame =
     , cdCardTraits = setFromList [Spell]
     , cdSlots = [#arcane]
     , cdUses = uses Charge 3
+    , cdAlternateCardCodes = ["60459"]
     }
 
 jimCulverHauntedMusician :: CardDef
@@ -337,3 +339,23 @@ theGoldBug =
     { cdCardTraits = setFromList [Item, Relic, Alchemy, Cursed]
     , cdSlots = [#accessory]
     }
+
+drHenryArmitage_SpreadingFlames :: CardDef
+drHenryArmitage_SpreadingFlames =
+  (storyAsset "12115" ("Dr. Henry Armitage" <:> "The Head Librarian") 3 SpreadingFlames)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }
+
+collector :: CardDef
+collector =
+  permanent
+    $ (asset "12181" "Collector" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdLevel = Just 0
+      , cdEncounterSet = Just QueenOfAsh
+      , cdEncounterSetQuantity = Just 2
+      }

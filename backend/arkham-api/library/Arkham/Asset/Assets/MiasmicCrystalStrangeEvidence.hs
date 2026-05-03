@@ -16,10 +16,10 @@ newtype MiasmicCrystalStrangeEvidence = MiasmicCrystalStrangeEvidence AssetAttrs
 miasmicCrystalStrangeEvidence :: AssetCard MiasmicCrystalStrangeEvidence
 miasmicCrystalStrangeEvidence = asset MiasmicCrystalStrangeEvidence Cards.miasmicCrystalStrangeEvidence
 
+-- NOTE: this used to have noLimit, but I do not recall why
 instance HasAbilities MiasmicCrystalStrangeEvidence where
   getAbilities (MiasmicCrystalStrangeEvidence a) =
-    [ noLimit
-        $ storyControlled_ a 1
+    [ storyControlled_ a 1
         $ triggered
           (DrawCard #when (affectsOthers $ at_ YourLocation) (basic $ CardFromEncounterSet Tekelili) AnyDeck)
           (assetUseCost a Charge 1)
@@ -29,7 +29,8 @@ instance RunMessage MiasmicCrystalStrangeEvidence where
   runMessage msg a@(MiasmicCrystalStrangeEvidence attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawnBy -> (iid', card)) _ -> do
       cancelCardEffects (attrs.ability 1) card
+      quietCancelCardDraw card
       putCardOnBottomOfDeck iid' TekeliliDeck card
-      drawCardsIfCan iid' (attrs.ability 1) 1
+      drawCards iid' (attrs.ability 1) 1
       pure a
     _ -> MiasmicCrystalStrangeEvidence <$> liftRunMessage msg attrs

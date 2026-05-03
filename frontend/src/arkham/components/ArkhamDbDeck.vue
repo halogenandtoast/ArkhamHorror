@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import {imgsrc, localizeArkhamDBBaseUrl} from '@/arkham/helpers';
+import {imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck} from '@/arkham/helpers';
 
 const model = defineModel()
 const deck = ref<string | null>(null)
@@ -27,10 +27,7 @@ async function loadDeck() {
     const response = await fetch(deckUrl.value)
     if (response.ok) {
       const data = await response.json()
-      const meta = data.meta ? JSON.parse(data.meta) : {}
-      const { slots: hiddenSlotCards, ...hiddenRest } = meta.hidden_slots || {}
-      const mergedSlots = {...data.slots, ...(hiddenSlotCards || {})}
-      const deckData = {...data, ...hiddenRest, slots: mergedSlots, url: deckUrl.value}
+      const deckData = processArkhamBuildDeck(data, deckUrl.value)
       if (Object.keys(deckData.slots).length === 0) {
         error.value = "Is this deck empty?"
       } else{

@@ -846,19 +846,19 @@ instance RunMessage ChaosBag where
               _ -> False
 
           checkWindowMsgs <- case miid of
-            Just iid ->
-              (\x y -> [x, y])
-                <$> checkWindows
-                  [ mkWhen (Window.RevealChaosToken iid token)
-                  | token <- tokens'
-                  , not token.cancelled
-                  ]
-                <*> checkWindows
-                  [ mkAfter (Window.RevealChaosToken iid token)
-                  | not sourceIsSkillTest
-                  , token <- tokens'
-                  , not token.cancelled
-                  ]
+            Just iid -> do
+              whenMsgs <-
+                traverse
+                  (\token -> checkWindows [mkWhen (Window.RevealChaosToken iid token)])
+                  [token | token <- tokens', not token.cancelled]
+              afterMsgs <-
+                if sourceIsSkillTest
+                  then pure []
+                  else
+                    traverse
+                      (\token -> checkWindows [mkAfter (Window.RevealChaosToken iid token)])
+                      [token | token <- tokens', not token.cancelled]
+              pure $ whenMsgs <> afterMsgs
             Nothing -> pure []
           for_ miid \iid -> do
             investigator <- getAttrs @Investigator iid

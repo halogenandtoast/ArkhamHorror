@@ -2,6 +2,7 @@
 
 module Arkham.Effect.Window (module Arkham.Effect.Window) where
 
+import Arkham.ScenarioLogKey
 import Arkham.Ability.Types
 import Arkham.Card.Id
 import Arkham.Id
@@ -47,6 +48,7 @@ data EffectWindow
   | EffectRevelationWindow TreacheryId
   | EffectDefeatWindow EnemyId
   | EffectHollowWindow CardId
+  | EffectRememberedWindow ScenarioLogKey
   deriving stock (Ord, Eq, Show, Data)
 
 instance IsLabel "endOfCurrentPhase" EffectWindow where
@@ -57,6 +59,9 @@ instance IsLabel "endOfNextSkillTest" (InvestigatorId -> EffectWindow) where
 
 instance IsLabel "nextSkillTest" (InvestigatorId -> EffectWindow) where
   fromLabel = EffectNextSkillTestWindow
+
+instance IsLabel "remembered" (ScenarioLogKey -> EffectWindow) where
+  fromLabel = EffectRememberedWindow
 
 instance IsLabel "round" EffectWindow where
   fromLabel = EffectRoundWindow

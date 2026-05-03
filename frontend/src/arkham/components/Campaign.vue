@@ -110,7 +110,15 @@ const questionHash = computed(() => {
 })
 
 const continueScenario = computed(() => {
-  if (props.game.scenario?.campaignStep?.tag === 'ContinueCampaignStep') return props.game.scenario?.campaignStep.contents
+  const step = props.game.scenario?.campaignStep
+  if (!step) return null
+  if (step.tag === 'ContinueCampaignStep') return step.contents
+
+  // ContinueCampaignStep was already unwrapped by the backend but question is still pending
+  const question = props.game.question[props.playerId] ?? Object.values(props.game.question)[0]
+  if (question?.tag === 'ContinueCampaign') {
+    return { nextStep: step, canUpgradeDecks: false, chooseSideStory: false, canChooseSideStory: false }
+  }
   return null
 })
 
@@ -131,12 +139,10 @@ const inScenarioStep = computed(() => {
     <ContinueCampaign
       :game="game"
       :campaign="campaign"
-      :playerId="playerId"
       :canUpgradeDecks="continueCampaign.canUpgradeDecks"
       :step="continueCampaign.nextStep"
       :chooseSideStory="continueCampaign.chooseSideStory"
       :canChooseSideStory="continueCampaign.canChooseSideStory"
-      @choose="choose"
     />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
@@ -147,12 +153,10 @@ const inScenarioStep = computed(() => {
       v-if="continueScenario"
       :game="game"
       :scenario="game.scenario ?? undefined"
-      :playerId="playerId"
       :canUpgradeDecks="continueScenario.canUpgradeDecks"
       :step="continueScenario.nextStep"
       :chooseSideStory="continueScenario.chooseSideStory"
       :canChooseSideStory="continueScenario.canChooseSideStory"
-      @choose="choose"
     />
     <Scenario
       v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0 && !inScenarioStep"

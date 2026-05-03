@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.TheFirstNight (theFirstNight) where
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheFirstNight = TheFirstNight AgendaAttrs
@@ -22,9 +23,13 @@ instance RunMessage TheFirstNight where
     AdvanceAgenda (isSide B attrs -> True) -> do
       disengageEachEnemyAndMoveToConnectingLocation attrs
       doStep 1 msg
+      doStep 2 msg
       advanceAgendaDeck attrs
       pure a
     DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
       moveOrganistAwayFromNearestInvestigator
+      pure a
+    DoStep 2 (AdvanceAgenda (isSide B attrs -> True)) -> do
+      selectEach UnengagedEnemy enemyCheckEngagement
       pure a
     _ -> TheFirstNight <$> liftRunMessage msg attrs

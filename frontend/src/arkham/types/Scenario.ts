@@ -272,8 +272,15 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "09660": return "theScarletKeys.shadesOfSuffering"
     case "09681": return "theScarletKeys.withoutATrace"
     case "09694": return "theScarletKeys.congressOfTheKeys"
+    case "10677a": return "theFeastOfHemlockVale"
     case "10501": return "theFeastOfHemlockVale.writtenInRock"
+    case "10523": return "theFeastOfHemlockVale.hemlockHouse"
+    case "10549": return "theFeastOfHemlockVale.theSilentHeath"
+    case "10569": return "theFeastOfHemlockVale.theLostSister"
+    case "10588": return "theFeastOfHemlockVale.theThingInTheDepths"
     case "10605": return "theFeastOfHemlockVale.theTwistedHollow"
+    case "10626": return "theFeastOfHemlockVale.theLongestNight"
+    case "10651": return "theFeastOfHemlockVale.theFateOfTheVale"
     case "10704": return "theFeastOfHemlockVale"
     case "50011": return "nightOfTheZealot.theGathering"
     case "50025": return "nightOfTheZealot.theMidnightMasks"
@@ -320,6 +327,9 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "84001": return "standalone.murderAtTheExcelsiorHotel"
     case "88001": return "standalone.fortuneAndFolly"
     case "88001b": return "standalone.fortuneAndFolly"
+    case "12105": return "brethrenOfAsh.spreadingFlames"
+    case "12133": return "brethrenOfAsh.smokeAndMirrors"
+    case "12168": return "brethrenOfAsh.queenOfAsh"
     default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

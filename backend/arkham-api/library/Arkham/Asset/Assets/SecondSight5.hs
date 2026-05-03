@@ -4,9 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.ForMovement
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Message (setOptionCriteria)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype SecondSight5 = SecondSight5 AssetAttrs
@@ -17,8 +18,7 @@ secondSight5 :: AssetCard SecondSight5
 secondSight5 = asset SecondSight5 Cards.secondSight5
 
 instance HasAbilities SecondSight5 where
-  getAbilities (SecondSight5 a) =
-    [skillTestAbility $ controlled_ a 1 $ investigateActionWith_ #willpower]
+  getAbilities (SecondSight5 a) = [skillTestAbility $ controlled_ a 1 $ investigateActionWith_ #willpower]
 
 instance RunMessage SecondSight5 where
   runMessage msg a@(SecondSight5 attrs) = runQueueT $ case msg of
@@ -36,14 +36,19 @@ instance RunMessage SecondSight5 where
         else removeTokens (attrs.ability 1) attrs Charge 1
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      when (attrs.use #charge > 0) do
-        additionalSkillTestOption "Second Sight (5)" do
-          removeTokens (attrs.ability 1) attrs Charge 1
-          discoverAtMatchingLocation
-            NotInvestigate
-            iid
-            (attrs.ability 1)
-            (orConnected NotForMovement $ locationWithInvestigator iid)
-            1
+      additionalSkillTestOptionEdit
+        ( setOptionCriteria
+            $ exists (orConnected_ (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid)
+            <> thisExists attrs (AssetWithSpendableUses (atLeast 1) Charge)
+        )
+        "Second Sight (5)"
+        do
+          chooseOneM iid do
+            labeled "Spend 1 charge to discover 1 additional clue" $ doStep 2 msg
+            labeled "Do not spend charge" nothing
+      pure a
+    DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
+      spendUses (attrs.ability 1) attrs Charge 1
+      discoverAtMatchingLocation_ iid (attrs.ability 1) (orConnected_ $ locationWithInvestigator iid) 1
       pure a
     _ -> SecondSight5 <$> liftRunMessage msg attrs

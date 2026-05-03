@@ -249,6 +249,7 @@ data WindowMatcher
   | WouldDrawExactlyOneCard Timing Who DeckMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | DrawsCards Timing Who CardListMatcher ValueMatcher
+  | DrewCardsFromOwnDeck Timing Who
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PlayEvent Timing Who EventMatcher
@@ -257,6 +258,7 @@ data WindowMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard CostStatus ExtendedCardMatcher
   | RevealLocation Timing Who Where
+  | RevealLocationForcedAbilities Timing Who Where (Maybe Where)
   | UnrevealedRevealLocation Timing Who Where
   | FlipLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where

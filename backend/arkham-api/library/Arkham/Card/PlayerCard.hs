@@ -5,6 +5,7 @@ module Arkham.Card.PlayerCard where
 import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CardType
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -31,6 +32,9 @@ data PlayerCard = MkPlayerCard
   , pcMutated :: Maybe Text
   }
   deriving stock (Show, Ord, Data)
+
+instance HasField "kind" PlayerCard CardType where
+  getField = (.kind) . toCardDef
 
 instance HasField "victoryPoints" PlayerCard (Maybe Int) where
   getField = (.victoryPoints) . toCardDef

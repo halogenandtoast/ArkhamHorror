@@ -16,7 +16,7 @@ interface ImageHelper {
 
 const batchSize: number = 1000
 const defaultHelper: ImageHelper = { root: '', digests: new Set(), data: new Map(), loaded: ref(true) }
-const imgHelper:Map<string, ImageHelper> = new Map<string, ImageHelper>([
+const imgHelper: Map<string, ImageHelper> = new Map<string, ImageHelper>([
   ['it', { root: 'ita', digests: new Set(ita), data: new Map(), loaded: ref(false) }],
   ['fr', { root: 'fr', digests: new Set(fr), data: new Map(), loaded: ref(false) }],
   ['es', { root: 'es', digests: new Set(es), data: new Map(), loaded: ref(false) }],
@@ -26,21 +26,21 @@ const imgHelper:Map<string, ImageHelper> = new Map<string, ImageHelper>([
 
 export async function checkImageExists(language: string = localStorage.getItem('language') || 'en') {
   if (language === 'en' || !imgHelper.has(language)) return
-  
+
   const helper = imgHelper.get(language) || defaultHelper
   if (!helper.root || helper.loaded.value) return
-  
+
   const store = useSiteSettingsStore()
-  
+
   helper.digests.forEach((originPath) => {
     const path = originPath.replace(/^\//, '')
     const ext = (path.split('.').pop() || '').toLowerCase()
-    
+
     if (ext !== 'avif' && ext !== 'webp' && !ext.endsWith('png') && !ext.startsWith('jpg')) return
 
     helper.data.set(path, ref(true))
   })
- 
+
   helper.loaded.value = true
 }
 
@@ -49,7 +49,7 @@ export function toCapitalizedWords(name: string) {
   return capitalize(words.map(lowercase).join(" "));
 }
 
-export function toCamelCase(str : string) {
+export function toCamelCase(str: string) {
   return str
     .toLowerCase()
     .replace(/\s+(\w)/g, (_, letter) => letter.toUpperCase())
@@ -88,19 +88,19 @@ export function imgsrc(src: string) {
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
   const fullPath = `${store.assetHost}/img/arkham/${path}`
-  
+
   if (isLocalized(src)) {
     const helper = imgHelper.get(language) || defaultHelper
     const exists = helper.digests.has(path)
-    
+
     if (exists && helper.root && helper.loaded.value) {
       const i18nFullPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
       const canFetch = helper.data.get(path)?.value || false
-      
+
       if (canFetch) return i18nFullPath
     }
   }
-  
+
   return fullPath
 }
 
@@ -117,7 +117,7 @@ export function pluralize(w: string, n: number) {
   }
 }
 
-export function formatContent(body:string) {
+export function formatContent(body: string) {
   return replaceIcons(body).
     replace(/_([^_]*)_/g, '<strong>$1</strong>').
     replace(/\*([^\*]*)\*/g, '<i>$1</i>')
@@ -259,4 +259,19 @@ export function localizeArkhamDBBaseUrl() {
 
   baseUrl.hostname = `${language}.${baseUrl.hostname}`;
   return baseUrl.origin;
+}
+
+export function processArkhamBuildDeck<T extends { slots?: Record<string, number> }>(
+  data: T,
+  url: string,
+): T & { slots: Record<string, number>; url: string } {
+  const rawMeta = (data as { meta?: unknown }).meta
+  const meta: { hidden_slots?: Record<string, unknown> } =
+    typeof rawMeta === 'string' ? JSON.parse(rawMeta) : {}
+  const { slots: hiddenSlotCards, ...hiddenRest } = (meta.hidden_slots ?? {}) as {
+    slots?: Record<string, number>
+    [key: string]: unknown
+  }
+  const mergedSlots = { ...(data.slots ?? {}), ...(hiddenSlotCards ?? {}) }
+  return { ...data, ...hiddenRest, slots: mergedSlots, url }
 }

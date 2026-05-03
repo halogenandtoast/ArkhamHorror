@@ -43,6 +43,7 @@ recreateWraith attrs placement = do
       , enemyCreationTarget = Nothing
       , enemyCreationInvestigator = Nothing
       }
+  push $ EnemyCheckEngagement attrs.id
 
 instance RunMessage Wraith where
   runMessage msg e@(Wraith attrs) = runQueueT $ case msg of

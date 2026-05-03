@@ -24,8 +24,7 @@ instance HasAbilities ExtraRations1 where
             , exists $ HealableAsset (a.ability 1) #damage $ #ally <> AssetControlledBy You
             ]
         )
-        $ freeTrigger
-        $ assetUseCost a Supply 1
+        $ freeTrigger (assetUseCost a Supply 1 <> exhaust a)
     ]
 
 instance RunMessage ExtraRations1 where

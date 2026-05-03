@@ -90,6 +90,8 @@ data ScenarioLogKey
   | PeeredBeyond
   | SharedADeepPain
   | FoundHiddenBones
+  | -- | Prelude Dawn of the SecondDay
+    YouAreRunningAnErrand
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

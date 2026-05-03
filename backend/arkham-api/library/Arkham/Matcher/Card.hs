@@ -206,6 +206,7 @@ data CardMatcher
   | CardWithClass ClassSymbol
   | CardWithAction Action
   | CardWithoutAction
+  | CardIsStoryAsset
   | CardWithSkillIcon SkillIcon
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]

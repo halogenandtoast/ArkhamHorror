@@ -1,16 +1,150 @@
 {
+  "heading": "冒险 VI",
   "tokens": {
     "easyStandard": {
-      "skull": "-2. 如果该检定是在 _阵法_ 行动期间执行的，再抽一个标记。",
-      "cultist": "-3. 如果你身上没有伤害标记，受到1点伤害。如果你身上没有恐惧标记，受到1点恐惧。",
-      "tablet": "-3. 如果你失败，你所在地点的一个 _幽灵_ 敌人攻击你(不论其是否处于消耗状态)。",
-      "elderThing": "-3. 如果该检定是在 _阵法_ 行动期间执行的且你检定失败，结算你所在地点的所有闹鬼能力。"
+      "skull": "-2。如果该检定是在 _阵法_ 行动期间执行的，再抽一个标记。",
+      "cultist": "-3。如果你身上没有伤害标记，受到1点伤害。如果你身上没有恐惧标记，受到1点恐惧。",
+      "tablet": "-3。 如果你失败，你所在地点的一个_幽灵_敌人攻击你(不论其是否处于消耗状态)。",
+      "elderThing": "-3。 如果该检定是在 _阵法_ 行动期间执行的且你检定失败，结算你所在地点的所有闹鬼能力。"
     },
     "hardExpert": {
-      "skull": "-3. 如果该检定是在 _阵法_ 行动期间执行的，再抽一个标记。",
-      "cultist": "-4. 如果你身上没有伤害标记，受到1点伤害。如果你身上没有恐惧标记，受到1点恐惧。",
-      "tablet": "-4. 如果你失败，你所在地点的一个 _幽灵_ 敌人攻击你(不论其是否处于消耗状态)。",
-      "elderThing": "-4. 如果该检定是在 _阵法_ 行动期间执行的且你检定失败，结算你所在地点的所有闹鬼能力。"
+      "skull": "-3。如果该检定是在 _阵法_ 行动期间执行的，再抽一个标记。",
+      "cultist": "-4。如果你身上没有伤害标记，受到1点伤害。如果你身上没有恐惧标记，受到1点恐惧。",
+      "tablet": "-4。 如果你失败，你所在地点的一个_幽灵_敌人攻击你(不论其是否处于消耗状态)。",
+      "elderThing": "-4。 如果该检定是在 _阵法_ 行动期间执行的且你检定失败，结算你所在地点的所有闹鬼能力。"
+    }
+  },
+  "tooltips": {
+    "miskatonicRiver": {
+      "resign": "You take your rowboat back to the shore of the Miskatonic River, leaving the mysterious island behind."
+    },
+    "forbiddingShore": {
+      "haunted": "You must either lose 1 action or lose 2 resources"
+    },
+    "unvisitedIsleStandingStones": {
+      "haunted": "Until the end of the round, increase the difficulty of each skill test during a _circle_ action by 2."
+    },
+    "unvisitedIsleMistyClearing": {
+      "haunted": "You must either place 1 doom on this location, or take 1 damage and 1 horror"
+    },
+    "unvisitedIsleForsakenWoods": {
+      "haunted": "You must either search the encounter deck and discard pile for a Whippoorwill and spawn it at this location, or the nearest Whippoorwill attack you."
+    },
+    "unvisitedIsleMossCoveredSteps": {
+      "haunted": "Your next move action this round costs 1 additional action"
+    },
+    "unvisitedIsleHauntedSpring": {
+      "haunted": "You must either discard an asset you control, or take 1 damage"
+    },
+    "unvisitedIsleDecayedWillow": {
+      "haunted": "Choose and discard 1 card from your hand."
+    }
+  },
+  "label": {
+    "unvisitedIsleMistyClearing": {
+      "doom": "Place 1 doom on this location"
+    },
+    "unvisitedIsleForsakenWoods": {
+      "search": "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location",
+      "attack": "The nearest Whippoorwill attacks you"
+    },
+    "spectralRaven": {
+      "haunted": "Resolve each haunted ability on your location",
+      "modify": "Spectral Raven gets +2 fight and +2 evade until the end of the investigation phase"
+    },
+    "watchersGaze": {
+      "yourLocation": "Resolve the Haunted ability on your location",
+      "watchersLocations": "Resolve the Haunted ability on The Spectral Watcher's location"
+    }
+  },
+  "intro": {
+    "title": "冒险VI：聚合幻灭",
+    "body": "<p>未访之岛坐落在米斯卡塔尼克河中央。两座桥梁横跨河面，将其与阿卡姆的商业区和河岸城连接起来。岛上长满了藤蔓、荆棘和诡异的灌木丛，此地无人居住，动物也稀少。一排排神秘的石柱如哨兵一般伫立在岛上，比树冠还高。尽管众说纷纭，但无一人能够确定这些石柱有何作用，是谁人所建。胆敢登上这座神秘岛屿来探险的人少之又少，其中有人探险归来后讲述了古怪的故事：夜晚至暗时刻树林里燃起篝火——数座石祭坛上深深镌刻着无法翻译的铭文——空荡荡的树林里死气沉沉，只有通体漆黑的乌鸦和夜鹰还栖身在树枝上，用渴望的目光注视着入侵者。不幸的是，要注意到这么多危险的讯号，对你来说已经是件危险的事。</p><p>阿卡姆的街道从未像现在这样空旷、寂静。整座城市被一团熟悉的灰雾所笼罩。你越靠近河边，雾气就变得越发浓重。你匆匆行进，不希望在前往仪式场所的路上遇见任何人，不论是活人还是死人。你发现码头边上停着几艘划艇，便登上了其中一艘。水面呈现出诡异的平静，几乎没有水流推动这艘小艇，看来划到那座岛去不是么难事。即便如此，浓雾让你难以辨清方向。不久，灰雾完全包围你，使你既看不见河的两岸，也看不见岛屿的边界。雾中显现出一些人影。水面泛起了涟漪。看守人正凝视着你。</p><p>就在这时，一道光能直刺天穹，即便在浓雾之中也如同白日一般清晰可见。人影齐刷刷地转向这座灯塔，而你感觉到，看守人的视线离开了你的灵魂。仪式开始了。凭藉光芒的指引，你加快了划艇的速度。是时候最终决定你到这儿来的目的了——你是来这儿帮助银暮秘社的吗？还是说是为了阻止他们？</p><p class='basic'>已经没法回头——之后你就没有机会改变主意了。调查员必须决定(选择以下一项)：</p><ul><li>*“我们得帮助秘社完成仪式。”* 完成仪式就能绑缚幽灵看守人，阻止它继续作恶。<ul><li>在剧本日志中，记录下*调查员支持秘社*。</li><li>进入_冒险设置_。</li></ul></li><li>*“我们得阻止秘社的仪式。”* 破坏仪式应该能够解放幽灵看守人，让它不再拘锁于尘世。<ul><li>在剧本日志中，记录下*调查员支持女巫集会*。</li><li>进入_冒险设置_。</li></ul></li></ul>",
+    "additionalIntro": "<p>_Additional Intro_: Erynn considers your words carefully as you tell her that you intend to side with her coven and help them stop the Lodge’s ritual despite what you have learned about her high priestess. “I don’t know,” she admits. “Is this truly what you want?” She sighs, looking more exhausted and troubled than ever before. “All right. If this is what you intend to do, so be it. But I hope you understand what you are doing…”</p>",
+    "label": {
+      "complete": "“我们得帮助秘社完成仪式。”",
+      "stop": "“我们得阻止秘社的仪式。”"
+    }
+  },
+  "setup": {
+    "gatherSets": "收齐以下遭遇组的所有卡牌：*聚合幻灭*、*在劫难逃*、*冥界*、*幽灵捕食者*、*远古恶魔*和*寒冷刺骨*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/union-and-disillusion.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/realm-of-death.png' /><img src='{setImgPath}/spectral-predators.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "setSetsAside": "请将以下遭遇套装放在一边，使其无法使用：*安妮特的女巫集会*、*银暮秘社*和*看守人*。这些遭遇组的图标为：<section class='encounter-sets'><img src='{setImgPath}/anettes-coven.png' /><img src='{setImgPath}/silver-twilight-lodge.png' /><img src='{setImgPath}/the-watcher.png' /></section>",
+    "setAside": "将灵怪陷阱地点和看守人的注视诡计放在一边，位于场外。",
+    "setEnemiesAside": "查找收藏，找出安妮特·梅森(*万象无终#57*)和约瑟夫·梅吉尔(*万象无终#85*)，将他们放在一边，位于场外。",
+    "missingPersons": "检查剧本日志中“失踪人口”部分。根据角色是否被划掉，执行以下段落：",
+    "gavriella": "如果加弗瑞拉·米兹拉克未被划掉, 将“加弗瑞拉·米兹拉克”剧情支援卡放在一边，并将“加弗瑞拉的命运”剧情卡放在冒险参考卡牌底下。",
+    "penny": "如果佩妮·怀特未被划掉, 将“佩妮·怀特”剧情支援卡放在一边，再将“佩妮的命运”剧情卡放在冒险参考卡牌底下。",
+    "jerome": "如果杰罗姆·戴维斯未被划掉, 将“杰罗姆·戴维斯”剧情支援卡放在一边，再将“杰罗姆的命运”剧情卡放在冒险参考卡牌底下。",
+    "valentino": "如果瓦伦蒂诺·里瓦斯未被划掉, 将“瓦伦蒂诺·里瓦斯”剧情支援卡放在一边，再将“瓦伦蒂诺的命运”剧情卡放在冒险参考卡牌底下。",
+    "removeRemainder": "将*聚合幻灭*遭遇组剩余的剧情支援和剧情卡牌从游戏中移除。",
+    "heretics": "检查剧本日志。每有1个*异端者被释放到阿卡姆*，在密谋1a上放置1个毁灭标记。",
+    "acts": "根据以下几种情况，应在这场冒险中使用不同版本的场景3和场景4。将其他所有版本的场景3和场景4从游戏中移除。检查剧本日志：",
+    "v1": "如果*调查员支持秘社*，使用场景3—“迷雾彼端(版本一)”和场景4—“咒缚仪式”。",
+    "v2": "如果*调查员支持女巫集会*、*调查员在欺骗秘社*并且*调查员受到加入核心圈的感召*，使用场景3—“迷雾彼端(版本二)“和场景4—“仪式遭毁”。",
+    "v3": "如果上述情况均不符合，但*调查员支持女巫集会*并且存在以下至少2项：*调查员在欺骗秘社*、*调查员隐瞒了自己知道女巫集会一事*、*调查员隐瞒了自己发现的遗留记忆*，使用场景3—“迷雾彼端(版本三)”和场景4—“仪式遭毁”。",
+    "v4": "如果上述情况均不符合，但*调查员支持女巫集会*，使用场景3—“迷雾彼端(版本四)”和场景4—“仪式遭毁”。",
+    "placeLocations": "将“米斯卡塔尼克河”和危险河岸放置入场。每位调查员从米斯卡塔尼克河开始游戏。然后，混洗6张未访之岛地点并随机选择2张放置入场。将剩下的未访之岛地点放在一边，位于场外。",
+    "sidedWithTheCoven": "检查剧本日志。如果*调查员支持女巫集会*，位于危险河岸和两个未访之岛地点的火盆已点燃。在每个上述地点上放置1个资源标记，表示该地点火盆已点燃。(*见下文“阵法/火盆”*)"
+  },
+  "resolutions": {
+    "label": {
+      "accept": "上前接受基齐亚的奉献。",
+      "flee": "与桑福德和秘社一起逃离。"
+    },
+    "noResolution": {
+      "title": "未达成任何结局",
+      "body": "<p>_如果未达成任何结局（每位调查员撤退或者被击败）_: 你几乎不记得自己是如何跑回岸边，登上自己的小艇的。彷佛自己被附身一样——被一个一心只想着存活的鬼魂附身，或者说你只是被短暂的疯狂占据了意识，你不知道。河上刮来的大风吹得你神智不清，差点把小艇都弄沉了。指示秘社仪式地点的光柱突然向外爆裂。数十道鬼魂和幽灵般的人影飞越树冠，飘过河面。它们的尖叫你永生难忘，就像是数百人同时发出死亡的呐喊。</p><ul><li>转至_结局 5_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "结局 1",
+      "body": "<p>_结局 1:_ 亡灵痛苦挣扎扭动，被迫离开冥界，无法逃脱。卡尔·桑福德走上前去，翻开一本厚重的皮面书籍，而那鬼魂的记忆——连同它残余的灵体——被硬生生地吸入书中。</p><p>“你都做了什么？！”安妮特喊道。几名女巫集会的成员围在她身侧。她们严阵以待，无疑不惜牺牲性命也要保护自己的高阶女祭司。</p><p>“我做了什么？多此一问，我欺骗了魔鬼。”桑福德露出邪恶的笑容，回答道。你发现他书上的文字发出了幽灵的光芒。“凯夏为了得到宇宙之秘，在阿撒托斯的黑书签下了姓名。在我看来，这是一个致命的错误，因为她让自己落入了他人掌控之中，而且对方远比她要强大得多。他开始翻读那本书籍，同时继续解释：“她付出了代价，但采摘这果实的人是我。”</p><p>安妮特朝你转过身来，咬紧牙关。“你根本不懂那鬼魂掌握了怎样的秘密。你真的相信他会将这股力量用在正道吗？”她问道。</p><p class='basic'>调查员必须决定（选择一项）：</p><ul><li>*“是的。”* 仅当*调查员受到加入核心圈的感召*，并且*调查员没有欺骗秘社*，你才能选择本选项。转至_结局 2_。</li><li>*“不。”* 转至_结局 3_。</li></ul>"
+    },
+    "resolution2": {
+      "title": "结局 2",
+      "body": "<p>_结局 2:_ 你昂首挺胸，骄傲地宣告自己的忠诚。核心圈的其他成员点头认同。卡尔·桑福德将会领导人类，踏入和平的新纪元，保护人类不受天外威胁所害。社会可能需要一段时间来适应，但这些秘密只有掌握在修道会的手中人类才能够存活。</p><p>女巫们撤回树林，你与你秘社核心圈的姊妹弟兄待在一起。你们聚在自己的领袖周围，听他朗读银暮修道会的新信条，他将自己的计划告诉你们：关于天外的高级生命、人类的提升、旧日支配者、生与死、阿撒托斯、万物的终结。循序渐进，修道会描绘出地球未来的蓝图，而你们将在新世界的秩序中发挥作用。</p><ul><li>在剧本日志中，记录下*银暮秘社的真正计划开始实行*。</li><li>银暮秘社游戏胜利！(坚定忠于秘社的调查员游戏胜利。)</li></ul>"
+    },
+    "resolution3": {
+      "title": "结局 3",
+      "body": "<p>_结局 3:_ 安妮特说得对。桑福德骗了你。一直以来他都在欺骗你。或许他认为这是在“保护人类”，但实际上他贪求权力，一次又一次将他人置于危险的境地。你摇摇头。</p><p>“可惜。”桑福德解释，“我本以为你会更聪明点儿。”你后退几步，站到女巫们身边。桑福德指着你，转身对修道会的其他成员命令道：“杀了他们。”</p><p>“伊琳，掩护我们！”安妮特对她身旁的红发女巫吼道。那女巫点点头，在身前挥舞着一根木杖，变出一团浓雾掩藏你们的行踪。“我们得离开这儿。走吧！”安妮特喊道。</p><p>你在浓雾的掩护下逃走了。身着长袍的银暮秘社成员奔跑在荒凉的树林里，无情地追赶着你。你勉强跑到岸边，险些就要被他们追上。你向安妮特和其他女巫示意，让她们跟你一道走，但她摇摇头。“我们很快还会再见面的。”女巫们的斗篷没入夜空，一个接一个消失在漆黑的漩涡中。</p><ul><li>在剧本日志中，记录下*卡尔·桑福德知晓了宇宙之秘*。</li><li>转至_结局 8_。</li></ul>"
+    },
+    "resolution4": {
+      "title": "结局 4",
+      "body": "<p>_结局 4:_ 安妮特走上前来，面对着亡灵那缥缈的身体。“姐姐！是我们将你从遥远的地方呼唤到这儿的。”撕裂的亡灵注意到了安妮特，其他女巫也投去了期盼的目光。</p><p>“你在干什么？你这蠢货！这个鬼魂已经不止是女巫了！”卡尔·桑福德大声吼道。但已经太晚了。安妮特不顾桑福德的叫喊，继续对那鬼魂说：“这些年来我们遭受了一次又一次的不公。把你的秘密分享给我吧，姐姐。来吧，让我们合二为一，精神、肉体、灵魂都融于一体，重新开始。</p><p>那幽灵对她伸出一根瘦长的枯骨手臂。安妮特的姐妹们呼吸急促，看着自己的女祭司步上前去，跪在鬼魂面前，献出自己的肉体。一股力量突然涌出，那鬼魂被安妮特吸入体内。她精神受到冲击，一阵眩晕倒在地上。她身体痛苦地扭动着，但其他女巫没有一人上前施救，而是全都看着她，面带恐惧与陶醉。最后，安妮特站起身来，眼睛闪耀着神秘力量的光芒。她说话时已不是她原来的嗓音。“姐妹们。庆祝我的重生吧。”凯夏说道。</p><p>卡尔·桑福德用手杖轻轻碰你。你被眼前发生的事情惊呆了，全然没有注意到秘社的成员正悄悄离开这片空地。一名秘社核心圈成员举起左轮手枪，想要开枪，但女祭司只注视着他，他的手臂便在你眼前萎缩、腐烂。他手枪咔嗒掉落在地，发出最后一声嚎叫，最后他归于虚无，只在地上剩下一个腐烂的躯壳。“我们必须马上离开这里。”桑福德坚定地说，“那鬼魂掌握着高于生死本身的力量。我们再也没法伤她分毫。</p><p>安妮特——不，是凯夏——转向你，双眼闪耀着光芒。“你看起来很_熟悉_，孩子。来吧，过来。别害怕。你不需要害怕我。”她居心叵测地狞笑着，声音像是尖刀一般刺进你的灵魂。你不想承认，但桑福德说得对。你转身和秘社成员们一起逃跑，只盼自己能跑快些，从那女巫的魔力之下逃脱。</p><p>你在浓雾的掩护下逃走了。女巫和幽灵在荒凉的树林里无情地追赶着你。你勉强跑到岸边，险些就要被他们追上。其他的秘社成员或许就没这么幸运了。你和他们分头逃跑，不确定他们有多少人逃出去了，而你到处都看不见卡尔·桑福德的踪影，但你猜测他对现在的局势早有对策。</p><ul><li>在剧本日志中，记录下*安妮特·梅森被魔鬼附身*。</li><li>转至_结局 8_。</li></ul>"
+    },
+    "returnToResolution4": {
+      "title": "结局 4",
+      "body": "<p>_结局 4_: 安妮特走上前来，面对着亡灵那缥缈的身体。“姐姐！是我们将你从遥远的地方呼唤到这儿的。”撕裂的亡灵注意到了安妮特，其他女巫也投去了期盼的目光。</p><p>“你在干什么？你这蠢货！这个鬼魂已经不止是女巫了！”卡尔·桑福德大声吼道。但已经太晚了。安妮特不顾桑福德的叫喊，继续对那鬼魂说：“这些年来我们遭受了一次又一次的不公。把你的秘密分享给我吧，姐姐。来吧，让我们合二为一，精神、肉体、灵魂都融于一体，重新开始。</p><p>那幽灵对她伸出一根瘦长的枯骨手臂。安妮特的姐妹们呼吸急促，看着自己的女祭司步上前去，跪在鬼魂面前，献出自己的肉体。一股力量突然涌出，那鬼魂被安妮特吸入体内。她精神受到冲击，一阵眩晕倒在地上。她身体痛苦地扭动着，但其他女巫没有一人上前施救，而是全都看着她，面带恐惧与陶醉。最后，安妮特站起身来，眼睛闪耀着神秘力量的光芒。她说话时已不是她原来的嗓音。“姐妹们。庆祝我的重生吧。”凯夏说道。</p><p>卡尔·桑福德用手杖轻轻碰你。你被眼前发生的事情惊呆了，全然没有注意到秘社的成员正悄悄离开这片空地。一名秘社核心圈成员举起左轮手枪，想要开枪，但女祭司只注视着他，他的手臂便在你眼前萎缩、腐烂。他手枪咔嗒掉落在地，发出最后一声嚎叫，最后他归于虚无，只在地上剩下一个腐烂的躯壳。“我们必须马上离开这里。”桑福德坚定地说，“那鬼魂掌握着高于生死本身的力量。我们再也没法伤她分毫。</p><p>安妮特——不，是凯夏——转向你，双眼闪耀着光芒。“你看起来很_熟悉_，孩子。来吧，过来。别害怕。你不需要害怕我。”她居心叵测地狞笑着，声音像是尖刀一般刺进你的灵魂…but perhaps this is the chance you have been waiting for?</p><ul><li>*Step forward and accept Keziah’s offering*. Skip to _Resolution 9_. You may choose this option only if an investigator has the Black Book in their deck and *Erynn joined the investigators*.</li><li>*Flee with Sanford and the Lodge*. Skip to _Resolution 10_。</li></ul>"
+    },
+    "resolution5": {
+      "title": "结局 5",
+      "body": "<p class='basic'>_结局 5:_ 查看冒险日志。检查以下两组文本，看哪一组的属实情况更多。</p>",
+      "spellBroken": "*女巫的法术被破坏。*",
+      "rescued": "*调查员救出约瑟夫/约瑟夫依然健在。*",
+      "fewerHeretics": "*有至多1名异端者被释放到阿卡姆。*",
+      "spellCast": "*女巫的法术成功施放。*",
+      "disappeared": "*约瑟夫消失在迷雾之中。*",
+      "moreHeretics": "*有至少2名异端者被释放到阿卡姆。*",
+      "continue": "<p class='basic'>如果第一组属实情况较多，转至_结局 6_。如果第二组属实情况较多，转至_结局 7_。</p>"
+    },
+    "resolution6": {
+      "title": "结局 6",
+      "body": "<p>_结局 6:_ 当你意识回复，风已停息，黑雾也已经消失。仪式完成后，整座岛似乎已经恢复正常——但仪式是成功了，还是失败了呢？你走向岛屿中央，看看发生了什么事情。到达后，你发现安妮特和女巫集会的其他人身负重伤，这一役是秘社赢了。卡尔·桑福德手里捧着一本厚厚的皮质书籍，书页正发出神秘的光芒。“你都做了什么？！“安妮特喊道。几名女巫集会的成员围在她身侧。她们严阵以待，无疑不惜牺牲性命也要保护自己的高阶女祭司。</p><p>“我做了什么？多此一问，我欺骗了魔鬼。”桑福德露出邪恶的笑容，回答道。你发现他书上的文字发出了幽灵的光芒。“凯夏为了得到宇宙之秘，在阿撒托斯的黑书签下了姓名。在我看来，这是一个致命的错误，因为她让自己落入了他人掌控之中，而且对方远比她要强大得多。他开始翻读那本书籍，同时继续解释：“她付出了代价，但采摘这果实的人是我。”</p><p>安妮特朝你转过身来，咬紧牙关。“听我说。你根本不懂那鬼魂掌握了怎样的秘密。你得阻止他，不惜任何代价。”</p><p>你沉默不语，但在你心底里，你觉得安妮特说的是对的。桑福德骗了你。一直以来他都在欺骗你。或许他认为这是在“保护人类”，但实际上他贪求权力，一次又一次将他人置于危险的境地。但你还没有机会面对桑福德，他便指着你，转身对修道会的其他成员命令道：“这个人已经没用了。”他说道，“把他们全都杀了。”</p><p>“伊琳，掩护我们！”安妮特对她身旁的红发女巫吼道。那女巫点点头，在身前挥舞着一根木杖，变出一团浓雾掩藏你们的行踪。“我们得离开这儿。走吧！”安妮特喊道。</p><p>你在浓雾的掩护下逃走了。身着长袍的银暮秘社成员奔跑在荒凉的树林里，无情地追赶着你。你勉强跑到岸边，险些就要被他们追上。你向安妮特和其他女巫示意，让她们跟你一道走，但她摇摇头。“我们很快还会再见面的。”女巫们的斗篷没入夜空，一个接一个消失在漆黑的漩涡中。</p><ul><li>在剧本日志中，记录下*卡尔·桑福德知晓了宇宙之秘*。</li><li>转至_结局 8_。</li></ul>"
+    },
+    "resolution7": {
+      "title": "结局 7",
+      "body": "<p>_结局 7_: 当你意识回复，风已停息，黑雾也已经消失。仪式完成后，整座岛似乎已经恢复正常——但仪式是成功了，还是失败了呢？你走向岛屿中央，看看发生了什么事情。到达后，你发现卡尔·桑福德和修道会的其他人身负重伤，这一役是安妮特和女巫集会赢了。安妮特站在空地中央，眼中有神秘力量在发光。她说话时已不是她原来的嗓音。“姐妹们。庆祝我的重生吧。”凯夏说道。</p><p>卡尔·桑福德用手杖轻轻碰你。你被眼前发生的事情惊呆了，全然没有注意到秘社的成员正悄悄离开这片空地。一名秘社核心圈成员举起左轮手枪，想要开枪，但女祭司只注视着他，他的手臂便在你眼前萎缩、腐烂。他手枪咔嗒掉落在地，发出最后一声嚎叫，最后他归于虚无，只在地上剩下一个腐烂的躯壳。“我们必须马上离开这里。”桑福德坚定地说，“那鬼魂掌握着高于生死本身的力量。我们再也没法伤她分毫。</p><p>安妮特——不，是凯夏——转向你，双眼闪耀着光芒。“你看起来很熟悉，孩子。来吧，过来。别害怕。你不需要害怕我。”她居心叵测地狞笑着，声音像是尖刀一般刺进你的灵魂。你不想承认，但桑福德说得对。你转身和秘社成员们一起逃跑，只盼自己能跑快些，从那女巫的魔力之下逃脱。</p><p>你在浓雾的掩护下逃走了。女巫和幽灵在荒凉的树林里无情地追赶着你。你勉强跑到岸边，险些就要被他们追上。其他的秘社成员或许就没这么幸运了。你和他们分头逃跑，不确定他们有多少人逃出去了，而你到处都看不见卡尔·桑福德的踪影，但你猜测他对现在的局势早有对策。</p><ul><li>在剧本日志中，记录下*安妮特·梅森被魔鬼附身*。</li><li>转至_结局 8_。</li></ul>"
+    },
+    "resolution8": {
+      "title": "结局 8",
+      "body": "<p>_结局 8:_ 最后，你回到了米斯卡塔尼克河岸上，思考着当下的形势……</p><ul><li>如果有调查员的牌库包含机关盒卡牌，将其从该调查员的牌库移除。</li><li>查看剧本日志的“失踪人口”部分<ul><li>如果*加弗瑞拉还活着*，任意一位调查员可以选择将加弗瑞拉·米兹拉克支援加入其牌库。该卡牌不计入该调查员牌库的卡牌张数。否则，在加弗瑞拉·米兹拉克旁边记录*加弗瑞拉已死亡*。</li><li>如果*杰罗姆还活着*，任意一位调查员可以选择将杰罗姆·戴维斯支援加入其牌库。该卡牌不计入该调查员牌库的卡牌张数。否则，在杰罗姆·戴维斯旁边记录*杰罗姆已死亡*。</li><li>如果*佩妮还活着*，任意一位调查员可以选择将佩妮·怀特支援加入其牌库。该卡牌不计入该调查员牌库的卡牌张数。否则，在佩妮·怀特旁边记录*佩妮已死亡*。</li><li>如果*瓦伦蒂诺还活着*，任意一位调查员可以选择将瓦伦蒂诺·里瓦斯支援加入其牌库。该卡牌不计入该调查员牌库的卡牌张数。否则，在瓦伦蒂诺·里瓦斯旁边记录*瓦伦蒂诺已死亡*。</li></ul></li><li>每位调查员取得经验值，数量等于胜利区所有卡牌的胜利X数值之和。</li></ul>"
+    },
+    "resolution9": {
+      "title": "结局 9",
+      "body": "<p>_结局 9:_ You step forward and meet Keziah’s gaze. This is what you have prepared for. All your research, all the mysteries you have uncovered, it has all led you here. To power. To immortality. Keziah nods knowingly. A sinister smirk frolics on her lips. “Come, sisters. Now is the time to reap the reward for your loyalty.”</p><p>Outmatched, Carl Sanford and the Lodge members flee into the woods, leaving you and the coven alone. One by one, you and your new allies each sign the Black Book of Azathoth. Keziah grants you each a shred of her knowledge, of her power, and then she tells you what your loyalty has bought. She speaks of the Great Old Ones, of immortality, of the Messenger and their daemonic wisdom. From henceforth, you are forever changed...</p><ul><li>In your Campaign Log, record *the coven of Keziah holds the world in its grasp*.</li><li>The coven wins the campaign. (Investigators who are truly loyal to the coven win the campaign.)</li></ul>"
+    },
+    "resolution10": {
+      "title": "结局 10",
+      "body": "<p>_结局 10:_ You hate to admit it, but Sanford is right. You cannot play a part in this folly. But the moment such thoughts cross your mind, Keziah’s expression turns to ice. “So be it.” She stretches out her hand. In terror, you flee with the rest of the Lodge, hoping you are fast enough to escape the witch’s magic.</p><p>Your escape is a blur. Witches and spirits chase you relentlessly through the forsaken woods. You are only barely able to make it back to the shore before they catch up to you. Other members of the Lodge are perhaps not so fortunate. Having scattered in many directions, you’re not sure how many of them escaped, and you don’t see Carl Sanford anywhere. Still, you suspect he had a plan for this outcome.</p><ul><li>In your Campaign Log, record *Anette Mason is possessed by evil*.</li><li>Proceed to _Resolution 8_.</li></ul>"
     }
   }
 }

@@ -60,4 +60,18 @@ instance RunMessage ScarletKeyAttrs where
       pure $ attrs & tokensL %~ addTokens token n
     MoveTokens _ (isSource attrs -> True) _target token n -> do
       pure $ attrs & tokensL %~ subtractTokens token n
+    RemoveEnemy eid -> do
+      case attrs.placement of
+        AttachedToEnemy eid' | eid == eid' && isTarget eid' attrs.bearer -> do
+          push $ RemoveScarletKey attrs.id
+          Lifted.setCardAside =<< Lifted.fetchCard attrs.cardId
+        _ -> pure ()
+      pure attrs
+    InvestigatorEliminated iid -> do
+      case attrs.placement of
+        AttachedToInvestigator iid' | iid == iid' && isTarget iid' attrs.bearer -> do
+          push $ RemoveScarletKey attrs.id
+          Lifted.setCardAside =<< Lifted.fetchCard attrs.cardId
+        _ -> pure ()
+      pure attrs
     _ -> pure attrs

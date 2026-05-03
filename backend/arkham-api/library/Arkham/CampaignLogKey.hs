@@ -14,6 +14,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.BrethrenOfAsh.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -38,6 +39,7 @@ data CampaignLogKey
   | EdgeOfTheEarthKey EdgeOfTheEarthKey
   | TheScarletKeysKey TheScarletKeysKey
   | TheFeastOfHemlockValeKey TheFeastOfHemlockValeKey
+  | BrethrenOfAshKey BrethrenOfAshKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -88,6 +90,7 @@ instance FromJSON CampaignLogKey where
       <|> (EdgeOfTheEarthKey <$> parseJSON o)
       <|> (TheScarletKeysKey <$> parseJSON o)
       <|> (TheFeastOfHemlockValeKey <$> parseJSON o)
+      <|> (BrethrenOfAshKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
       <|> fail ("Could not parse CampaignLogKey" <> show o)
@@ -240,6 +243,12 @@ instance IsCampaignLogKey MotherRachelNotes where
     TheFeastOfHemlockValeKey (MotherRachelNotes k) -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey BrethrenOfAshKey where
+  toCampaignLogKey = BrethrenOfAshKey
+  fromCampaignLogKey = \case
+    BrethrenOfAshKey k -> Just k
+    _ -> Nothing
+
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
@@ -301,6 +310,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     EdgeOfTheEarthKey k -> pack . go $ show k
     TheScarletKeysKey k -> pack . go $ show k
     TheFeastOfHemlockValeKey k -> pack . go $ show k
+    BrethrenOfAshKey k -> pack . go $ show k
     s -> pack . go $ show s
    where
     go :: String -> String

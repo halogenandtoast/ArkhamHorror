@@ -35,7 +35,7 @@ instance RunMessage FreightCar where
       (SkillTestInitiatorTarget (LabeledTarget "closeToVortex" _))
       _
       _ -> do
-      kill (attrs.ability 1) iid
+      defeat (attrs.ability 1) iid
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       sid <- getRandom

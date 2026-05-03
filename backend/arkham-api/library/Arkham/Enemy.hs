@@ -586,6 +586,13 @@ allEnemies =
       , SomeEnemyCard stalkingHybrid
       , --- Horrors in the Rock [fhv]
         SomeEnemyCard crystalParasite
+      , --- The Forest [fhv]
+        SomeEnemyCard poisonblossom
+      , SomeEnemyCard forestWatcher
+      , SomeEnemyCard cochlealStag
+      , --- Myconids [fhv]
+        SomeEnemyCard blackAmanita
+      , SomeEnemyCard corpseLichen
       , -- Core 2026
         --- signature [core2026]
         SomeEnemyCard blackChamberOperative
@@ -771,4 +778,36 @@ allEnemies =
       , SomeEnemyCard theContessaEnraged
       , SomeEnemyCard vampireThrall
       , SomeEnemyCard werewolf
+      , --- Spreading Flames
+        SomeEnemyCard servantOfFlameRagingFury
+      , SomeEnemyCard servantOfFlameOnTheRun
+      , SomeEnemyCard servantOfFlameAWillingSacrifice
+      , --- People Of Arkham
+        SomeEnemyCard davidRenfieldDisillusionedEschatologist
+      , SomeEnemyCard corneliaAkelyExhaustedSupervisor
+      , SomeEnemyCard naomiOBannionRunsThisTown
+      , SomeEnemyCard sgtEarlMonroeDirtyCop
+      , SomeEnemyCard abigailForemanWaryLibrarian
+      , SomeEnemyCard margaretLiuBeguilingLoungeSinger
+      , --- Ashen Pilgrims
+        SomeEnemyCard cantorOfFlame
+      , SomeEnemyCard hellhound
+      , --- Bystanders
+        SomeEnemyCard bystander
+      , --- Mad Science
+        SomeEnemyCard mutatedExperiment
+      , --- Torment
+        SomeEnemyCard batHorror
+      , --- Gangs Of Arkham
+        SomeEnemyCard rogueGangster
+      , --- Whippoorwills (Chapter 2)
+        SomeEnemyCard whippoorwill2
+      , --- Cultists
+        SomeEnemyCard zealot
+      , SomeEnemyCard darkMagician
+      , --- Queen of Ash
+        SomeEnemyCard queensKnight
+      , SomeEnemyCard heraldOfFlame
+      , SomeEnemyCard elokossFaintEmbers
+      , SomeEnemyCard elokossMotherOfFlame
       ]

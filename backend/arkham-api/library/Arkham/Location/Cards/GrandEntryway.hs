@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.GrandEntryway (grandEntryway) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards

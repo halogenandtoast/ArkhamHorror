@@ -25,11 +25,11 @@ import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder 
 import { Card, cardDecoder, } from '@/arkham/types/Card';
 import { TarotCard, tarotCardDecoder, } from '@/arkham/types/TarotCard';
 
-type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
+type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
 
 export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   [
-    JsonDecoder.object({ tag: JsonDecoder.literal('IsPending') }, 'IsPending'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('IsPending'), contents: JsonDecoder.array(JsonDecoder.string(), 'string[]') }, 'IsPending'),
     JsonDecoder.object({ tag: JsonDecoder.literal('IsActive') }, 'IsActive'),
     JsonDecoder.object({ tag: JsonDecoder.literal('IsOver') }, 'IsOver'),
     JsonDecoder.object({ tag: JsonDecoder.literal('IsChooseDecks'), contents: JsonDecoder.array(JsonDecoder.string(), 'string[]') }, 'IsChooseDecks'),
@@ -46,6 +46,7 @@ export type GameDetails = {
   investigators: InvestigatorDetails[];
   otherInvestigators: InvestigatorDetails[];
   multiplayerVariant: MultiplayerVariant;
+  hasOpenSeats: boolean;
 }
 
 export type MultiplayerVariant = 'WithFriends' | 'Solo'
@@ -188,6 +189,7 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
     investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     multiplayerVariant: multiplayerVariantDecoder,
+    hasOpenSeats: JsonDecoder.boolean(),
   },
   'GameDetails',
 );

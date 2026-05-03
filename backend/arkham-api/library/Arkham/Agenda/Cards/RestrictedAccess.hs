@@ -43,6 +43,7 @@ instance RunMessage RestrictedAccess where
         Nothing -> do
           lead <- getLead
           findEncounterCardIn lead attrs (cardIs Enemies.huntingHorror) [#deck, #discard, #void]
+      shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       pure a
     FoundEnemyInOutOfPlay VoidZone _ (isTarget attrs -> True) eid -> do

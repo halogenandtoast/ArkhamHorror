@@ -303,6 +303,7 @@ data Criterion
   | BearerNotEliminated
   | IsReturnTo
   | IfCostsAreIgnored Criterion
+  | IgnoreModifiersFrom Source Criterion
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

@@ -5,7 +5,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex)
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher.Base
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
 
@@ -22,7 +22,7 @@ instance HasAbilities TheCrossroadsDay where
       a
       [ groupLimit PerGame $ restricted a 1 Here actionAbility
       , groupLimit PerRound
-          $ restricted a 2 (Here <> oneOf (map PlayerCountIs [1, 2]))
+          $ restricted a 2 (Here <> oneOf (map PlayerCountIs [1, 2]) <> DuringTurn You)
           $ FastAbility' Free #move
       ]
 

@@ -303,16 +303,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ a
       & (actStackL . at n ?~ actStack')
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
-  SetCurrentActDeck n stack@(current : _) -> do
+  SetCurrentActDeck n stack -> do
     selectEach (Matcher.ActWithDeckId n) $ toDiscard GameSource
-    push $ AddAct n current
+    for_ (headMay stack) $ push . AddAct n
     pure
       $ a
       & (actStackL . at n ?~ stack)
       & (setAsideCardsL %~ filter (`notElem` stack))
-  SetCurrentAgendaDeck n stack@(current : _) -> do
+  SetCurrentAgendaDeck n stack -> do
     selectEach (Matcher.AgendaWithDeckId n) $ toDiscard GameSource
-    push $ AddAgenda n current
+    for_ (headMay stack) $ push . AddAgenda n
     pure
       $ a
       & (agendaStackL . at n ?~ stack)
@@ -1444,11 +1444,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     if null matches
       then chooseOne iid [Label "No matches found" []]
       else do
-        -- TODO: show where focused cards are from
-        push
-          $ FocusCards
-          $ map EncounterCard matchingDeckCards
-          <> map EncounterCard matchingDiscards
+        let
+          deckEntry =
+            [ (Zone.FromDeck, map EncounterCard matchingDeckCards)
+            | not (null matchingDeckCards)
+            ]
+          discardEntry =
+            [ (Zone.FromDiscard, map EncounterCard matchingDiscards)
+            | includeDiscard == IncludeDiscard
+            , not (null matchingDiscards)
+            ]
+        push $ FoundCards $ Map.fromList (deckEntry <> discardEntry)
         chooseOne iid matches
     pure a
   DrawEncounterCards target n -> do
@@ -1744,7 +1750,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     getInvestigators >>= \case
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
       xs@(x : _) -> do
-        questionLabel "Choose lead investigator" x
+        questionLabel' "chooseLeadInvestigator" x
           $ ChooseOne
             [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
             | iid <- xs
@@ -1837,6 +1843,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     lead <- getLeadPlayer
     push $ Ask lead ContinueCampaign
     pure $ a & campaignStepL ?~ cs
+  ScenarioCampaignStep (ScenarioStepWithOptions sid _opts) -> do
+    push $ ScenarioCampaignStep (ScenarioStep sid)
+    pure a
   NextScenarioCampaignStep (Just step) -> do
     pushAll [HandleKilledOrInsaneInvestigators, ScenarioCampaignStep step]
     pure $ a & campaignStepL ?~ step

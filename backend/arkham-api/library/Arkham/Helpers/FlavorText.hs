@@ -151,6 +151,11 @@ instance HasField "green" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBu
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
 
+instance HasField "codex" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (CodexEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [CodexEntry] inner'
+
 instance HasField "bordered" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
   getField f t = for_ (buildFlavor (f t)).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (BorderedEntry : mods) inner'
@@ -175,6 +180,16 @@ instance
   getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
+
+instance
+  HasField
+    "codex"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (CodexEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [CodexEntry] inner'
 
 instance
   HasField

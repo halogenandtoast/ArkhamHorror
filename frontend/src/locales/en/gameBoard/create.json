@@ -65,6 +65,9 @@
       }
     },
 
+    "chapter1Heading": "Chapter 1",
+    "chapter2Heading": "Chapter 2",
+
     "asIfAtBehavior": "\"As If\" At Behavior",
     "asIfAtChapter1": "Chapter 1 Rules",
     "asIfAtChapter1Description": "\"As If\" at a location applies for the duration of the entire card or ability, including window triggers from other cards.",

@@ -292,6 +292,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ actionsToList $ cdActions $ toCardDef a
   CardWithoutAction -> null $ actionsToList $ cdActions $ toCardDef a
+  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a),  toCardType a == AssetType]
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->
@@ -307,6 +308,9 @@ isNonWeakness = (`cardMatch` NonWeakness)
 
 filterCards :: (IsCardMatcher a, IsCard b) => a -> [b] -> [b]
 filterCards matcher = filter ((`cardMatch` matcher) . toCard)
+
+countCards :: (IsCardMatcher a, IsCard b) => a -> [b] -> Int
+countCards matcher = count ((`cardMatch` matcher) . toCard)
 
 findCardMatch
   :: (IsCardMatcher a, IsCard card, Element cards ~ card, MonoFoldable cards)
@@ -347,6 +351,17 @@ setTaboo mtaboo card = do
  where
   go = \case
     PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc})
+    other -> other
+
+setFacedown :: CardGen m => Bool -> Card -> m Card
+setFacedown b card = do
+  let result = go card
+  replaceCard (toCardId result) result
+  pure result
+ where
+  go = \case
+    EncounterCard ec -> EncounterCard ec {ecFacedown = Just b}
+    VengeanceCard vc -> VengeanceCard (go vc)
     other -> other
 
 data Card

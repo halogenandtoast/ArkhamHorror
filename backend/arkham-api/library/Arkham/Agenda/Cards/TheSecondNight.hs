@@ -24,11 +24,15 @@ instance RunMessage TheSecondNight where
     AdvanceAgenda (isSide B attrs -> True) -> do
       disengageEachEnemyAndMoveToConnectingLocation attrs
       doStep 1 msg
+      doStep 2 msg
       advanceAgendaDeck attrs
       pure a
     DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
       moveOrganistAwayFromNearestInvestigator
       whenM (not <$> slain Enemies.jordanPerry) do
         createEnemyAtLocationMatching_ Enemies.jordanPerry (LocationWithTitle "Montparnasse")
+      pure a
+    DoStep 2 (AdvanceAgenda (isSide B attrs -> True)) -> do
+      selectEach UnengagedEnemy enemyCheckEngagement
       pure a
     _ -> TheSecondNight <$> liftRunMessage msg attrs

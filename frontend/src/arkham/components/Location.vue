@@ -391,14 +391,14 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
       <div class="location-column">
         <div class="card-frame" :class="{ explosion }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
-          <span v-if="blocked" class="status-icon">
+          <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
             <font-awesome-icon :icon="['fab', 'expeditedssl']" />
           </span>
             <span v-for="ui in important" class="important" :class="{ 'important--can-interact': canInteract }" v-tooltip="ui">
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner" :class="{ highlighted }">
+          <div class="card-frame-inner" :class="{ highlighted, blocked }">
             <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
             <template v-else>
               <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -631,28 +631,30 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
 
 .status-icon {
   position: absolute;
-  top: 10%;
-  background: rgba(255, 255, 255, 0.7);
+  top: 0.25em;
+  left: 0.45em;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 50%;
-  font-size: 2.6em;
-  color: rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  z-index: 1;
-  scale: 0.8;
-  width: 1.2em;
-  height: 1.2em;
+  font-size: 1em;
+  color: rgba(0, 0, 0, 0.85);
+  pointer-events: auto;
+  z-index: 2;
+  width: 1.1em;
+  height: 1.1em;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
 .important {
   position: absolute;
-  bottom: 10%;
+  bottom: 8%;
+  right: 8%;
   border-radius: 1000px;
-  font-size: 2.6em;
+  font-size: 2em;
   color: var(--important);
-  /*pointer-events: none;*/
   z-index: 1;
   max-width: 40%;
   max-height: min-content;
@@ -788,6 +790,9 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     }
     &.highlighted {
       transform: scale(1.1);
+    }
+    &.blocked {
+      filter: grayscale(0.5) brightness(0.85);
     }
     --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
   }

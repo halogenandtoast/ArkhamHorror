@@ -32,7 +32,10 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
+  const encounterCards = Object.entries({
+    ...(props.game.scenario?.foundCards ?? {}),
+    ...props.game.foundCards,
+  })
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
@@ -41,14 +44,6 @@ const searchedCards = computed(() => {
 const focusedCards = computed(() => {
   if (searchedCards.value.length > 0) {
     return []
-  }
-
-  const { focusedCards, foundCards } = props.game
-
-  if (focusedCards.length === 0) {
-    if (Object.values(props.game.foundCards).some((v) => v.length > 0)) {
-      return Object.values(props.game.foundCards).flat()
-    }
   }
 
   return props.game.focusedCards
@@ -146,7 +141,7 @@ const title = computed(() => {
   <Draggable v-if="requiresModal">
     <template #handle><h1 v-html="label(title)"></h1></template>
     <div class='choice-modal-wrapper'>
-      <p class="body" v-if="body" v-html="label(t(body))"></p>
+      <p class="body" v-if="body" v-html="label(body)"></p>
       <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />
     </div>
   </Draggable>

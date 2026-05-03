@@ -24,6 +24,7 @@ data Sealing
 data Keyword
   = Alert
   | Aloof
+  | Doomed
   | Elusive
   | Fast
   | Hidden
@@ -48,6 +49,7 @@ data Keyword
   | Partner
   | Concealed ConcealedCardKind GameValue
   | Starting
+  | ScenarioModifierKeyword Text Value Keyword
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

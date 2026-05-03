@@ -6,6 +6,7 @@ import Arkham.Helpers.Healing
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype BoardingHouseDay = BoardingHouseDay LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,7 +20,12 @@ instance HasAbilities BoardingHouseDay where
     campaignI18n
       $ extendRevealed
         a
-        [ groupLimit PerGame $ withI18nTooltip "boardingHouse.day.codex" $ restricted a 1 Here actionAbility
+        [ withI18nTooltip "boardingHouse.day.codex"
+            $ restricted
+              a
+              1
+              (Here <> youExist (InvestigatorWithoutModifier $ ScenarioModifier "codex9"))
+              actionAbility
         , playerLimit PerGame
             $ withI18nTooltip "boardingHouse.day.heal"
             $ withCriteria

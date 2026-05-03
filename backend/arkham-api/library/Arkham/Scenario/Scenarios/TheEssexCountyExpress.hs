@@ -203,7 +203,7 @@ instance RunMessage TheEssexCountyExpress where
         push
           $ ReportXp
           $ XpBreakdown
-            [InvestigatorGainXp iid (XpDetail XpBonus (popScope $ ikey "xp.bonus") 1) | iid <- defeated]
+            [InvestigatorGainXp iid (XpDetail XpBonus (popScope $ ikey' "xp.bonus") 1) | iid <- defeated]
       case r of
         NoResolution -> doStep 1 R2
         _ -> doStep 1 msg

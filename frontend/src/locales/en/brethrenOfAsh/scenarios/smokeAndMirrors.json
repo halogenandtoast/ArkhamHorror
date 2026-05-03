@@ -1,0 +1,115 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the total number of _Elite_ enemies in the victory display and under the act.",
+      "cultist": "-1. If this is a test targeting an _Elite_ enemy, reveal another token.",
+      "tablet": "-3. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-1 for each clue you control."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than the total number of _Elite_ enemies in the victory display and under the act.",
+      "cultist": "-3. If this is a test targeting an _Elite_ enemy, reveal another token.",
+      "tablet": " -4. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-2 for each clue you control."
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets:<section class='encounter-sets grid'><div><img src='{setImgPath}/smoke-and-mirrors.png' /><span>Smoke and Mirrors</span></div><div><img src='{setImgPath}/arcane-lock.png' /><span>Arkane Lock</span></div><div><img src='{setImgPath}/arkham.png' /><span>Arkham</span></div><div><img src='{setImgPath}/bad-weather.png' /><span>Bad Weather</span></div><div><img src='{setImgPath}/dead-ends.png' /><span>Dead Ends</span></div><div><img src='{setImgPath}/flying-terrors.png' /><span>Flying Terrors</span></div><div><img src='{setImgPath}/gangs-of-arkham.png' /><span>Gangs of Arkham</span></div><div><img src='{setImgPath}/people-of-arkham.png' /><span>People of Arkham</span></div><div><img src='{setImgPath}/whippoorwills2026.png' /><span>Whippoorwills</span></div></section>",
+    "placeLocations": "Choose one of the two Downtown locations and one of the two Uptown locations at random and put them into play. Remove the other versions of Downtown and Uptown from the game. Put the Northside, Easttown, Merchant District, Waterfront District, Southside, and French Hill locations into play. Each investigator begins play at Miskatonic University.",
+    "setOutOfPlay": "Gather each card in the <b>People of Arkham</b> encounter set. Choose one of them at random and set it aside, out of play, without looking at it. Shuffle each remaining card from that set along with the Servant of Flame enemy and deal 1 card facedown beneath Northside, Downtown, Southside, French Hill, Uptown, and Waterfront District.",
+    "checkCampaignLog": "Check your campaign log.",
+    "miskatonicUniversityBurned": "*If Miskatonic University burned*, put Miskatonic University (*In Flames*) into play and remove the other copy of Miskatonic University from the game.",
+    "savedMiskatonicUniversity": "*If the investigators saved Miskatonic University*, put Miskatonic University (*Quiet Campus*) into play and remove the other copy of Miskatonic University from the game. Place 1 doom on the agenda.",
+    "startAt": "Each investigator begins play at Miskatonic University.",
+    "placeDoom": "Place 1 doom on the agenda for each investigator in the game.",
+    "bearerOfDrHenryArmitage": "If an investigator is the bearer of the Dr. Henry Armitage story asset, search their deck for him and put him into play under his bearer's control. He does not take up an ally slot during this scenario.",
+    "setAsideMarkOfElokoss": "Set each copy of the Mark of Elokoss weakness aside, out of play.",
+    "shuffleRemainder": "Shuffle the remaining encounter cards to create the encounter deck.",
+    "readyToBegin": "You are now ready to begin."
+  },
+  "intro": {
+    "title": "Scenario II: Smoke and Mirrors",
+    "body": "<p>You follow Dr. Armitage back to his apartment. A veil of black smoke obscures the moon and stars as a warm breeze carries ash and embers through the familiar city streets.</p><p>“I’ve had my suspicions that something foul was afoot. Several students have disappeared in the last few weeks,” the head librarian tells you. “All of them began to exhibit strange behaviors after attending a supposedly exclusive ‘meeting’ off campus not long ago. They complained of horrible, incessant whispers and a strange bruise that suddenly appeared on their skin. And then, they vanished.”</p><p>Fearing the worst, you ask him about your friend. “They insisted we meet earlier today,” he replies. “They told me that an organization calling themselves the ‘Brethren of Ash’ have been inviting students and vulnerable citizens to these strange assemblies. Your friend listed a number of individuals who attended, although it is unclear whether they were prospective recruits or loyal adherents. Before they left, your friend spoke of another meeting tonight. A gathering of all the faithful. I don’t know why, but the thought of it fills me with an inutterable dread. And now your friend is gone,” he says dourly.</p><p>You resolve to interrogate the list of suspects and then meet at Velma’s Diner in Easttown before midnight. The head librarian suggests you use a light touch rather than a more heavy-handed approach, which could alert the cabal. However, you worry you will not have any other choice.</p><ul><li>Add 2 {'{'}cultist{'}'} tokens to the chaos bag for the remainder of the campaign. (*Record this in your campaign log.*)</li></ul><p class='right basic'>Proceed to _Setup_.</p>"
+  },
+  "tooltips": {
+    "arkhamAlive": {
+      "resign": "_Resign_. You return to compare notes with Dr. Armitage on your friend's whereabouts."
+    },
+    "emergentEvils": {
+      "resign": "@:brethrenOfAsh.smokeAndMirrors.tooltips.arkhamAlive.resign"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: On the cab ride to Velma's Diner, you consider all that you've learned. Unfortunately, your search turned up plenty of leads but few solid results. You can only hope Dr. Armitage fared better.</p>",
+      "harbingerOfElokoss": "Reveal the enemy from the _People of Arkham_ encounter set that was set aside at the beginning of the game. This is the true identity of the Servant of Flame enemy, a harbinger of Elokoss. In your campaign log, record *{name} is the harbinger of Elokoss*.",
+      "drawnCard": "Gather each _Elite_ enemy in play and/or beneath a location when the scenario ended and shuffle them together facedown along with the harbinger of Elokoss, then draw one of them at random. {name} was drawn. If the enemy drawn…",
+      "isHarbinger": "…is the harbinger of Elokoss, record *the investigators discovered the cult's whereabouts* in your campaign log.",
+      "otherwise": "…is any other enemy, record *the investigators failed in their search* in your campaign log.",
+      "servantOfFlame": "If the Servant of Flame enemy is in the victory display, record *the investigators killed the Servant of Flame* in your campaign log.",
+      "victory": "Each investigator earns experience equal to the _victory X_ value of each card in the victory display, along with 1 bonus experience for each enemy beneath the act when the scenario ended.",
+      "proceed": "If the Servant of Flame enemy was beneath the act when the scenario ended, skip to _Resolution 2_. Otherwise, proceed to _Scenario III: Queen of Ash_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You hail a cab bound for Easttown and reflect on all that you've learned. Despite their attempts to hide their true identity, you've sussed out the real culprit. You only hope the information you gathered is enough to save your missing friend.</p><ul><li>In your campaign log, record that *the investigators discovered the cult's whereabouts*.</li><li>Reveal the enemy from the _People of Arkham_ encounter set that was set aside at the beginning of the game. This is the harbinger of Elokoss. In your campaign log, record *{name} is the harbinger of Elokoss*.</li><li>Check which enemies are in the victory display and/or under the act when the scenario ended and update your campaign log.<ul><li>If the Servant of Flame enemy is in the victory display, record *the investigators killed the Servant of Flame*.</li><li>If there are 6 _Elite_ enemies under the act, record *the investigators scoured Arkham for answers*.</li><li>If there are 6 _Elite_ enemies in the victory display, record *the investigators stirred up trouble*.</li></ul></li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display, along with 1 bonus experience for each enemy beneath the act when the scenario ended.</li><li>If the _Servant of Flame_ enemy was beneath the act when the scenario ended, proceed to _Resolution 2_. Otherwise, proceed to _Scenario III: Queen of Ash_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: On your way to meet Dr. Armitage, you ask the cab to swing by the secure location where you kept your unconscious nemesis. The smell of smoke greets you as you enter, and the floors are black with soot. Despite your best efforts, the ghoulish figure escaped capture. The handcuffs you used to secure the servant were smashed—not melted or otherwise tampered with—suggesting that they had help in their escape.</p><ul><li>In your campaign log, record *the Servant of Flame escaped*.</li><li.Each investigator earns 1 bonus experience.</li><li>Proceed to _Scenario III: Queen of Ash_.</li></ul>"
+    },
+    "xp": {
+      "resolution2": "for capturing the Servant of Flame",
+      "bonus": "for each enemy beneath the act"
+    }
+  },
+  "label": {
+    "r2": "The Servant of Flame was beneath the act (→ Resolution 2)",
+    "r3": "The Servant of Flame escaped (→ Resolution 3)"
+  },
+  "xp": {
+    "resolution2": "for capturing the Servant of Flame",
+    "bonus": "for each enemy beneath the act"
+  },
+  "codex": {
+    "label": {
+      "addToVictory": "Add the Servant of Flame to the victory display. Each investigator draws 3 cards.",
+      "placeUnderAct": "Place the Servant of Flame beneath the act. Each investigator gains 1 clue."
+    },
+    "davidRenfield": {
+      "title": "{'{'}codex{'}'} Codex 1: David Renfield",
+      "body": "<p>The haughty Mr. Renfield tries to brush you off politely, but when you mention the “Brethren of Ash,” he flees down a nearby street. Although you give chase, the eschatologist is surprisingly fleet-footed.</p><p class='basic right'>Move David Renfield to a connecting location (with no investigators, if able).</p><p class='basic right'>Place 1 resource (*from the token pool*) on David Renfield, as a lead. If there are 1 {'{'}perPlayer{'}'} leads on him, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.davidRenfield.body <hr><p>Eventually, you find Mr. Renfield hiding in a cluttered bookshop. After you explain yourself and your intentions further, he acquiesces to your questioning.</p><p>“I only attended the meeting out of an academic curiosity,” the eschatologist says. “While much of what they said was utter drivel, I did glean some insights. It seems the Brethren of Ash worship an ancient devil named ‘Elokoss’: a being of fire and destruction, said to be responsible for the great fire of Alexandria. Or so they claim. As if that were something to take pride in,” he scoffs. “When you mentioned the Brethren, I–I worried you were one of them. They are an army of thralls, all united under their queen!”</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place David Renfield beneath the act.</p>"
+    },
+    "corneliaAkely": {
+      "title": "{'{'}codex{'}'} Codex 2: Cornelia Akely",
+      "body": "<p>You find Ms. Akely working the late shift at a run-down garage. She seems friendly enough as she offers you a cigarette, but the moment you mention the “Brethren of Ash,” her expression hardens, and she points you to the door.</p><p class='basic right'>Heal 1 horror.</p><p class='basic right'>Place 1 resource (*from the token pool*) on Cornelia Akely, as a lead. If there are 1 {'{'}perPlayer{'}'} leads on her, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.corneliaAkely.body <hr><p>Eventually, your words get through to the grumpy foreman. She apologizes and invites you to sit down. “I went because a couple of my friends at the NHI factory talked them up. Apparently those ‘Brethren of Ash’ are preaching something about a ‘glorious rebirth’ for all of their followers. I tuned out the rest of it. I don’t really go for that kind of flim flam anyway,” Cornelia says.</p><p>When you ask about her friends, she shakes her head. “All three of ‘em haven’t shown up to work for the past few weeks.”</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place Cornelia Akely beneath the act.</p>"
+    },
+    "naomiOBannion": {
+      "title": "{'{'}codex{'}'} Codex 3: Naomi O'Bannion",
+      "body": "<p>The O’Bannion’s kingpin is hardly interested in your questions, though she is more than willing to off anything that’s giving you trouble…for a price. You’ll need to grease a few more palms if you plan to get any information out of her.</p><p class='basic right'>You may choose a non-*Humanoid* enemy at any location. Automatically defeat the chosen enemy.</p><p class='basic right'>Place 1 resource (*from the token pool*) on Naomi O’Bannion, as a lead. If there are 1 {'{'}perPlayer{'}'} leads on her, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.naomiOBannion.body <hr><p>Naomi tosses her head back in a full-throated laugh when you mention the Brethren of Ash. “Those kooks? I don’t know them. But two of my guys found a pair of them sniffing around one of our gin joints. There was something real strange about ‘em, like they weren’t all there. And it wasn’t ‘cause of the giggle water, I’ll tell you,” she takes a long drag of her clove cigarette. You ask where they were found, and she blows a thick cloud of smoke in your face. “Like hell am I gonna tell you about my business. Now get lost.”</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place Naomi O’Bannion beneath the act.</p>"
+    },
+    "sgtEarlMonroe": {
+      "title": "{'{'}codex{'}'} Codex 4: Sgt. Earl Monroe",
+      "body": "<p>At the mention of the “Brethren of Ash,” the police officer brandishes his nightstick and tells you that you’d best stick your nose somewhere else. You brace yourself for a fight.</p><p class='basic right'>Heal 1 damage.</p><p class='basic right'>Place 1 resource (*from the token pool*) on Sgt. Earl Monroe, as a lead. If there are 1 {'{'}perPlayer{'}'} leads on him, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.sgtEarlMonroe.body <hr><p>Eventually, Monroe relents. “Alright, alright,” the officer spits some blood as he nurses a bruised cheek.</p><p>“There were a few of them who came to me after we logged the third disappearance. They insisted the folks who disappeared did so willingly. When I said I still wasn’t convinced, they took me to one of their meetings out near the docks. There was something real screwy about the whole affair. Something wrong with their eyes, like they were hypnotized or something.” The officer looks away in regret. “They paid me to keep quiet. I’m not proud of it. Don’t tell anyone about this—I, I promise I’ll keep to the straight and narrow from now on.”</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place Sgt. Earl Monroe beneath the act.</p>"
+    },
+    "abigailForeman": {
+      "title": "{'{'}codex{'}'} Codex 5: Abigail Foreman",
+      "body": "<p>The junior librarian waves your questions away as she pulls several more tomes off the shelf. The only way to pull her away from her work might be to help her find whatever she is looking for.</p><p class='basic right'>Draw 1 card.</p><p class='basic right'>Place 1 resource (*from the token pool*) on Abigail Foreman, as a lead. If there are 1 {'{'}perPlayer{'}'} leads on her, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.abigailForeman.body <hr><p>Abigail slumps back in a lavish armchair with a sigh. “Yes, I’ve been looking for any information on the ‘Brethren of Ash’ since my roommate went missing last week. Thankfully, I found this,” she opens up a thin volume with a delicate inlay of a birch tree with flowering eyes on the cover. Inside are many disturbing drawings of violent sacrifice, victims burned alive, and strange inhuman symbols arrayed in odd patterns.</p><p>“Rather macabre, don’t you think?” says Abigail. “It appears to be written in Akkadian. Unfortunately, it will take weeks to translate with the entire ancient languages department away on an expedition. Egypt, this time. I’m sorry I couldn’t be more help,” she says, pressing her hand to the book cover.</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place Abigail Foreman beneath the act.</p>"
+    },
+    "margaretLiu": {
+      "title": "{'{'}codex{'}'} Codex 6: Margaret Liu",
+      "body": "<p>Margaret Liu, one of the most well-known lounge singers in town, is fully engrossed in her performance. You may have to get creative to catch her attention.</p><p class='basic right'>Look at the top card of the encounter deck. You may discard it.</p><p class='basic right'>Place 1 resource (*from the token pool*) on Margaret Liu, as a lead. If there are {'{'}perPlayer{'}'} leads on her, continue reading. Otherwise, any investigator may trigger this codex again.</p>",
+      "success": "@:brethrenOfAsh.smokeAndMirrors.codex.margaretLiu.body <hr><p>Your attempts to get Ms. Liu’s attention are more than effective, and soon you find yourself backstage with her undivided attention. “I must say I was very impressed at your little, erm, performance,” she says. “But why are you really here?” The lounge singer’s carefree smile vanishes at the mention of the “Brethren of Ash.”</p><p>“I don’t know who they are and I don’t care to,” she says. “I was headed home a week ago when I was accosted by two men in—and I must emphasize this—the ugliest robes you’ll ever see. They had the strangest symbol on the hood,” she says, then scribbles a crude sigil on a napkin. It resembles a hand with an inset eye. You ask her what happened next, and she nods to the bruiser at the door.</p><p>“Antonio scared them off. I haven’t seen them since.”</p><p class='basic right'>You have successfully interrogated this suspect.</p><p class='basic right'>Place Margaret Liu beneath the act.</p>"
+    },
+    "servantOfFlame": {
+      "title": "{'{'}codex{'}'} Codex Φ: Servant of Flame",
+      "body": "<p>Your nemesis lies incapacitated at your feet. The flame that cloaked them has died out, though their robes are miraculously un-singed. Any attempts to remove their mask are fruitless; you will need to wait for them to regain consciousness if you want to discover who they are. You wonder how many victims their blood-spattered sickle has claimed. Perhaps it would be better to finish them off here and now, to avoid future bloodshed. No one else has to know.</p><p class='basic'>The investigators must decide (*choose one*):</p><ul><li>*We can't risk letting them hurt others. They're too dangerous to be left alive.* Add the Servant of Flame to the victory display. Each investigator draws 3 cards.</li><li>*Hold them for questioning later tonight.* Place the Servant of Flame beneath the act. Each investigator gains 1 clue (*from the token pool*).</li></ul>"
+    }
+  }
+}

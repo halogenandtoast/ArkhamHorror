@@ -370,6 +370,8 @@ allActs =
     , SomeActCard wheresBertie
     , --- Day of Rest
       SomeActCard dawnOfTheFirstDay
+    , --- Day of Rain
+      SomeActCard dawnOfTheSecondDay
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway
@@ -437,4 +439,15 @@ allActs =
     , --- Abominable Contessa
       SomeActCard theAbominableContessa
     , SomeActCard bloodbath
+    , --- Core2026
+      --- Spreading Flames
+      SomeActCard whereTheresSmoke
+    , SomeActCard escapeTheDorms
+    , SomeActCard searchingForDrArmitage
+    , SomeActCard blazeOfGlory
+      --- Smoke And Mirrors
+    , SomeActCard augursOfFlame
+      --- Queen of Ash
+    , SomeActCard searchTheSewers
+    , SomeActCard stopTheRite
     ]

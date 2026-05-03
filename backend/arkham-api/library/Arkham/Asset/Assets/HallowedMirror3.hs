@@ -31,10 +31,10 @@ instance RunMessage HallowedMirror3 where
   runMessage msg a@(HallowedMirror3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       chooseOneM iid do
-        labeled "Change each \"2\" to a \"3\""
-          $ eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
-        labeled "Shuffle it into your deck instead of discarding it"
-          $ eventModifier (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
+        labeled "Change each \"2\" to a \"3\"" do
+          eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
+        labeled "Shuffle it into your deck instead of discarding it" do
+          cardResolutionModifier card (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       bonded <- take 3 <$> searchBonded iid Events.soothingMelody

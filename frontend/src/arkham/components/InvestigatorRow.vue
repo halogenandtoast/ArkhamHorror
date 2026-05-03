@@ -12,11 +12,13 @@ export interface Props {
   investigator: Investigator
   game: Arkham.Game
   bonusXp?: number | null;
+  showExpand?: boolean;
 }
 
 const store = useDbCardStore()
 const props = withDefaults(defineProps<Props>(), {
-  bonusXp: null
+  bonusXp: null,
+  showExpand: true,
 })
 
 const expanded = ref(false)
@@ -66,7 +68,7 @@ const deck = computed(() => {
         </div>
         <span class="name">{{ getInvestigatorName(investigator.name.title) }}</span>
         <slot name="back" :investigator="props.investigator">
-          <button class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? 'Collapse' : 'Expand'">
+          <button v-if="showExpand" class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? 'Collapse' : 'Expand'">
             <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
           </button>
         </slot>
@@ -110,7 +112,7 @@ const deck = computed(() => {
 /* ── Container ───────────────────────────────────────────── */
 
 .investigator {
-  width: 80%;
+  min-width: 80%;
   border-radius: 10px;
   overflow: hidden;
 

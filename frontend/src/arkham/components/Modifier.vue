@@ -63,6 +63,19 @@ function sourceCardCode(source: Source) {
     return `${source.contents.replace('c', '')}`
   }
 
+  if (source.tag === 'AgendaSource') {
+    const agenda = props.game.agendas[source.contents]
+    if (!agenda) return null
+    const id = agenda.id
+    if (agenda.flipped) {
+      if (["c03276a", "c03279a"].includes(id)) {
+        return `${id.replace(/^c/, '')}b`
+      }
+      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
+    }
+    return `${id.replace(/^c/, '')}`
+  }
+
   return null
 }
 

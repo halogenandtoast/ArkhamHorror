@@ -161,6 +161,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
   InvestigatorBeganRoundAt :: Field Investigator (Maybe LocationId)
+  InvestigatorPreviousLocation :: Field Investigator (Maybe LocationId)
   InvestigatorSearch :: Field Investigator (Maybe Search)
   --
   InvestigatorSupplies :: Field Investigator [Supply]
@@ -259,6 +260,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorUnhealedHorrorThisRound" -> pure $ SomeField InvestigatorUnhealedHorrorThisRound
     "InvestigatorMeta" -> pure $ SomeField InvestigatorMeta
     "InvestigatorBeganRoundAt" -> pure $ SomeField InvestigatorBeganRoundAt
+    "InvestigatorPreviousLocation" -> pure $ SomeField InvestigatorPreviousLocation
     "InvestigatorSupplies" -> pure $ SomeField InvestigatorSupplies
     _ -> error "Unknown Field Investigator"
 
@@ -333,6 +335,8 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorSeals :: Set Seal
   , -- monterey jack
     investigatorBeganRoundAt :: Maybe LocationId
+  , -- previous location (set when moving)
+    investigatorPreviousLocation :: Maybe LocationId
   , -- investigator specific logs
     investigatorLog :: CampaignLog
   , -- internal tracking
@@ -714,6 +718,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorKeys <- o .: "keys"
     investigatorSeals <- o .:? "seals" .!= mempty
     investigatorBeganRoundAt <- o .:? "beganRoundAt"
+    investigatorPreviousLocation <- o .:? "previousLocation"
     investigatorLog <- o .: "log"
     investigatorDiscarding <- o .:? "discarding"
     investigatorDiscover <- o .:? "discover"

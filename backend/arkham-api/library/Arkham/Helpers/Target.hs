@@ -133,14 +133,13 @@ targetMatches s = \case
             Just iid' -> elem iid' <$> select whoMatcher
             _ -> pure False
         EventTarget eid -> do
-          selectEventController eid >>= \case
-            Just controllerId -> elem controllerId <$> select whoMatcher
-            Nothing -> do
-              -- event may have been discarded already
-              mOwner <- join . fmap toCardOwner <$> fieldMay EventCard eid
-              case mOwner of
-                Just owner -> elem owner <$> select whoMatcher
+          placement <- field EventPlacement eid
+          if placement.isInPlay
+            then
+              selectEventController eid >>= \case
+                Just controllerId -> elem controllerId <$> select whoMatcher
                 Nothing -> pure False
+            else pure False
         SkillTarget sid -> do
           selectSkillController sid >>= \case
             Just controllerId -> elem controllerId <$> select whoMatcher

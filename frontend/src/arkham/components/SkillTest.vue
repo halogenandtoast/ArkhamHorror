@@ -201,6 +201,19 @@ function sourceCardCode(source: Source) {
     return `${source.contents.replace('c', '')}`
   }
 
+  if (source.tag === 'AgendaSource') {
+    const agenda = props.game.agendas[source.contents]
+    if (!agenda) return null
+    const id = agenda.id
+    if (agenda.flipped) {
+      if (["c03276a", "c03279a"].includes(id)) {
+        return `${id.replace(/^c/, '')}b`
+      }
+      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
+    }
+    return `${id.replace(/^c/, '')}`
+  }
+
   return null
 }
 
@@ -520,10 +533,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 
       <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
         <span v-if="skillTestResults.skillTestResultsSuccess">
-          {{ $t('Succeeded by {amount}', { amount: (testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
+          {{ $t('succeededBy', { amount: (testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
         <span v-else-if="testResult !== null">
-          {{ $t('Failed by {amount}', { amount: testResult - (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
+          {{ $t('failedBy', { amount: testResult - (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
       </div>
 

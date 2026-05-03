@@ -90,6 +90,7 @@ const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
+const forcedShowHollowed = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -516,7 +517,7 @@ const gridConcealed = computed<ConcealedGroup[]>(() => {
 function isHollow(m: ModifierType): m is Hollow {
   return m.tag === "Hollow"
 }
-const hollowed = computed(() => Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))
+const hollowed = computed(() => [...new Set(Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))])
 
 const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
@@ -591,6 +592,13 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
 const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
 const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
+const handleHollowedChoose = (idx: number) => {
+  if (hollowed.value.length > 1) {
+    showHollowed()
+  } else {
+    choose(idx)
+  }
+}
 const hideCards = () => showCards.ref = noCards
 const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 
@@ -647,13 +655,25 @@ watchEffect(() => {
     if (c.target.tag !== "CardIdTarget") return false
     return discards.value.some(card => cardId(card) === c.target.contents)
   }
+  const isHollowedChoice = (c: Message) => {
+    if (c.tag !== "TargetLabel") return false
+    if (c.target.tag !== "CardIdTarget") return false
+    return hollowed.value.some(card => cardId(card) === c.target.contents)
+  }
   const showDiscard = choices.value.some(isDiscardChoice)
+  const showHollowedCards = choices.value.some(isHollowedChoice)
   if (showDiscard) {
     showDiscards();
     forcedShowDiscard.value = true
+    forcedShowHollowed.value = false
+  } else if (showHollowedCards) {
+    showHollowed()
+    forcedShowHollowed.value = true
+    forcedShowDiscard.value = false
   } else {
     hideCards()
     forcedShowDiscard.value = false
+    forcedShowHollowed.value = false
   }
 })
 
@@ -1248,7 +1268,7 @@ async function addChaosToken(face: any){
               :playerId="playerId"
               class="card"
               @click="showHollowed"
-              @choose="choose"
+              @choose="handleHollowedChoose"
             />
             <span class="deck-size">{{hollowed.length}}</span>
           </div>

@@ -47,11 +47,11 @@ instance IsCampaign TheFeastOfHemlockVale where
       let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
        in case (meta.day, meta.time) of
             (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
-            (Day1, Night) -> Nothing
-            (Day2, Day) -> Nothing
+            (Day1, Night) -> continue PreludeDawnOfTheSecondDay
+            (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
             (Day2, Night) -> Nothing
-            (Day3, Day) -> Nothing
-            (Day3, Night) -> Nothing
+            (Day3, _) -> continueEdit (CampaignSpecificStep "preludeTheFinalEvening" Nothing) allowOptions
+    TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

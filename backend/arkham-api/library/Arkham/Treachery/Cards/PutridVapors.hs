@@ -1,0 +1,26 @@
+module Arkham.Treachery.Cards.PutridVapors (putridVapors) where
+
+import Arkham.Matcher
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Import.Lifted
+
+newtype PutridVapors = PutridVapors TreacheryAttrs
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+putridVapors :: TreacheryCard PutridVapors
+putridVapors = treachery PutridVapors Cards.putridVapors
+
+instance RunMessage PutridVapors where
+  runMessage msg t@(PutridVapors attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #agility (Fixed 3)
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignHorror iid attrs 1
+      hasAssets <- selectAny $ assetControlledBy iid <> not_ StoryAsset
+      when hasAssets do
+        chooseAndDiscardAssetMatching iid attrs $ assetControlledBy iid <> not_ StoryAsset
+      pure t
+    _ -> PutridVapors <$> liftRunMessage msg attrs

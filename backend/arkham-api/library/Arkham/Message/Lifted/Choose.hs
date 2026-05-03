@@ -287,6 +287,17 @@ chooseBeginSkillTestEdit
 chooseBeginSkillTestEdit sid iid source target kinds n f = do
   chooseOneM iid $ for_ kinds \kind -> skillLabeled kind $ beginSkillTestEdit sid iid source target kind n f
 
+chooseRevelationSkillTest
+  :: (Sourceable source, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [SkillType]
+  -> GameCalculation
+  -> m ()
+chooseRevelationSkillTest sid iid source kinds n = do
+  chooseBeginSkillTestEdit sid iid source iid kinds n setIsRevelation
+
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)
 

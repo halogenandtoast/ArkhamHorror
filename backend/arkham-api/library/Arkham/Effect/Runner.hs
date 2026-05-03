@@ -129,6 +129,8 @@ instance RunMessage EffectAttrs where
                 _ -> False
           when (any isMovement ws) $ push (DisableEffect effectId)
       pure a
+    Remember k | isEndOfWindow a (EffectRememberedWindow k) -> do
+      a <$ push (DisableEffect effectId)
     MoveIgnored iid -> do
       for_ a.target.investigator \iid' -> do
         when (iid == iid') do

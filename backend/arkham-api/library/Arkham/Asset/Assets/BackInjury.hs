@@ -29,7 +29,6 @@ instance RunMessage BackInjury where
       chooseOrRunOneM iid do
         labeled "Put Back Injury into play in your threat area" do
           putCardIntoPlay iid attrs
-          checkDefeated attrs iid
         whenM (lift $ can.shuffle.deck iid) do
           labeled "Take 1 damage and shuffle it into your deck" do
             assignDamage iid attrs 1

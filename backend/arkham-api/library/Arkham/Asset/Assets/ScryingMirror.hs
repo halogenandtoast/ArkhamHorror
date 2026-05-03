@@ -16,9 +16,9 @@ scryingMirror = asset ScryingMirror Cards.scryingMirror
 
 instance HasAbilities ScryingMirror where
   getAbilities (ScryingMirror a) =
-    [ restricted a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
-          (InitiatedSkillTest #when (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
+          (InitiatedSkillTest #after (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
           (exhaust a <> assetUseCost a Secret 1)
     ]
 

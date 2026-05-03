@@ -53,7 +53,7 @@ instance RunMessage JusticeXI where
           lead <- getLead
           lids <- select $ FarthestLocationFromAll (NotLocation "Entry Hall")
           josefMeiger <- getSetAsideCard Enemies.josefMeiger
-          push $ SpendClues targetAmount iids
+          spendCluesAsAGroup iids targetAmount
           chooseOne lead $ targetLabels lids (only . SpawnEnemyAt josefMeiger)
       pushAll $ map (RemoveAllClues (toSource attrs) . toTarget) allLocations
       scenarioI18n $ scope "interlude1" do

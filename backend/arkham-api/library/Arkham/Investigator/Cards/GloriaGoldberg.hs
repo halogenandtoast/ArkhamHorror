@@ -50,6 +50,7 @@ instance RunMessage GloriaGoldberg where
               , ecCardCode = prophecy.cardCode
               , ecOriginalCardCode = prophecy.cardCode
               , ecIsFlipped = Nothing
+              , ecFacedown = Nothing
               , ecAddedPeril = False
               , ecOwner = Nothing
               }

@@ -284,6 +284,8 @@ allSkills =
       , SomeSkillCard providential2
       , --- neutral [fhv]
         SomeSkillCard wellDressed
+      , --- story [fhv]
+        SomeSkillCard theHemlockCurse
       , -- The Drowned City
         --- signature [tdc]
         SomeSkillCard determined
@@ -318,6 +320,7 @@ allSkills =
         SomeSkillCard slippery
       , SomeSkillCard timelyIntervention
       , SomeSkillCard onTheBrink2
+      , SomeSkillCard timelyIntervention3
       , -- Return to the Dunwich Legacy
         --- survivor [rtdwl]
         SomeSkillCard riseToTheOccasion3

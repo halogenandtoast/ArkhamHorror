@@ -44,7 +44,7 @@ instance RunMessage IsabelleBarnes where
             sid
             (attrs.ability 1)
             card.id
-            [MustBeCommitted, NoAdditionalCosts, ShuffleIntoDeckInsteadOfDiscard]
+            [MustBeCommitted, ShuffleIntoDeckInsteadOfDiscard]
           skillTestModifiers sid (attrs.ability 1) iid [AsIfInHandFor NotForPlay card.id]
           commitCard iid card
       pure i

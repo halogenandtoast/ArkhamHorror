@@ -2,11 +2,12 @@
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
-import { debugGame, deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
+import { deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
 import type { GameDetails } from '@/arkham/types/Game';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
+import ImportGame from '@/arkham/components/ImportGame.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import { storeToRefs } from 'pinia';
 
@@ -30,17 +31,6 @@ async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
     games.value = games.value.filter((g) => g.id !== game.id);
   });
-}
-
-const debugFile = ref<HTMLInputElement | null>(null)
-const submitDebugUpload = async (e: Event) => {
-  e.preventDefault()
-  const file = (debugFile.value?.files || [])[0]
-  if (file) {
-    const formData = new FormData();
-    formData.append("debugFile", file);
-    debugGame(formData).then((game) => router.push(`/games/${game.id}`))
-  }
 }
 
 const newGame = ref(route.path === "/new-game" || false)
@@ -105,13 +95,11 @@ const dismissNotification = (notification: AppNotification) => {
           <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
         </section>
-        <section v-if="currentUser && currentUser.beta === true">
-          <header><h2>{{$t('debugGame')}}</h2></header>
-          <form enctype="multipart/form-data" method=POST class="box">
-            <p>Load a game previously exported view the "Debug Export"</p>
-            <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
-            <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
-          </form>
+        <section v-if="currentUser">
+          <header>
+            <h2>Load Game</h2>
+          </header>
+          <ImportGame />
         </section>
       </div>
     </div>

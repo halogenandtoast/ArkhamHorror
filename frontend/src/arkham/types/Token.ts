@@ -29,6 +29,7 @@ export const TOKENS = [
   "Lock",
   "LostSoul",
   "Offering",
+  "Overgrowth",
   "Pillar",
   "Portent",
   "Renown",

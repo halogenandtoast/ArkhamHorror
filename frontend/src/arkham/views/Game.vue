@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplate
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti   from '@/effects/confetti'
-import { useClipboard, useWebSocket } from '@vueuse/core'
+import { useWebSocket } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
@@ -42,7 +42,7 @@ import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
-import GameDetails from '@/arkham/components/GameDetails.vue'
+import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
@@ -82,12 +82,10 @@ const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
 const emitter = useEmitter()
-const source = ref(`${window.location.href}/join`)
+const router = useRouter()
 const store = useCardStore()
 const userStore = useUserStore()
-const { copy } = useClipboard({ source })
 const { addEntry, menuItems } = useMenu()
-const router = useRouter()
 const preloaded = new Set<string>()
 let mouseX = 0;
 let mouseY = 0;
@@ -314,8 +312,6 @@ const handleResult = (result: ServerResult) => {
 
     case "GameCardOnly":
       if (props.spectate) return
-      console.log(uiLock.value, result)
-
       if (uiLock.value) { qPush(result); return }
 
       uiLock.value = true
@@ -323,6 +319,7 @@ const handleResult = (result: ServerResult) => {
         .decodePromise(result as any)
         .then((r) => {
           // if it isn't for us, immediately unlock and continue draining
+          console.log(solo.value, r.player, playerId.value)
           if (!(solo.value === true || r.player === playerId.value)) {
             uiLock.value = false
             return
@@ -383,7 +380,7 @@ const KONAMI_TIMEOUT_MS = 5000 // reset if user pauses too long
 
 const onKonami = () => {
   if (!game.value) return
-  debug.send(game.value.id, { tag: 'KonamiCode' })
+  debug.send(game.value.id, { tag: 'KonamiCode', contents: playerId.value })
 }
 
 const feedKonami = (rawKey: string): boolean => {
@@ -893,19 +890,12 @@ onUnmounted(() => {
         <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }} </button>
       </div>
     </div>
-    <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
-      <header>
-        <h2>{{ $t('waitingForMorePlayers') }}</h2>
-      </header>
-      <GameDetails :game="game" id="invite">
-        <div v-if="playerId == game.activePlayerId" class="full-width">
-          <p>{{ $t('showInviteLink') }}</p>
-          <div class="invite-link">
-            <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
-          </div>
-        </div>
-      </GameDetails>
-    </div>
+    <MultiplayerLobby
+      v-if="game.gameState.tag === 'IsPending'"
+      :game-id="gameId"
+      :game="game"
+      :player-id="playerId"
+    />
     <template v-else>
       <Draggable v-if="showSettings">
       <Settings :game="game" :playerId="playerId" :closeSettings="() => showSettings = false" />

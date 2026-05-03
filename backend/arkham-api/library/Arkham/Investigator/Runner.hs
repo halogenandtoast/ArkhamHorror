@@ -125,6 +125,7 @@ import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
+  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -985,7 +986,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
     discardableHand <-
-      select $ inHandOf NotForPlay investigatorId <> CardWithoutModifier CannotLeaveYourHand
+      select $ inHandOf NotForPlay investigatorId
+        <> CardWithoutModifier CannotLeaveYourHand
+        <> basic handDiscard.filter
     when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull discardableHand)) do
       wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
       pushAll [wouldDiscard, Do msg]
@@ -1008,7 +1011,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               pushWhen (n > 0)
                 $ chooseN player n
                 $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-                  | c <- cs
+                  | c <- cs'
                   ]
               for_ handDiscard.target \target ->
                 push $ DiscardedCards investigatorId handDiscard.source target cs'
@@ -3072,7 +3075,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
 
     pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
-    pure $ a & placementL .~ AtLocation lid
+    let prevLoc = case investigatorPlacement of
+          AtLocation l -> Just l
+          _ -> Nothing
+    pure $ a & placementL .~ AtLocation lid & previousLocationL .~ prevLoc
   CheckEnemyEngagement iid | iid == investigatorId -> do
     -- [AsIfAt]: enemies don't move to threat with AsIf, so we use actual location here
     -- This might not be correct and we should still check engagement and let
@@ -3443,6 +3449,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
               <> msgs'
               <> [after]
+              <> [UpdateHistory iid $ HistoryItem HistoryCardsDrawn (length allDrawn)]
               <> ( guard (discardAmount > 0)
                      *> [ FocusCards focusable
                         , chooseN

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Narcolepsy (narcolepsy, Narcolepsy (..)) where
+module Arkham.Treachery.Cards.Narcolepsy (narcolepsy) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -21,8 +21,8 @@ instance HasModifiersFor Narcolepsy where
 
 instance HasAbilities Narcolepsy where
   getAbilities (Narcolepsy a) =
-    [ restrictedAbility a 1 OnSameLocation actionAbility
-    , restrictedAbility a 2 (InThreatAreaOf You)
+    [ restricted a 1 OnSameLocation actionAbility
+    , restricted a 2 (InThreatAreaOf You)
         $ forced
         $ oneOf [InvestigatorTakeDamage #after You AnySource, InvestigatorTakeHorror #after You AnySource]
     ]

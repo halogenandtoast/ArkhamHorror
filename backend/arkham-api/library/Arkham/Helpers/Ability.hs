@@ -68,23 +68,25 @@ preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  -- logic here is a bit awkward, but in the case of forced abilities we still
-  -- want `CannotTriggerAbilityMatching` to apply, BUT to retain the existing
-  -- logic (not 100% sure why we exclude forced here) we need to check
-  -- `CannotTriggerAbilityMatching` first and then fallback
+  -- Forced abilities trigger automatically and are not "triggered" by the
+  -- investigator, so `CannotTriggerAbilityMatching` does not suppress them.
+  -- This also avoids self-locks like Narcolepsy, whose constant modifier
+  -- would otherwise block its own forced discard ability.
   isForced <- isForcedAbility iid ability
-  let cannotTriggerMatchers =
-        modifiers & mapMaybe \case
-          CannotTriggerAbilityMatching m -> Just m
-          _ -> Nothing
-  suppressedByMatcher <-
-    if null cannotTriggerMatchers
-      then pure False
-      else elem ability <$> select (Matcher.AbilityOneOf cannotTriggerMatchers)
-  if
-    | suppressedByMatcher -> pure True
-    | isForced -> pure False
-    | otherwise -> anyM (prevents modifiers) modifiers
+  if isForced
+    then pure False
+    else do
+      let cannotTriggerMatchers =
+            modifiers & mapMaybe \case
+              CannotTriggerAbilityMatching m -> Just m
+              _ -> Nothing
+      suppressedByMatcher <-
+        if null cannotTriggerMatchers
+          then pure False
+          else elem ability <$> select (Matcher.AbilityOneOf cannotTriggerMatchers)
+      if suppressedByMatcher
+        then pure True
+        else anyM (prevents modifiers) modifiers
  where
   prevents modifiers = \case
     CannotPerformAction x -> preventsAbility x

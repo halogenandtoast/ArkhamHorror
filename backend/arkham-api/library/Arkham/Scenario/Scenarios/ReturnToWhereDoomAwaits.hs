@@ -104,7 +104,6 @@ instance RunMessage ReturnToWhereDoomAwaits where
         Hard -> MinusSix
         Expert -> MinusSeven
 
-      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
 
       hasTheInvestigatorsBack <- getHasRecord NaomiHasTheInvestigatorsBacks
       setAside
@@ -113,6 +112,7 @@ instance RunMessage ReturnToWhereDoomAwaits where
           <> alteredPaths
           <> [Assets.naomiOBannionRuthlessTactician | not hasTheInvestigatorsBack]
       setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
+      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
 
       let
         ascendingTheHill = case (useV1, useV2) of

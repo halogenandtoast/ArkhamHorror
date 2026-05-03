@@ -20,7 +20,7 @@ instance RunMessage ASuddenFall2 where
       skillTestModifier sid attrs iid (AddSkillValue #combat)
       chooseFightEnemyWith #agility sid iid attrs
       pure e
-    PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 2 -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       withSkillTest \sid ->
         withSkillTestTargetedEnemy \enemy -> do
           whenMatch enemy ExhaustedEnemy do

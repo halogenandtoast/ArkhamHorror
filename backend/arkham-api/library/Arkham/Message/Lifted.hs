@@ -1184,6 +1184,9 @@ questionLabel lbl iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl Nothing q)
 
+questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
+questionLabel' lbl = questionLabel ("$" <> lbl)
+
 questionLabelWithCard
   :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
 questionLabelWithCard lbl cCode iid q = do

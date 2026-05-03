@@ -192,9 +192,17 @@
   "drew": "{iname} drew {name}",
   "Done With Mulligan": "Done With Mulligan",
   "skip": "Skip",
+  "submit": "Submit",
   "handSize": "Hand Size",
   "yes": "Yes",
   "no": "No",
+  "succeededBy": "Succeeded by {amount}",
+  "failedBy": "Failed by {amount}",
+  "chooseLeadInvestigator": "Choose lead investigator",
+  "cluesPerPlayerAsGroup": "Spend {total} clues as a group",
+  "fromDeck": "From Deck",
+  "fromHand": "From Hand",
+  "fromDiscard": "From Discard",
   "core2": {
     "tooltips": {
       "sewerCulvert": {

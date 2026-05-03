@@ -35,25 +35,11 @@ const emit = defineEmits(['choose'])
 const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
-const translateDynamicLabel = (text: string | null) => {
-  if (!text) return '';
-  const clueMatch = text.match(/^(\d+)\s+Clues per Player as a Group$/);
-  if (clueMatch) {
-    const perPlayerCount = parseInt(clueMatch[1], 10);
-    const investigatorCount = Object.keys(props.game.investigators).length;
-    const totalClues = perPlayerCount * investigatorCount;
-    return t('cluesPerPlayerAsGroup', { 
-      count: perPlayerCount, 
-      total: totalClues 
-    });
-  }
-  return t(text);
-}
 function zoneToLabel(s: string) {
   switch(s) {
-    case "FromDeck": return "From Deck"
-    case "FromHand": return "From Hand"
-    case "FromDiscard": return "From Discard"
+    case "FromDeck": return t("fromDeck")
+    case "FromHand": return t("fromHand")
+    case "FromDiscard": return t("fromDiscard")
     default: return s
   }
 }
@@ -138,7 +124,7 @@ const amountsLabel = computed(() => {
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return question.value.question.label
+    return label(question.value.question.label)
   }
 
   return null
@@ -610,10 +596,10 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
           <div v-if="paymentAmountsLabel" class="modal amount-modal">
             <div class="modal-contents amount-contents">
               <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
-                <legend v-html="translateDynamicLabel(paymentAmountsLabel)"></legend>
+                <legend v-html="paymentAmountsLabel"></legend>
                 <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
                   <div v-if="amountChoice.maxBound !== 0">
-                    {{ t(amountChoice.title) }}
+                    {{ amountChoice.title }}
                     <input
                       type="number"
                       :min="amountChoice.minBound"
@@ -630,7 +616,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
           <div v-if="amountsLabel" class="modal amount-modal">
             <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
               <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-                <h2>{{ t(zoneToLabel(group)) }}</h2>
+                <h2>{{ zoneToLabel(group) }}</h2>
                 <div class="group-cards">
                   <Card
                     v-for="card in cards"
@@ -645,10 +631,10 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
             </div>
             <div class="modal-contents amount-contents">
               <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-                <legend v-html="translateDynamicLabel(amountsLabel)"></legend>
+                <legend v-html="amountsLabel"></legend>
                 <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
                   <div v-if="paymentChoice.maxBound !== 0">
-                    <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(t(paymentChoice.label))"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+                    <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
                   </div>
                 </template>
                 <button :disabled="unmetAmountRequirements">{{ t('submit') }}</button>

@@ -419,7 +419,7 @@ findEncounterCard
   -> cardMatcher
   -> Message
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
-  FindEncounterCard iid target zones cardMatcher
+  FindEncounterCard iid target zones cardMatcher LeadChooses
 
 placeLabeledLocationCards_ :: (HasGame m, Tracing m, CardGen m) => Text -> [CardDef] -> m [Message]
 placeLabeledLocationCards_ lbl cards = do

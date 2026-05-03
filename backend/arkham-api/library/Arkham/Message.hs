@@ -791,7 +791,7 @@ data Message
       CardMatcher
       IncludeDiscard
       ScenarioEncounterDeckKey
-  | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
+  | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher FindEncounterCardStrategy
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]
   | FocusChaosTokens [ChaosToken]
@@ -1577,6 +1577,11 @@ mconcat
               pure $ case ea of
                 Left target -> ShuffleBackIntoEncounterDeck GameSource target
                 Right (source, target) -> ShuffleBackIntoEncounterDeck source target
+            "FindEncounterCard" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, d, s) -> FindEncounterCard a b c d s
+                Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
             _ -> defaultParseMessage (Object o)
       |]
   ]

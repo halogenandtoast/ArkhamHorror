@@ -121,11 +121,11 @@ instance RunMessage HorrorInHighGear where
 
       lead <- getLead
       getPlayerCount >>= \case
-        2 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-        3 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        2 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        3 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
         4 -> do
-          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
         _ -> pure ()
     ForInvestigator iid (DoStep 1 Setup) -> do
       vehicles <- selectWithFilterM (AssetWithTrait Vehicle) \vehicle -> do

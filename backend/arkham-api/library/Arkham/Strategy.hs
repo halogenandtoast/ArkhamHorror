@@ -87,6 +87,11 @@ data ChosenCardStrategy
   | RemoveChosenCardFromGame
   deriving stock (Show, Eq, Ord, Data)
 
+data FindEncounterCardStrategy
+  = LeadChooses
+  | RandomSelect
+  deriving stock (Show, Eq, Ord, Data)
+
 fromTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
 fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)
 
@@ -145,3 +150,18 @@ instance FromJSON AfterPlayStrategy where
         _ -> fail "invalid AfterPlayStrategy"
 
 $(deriveJSON defaultOptions ''ChosenCardStrategy)
+$(deriveToJSON defaultOptions ''FindEncounterCardStrategy)
+
+instance FromJSON FindEncounterCardStrategy where
+  parseJSON v = case v of
+    String s -> case s of
+      "LeadChooses" -> pure LeadChooses
+      "RandomSelect" -> pure RandomSelect
+      _ -> pure LeadChooses
+    Object o -> do
+      tag <- o .:? "tag"
+      case tag :: Maybe Text of
+        Just "LeadChooses" -> pure LeadChooses
+        Just "RandomSelect" -> pure RandomSelect
+        _ -> pure LeadChooses
+    _ -> pure LeadChooses

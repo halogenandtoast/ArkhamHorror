@@ -1358,7 +1358,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     shuffled <- shuffleM encounterDeck
     push (FoundEncounterCard iid target card)
     pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard)
-  FindEncounterCard iid target zones matcher -> do
+  FindEncounterCard iid target zones matcher strategy -> do
     let
       matchingDiscards =
         if Zone.FromEncounterDiscard `elem` zones
@@ -1384,34 +1384,47 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         matchingVoidEnemies
         (field @(OutOfPlayEntity 'Zone.VoidZone Enemy) (OutOfPlayEnemyField Zone.VoidZone EnemyCard))
 
-    -- TODO: show where focused cards are from
+    case strategy of
+      LeadChooses -> do
+        -- TODO: show where focused cards are from
+        push
+          $ FocusCards
+          $ map EncounterCard matchingDeckCards
+          <> map EncounterCard matchingDiscards
+          <> map snd voidEnemiesWithCards
 
-    push
-      $ FocusCards
-      $ map EncounterCard matchingDeckCards
-      <> map EncounterCard matchingDiscards
-      <> map snd voidEnemiesWithCards
-
-    when
-      ( notNull matchingDiscards
-          || notNull matchingDeckCards
-          || notNull voidEnemiesWithCards
-          || notNull matchingVictoryDisplay
-      )
-      do
-        chooseOne iid
-          $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card, UnfocusCards]
-            | card <- matchingDiscards
-            ]
-          <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card, UnfocusCards]
-             | card <- matchingDeckCards
-             ]
-          <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card, UnfocusCards]
-             | card <- matchingVictoryDisplay
-             ]
-          <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid, UnfocusCards]
-             | (eid, card) <- voidEnemiesWithCards
-             ]
+        when
+          ( notNull matchingDiscards
+              || notNull matchingDeckCards
+              || notNull voidEnemiesWithCards
+              || notNull matchingVictoryDisplay
+          )
+          do
+            chooseOne iid
+              $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card, UnfocusCards]
+                | card <- matchingDiscards
+                ]
+              <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card, UnfocusCards]
+                 | card <- matchingDeckCards
+                 ]
+              <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card, UnfocusCards]
+                 | card <- matchingVictoryDisplay
+                 ]
+              <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid, UnfocusCards]
+                 | (eid, card) <- voidEnemiesWithCards
+                 ]
+      RandomSelect -> do
+        let
+          choices =
+            [FoundEncounterCardFrom iid target FromDiscard card | card <- matchingDiscards]
+              <> [FoundEncounterCardFrom iid target FromEncounterDeck card | card <- matchingDeckCards]
+              <> [FoundEncounterCardFrom iid target FromVictoryDisplay card | card <- matchingVictoryDisplay]
+              <> [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid | (eid, _) <- voidEnemiesWithCards]
+        case nonEmpty choices of
+          Nothing -> pure ()
+          Just nec -> do
+            chosen <- sample nec
+            push chosen
 
     pure a
   FindAndDrawEncounterCard iid matcher includeDiscard -> do

@@ -526,6 +526,34 @@ findEncounterCardIn iid target cardMatcher scenarioZones =
       (toTarget target)
       scenarioZones
       (toCardMatcher cardMatcher)
+      LeadChooses
+
+findRandomEncounterCard
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> m ()
+findRandomEncounterCard iid target cardMatcher =
+  findRandomEncounterCardIn iid target cardMatcher [FromEncounterDeck, FromEncounterDiscard]
+
+findRandomEncounterCardIn
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> [ScenarioZone]
+  -> m ()
+findRandomEncounterCardIn iid target cardMatcher scenarioZones =
+  push
+    $ Msg.FindEncounterCard
+      iid
+      (toTarget target)
+      scenarioZones
+      (toCardMatcher cardMatcher)
+      RandomSelect
 
 beginSkillTest
   :: (ReverseQueue m, Sourceable source, Targetable target)

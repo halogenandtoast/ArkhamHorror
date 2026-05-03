@@ -1750,7 +1750,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     getInvestigators >>= \case
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
       xs@(x : _) -> do
-        questionLabel "Choose lead investigator" x
+        questionLabel' "chooseLeadInvestigator" x
           $ ChooseOne
             [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
             | iid <- xs

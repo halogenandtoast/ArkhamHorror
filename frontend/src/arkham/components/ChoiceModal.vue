@@ -163,4 +163,9 @@ const title = computed(() => {
   flex-direction: column;
   gap: 10px;
 }
+
+.choice-modal-wrapper .body {
+  text-align: center;
+  margin: 0;
+}
 </style>

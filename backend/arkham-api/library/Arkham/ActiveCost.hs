@@ -1191,7 +1191,7 @@ payCost msg c iid skipAdditionalCosts cost = do
               lead <- getLeadPlayer
               push
                 $ Ask lead
-                $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalClues) paymentOptions
+                $ ChoosePaymentAmounts ("$cluesPerPlayerAsGroup total=i:" <> tshow totalClues) (Just $ TotalAmountTarget totalClues) paymentOptions
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues

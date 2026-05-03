@@ -45,9 +45,9 @@ instance RunMessage TheLastBlossom where
           withInvestigatorBearer attrs \iid -> do
             selectEach (affectsOthers $ colocatedWith iid) \iid' -> do
               whenM (canHaveDamageHealed attrs iid') do
-                healDamage iid attrs 1
+                healDamage iid' attrs 1
               whenM (canHaveHorrorHealed attrs iid') do
-                healHorror iid attrs 1
+                healHorror iid' attrs 1
             handleUnstableFlip iid attrs
       pure k
     _ -> TheLastBlossom <$> liftRunMessage msg attrs

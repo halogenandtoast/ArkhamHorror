@@ -174,23 +174,26 @@ instance RunMessage HorrorInHighGear where
                     else chooseNM iid n do
                       for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
             _ -> pure ()
-        Tablet | n > 0 -> do
-          field InvestigatorPlacement iid >>= \case
-            InVehicle aid -> do
-              passengers <-
-                selectWithField InvestigatorResources
-                  $ InVehicleMatching (AssetWithId aid)
-                  <> InvestigatorWithAnyResources
-              case passengers of
-                [] -> pure ()
-                [(x, r)] -> loseResources x Tablet (min n r)
-                xs ->
-                  if sum (map snd xs) <= n
-                    then for_ xs \(x, c) -> loseResources x Tablet c
-                    else chooseNM iid n do
-                      for_ xs \(x, _c) -> resourceLabeled x $ loseResources x Tablet 1
-            _ -> pure ()
+        Tablet | n > 0 -> doStep n msg
         ElderThing | isEasyStandard attrs -> push HuntersMove
+        _ -> pure ()
+      pure s
+    DoStep n msg'@(FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == Tablet && n > 0 -> do
+      field InvestigatorPlacement iid >>= \case
+        InVehicle aid -> do
+          passengers <-
+            selectWithField InvestigatorResources
+              $ InVehicleMatching (AssetWithId aid)
+              <> InvestigatorWithAnyResources
+          case passengers of
+            [] -> pure ()
+            [(x, r)] -> loseResources x Tablet (min n r)
+            xs ->
+              if sum (map snd xs) <= n
+                then for_ xs \(x, c) -> loseResources x Tablet c
+                else do
+                  chooseOneM iid $ for_ xs \(x, _c) -> resourceLabeled x $ loseResources x Tablet 1
+                  doStep (n - 1) msg'
         _ -> pure ()
       pure s
     ResolveChaosToken _ ElderThing _iid -> do

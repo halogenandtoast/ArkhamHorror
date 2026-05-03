@@ -180,7 +180,7 @@ wardOfProtection =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow =
-        Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
+        Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) AnyDeck
     , cdAlternateCardCodes = ["01565", "12065"]
     }
 

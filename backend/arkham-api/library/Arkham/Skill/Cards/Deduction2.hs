@@ -16,6 +16,6 @@ instance RunMessage Deduction2 where
   runMessage msg s@(Deduction2 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n -> do
       whenM isInvestigation do
-        withSkillTest \sid -> skillTestModifier sid attrs iid $ DiscoveredClues $ if n >= 2 then 2 else 1
+        withSkillTest \sid -> priority $ skillTestModifier sid attrs iid $ DiscoveredClues $ if n >= 2 then 2 else 1
       pure s
     _ -> Deduction2 <$> liftRunMessage msg attrs

@@ -16,6 +16,6 @@ opportunist2 = skill Opportunist2 Cards.opportunist2
 instance RunMessage Opportunist2 where
   runMessage msg s@(Opportunist2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
-      withSkillTest \sid -> skillTestModifier sid attrs attrs ReturnToHandAfterTest
+      withSkillTest \sid -> priority $ skillTestModifier sid attrs attrs ReturnToHandAfterTest
       pure s
     _ -> Opportunist2 <$> liftRunMessage msg attrs

@@ -16,6 +16,6 @@ viciousBlow2 = skill ViciousBlow2 Cards.viciousBlow2
 instance RunMessage ViciousBlow2 where
   runMessage msg s@(ViciousBlow2 attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ n | sid == attrs.id -> do
-      withSkillTest \stId -> skillTestModifier stId attrs iid (DamageDealt $ if n >= 2 then 2 else 1)
+      withSkillTest \stId -> priority $ skillTestModifier stId attrs iid (DamageDealt $ if n >= 2 then 2 else 1)
       pure s
     _ -> ViciousBlow2 <$> liftRunMessage msg attrs

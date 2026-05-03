@@ -24,6 +24,6 @@ instance RunMessage SharpVision1 where
       runMaybeT_ do
         liftGuardM isBasicInvestigation
         iid <- MaybeT getSkillTestInvestigator
-        lift $ withSkillTest \sid -> skillTestModifier sid attrs iid (DiscoveredClues 1)
+        lift $ withSkillTest \sid -> priority $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure s
     _ -> SharpVision1 <$> liftRunMessage msg attrs

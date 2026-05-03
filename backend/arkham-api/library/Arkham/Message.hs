@@ -609,6 +609,7 @@ data Message
   | BeginTurn InvestigatorId
   | Blanked Message
   | HandleOption CampaignOption
+  | RemoveOption CampaignOption
   | CampaignStep CampaignStep
   | ScenarioCampaignStep CampaignStep
   | CancelEachNext (Maybe CardId) Source [MessageType]

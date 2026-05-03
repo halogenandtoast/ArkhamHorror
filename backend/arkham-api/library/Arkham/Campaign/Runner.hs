@@ -144,6 +144,7 @@ defaultCampaignRunner msg a = case msg of
       else pure a
   RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
+  RemoveOption option -> pure $ updateAttrs a (logL . optionsL %~ deleteSet option)
   InitDeck iid _ deck -> do
     playerCount <- getPlayerCount
     investigatorClass <- field InvestigatorClass iid

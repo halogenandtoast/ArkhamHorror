@@ -1,0 +1,178 @@
+{
+  "heading": "File #59–Z (Finale)",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current act number.",
+      "cultist": "-5. You may flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -2, instead.",
+      "tablet": "-2. If this is an attack against a ready _Outsider_ enemy, you automatically fail, instead.",
+      "elderThing": "-3. Cancel the effects and icons of each card committed to this test and set each of them aside, out of play, as hollows."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current act number.",
+      "cultist": "-7. You may flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -4, instead.",
+      "tablet": "-2. If there is a ready _Outsider_ enemy at your location, you automatically fail, instead.",
+      "elderThing": "-4. Cancel the effects and icons of each card committed to this test and set each of them aside, out of play, as hollows."
+    }
+  },
+  "label": {
+    "cultist": {
+      "easyStandard": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -2, instead",
+      "hardExpert": "Flip a _Stable_ key you control to its _Unstable_ side to treat this token's modifier as -4, instead"
+    },
+    "theWorldUnbidden": {
+      "unstable": "Shift an _Unstable_ key they control without flipping it to its Stable side to cancel all of the damage and horror just dealt to them by the above effect.",
+      "stable": "Flip any number of _Stable_ keys they control to their _Unstable_ side to cancel that much damage/horror just dealt to them by the above effect.",
+      "damage": "Cancel 1 damage",
+      "horror": "Cancel 1 horror"
+    }
+  },
+  "intro": {
+    "label": {
+      "deemedALiability": "进入_审判 2_。",
+      "overthrow": "进入_审判 3_。",
+      "join": "进入_审判 4_。",
+      "deemedAnAsset": "进入_审判 5_。"
+    },
+    "title": "File #59–Z (Finale): 密钥峰会",
+    "body": "<p class='basic file'>取决你如何抵达此地……</p>",
+    "option1": "如果是由于最后一次近况报告(由于时间耗尽)， proceed to _引言1_.",
+    "option2": "如果你是自行前往通古斯， skip to Intro 2.",
+    "intro1": "<p class='file'>_引言1_: 你在一片黑暗中醒来，突然你头上的布袋被抽开扔在一旁，有人掐着你的脸颊并拍了一两下确认你已经清醒。“起来。”一个恶毒的声音下令。你眨着眼想清醒过来，然后惊慌地发现你跟你的伙伴们被绑在椅子上，嘴里塞着口衔，让你们只能发出模糊的哼声。</p><p>你的眼睛适应昏暗的光线后，你发现自己一定身处地底下。这座没有窗户的大厅由俐落、做工良好的石材砌成，水银灯发出的微光照亮墙面，墙上有绯红色的装饰，墙边有几个玻璃展示柜，里面放着各种文物或具有历史性的工艺品。而最显眼的是房间中央的巨大桌子，桌面上有精雕细琢的各种图案与线条。一群身影站在大桌旁，有些很眼熟；其他的都不认识，但他们全都穿戴着绯红色。你感到非常不安。“你们将为了对结社做过的事付出代价；抑或是接受表扬，一切皆由峰会决定。”先前的声音宣告着。“现在，我们将允许所有人发言，无论是指控；或是辩护。”</p><p class='basic right'>进入_审判 1_.</p>",
+    "intro2": "<p class='file'>Intro 2: 如果没有调查官泰勒提供的情报，你一定找不到绯红结社的秘密据点。它藏身在西伯利亚中心的地底，距离通古斯的神秘大坑不远，这场十几年前发生的大爆炸或是撞击，其真实原因依然成谜。也许这个事件与结社有某种关联——不，有鉴于他们掌握的危险物品，必定与他们有关。问题是前因后果是什么？</p><p>据点入口隐藏在大雪与荒芜的原野中，但你终于还是找到了。扇铁门隐藏在覆满白雪的山丘侧面，不走近几乎无法辨认。你很惊讶地发现门没有上锁，但你进入时，马上撞见身穿熟悉红色服饰的结社守卫，他们用怀疑的眼神看着你。其中一名守卫带着邪魅的笑容开口说道：“我们正等着你的到来。来吧，峰会要开始了。”</p><p>你没什么选择，只好跟着他们。守卫领着你深入地下，走过狭窄的楼梯与单调的石砌廊道。终于你们抵达一间没有窗户的大厅，水银灯发出的微光照亮墙面，墙上有绯红色的装饰，墙边有几个玻璃展示柜，里面放着各种文物或具有历史性的工艺品。而最显眼的是房间中央的巨大桌子，桌面上有精雕细琢的各种图案与线条。一群身影站在大桌旁，有些很眼熟；其他的都不认识，但他们全都穿戴着绯红色。大门在你身后轰然关上，你瞬间感到非常不安。从人群中传出一个声音宣告道：“你的时机正好，我们正要开始进行投票。”</p><p>你出声询问投票的目的时，嘴唇突然变得干燥，你无法摆脱自己是主动前来面对毁灭的感觉。“一场集会被召开了。你将为了对结社做过的事付出代价；抑或是接受表扬，一切皆由峰会决定。现在，我们将允许所有人发言，无论是指控；或是辩护。”突然你被从后方束缚住并塞上口衔。守卫笑着说道：“这只是出于正式的程序，我保证。”</p><p class='basic right'>进入_审判 1_.</p>",
+    "theTrial1": "<p class='file'>_审判 1_: 结社将投票来决定你的命运。</p><p class='basic'>依照顺序阅读以下每个部分的叙述，并记录下每个投票结果。“赞成”代表该结社成员想要将你解决掉；“反对”代表该结社成员希望保护你的安全。弃票与保持沉默不计入赞成，也不计入反对。</p>",
+    "nay": {
+      "title": "<h3 class='vote-header'>反对</h3>",
+      "count": "<p class='basic scarlet-keys-vote nay' data-count='{count}'>{count}</p>"
+    },
+    "yea": {
+      "title": "<h3 class='vote-header'>赞成</h3>",
+      "count": "<p class='basic scarlet-keys-vote yea' data-count='{count}'>{count}</p>"
+    },
+
+    "theCellAidedTheKnight": "<p>_如果协助骑士_: 亚历山卓的年迈“骑士”上前，所有人将注意力放在他身上。“我可敬的兄弟姐妹们，虽然这位效忠着……错误的对象，但他值得我们的尊敬与谅解。如果没有他的协助，我们在亚历山卓的圣殿将会沦陷，而且我必须说，是出自我们其中一位成员的手笔。我相信此举足以证明他的价值。”一部分的人点头同意。与会成员们等待着另一方的驳斥，但却无人上前。看来野兽仍在舔舐自己的伤口。</p><p class='basic right'>酒红骑士表示“反对”。<br>猩红斗篷下的野兽视为弃票。</p>",
+    "theCellFailedToFendOffTheBeast": "<p>_如果未能成功抵御野兽_:隐藏在猩红斗篷下的野兽发出低沉的声音：“鲜血。”他简洁地说。牠野蛮的声音痛击你，让你打从骨子里颤抖。“必须献上鲜血。”你在人群中搜寻年迈骑士的脸，希望他站出来诉诸理性，但他不在这……</p><p class='basic right'>酒红骑士视为弃票。<br>猩红斗篷下的野兽表示“赞成”。</p>",
+    "youHaventSeenTheLastOfTheClaretKnight": "<p>_如果未得知酒红骑士最后的下落_: “判决很明显。”亚历山卓的年迈“骑士”开口说。“他不值得信任，而且试着从我们手中夺去控制权。他必须受到处置。”在桌子的另一端，骑士隐藏在猩红斗篷下的敌手咆啸道：“就这么一次，我们意见相同。”牠的声音听起来野蛮不文。骑士瞇起眼睛警告牠：“这不代表任何事。”</p><p class='basic right'>酒红骑士表示“赞成”。<br>猩红斗篷下的野兽表示“赞成”。</p>",
+    "theDogsAreAtWar": "<p>_如果战争肆虐_: 短暂的寂静，与会成员在他们之间搜寻在亚历山卓活动的两名成员。“看来有两位同胞决定不参加本次集会。”一名成员宣告道。你怀疑他们是否还活着，或许双方都殒落在他们的冲突之中。想到亚历山卓可能的惨况，你不禁颤抖。</p><p class='basic right'>酒红骑士视为弃票。<br>猩红斗篷下的野兽视为弃票。</p>",
+    "dogsOfWarSkipped": "<p>_如果以上皆非_: “我不以暴力为乐。”一名年长，穿着得体的红衣绅士说。“我认为他有潜在的价值。”在桌子的另一端，一个身穿猩红斗篷的身影低吼道：“这就是为什么你很弱。”牠的面孔隐藏在阴影中，牠转向你，你在昏暗的光线下只能看见一对可怕的獠牙。“必须献上鲜血。”</p><p class='basic right'>酒红骑士表示“反对”。<br>猩红斗篷下的野兽表示“赞成”。</p><p class='basic right'>掷硬币决定密钥的承受者，并将此记录在剧本日志中：如果是正面，“酒红骑士”是法罗斯之光承受者；如果是反面，“猩红斗篷下的野兽”是法罗斯之光承受者。</p>",
+    "eceTrustsTheCell": "<p>_如果赢得艾洁的信任_: 艾洁上前清清喉咙说道：“由于隐藏在伊斯坦堡的扭曲棱镜正处于被第三方势力夺走的危险中，我联络上了基石。这位探员回应了我的请求，他并没有将其据为己有，而是选择将其交于我保管。我相信他是可信赖的。而且，相较于我们之中某些成员，他的道德标准也无庸置疑。”</p><p class='basic right'>艾洁·沙辛表示“反对”。</p>",
+    "eceDoesNotTrustTheCell": "<p>_如果失去艾洁的信任_: “当其他成员将注意力转向艾洁时，她低着头，迟疑地说道：“我……厌恶暴力，所以我拒绝参与这场令人鄙视的闹剧，虽然我们之中某些人乐在其中。”她尖锐的话语激怒了部分的结社成员。但当她眼神与你相对时，悲伤与决心让她的表情变得坚定。“但在我们面前的这位无法被信任，我无法为他的行为辩护。”然后低声说了一句：“我很抱歉。”</p><p class='basic right'>艾洁·沙辛弃票。</p>",
+    "dealingsInTheDarkSkipped": "<p>_如果以上皆非_: “如果我们要成为一个注重道德操守的组织，”一名戴着红头纱的女士礼貌的主张，“我们就不能随意消灭所有阻碍我们的人。理解与合作才能带来进步。而且我厌恶暴力，我们应该试着与他合作，而不是消灭。”</p><p class='basic right'>艾洁·沙辛表示“反对”。</p>",
+    "youHaventSeenTheLastOfAmaranth": "<p>_如果未得知永生花最后的下落_: 永生花与你眼神交会时露出邪恶的微笑。“喔，我等这一刻很久了。”她拉长语调，眼神发亮，“多管闲事的蠢货，你真的觉得能干扰我们的计划后还能全身而退吗？”</p><p class='basic right'>永生花激动地表示“赞成”。</p>",
+    "theLoversAreReunited": "<p>_如果爱侣重逢_: 永生花跟木乃伊般的拉金·法尔希站在一起，他们不怀好意地看向你，然后用病态的迷恋眼神四目相对。永生花开口问道：“你怎么说，我亲爱的拉金，我们应该饶过妨碍我们的笨蛋吗？还是该让他学到教训？”拉金粗哑的声音说道：“吾爱，没人可以妨碍我们。而等他消失后，任何人都不敢再挡我们的路。”</p><p class='basic right'>永生花表示“赞成”。<br>拉金·法尔希表示“赞成”。</p>",
+    "amaranthHasLeftTheCoterie": "<p>_如果永生花离开结社_: 一名成员大声问道：“永生花在哪？她从来没缺席过。”虽然你带着口衔，还是忍不住微笑。至少艾琳终于摆脱结社的掌握，取回自己的人生了。</p><p class='basic right'>永生花视为弃票。</p>",
+    "deadHeatSkipped": "<p>_如果以上皆非_: 接着一位美丽、身穿黑色洋装的白皙女人开口了，她全身唯一的颜色是在她耳际盛开的鲜艳红花。“我们秘密行事是有原因的，不是吗？”她的美丽与她邪恶的语调跟冷酷的话语形成强烈对比，“他知道的太多了，杀了他一劳永逸。”</p><p class='basic right'>永生花表示“赞成”。<br>永生花是终末之花承受者。将此记录在剧本日志中。</p>",
+    "youHaventSeenTheLastOfThorne": "<p>_如果未得知索恩最后的下落_: 索恩整理了一下长外套下的衬衫衣领。“基石不断干扰我们的计划，我们应该除掉这些人并继续进行搜寻。”他坚定地对上你的视线：“我警告过你不要妨碍我们的，不是吗？”</p><p class='basic right'>索恩表示“赞成”。<p>",
+    "theCellMadeADealWithThorne": "<p>_如果与索恩达成交易_: 索恩上前开口说道：“我们的行动需要与世界上各种各样的人合作、学者、当地政府，甚至罪犯。他没什么不同，而且证明了自己大有帮助。他协助了我们在安克拉治的任务，而且有足够的智慧能看出密钥在我们的保管下会更安全。”</p><p class='basic right'>索恩表示“反对”。</p>",
+    "thorneDisappeared": "<p>_如果索恩消失_: 你很惊讶在人群中看到索恩的脸，你上次见到他时，他消失在安克拉治北方的荒野，而现在他又出现了。但在你们经历经过那一切后，他却保持着沉默。</p><p class='basic right'>索恩保持沉默</p>",
+    "onThinIceSkipped": "<p>_如果以上皆非_: 一名带着红领巾的成员发言，他有白金色的头发跟苍白的肤色。他指着你说道：“我没有遇过这个人，在未了解他的能力与值不值得信赖的状况下做决定是愚蠢的。因此我将不参与这次投票。”</p><p class='basic right'>索恩弃票。<br>索恩是黑曜透镜承受者，并将此记录在剧本日志中。</p>",
+    "alikiIsOnYourSide": "<p>_如果跟阿利琪结盟_: 阿利琪·佐妮·乌佩雷特里亚飘忽不定的身影从阴影中浮现，她背后背着一把金色的剑鞘。她腰间的红丝带无风的飘扬着，她惯常地用被遗忘的语言开口说话，一位结社成员为她翻译：“乌佩特里亚说……”他的眉头因惊讶而皱起，“她说在我们面前的这位是远大目标的忠诚仆人，就像我们一样。”群众中爆发一阵窃窃私语。</p><p class='basic right'>阿利琪表示“反对”。</p>",
+    "youHaventSeenTheLastOfAlikiZoniUperetria": "<p>_如果未得知阿利琪·佐妮·乌佩雷特里亚最后的下落_: “别忘了乌佩雷特里亚。”一个成员说。另一个问道：“她来了？我们好几个礼拜前就一直试着联络她。”与会的成员们一齐转向那个幽灵般的少女，她站在房间的角落，跟其他人保持一段距离。一阵不自然的寂静弥漫在大厅中。阿利琪如雕像一般沉默的伫立着，只有腰间的红丝带无风飘荡。</p><p class='basic right'>阿利琪保持沉默。</p>",
+    "withoutATraceSkipped": "<p>_如果以上皆非_: 从阴影中出现一个幽灵般的形体，身穿白色连身裙，背后揹着一把金色的剑鞘，乌黑的长发遮住她的脸庞，系在腰间的红色丝带无风的飘荡着。她的声音像低声的哀泣，又像柔和的哨音，说着你从未听过的语言。其中一名结社成员似乎能理解她的话，他宣告出这名少女的决定。</p><p class='basic right'>阿利琪表示“赞成”。</p>",
+    "desi": "<p class='basic'>_Before resolving any of the below options, *德西欠下人情*_: 拿出存放在安全位置的德西德里奥·德尔加多·阿瓦雷兹卡牌，并将其翻到背面。 Then, proceed.</p>",
+    "desiIsGood": "<p>_如果德西德里奥·德尔加多·阿瓦雷兹卡牌的背面是其剧情支援牌版本_: 一簇火炎亮起，德西用火柴点燃香烟。“他没问题。”德西说。“有比这更重要的鸟事该处理。我在哈瓦那差点被你们知道的那些鬼东西逮到。他前来帮忙——虽然我不需要。重点是，他对我伸出了援手。”</p><p class='basic right'>德西德里奥·德尔加多·阿瓦雷兹表示“反对”。</p>",
+    "desiIsBad": "<p>_如果未得知德西德里奥·德尔加多·阿瓦雷兹最后的下落，或德西德里奥·德尔加多·阿瓦雷兹卡牌的背面是其遭遇牌版本_: 你看着德西，希望他站出来为你说话。但他只是点起一支香烟，定睛看着你背后的墙壁。</p><p class='basic right'>德西德里奥·德尔加多·阿瓦雷兹保持沉默。</p>",
+    "dancingMadSkipped": "<p>_如果以上皆非_: “我应该要知道他是哪根葱吗？”一名身穿西装、打着红色领带的男人说，他点起香烟然后吐出一口烟，烟雾漂浮在桌子上方的黑暗中。“真是浪费时间，你们不是一向习惯铲除所有不确定因素吗？赶快解决他，我们才能谈正事。”</p><p class='basic right'>德西德里奥·德尔加多·阿瓦雷兹表示“赞成”。<br>德西德里奥·德尔加多·阿瓦雷兹是镜像之刃承受者，并将此记录在剧本日志中。</p>",
+    "theCellMeddledInAbarransAffairs": "<p>_如果搅乱阿巴兰的计划_: 突然，阿巴兰·阿里戈里亚加巨大魁武的身影出现，他一拳捶在仪式桌上：“这个侵入者！他想要毁了我！想夺走我的财富、我的宝贝！”他的脸因愤怒而泛红、颤抖，紧握的拳头指节发白。”我会亲自惩罚他！我要把他五马分尸！我要——”在他的愤怒稍微消退前，他列出一长串将要施展在你身上的酷刑。</p><p class='basic right'>阿巴兰·阿里戈里亚加表示“赞成”。</p>",
+    "fortuneAndFollySkipped": "<p>_如果以上为非_: 一个你不认识的男人接着开口。他戴在左手食指上的红宝石戒指巨大到让他魁武的身形看起来缩小了一些。“我们是被选中的幸运儿，眼前又有一项天赐的恩惠降临在我们身上了。”他宣布着，响雷般的声音吸引了整个大厅的注意。“我们的敌人被束缚在眼前，何必浪费这个礼物呢？从他口中问出情报对我们远大的目标多有益处。我们可以让他成为我们事业的养分，没错，养分……”他带着奸笑结束发言。你差点希望他直接给你个痛快。</p><p class='basic right'>阿巴兰·阿里戈里亚加弃票。</p>",
+    "noMatterWhat": "<p>_无论如何_: 你看不见红手套的脸，但你不禁回想起他可怕的笑容。</p>",
+    "theCellKnowsTheTrueNatureOfTheCoterie": "<p class='basic right'>*如果得知结社的真实样貌*, immediately skip to _审判 6_ without tallying any further votes.</p>",
+    "eerilySilent": "<p class='basic right'>否则，如果3位或以上的结社成员保持沉默：, immediately skip to _审判 7_ without tallying any further votes.</p>",
+    "continueTheTrial": "<p class='basic right'>如果以上为非, proceed as normal.</p>",
+    "youHaventSeenTheLastOfLaChicaRoja": "<p>_如果未得知红姑娘最后的下落_: 你几乎没注意到红姑娘在场，她站在两名成员中间，跟黑暗融为一体。她点点帽沿向你致意，嘴角带着笑容。“这个家伙只是跟那些条子跟穿西装的一样，想抓到我。”桌子的另一端有个声音开口反驳，是一个光头、带着红色眼镜的男子。“他们妨碍了结社的行动。”红姑娘回应道：“呿，他只是介入了一场私人恩怨罢了。你对我有意见就冲着我来，别牵扯别人。”</p><p class='basic right'>红姑娘弃票。<br>讪笑监视者表示“赞成”。</p>",
+    "youHaventSeenTheLastOfTheSanguineWatcher": "<p>_如果未得知讪笑监视者最后的下落_: 突然一顶缠着红色饰带的宽边帽落在桌上，红姑娘从影子中现身。“基石不是我们最大的威胁，我们之中的某些人才是。这个人虽然没有身着红色，但我保证他比我们之中半数人更加正直。”在桌子另一端，讪笑监视者拿下他红宝石制的眼镜，用血红色的布擦拭。空洞诡异的眼眶盯着你们。“愚蠢的女孩。”他的声音像毒药般充满恶意：“这么绝望地想取得关注吗？”红姑娘对他怒目相视，帽子在她盛怒的抓握下变形。她质问着：“你们知道这个恶心的混蛋都做了什么好事吗？你们有人在乎吗？”</p><p class='basic right'>红姑娘表示“反对”。<br>讪笑监视者表示“赞成”。</p>",
+    "theSanguineWatchersTormentContinues": "<p>_如果讪笑监视者持续肆虐_: 红姑娘从角落的阴影中出现，熟悉的宽边帽在她开口时遮住她的双眼。“我在布宜诺斯艾利斯对付我们其中一位成员，他的行为背离了我们的目标。这个人看出了事情的严重性并试着协助我。他虽然没有身着红色，但我保证他比我们之中半数人更加正直。”群众中传出一个声音，询问红姑娘指控的对象是谁。“我们那位没眼睛的朋友。”她愤怒地说道，“他依然折磨着布宜诺斯艾利斯的人民。但你们有人在乎吗？”</p><p class='basic right'>红姑娘表示“反对”。<br>讪笑监视者视为弃票。</p>",
+    "sanguineShadowsSkipped": "<p>_如果以上皆非_: 一名光头、带着红色眼镜的男子伸出瘦骨嶙峋的手指，指向桌子另一端的某位成员，他喊道：“为什么她违背了结社的目标却不在被审判的行列？”那名女子站了出来，脸孔隐藏在一顶缠着红色饰带的宽边帽之下。“你说我违背结社？”她擡起帽沿，大家都看见她深棕色的眼睛直盯着戴眼镜的男子。“你才是背离结社的人。你跟其他在场的某些人一样，穿上红色就只是为了制造混乱。”所有人都看着双方愤恨的瞪着对方，暂时忘记你的存在。在审判继续后，他们似乎都对你的下场没有兴趣。</p><p class='basic right'>红姑娘弃票。<br>讪笑监视者弃票。</p><p class='basic right'>讪笑监视者是泣血女士承受者。将此记录在剧本日志中。</p>",
+    "youHaventSeenTheLastOfTzuSanNiang": "<p>_如果未得知梓三娘最后的下落_: 你一点都不惊讶看到梓三娘也出席了。有些懂得害怕的人会在逃跑后避避风头，但她不是那样的人。“喔，太棒了，恼人的虫子。”她银铃般的声音充满欢愉的恶意。“他插手了我的生意，罪该万死。”</p><p class='basic right'>梓三娘激动地表示“赞成”</p>",
+    "tzuSanNiangHasYouUnderHerSway": "<p>_如果生死于梓三娘掌握中_: 看见梓三娘朝你走来，你的心脏快从嘴巴跳出来。她的一举一动都魅惑着你，你想帮助她、服侍她的冲动再次涌来。喔，我的小宠物。“她拿着阳伞在你面前弯下身，“你也许逃走了，但你永远摆脱不了我，你知道的，对吧？”你咬紧牙关，但冲动过于强烈，你不受控制地点头。她微笑着说道：“你何不亲口告诉我们，应该如何处置你？”随着一声轻笑，你的口衔被解开。你努力的抗拒着、否认着，但她想要的答案还是不受控的从你口中流出，她的目的达成了。她将口衔塞回你嘴里，在走回人群前还用手指玩弄你的头发，强烈的反胃感使你不停颤抖。</p><p class='basic right'>在梓三娘的控制下，调查员队长表示“赞成”。</p>",
+    "tzuSanNiangIsUnderYourSway": "<p>_如果掌握梓三娘的生死_: 结社群成员之间传递着一片尴尬的静默。“梓三娘呢？”终于有人开口问。你有一瞬间感到内疚，但马上转为满意。她没有出席。</p><p class='basic right'>梓三娘视为弃票。</p>",
+    "shadesOfSufferingSkipped": "<p>_如果以上皆非_: 一名撑着鲜红阳伞的女子开口，她的声音迷人又魅惑。“不好意思，”她一开口，所有人都被她的魅力吸引了，“我不懂为什么要浪费时间在这种枝微末节的小事上。”你心中升起一股希望，也许她是讲理的人。“赶快把他解决掉吧。”她看都没看你一眼，你的希望随之破碎。</p><p class='basic right'>梓三娘表示“赞成”。</p><p class='basic right'>梓三娘表示“赞成”。</p>",
+    "tuwileMasaiIsOnYourSide": "<p>_如果跟图维勒·马赛结盟_: 马赛教授从阴影中走出来，光线反射在他红色的厚框眼镜上。他上下打量着你，就像是第一次见到你一样。“我只从传闻中听过他，但这些传闻显示出他对我们的目标展现出理解与同理心，我建议我们以善意回应善意。”</p><p class='basic right'>图维勒·马赛表示“反对”。</p>",
+    "tuwileMasaiIsNotOnYourSide": "<p>_如果如果以上为非_: 一名黑皮肤、瘦高俐落的绅士从阴影中走出来，他带着一副红色的厚框眼镜。“虽然这整个仪式都像青少年的闹剧。但我认为他对于结社太过危险，不能放任他离开。所有结社的威胁都应该接受迅速且人道的处置。”</p><p class='basic right'>图维勒·马赛表示“赞成”。</p>",
+    "trialResult": "<p class='basic'>取决于投票结果，依下列顺序结算：</p><ul><li>如果平票，或是“赞成”占多数，你被定罪。 进入_审判 2_.</li><li>如果“反对”占多数…<ul><li>…且红姑娘、艾洁·沙辛与德西德里奥·德尔加多·阿瓦雷兹皆表示“反对”，你可以尝试说服他们推翻结社。 If you do, skip to _审判 3_.</li><li>…且索恩、图维勒·马赛与酒红骑士皆表示“反对”，你可以尝试加入结社。 If you do, skip to _审判 4_.</li><li>否则，你被视为一个资产， 跳到_审判 5_.</li></ul></li></ul>",
+    "theTrial2": "<p class='file'>_审判 2_: 结果已定，你被压到地上，你挣扎着想摆脱束缚，但徒劳无功，同时也寡不敌众，没有希望了。冰冷的刀刃放在你的脖子上，一个冷酷的声音沉重的宣布：“你因对结社伟大目标的阻挠及伤害被指控且被判有罪。”刀刃微微陷入你的皮肤，一道血丝顺着你的脖子流下。“判决为死刑。愿绯红洗刷你的罪孽。”你闭上眼就地待死。</p><p>就在这时，随着一声巨响，喊叫与战斗声从厅外传来，金属撞击声跟枪声同时大作。你在刽子手被不知名的敌人打倒时感到一阵晕眩，你挣扎着想挣脱，但还是不行，直到片刻后……你被拖出大厅，有人将你解开并将你扶起，你终于看清楚你的救星，就是带着红头巾的那位女士。“我们必须马上离开。”艾洁催促你前进，声音几乎被战斗混乱的声响盖过。其他几名身穿红色的人也在你们的行列中，不断转头看向后方。</p><p>另一波强烈震动传来时，你开口问发生了什么事。“戴着红手套的那位，他……”她停顿了一下，抓住你的手臂止不住的颤抖，“他不是我们所想的那样。他一直让我感觉毛骨悚然，但回头想想——我们怎么会——没有发现——？”</p><p>你们躲进一个满是绯红色装饰的大厅后，你请她放慢速度再说一次。她迎上你的视线说道：“他攻击我们。其他人正在抵挡他，但他有些不对劲，他不是人类，是其它某种存在。他偷走了能找到的所有密钥并逃走了，就像……”她颤抖着说道：“……像那些我们试着消灭的生物一样。”</p><p>你的思绪飞快运转着。如果红手套——或不管他是什么，想夺走剩下的密钥，那你必须不计代价阻止他。你轻轻推开艾洁并往回走。她大叫：“你想做什么？其他人不会对你手下留情的，你知道吧？”但你已经下定了决心。</p><p>“如果你要去追捕那些东西，”其中一个人对你说道，“那算我们一份。”</p><ul><li>逃离绯红结社*。</li><li>进入_Setup (版本 I)_.</li></ul>",
+    "theTrial6": "<p class='file'>_审判 6_: 在下一位成员还没来的及发言前，一个身影出现在戴红手套的男子身后，一个黑色的物体抵上他的后脑杓。随着一声如雷的枪声响彻大厅，他的脸爆炸了，但没有血肉模糊的画面，取而代之的是一股扭曲的烟雾飘出，悬浮在男人空洞的躯壳上。牠模糊的形体上有许多触手，像一团怪异的星云，使周围的现实扭曲变形。牠身上原本的衣物散落一地。</p><p>其他结社成员纷纷抽出武器攻击那个存在，但牠迅速地逃出大厅，试着重组起实体。几个身影跟上牠的脚步，牠们也脱下了伪装的躯壳，空洞的衣物散落一地。真正的红手套从阴影处走出来。他边将武器重新上膛，边用出乎意料冷漠的语气说道：“牠们来了，就在我们之中。如果你们有将心力放在真正的目标上，早就应该发现了。”他跟你交换了一个无可奈何的眼神，但也露出细微的微笑。“这位‘被告’是我还能回到这个世界的唯一理由。没有他，你们全都死定了，审判结束。”没有任何人提出异议。</p><p>你口中的口衔被移除，束缚也被解开，你被领到仪式桌前，站到红手套身旁。“牠们想要什么？你去哪了？”一名结社成员发问。</p><P>“牠们想要夺取我们的世界，也许还有其他每个世界。”他回答，拉紧手上的绯红色手套。“但是时候换我们反击了，跟着牠们回到牠们的老巢，解决牠们，斩草除根。”群众中泛起一阵同意的低语。</p><ul><li>In your Campaign Log, record *被绯红结社赦免*。</li><li>进入_Setup (版本 III)_.</li></ul>",
+    "theTrial7": "<p class='file'>_审判 7_: 在下一位成员还没来的及发言前，红手套的手变成了一条细长的异物质抓住了发言者的头颅，头颅粉碎在一股异常强大的力道下，他的手套染上了更深的红色。尸体重重倒下，混乱爆发。</p><p>你恐惧地看着更多的身影开始扭曲变形，残暴地屠杀周围所有人。一瞬间，金属撞击声跟枪声同时作响在大厅之中。每位被杀害的结社成员都被抹除了存在，当抓捕你的人也被从现实中抹去时，你完全不知所措。你在激烈的战斗中匍匐在地，最后终于找到一片锐利的玻璃将束缚割开。当你将同伴解救出来时，那些存在已经逃离了。你最后看见的是红手套已经不成人形的身影从你进来的大门逃离。</p><p>你确认着周遭的伤亡，但出乎意料的没有多少痕迹。只有几套被抛弃的红色衣物散落在地上，整个大厅空荡荡的。</p><p>你恐惧地发现你完全没有关于那些结社成员跟仿冒者的记忆，一个都没有。</p><ul><li>In your Campaign Log, record *绯红结社从内部被摧毁*。</li><li>进入_Setup (版本 III)_.</li></ul>",
+    "theTrial8": "<p class='file'>_审判 8_: 审判终于告一段落，终于可以将峰会的注意力转向其他事务。其中一位成员发言：“异域存在依然是个威胁。我们不断积蓄力量准备面对无法避免的危机，但我们如何确定牠们是否真的对我们的次元有兴趣呢？我们无法理解那些诡秘的存在。”</p><p>你插话，说出所有你在旅程中与基石的行动中看到的所有关于那些存在的情报。发生在世界各地的奇异事件越来越频繁，而且你有理由认为这些生物是有智慧且满怀恶意的，而非无计画的依循本能行动。更糟的是，你认为牠们也同样在追寻密钥。</p><p>另一名成员说道：“如果他们在蠢蠢欲动，准备发动战争，那我们也必须做好准备。我们应该召集我们之中最强的人，带上我们力量最强大的密钥。我们应该利用密钥的力量清除这个威胁，永绝后患。”群众中泛起一阵同意的低语。</p><p>“但如果牠们像这位新朋友说的这么聪明，牠们又是怎么对我们内部运作了如指掌呢？”一名成员提出怀疑。你带着一股不祥的预感扫视大厅，发现其中一名成员不见了。其他人注意到你的视线，起身更仔细的搜寻整座大厅。其中一个人证明了你的恐惧，一只红色手套被丢弃在角落，彷佛它对所有者毫无意义。</p><p>带着红头巾的那位女士首先理解了你的猜想。她用颤抖的声音下令：“分头散开，找到他，找出他去哪了。小心，准备面对任何情况。”</p><p>没过多久你们就找到了他的去向：一道发着光的传送门，散发着超次元的能量，怪异的力量在其中翻涌。其中一名成员上前观察后说道：“它正在关闭。”它的确正在逐渐缩小，再过一阵子就会消失无踪。“我们没时间了。”</p><ul><li>进入_Setup (版本 II)_.</li></ul>"
+  },
+  "version1": {
+    "setup": {
+      "title": "冒险设置(版本一)",
+      "gatherSets": "Gather all cards from the following encounter sets: *密钥峰会*, *结社*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, *Locked Doors*。 These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/locked-doors.png'></section>",
+      "placeLocations": "将 _窝点_ 版本的绯红门厅和三个结社圣殿地点放置入场。",
+      "removeSanctum": "从游戏中移除这些地点的 _圣堂_ 版本。",
+      "startAt": "每位调查员从绯红门厅开始游戏。",
+      "actDeck": "只使用场景1a“秘密与谎言(版本一)”形成场景牌堆。从游戏中移除其他版本的场景1a。",
+      "yea": "找出 _绯红结社_ 遭遇组中每个投票表决为“赞成”的 *结社* 敌人与戴红手套的男子。 This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/red-coterie.png'></section>",
+      "doNotGatherNay": "不要找出投票为反对、弃权或保持沉默的 _结社_ 敌人 (*不包括戴红手套的男子*)。",
+      "theRedGlovedMan": "调查员队长将戴红手套的男子生成到阴影中，并结算其隐蔽关键字 (*场景1a给予的能力*).",
+      "drawCoterie": "混洗收齐的 _结社_ 敌人。一次一位，按照玩家顺序，每位非队长的调查员抽取其中1张，照常将其生成。",
+      "shuffleRemainingCoterie": "收齐 _结社_ 敌人(在上个步骤中未被抽取的敌人)，将其洗入遭遇牌堆。",
+      "yeaNote": "*注意下列角色可能会投票表决“赞成”，但是在此遭遇组中并没有敌人卡牌：图维勒·马赛、阿巴兰·阿里戈里亚加、拉金·法尔希。*",
+      "nay": "找出每个投票表决为“反对”的结社成员，找出他们的 _同谋_ 剧情支援版本，将其置于任意调查员的控制之下。 (*注意：这些剧情支援分散于多个不同的遭遇组中。其中有些卡牌的另一面是敌人面。*)",
+      "nayNote": "*注意图维勒·马赛可能会投票表决“反对”，但是在此遭遇组中并没有 _同谋_ 剧情支援卡牌。*",
+      "setOutOfPlay": "将密钥峰会密钥峰会 _异界_ 地点与拟态神罚化身敌人放在一旁，置于场外。",
+      "secondEncounterDeck": "现在设置第二个遭遇牌堆。收齐以下遭遇组的所有卡牌： *异域使徒*, *界外异域*, *异域存在*, *秘密战争*, *远古恶魔*, and *恐惧打击*。 These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/beyond-the-beyond.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/secret-war.png'><img src='{setImgPath}/ancient-evils.png'><img src='{setImgPath}/striking-fear.png'></section>找出*恐惧打击*遭遇组时，只从该遭遇组拿取下列卡牌(2张呆若木鸡和2张刺耳之声)。不要拿取该遭遇组的3张腐烂的尸体卡牌。",
+      "otherworldDeck": "找出 *界外异域* 遭遇组中的九张残迹之城地点。将它们一起混洗，未揭示面朝上，形成一个牌堆。该牌堆称作异界牌堆。将异界牌堆放到冒险参考卡牌旁。",
+      "shuffleRemainder": "从这些遭遇组中洗混剩余的遭遇卡牌，组成第二个遭遇牌堆。目前先将该牌堆放在一旁，置于场外。",
+      "decoys": "拿取每张诱饵小卡和以下的小卡：残迹之城(L、M和R)、拟态神罚化身、戴红手套的男子。将它们放在一旁，置于场外。",
+      "locationAdjacency": "The rules for “异域存在领域的地点相邻关系” and “在阴影中的地点” can be found on page 57. Make sure to read (or refresh yourself on) these rules before playing this scenario."
+    }
+  },
+  "version2": {
+    "setup": {
+      "title": "冒险设置(版本二)",
+      "gatherSets": "Gather all cards from the following encounter sets: *密钥峰会*, *Agents of the Outside*, *界外异域*, *Outsiders*, *结社*, *Secret War*, *Spreading Corruption*, *Ancient Evils*, and *Striking Fear*。 These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/beyond-the-beyond.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/secret-war.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/ancient-evils.png'><img src='{setImgPath}/striking-fear.png'></section> 找出恐惧打击遭遇组时，只从该遭遇组拿取下列卡牌(2张呆若木鸡和2张刺耳之声)。不要拿取该遭遇组的3张腐烂的尸体卡牌。",
+      "otherworldDeck": "找出*界外异域*遭遇组中的九张残迹之城地点。将它们一起混洗，未揭示面朝上，形成一个牌堆。该牌堆称作异界牌堆。将异界牌堆放到冒险参考卡牌旁。",
+      "placeLocations": "将_圣堂_版本的绯红门厅和三个结社圣殿地点放置入场。",
+      "removeLair": "从游戏中移除这些地点的_窝点_版本。",
+      "startAt": "每位调查员从绯红门厅开始游戏。",
+      "actDeck": "只使用场景1a“秘密与谎言(版本二)”形成场景牌堆。从游戏中移除其他版本的场景1a。",
+      "yea": "找出 _绯红结社_ 遭遇组中每个投票表决为“赞成”的*结社*敌人与戴红手套的男子。将每张这些敌人放在一旁，置于场外。 This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/red-coterie.png'></section>",
+      "yeaNote": "*注意下列角色可能会投票表决“赞成”，但是在此遭遇组中并没有敌人卡牌：图维勒·马赛、阿巴兰·阿里戈里亚加、拉金·法尔希。*",
+      "nay": "找出每个投票表决为“反对”的结社成员，找出他们的 _同谋_ 剧情支援版本，将其置于任意调查员的控制之下。 (*注意：这些剧情支援分散于多个不同的遭遇组中。其中有些卡牌的另一面是敌人面。*)",
+      "nayNote": "*注意图维勒·马赛可能会投票表决“反对”，但是在此遭遇组中并没有 _同谋_ 剧情支援卡牌。*",
+      "setOutOfPlay": "将*密钥峰会*遭遇组中的三张 _异界_ 地点与拟态神罚化身敌人放在一旁，置于场外。",
+      "decoys": "拿取每张诱饵小卡和以下的小卡：残迹之城(L、M和R)、拟态神罚化身。将它们放在一旁，置于场外。",
+      "locationAdjacency": "The rules for “异域存在领域的地点相邻关系” and “在阴影中的地点” can be found on page 57. Make sure to read (or refresh yourself on) these rules before playing this scenario."
+    }
+  },
+  "version3": {
+    "setup": {
+      "title": "冒险设置(版本三)",
+      "gatherSets": "Gather all cards from the following encounter sets: *密钥峰会*, *Agents of the Outside*, *界外异域*, *Outsiders*, *结社*, *Secret War*, *Spreading Corruption*, *Ancient Evils*, and *Striking Fear*。 These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/congress-of-the-keys.png'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/beyond-the-beyond.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/red-coterie.png'><img src='{setImgPath}/secret-war.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/ancient-evils.png'><img src='{setImgPath}/striking-fear.png'></section> 找出恐惧打击遭遇组时，只从该遭遇组拿取下列卡牌(2张呆若木鸡和2张刺耳之声)。不要拿取该遭遇组的3张腐烂的尸体卡牌。",
+      "otherworldDeck": "找出*界外异域*遭遇组中的九张残迹之城地点。将它们一起混洗，未揭示面朝上，形成一个牌堆。该牌堆称作异界牌堆。将异界牌堆放到冒险参考卡牌旁。",
+      "placeLocations": "将_圣堂_版本的绯红门厅和三个结社圣殿地点放置入场。",
+      "removeLair": "从游戏中移除这些地点的_窝点_版本。",
+      "startAt": "每位调查员从绯红门厅开始游戏。",
+      "actDeck": "只使用场景1a“秘密与谎言(版本三)”形成场景牌堆。从游戏中移除其他版本的场景1a。",
+      "eerilySilent": "找出 _绯红结社_ 遭遇组中每个保持沉默的 *结社* 敌人。 This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/red-coterie.png'></section>",
+      "doNotGatherRest": "不要找出投票为赞成、反对或弃权的 _绯红结社_ 敌人。",
+      "theRedGlovedMan": "调查员队长将戴红手套的男子生成到阴影中，并结算其隐蔽关键字 (*场景1a给予的能力*).",
+      "drawCoterie": "混洗收齐的 _绯红结社_ 敌人。一次一位，按照玩家顺序，每位非队长的调查员抽取其中1张，照常将其生成。",
+      "shuffleRemainingCoterie": "收齐 _绯红结社_ 敌人(在上个步骤中未被抽取的敌人)，将其洗入遭遇牌堆。",
+      "theRedCoterieSparedTheCell": "检查剧本日志。 如果*被绯红结社赦免*，找出 _同谋_ 剧情支援版本的戴红手套的男子，与每张其他在上一个步骤期间没有拿取的结社成员。将每个成员置于任意调查员的控制下。(*注意：这些剧情支援分散于多个不同的遭遇组中。其中有些卡牌的另一面是敌人面。*)",
+      "ignoreUnique": "在这场冒险结束前，忽略戴红手套的男子的独特符号。(如果*如果戴红手套的男子是任何密钥的承受者，只将那些密钥附属到他的敌人版本。*)",
+      "conspiratorNote": "*注意: The list of possible _同谋_ story assets is as follows: 酒红骑士, 艾洁·沙辛, 索恩, 阿利琪·佐妮·乌佩雷特里亚, 德西德里奥·德尔加多·阿瓦雷兹, 红姑娘, and 戴红手套的男子.*",
+      "setOutOfPlay": "将 *密钥峰会* 遭遇组中的三张_异界_ 地点与拟态神罚化身敌人放在一旁，置于场外。",
+      "decoys": "拿取每张诱饵小卡和以下的小卡：残迹之城(L、M和R)、拟态神罚化身、戴红手套的男子。将它们放在一旁，置于场外。",
+      "locationAdjacency": "The rules for “异域存在领域的地点相邻关系” and “在阴影中的地点” can be found on page 57. Make sure to read (or refresh yourself on) these rules before playing this scenario."
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "避免了他们的次元遭受悲惨的命运。"
+    },
+    "defeated": {
+      "title": "Investigator Defeat",
+      "body": "<p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_:  你已经不存在任何次元中，构成你的每一丝物质都被拆解，你的记忆跟思绪都落入无尽的遗忘深渊中，直到时间的尽头。但你的意识、你的感受仍然存在，关押在永恒的虚无牢狱中。</p><ul><li>每位被击败的调查员 _发疯_ ，并且在此之后从未被再次看到或耳闻。关于他们存在的所有记忆都从现实中被抹除了。</li><li>If no resolution was reached (each investigator was defeated): Go to _结局2_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_你被抛进世界之间的间隙，直到重重撞在坚实的表面上，飞行的感觉才逐渐消退。你艰难地起身，身上每一条肌肉都在抗议着。你扫视着四周，做好面对任何状况的心理准备。在你认出自己身处何处时，你惊讶的发现自己在……<?p><ul><li>将世界地图摊开在一个平整表面上。每位调查员抛掷一枚硬币或一个混乱标记到该地图上。其落下的地点就等同于该调查员最终的所在地。(如果落在海洋上，则表示在一艘随机的船上。)</li></ul><p>花了几周的时间，你才重新跟同伴们联系上，至少是那些在异域存在的国度崩毁后存活下来的伙伴。看来现在，牠们的阴谋终于被阻止了。也许你应该放个长假，但还有最后一件事要处理......</p><ul><li>In your Campaign Log, record that *成功阻止异域存在*。</li><li>每位调查员受到2点肉体创伤和2点精神创伤，因为其从未真正从横跨次元的挑战中恢复过来。</li><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。 每位调查员获得5点奖励经验值，因为其避免了这个次元遭受悲惨的命运。</li><li>_调查员剧本胜利！_</li><li>进入_Epilogue_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: “这是最后一份了。”韩德森探员在一份报告上盖下印章。“我能理解保密的重要性，但我还是要再次建议您雇用一个人来处理这些文书工作，调查官。”他将一堆文件交给泰勒，她坐在深黑色的办公桌后，表情凝重。</p><p>“人越多，泄密的机会越大。我们保持人员紧缩是有原因的。韩德森，别忘了更重要的事。”她翻阅档案，皱了一下眉头说：“32-J的报告呢？”</p><p>“32-J？”韩德森从口袋掏出一本小笔记本翻看。“没有这个编号。”</p><p>泰勒皱着眉头说：“不对，应该要有的，我们在伦敦遇上他们，你也在……”过了一会儿，她困惑的摇头。“真奇怪，我不记得他们是谁了。”</p><p>韩德森笑着说：“你花太多时间在工作上了。休个假吧，调查官。妳不在个几天我们也没问题的。”</p><ul><li>In your Campaign Log, record *归于空洞*。</li><li>_调查失败_。</li></ul>"
+    }
+  }
+}

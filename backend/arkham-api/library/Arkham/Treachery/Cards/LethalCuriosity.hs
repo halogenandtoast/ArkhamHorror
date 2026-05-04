@@ -22,13 +22,13 @@ instance RunMessage LethalCuriosity where
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
       doStep n msg
       pure t
-    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       clues <- field InvestigatorClues iid
       chooseOrRunOneM iid do
         labeled "Take 1 damage" $ assignDamage iid attrs 1
         when (clues > 0)
           $ labeled "Place 1 of your clues on your location"
           $ placeCluesOnLocation iid attrs 1
-      doStep (n - 1) msg
+      doStep (n - 1) msg'
       pure t
     _ -> LethalCuriosity <$> liftRunMessage msg attrs

@@ -4,8 +4,8 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
@@ -54,16 +54,19 @@ instance HasChaosTokenValue HorrorInHighGear where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
+chaosTokens :: [ChaosTokenFace]
+chaosTokens =
+  [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+  , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+  , AutoFail , ElderSign
+  ]
+{- FOURMOLU_ENABLE -}
+
 instance RunMessage HorrorInHighGear where
   runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      {- FOURMOLU_DISABLE -}
-      setChaosTokens
-        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
-        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
-        , AutoFail , ElderSign
-        ]
-      {- FOURMOLU_ENABLE -}
+      setChaosTokens chaosTokens
       pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
@@ -157,7 +160,7 @@ instance RunMessage HorrorInHighGear where
           questionLabeled "Where will the enemy spawn?"
           targets locations $ createEnemyAt_ card
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Cultist | n > 0 -> doStep n msg
         Tablet | n > 0 -> doStep n msg

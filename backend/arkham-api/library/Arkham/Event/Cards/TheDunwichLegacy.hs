@@ -258,7 +258,7 @@ ifItBleeds :: CardDef
 ifItBleeds =
   (event "02225" "\"If it bleeds...\"" 1 Guardian)
     { cdSkills = [#willpower, #combat]
-    , cdFastWindow = Just $ EnemyDefeated #after You ByAny $ EnemyWithTrait Monster
+    , cdFastWindow = Just $ IfEnemyDefeated #after You ByAny $ EnemyWithTrait Monster
     }
 
 exposeWeakness1 :: CardDef

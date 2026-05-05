@@ -27,7 +27,7 @@ instance HasAbilities PossessedOathspeaker where
     extend
       a
       [ mkAbility a 1 $ forced $ PhaseBegins #when #enemy
-      , mkAbility a 2 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (be a)
+      , mkAbility a 2 $ Objective $ forced $ IfEnemyDefeated #after Anyone ByAny (be a)
       ]
 
 instance RunMessage PossessedOathspeaker where

@@ -15,7 +15,7 @@ servantOfFlameOnTheRun = enemy ServantOfFlameOnTheRun Cards.servantOfFlameOnTheR
 
 instance HasAbilities ServantOfFlameOnTheRun where
   getAbilities (ServantOfFlameOnTheRun a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #after You ByAny (be a)
+    extend1 a $ mkAbility a 1 $ forced $ IfEnemyDefeated #after You ByAny (be a)
 
 instance RunMessage ServantOfFlameOnTheRun where
   runMessage msg e@(ServantOfFlameOnTheRun attrs) = runQueueT $ case msg of

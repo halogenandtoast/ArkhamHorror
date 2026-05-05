@@ -24,7 +24,7 @@ instance HasAbilities TheBindingRite where
     , mkAbility x 2
         $ Objective
         $ freeReaction
-        $ EnemyDefeated #after Anyone ByAny
+        $ IfEnemyDefeated #after Anyone ByAny
         $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Lit)
         <> enemyIs Enemies.theSpectralWatcher
     ]

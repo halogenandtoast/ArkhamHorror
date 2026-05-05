@@ -17,7 +17,7 @@ theMusclePracticed = asset TheMusclePracticed Cards.theMusclePracticed
 
 instance HasAbilities TheMusclePracticed where
   getAbilities (TheMusclePracticed a) =
-    [controlled_ a 1 $ triggered (EnemyDefeated #after You ByAny (EnemyWithTrait Casino)) (exhaust a)]
+    [controlled_ a 1 $ triggered (IfEnemyDefeated #after You ByAny (EnemyWithTrait Casino)) (exhaust a)]
 
 instance RunMessage TheMusclePracticed where
   runMessage msg a@(TheMusclePracticed attrs) = runQueueT $ case msg of

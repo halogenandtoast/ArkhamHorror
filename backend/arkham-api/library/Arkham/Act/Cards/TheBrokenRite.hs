@@ -24,7 +24,7 @@ instance HasAbilities TheBrokenRite where
     , mkAbility x 2
         $ Objective
         $ forced
-        $ EnemyDefeated #after Anyone ByAny
+        $ IfEnemyDefeated #after Anyone ByAny
         $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Unlit)
         <> enemyIs Enemies.theSpectralWatcher
     ]

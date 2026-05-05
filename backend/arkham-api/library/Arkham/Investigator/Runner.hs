@@ -4729,26 +4729,40 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = do
-        Action.Investigate <- maybeToList mAction
-        go =<< maybeToList mTarget
-      go = \case
-        ProxyTarget t _ -> go t
+      windows = case mAction of
+        Just Action.Investigate -> goLocation =<< maybeToList mTarget
+        Just Action.Fight -> goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+        Just Action.Evade -> goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+        _ -> []
+      goLocation = \case
+        ProxyTarget t _ -> goLocation t
         LocationTarget lid -> [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> go t1 <> go t2
+        BothTarget t1 t2 -> goLocation t1 <> goLocation t2
+        _ -> []
+      goEnemy mk = \case
+        ProxyTarget t _ -> goEnemy mk t
+        EnemyTarget eid -> [mkWhen $ mk eid n]
+        BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
     pure a
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = do
-        Action.Investigate <- maybeToList mAction
-        go =<< maybeToList mTarget
-      go = \case
-        ProxyTarget t _ -> go t
+      windows = case mAction of
+        Just Action.Investigate -> goLocation =<< maybeToList mTarget
+        Just Action.Fight -> goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+        Just Action.Evade -> goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+        _ -> []
+      goLocation = \case
+        ProxyTarget t _ -> goLocation t
         LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> go t1 <> go t2
+        BothTarget t1 t2 -> goLocation t1 <> goLocation t2
+        _ -> []
+      goEnemy mk = \case
+        ProxyTarget t _ -> goEnemy mk t
+        EnemyTarget eid -> [mkAfter $ mk eid n]
+        BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a

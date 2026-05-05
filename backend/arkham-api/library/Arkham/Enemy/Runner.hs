@@ -58,7 +58,6 @@ import Arkham.History
 import Arkham.I18n
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
-import Data.Set qualified as Set
 import Arkham.Matcher (
   AssetMatcher (..),
   EnemyMatcher (..),
@@ -77,6 +76,7 @@ import Arkham.Matcher (
   mapOneOf,
   oneOf,
   preyWith,
+  replaceThatEnemy,
   replaceYouMatcher,
   pattern AloofEnemy,
   pattern InvestigatorCanDisengage,
@@ -114,6 +114,7 @@ import Data.List qualified as List
 import Data.List.Extra (firstJust)
 import Data.Map.Strict qualified as Map
 import Data.Monoid (Any (..), First (..))
+import Data.Set qualified as Set
 
 {- | Handle when enemy no longer exists
 When an enemy is defeated we need to remove related messages from choices
@@ -727,8 +728,9 @@ instance RunMessage EnemyAttrs where
         unless (CannotMove `elem` mods) do
           for_ keywords \case
             Keyword.Patrol lMatcher -> do
-              wantsToPatrol <- matches enemyId (UnengagedEnemy <> not_ (EnemyAt lMatcher))
-              pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
+              wantsToPatrol <- matches enemyId (UnengagedEnemy <> not_ (EnemyAt $ replaceThatEnemy a.id lMatcher))
+              pushWhen wantsToPatrol
+                $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) $ replaceThatEnemy a.id lMatcher]
             Keyword.Hunter -> whenM (matches enemyId UnengagedEnemy) do
               wantsToHunt <-
                 getPreyMatcher a >>= \case
@@ -885,10 +887,11 @@ instance RunMessage EnemyAttrs where
       pure a
     Do (PatrolMove eid lMatcher) | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
       field EnemyLocation enemyId >>= traverse_ \loc ->
-        unlessM (loc <=~> lMatcher) do
+        unlessM (loc <=~> replaceThatEnemy a.id lMatcher) do
           mods <- getModifiers enemyId
           let locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
-          destinations <- select $ locationMatcherModifier $ NearestLocationToLocation loc lMatcher
+          destinations <-
+            select $ locationMatcherModifier $ NearestLocationToLocation loc $ replaceThatEnemy a.id lMatcher
           lead <- getLeadPlayer
           pathIds <- concatForM destinations (select . locationMatcherModifier . ClosestPathLocation loc)
           case pathIds of
@@ -1025,12 +1028,6 @@ instance RunMessage EnemyAttrs where
         whenM (eid <=~> ReadyEnemy) do
           push $ Exhaust (mkExhaustion a a)
       pure a
-    When (PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
-      pushM $ checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]
-      pure a
-    After (PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n) | isActionTarget a target -> do
-      pushM $ checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid source enemyId n)]
-      pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       push
         $ SkillTestResultOption
@@ -1160,12 +1157,6 @@ instance RunMessage EnemyAttrs where
               skillType
               (EnemyMaybeFieldCalculation eid EnemyEvade)
         Nothing -> error "No evade value"
-      pure a
-    When (PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n) | isActionTarget a target -> do
-      pushM $ checkWindows [mkWhen $ Window.SuccessfulEvadeEnemy iid source enemyId n]
-      pure a
-    After (PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n) | isActionTarget a target -> do
-      pushM $ checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid source enemyId n]
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
       push

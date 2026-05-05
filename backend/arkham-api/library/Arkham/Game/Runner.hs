@@ -1798,7 +1798,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               eid <- hoistMaybe target.enemy
               kws <- lift $ toList <$> getModifiedKeywords eid
               liftGuardM $ flip anyM kws \case
-                Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt lm))
+                Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ replaceThatEnemy eid lm))
                 Keyword.Hunter -> do
                   attrs <- getAttrs @Enemy eid
                   getPreyMatcher attrs >>= \case

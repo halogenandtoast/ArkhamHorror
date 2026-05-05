@@ -12,7 +12,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Import.Lifted hiding (EncounterCardSource)
+import Arkham.Skill.Import.Lifted hiding (EncounterCardSource, isEncounterCardSource)
 import Arkham.SkillType
 import Arkham.Treachery.Types (Field (TreacheryTraits))
 

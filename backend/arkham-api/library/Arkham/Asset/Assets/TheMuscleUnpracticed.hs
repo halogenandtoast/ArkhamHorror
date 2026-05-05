@@ -17,7 +17,7 @@ theMuscleUnpracticed = asset TheMuscleUnpracticed Cards.theMuscleUnpracticed
 
 instance HasAbilities TheMuscleUnpracticed where
   getAbilities (TheMuscleUnpracticed a) =
-    [controlled_ a 1 $ triggered (EnemyDefeated #after You ByAny (EnemyWithTrait Casino)) (exhaust a)]
+    [controlled_ a 1 $ triggered (IfEnemyDefeated #after You ByAny (EnemyWithTrait Casino)) (exhaust a)]
 
 instance RunMessage TheMuscleUnpracticed where
   runMessage msg a@(TheMuscleUnpracticed attrs) = runQueueT $ case msg of

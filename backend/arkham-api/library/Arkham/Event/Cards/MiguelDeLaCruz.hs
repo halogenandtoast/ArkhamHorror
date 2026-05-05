@@ -67,7 +67,7 @@ fieldDressing1 =
     { cdCardTraits = setFromList [Spirit]
     , cdSkills = [#willpower]
     , cdFastWindow =
-        Just $ EnemyDefeated #after You ByAny (oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster])
+        Just $ IfEnemyDefeated #after You ByAny (oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster])
     , cdLevel = Just 1
     }
 

@@ -25,7 +25,7 @@ instance HasAbilities CoterieEnvoy where
     extend1 a
       $ restricted a 1 (exists ConcealedCardAny)
       $ freeReaction
-      $ EnemyDefeated #after You ByAny (be a)
+      $ IfEnemyDefeated #after You ByAny (be a)
 
 instance RunMessage CoterieEnvoy where
   runMessage msg e@(CoterieEnvoy attrs) = runQueueT $ case msg of

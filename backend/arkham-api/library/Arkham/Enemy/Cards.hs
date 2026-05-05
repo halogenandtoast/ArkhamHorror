@@ -3288,7 +3288,9 @@ coterieEnvoy =
     , cdKeywords =
         setFromList
           [ Keyword.Aloof
-          , Keyword.Patrol (LocationWithConcealedCard <> not_ (LocationWithEnemy $ EnemyIs "09720"))
+          , Keyword.Patrol
+              $ LocationWithConcealedCard
+              <> not_ (LocationWithEnemy $ EnemyIs "09720" <> not_ ThatEnemy)
           ]
     }
 

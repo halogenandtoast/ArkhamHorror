@@ -252,7 +252,12 @@ getActionsWith iid ws f = withSpan_ "getActions" do
       liftGuardM $ getCanPerformAbility iid ws action
       liftGuardM $ getCanAffordAbility iid action ws
   forcedActions <- filterM (isForcedAbility iid) actions'''
-  pure $ nub $ if bountiesOnly || null forcedActions then actions''' else forcedActions
+  -- Encounter-card forced abilities (Treachery, Enemy, Location, Agenda, Act)
+  -- resolve before player-card forced abilities (Asset, Event, Skill).
+  let encounterForcedActions = filter (isEncounterCardSource . abilitySource) forcedActions
+  let prioritizedForcedActions =
+        if null encounterForcedActions then forcedActions else encounterForcedActions
+  pure $ nub $ if bountiesOnly || null forcedActions then actions''' else prioritizedForcedActions
 
 hasFightActions
   :: (Sourceable source, Tracing m, HasGame m)

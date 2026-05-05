@@ -22,7 +22,7 @@ instance HasAbilities NovaMalone where
   getAbilities (NovaMalone a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
     , playerLimit PerRound
-        $ reaction a 2 ControlsThis Free (EnemyDefeated #after You ByAny AnyEnemy)
+        $ reaction a 2 ControlsThis Free (IfEnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance RunMessage NovaMalone where

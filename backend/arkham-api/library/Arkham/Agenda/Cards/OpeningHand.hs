@@ -21,7 +21,7 @@ instance HasAbilities OpeningHand where
     [ restricted a 1 (exists $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTrait Casino <> ReadyEnemy)
         $ forced
         $ PhaseBegins #when #enemy
-    , mkAbility a 2 $ forced $ EnemyDefeated #after You ByAny (EnemyWithTrait Casino)
+    , mkAbility a 2 $ forced $ IfEnemyDefeated #after You ByAny (EnemyWithTrait Casino)
     ]
 
 instance RunMessage OpeningHand where

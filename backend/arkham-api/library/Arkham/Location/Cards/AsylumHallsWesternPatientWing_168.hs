@@ -19,7 +19,7 @@ instance HasAbilities AsylumHallsWesternPatientWing_168 where
   getAbilities (AsylumHallsWesternPatientWing_168 a) =
     extendRevealed1 a
       $ restricted a 1 Here
-      $ freeReaction (EnemyDefeated #after You ByAny $ EnemyWithTrait Lunatic)
+      $ freeReaction (IfEnemyDefeated #after You ByAny $ EnemyWithTrait Lunatic)
 
 instance RunMessage AsylumHallsWesternPatientWing_168 where
   runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = runQueueT $ case msg of

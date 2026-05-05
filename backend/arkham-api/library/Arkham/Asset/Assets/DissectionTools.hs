@@ -25,7 +25,7 @@ instance HasAbilities DissectionTools where
   getAbilities (DissectionTools a) =
     [ restricted a 1 ControlsThis
         $ freeReaction
-        $ EnemyDefeated #after Anyone ByAny
+        $ IfEnemyDefeated #after Anyone ByAny
         $ EnemyAt YourLocation
     ]
 

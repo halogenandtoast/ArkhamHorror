@@ -23,7 +23,7 @@ instance HasAbilities Nasht where
     withBaseAbilities
       x
       [ skillTestAbility $ mkAbility x 1 parleyAction_
-      , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny $ be x
+      , mkAbility x 2 $ forced $ IfEnemyDefeated #after You ByAny $ be x
       ]
 
 instance RunMessage Nasht where

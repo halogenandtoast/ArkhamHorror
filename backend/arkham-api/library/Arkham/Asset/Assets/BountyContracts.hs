@@ -22,7 +22,7 @@ instance HasAbilities BountyContracts where
     [ restricted a 1 (available <> ControlsThis)
         $ freeReaction
         $ EnemyEntersPlay #after EnemyWithHealth
-    , restricted a 2 ControlsThis $ forced $ EnemyDefeated #after You ByAny EnemyWithBounty
+    , restricted a 2 ControlsThis $ forced $ IfEnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
     available = if hasUses a then mempty else Never

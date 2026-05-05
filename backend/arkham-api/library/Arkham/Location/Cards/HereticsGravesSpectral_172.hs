@@ -25,7 +25,7 @@ instance HasAbilities HereticsGravesSpectral_172 where
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
-      $ EnemyDefeated #after Anyone ByAny
+      $ IfEnemyDefeated #after Anyone ByAny
       $ enemyAt (toId a)
       <> EnemyWithTrait Witch
 

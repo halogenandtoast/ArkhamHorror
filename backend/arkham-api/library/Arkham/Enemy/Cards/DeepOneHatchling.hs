@@ -25,7 +25,7 @@ instance HasAbilities DeepOneHatchling where
       [ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
       , restricted a 2 (exists $ not_ (be a) <> EnemyWithTrait DeepOne <> UnengagedEnemy <> ReadyEnemy)
           $ forced
-          $ EnemyDefeated #after You ByAny (be a)
+          $ IfEnemyDefeated #after You ByAny (be a)
       ]
 
 instance RunMessage DeepOneHatchling where

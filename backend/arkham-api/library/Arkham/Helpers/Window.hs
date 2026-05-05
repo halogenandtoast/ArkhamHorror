@@ -548,6 +548,7 @@ getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
+  ((windowType -> Window.IfEnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid
   ((windowType -> Window.EnemyEnters eid _) : _) -> eid
   ((windowType -> Window.EnemyWouldSpawnAt eid _) : _) -> eid

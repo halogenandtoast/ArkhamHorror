@@ -17,7 +17,7 @@ bounty =
   (event "60161" "Bounty" 0 Guardian)
     { cdCardTraits = setFromList [Fortune]
     , cdSkills = [#combat]
-    , cdFastWindow = Just $ IfEnemyDefeated #after Anyone ByAny $ AnyEnemy <> EnemyAt YourLocation
+    , cdFastWindow = Just $ IfEnemyDefeated #after Anyone ByAny $ EnemyWasAt YourLocation
     }
 
 customGrip :: CardDef

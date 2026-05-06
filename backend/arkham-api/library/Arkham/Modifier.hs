@@ -131,6 +131,7 @@ data ModifierType
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
   | CanOnlyUseCardsInRole ClassSymbol
+  | CanPlayAtLocation CardMatcher LocationMatcher
   | CanPlayFromDiscard CardMatcher
   | CanPlayTopOfDeck CardMatcher
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])

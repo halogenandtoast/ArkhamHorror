@@ -328,6 +328,14 @@ getWindowSkippable
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
       liftGuardM $ withAlteredGame withoutCanModifiers $ passesLimits iid card
+getWindowSkippable
+  attrs
+  _ws
+  ( windowTiming &&& windowType ->
+      (Timing.When, Window.PlayEvent iid eid)
+    ) | iid == toId attrs = do
+    card <- field EventCard eid
+    withAlteredGame withoutCanModifiers $ passesLimits iid card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []
@@ -3049,7 +3057,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           pushAll
             [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
-            , After (WhenWillEnterLocation iid lid)
             , After (MoveTo movement)
             , EnterLocation iid lid
             ]
@@ -3066,6 +3073,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [afterEntering]
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
             <> [CheckEnemyEngagement iid | not movement.skipEngagement]
+            <> [After (WhenWillEnterLocation iid lid)]
           pure $ a & movementL .~ Nothing
   ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
     whenM (getCanMoveTo iid' (moveSource movement) lid) do

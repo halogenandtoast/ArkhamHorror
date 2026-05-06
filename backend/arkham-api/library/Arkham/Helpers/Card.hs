@@ -280,8 +280,20 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       n <- count (elem t) . map toTraits <$> getAllCardUses
       pure $ m > n
     LimitPerTraitPerLocation t m -> do
-      n <- selectCount $ EventWithTrait t <> EventAt (locationWithInvestigator iid)
-      pure $ m > n
+      mods <- getModifiers iid
+      let
+        extraMatchers =
+          [ lmatch
+          | CanModify (CanPlayAtLocation cmatch lmatch) <- mods
+          , cardMatch c cmatch
+          ]
+        countAt lm = selectCount $ EventWithTrait t <> EventAt lm
+      baseOk <- (m >) <$> countAt (locationWithInvestigator iid)
+      if baseOk || null extraMatchers
+        then pure baseOk
+        else do
+          extraLids <- nub . concat <$> traverse select extraMatchers
+          anyM (\lid' -> (m >) <$> countAt (LocationWithId lid')) extraLids
 
 cardIsFast :: HasGame m => Card -> m Bool
 cardIsFast = cardIsFast' getModifiers

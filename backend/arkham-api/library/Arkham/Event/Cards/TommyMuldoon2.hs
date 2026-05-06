@@ -17,6 +17,7 @@ bounty =
   (event "60161" "Bounty" 0 Guardian)
     { cdCardTraits = setFromList [Fortune]
     , cdSkills = [#combat]
+    , cdCriteria = Just $ exists $ affectsColocatedMatch You <> can.gain.resources
     , cdFastWindow = Just $ IfEnemyDefeated #after Anyone ByAny $ EnemyWasAt YourLocation
     }
 

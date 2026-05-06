@@ -33,7 +33,9 @@ instance RunMessage HenryWan where
       let source = attrs.ability 1
       chooseOneM iid do
         if any invalidToken tokens
-          then labeled "Do nothing" $ handleTarget iid source attrs
+          then labeled "Do nothing" do
+            resetChaosTokens (attrs.ability 1)
+            unfocusChaosTokens
           else do
             labeled "Stop" $ handleTarget iid source attrs
             labeled "Draw Another" $ requestChaosTokens iid source 1

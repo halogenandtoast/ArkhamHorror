@@ -31,11 +31,14 @@ instance RunMessage CustomGrip where
         AssetTarget aid -> do
           returnToHand iid aid
           toDiscardBy iid (attrs.ability 1) attrs
-          cards <- select $ PlayableCard Cost.PaidCost $ inHandOf ForPlay iid <> basic #firearm
-          unless (null cards) do
-            chooseOrRunOneM iid do
-              labeled "Do not play a Firearm" nothing
-              targets cards $ playCardPayingCost iid
+          doStep 1 msg
         _ -> pure ()
+      pure e
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf ForPlay iid <> basic #firearm
+      unless (null cards) do
+        chooseOrRunOneM iid do
+          labeled "Do not play a Firearm" nothing
+          targets cards $ playCardPayingCost iid
       pure e
     _ -> CustomGrip <$> liftRunMessage msg attrs

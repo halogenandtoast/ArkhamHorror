@@ -400,29 +400,34 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         pure $ (clues + z) >= n
       GroupClueCost n locationMatcher -> do
         cost <- getPlayerCountValue n
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- getSpendableClueCount iids
         pure $ totalSpendableClues >= cost
       SameLocationGroupClueCost n locationMatcher -> do
         totalClues <- getPlayerCountValue n
-        select locationMatcher >>= anyM \lid -> do
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        select lm >>= anyM \lid -> do
           total <- getSpendableClueCount =<< select (Matcher.investigatorAt lid)
           pure $ total >= totalClues
       GroupResourceCost n locationMatcher -> do
         cost <- getPlayerCountValue n
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- sum <$> traverse getSpendableResources iids
         pure $ totalSpendableClues >= cost
       GroupDiscardCost n extendedCardMatcher locationMatcher -> do
         cost <- getPlayerCountValue n
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
         cards <-
           selectCount
-            $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt locationMatcher)
+            $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt lm)
             <> extendedCardMatcher
             <> Matcher.basic Matcher.DiscardableCard
         pure $ cards >= cost
       GroupClueCostRange (cost, _) locationMatcher -> do
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- getSpendableClueCount iids
         pure $ totalSpendableClues >= cost
       IncreaseCostOfThis cardId n -> do

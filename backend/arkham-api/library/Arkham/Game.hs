@@ -5568,6 +5568,7 @@ instance Projection Campaign where
       CampaignMeta -> pure campaignMeta
       CampaignStore -> pure campaignStore
       CampaignDestiny -> pure campaignDestiny
+      CampaignUsedAbilities -> pure campaignUsedAbilities
       CampaignInvalidCards -> case c of
         Campaign k -> pure $ invalidCards k
 

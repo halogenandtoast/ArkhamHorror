@@ -6,6 +6,7 @@ import Arkham.Action qualified as Action
 import Arkham.Actions
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaign.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Customization
@@ -389,6 +390,20 @@ getCanAffordUse
   :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
+-- For PerCampaign limits, the ability source can change between scenarios
+-- (e.g. a location is recreated with a fresh UUID). The campaign entity
+-- persists across ResetGame, so we record/query PerCampaign usage there.
+-- During a standalone scenario there is no campaign, so fall back to the
+-- investigators' lists (single-scenario, source UUIDs are stable).
+getPerCampaignUsedAbilities :: (HasGame m, Tracing m) => m [UsedAbility]
+getPerCampaignUsedAbilities =
+  selectOne Matcher.TheCampaign >>= \case
+    Just cId -> field CampaignUsedAbilities cId
+    Nothing ->
+      filterDepthSpecificAbilities
+        =<< concatMapM (field InvestigatorUsedAbilities)
+        =<< allInvestigators
+
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
 -- EMAIL: Cards can't react to themselves, i.e. Grotesque Statue (4)
 getCanAffordUseWith
@@ -463,6 +478,19 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             True
             (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
+      MaxPer cardDef PerCampaign n -> do
+        let
+          abilityCardDef = \case
+            MaxPer cDef _ _ -> Just cDef
+            _ -> Nothing
+        usedAbilities' <- getPerCampaignUsedAbilities
+        pure
+          . (< n)
+          . getSum
+          . foldMap (Sum . usedTimes)
+          $ filter
+            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            usedAbilities'
       MaxPer cardDef _ n -> do
         let
           abilityCardDef = \case
@@ -509,6 +537,14 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
                 _ -> pure False
           )
           ws
+      GroupLimit PerCampaign n -> do
+        usedAbilities' <- getPerCampaignUsedAbilities
+        let
+          sameAbility u =
+            abilityCardCode (usedAbility u) == abilityCardCode ability
+              && abilityIndex (usedAbility u) == abilityIndex ability
+        let total = sum $ map usedTimes $ filter sameAbility usedAbilities'
+        pure $ total < n
       GroupLimit _ n -> do
         usedAbilities' <-
           filterDepthSpecificAbilities

@@ -1152,20 +1152,22 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ InvestigatorPlaceCluesOnLocation iid source x
       withPayment $ CluePayment iid x
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
-      mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)
+      let lm = replaceYouMatcher iid locationMatcher
+      mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt lm)
       if mVal == sVal
-        then push $ pay (GroupClueCost (Static sVal) locationMatcher)
+        then push $ pay (GroupClueCost (Static sVal) lm)
         else
           push
             $ questionLabel ("Spend " <> tshow sVal <> "-" <> tshow mVal <> " clues, as a group") player
             $ DropDown
-              [ (tshow n, pay (GroupClueCost (Static n) locationMatcher))
+              [ (tshow n, pay (GroupClueCost (Static n) lm))
               | n <- [sVal .. mVal]
               ]
       pure c
     GroupClueCost x locationMatcher -> do
       totalClues <- getPlayerCountValue x
-      iids <- select $ InvestigatorAt locationMatcher <> InvestigatorWithAnyClues
+      let lm = replaceYouMatcher iid locationMatcher
+      iids <- select $ InvestigatorAt lm <> InvestigatorWithAnyClues
       iidsWithClues <- forMaybeM iids \iid' -> do
         clues <- getSpendableClueCount [iid']
         if clues > 0
@@ -1197,8 +1199,9 @@ payCost msg c iid skipAdditionalCosts cost = do
     -- withPayment $ CluePayment totalClues
     SameLocationGroupClueCost x locationMatcher -> do
       totalClues <- getPlayerCountValue x
+      let lm = replaceYouMatcher iid locationMatcher
       locations <-
-        select locationMatcher >>= filterM \lid -> do
+        select lm >>= filterM \lid -> do
           total <- getSpendableClueCount =<< select (investigatorAt lid)
           pure $ total >= totalClues
       lead <- getLeadPlayer
@@ -1211,7 +1214,8 @@ payCost msg c iid skipAdditionalCosts cost = do
     -- withPayment $ CluePayment totalClues
     GroupResourceCost x locationMatcher -> do
       totalResources <- getPlayerCountValue x
-      iids <- select $ InvestigatorAt locationMatcher <> InvestigatorWithAnyResources
+      let lm = replaceYouMatcher iid locationMatcher
+      iids <- select $ InvestigatorAt lm <> InvestigatorWithAnyResources
       iidsWithResources <- forMaybeM iids \iid' -> do
         resources <- getSpendableResources iid'
         if resources > 0
@@ -1241,7 +1245,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     GroupDiscardCost x extendedCardMatcher locationMatcher -> do
       totalCards <- getPlayerCountValue x
-      iids <- select $ InvestigatorAt locationMatcher <> HandWith (HasCard DiscardableCard)
+      let lm = replaceYouMatcher iid locationMatcher
+      iids <- select $ InvestigatorAt lm <> HandWith (HasCard DiscardableCard)
       iidsWithCards <- forMaybeM iids \iid' -> do
         cards <- select $ inHandOf NotForPlay iid' <> basic DiscardableCard <> extendedCardMatcher
         if not (null cards)

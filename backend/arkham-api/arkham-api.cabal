@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.37.0.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -5826,6 +5826,7 @@ test-suite spec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
       Arkham.Campaign.TheDunwichLegacy.ScenariosSpec
       Arkham.Campaign.ThePathToCarcosa.ScenariosSpec
+      Arkham.Campaign.UsedAbilitiesSpec
       Arkham.DecklistSpec
       Arkham.Enemy.Cards.GuardianOfTheCrystallizerSpec
       Arkham.Enemy.Cards.MobEnforcerSpec
@@ -5954,7 +5955,8 @@ test-suite spec
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:
-      arkham-api
+      aeson
+    , arkham-api
     , async
     , base
     , containers

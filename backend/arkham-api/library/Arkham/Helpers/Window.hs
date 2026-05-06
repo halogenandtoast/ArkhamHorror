@@ -273,6 +273,7 @@ defeatedEnemy :: HasCallStack => [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
+    (windowType -> Window.IfEnemyDefeated _ _ eid) -> Just eid
     (windowType -> Window.EnemyWouldBeDefeated eid) -> Just eid
     _ -> Nothing
 
@@ -517,6 +518,7 @@ getPassedBy = \case
 getDefeatedDetails :: [Window] -> (Maybe InvestigatorId, DefeatedBy, EnemyId)
 getDefeatedDetails = \case
   ((windowType -> Window.EnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
+  ((windowType -> Window.IfEnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
   (_ : rest) -> getDefeatedDetails rest
   [] -> error "missing"
 

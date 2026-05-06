@@ -7,6 +7,7 @@ import Arkham.Helpers.Message as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Ability
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -430,6 +431,33 @@ defaultCampaignRunner msg a = case msg of
   UseAbility _ ab _ | ab.source == CampaignSource -> do
     push $ Do msg
     pure a
+  Do (UseAbility iid ability windows) | ability.limitType == Just PerCampaign -> do
+    let
+      sameAbility u =
+        abilityCardCode (usedAbility u) == abilityCardCode ability
+          && abilityIndex (usedAbility u) == abilityIndex ability
+    case find sameAbility (campaignUsedAbilities (toAttrs a)) of
+      Nothing -> do
+        let
+          used =
+            UsedAbility
+              { usedAbility = ability
+              , usedAbilityInitiator = iid
+              , usedAbilityWindows = windows
+              , usedTimes = 1
+              , usedDepth = 0
+              , usedAbilityTraits = mempty
+              , usedThisWindow = False
+              , usedAbilityTarget = Nothing
+              }
+        pure $ updateAttrs a (usedAbilitiesL %~ (used :))
+      Just _ -> do
+        let
+          updateUsed u
+            | sameAbility u =
+                u {usedTimes = usedTimes u + 1, usedAbilityWindows = usedAbilityWindows u <> windows}
+            | otherwise = u
+        pure $ updateAttrs a (usedAbilitiesL %~ map updateUsed)
   RotateTarot (toTarotArcana -> arcana) -> do
     let
       rotate = \case

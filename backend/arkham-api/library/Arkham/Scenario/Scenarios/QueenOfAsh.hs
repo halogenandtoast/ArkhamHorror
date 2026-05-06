@@ -14,7 +14,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (modifyEach)
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy, inSkillTest)
@@ -27,7 +26,6 @@ import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (getRecordedCardCodes, record, whenHasRecord)
-import Arkham.Modifier (ModifierType (RevealAnotherChaosToken))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
@@ -40,18 +38,8 @@ import Arkham.Xp
 
 newtype QueenOfAsh = QueenOfAsh ScenarioAttrs
   deriving stock Generic
-  deriving anyclass IsScenario
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
-
-instance HasModifiersFor QueenOfAsh where
-  getModifiersFor (QueenOfAsh attrs) = runMaybeT_ do
-    liftGuardM inSkillTest
-    action <- MaybeT getSkillTestAction
-    guard $ action `elem` [#fight, #evade]
-    eid <- MaybeT getSkillTestTargetedEnemy
-    liftGuardM $ matches eid AnyEnemy
-    liftGuardM $ fieldP EnemyTraits (member Trait.Cultist) eid
-    lift $ modifyEach attrs [Cultist] [RevealAnotherChaosToken]
 
 queenOfAsh :: Difficulty -> QueenOfAsh
 queenOfAsh difficulty =
@@ -300,4 +288,14 @@ instance RunMessage QueenOfAsh where
       when (token.face == ElderThing) $ do
         findTopOfDiscard (cardIs Treacheries.fire1) >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
       QueenOfAsh <$> liftRunMessage msg attrs
+    ResolveChaosToken _ Cultist iid -> do
+      runMaybeT_ do
+        liftGuardM inSkillTest
+        action <- MaybeT getSkillTestAction
+        guard $ action `elem` [#fight, #evade]
+        eid <- MaybeT getSkillTestTargetedEnemy
+        liftGuardM $ matches eid AnyEnemy
+        liftGuardM $ fieldP EnemyTraits (member Trait.Cultist) eid
+        lift $ drawAnotherChaosToken iid
+      pure s
     _ -> QueenOfAsh <$> liftRunMessage msg attrs

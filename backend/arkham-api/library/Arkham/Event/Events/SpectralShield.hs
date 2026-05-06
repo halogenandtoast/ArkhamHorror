@@ -68,9 +68,16 @@ instance RunMessage SpectralShield where
             | otherwise -> pure ()
         _ -> error "unpexpected placement"
 
+      cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
+      doStep 1 msg
+      pure e
+    DoStep 1 (UseThisAbility _iid' (isSource attrs -> True) 1) -> do
       chargeAssets <- select $ assetControlledBy attrs.owner <> AssetWithUses Charge
       if null chargeAssets
-        then toDiscard (attrs.ability 1) attrs
+        then do
+          -- a bit of a hack here but with abilities like Diana's this card can
+          -- leave play before we get to this step, in that case we skip this
+          when attrs.placement.isInPlay $ toDiscard (attrs.ability 1) attrs
         else chooseOneM attrs.owner do
           targets chargeAssets \chargeAsset -> removeTokens (attrs.ability 1) chargeAsset Charge 1
       pure e

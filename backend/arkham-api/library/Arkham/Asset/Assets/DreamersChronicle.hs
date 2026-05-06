@@ -36,7 +36,7 @@ instance RunMessage DreamersChronicle where
           chooseOneM iid do
             labeled "Take 1 horror to discover 1 additional clue at your location" do
               assignHorror iid (attrs.ability 1) 1
-              discoverAtYourLocation IsInvestigate iid (attrs.ability 1) 1
+              discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
             labeled "Skip" nothing
       pure a
     _ -> DreamersChronicle <$> liftRunMessage msg attrs

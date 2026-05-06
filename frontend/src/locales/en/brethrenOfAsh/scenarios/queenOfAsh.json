@@ -22,7 +22,7 @@
     "checkCampaignLog": "Check the campaign log.",
     "scouredArkhamForAnswers": "If the investigators scoured Arkham for answers, each investigator begins the game with 1 clue.",
     "stirredUpTrouble": "*If the investigators stirred up trouble*, find each _Cultist_ enemy in the _Ashen Pilgrims_ and _Cultists_ encounter sets, shuffle them together and put 1 {'{'}perPlayer{'}'} enemies from that set into play, each at a different Sewer Tunnels location.",
-    "killedTheServantOfFlame": "*If the investigators killed the Servant of Flame*, remove the Servant of Flame enemy from the game. Otherwise, set it aside, out of play.",
+    "killedServantOfFlame": "*If the investigators killed the Servant of Flame*, remove the Servant of Flame enemy from the game. Otherwise, set it aside, out of play.",
     "placeDoom": "If there are 3 or 4 players in the game, place 1 doom on the agenda. During setup, place 1 doom on the agenda.",
     "setOutOfPlay": "Gather the _Fire!_ encounter set and set each copy of Fire! aside, out of play, along with both copies of the Collector reward asset and the Elokoss, Queen's Knight, and Herald of Flame enemies."
   },

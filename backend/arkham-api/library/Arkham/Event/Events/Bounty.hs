@@ -16,17 +16,14 @@ bounty = event Bounty Cards.bounty
 
 instance RunMessage Bounty where
   runMessage msg e@(Bounty attrs) = runQueueT $ case msg of
-    PlayThisEvent iid (is attrs -> True) -> do
+    PlayThisEvent _iid (is attrs -> True) -> do
       let eid = defeatedEnemy attrs.windows
-      mhealth <- getDefeatedEnemyHealth eid
-      let x = maybe 0 (min 6) mhealth
-      when (x > 0) do
-        iids <- select $ affectsOthers $ colocatedWith iid <> can.gain.resources
-        replicateM_ x do
-          chooseOrRunOne
-            iid
-            [ ResourceLabel iid' [TakeResources iid' 1 (toSource attrs) False]
-            | iid' <- iids
-            ]
+      x <- maybe 0 (min 6) <$> getDefeatedEnemyHealth eid
+      doStep x msg
+      pure e
+    DoStep x msg'@(PlayThisEvent iid (is attrs -> True)) | x > 0 -> do
+      iids <- select $ affectsOthers $ colocatedWith iid <> can.gain.resources
+      chooseOrRunOneM iid $ for_ iids \iid' -> resourceLabeled iid' $ gainResources iid' attrs 1
+      doStep (x - 1) msg'
       pure e
     _ -> Bounty <$> liftRunMessage msg attrs

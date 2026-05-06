@@ -3749,8 +3749,8 @@ enemyMatcherFilter es matcher' = do
       case meta of
         Object obj -> case parseMaybe @_ @[EnemyId] (.: "enemiesThatAttackedYouSinceTheEndOfYourLastTurn") obj of
           Just eids -> pure $ filter ((`elem` eids) . toId) es
-          Nothing -> error "AttackedYouSinceTheEndOfYourLastTurn: key missing"
-        _ -> error "AttackedYouSinceTheEndOfYourLastTurn: InvestigatorMeta is not an Object"
+          Nothing -> pure mempty
+        _ -> pure mempty
     EnemyCanAttack investigatorMatcher -> do
       iids <- select investigatorMatcher
       flip filterM es \enemy -> do

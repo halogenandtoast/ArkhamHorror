@@ -485,6 +485,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DirectHorrorCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       DirectDamageAndHorrorCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       InvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
+      EachInvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better
       EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher

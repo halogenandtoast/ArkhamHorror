@@ -744,6 +744,11 @@ payCost msg c iid skipAdditionalCosts cost = do
           | iid' <- investigators
           ]
       withPayment $ InvestigatorDamagePayment x
+    EachInvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      investigators <- select investigatorMatcher
+      for_ investigators $ \iid' ->
+        push $ InvestigatorAssignDamage iid' source' damageStrategy x 0
+      withPayment $ InvestigatorDamagePayment (x * length investigators)
     FieldResourceCost (FieldCost mtchr fld) -> do
       ns <- nub <$> selectFields fld mtchr
       case ns of

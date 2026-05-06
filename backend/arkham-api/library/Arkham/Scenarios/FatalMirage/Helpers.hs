@@ -59,17 +59,17 @@ mirage a clues locations = scenarioI18n do
   withI18nTooltip "mirage"
     $ restricted a MirageAbility (Here <> SetAsideCardExists (mapOneOf cardIs locations))
     $ FastAbility
-    $ CostWhenTreacheryElse
+    $ GroupClueCost (PerPlayer clues) YourLocation
+    <> CostWhenTreachery
       ( TreacheryAt (LocationWithId $ asId a)
           <> treacheryIs Treacheries.evanescentMist
           <> not_ (TreacheryWithModifier Blank)
       )
       ( OrCost
-          [ GroupClueCost (StaticWithPerPlayer 2 clues) YourLocation
-          , InvestigatorDamageCost (toSource a) (at_ YourLocation) DamageAny 2
+          [ GroupClueCost (Static 2) YourLocation
+          , EachInvestigatorDamageCost (toSource a) (at_ YourLocation) DamageAny 2
           ]
       )
-      (GroupClueCost (PerPlayer clues) YourLocation)
 
 mirageRunner
   :: CardDef -> [CardDef] -> Int -> Message -> LocationAttrs -> QueueT Message GameT LocationAttrs

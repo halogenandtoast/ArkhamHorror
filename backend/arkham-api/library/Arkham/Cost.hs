@@ -222,6 +222,7 @@ data Cost
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
+  | EachInvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | ConcealedXCost
   | XCost Cost
   | OneOfDistanceCost LocationMatcher Cost
@@ -431,6 +432,7 @@ displayCostType = \case
   DirectHorrorCost _ _ n -> tshow n <> " Direct Horror"
   DirectDamageAndHorrorCost _ _ m n -> tshow m <> " Direct Damage and " <> tshow n <> " Direct Horror"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
+  EachInvestigatorDamageCost _ _ _ n -> "Each investigator takes " <> tshow n <> " Damage"
   DiscardCost zone _ -> "Discard from " <> zoneLabel zone
   DiscardCardCost _ -> "Discard Card"
   DiscardUnderneathCardCost _ _ -> "Discard card beneath"

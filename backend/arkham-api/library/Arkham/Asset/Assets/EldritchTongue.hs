@@ -10,7 +10,6 @@ import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Strategy
 
 newtype EldritchTongue = EldritchTongue AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
@@ -66,11 +65,11 @@ instance RunMessage EldritchTongueEffect where
           chooseOneM iid do
             targets cards \card -> do
               unfocusCards
-              eventModifiers
+              cardResolutionModifiers
+                card
                 attrs.source
                 card
-                [ SetAfterPlay AbsoluteRemoveThisFromGame
-                , RemoveFromGameInsteadOfDiscard
+                [ RemoveFromGameInsteadOfDiscard
                 , AdditionalCost $ UnlessFastActionCost 1 <> UseCost (AssetWithId aid) Charge 1
                 ]
               playCardPayingCostWithWindows iid card ws

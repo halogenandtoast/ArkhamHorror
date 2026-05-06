@@ -157,6 +157,24 @@ executables:
       - condition: flag(library-only)
         buildable: false
 
+  arkham-replay:
+    main: Main.hs
+    source-dirs: app-replay
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - aeson
+      - arkham-api
+      - bytestring
+      - hs-opentelemetry-sdk
+      - MonadRandom
+      - text
+    when:
+      - condition: flag(library-only)
+        buildable: false
+
 flags:
   library-only:
     description: Build for use with "yesod devel"

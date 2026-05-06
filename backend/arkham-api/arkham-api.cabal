@@ -5740,6 +5740,52 @@ executable arkham-api
   if flag(library-only)
     buildable: False
 
+executable arkham-replay
+  main-is: Main.hs
+  other-modules:
+      Paths_arkham_api
+  hs-source-dirs:
+      app-replay
+  default-extensions:
+      AllowAmbiguousTypes
+      BlockArguments
+      DataKinds
+      DeriveAnyClass
+      DerivingStrategies
+      DerivingVia
+      ExtendedDefaultRules
+      FunctionalDependencies
+      GADTs
+      LambdaCase
+      MultiWayIf
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedLabels
+      OverloadedRecordDot
+      OverloadedStrings
+      PatternSynonyms
+      RecordWildCards
+      StrictData
+      TypeFamilies
+      TypeFamilyDependencies
+      TypeOperators
+      UndecidableInstances
+      ViewPatterns
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      cards-discover:cards-discover
+  build-depends:
+      MonadRandom
+    , aeson
+    , arkham-api
+    , base
+    , bytestring
+    , hs-opentelemetry-sdk
+    , text
+  default-language: GHC2021
+  if flag(library-only)
+    buildable: False
+
 test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs

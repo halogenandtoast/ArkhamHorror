@@ -309,20 +309,29 @@ unhandled :: Applicative m => Text -> m Reply
 unhandled = pure . Unhandled
 
 handleAnswer :: Game -> PlayerId -> Answer -> DB Reply
-handleAnswer Game {..} playerId = \case
+handleAnswer game playerId = \case
   DeckAnswer deckId _ -> do
     deck <- get404 deckId
     let investigatorId = investigator_code $ arkhamDeckList deck
     update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-    let question' = Map.delete playerId gameQuestion
+    let question' = Map.delete playerId (gameQuestion game)
     handled $ LoadDecklist playerId (arkhamDeckList deck)
       : [AskMap question' | not (Map.null question')]
   DeckListAnswer dl _ -> do
     let investigatorId = investigator_code dl
     update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-    let question' = Map.delete playerId gameQuestion
+    let question' = Map.delete playerId (gameQuestion game)
     handled $ LoadDecklist playerId dl
       : [AskMap question' | not (Map.null question')]
+  other -> liftIO $ handleAnswerPure game playerId other
+
+-- | Like 'handleAnswer' but with no DB access. Returns 'Unhandled' for
+-- 'DeckAnswer' / 'DeckListAnswer', which require updating an 'ArkhamPlayer'
+-- row. Used by the headless replay CLI.
+handleAnswerPure :: Game -> PlayerId -> Answer -> IO Reply
+handleAnswerPure Game {..} playerId = \case
+  DeckAnswer {} -> unhandled "DeckAnswer requires database access"
+  DeckListAnswer {} -> unhandled "DeckListAnswer requires database access"
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     handled [SetCampaignLog standaloneCampaignLog]
@@ -405,7 +414,7 @@ handleAnswer Game {..} playerId = \case
         maybe
           (unhandled "Player not being asked")
           ( \q -> do
-              result <- liftIO $ try @SomeException $ evaluate $ go id q response
+              result <- try @SomeException $ evaluate $ go id q response
               case result of
                 Left _ -> unhandled "Wrong question type"
                 Right msgs -> handled msgs

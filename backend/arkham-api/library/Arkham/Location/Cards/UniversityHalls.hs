@@ -9,7 +9,6 @@ import Arkham.Location.Base (getLocationMeta)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Data.Map.Strict qualified as Map
@@ -49,6 +48,6 @@ instance RunMessage UniversityHalls where
       pure l
     DiscardedTopOfDeck iid cards (isAbilitySource attrs 2 -> True) (isTarget attrs -> True) -> do
       let tekelili = filterCards (CardFromEncounterSet Tekelili) cards
-      focusCards tekelili $ chooseOrRunOneM iid $ targets tekelili $ drawCard iid
+      focusCards tekelili $ for_ tekelili $ drawCard iid
       pure l
     _ -> UniversityHalls <$> mirageRunner Stories.universityHalls mirageCards 1 msg attrs

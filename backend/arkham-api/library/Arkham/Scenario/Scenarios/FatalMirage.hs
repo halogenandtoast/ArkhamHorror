@@ -220,7 +220,7 @@ instance RunMessage FatalMirage where
       addTekeliliDeck
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
-        Cultist | n < 2 -> placeCluesOnLocation iid Cultist 1
+        Cultist | n < 2 && isHardExpert attrs -> placeCluesOnLocation iid Cultist 1
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do

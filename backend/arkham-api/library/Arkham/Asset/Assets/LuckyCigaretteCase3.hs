@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.LuckyCigaretteCase3 (luckyCigaretteCase3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Capability
 import Arkham.Matcher
 import Arkham.Strategy
 import Arkham.Window (Window (..))
@@ -17,7 +18,7 @@ luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3
 
 instance HasAbilities LuckyCigaretteCase3 where
   getAbilities (LuckyCigaretteCase3 a) =
-    [ restricted a 1 ControlsThis
+    [ controlled a 1 (can.search.deck You)
         $ triggered (SkillTestResult #after You #any (SuccessResult $ atLeast 1)) (exhaust a)
     ]
 

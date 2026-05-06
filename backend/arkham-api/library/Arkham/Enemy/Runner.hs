@@ -530,14 +530,20 @@ instance RunMessage EnemyAttrs where
             pushM $ checkWhen $ Window.EnemySpawns eid lid
             pushM $ checkAfter $ Window.EnemySpawns eid lid
 
-          pushAll
-            . (<> [After msg])
-            =<< traverse
+          whenWindows <-
+            traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
           case a.placement of
-            InThreatArea {} -> pure a
-            _ -> pure $ a & placementL .~ AtLocation lid
+            -- For hunters following an investigator the AFTER window is
+            -- scheduled by After (WhenWillEnterLocation) so it can fire after
+            -- the investigator's placement update and engagement check.
+            InThreatArea {} -> do
+              pushAll whenWindows
+              pure a
+            _ -> do
+              pushAll (whenWindows <> [After msg])
+              pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)

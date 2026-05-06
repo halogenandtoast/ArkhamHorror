@@ -534,18 +534,8 @@ instance RunMessage EnemyAttrs where
             traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
-          case a.placement of
-            -- For hunters following an investigator the AFTER window is
-            -- scheduled by the move pipeline (Do (ResolveMovement)) after
-            -- engagement; firing it here would race ahead of the
-            -- investigator's placement update. PlaceInvestigator paths still
-            -- pick it up via After (WhenWillEnterLocation).
-            InThreatArea {} -> do
-              pushAll whenWindows
-              pure a
-            _ -> do
-              pushAll (whenWindows <> [After msg])
-              pure $ a & placementL .~ AtLocation lid
+          pushAll (whenWindows <> [After msg])
+          pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)
@@ -1793,24 +1783,15 @@ instance RunMessage EnemyAttrs where
         pushAll [sbefore, safter]
       pure a
     WhenWillEnterLocation iid lid -> do
+      -- An engaged enemy that follows the investigator does not "enter" the
+      -- new location for the purpose of EnemyEnters windows; only disengage
+      -- it if it cannot follow (massive, or destination is unenterable).
       case enemyPlacement of
         InThreatArea iid' | iid' == iid -> do
           keywords <- getModifiedKeywords a
           willMove <- canEnterLocation enemyId lid
-          -- TODO: we may not need to check massive anymore since we look at placement
-          if #massive `notElem` keywords && willMove
-            then push $ EnemyEntered enemyId lid
-            else push $ DisengageEnemy iid enemyId
-        _ -> pure ()
-      pure a
-    After (WhenWillEnterLocation iid lid) -> do
-      case enemyPlacement of
-        InThreatArea iid' | iid' == iid -> do
-          keywords <- getModifiedKeywords a
-          willMove <- canEnterLocation enemyId lid
-          -- TODO: we may not need to check massive anymore since we look at placement
-          when (#massive `notElem` keywords && willMove) do
-            push $ After (EnemyEntered enemyId lid)
+          unless (#massive `notElem` keywords && willMove) do
+            push $ DisengageEnemy iid enemyId
         _ -> pure ()
       pure a
     InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do

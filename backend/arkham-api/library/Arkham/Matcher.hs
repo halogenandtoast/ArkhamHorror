@@ -359,8 +359,12 @@ locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
 accessibleFrom :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
-accessibleFrom forMovement = IncludeEmptySpace . AccessibleFrom forMovement . LocationWithId . asId
+accessibleFrom forMovement = accessibleFromMatch forMovement . LocationWithId . asId
 {-# INLINE accessibleFrom #-}
+
+accessibleFromMatch :: ForMovement -> LocationMatcher -> LocationMatcher
+accessibleFromMatch forMovement = IncludeEmptySpace . AccessibleFrom forMovement
+{-# INLINE accessibleFromMatch #-}
 
 accessibleTo :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
 accessibleTo forMovement = IncludeEmptySpace . AccessibleTo forMovement . LocationWithId . asId

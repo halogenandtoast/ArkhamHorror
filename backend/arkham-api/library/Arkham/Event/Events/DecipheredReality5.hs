@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted (investigate_)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (optionWhenExists)
 import Arkham.Modifier
 import Arkham.Projection
 

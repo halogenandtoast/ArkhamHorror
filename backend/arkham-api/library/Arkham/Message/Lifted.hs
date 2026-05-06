@@ -87,7 +87,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
-import Arkham.Message as X (AndThen (..), getChoiceAmount, preOriginalOption)
+import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name

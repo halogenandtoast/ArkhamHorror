@@ -28,7 +28,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Message.Lifted.Move (placeAllAt, moveTowardsMatching)
+import Arkham.Message.Lifted.Move (moveTowardsMatching, placeAllAt)
 import Arkham.Modifier (ModifierType (AdditionalStartingUses))
 import Arkham.Placement
 import Arkham.Projection
@@ -392,14 +392,14 @@ instance RunMessage CityOfTheElderThings where
               chooseOrRunOneM iid do
                 for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
         ElderThing -> do
-          xs <- select $ enemyEngagedWith iid
-          if null xs
-            then do
-              ys <- select $ NearestEnemyTo iid AnyEnemy
-              chooseTargetM iid ys \y -> moveTowardsMatching ElderThing y (locationWithInvestigator iid)
-            else chooseTargetM iid xs \x -> initiateEnemyAttack x ElderThing iid
-          pure ()
+          xs <- selectOrElse (enemyAtLocationWith iid) (NearestEnemyTo iid AnyEnemy)
+          chooseTargetM iid xs \x -> do
+            moveTowardsMatching ElderThing x (locationWithInvestigator iid)
+            forTarget x msg
         _ -> pure ()
+      pure s
+    ForTarget (EnemyTarget eid) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == ElderThing -> do
+      whenMatch eid (enemyEngagedWith iid) $ initiateEnemyAttack eid ElderThing iid
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       ks <- field InvestigatorKeys iid

@@ -49,6 +49,7 @@ instance HasModifiersFor QueenOfAsh where
     action <- MaybeT getSkillTestAction
     guard $ action `elem` [#fight, #evade]
     eid <- MaybeT getSkillTestTargetedEnemy
+    liftGuardM $ matches eid AnyEnemy
     liftGuardM $ fieldP EnemyTraits (member Trait.Cultist) eid
     lift $ modifyEach attrs [Cultist] [RevealAnotherChaosToken]
 

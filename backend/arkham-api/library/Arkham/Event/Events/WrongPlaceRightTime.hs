@@ -39,40 +39,42 @@ instance RunMessage WrongPlaceRightTime where
       canDamageAssets <- select $ AssetAt (locationWithInvestigator iid) <> AssetWithAnyRemainingHealth
       canHorrorAssets <- select $ AssetAt (locationWithInvestigator iid) <> AssetWithAnyRemainingSanity
 
-      when ((dmg > 0 && notNull canDamageAssets) || (hrr > 0 && notNull canHorrorAssets)) do
-        player <- getPlayer iid
-        chooseOne iid
-          $ Label "Done moving damage/horror" [DoStep 0 msg']
-          : [ DamageLabel
-                iid
-                [ Msg.chooseOne
-                    player
-                    [ targetLabel
-                        asset
-                        [ handleTargetChoice iid attrs asset
-                        , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #damage 1
-                        , DoStep (n - 1) msg'
-                        ]
-                    | asset <- canDamageAssets
-                    ]
-                ]
-            | dmg > 0 && notNull canDamageAssets
-            ]
-            <> [ HorrorLabel
-                   iid
-                   [ Msg.chooseOne
-                       player
-                       [ targetLabel
-                           asset
-                           [ handleTargetChoice iid attrs asset
-                           , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #horror 1
-                           , DoStep (n - 1) msg'
-                           ]
-                       | asset <- canHorrorAssets
-                       ]
-                   ]
-               | hrr > 0 && notNull canHorrorAssets
-               ]
+      if not ((dmg > 0 && notNull canDamageAssets) || (hrr > 0 && notNull canHorrorAssets))
+        then doStep 0 msg'
+        else do
+          player <- getPlayer iid
+          chooseOne iid
+            $ Label "Done moving damage/horror" [DoStep 0 msg']
+            : [ DamageLabel
+                  iid
+                  [ Msg.chooseOne
+                      player
+                      [ targetLabel
+                          asset
+                          [ handleTargetChoice iid attrs asset
+                          , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #damage 1
+                          , DoStep (n - 1) msg'
+                          ]
+                      | asset <- canDamageAssets
+                      ]
+                  ]
+              | dmg > 0 && notNull canDamageAssets
+              ]
+              <> [ HorrorLabel
+                     iid
+                     [ Msg.chooseOne
+                         player
+                         [ targetLabel
+                             asset
+                             [ handleTargetChoice iid attrs asset
+                             , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #horror 1
+                             , DoStep (n - 1) msg'
+                             ]
+                         | asset <- canHorrorAssets
+                         ]
+                     ]
+                 | hrr > 0 && notNull canHorrorAssets
+                 ]
 
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do

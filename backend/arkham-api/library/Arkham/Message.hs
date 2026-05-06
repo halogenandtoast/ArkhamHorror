@@ -1242,6 +1242,7 @@ data Message
   | PlaceGrid GridLocation
   | LoadTarotDeck
   | PerformTarotReading
+  | SetPerformTarotReadings Bool
   | PerformReading TarotReading
   | DrawAndChooseTarot InvestigatorId TarotCardFacing Int
   | PlaceTarot InvestigatorId TarotCard

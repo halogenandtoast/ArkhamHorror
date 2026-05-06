@@ -523,15 +523,17 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (phaseL .~ InvestigationPhase)
       & (cardsL %~ if keepCardCache then id else filterMap (not . isEncounterCard))
   PerformTarotReading -> do
-    lead <- getLeadPlayer
-    push
-      $ questionLabel "Choose Tarot Reading Type" lead
-      $ ChooseOne
-        [ Label "Chaos" [PerformReading Tarot.Chaos]
-        , Label "Balance" [PerformReading Tarot.Balance]
-        , Label "Choice" [PerformReading Tarot.Choice]
-        ]
+    when (gamePerformTarotReadings g) do
+      lead <- getLeadPlayer
+      push
+        $ questionLabel "Choose Tarot Reading Type" lead
+        $ ChooseOne
+          [ Label "Chaos" [PerformReading Tarot.Chaos]
+          , Label "Balance" [PerformReading Tarot.Balance]
+          , Label "Choice" [PerformReading Tarot.Choice]
+          ]
     pure g
+  SetPerformTarotReadings b -> pure $ g & performTarotReadingsL .~ b
   RestartScenario -> pure $ g & (phaseL .~ InvestigationPhase)
   SetPhase phase -> pure $ g & phaseL .~ phase
   BeginGame -> do

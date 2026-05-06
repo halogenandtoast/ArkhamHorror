@@ -16,7 +16,8 @@ payYourDues =
     { cdCardTraits = singleton Favor
     , cdSkills = [#intellect, #willpower]
     , cdActions = #parley
-    , cdCost = Just (MatchingEnemyFieldCost (NonEliteEnemy <> EnemyAt YourLocation) EnemyRemainingHealthField)
+    , cdCost =
+        Just (MatchingEnemyFieldCost (NonEliteEnemy <> EnemyAt YourLocation) EnemyRemainingHealthField)
     }
 
 quickExit :: CardDef
@@ -40,7 +41,7 @@ rightUnderTheirNoses =
   (event "60368" "Right Under Their Noses" 2 Rogue)
     { cdCardTraits = setFromList [Trick, Illicit]
     , cdSkills = [#intellect, #willpower]
-    , cdFastWindow = Just $ EnemyEvaded #after You AnyEnemy
+    , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
     }
 
 cleanSweep2 :: CardDef
@@ -75,6 +76,6 @@ rightUnderTheirNoses3 =
   (event "60382" "Right Under Their Noses" 2 Rogue)
     { cdCardTraits = setFromList [Trick, Illicit]
     , cdSkills = [#intellect, #willpower, #wild]
-    , cdFastWindow = Just $ EnemyEvaded #after You AnyEnemy
+    , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
     , cdLevel = Just 3
     }

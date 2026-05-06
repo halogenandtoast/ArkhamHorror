@@ -35,7 +35,7 @@ instance RunMessage CustomGrip where
         _ -> pure ()
       pure e
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf ForPlay iid <> basic #firearm
+      cards <- select $ PlayableCard (Cost.UnpaidCost Cost.NoAction) $ inHandOf ForPlay iid <> basic #firearm
       unless (null cards) do
         chooseOrRunOneM iid do
           labeled "Do not play a Firearm" nothing

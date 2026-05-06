@@ -536,8 +536,10 @@ instance RunMessage EnemyAttrs where
               (eid : swarm)
           case a.placement of
             -- For hunters following an investigator the AFTER window is
-            -- scheduled by After (WhenWillEnterLocation) so it can fire after
-            -- the investigator's placement update and engagement check.
+            -- scheduled by the move pipeline (Do (ResolveMovement)) after
+            -- engagement; firing it here would race ahead of the
+            -- investigator's placement update. PlaceInvestigator paths still
+            -- pick it up via After (WhenWillEnterLocation).
             InThreatArea {} -> do
               pushAll whenWindows
               pure a

@@ -52,6 +52,7 @@ import Arkham.Discard
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Helpers.Enemy (canEnterLocation)
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
@@ -144,6 +145,7 @@ import Arkham.Matcher (
   cardIs,
   colocatedWith,
   enemyEngagedWith,
+  enemyWillMoveWith,
   inHandOf,
   locationWithInvestigator,
   mapOneOf,
@@ -3054,6 +3056,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
           pure a
         ToLocation lid -> do
+          -- Capture hunters in this investigator's threat area that will follow
+          -- (non-massive, can enter the destination) so we can fire their
+          -- After (EnemyEnters) windows after engagement. Capturing the list
+          -- now avoids picking up enemies that engage during this same move
+          -- via CheckEnemyEngagement — those never actually "entered" lid.
+          followingHunters <- select $ enemyWillMoveWith iid
+          followingHunters' <- filterM (`canEnterLocation` lid) followingHunters
           pushAll
             [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
@@ -3073,7 +3082,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [afterEntering]
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
             <> [CheckEnemyEngagement iid | not movement.skipEngagement]
-            <> [After (WhenWillEnterLocation iid lid)]
+            <> [After (EnemyEntered hunter lid) | hunter <- followingHunters']
           pure $ a & movementL .~ Nothing
   ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
     whenM (getCanMoveTo iid' (moveSource movement) lid) do

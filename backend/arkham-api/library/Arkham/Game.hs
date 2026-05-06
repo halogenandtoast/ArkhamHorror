@@ -6157,6 +6157,14 @@ runMessages gameId mLogger = do
                   overGame $ enemyMovingL ?~ eid
                   -- because some modifiers depend on the enemy moving we need to preload them here
                   overGameM preloadModifiers
+                MoveToward (EnemyTarget eid) _ -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
+                Move m | EnemyTarget eid <- m.target -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
                 CheckWindows (getEvadedEnemy -> Just eid) -> overGame $ enemyEvadingL ?~ eid
                 Do (CheckWindows (getEvadedEnemy -> Just eid)) -> overGame $ enemyEvadingL ?~ eid
                 _ -> pure ()

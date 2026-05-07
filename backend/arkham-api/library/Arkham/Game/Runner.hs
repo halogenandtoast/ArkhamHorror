@@ -1476,16 +1476,20 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               <$> runMessage
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
-          whenPlayAsset <- checkWindows [mkWindow #when $ Window.PlayAsset iid aid]
-          afterPlayAsset <- checkWindows [mkWindow #after $ Window.PlayAsset iid aid]
+          let isPermanent = cdPermanent $ toCardDef pc
+          playWindowMsgs <-
+            if isPermanent
+              then pure []
+              else do
+                whenPlayAsset <- checkWindows [mkWindow #when $ Window.PlayAsset iid aid]
+                afterPlayAsset <- checkWindows [mkWindow #after $ Window.PlayAsset iid aid]
+                pure [(whenPlayAsset, afterPlayAsset)]
           pushAll
-            [ PaidForCardCost iid card payment
-            , CardIsEnteringPlay iid card
-            , whenPlayAsset
-            , InvestigatorPlayAsset iid aid
-            , afterPlayAsset
-            , ResolvedCard iid card
-            ]
+            $ [PaidForCardCost iid card payment, CardIsEnteringPlay iid card]
+            <> [w | (w, _) <- playWindowMsgs]
+            <> [InvestigatorPlayAsset iid aid]
+            <> [w | (_, w) <- playWindowMsgs]
+            <> [ResolvedCard iid card]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EventType -> do
           investigator' <- getInvestigator iid

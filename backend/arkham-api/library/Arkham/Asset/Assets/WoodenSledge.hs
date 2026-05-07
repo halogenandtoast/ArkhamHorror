@@ -19,9 +19,12 @@ woodenSledge :: AssetCard WoodenSledge
 woodenSledge = asset WoodenSledge Cards.woodenSledge
 
 instance HasModifiersFor WoodenSledge where
-  getModifiersFor (WoodenSledge a) =
-    modifySelectWhen a a.controlled (InvestigatorAt a.location)
-      $ map (AsIfInHandFor ForPlay . toCardId) a.cardsUnderneath
+  getModifiersFor (WoodenSledge a) = when a.controlled
+    $ modifySelectMap a (InvestigatorAt a.location) \iid ->
+      flip mapMaybe a.cardsUnderneath \c -> do
+        let nonOwner = maybe False (/= iid) c.owner
+        guard (not (nonOwner && isSignature c))
+        pure $ AsIfInHandFor ForPlay c.id
 
 instance HasAbilities WoodenSledge where
   getAbilities (WoodenSledge a) =

@@ -535,7 +535,9 @@ instance RunMessage EnemyAttrs where
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
           pushAll (whenWindows <> [After msg])
-          pure $ a & placementL .~ AtLocation lid
+          case a.placement of
+            InThreatArea {} -> pure a
+            _ -> pure $ a & placementL .~ AtLocation lid
     After (EnemyEntered eid lid) | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)

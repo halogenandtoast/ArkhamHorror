@@ -369,7 +369,7 @@ handleAnswerPure Game {..} playerId = \case
       Just v | v /= gameScenarioSteps -> unhandled "Stale question"
       _ -> do
         let
-          go choices target = do
+          doResolve choices target = do
             let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
             let lookupChoice (uuid, n) =
                   (\lbl -> (NamedUUID lbl uuid, n)) <$> Map.lookup uuid nameMap
@@ -381,8 +381,8 @@ handleAnswerPure Game {..} playerId = \case
                   $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
                   : [AskMap question' | not (Map.null question')]
         case Map.lookup playerId gameQuestion of
-          Just (ChooseAmounts _ _ choices target) -> go choices target
-          Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> go choices target
+          Just (ChooseAmounts _ _ choices target) -> doResolve choices target
+          Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> doResolve choices target
           _ -> unhandled "Wrong question type"
   PaymentAmountsAnswer response ->
     case parQuestionVersion response of

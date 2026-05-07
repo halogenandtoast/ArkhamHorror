@@ -1301,7 +1301,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       if assetIsStory $ toAttrs asset
         then do
           unless (cdDoubleSided (toCardDef asset)) do
-            push $ toDiscard GameSource $ toTarget assetId
+            push $ addToHand iid card
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g

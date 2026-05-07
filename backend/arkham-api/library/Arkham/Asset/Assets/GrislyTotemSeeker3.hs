@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Effect.Types (finishedL)
 import Arkham.Helpers.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (getCommittedCard)
@@ -60,12 +61,12 @@ grislyTotemSeeker3Effect = cardEffect GrislyTotemSeeker3Effect Cards.grislyTotem
 
 instance RunMessage GrislyTotemSeeker3Effect where
   runMessage msg e@(GrislyTotemSeeker3Effect attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ _ _ _ -> do
+    PassedSkillTest iid _ _ _ _ _ | not attrs.finished -> do
       withSkillTest \sid -> do
         when (isTarget sid attrs.target) do
           disable attrs
           additionalSkillTestOption "Grisly Totem" do
             drawCardsIfCan iid attrs.source 1
-      pure e
+      pure $ GrislyTotemSeeker3Effect $ attrs & finishedL .~ True
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e
     _ -> GrislyTotemSeeker3Effect <$> liftRunMessage msg attrs

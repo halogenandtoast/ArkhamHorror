@@ -220,4 +220,13 @@ i.iconSkillAgility:before {
     padding: 10px;
   }
 }
+
+:deep(.message-label) {
+  .agility-icon, .combat-icon, .intellect-icon, .willpower-icon {
+    display: contents;
+    &::before {
+      display: contents;
+    }
+  }
+}
 </style>

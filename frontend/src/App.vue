@@ -294,9 +294,7 @@ button {
 }
 
 .willpower-icon {
-  display: contents;
   &:before {
-    display: contents;
     text-transform: none;
     font-family: "Arkham";
     content: "\0041";
@@ -305,9 +303,7 @@ button {
 }
 
 .intellect-icon {
-  display: contents;
   &:before {
-    display: contents;
     text-transform: none;
     font-family: "Arkham";
     content: "\0046";
@@ -315,9 +311,7 @@ button {
 }
 
 .combat-icon {
-  display: contents;
   &:before {
-    display: contents;
     text-transform: none;
     font-family: "Arkham";
     content: "\0044";
@@ -325,9 +319,7 @@ button {
 }
 
 .agility-icon {
-  display: contents;
   &:before {
-    display: contents;
     text-transform: none;
     font-family: "Arkham";
     content: "\0053";

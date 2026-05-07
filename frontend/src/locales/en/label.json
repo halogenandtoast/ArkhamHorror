@@ -28,6 +28,7 @@
   "discoverAdditionalClues": "Discover 1 additional clue | Discover {count} additional clues",
   "discoverAtYourLocation": "Discover 1 clue at your location | Discover {count} clues at your location",
   "disengageAll": "Disengage all",
+  "disengageAndMove": "Disengage from each enemy and move to a connecting location",
   "doNotDraw": "Do not draw",
   "doNotMove": "Do not move",
   "doNotDisengage": "Do not disengage",

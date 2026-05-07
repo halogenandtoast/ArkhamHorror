@@ -79,7 +79,7 @@ import Arkham.Helpers.Card (
   getModifiedCardCost,
   passesLimits,
  )
-import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources)
+import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources, hasSkillTestCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
@@ -1617,25 +1617,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               runAtIfEntering <- checkWindows [atIfEntering]
               runAfterMoves <- checkWindows [afterMoves]
 
+              let
+                postEnterMsgs =
+                  [ runWhenMoves
+                  , runAtIfMoves
+                  , ResolveMovement iid
+                  , runAfterMoves
+                  , ResolvedMovement iid movement.id
+                  ]
+                    <> maybeToList mRunAfterLeaving
+                innerMsgs =
+                  [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
+                    <> [runWhenEntering, runAtIfEntering, PayAdditionalCost iid batchId enterCosts]
+                    <> if hasSkillTestCost enterCosts
+                      then [MoveWithSkillTest (WhenCanMove iid postEnterMsgs)]
+                      else postEnterMsgs
+                whenCanMoveMsg = WhenCanMove iid innerMsgs
+                wrapLeave = if hasSkillTestCost leaveCosts then MoveWithSkillTest else id
               pushBatched batchId
                 $ maybeToList mRunWouldMove
                 <> maybeToList mRunWhenLeaving
                 <> maybeToList mRunAtIfLeaving
-                <> [ PayAdditionalCost iid batchId leaveCosts
-                   , WhenCanMove
-                       iid
-                       $ [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-                       <> [ runWhenEntering
-                          , runAtIfEntering
-                          , PayAdditionalCost iid batchId enterCosts
-                          , runWhenMoves
-                          , runAtIfMoves
-                          , ResolveMovement iid
-                          , runAfterMoves
-                          , ResolvedMovement iid movement.id
-                          ]
-                       <> maybeToList mRunAfterLeaving
-                   ]
+                <> [PayAdditionalCost iid batchId leaveCosts]
+              push (wrapLeave whenCanMoveMsg)
             Place -> do
               -- like Direct, but no moves windows and no costs
 

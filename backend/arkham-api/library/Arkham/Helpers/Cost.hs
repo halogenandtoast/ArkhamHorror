@@ -63,6 +63,28 @@ import Data.List qualified as List
 import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
 
+hasSkillTestCost :: Cost -> Bool
+hasSkillTestCost = \case
+  SkillTestCost {} -> True
+  Costs xs -> any hasSkillTestCost xs
+  OrCost xs -> any hasSkillTestCost xs
+  OptionalCost x -> hasSkillTestCost x
+  CostWhenEnemy _ x -> hasSkillTestCost x
+  CostWhenTreachery _ x -> hasSkillTestCost x
+  CostWhenTreacheryElse _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostOnlyWhen _ x -> hasSkillTestCost x
+  CostIfEnemy _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostIfCustomization _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostIfRemembered _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  UpTo _ x -> hasSkillTestCost x
+  AtLeastOne _ x -> hasSkillTestCost x
+  AsIfAtLocationCost _ x -> hasSkillTestCost x
+  NonBlankedCost x -> hasSkillTestCost x
+  LabeledCost _ x -> hasSkillTestCost x
+  XCost x -> hasSkillTestCost x
+  OneOfDistanceCost _ x -> hasSkillTestCost x
+  _ -> False
+
 getCanAffordCost
   :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
   => InvestigatorId

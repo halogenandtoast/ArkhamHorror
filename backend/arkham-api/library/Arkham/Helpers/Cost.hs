@@ -176,31 +176,41 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         pure $ x >= n
       AddCurseTokenCost n -> do
         x <- getRemainingCurseTokens
-        -- Are you Parallel Rex?
-        canParallelRex <-
-          iid
-            <=~> ( Matcher.InvestigatorIs "90078"
-                     <> Matcher.InvestigatorAt Matcher.Anywhere
-                     <> Matcher.InvestigatorWithAnyClues
-                 )
-        z <-
-          if canParallelRex
-            then fieldMap InvestigatorClues (* 2) iid
-            else pure 0
-        pure $ x + z >= n
+        if x >= n
+          then pure True
+          else
+            -- Parallel Rex's reaction only triggers when 2+ curse tokens would be added
+            if n < 2
+              then pure False
+              else do
+                canParallelRex <-
+                  iid
+                    <=~> ( Matcher.InvestigatorIs "90078"
+                             <> Matcher.InvestigatorAt Matcher.Anywhere
+                             <> Matcher.InvestigatorWithAnyClues
+                         )
+                if canParallelRex
+                  then do
+                    z <- fieldMap InvestigatorClues (* 2) iid
+                    pure $ x + z >= n
+                  else pure False
       AddCurseTokensCost n _ -> do
         x <- getRemainingCurseTokens
-        canParallelRex <-
-          iid
-            <=~> ( Matcher.InvestigatorIs "90078"
-                     <> Matcher.InvestigatorAt Matcher.Anywhere
-                     <> Matcher.InvestigatorWithAnyClues
-                 )
-        z <-
-          if canParallelRex
-            then fieldMap InvestigatorClues (* 2) iid
-            else pure 0
-        pure $ x + z >= n
+        if x >= n
+          then pure True
+          else do
+            canParallelRex <-
+              iid
+                <=~> ( Matcher.InvestigatorIs "90078"
+                         <> Matcher.InvestigatorAt Matcher.Anywhere
+                         <> Matcher.InvestigatorWithAnyClues
+                     )
+            if canParallelRex
+              then do
+                z <- fieldMap InvestigatorClues (* 2) iid
+                -- Smallest Rex-payable amount is max n 2; if that fits, the cost is affordable.
+                pure $ x + z >= max n 2
+              else pure False
       SkillTestCost {} -> pure True
       AsIfAtLocationCost lid c -> do
         withModifiers' iid (toModifiers source [AsIfAt lid])

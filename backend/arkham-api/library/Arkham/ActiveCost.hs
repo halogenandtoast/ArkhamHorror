@@ -810,13 +810,16 @@ payCost msg c iid skipAdditionalCosts cost = do
       x <- min n <$> getRemainingCurseTokens
       if x < n
         then do
-          -- we need to parallel rex
+          -- we need to parallel rex; his reaction only triggers when 2+ curse tokens would be added
           canParallelRex <-
-            iid
-              <=~> ( InvestigatorIs "90078"
-                       <> InvestigatorAt Anywhere
-                       <> InvestigatorWithAnyClues
-                   )
+            if n < 2
+              then pure False
+              else
+                iid
+                  <=~> ( InvestigatorIs "90078"
+                           <> InvestigatorAt Anywhere
+                           <> InvestigatorWithAnyClues
+                       )
           if canParallelRex
             then do
               batchId <- getRandom
@@ -849,7 +852,9 @@ payCost msg c iid skipAdditionalCosts cost = do
         iid <=~> (InvestigatorIs "90078" <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
       rex <- if canParallelRex then fieldMap InvestigatorClues (* 2) iid else pure 0
 
-      maxTokens <- min m . (+ rex) <$> getRemainingCurseTokens
+      remaining <- getRemainingCurseTokens
+      let maxTokens = min m (remaining + rex)
+      let payable k = k <= remaining || (k >= 2 && k - remaining <= rex)
 
       push
         $ Ask player
@@ -857,6 +862,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         $ DropDown
           [ (tshow x, pay (AddCurseTokenCost x))
           | x <- [n .. maxTokens]
+          , payable x
           ]
       pure c
     AddCurseTokensEqualToShroudCost -> do

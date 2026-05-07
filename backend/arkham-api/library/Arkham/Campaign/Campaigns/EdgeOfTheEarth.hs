@@ -1044,52 +1044,47 @@ instance RunMessage EdgeOfTheEarth where
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status
     When (AssetDefeated _ aid) -> do
       cCode <- field AssetCardCode aid
-      pushWhen (cCode `elem` map (.cardCode) expeditionTeam) $ SetPartnerStatus cCode Eliminated
+      for_ (toPartnerCodeMay cCode) \partnerCode ->
+        push $ SetPartnerStatus partnerCode Eliminated
       pure c
     RemoveFromPlay (AssetSource aid) -> do
       mCode <- fieldMay AssetCardCode aid
-      case mCode of
+      case mCode >>= toPartnerCodeMay of
         Nothing -> pure c
-        Just cCode ->
-          if cCode `elem` map (.cardCode) expeditionTeam
-            then do
-              damage <- field AssetDamage aid
-              horror <- field AssetHorror aid
-              pure
-                $ EdgeOfTheEarth
-                $ attrs
-                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
-            else pure c
+        Just partnerCode -> do
+          damage <- field AssetDamage aid
+          horror <- field AssetHorror aid
+          pure
+            $ EdgeOfTheEarth
+            $ attrs
+            & (logL . partnersL . ix partnerCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
     RemoveFromGame (AssetTarget aid) -> do
       mCode <- fieldMay AssetCardCode aid
-      case mCode of
+      case mCode >>= toPartnerCodeMay of
         Nothing -> pure c
-        Just cCode ->
-          if cCode `elem` map (.cardCode) expeditionTeam
-            then do
-              damage <- field AssetDamage aid
-              horror <- field AssetHorror aid
-              pure
-                $ EdgeOfTheEarth
-                $ attrs
-                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
-            else pure c
+        Just partnerCode -> do
+          damage <- field AssetDamage aid
+          horror <- field AssetHorror aid
+          pure
+            $ EdgeOfTheEarth
+            $ attrs
+            & (logL . partnersL . ix partnerCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
     HealDamage (CardCodeTarget cCode) CampaignSource n -> do
-      if cCode `elem` map (.cardCode) expeditionTeam
-        then do
+      case toPartnerCodeMay cCode of
+        Just partnerCode ->
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & (logL . partnersL . ix cCode %~ (damageL %~ max 0 . subtract n))
-        else pure c
+            & (logL . partnersL . ix partnerCode %~ (damageL %~ max 0 . subtract n))
+        Nothing -> pure c
     HealHorror (CardCodeTarget cCode) CampaignSource n -> do
-      if cCode `elem` map (.cardCode) expeditionTeam
-        then do
+      case toPartnerCodeMay cCode of
+        Just partnerCode ->
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & (logL . partnersL . ix cCode %~ (horrorL %~ max 0 . subtract n))
-        else pure c
+            & (logL . partnersL . ix partnerCode %~ (horrorL %~ max 0 . subtract n))
+        Nothing -> pure c
     CampaignStep TheHeartOfMadnessPart1 -> scope "theHeartOfMadness.part1" do
       story $ i18nWithTitle "intro"
       kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology

@@ -127,51 +127,54 @@ getPartnerStatus (toPartnerCode -> cardCode) = do
   pure $ fromJustNote ("Not a valid partner: " <> show cardCode)  $ (lookup cardCode partners <|> lookup (toResolute cardCode) partners) <&> \partner -> partner.status
 
 toPartnerCode :: (HasCallStack, HasCardCode a) => a -> CardCode
-toPartnerCode a = case toCardCode a of
-  c | c `elem` expeditionTeamCodes -> c
+toPartnerCode a = fromMaybe (error "Unknown partner") (toPartnerCodeMay a)
+
+toPartnerCodeMay :: HasCardCode a => a -> Maybe CardCode
+toPartnerCodeMay a = case toCardCode a of
+  c | c `elem` expeditionTeamCodes -> Just c
   c
     | c == Enemies.professorWilliamDyerProfessorOfGeology.cardCode ->
-        Assets.professorWilliamDyerProfessorOfGeology.cardCode
-  c | c == Enemies.danforthBrilliantStudent.cardCode -> Assets.danforthBrilliantStudent.cardCode
+        Just Assets.professorWilliamDyerProfessorOfGeology.cardCode
+  c | c == Enemies.danforthBrilliantStudent.cardCode -> Just Assets.danforthBrilliantStudent.cardCode
   c
     | c == Enemies.roaldEllsworthIntrepidExplorer.cardCode ->
-        Assets.roaldEllsworthIntrepidExplorer.cardCode
+        Just Assets.roaldEllsworthIntrepidExplorer.cardCode
   c
     | c == Enemies.takadaHirokoAeroplaneMechanic.cardCode ->
-        Assets.takadaHirokoAeroplaneMechanic.cardCode
-  c | c == Enemies.averyClaypoolAntarcticGuide.cardCode -> Assets.averyClaypoolAntarcticGuide.cardCode
-  c | c == Enemies.drMalaSinhaDaringPhysician.cardCode -> Assets.drMalaSinhaDaringPhysician.cardCode
+        Just Assets.takadaHirokoAeroplaneMechanic.cardCode
+  c | c == Enemies.averyClaypoolAntarcticGuide.cardCode -> Just Assets.averyClaypoolAntarcticGuide.cardCode
+  c | c == Enemies.drMalaSinhaDaringPhysician.cardCode -> Just Assets.drMalaSinhaDaringPhysician.cardCode
   c
     | c == Enemies.jamesCookieFredericksDubiousChoice.cardCode ->
-        Assets.jamesCookieFredericksDubiousChoice.cardCode
-  c | c == Enemies.eliyahAshevakDogHandler.cardCode -> Assets.eliyahAshevakDogHandler.cardCode
+        Just Assets.jamesCookieFredericksDubiousChoice.cardCode
+  c | c == Enemies.eliyahAshevakDogHandler.cardCode -> Just Assets.eliyahAshevakDogHandler.cardCode
   c
     | c == Assets.professorWilliamDyerProfessorOfGeologyResolute.cardCode ->
-        Assets.professorWilliamDyerProfessorOfGeology.cardCode
+        Just Assets.professorWilliamDyerProfessorOfGeology.cardCode
   c
     | c == Assets.danforthBrilliantStudentResolute.cardCode ->
-        Assets.danforthBrilliantStudent.cardCode
+        Just Assets.danforthBrilliantStudent.cardCode
   c
     | c == Assets.eliyahAshevakDogHandlerResolute.cardCode ->
-        Assets.eliyahAshevakDogHandler.cardCode
+        Just Assets.eliyahAshevakDogHandler.cardCode
   c
     | c == Assets.drMalaSinhaDaringPhysicianResolute.cardCode ->
-        Assets.drMalaSinhaDaringPhysician.cardCode
+        Just Assets.drMalaSinhaDaringPhysician.cardCode
   c
     | c == Assets.averyClaypoolAntarcticGuideResolute.cardCode ->
-        Assets.averyClaypoolAntarcticGuide.cardCode
+        Just Assets.averyClaypoolAntarcticGuide.cardCode
   c
     | c == Assets.jamesCookieFredericksDubiousChoiceResolute.cardCode ->
-        Assets.jamesCookieFredericksDubiousChoice.cardCode
+        Just Assets.jamesCookieFredericksDubiousChoice.cardCode
   c
     | c == Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode ->
-        Assets.drAmyKenslerProfessorOfBiology.cardCode
+        Just Assets.drAmyKenslerProfessorOfBiology.cardCode
   c
     | c == Assets.roaldEllsworthIntrepidExplorerResolute.cardCode ->
-        Assets.roaldEllsworthIntrepidExplorer.cardCode
+        Just Assets.roaldEllsworthIntrepidExplorer.cardCode
   c
     | c == Assets.takadaHirokoAeroplaneMechanicResolute.cardCode ->
-        Assets.takadaHirokoAeroplaneMechanic.cardCode
-  _ -> error "Unknown partner"
+        Just Assets.takadaHirokoAeroplaneMechanic.cardCode
+  _ -> Nothing
  where
   expeditionTeamCodes = map toCardCode (toList expeditionTeam)

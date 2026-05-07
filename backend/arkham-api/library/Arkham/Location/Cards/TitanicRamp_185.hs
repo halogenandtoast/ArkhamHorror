@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -40,12 +41,12 @@ instance RunMessage TitanicRamp_185 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         labeled
-          "Have any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
+          "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
           do
             withCost
               iid
               (GroupClueCost (Static 1) (orConnected NotForMovement $ locationWithInvestigator iid))
-              passSkillTest
+              $ withSkillTest \sid -> skillTestAutomaticallySucceeds (attrs.ability 1) sid
         labeled "Do not spend clues" nothing
       pure l
     FailedThisSkillTest iid (isSource attrs -> True) -> do

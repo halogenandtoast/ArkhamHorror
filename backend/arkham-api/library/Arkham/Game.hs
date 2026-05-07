@@ -363,6 +363,7 @@ withModifiers :: (HasGame m, Tracing m, Targetable a) => a -> m (With a Modifier
 withModifiers a = With a . ModifierData <$> (traverse (overModifierTypeM calculateModifier) =<< getModifiers' a)
  where
   calculateModifier (CalculatedSkillModifier s c) = SkillModifier s <$> calculate c
+  calculateModifier (DamageDealtCalculation c) = DamageDealt <$> calculate c
   calculateModifier other = pure other
 
 withTreacheryMetadata :: (HasGame m, Tracing m) => Treachery -> m (With Treachery TreacheryMetadata)

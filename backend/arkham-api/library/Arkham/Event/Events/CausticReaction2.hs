@@ -3,6 +3,7 @@ module Arkham.Event.Events.CausticReaction2 (causticReaction2) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Projection ()
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype CausticReaction2 = CausticReaction2 EventAttrs
@@ -16,9 +17,14 @@ instance RunMessage CausticReaction2 where
   runMessage msg e@(CausticReaction2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      clues <- iid.clues
-      let mods = SkillModifier #intellect 1 : [DamageDealt 1 | clues >= 2]
-      skillTestModifiers sid attrs iid mods
+      skillTestModifiers
+        sid
+        attrs
+        iid
+        [ SkillModifier #intellect 1
+        , DamageDealtCalculation
+            $ IfInvestigatorExistsCalculation iid (InvestigatorWithClues $ atLeast 2) (Fixed 2) (Fixed 1)
+        ]
       chooseFightEnemyWith #intellect sid iid attrs
       pure e
     _ -> CausticReaction2 <$> liftRunMessage msg attrs

@@ -160,6 +160,9 @@ damageValueFor baseValue iid damageFor = do
     else foldrM applyModifier baseValue' modifiers
  where
   applyModifier (DamageDealt m) n = pure $ max 0 (n + m)
+  applyModifier (DamageDealtCalculation c) n = do
+    m <- calculate c
+    pure $ max 0 (n + m)
   applyModifier (CriteriaModifier c (DamageDealt m)) n = do
     passes <- passesCriteria iid Nothing GameSource GameSource [] c
     pure $ max 0 (n + if passes then m else 0)

@@ -255,6 +255,7 @@ data ModifierType
   | CountsAsInvestigatorForHunterEnemies
   | CountsAsDifferentLocation
   | DamageDealt Int
+  | DamageDealtCalculation GameCalculation
   | DamageDealtToInvestigator Int
   | DamageTaken Int
   | HorrorTaken Int

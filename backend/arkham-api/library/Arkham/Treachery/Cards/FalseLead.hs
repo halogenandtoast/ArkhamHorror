@@ -20,7 +20,7 @@ instance RunMessage FalseLead where
     Revelation iid (isSource attrs -> True) -> do
       playerClueCount <- field InvestigatorClues iid
       if playerClueCount == 0
-        then withI18n $ chooseOneM iid $ labeled' "gainSurge" $ gainSurge attrs
+        then gainSurge attrs
         else do
           sid <- getRandom
           revelationSkillTest sid iid attrs #intellect (Fixed 4)

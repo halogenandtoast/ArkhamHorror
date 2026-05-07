@@ -12,6 +12,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario (toChaosTokenValue)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Label
 import Arkham.Layout
 import Arkham.Location.Types (Field (..))
@@ -32,7 +33,11 @@ sealAtLocationOf :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 sealAtLocationOf iid =
   getLocationOf iid >>= \case
     Nothing -> pure False
-    Just lid -> fieldMap LocationSeals (not . null) lid
+    Just lid ->
+      orM
+        [ fieldMap LocationSeals (not . null) lid
+        , not . all null <$> selectField InvestigatorSeals (investigatorAt lid)
+        ]
 
 placeSeal :: (ReverseQueue m, Targetable target) => target -> Seal -> m ()
 placeSeal target = push . PlaceSeal (toTarget target)

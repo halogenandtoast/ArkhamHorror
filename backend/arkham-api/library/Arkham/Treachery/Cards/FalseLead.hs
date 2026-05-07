@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.FalseLead (falseLead) where
 
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

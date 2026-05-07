@@ -45,7 +45,7 @@ theHeartOfMadnessPart1 difficulty =
 
 instance HasModifiersFor TheHeartOfMadnessPart1 where
   getModifiersFor (TheHeartOfMadnessPart1 _a) = withSkillTestInvestigator \iid -> do
-    whenM (sealAtLocationOf iid) do
+    whenM (orM [sealAtLocationOf iid, selectAny (locationWithInvestigator iid <> LocationWithTitle "Mist-Pylon")]) do
       modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart1 where

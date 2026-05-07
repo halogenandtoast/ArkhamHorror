@@ -65,12 +65,14 @@ data QuestionResponse = QuestionResponse
 data PaymentAmountsResponse = PaymentAmountsResponse
   { parAmounts :: Map UUID Int
   , parQuestionVersion :: Maybe Int
+  , parPlayerId :: Maybe PlayerId
   }
   deriving stock (Show, Generic)
 
 data AmountsResponse = AmountsResponse
   { arAmounts :: Map UUID Int
   , arQuestionVersion :: Maybe Int
+  , arPlayerId :: Maybe PlayerId
   }
   deriving stock (Show, Generic)
 
@@ -93,12 +95,14 @@ instance FromJSON PaymentAmountsResponse where
   parseJSON = withObject "PaymentAmountsResponse" \o -> do
     parAmounts <- o .: "amounts"
     parQuestionVersion <- o .:? "questionVersion"
+    parPlayerId <- o .:? "playerId"
     pure PaymentAmountsResponse {..}
 
 instance FromJSON AmountsResponse where
   parseJSON = withObject "AmountsResponse" \o -> do
     arAmounts <- o .: "amounts"
     arQuestionVersion <- o .:? "questionVersion"
+    arPlayerId <- o .:? "playerId"
     pure AmountsResponse {..}
 
 data StandaloneSetting
@@ -284,8 +288,8 @@ answerPlayer :: Answer -> Maybe PlayerId
 answerPlayer = \case
   Answer response -> qrPlayerId response
   Raw _ -> Nothing
-  AmountsAnswer _ -> Nothing
-  PaymentAmountsAnswer _ -> Nothing
+  AmountsAnswer response -> arPlayerId response
+  PaymentAmountsAnswer response -> parPlayerId response
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
   CampaignSpecificAnswer {} -> Nothing
@@ -363,24 +367,23 @@ handleAnswerPure Game {..} playerId = \case
   AmountsAnswer response ->
     case arQuestionVersion response of
       Just v | v /= gameScenarioSteps -> unhandled "Stale question"
-      _ -> case Map.lookup playerId gameQuestion of
-        Just (ChooseAmounts _ _ choices target) -> do
-          let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-          let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
-          let question' = Map.delete playerId gameQuestion
-          let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-          handled
-            $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
-            : [AskMap question' | not (Map.null question')]
-        Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
-          let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-          let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
-          let question' = Map.delete playerId gameQuestion
-          let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-          handled
-            $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
-            : [AskMap question' | not (Map.null question')]
-        _ -> unhandled "Wrong question type"
+      _ -> do
+        let
+          resolve choices target = do
+            let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
+            let lookupChoice (uuid, n) =
+                  (\lbl -> (NamedUUID lbl uuid, n)) <$> Map.lookup uuid nameMap
+            case traverse lookupChoice (Map.toList $ arAmounts response) of
+              Nothing -> unhandled "Wrong choice id"
+              Just amounts -> do
+                let question' = Map.delete playerId gameQuestion
+                handled
+                  $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
+                  : [AskMap question' | not (Map.null question')]
+        case Map.lookup playerId gameQuestion of
+          Just (ChooseAmounts _ _ choices target) -> resolve choices target
+          Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> resolve choices target
+          _ -> unhandled "Wrong question type"
   PaymentAmountsAnswer response ->
     case parQuestionVersion response of
       Just v | v /= gameScenarioSteps -> unhandled "Stale question"

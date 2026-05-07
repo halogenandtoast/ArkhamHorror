@@ -645,7 +645,7 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
     const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion } }))
+    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion, playerId: playerId.value } }))
   }
 }
 
@@ -655,7 +655,7 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
     const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion } }))
+    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion, playerId: playerId.value } }))
   }
 }
 

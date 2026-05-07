@@ -80,6 +80,18 @@ instance HasModifiersFor WindowModifierEffect where
             isTurn <- iid <=~> TurnInvestigator
             when isTurn $ tell $ MonoidalMap $ singletonMap target modifiers
           Just (EffectNextSkillTestWindow {}) -> pure ()
+          Just (FirstEffectWindow ws) -> case firstEffectWindowGate ws of
+            FirstWindowSuppress -> pure ()
+            FirstWindowSkillTest sid -> do
+              msid <- getSkillTestId
+              when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap target modifiers
+            FirstWindowTurn iid -> do
+              isTurn <- iid <=~> TurnInvestigator
+              when isTurn $ tell $ MonoidalMap $ singletonMap target modifiers
+            FirstWindowPhase p -> do
+              p' <- getPhase
+              when (p == p') $ tell $ MonoidalMap $ singletonMap target modifiers
+            FirstWindowEmit -> tell $ MonoidalMap $ singletonMap target modifiers
           _ -> tell $ MonoidalMap $ singletonMap target modifiers
         _ -> pure ()
    where

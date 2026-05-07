@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.FalseLead (falseLead) where
 
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards

@@ -20,7 +20,7 @@ instance HasAbilities LibraryOfKos where
   getAbilities (LibraryOfKos a) =
     extendRevealed1 a
       $ skillTestAbility
-      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealE)) actionAbility
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealE)) actionAbility
 
 instance RunMessage LibraryOfKos where
   runMessage msg l@(LibraryOfKos attrs) = runQueueT $ case msg of

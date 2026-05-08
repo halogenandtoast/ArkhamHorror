@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Types (
+  AbilityMatcher (..),
   ActMatcher,
   AgendaMatcher,
   AssetMatcher,
@@ -213,6 +214,7 @@ allowsPlayerCardSource = \case
   SourceIsPlayerCard -> True
   SourceIsPlayerCardAbility -> True
   AnySource -> True
+  SourceIsAbility BasicAbility -> True
   SourceMatchesAny ms -> any allowsPlayerCardSource ms
   SourceMatches ms -> all allowsPlayerCardSource ms
   NotSource m -> not (allowsPlayerCardSource m)

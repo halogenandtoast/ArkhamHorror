@@ -115,6 +115,25 @@ function onDropDiscard(event: DragEvent) {
   }
 }
 
+function onDropDeck(event: DragEvent) {
+  event.preventDefault()
+  if (!debug.active) return
+  if (!event.dataTransfer) return
+  const data = event.dataTransfer.getData('text/plain')
+  if (!data) return
+  const json = JSON.parse(data)
+  if (json.tag !== 'CardTarget') return
+  const target = { tag: 'CardIdTarget', contents: json.contents }
+  const deckSig = { tag: 'InvestigatorDeck', contents: id.value }
+  if (event.shiftKey) {
+    debug.send(props.game.id, { tag: 'PutOnTopOfDeck', contents: [id.value, deckSig, target] })
+  } else if (event.altKey) {
+    debug.send(props.game.id, { tag: 'PutOnBottomOfDeck', contents: [id.value, deckSig, target] })
+  } else {
+    debug.send(props.game.id, { tag: 'ShuffleIntoDeck', contents: [deckSig, target] })
+  }
+}
+
 const dragover = (e: DragEvent) => {
   e.preventDefault()
   if (e.dataTransfer) {
@@ -185,7 +204,12 @@ watch(choices, async (newChoices) => {
     @close="hideCards"
   />
   <div class="deck-container">
-    <div class="top-of-deck">
+    <div
+      class="top-of-deck"
+      @drop="onDropDeck($event)"
+      @dragover.prevent="dragover($event)"
+      @dragenter.prevent
+    >
       <Treachery
         v-if="topOfDeckTreachery"
         :treachery="topOfDeckTreachery"

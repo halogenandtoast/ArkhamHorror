@@ -214,7 +214,7 @@ longestUniqueStreak = go []
     let seen = mconcat uniq
      in if any (`notElem` seen) xs
           then go (xs : uniq) xss
-          else go [] xss
+          else uniq
 
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case
@@ -1140,6 +1140,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             Lifted.shuffleCardsIntoDeck iid (only card)
             push $ After msg
         pure a
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+    pure a
+  PutOnTopOfDeck _ (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) card
+    pure a
+  PutOnBottomOfDeck _ (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
+    pure a
   Discarded (AssetTarget aid) _ (PlayerCard card) -> do
     -- TODO: This message is ugly, we should do something different
     -- TODO: There are a number of messages here that mean the asset is no longer in play, we should consolidate to a singular message
@@ -4063,15 +4075,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
     let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
+    let streakTypes = nub (concat streak)
 
     when (notNull duplicated)
       $ pushM
       $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
 
-    when (length streak > 1)
+    when (length streakTypes > 1)
       $ pushM
       $ checkWindows
-        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) (nub $ concat streak))]
+        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streakTypes) streakTypes)]
 
     when (#parley `elem` actions && #parley `notElem` previous)
       $ pushM
@@ -5207,3 +5220,4 @@ takeUpkeepResources a = do
           pure a
         else
           pure $ a & tokensL %~ addTokens Resource amount
+

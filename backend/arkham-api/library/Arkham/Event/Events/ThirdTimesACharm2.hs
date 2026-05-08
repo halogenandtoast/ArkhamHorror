@@ -42,7 +42,7 @@ instance HasAbilities ThirdTimesACharm2Effect where
             $ limitedAbility (GroupLimit PerTestOrAbility 2)
             $ mkAbility (proxied (SkillTestSource sid) a) 1
             $ freeReaction
-            $ RevealChaosToken #when You #any
+            $ RevealChaosToken #cancel You #any
         | n > 0
         ]
       _ -> error "incorrect source"

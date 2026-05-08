@@ -22,7 +22,7 @@ instance HasAbilities UncannySpecimen where
   getAbilities (UncannySpecimen a) =
     [ controlled a 1 (DuringSkillTest SkillTestAtYourLocation)
         $ triggered
-          ( RevealChaosToken #when Anyone
+          ( RevealChaosToken #cancel Anyone
               $ oneOf [#skull, #cultist, #tablet, #elderthing]
           )
           (discardCost a)

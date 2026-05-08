@@ -57,6 +57,9 @@ instance HasField "kind" Window WindowType where
 mkWindow :: Timing -> WindowType -> Window
 mkWindow timing windowType = Window timing windowType Nothing
 
+mkCancel :: WindowType -> Window
+mkCancel windowType = Window #cancel windowType Nothing
+
 mkWhen :: WindowType -> Window
 mkWhen windowType = Window #when windowType Nothing
 

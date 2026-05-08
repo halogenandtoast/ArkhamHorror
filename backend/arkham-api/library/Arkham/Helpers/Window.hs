@@ -75,6 +75,9 @@ checkAfter = checkWindows . pure . mkAfter
 checkWhen :: HasGame m => WindowType -> m Message
 checkWhen = checkWindows . pure . mkWhen
 
+checkCancel :: HasGame m => WindowType -> m Message
+checkCancel = checkWindows . pure . mkCancel
+
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   -- TODO: We don't want to check eliminated investigators except for the InvestigatorEliminated window

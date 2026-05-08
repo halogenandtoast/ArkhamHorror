@@ -26,7 +26,7 @@ instance HasAbilities DialOfAncientsSignsOfAberration4 where
         $ controlled a 3 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction
           "Spend 1 charge to cancel that token, return it to the bag, and reveal a new one"
-          (RevealChaosToken #after Anyone $ CancelableChaosToken AnyChaosToken)
+          (RevealChaosToken #cancel Anyone $ CancelableChaosToken AnyChaosToken)
           (assetUseCost a Charge 1)
     ]
 

@@ -19,7 +19,7 @@ import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, skillTestModifier)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows)
+import Arkham.Helpers.Window (checkAfter, checkCancel, checkWhen, checkWindows, windows)
 import Arkham.Id
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
@@ -319,9 +319,12 @@ instance RunMessage SkillTest where
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
+      cancelRevealWindow <-
+        checkCancel $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       afterRevealWindow <-
         checkAfter $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       pushAll $ UnfocusChaosTokens
+        : cancelRevealWindow
         : afterRevealMsg
         : afterRevealWindow
         : afterRevealMsg

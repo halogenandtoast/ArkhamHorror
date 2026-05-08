@@ -22,7 +22,7 @@ instance HasAbilities NightmareBauble3 where
   getAbilities (NightmareBauble3 a) =
     [ restricted a 1 ControlsThis
         $ triggered
-          (RevealChaosToken #when You #autofail)
+          (RevealChaosToken #cancel You #autofail)
           (ShuffleAttachedCardIntoDeckCost (toTarget a) (cardIs Skills.dreamParasite))
     ]
 

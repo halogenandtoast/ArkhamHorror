@@ -24,7 +24,9 @@ import Arkham.Name
 import Arkham.Queue
 import Conduit
 import Control.Concurrent.MVar
+import Control.Concurrent.STM.TBQueue (readTBQueue)
 import Control.Lens (view)
+import Data.IntMap.Strict qualified as IntMap
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
@@ -50,15 +52,23 @@ import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException do
-  writeChannel :: TChan BSL.ByteString <- lift $ (.channel) <$> getRoom gameId
+  room <- lift $ getRoom gameId
   broker <- lift $ getsYesod appMessageBroker
-  roomsVar <- getsYesod appGameRooms
-  liftIO
-    $ modifyMVar_ roomsVar
-    $ pure
-    . Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId
+  let broadcast = broadcastToRoom room
 
-  bracket (atomically $ dupTChan writeChannel) closeConnection \readChannel -> do
+  let cleanup subId = do
+        unsubscribeFromRoom room subId
+        -- If this was the last subscriber, drop the room from the map so
+        -- it doesn't accumulate orphaned entries.
+        isEmpty <- liftIO $ atomically do
+          IntMap.null <$> readTVar (roomSubscribers room)
+        when isEmpty do
+          roomsVar <- lift $ getsYesod appGameRooms
+          liftIO $ modifyMVar_ roomsVar $ pure . Map.delete gameId
+          lift $ removeChannel (gameChannel gameId)
+
+  bracket (subscribeToRoom room) (\(subId, _) -> cleanup subId) \(_subId, sub) -> do
+    let Subscriber {subQueue, subOverflow} = sub
     mtid <- case broker of
       RedisBroker redisConn _ -> do
         tid <- liftIO
@@ -66,39 +76,42 @@ gameStream gameId = catchingConnectionException do
           $ runRedis redisConn
           $ pubSub (subscribe [gameChannel gameId])
           $ \msg -> do
-            atomically $ writeTChan readChannel (BSL.fromStrict $ msgMessage msg)
+            broadcast (BSL.fromStrict $ msgMessage msg)
             pure mempty
         pure $ Just tid
       WebSocketBroker -> pure Nothing
 
     let stopSub = maybe (pure ()) (liftIO . cancel) mtid
 
+    let sender =
+          forever
+            ( do
+                msg <- atomically do
+                  overflowed <- readTVar subOverflow
+                  if overflowed
+                    then throwSTM SlowSubscriber
+                    else readTBQueue subQueue
+                sendTextData msg
+            )
+            `catch` (\(_ :: SlowSubscriber) -> pure ())
+
     finally
       ( race_
-          (forever $ atomically (readTChan readChannel) >>= sendTextData)
-          (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
+          sender
+          (runConduit $ sourceWS .| mapM_C (handleData room broadcast))
       )
       stopSub
  where
-  handleData writeChannel dataPacket = lift do
+  handleData room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
       Right answer ->
-        updateGame answer gameId writeChannel `catch` \(e :: SomeException) -> do
-          atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
+        updateGame answer gameId (Just room) `catch` \(e :: SomeException) -> do
+          liftIO $ broadcast $ encode $ GameError $ tshow e
 
-  closeConnection _ = do
-    roomsVar <- getsYesod appGameRooms
-    remove <- liftIO $ modifyMVar roomsVar \rooms -> pure do
-      case Map.lookup gameId rooms of
-        Nothing -> (rooms, False)
-        Just room -> do
-          let room' = room {socketClients = max 0 (room.clients - 1)}
-          if room'.clients == 0
-            then (Map.delete gameId rooms, True)
-            else (Map.insert gameId room' rooms, False)
-
-    when remove $ lift $ removeChannel (gameChannel gameId)
+data SlowSubscriber = SlowSubscriber
+  deriving stock Show
+  deriving anyclass Exception
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -157,8 +170,18 @@ instance ToJSON GameDetailsEntry where
     FailedGameDetails t -> object ["error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
-updateGame :: Answer -> ArkhamGameId -> TChan BSL.ByteString -> Handler ()
-updateGame response gameId writeChannel = do
+-- | A broadcast callback. Used to fan out log lines and game-state updates
+-- to every WebSocket subscriber on a room. May be a no-op if there are no
+-- subscribers (e.g. a direct REST PUT with no client listening), in which
+-- case messages are silently dropped instead of buffered indefinitely.
+type Broadcast = BSL.ByteString -> IO ()
+
+updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
+updateGame response gameId mRoom = do
+  let broadcast :: Broadcast
+      broadcast = case mRoom of
+        Nothing -> \_ -> pure ()
+        Just room -> broadcastToRoom room
   tracer <- getTracer
   oldLog <- runDB $ getGameLog gameId Nothing
   (ArkhamGame {..}, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
@@ -185,7 +208,7 @@ updateGame response gameId writeChannel = do
         queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
         genRef <- newIORef $ mkStdGen gameSeed
 
-        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
+        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer) do
           runMessages (gameIdToText gameId) Nothing
 
         ge <- readIORef gameRef
@@ -234,11 +257,11 @@ newtype RawGameJsonPut = RawGameJsonPut
   deriving anyclass FromJSON
 
 handleMessageLog
-  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> ClientMessage -> m ()
-handleMessageLog logRef writeChannel msg = liftIO $ do
+  :: MonadIO m => IORef [Text] -> Broadcast -> ClientMessage -> m ()
+handleMessageLog logRef broadcast msg = liftIO $ do
   for_ (toClientText msg) $ \txt ->
     atomicModifyIORef' logRef (\logs -> (logs <> [txt], ()))
-  atomically $ writeTChan writeChannel (encode $ toGameMessage msg)
+  broadcast (encode $ toGameMessage msg)
  where
   toGameMessage = \case
     ClientText txt -> GameMessage txt
@@ -272,9 +295,11 @@ publishToRoom gameId a = do
         $ publish (gameChannel gameId)
         $ toStrictByteString
         $ encode a
-    WebSocketBroker -> do
-      writeChannel <- (.channel) <$> getRoom gameId
-      atomically $ writeTChan writeChannel $ encode a
+    WebSocketBroker ->
+      -- Don't create a Room here. If nobody is subscribed, drop the
+      -- update on the floor; the next subscriber will read the latest
+      -- state from the database when they connect.
+      lookupRoom gameId >>= traverse_ (`broadcastToRoom` encode a)
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

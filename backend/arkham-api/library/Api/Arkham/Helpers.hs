@@ -15,6 +15,7 @@ import Arkham.Queue
 import Arkham.Random
 import Arkham.Tracing
 import Control.Concurrent.MVar
+import Control.Concurrent.MVar qualified as MVar
 import Control.Lens hiding (from)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random (MonadRandom (..), StdGen)
@@ -149,14 +150,16 @@ getRoom gid = do
       case Map.lookup gid rooms of
         Just r -> pure (rooms, r)
         Nothing -> do
-          chan <- atomically newBroadcastTChan
-          let r =
-                Room
-                  { socketChannel = chan
-                  , socketClients = 0
-                  , messageBrokerChannel = gameChannel gid
-                  }
+          r <- newRoom (gameChannel gid)
           pure (Map.insert gid r rooms, r)
+
+-- | Like 'getRoom' but never creates a Room. Use from the publish path so
+-- that broadcasting to a game with no listeners doesn't leak an empty
+-- Room into 'appGameRooms' that nothing will ever clean up.
+lookupRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m (Maybe Room)
+lookupRoom gid = do
+  roomsVar <- getsApp appGameRooms
+  Map.lookup gid <$> liftIO (MVar.readMVar roomsVar)
 
 displayCardType :: CardType -> Text
 displayCardType = \case

@@ -16,6 +16,7 @@ module Foundation where
 
 import Import.NoFoundation
 
+import Control.Concurrent.STM.TBQueue
 import Control.Exception.Annotated qualified as UE
 import Control.Exception.Annotated.UnliftIO qualified as AnnotatedIO
 import Control.Monad.Catch (
@@ -25,6 +26,7 @@ import Control.Monad.Catch (
   generalBracket,
  )
 import Control.Monad.Catch qualified as Catch
+import Data.IntMap.Strict qualified as IntMap
 import UnliftIO.Exception qualified as UnliftIO
 
 import Arkham.Card.CardCode
@@ -61,20 +63,76 @@ import Yesod.Core.Unsafe qualified as Unsafe
 import "bugsnag" Network.Bugsnag qualified as Bugsnag
 import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
 
+{- | Per-subscriber bounded queue. When the queue fills up we treat the
+subscriber as unable to keep up and drop further writes for it. The
+subscriber's reader loop in 'gameStream' cancels itself once it observes
+the overflow flag, which closes the WebSocket and triggers cleanup.
+-}
+data Subscriber = Subscriber
+  { subQueue :: TBQueue BSL.ByteString
+  , subOverflow :: TVar Bool
+  }
+
 data Room = Room
-  { socketChannel :: TChan BSL.ByteString
-  , socketClients :: Int
+  { roomSubscribers :: TVar (IntMap Subscriber)
+  , roomNextSubId :: TVar Int
   , messageBrokerChannel :: RedisChannel
   }
 
-instance HasField "channel" Room (TChan BSL.ByteString) where
-  getField = socketChannel
-
-instance HasField "clients" Room Int where
-  getField = socketClients
-
 instance HasField "broker" Room RedisChannel where
   getField = messageBrokerChannel
+
+{- | Maximum messages buffered per WebSocket subscriber before we mark them
+as overflowed. Tuned to bound memory in the worst case (slow client,
+half-open TCP connection): ~256 messages * a few KB each = a few MB per
+stuck connection, after which the subscriber is torn down.
+-}
+roomQueueBound :: Natural
+roomQueueBound = 256
+
+newRoom :: RedisChannel -> IO Room
+newRoom chn = atomically do
+  subs <- newTVar IntMap.empty
+  next <- newTVar 0
+  pure $ Room subs next chn
+
+{- | Register a new WebSocket subscriber on the room. Returns the
+subscription id (used to unsubscribe) and the bounded queue the
+subscriber should read from.
+-}
+subscribeToRoom :: MonadIO m => Room -> m (Int, Subscriber)
+subscribeToRoom room = liftIO $ atomically do
+  q <- newTBQueue roomQueueBound
+  overflow <- newTVar False
+  let sub = Subscriber q overflow
+  subId <- readTVar (roomNextSubId room)
+  writeTVar (roomNextSubId room) (subId + 1)
+  modifyTVar' (roomSubscribers room) (IntMap.insert subId sub)
+  pure (subId, sub)
+
+unsubscribeFromRoom :: MonadIO m => Room -> Int -> m ()
+unsubscribeFromRoom room subId = liftIO $ atomically do
+  modifyTVar' (roomSubscribers room) (IntMap.delete subId)
+
+-- | Number of currently registered subscribers (used by the admin UI).
+roomClientCount :: MonadIO m => Room -> m Int
+roomClientCount room = liftIO $ atomically do
+  IntMap.size <$> readTVar (roomSubscribers room)
+
+{- | Send a payload to every subscriber on the room. Subscribers whose
+queue is full are flagged as overflowed and skipped; the corresponding
+reader loop will observe the flag and tear itself down.
+-}
+broadcastToRoom :: MonadIO m => Room -> BSL.ByteString -> m ()
+broadcastToRoom room msg = liftIO $ atomically do
+  subs <- readTVar (roomSubscribers room)
+  for_ (IntMap.elems subs) \Subscriber {subQueue, subOverflow} -> do
+    overflowed <- readTVar subOverflow
+    unless overflowed do
+      full <- isFullTBQueue subQueue
+      if full
+        then writeTVar subOverflow True
+        else writeTBQueue subQueue msg
 
 data MessageBroker = WebSocketBroker | RedisBroker Connection PubSubController
 

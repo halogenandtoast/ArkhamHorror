@@ -160,8 +160,8 @@ putApiV1ArkhamGameR gameId = do
   unless user.admin do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
-  writeChannel <- (.channel) <$> getRoom gameId
-  updateGame response gameId writeChannel
+  mRoom <- lookupRoom gameId
+  updateGame response gameId mRoom
 
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
@@ -170,8 +170,8 @@ putApiV1ArkhamGameRawR gameId = do
   unless user.admin do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody @_ @RawGameJsonPut
-  writeChannel <- (.channel) <$> getRoom gameId
-  updateGame (Raw response.gameMessage) gameId writeChannel
+  mRoom <- lookupRoom gameId
+  updateGame (Raw response.gameMessage) gameId mRoom
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

@@ -31,7 +31,7 @@ instance HasAbilities Basement where
           ( exists (assetIs Assets.tomeOfRituals)
               <> exists (investigatorAt attrs <> InvestigatorWithAnyClues)
           )
-          $ freeReaction (IfEnemyDefeated #after You ByAny (enemyAt attrs))
+          $ freeReaction (IfEnemyDefeated #after You ByAny (EnemyWasAt $ be attrs))
       ]
 
 instance RunMessage Basement where

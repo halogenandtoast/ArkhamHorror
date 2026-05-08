@@ -27,12 +27,12 @@ instance HasAbilities RexMurphyParallel where
     [ restricted a 1 Self
         $ ForcedWhen isForced
         $ freeReaction
-        $ oneOf
-          [ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
-              $ WouldPlaceClueOnLocation #when You YourLocation (atLeast 1)
-          , WindowWhen (exists $ You <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
-              $ WouldAddChaosTokensToChaosBag #when (Just You) (atLeast 2) #curse
-          ]
+        $ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
+        $ WouldPlaceClueOnLocation #when You YourLocation (atLeast 1)
+    , restricted a 2 Self
+        $ freeReaction
+        $ WindowWhen (exists $ You <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
+        $ WouldAddChaosTokensToChaosBag #when (Just You) (atLeast 2) #curse
     ]
    where
     isForced =
@@ -50,7 +50,7 @@ instance HasChaosTokenValue RexMurphyParallel where
 
 instance RunMessage RexMurphyParallel where
   runMessage msg i@(RexMurphyParallel attrs) = runQueueT $ case msg of
-    InvestigatorPlaceCluesOnLocation iid _source n -> do
+    InvestigatorPlaceCluesOnLocation iid _source n | iid == toId attrs -> do
       clues <- field InvestigatorClues iid
       attrs' <- liftRunMessage msg (deleteMetaKey "forced" attrs)
       pure
@@ -77,6 +77,10 @@ instance RunMessage RexMurphyParallel where
                   | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
                   ]
             else doStep mandatoryTimes msg
+        _ -> pure ()
+      pure $ RexMurphyParallel $ deleteMetaKey "forced" attrs
+    UseCardAbility iid (isSource attrs -> True) 2 [w] _ -> do
+      case windowType w of
         Window.WouldAddChaosTokensToChaosBag _ tokens -> do
           let numCurse = count (== #curse) tokens
           numClues <- field InvestigatorClues iid
@@ -103,7 +107,7 @@ instance RunMessage RexMurphyParallel where
                   ]
             else doStep mandatoryTimes msg
         _ -> pure ()
-      pure $ RexMurphyParallel $ deleteMetaKey "forced" attrs
+      pure i
     DoStep n (UseCardAbility iid (isSource attrs -> True) 1 [w] _) -> do
       case windowType w of
         Window.WouldPlaceClueOnLocation _ lid source clues -> do
@@ -120,9 +124,13 @@ instance RunMessage RexMurphyParallel where
                     }
                 ]
             push $ Would batchId [would, InvestigatorPlaceCluesOnLocation iid source remainingClues]
+        _ -> pure ()
+      pure i
+    DoStep n (UseCardAbility iid (isSource attrs -> True) 2 [w] _) -> do
+      case windowType w of
         Window.WouldAddChaosTokensToChaosBag mWho tokens -> do
           push $ CancelBatch $ Window.getBatchId [w]
-          push $ InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) n
+          push $ Do (InvestigatorPlaceCluesOnLocation iid (attrs.ability 2) n)
           -- we need to check if we need to recreate the window
           let remainingTokens = foldr deleteFirst tokens (replicate @[ChaosTokenFace] (n * 2) #curse)
           unless (null remainingTokens) do

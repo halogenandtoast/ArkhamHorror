@@ -123,14 +123,15 @@ const remembered = computed(() => {
   const log = props.game.scenario?.log
   if (!log || !props.game.scenario) return [] as string[]
   const prefix = scenarioToI18n(props.game.scenario)
+  const toKey = (s: string) => (s.charAt(0).toLowerCase() + s.slice(1)).replace(/'/g, '')
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
     if (record.tag === 'RememberedName') {
-      return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, {
+      return t(`${prefix}.remembered.${toKey(record.actualTag)}`, {
         name: simpleName(record.name),
       })
     }
-    return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
+    return t(`${prefix}.remembered.${toKey(record.tag)}`)
   })
 })
 
@@ -167,7 +168,7 @@ const isSection = (r: LogKey): r is SectionLogKey => {
   return typeof r.contents.tag === 'string' && typeof r.contents.contents === 'string'
 }
 
-const lowerFirst = (s: string) => s.slice(0, 1).toLowerCase() + s.slice(1)
+const lowerFirst = (s: string) => (s.slice(0, 1).toLowerCase() + s.slice(1)).replace(/'/g, '')
 const clamp6 = (n: unknown) => Math.max(0, Math.min(6, Math.floor(Number(n) || 0)))
 
 const recorded = computed(() => {

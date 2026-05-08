@@ -109,7 +109,7 @@ function isNestedContents(x: unknown): x is { tag: string; contents: string } {
 }
 
 export function formatKey(key: LogKey): string {
-  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1)
+  const format = (str: string) => (str.slice(0, 1).toLowerCase() + str.slice(1)).replace(/'/g, '')
 
   // remove 'Key' from the end of the tag if it exists
   const prefix = format(key.tag.replace(/Key$/, ""))

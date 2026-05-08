@@ -5,6 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (CreaturesInTheIce))
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Helpers.Window (entering)
 import Arkham.Matcher
@@ -25,7 +26,8 @@ instance RunMessage ColdWelcome where
     AdvanceAgenda (isSide B attrs -> True) -> do
       (spawning, rest) <- splitAt 1 <$> getSetAsideCardsMatching (cardIs Enemies.skitteringNonsense)
       lead <- getLead
-      for_ spawning (`createEnemy_` lead)
+      leadLocation <- getJustLocation lead
+      for_ spawning (`createEnemy_` leadLocation)
       shuffleCardsIntoDeck Deck.EncounterDeck rest
       shuffleSetAsideIntoEncounterDeck CreaturesInTheIce
       advanceAgendaDeck attrs

@@ -12,7 +12,7 @@ bloodCurse = skill BloodCurse Cards.bloodCurse
 
 instance RunMessage BloodCurse where
   runMessage msg s@(BloodCurse attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      additionalSkillTestOption "Blood Curse" $ directDamage iid attrs 1
+    PassedSkillTest _iid _ _ (isTarget attrs -> True) _ _ -> do
+      additionalSkillTestOption "Blood Curse" $ directDamage attrs.owner attrs 1
       pure s
     _ -> BloodCurse <$> liftRunMessage msg attrs

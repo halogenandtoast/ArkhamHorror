@@ -23,7 +23,7 @@ instance RunMessage Downpour where
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
       doStep n msg
       pure t
-    DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) -> do
+    DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       actions <- field InvestigatorRemainingActions iid
       clues <- field InvestigatorClues iid
       chooseOrRunOneM iid $ withI18n do

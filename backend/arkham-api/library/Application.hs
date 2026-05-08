@@ -130,7 +130,15 @@ makeFoundation appSettings = do
       _ <- forkIO $ pubSubForever conn ctrl (pure ())
       pure $ RedisBroker conn ctrl
 
-  provider <- initializeGlobalTracerProvider
+  -- OpenTelemetry is disabled in production: we build a tracer provider with
+  -- no span processors so all spans are silently dropped and no OTLP exporter
+  -- is started. Outside production we still initialize the real global
+  -- tracer provider so local/dev traces work.
+  isProduction <- (== Just "production") <$> lookupEnv "NODE_ENV"
+  provider <-
+    if isProduction
+      then createTracerProvider [] emptyTracerProviderOptions
+      else initializeGlobalTracerProvider
   let appTracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
 
   -- We need a log function to create a connection pool. We need a connection

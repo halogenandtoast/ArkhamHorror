@@ -62,3 +62,20 @@ spec = describe "Crystallizer of Dreams" do
         commit workingAHunch
         startSkillTest
         assertPassedSkillTest
+
+  context "interaction with Double, Double (4)" do
+    it "attaches the replayed event when Crystallizer is skipped on the first play"
+      . gameTest
+      $ \self -> do
+        crystallizerOfDreams <- self `putAssetIntoPlay` Assets.crystallizerOfDreams
+        doubleDouble <- self `putAssetIntoPlay` Assets.doubleDouble4
+        emergencyCache <- genCard Events.emergencyCache
+        self `addToHand` emergencyCache
+        withProp @"resources" 5 self
+        duringTurn self do
+          self `playCard` emergencyCache
+          skip
+          useReactionOf doubleDouble
+          useReactionOf crystallizerOfDreams
+          asDefs crystallizerOfDreams.cardsUnderneath `shouldReturn` [Events.emergencyCache]
+          asDefs self.discard `shouldReturn` []

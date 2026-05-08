@@ -924,9 +924,13 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         else pure id
     pure $ g & entitiesL . assetsL %~ deleteMap aid & removedEntitiesF
   RemoveEvent eid -> do
-    popMessageMatching_ $ \case
-      Discard _ _ (EventTarget eid') -> eid == eid'
-      _ -> False
+    let isMyDiscard = \case
+          Discard _ _ (EventTarget eid') -> eid == eid'
+          _ -> False
+    popMessageMatching_ isMyDiscard
+    withQueue_ $ map $ \case
+      Would bId msgs -> Would bId (filter (not . isMyDiscard) msgs)
+      other -> other
     event' <- getEvent eid
     pure
       $ g

@@ -246,6 +246,10 @@ instance RunMessage SkillTest where
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator
+      -- We are extending ST.4: the After window for ResolveChaosSymbolEffectsStep
+      -- should fire once, after all tokens (including the new draw) are
+      -- resolved. Drop any prematurely-queued one; the next
+      -- RevealSkillTestChaosTokens will queue a fresh one.
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
@@ -256,6 +260,10 @@ instance RunMessage SkillTest where
         Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
           False
         Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
+          False
+        CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _] ->
+          False
+        Do (CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _]) ->
           False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False

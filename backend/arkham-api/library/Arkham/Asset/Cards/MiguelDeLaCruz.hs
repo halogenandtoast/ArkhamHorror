@@ -16,7 +16,7 @@ miguelsKnapsack =
 
 danielJameson :: CardDef
 danielJameson =
-  (asset "60555" ("Daniel Jameson" <:> "Seasoned Hunter") 2 Survivor)
+  (asset "60555" ("Daniel Jameson" <:> "Seasoned Hunter") 3 Survivor)
     { cdCardTraits = setFromList [Ally, Hunter]
     , cdSkills = [#agility]
     , cdSlots = [#ally]

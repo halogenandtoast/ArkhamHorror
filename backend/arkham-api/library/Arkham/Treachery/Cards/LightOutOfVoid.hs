@@ -22,7 +22,7 @@ instance RunMessage LightOutOfVoid where
     Revelation _iid (isSource attrs -> True) -> do
       doStep 1 msg
       pure t
-    DoStep n msg'@(Revelation iid (isSource attrs -> True)) -> do
+    DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n == 1 || n == 2 -> do
       cultists <- selectMaxBy EnemyEvade (fromMaybe (-1)) (InPlayEnemy #cultist)
       chooseOneM iid $ scenarioI18n do
         labeledValidate' (notNull cultists) "lightOutOfVoid.doom" do
@@ -32,10 +32,12 @@ instance RunMessage LightOutOfVoid where
           $ numberVar "horror" 1
           $ labeled' "takeDamageAndHorror"
           $ assignDamageAndHorror iid (attrs.ability 1) 1 1
-      when (n == 1) do
-        act <- getCurrentAgendaStep
-        cultistClues <- getCluesPossesedByTheCult
-        playerClues <- selectSum InvestigatorClues Anyone
-        when (act == 2 || playerClues > cultistClues) $ doStep 2 msg'
+      when (n == 1) $ doStep 3 msg'
+      pure t
+    DoStep 3 msg'@(Revelation _ (isSource attrs -> True)) -> do
+      act <- getCurrentAgendaStep
+      cultistClues <- getCluesPossesedByTheCult
+      playerClues <- selectSum InvestigatorClues Anyone
+      when (act == 2 || playerClues > cultistClues) $ doStep 2 msg'
       pure t
     _ -> LightOutOfVoid <$> liftRunMessage msg attrs

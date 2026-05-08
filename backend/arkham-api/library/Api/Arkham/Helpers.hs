@@ -10,6 +10,7 @@ import Arkham.Debug
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
+import Arkham.Metrics (withMetric)
 import Arkham.Queue
 import Arkham.Random
 import Arkham.Tracing
@@ -122,9 +123,11 @@ instance HasGameLogger GameAppT where
 instance Tracing GameAppT where
   type SpanType GameAppT = Trace.Span
   type SpanArgs GameAppT = Trace.SpanArguments
-  addAttribute = Trace.addAttribute
+  -- See note in Arkham.GameT: addAttribute is a no-op so unused thunks
+  -- (often `tshow` over deep ADTs) stay unforced.
+  addAttribute _ _ _ = pure ()
   defaultSpanArgs = Trace.defaultSpanArguments
-  doTrace name args action = inSpan' name args action
+  doTrace name args action = withMetric name (inSpan' name args action)
 
 gameIdToText :: ArkhamGameId -> Text
 gameIdToText = UUID.toText . coerce

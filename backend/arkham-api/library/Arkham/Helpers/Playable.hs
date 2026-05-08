@@ -58,16 +58,18 @@ getPlayableCards
      )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableCards source investigator costStatus windows' = withSpan_ "getPlayableCards" do
-  asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards (asId investigator)
-  otherPlayersPlayableCards <-
-    withSpan_ "getOtherPlayersPlayableCards"
-      $ getOtherPlayersPlayableCards (asId investigator) costStatus windows'
-  playableDiscards <-
-    withSpan_ "getPlayableDiscards" $ getPlayableDiscards source (asId investigator) costStatus windows'
-  hand <- field InvestigatorHand (asId investigator)
-  playableHandCards <-
-    filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
-  pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
+  let iid = asId investigator
+  cached (PlayableCardsKey iid (toSource source) costStatus windows') do
+    asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards iid
+    otherPlayersPlayableCards <-
+      withSpan_ "getOtherPlayersPlayableCards"
+        $ getOtherPlayersPlayableCards iid costStatus windows'
+    playableDiscards <-
+      withSpan_ "getPlayableDiscards" $ getPlayableDiscards source iid costStatus windows'
+    hand <- field InvestigatorHand iid
+    playableHandCards <-
+      filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
+    pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableCardsMatch
   :: ( HasCallStack

@@ -25,6 +25,7 @@ library
       Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
+      Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Game.Bug
@@ -4311,6 +4312,7 @@ library
       Arkham.Message.Lifted.Upgrade
       Arkham.Message.Story
       Arkham.Message.Type
+      Arkham.Metrics
       Arkham.Modifier
       Arkham.ModifierData
       Arkham.Movement

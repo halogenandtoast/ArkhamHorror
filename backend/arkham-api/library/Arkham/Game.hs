@@ -201,6 +201,7 @@ import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
+import Arkham.Metrics (messageTag)
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
@@ -6114,8 +6115,9 @@ runMessages gameId mLogger = do
                       asIfLocations' <- runWithEnv getAsIfLocationMap
                       aloofEnemies' <- runWithEnv (select AloofEnemy)
                       investigatorSanityHealth' <- runWithEnv getInvestigatorSanityHealthMap
-                      runWithEnv $ withSpan' "Root" \currentSpan -> do
+                      runWithEnv $ withSpan' ("Msg[" <> messageTag m <> "]") \currentSpan -> do
                         addAttribute currentSpan "gameId" gameId
+                        addAttribute currentSpan "messageConstructor" (messageTag m)
                         overGameM preloadEntities
                         overGameM $ runPreGameMessage m
                         if shouldPreloadModifiers m
@@ -6178,8 +6180,9 @@ runMessages gameId mLogger = do
               aloofEnemies <- runWithEnv (select AloofEnemy)
               investigatorSanityHealth <- runWithEnv getInvestigatorSanityHealthMap
 
-              runWithEnv $ withSpan' "Root" \currentSpan -> do
+              runWithEnv $ withSpan' ("Msg[" <> messageTag msg <> "]") \currentSpan -> do
                 addAttribute currentSpan "gameId" gameId
+                addAttribute currentSpan "messageConstructor" (messageTag msg)
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
                 if shouldPreloadModifiers msg

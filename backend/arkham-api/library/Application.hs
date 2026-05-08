@@ -23,6 +23,7 @@ module Application (
   db,
 ) where
 
+import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
@@ -79,6 +80,7 @@ import Text.Regex.Posix ((=~))
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Game.Bug
@@ -261,6 +263,14 @@ appMain = do
       [configSettingsYmlValue]
       -- allow environment variables to override
       useEnv
+
+  -- Opt-in performance metrics collector. Set ARKHAM_METRICS=1 (or any non-empty
+  -- value besides "0"/"false") to enable global span timing; query the
+  -- /api/v1/admin/metrics endpoint to read or reset the table.
+  metricsEnv <- lookupEnv "ARKHAM_METRICS"
+  case metricsEnv of
+    Just v | v /= "" && v /= "0" && v /= "false" -> void Metrics.enableMetrics
+    _ -> pure ()
 
   -- Generate the foundation from the settings
   foundation <- makeFoundation settings

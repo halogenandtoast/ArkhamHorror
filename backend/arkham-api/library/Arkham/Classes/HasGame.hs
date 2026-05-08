@@ -4,6 +4,7 @@
 module Arkham.Classes.HasGame where
 
 import Arkham.Action
+import Arkham.Card (Card)
 import Arkham.Cost
 import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.Id
@@ -55,6 +56,8 @@ data CacheKey v where
   CanMoveToLocationKey :: InvestigatorId -> Source -> LocationId -> CacheKey Bool
   CanMoveToLocationsKey_ :: InvestigatorId -> Source -> [LocationId] -> CacheKey [LocationId]
   CanMoveToLocationsKey :: InvestigatorId -> Source -> CacheKey [LocationId]
+  PlayableCardsKey
+    :: InvestigatorId -> Source -> CostStatus -> [Window] -> CacheKey [Card]
   SelectKey :: Typeable a => SomeQuery a -> CacheKey [a]
   ExistKey :: Typeable a => SomeQuery a -> CacheKey Bool
 
@@ -88,6 +91,11 @@ instance GEq CacheKey where
     (CanMoveToLocationsKey a2 b2)
       | (a1, b1) == (a2, b2) = Just Refl
       | otherwise = Nothing
+  geq
+    (PlayableCardsKey a1 b1 c1 d1)
+    (PlayableCardsKey a2 b2 c2 d2)
+      | (a1, b1, c1, d1) == (a2, b2, c2, d2) = Just Refl
+      | otherwise = Nothing
   geq (SelectKey (q1 :: SomeQuery a)) (SelectKey (q2 :: SomeQuery b))
     | Just Refl <- eqT @a @b, q1 == q2 = Just Refl -- requires Eq (SomeQuery a)
     | otherwise = Nothing
@@ -117,11 +125,19 @@ instance GCompare CacheKey where
     (CanMoveToLocationsKey a1 b1, CanMoveToLocationsKey a2 b2) ->
       compareTuple (a1, b1) (a2, b2)
     (CanMoveToLocationsKey {}, _) -> GLT
+    (PlayableCardsKey {}, CanAffordCostKey {}) -> GGT
+    (PlayableCardsKey {}, CanMoveToLocationKey {}) -> GGT
+    (PlayableCardsKey {}, CanMoveToLocationsKey_ {}) -> GGT
+    (PlayableCardsKey {}, CanMoveToLocationsKey {}) -> GGT
+    (PlayableCardsKey a1 b1 c1 d1, PlayableCardsKey a2 b2 c2 d2) ->
+      compareTuple (a1, b1, c1, d1) (a2, b2, c2, d2)
+    (PlayableCardsKey {}, _) -> GLT
     (SelectKey (q1 :: SomeQuery a), SelectKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->
       case compare q1 q2 of -- requires Ord (SomeQuery a)
         LT -> GLT
         EQ -> GEQ
         GT -> GGT
+    (SelectKey {}, PlayableCardsKey {}) -> GGT
     (SelectKey {}, _) -> GGT
     (ExistKey (q1 :: SomeQuery a), ExistKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->
       case compare q1 q2 of -- requires Ord (SomeQuery a)

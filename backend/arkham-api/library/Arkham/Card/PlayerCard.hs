@@ -116,7 +116,7 @@ setTaboo mtaboo pc = pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo p
 
 tabooMutated :: Maybe TabooList -> PlayerCard -> Maybe Text
 tabooMutated Nothing _ = Nothing
-tabooMutated jtbl pc = tabooMutated' jtbl (pcCardCode pc)
+tabooMutated jtbl pc = asum $ map (tabooMutated' jtbl) (toCardDef pc).cardCodes
 
 tabooMutated' :: Maybe TabooList -> CardCode -> Maybe Text
 tabooMutated' = \case

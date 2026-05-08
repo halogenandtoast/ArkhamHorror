@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.BlackChamberOperative (blackChamberOperative) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
@@ -21,9 +22,9 @@ instance HasAbilities BlackChamberOperative where
 instance RunMessage BlackChamberOperative where
   runMessage msg e@(BlackChamberOperative attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      clues <- iid.clues
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       miid <- getLocationOf iid
-      if clues > 0 && isJust miid
+      if canPlaceClues && isJust miid
         then placeCluesOnLocation iid (attrs.ability 1) 1
         else do
           readyThis attrs

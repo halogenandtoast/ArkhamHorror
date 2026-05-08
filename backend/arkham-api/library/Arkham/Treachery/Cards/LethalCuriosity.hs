@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.LethalCuriosity (lethalCuriosity) where
 
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -23,10 +22,10 @@ instance RunMessage LethalCuriosity where
       doStep n msg
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
-      clues <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid do
         labeled "Take 1 damage" $ assignDamage iid attrs 1
-        when (clues > 0)
+        when canPlaceClues
           $ labeled "Place 1 of your clues on your location"
           $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'

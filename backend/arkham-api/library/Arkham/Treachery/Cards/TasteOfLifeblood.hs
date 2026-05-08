@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.TasteOfLifeblood (tasteOfLifeblood, TasteOfLifeblood (..)) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher
@@ -25,6 +26,7 @@ instance RunMessage TasteOfLifeblood where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       clues <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       enemies <- select $ NearestEnemyToFallback iid AnyEnemy
       player <- getPlayer iid
       chooseOrRunOne iid
@@ -32,7 +34,7 @@ instance RunMessage TasteOfLifeblood where
         <> [ Label
             "Place 1 of your clues on your location"
             [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
-           | clues > 0
+           | canPlaceClues
            ]
         <> [ Label
             "Place 1 of your clues on nearest enemy"

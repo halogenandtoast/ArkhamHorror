@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.ForbiddenSecrets (forbiddenSecrets) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Location
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -29,8 +30,8 @@ instance RunMessage ForbiddenSecrets where
       doStep n msg
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
-      hasClues <- fieldMap InvestigatorClues (> 0) iid
-      if hasClues
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
+      if canPlaceClues
         then chooseOneM iid $ withI18n do
           withLocationOf iid \_ -> do
             countVar 1 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1

@@ -170,34 +170,26 @@ instance RunMessage LocationAttrs where
           $ LocationMaybeFieldCalculation a.id LocationShroud
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
-      let clues = locationClues a
-      let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       push
         $ SkillTestResultOption
           ( SkillTestOption
               { option =
                   Label ("Discover Clue at " <> display (toName a))
-                    $ [before | clues == 0]
-                    <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
-                       , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
-                       ]
-                    <> [after | clues == 0]
+                    [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
+                    , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
+                    ]
               , kind = OriginalOptionKind
               , criteria = Nothing
               }
           )
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
-      let clues = locationClues a
-      let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       push
         $ SkillTestResultOption
           ( SkillTestOption
               { option =
                   Label ("Discover Clue at " <> display (toName a))
-                    $ [before | clues == 0]
-                    <> [Successful (Action.Investigate, toTarget a) iid source actual n]
-                    <> [after | clues == 0]
+                    [Successful (Action.Investigate, toTarget a) iid source actual n]
               , kind = OriginalOptionKind
               , criteria = Nothing
               }

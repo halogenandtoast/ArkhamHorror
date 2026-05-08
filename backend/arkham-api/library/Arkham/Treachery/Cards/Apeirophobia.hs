@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.Apeirophobia (apeirophobia, Apeirophobia (..)) whe
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Investigator.Projection ()
 import Arkham.Message.Lifted.Choose
@@ -24,10 +25,10 @@ instance RunMessage Apeirophobia where
           revelationSkillTest sid iid attrs #willpower (Fixed shelter)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      clues <- iid.clues
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOneM iid do
         labeled "Take 1 horror for each point you failed by." $ assignHorror iid attrs n
-        when (clues >= 1) do
+        when canPlaceClues do
           labeled "Place 2 of your clues on your location." $ placeCluesOnLocation iid attrs 2
         whenM hasRemainingFrostTokens do
           labeled "Add 1 {frost} token to the chaos bag." $ addChaosToken #frost

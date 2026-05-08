@@ -1,6 +1,7 @@
 {- HLINT ignore "Use camelCase" -}
 module Arkham.Treachery.Cards.Downpour_BadWeather (downpour_BadWeather) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
@@ -26,12 +27,12 @@ instance RunMessage Downpour_BadWeather where
       pure t
     DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) -> do
       actions <- field InvestigatorRemainingActions iid
-      clues <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid $ withI18n do
         countVar 1 $ labeledValidate' (actions > 0) "loseActions" do
           loseActions iid attrs 1
           doStep (n - 1) msg'
-        countVar 1 $ labeledValidate' (clues > 0) "placeCluesOnYourLocation" do
+        countVar 1 $ labeledValidate' canPlaceClues "placeCluesOnYourLocation" do
           placeCluesOnLocation iid attrs 1
           doStep (n - 1) msg'
       pure t

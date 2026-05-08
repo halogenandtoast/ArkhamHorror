@@ -4758,41 +4758,49 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = case mAction of
-        Just Action.Investigate -> goLocation =<< maybeToList mTarget
-        Just Action.Fight -> goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
-        Just Action.Evade -> goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
-        _ -> []
       goLocation = \case
         ProxyTarget t _ -> goLocation t
-        LocationTarget lid -> [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> goLocation t1 <> goLocation t2
-        _ -> []
+        LocationTarget lid -> do
+          clues <- field LocationClues lid
+          pure
+            $ mkWhen (Window.PassInvestigationSkillTest iid lid n)
+            : [mkWhen (Window.SuccessfullyInvestigateWithNoClues iid lid) | clues == 0]
+        BothTarget t1 t2 -> (<>) <$> goLocation t1 <*> goLocation t2
+        _ -> pure []
       goEnemy mk = \case
         ProxyTarget t _ -> goEnemy mk t
         EnemyTarget eid -> [mkWhen $ mk eid n]
         BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
+    windows <- case mAction of
+      Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
+      Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      _ -> pure []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
     pure a
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = case mAction of
-        Just Action.Investigate -> goLocation =<< maybeToList mTarget
-        Just Action.Fight -> goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
-        Just Action.Evade -> goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
-        _ -> []
       goLocation = \case
         ProxyTarget t _ -> goLocation t
-        LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> goLocation t1 <> goLocation t2
-        _ -> []
+        LocationTarget lid -> do
+          clues <- field LocationClues lid
+          pure
+            $ mkAfter (Window.PassInvestigationSkillTest iid lid n)
+            : [mkAfter (Window.SuccessfullyInvestigateWithNoClues iid lid) | clues == 0]
+        BothTarget t1 t2 -> (<>) <$> goLocation t1 <*> goLocation t2
+        _ -> pure []
       goEnemy mk = \case
         ProxyTarget t _ -> goEnemy mk t
         EnemyTarget eid -> [mkAfter $ mk eid n]
         BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
+    windows <- case mAction of
+      Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
+      Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      _ -> pure []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional immediate | iid == investigatorId -> do

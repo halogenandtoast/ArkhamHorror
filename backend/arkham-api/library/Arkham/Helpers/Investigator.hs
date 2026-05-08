@@ -566,6 +566,12 @@ getCanPlaceCluesOnLocationCount iid = do
   m <- if canRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
   (+ m) <$> field InvestigatorClues iid
 
+canPlaceCluesOnYourLocation :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+canPlaceCluesOnYourLocation iid = canPlaceCluesOnYourLocationN iid 1
+
+canPlaceCluesOnYourLocationN :: (HasGame m, Tracing m) => InvestigatorId -> Int -> m Bool
+canPlaceCluesOnYourLocationN iid n = (>= n) <$> getCanPlaceCluesOnLocationCount iid
+
 canHaveHorrorHealed :: (HasGame m, Tracing m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 

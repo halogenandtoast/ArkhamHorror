@@ -102,7 +102,7 @@ import Arkham.Helpers.Slot (
   removeIfMatchesOnce,
   slotItems,
  )
-import Arkham.Helpers.Source (sourceMatches, sourceTraits)
+import Arkham.Helpers.Source (getSourceController, sourceMatches, sourceTraits)
 import Arkham.Helpers.Window (
   batchedTimings,
   checkAfter,
@@ -472,6 +472,12 @@ runWindow attrs windows actions playableCards = do
               )
               actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
+
+sourcePerformerHasModifier :: (HasGame m, Tracing m) => Source -> ModifierType -> m Bool
+sourcePerformerHasModifier source m =
+  getSourceController source >>= \case
+    Nothing -> pure False
+    Just iid -> hasModifier iid m
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigatorMessage" $ runQueueT $ case msg of
@@ -2704,8 +2710,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
       & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
   ApplyHealing source -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
     let totalSanity = sanity + investigatorHorrorHealed
@@ -2718,8 +2724,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       push $ Do msg
     pure a
   Do (ApplyHealing source) -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
     let totalSanity = sanity + investigatorHorrorHealed
@@ -2758,7 +2764,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (horrorHealedL .~ 0)
   HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]
     canHealAtFull <-
       if null canHealAtFullSources
@@ -2790,12 +2796,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [Label "Heal remaining damage normally" [whenWindow, Do msg] | investigatorHealthDamage a > 0]
     pure a
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     unless cannotHealDamage do
       pushAll [HealDamageDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
     pure a
   HealDamageDelayed (isTarget a -> True) source n -> do
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     if cannotHealDamage
       then pure a
       else pure $ a & assignedHealthHealL %~ insertWith (+) source n
@@ -2805,7 +2811,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     -- TODO: HERE  MAYBE
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
       else do
@@ -2817,12 +2823,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     mods <- getModifiers a
     let n = sum [x | HealingTaken x <- mods]
     let amount = amount' + n
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     unless cannotHealHorror
       $ pushAll [HealHorrorDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
     pure a
   HealHorrorDelayed target@(isTarget a -> True) source n | n > 0 -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
 
     -- afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source n]
 
@@ -2863,7 +2869,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   Do (HealHorrorDelayed (isTarget a -> True) source n) -> do
     let iid = investigatorId
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     unless cannotHealHorror do
       hrrTreacheries <-
         selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfHorror
@@ -2884,7 +2890,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                ]
     pure a
   Do (HealHorror (isTarget a -> True) source n) -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     if cannotHealHorror
       then pure a
       else pure $ a & assignedSanityHealL %~ insertWith (+) source n
@@ -2962,7 +2968,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (unhealedHorrorThisRoundL %~ min 0 . subtract amount)
   HealDamageDirectly (InvestigatorTarget iid) source amount | iid == investigatorId && amount > 0 -> do
     -- USE ONLY WHEN NO CALLBACKS
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     if cannotHealDamage
       then pure a
       else do
@@ -3403,9 +3409,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         -- or her deck, then draws the card, and upon completion of the entire draw
         -- takes one horror.
 
-        let
-          source = cardDrawSource cardDraw
-          n = cardDrawAmount cardDraw
+        let n = cardDrawAmount cardDraw
 
         modifiers' <- getModifiers (toTarget a)
 
@@ -3478,6 +3482,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               & (drawnCardsL .~ mempty)
               & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
 
+        -- Continue an in-progress draw after a reshuffle / partial draw,
+        -- preserving rules and filters from the original draw (e.g.
+        -- AfterDrawDiscard) but resetting per-draw bookkeeping so the
+        -- remaining cards are drawn cleanly. cardDrawAndThen is dropped
+        -- because the original DoDrawCards already pushed it.
+        let
+          continueDraw amount =
+            DrawCards iid
+              $ cardDraw
+                { cardDrawAmount = amount
+                , cardDrawState = UnresolvedCardDraw
+                , cardDrawAndThen = Nothing
+                , cardDrawAlreadyDrawn = []
+                }
         if null investigatorDeck
           then do
             -- What happens if the Yorick player has Graveyard Ghouls engaged
@@ -3492,7 +3510,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             if canShuffle
               then do
                 wouldDo
-                  (EmptyDeck iid (Just $ drawCards iid source n))
+                  (EmptyDeck iid (Just $ continueDraw n))
                   (Window.DeckWouldRunOutOfCards iid)
                   (Window.DeckHasNoCards iid)
                 pure a
@@ -3504,7 +3522,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             let deck = unDeck investigatorDeck
             if length deck < n
               then do
-                push $ drawCards iid source (n - length deck)
+                push $ continueDraw (n - length deck)
                 pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
               else do
                 let (drawn, deck') = splitAt n deck

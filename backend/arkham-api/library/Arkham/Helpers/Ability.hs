@@ -472,6 +472,15 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             True
             (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
+      PlayerLimit PerWindow n -> do
+        -- Count uses scoped to the *current* windows (`ws`) by intersecting
+        -- against each `usedAbilityWindows` entry. This prevents a use in an
+        -- outer window from blocking the ability inside a freshly opened
+        -- nested window (e.g. Ritual Candles re-firing after Uncanny
+        -- Specimen's draw-another opens a new RevealChaosToken window).
+        let matching = filter ((== ability) . usedAbility) usedAbilities
+        let countInWs u = length (filter (`elem` ws) (usedAbilityWindows u))
+        pure $ sum (map countInWs matching) < n
       PlayerLimit _ n -> do
         pure
           $ maybe
@@ -545,6 +554,14 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
               && abilityIndex (usedAbility u) == abilityIndex ability
         let total = sum $ map usedTimes $ filter sameAbility usedAbilities'
         pure $ total < n
+      GroupLimit PerWindow n -> do
+        usedAbilities' <-
+          filterDepthSpecificAbilities
+            =<< concatMapM (field InvestigatorUsedAbilities)
+            =<< allInvestigators
+        let matching = filter ((== ability) . usedAbility) usedAbilities'
+        let countInWs u = length (filter (`elem` ws) (usedAbilityWindows u))
+        pure $ sum (map countInWs matching) < n
       GroupLimit _ n -> do
         usedAbilities' <-
           filterDepthSpecificAbilities

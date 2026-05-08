@@ -1347,7 +1347,7 @@ cosmicGuidance =
 
 eldritchWhispers1 :: CardDef
 eldritchWhispers1 =
-  (skill "60471" "Eldritch Whispers" [#wild, #wild] Mystic)
+  (skill "60471" "Eldritch Whispers" [#willpower, #willpower] Mystic)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1

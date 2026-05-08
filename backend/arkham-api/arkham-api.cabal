@@ -5923,6 +5923,7 @@ test-suite spec
       Arkham.Investigator.Cards.KymaniJonesSpec
       Arkham.Investigator.Cards.LukeRobinsonSpec
       Arkham.Investigator.Cards.MandyThompsonSpec
+      Arkham.Investigator.Cards.MarieLambeau2Spec
       Arkham.Investigator.Cards.PatriceHathawaySpec
       Arkham.Investigator.Cards.RexMurphySpec
       Arkham.Investigator.Cards.RolandBanksSpec

@@ -77,6 +77,20 @@ data Room = Room
   { roomSubscribers :: TVar (IntMap Subscriber)
   , roomNextSubId :: TVar Int
   , messageBrokerChannel :: RedisChannel
+  , roomLogCache :: TVar (Maybe RoomLogCache)
+  -- ^ In-memory mirror of arkham_log_entries for this game, so updateGame
+  -- doesn't have to re-read the entire log from the DB on every action.
+  -- Validated against the locked game's step on each use; if the step
+  -- doesn't match (another server modified the game), we fall back to
+  -- reading from the DB and refresh the cache.
+  }
+
+-- | Cache of one game's log entries. 'cacheStep' is the arkham_games.step
+-- value at the time we cached. Invalidate (refetch from DB) when the
+-- locked game's step doesn't match.
+data RoomLogCache = RoomLogCache
+  { cacheStep :: !Int
+  , cacheEntries :: ![Text]
   }
 
 instance HasField "broker" Room RedisChannel where
@@ -94,7 +108,8 @@ newRoom :: RedisChannel -> IO Room
 newRoom chn = atomically do
   subs <- newTVar IntMap.empty
   next <- newTVar 0
-  pure $ Room subs next chn
+  cache <- newTVar Nothing
+  pure $ Room subs next chn cache
 
 {- | Register a new WebSocket subscriber on the room. Returns the
 subscription id (used to unsubscribe) and the bounded queue the

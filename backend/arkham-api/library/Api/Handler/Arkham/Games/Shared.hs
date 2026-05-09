@@ -189,8 +189,18 @@ updateGame response gameId mRoom = do
         Nothing -> \_ -> pure ()
         Just room -> broadcastToRoom room
   tracer <- getTracer
-  oldLog <- runDB $ getGameLog gameId Nothing
-  (ArkhamGame {..}, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  -- NOTE: not wrapping the whole handler in withSpan_ -- it would rewrap
+  -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
+  -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
+  -- The runMessages span below is wrapped where it's safe.
+  (ArkhamGame {..}, oldLogEntries, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+    -- Read the prior log from the per-room cache when it's in sync with
+    -- the just-locked game's step; otherwise fall back to the DB. Avoids
+    -- the 217-row-avg getGameLog read on every action in the common case.
+    oldLogEntries <- liftIO (lookupCachedLog mRoom arkhamGameStep) >>= \case
+      Just entries -> pure entries
+      Nothing -> gameLogToLogEntries <$> getGameLog gameId Nothing
+
     mLastStep <- getBy $ UniqueStep gameId arkhamGameStep
     let
       gameJson@Game {..} = arkhamGameCurrentData
@@ -203,7 +213,7 @@ updateGame response gameId mRoom = do
 
     logRef <- newIORef []
     handleAnswer gameJson playerId response >>= \case
-      Unhandled _ -> pure (g, [])
+      Unhandled _ -> pure (g, oldLogEntries, [])
       Handled answerMessages -> do
         let
           messages =
@@ -221,7 +231,8 @@ updateGame response gameId mRoom = do
         let diffDown = diff ge arkhamGameCurrentData
 
         updatedQueue <- readIORef $ queueToRef queueRef
-        updatedLog <- readIORef logRef
+        -- handleMessageLog conses for O(1) inserts; reverse here to restore order.
+        updatedLog <- reverse <$> readIORef logRef
 
         now <- liftIO getCurrentTime
         deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
@@ -246,15 +257,39 @@ updateGame response gameId mRoom = do
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
-        pure (g', updatedLog)
+        pure (g', oldLogEntries, updatedLog)
+
+  -- Update the per-room cache after the DB transaction has committed,
+  -- so the cache is never ahead of durably-stored state.
+  let publishLog = oldLogEntries <> updatedLog
+  liftIO $ writeCachedLog mRoom arkhamGameStep publishLog
 
   publishToRoom gameId
     $ GameUpdate
     $ PublicGame
       gameId
       arkhamGameName
-      (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
+      publishLog
       arkhamGameCurrentData
+
+-- | Read the cached log entries IF the cache is consistent with the locked
+-- game's current step. Returns Nothing on a mismatch (so the caller refetches
+-- from the DB and refreshes the cache).
+lookupCachedLog :: Maybe Room -> Int -> IO (Maybe [Text])
+lookupCachedLog Nothing _ = pure Nothing
+lookupCachedLog (Just room) currentStep = atomically do
+  cachedVal <- readTVar (roomLogCache room)
+  pure $ case cachedVal of
+    Just c | c.cacheStep == currentStep -> Just c.cacheEntries
+    _ -> Nothing
+
+-- | Write the cache after a successful update. The step recorded is the new
+-- post-update step; the next action will read the game at that step and find
+-- a consistent cache.
+writeCachedLog :: Maybe Room -> Int -> [Text] -> IO ()
+writeCachedLog Nothing _ _ = pure ()
+writeCachedLog (Just room) newStep entries =
+  atomically $ writeTVar (roomLogCache room) $ Just $ RoomLogCache newStep entries
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
@@ -265,8 +300,11 @@ newtype RawGameJsonPut = RawGameJsonPut
 handleMessageLog
   :: MonadIO m => IORef [Text] -> Broadcast -> ClientMessage -> m ()
 handleMessageLog logRef broadcast msg = liftIO $ do
+  -- Cons in O(1); the caller reverses once when reading the IORef.
+  -- The previous (logs <> [txt]) was O(n) per call -> O(n^2) per action,
+  -- which mattered during scenario setup with hundreds of log lines.
   for_ (toClientText msg) $ \txt ->
-    atomicModifyIORef' logRef (\logs -> (logs <> [txt], ()))
+    atomicModifyIORef' logRef (\logs -> (txt : logs, ()))
   broadcast (encode $ toGameMessage msg)
  where
   toGameMessage = \case

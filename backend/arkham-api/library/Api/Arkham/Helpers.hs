@@ -322,9 +322,22 @@ lockGame gameId = void $ select do
   where_ $ game.id ==. val gameId
   locking forUpdate
 
+-- | One round-trip in the hot path: lock the row AND fetch its data.
+-- Replaces the previous lockGame + get404 pair, halving the DB calls
+-- for every caller of atomicallyWithGame on the success path.
+-- (notFound lives in MonadHandler, but DB is rank-2 over MonadIO; on the
+-- rare missing-game path we delegate to get404 to throw the 404, which
+-- costs one extra empty SELECT only when the game doesn't exist.)
 atomicallyWithGame :: ArkhamGameId -> (ArkhamGame -> DB a) -> DB a
 atomicallyWithGame gameId f = do
-  lockGame gameId
-  game <- get404 gameId
-  f game
+  results <- select do
+    game <- from $ table @ArkhamGame
+    where_ $ game.id ==. val gameId
+    locking forUpdate
+    pure game
+  case results of
+    [] -> do
+      game <- get404 gameId
+      f game
+    (Entity _ game : _) -> f game
 

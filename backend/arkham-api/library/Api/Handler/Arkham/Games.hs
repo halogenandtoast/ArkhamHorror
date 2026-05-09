@@ -43,6 +43,7 @@ import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
+import OpenTelemetry.Eventlog (withSpan_)
 import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import Yesod.WebSockets
 
@@ -75,24 +76,29 @@ getApiV1ArkhamGameSpectateR gameId = do
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- getRequestUserId
-  games <- runDB $ select do
-    (players :& games) <-
-      distinct
-        $ from
-        $ table @ArkhamPlayer
-        `innerJoin` table @ArkhamGameRaw
-          `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
-    where_ $ players.userId ==. val userId
-    orderBy [desc games.updatedAt]
-    pure games
-  let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
-  playerCounts <- runDB $ select do
-    p <- from $ table @ArkhamPlayer
-    where_ $ p.arkhamGameId `in_` valList gameIds
-    groupBy p.arkhamGameId
-    pure (p.arkhamGameId, countRows @Int)
-  let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
+  -- withSpan_ wraps Yesod's HCContent control-flow exceptions, so it's
+  -- only safe over code paths that don't call notFound/notAuthenticated/etc.
+  -- getRequestUserId is the only HCContent-throwing call; everything below
+  -- is safe to trace.
+  withSpan_ "getApiV1ArkhamGamesR" do
+    games <- runDB $ select do
+      (players :& games) <-
+        distinct
+          $ from
+          $ table @ArkhamPlayer
+          `innerJoin` table @ArkhamGameRaw
+            `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
+      where_ $ players.userId ==. val userId
+      orderBy [desc games.updatedAt]
+      pure games
+    let gameIds = map (coerce . entityKey) games :: [ArkhamGameId]
+    playerCounts <- runDB $ select do
+      p <- from $ table @ArkhamPlayer
+      where_ $ p.arkhamGameId `in_` valList gameIds
+      groupBy p.arkhamGameId
+      pure (p.arkhamGameId, countRows @Int)
+    let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
+    pure $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

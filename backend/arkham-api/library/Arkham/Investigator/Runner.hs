@@ -4081,10 +4081,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       $ pushM
       $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
 
-    when (length streakTypes > 1)
+    when (length streak > 1)
       $ pushM
       $ checkWindows
-        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streakTypes) streakTypes)]
+        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) streakTypes)]
 
     when (#parley `elem` actions && #parley `notElem` previous)
       $ pushM

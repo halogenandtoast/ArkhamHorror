@@ -36,16 +36,24 @@ V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
 V2_NAMESPACE   ?= arkham
 V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
+V2_BUILDER     ?= arkham-multiarch
+
+## Ensure a docker-container buildx builder exists (required for multi-platform builds)
+v2-buildx-setup:
+	@docker buildx inspect $(V2_BUILDER) >/dev/null 2>&1 || \
+	  docker buildx create --name $(V2_BUILDER) --driver docker-container >/dev/null
+.PHONY: v2-buildx-setup
 
 ## Build, push, and roll out to the DigitalOcean k8s (terraform/) cluster
-v2-deploy:
+v2-deploy: v2-buildx-setup
 	@command -v kubectl >/dev/null || { echo "kubectl not found"; exit 1; }
 	@test -f $(V2_KUBECONFIG) || { echo "kubeconfig missing at $(V2_KUBECONFIG) — run 'terraform output -raw kubeconfig_raw > terraform/kubeconfig'"; exit 1; }
-	@TAG=$$(git rev-parse --short HEAD); \
+	@set -e; \
+	  TAG=$$(git rev-parse --short HEAD); \
 	  DIRTY=$$(git status --porcelain | head -1); \
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
-	  docker buildx build --platform $(V2_PLATFORM) \
+	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
@@ -62,12 +70,13 @@ v2-deploy-multiarch: v2-deploy
 .PHONY: v2-deploy-multiarch
 
 ## Build+push linux/amd64 and linux/arm64 images to Docker Hub (no rollout)
-v2-push-multiarch:
-	@TAG=$$(git rev-parse --short HEAD); \
+v2-push-multiarch: v2-buildx-setup
+	@set -e; \
+	  TAG=$$(git rev-parse --short HEAD); \
 	  DIRTY=$$(git status --porcelain | head -1); \
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
-	  docker buildx build --platform linux/amd64,linux/arm64 \
+	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push .

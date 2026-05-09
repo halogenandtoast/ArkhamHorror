@@ -13,14 +13,15 @@ newtype SpiresOfCarcosa = SpiresOfCarcosa TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spiresOfCarcosa :: TreacheryCard SpiresOfCarcosa
-spiresOfCarcosa = treachery SpiresOfCarcosa Cards.spiresOfCarcosa
+spiresOfCarcosa = treacheryWith SpiresOfCarcosa Cards.spiresOfCarcosa id
 
 instance HasAbilities SpiresOfCarcosa where
   getAbilities (SpiresOfCarcosa a) =
     [investigateAbility a 1 mempty OnSameLocation]
       <> case a.attached of
-        Just (LocationTarget lid) ->
-          [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
+        Just (LocationTarget lid)
+          | toResultDefault False a.meta ->
+              [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
         _ -> []
 
 instance RunMessage SpiresOfCarcosa where
@@ -39,5 +40,5 @@ instance RunMessage SpiresOfCarcosa where
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs
-      pure t
+      pure $ SpiresOfCarcosa $ attrs & setMeta True
     _ -> SpiresOfCarcosa <$> liftRunMessage msg attrs

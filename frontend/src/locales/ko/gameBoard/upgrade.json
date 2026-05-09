@@ -8,6 +8,7 @@
     "pullUpdate": "{deckSource}에서 향상된 덱 가져오기",
     "OR": "또는",
     "deckUrlPlaceholder": "아컴디비(ko.arkhamdb.com) 또는 아컴빌드(arkham.build) 사이트의 덱 주소",
+    "orUploadJson": "또는 JSON 업로드",
     "Upgrade": "향상",
     "continueWithoutUpgrading": "향상 없이 계속하기",
     "waitingOtherPlayer": "다른 플레이어가 덱을 향상하기를 기다리는 중.",

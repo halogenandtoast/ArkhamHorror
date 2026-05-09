@@ -914,6 +914,10 @@ newGame scenario' investigator = do
         , gamePerformTarotReadings = False
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameUndoActionStep = Nothing
+        , gameUndoTurnStep = Nothing
+        , gameUndoPhaseStep = Nothing
+        , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
         }
 

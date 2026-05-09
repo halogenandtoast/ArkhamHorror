@@ -2,6 +2,7 @@
     "discards": "Discards",
     "endTurn": "End turn",
     "skipTriggers": "Skip Triggers",
+    "skipAllTriggers": "Skip Triggers for All Investigators",
     "devouredCards": "Devoured ({count})",
     "underneathCards": "Underneath ({count})"
 

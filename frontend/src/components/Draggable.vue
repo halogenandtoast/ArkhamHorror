@@ -244,6 +244,22 @@ function moveUp() {
     max-width: 100%;
   }
 
+  &:has(> .content > .settings),
+  &:has(> .content > .shortcuts-modal) {
+    width: min(640px, 92vw);
+    max-width: 92vw;
+    background: var(--background);
+    border-color: var(--box-border);
+
+    > .content {
+      margin: 0;
+      border-radius: 0 0 16px 16px;
+      background: var(--background);
+      overflow: hidden;
+      height: auto;
+    }
+  }
+
   &:not(.minimized) {
     &:has(p.file) {
       box-shadow: none;

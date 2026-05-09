@@ -74,6 +74,10 @@ instance FromJSON Game where
     gamePerformTarotReadings <- o .: "gamePerformTarotReadings"
     gameCurrentBatchId <- o .: "gameCurrentBatchId"
     gameScenarioSteps <- o .:? "gameScenarioSteps" .!= 0
+    gameUndoActionStep <- o .:? "gameUndoActionStep" .!= Nothing
+    gameUndoTurnStep <- o .:? "gameUndoTurnStep" .!= Nothing
+    gameUndoPhaseStep <- o .:? "gameUndoPhaseStep" .!= Nothing
+    gameUndoRoundStep <- o .:? "gameUndoRoundStep" .!= Nothing
     let gameAsIfAtIgnored = mempty
 
     pure Game {..}

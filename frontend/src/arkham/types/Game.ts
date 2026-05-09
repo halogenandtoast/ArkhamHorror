@@ -106,6 +106,10 @@ export type Game = {
   totalDoom: number;
   totalClues: number;
   scenarioSteps: number;
+  undoActionStep: number | null;
+  undoTurnStep: number | null;
+  undoPhaseStep: number | null;
+  undoRoundStep: number | null;
 }
 
 export function choices(game: Game, playerId: string): Message[] {
@@ -246,12 +250,20 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]'),
     totalDoom: JsonDecoder.number(),
     totalClues: JsonDecoder.number(),
-    scenarioSteps: JsonDecoder.number()
+    scenarioSteps: JsonDecoder.number(),
+    undoActionStep: v2Optional(JsonDecoder.number()),
+    undoTurnStep: v2Optional(JsonDecoder.number()),
+    undoPhaseStep: v2Optional(JsonDecoder.number()),
+    undoRoundStep: v2Optional(JsonDecoder.number())
   },
   'Game',
-).map(({mode, killedInvestigators, ...game}) => ({
+).map(({mode, killedInvestigators, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
   killedInvestigators: killedInvestigators ?? {},
+  undoActionStep: undoActionStep ?? null,
+  undoTurnStep: undoTurnStep ?? null,
+  undoPhaseStep: undoPhaseStep ?? null,
+  undoRoundStep: undoRoundStep ?? null,
   ...game
 }))

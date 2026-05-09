@@ -311,6 +311,10 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gamePerformTarotReadings = includeTarotReadings
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameUndoActionStep = Nothing
+        , gameUndoTurnStep = Nothing
+        , gameUndoPhaseStep = Nothing
+        , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
         }
  where
@@ -624,6 +628,10 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("totalDoom" .= doom)
       <> ("totalClues" .= clues)
       <> ("scenarioSteps" .= gameScenarioSteps)
+      <> ("undoActionStep" .= gameUndoActionStep)
+      <> ("undoTurnStep" .= gameUndoTurnStep)
+      <> ("undoPhaseStep" .= gameUndoPhaseStep)
+      <> ("undoRoundStep" .= gameUndoRoundStep)
    where
     emptyAdditionalData =
       object
@@ -746,6 +754,10 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "totalDoom" .= toJSON doom
         , "totalClues" .= toJSON clues
         , "scenarioSteps" .= toJSON gameScenarioSteps
+        , "undoActionStep" .= toJSON gameUndoActionStep
+        , "undoTurnStep" .= toJSON gameUndoTurnStep
+        , "undoPhaseStep" .= toJSON gameUndoPhaseStep
+        , "undoRoundStep" .= toJSON gameUndoRoundStep
         ]
    where
     emptyAdditionalData =

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { useSettings } from '@/stores/settings';
 import { storeToRefs } from 'pinia';
-import { onUnmounted, onMounted, computed, ref, watch } from 'vue'
+import { onUnmounted, onMounted, computed, inject, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
-import { PaperClipIcon } from '@heroicons/vue/20/solid'
+import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Source } from '@/arkham/types/Source'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
@@ -135,6 +136,10 @@ const skipTriggersAction = computed(() => {
   return props.choices
     .findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON && c.investigatorId === id.value);
 })
+
+const skipAllTriggers = inject<(() => void)>('skipAllTriggers')
+const skipAllAvailable = inject<Ref<boolean>>('skipAllAvailable')
+const showSkipAll = computed(() => skipTriggersAction.value !== -1 && skipAllAvailable?.value === true)
 
 const investigatorClass = computed(() => {
   return ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.meta !== 'Neutral' ? (props.investigator.meta ?? props.investigator.class) : props.investigator.class
@@ -477,11 +482,20 @@ const spadeInjury = computed(() => {
               @click="showDevoured"
             >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
 
-            <button
-              :disabled="skipTriggersAction == -1"
-              @click="$emit('choose', skipTriggersAction)"
-              class="skip-triggers-button"
-            >{{ isMobile ? t('skip') : $t('investigator.skipTriggers') }}</button>
+            <span class="skip-triggers-group" :class="{ 'skip-triggers-group--paired': showSkipAll }">
+              <button
+                :disabled="skipTriggersAction == -1"
+                @click="$emit('choose', skipTriggersAction)"
+                class="skip-triggers-button"
+              >{{ isMobile ? t('skip') : $t('investigator.skipTriggers') }}</button>
+              <button
+                v-if="showSkipAll"
+                @click="skipAllTriggers && skipAllTriggers()"
+                class="skip-all-triggers-button"
+                v-tooltip="$t('investigator.skipAllTriggers')"
+                :aria-label="$t('investigator.skipAllTriggers')"
+              ><ForwardIcon class="skip-all-triggers-icon" aria-hidden="true" /></button>
+            </span>
 
             <button
               v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
@@ -804,6 +818,11 @@ i.action {
   }
 }
 
+.skip-triggers-group {
+  display: inline-flex;
+  align-items: stretch;
+}
+
 .skip-triggers-button {
   transition: all 0.2s ease-in;
   background-color: var(--select);
@@ -819,6 +838,33 @@ i.action {
   &:not([disabled]):hover {
     background-color: var(--select-dark);
   }
+}
+
+.skip-triggers-group--paired .skip-triggers-button {
+  border-radius: 2px 0 0 2px;
+}
+
+.skip-all-triggers-button {
+  transition: all 0.2s ease-in;
+  background-color: var(--select);
+  color: white;
+  border: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 0 2px 2px 0;
+  padding-inline: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--select-dark);
+  }
+}
+
+.skip-all-triggers-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .investigator-image {

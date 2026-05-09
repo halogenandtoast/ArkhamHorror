@@ -402,6 +402,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (inActionL .~ True)
       & (actionCanBeUndoneL .~ True)
       & (actionDiffL .~ [])
+      & (undoActionStepL ?~ gameScenarioSteps g)
   FinishAction -> do
     iid <- getActiveInvestigatorId
     let
@@ -2175,7 +2176,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                     [PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs]
               ]
           ]
-    pure $ g & phaseL .~ InvestigationPhase
+    pure $ g & phaseL .~ InvestigationPhase & undoPhaseStepL ?~ (gameScenarioSteps g + 1)
   BeginTurn x -> do
     player <- getPlayer x
     pushM $ checkWindows [mkWhen (Window.TurnBegins x), mkAfter (Window.TurnBegins x)]
@@ -2187,6 +2188,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (activeAbilitiesL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
+      -- +1 because the batch processing this BeginTurn ends at the next Ask
+      -- (the investigator's first action choice). We want undo to land there,
+      -- not at the prior batch (which would be the choose-player question or
+      -- the end of mythos).
+      & (undoTurnStepL ?~ (gameScenarioSteps g + 1))
   SetPlayerOrder -> do
     lead <- getLead
     players <- getInvestigators
@@ -2261,7 +2267,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
     runQueueT $ runEnemyPhase EndEnemy
-    pure $ g & phaseL .~ EnemyPhase
+    pure $ g & phaseL .~ EnemyPhase & undoPhaseStepL ?~ (gameScenarioSteps g + 1)
   EnemyAttackFromDiscard iid source card -> do
     enemyId <- getRandom
     let enemy = overAttrs (\a -> a {enemyPlacement = StillInEncounterDiscard}) (createEnemy card enemyId)
@@ -2302,7 +2308,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       , phaseStep CheckHandSizeStep [AllCheckHandSize]
       , phaseStep UpkeepPhaseEndsStep [EndUpkeep, Do EndUpkeep]
       ]
-    pure $ g & phaseL .~ UpkeepPhase
+    pure $ g & phaseL .~ UpkeepPhase & undoPhaseStepL ?~ (gameScenarioSteps g + 1)
   Do EndUpkeep -> do
     pushAll
       . (: [EndPhase, After EndPhase])
@@ -2378,7 +2384,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                MythosPhaseEndsStep
                [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
            ]
-    pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
+    pure
+      $ g
+      & (phaseL .~ MythosPhase)
+      & (phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep)
+      & (undoPhaseStepL ?~ (gameScenarioSteps g + 1))
   Msg.PhaseStep step msgs -> do
     pushAll msgs
     pure $ g & phaseStepL ?~ step
@@ -3498,8 +3508,17 @@ runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
       & (removedFromPlayL .~ [])
       & (playerOrderL %~ \po -> if null po then view (entitiesL . investigatorsL . to Map.keys) g else po)
   Setup -> pure $ g & inSetupL .~ True
-  StartScenario {} -> pure $ g & inSetupL .~ True & scenarioStepsL .~ 0
+  StartScenario {} ->
+    pure
+      $ g
+      & (inSetupL .~ True)
+      & (scenarioStepsL .~ 0)
+      & (undoActionStepL .~ Nothing)
+      & (undoTurnStepL .~ Nothing)
+      & (undoPhaseStepL .~ Nothing)
+      & (undoRoundStepL .~ Nothing)
   EndSetup -> pure $ g & inSetupL .~ False
+  BeginRound -> pure $ g & undoRoundStepL ?~ (gameScenarioSteps g + 1)
   _ -> pure g
 
 handleActionDiff :: Game -> Game -> Game

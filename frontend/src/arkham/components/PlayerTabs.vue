@@ -406,4 +406,5 @@ ul.tabs__header > li.inactive {
 .glow-effect {
   box-shadow: inset 0 -10px 20px -10px rgba(0, 255, 0, 0.7); /* Inset shadow for glow effect */
 }
+
 </style>

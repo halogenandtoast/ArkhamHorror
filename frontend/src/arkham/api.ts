@@ -207,6 +207,18 @@ export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
 export const undoScenarioChoice = (gameId: string): Promise<void> =>
   api.put(`arkham/games/${gameId}/undo/scenario`)
 
+export const undoAction = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/undo/action`)
+
+export const undoTurn = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/undo/turn`)
+
+export const undoPhase = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/undo/phase`)
+
+export const undoRound = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/undo/round`)
+
 export const importGame = async (formData: FormData, multiplayerVariant: string): Promise<Game> => {
   const { data } = await api.post(`arkham/games/import?multiplayerVariant=${multiplayerVariant}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return gameDecoder.decodePromise(data)

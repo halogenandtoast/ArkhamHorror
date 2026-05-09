@@ -8,6 +8,7 @@
     "pullUpdate": "Pull Upgraded Deck from {deckSource}",
     "OR": "OR",
     "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
+    "orUploadJson": "or upload JSON",
     "Upgrade": "Upgrade",
     "continueWithoutUpgrading": "Continue without upgrading",
     "waitingOtherPlayer": "Waiting for other players to upgrade deck.",

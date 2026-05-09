@@ -36,6 +36,10 @@
           /decks ApiV1ArkhamGameDecksR PUT
           /undo ApiV1ArkhamGameUndoR PUT
           /undo/scenario ApiV1ArkhamGameUndoScenarioR PUT
+          /undo/action ApiV1ArkhamGameUndoActionR PUT
+          /undo/turn ApiV1ArkhamGameUndoTurnR PUT
+          /undo/phase ApiV1ArkhamGameUndoPhaseR PUT
+          /undo/round ApiV1ArkhamGameUndoRoundR PUT
           /file-bug ApiV1ArkhamGameBugR POST
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET

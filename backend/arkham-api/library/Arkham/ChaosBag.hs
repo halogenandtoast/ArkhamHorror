@@ -918,7 +918,8 @@ instance RunMessage ChaosBag where
       push $ RequestChaosTokens s (Just iid) (Reveal 1) SetAside
       pure c
     FinalizeRequestedChaosTokens source miid -> do
-      for_ (Map.lookup source chaosBagPendingRequests) $ push . RequestedChaosTokens source miid
+      for_ (Map.lookup source chaosBagPendingRequests) \tokens ->
+        unless (null tokens) $ push (RequestedChaosTokens source miid tokens)
       -- why do we just clear the tokens and not the source? Because when
       -- dealing with a skill test we might want to draw more tokens later, but
       -- not include them in the tokens to reveal

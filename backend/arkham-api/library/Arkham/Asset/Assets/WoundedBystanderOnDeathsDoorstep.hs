@@ -26,10 +26,12 @@ instance HasAbilities WoundedBystanderOnDeathsDoorstep where
         $ forced
         $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
     , restrictedAbility a 2 ControlsThis $ forced $ AssetDefeated #when ByAny (be a)
-    , controlledAbility a 3 (exists (be a <> not_ AssetWithDamage))
+    , controlledAbility a 3 (canDiscardCriteria <> exists (be a <> not_ AssetWithDamage))
         $ SilentForcedAbility
           (not_ $ oneOf [AssetHealed t #damage (be a) AnySource | t <- [#when, #at, #after]])
     ]
+   where
+    canDiscardCriteria = if toResultDefault True a.meta then NoRestriction else Never
 
 instance RunMessage WoundedBystanderOnDeathsDoorstep where
   runMessage msg a@(WoundedBystanderOnDeathsDoorstep attrs) = runQueueT $ case msg of
@@ -44,5 +46,5 @@ instance RunMessage WoundedBystanderOnDeathsDoorstep where
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       toDiscardBy iid (attrs.ability 3) attrs
-      pure a
+      pure $ WoundedBystanderOnDeathsDoorstep $ setMeta False attrs
     _ -> WoundedBystanderOnDeathsDoorstep <$> liftRunMessage msg attrs

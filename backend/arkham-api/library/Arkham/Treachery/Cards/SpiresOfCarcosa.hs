@@ -18,8 +18,8 @@ spiresOfCarcosa = treacheryWith SpiresOfCarcosa Cards.spiresOfCarcosa id
 instance HasAbilities SpiresOfCarcosa where
   getAbilities (SpiresOfCarcosa a) =
     [investigateAbility a 1 mempty OnSameLocation]
-      <> case a.attached of
-        Just (LocationTarget lid)
+      <> case a.attached.location of
+        Just lid
           | toResultDefault False a.meta ->
               [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
         _ -> []

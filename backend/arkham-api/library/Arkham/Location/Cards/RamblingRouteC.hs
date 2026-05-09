@@ -23,7 +23,7 @@ ramblingRouteC :: LocationCard RamblingRouteC
 ramblingRouteC = symbolLabel $ locationWith RamblingRouteC Cards.ramblingRouteC 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor RamblingRouteC where
-  getModifiersFor (RamblingRouteC a) = do
+  getModifiersFor (RamblingRouteC a) = whenRevealed a do
     for_ a.position \pos ->
       modifySelect
         a

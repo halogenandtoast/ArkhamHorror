@@ -31,6 +31,37 @@ deploy:
 	kamal deploy
 .PHONY: deploy
 
+V2_IMAGE       ?= halogenandtoast/arkham-horror
+V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
+V2_NAMESPACE   ?= arkham
+V2_DEPLOYMENT  ?= arkham-web
+V2_PLATFORM    ?= linux/amd64
+
+## Build, push, and roll out to the DigitalOcean k8s (terraform/) cluster
+v2-deploy:
+	@command -v kubectl >/dev/null || { echo "kubectl not found"; exit 1; }
+	@test -f $(V2_KUBECONFIG) || { echo "kubeconfig missing at $(V2_KUBECONFIG) — run 'terraform output -raw kubeconfig_raw > terraform/kubeconfig'"; exit 1; }
+	@TAG=$$(git rev-parse --short HEAD); \
+	  DIRTY=$$(git status --porcelain | head -1); \
+	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
+	  docker buildx build --platform $(V2_PLATFORM) \
+	    --tag $(V2_IMAGE):$$TAG \
+	    --tag $(V2_IMAGE):latest \
+	    --push . ; \
+	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout restart deployment/$(V2_DEPLOYMENT); \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout status deployment/$(V2_DEPLOYMENT) --timeout=10m
+.PHONY: v2-deploy
+
+## Tail logs from the DigitalOcean k8s deployment
+v2-logs:
+	KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) logs \
+	  -l app=$(V2_DEPLOYMENT) --tail=200 -f
+.PHONY: v2-logs
+
 ## Sync local images to s3 bucket
 sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"

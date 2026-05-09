@@ -48,6 +48,7 @@ import Network.WebSockets (ConnectionException)
 import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
+import UnliftIO.Timeout (timeout)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
@@ -182,6 +183,23 @@ instance ToJSON GameDetailsEntry where
 -- case messages are silently dropped instead of buffered indefinitely.
 type Broadcast = BSL.ByteString -> IO ()
 
+-- | Hard cap on a single runMessages invocation. If a game's message
+-- processing exceeds this we kill the action and roll back the surrounding
+-- DB transaction so the worker (and the FOR UPDATE lock on the game row)
+-- can be released. Empirically a normal action completes in well under 1s;
+-- 30s gives plenty of headroom for slow-but-legitimate scenario setup
+-- while still preventing one poison game from monopolising a worker.
+runMessagesTimeoutMicros :: Int
+runMessagesTimeoutMicros = 30 * 1000000
+
+-- | Thrown by updateGame when 'runMessages' exceeds 'runMessagesTimeoutMicros'.
+-- The Yesod handler turns this into a 500; the important effect is that the
+-- exception propagates out of runDB, rolls back the transaction, and frees
+-- the worker. Search Honeycomb / logs for this to find poison games.
+data RunMessagesTimeout = RunMessagesTimeout ArkhamGameId Int
+  deriving stock Show
+  deriving anyclass Exception
+
 updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
 updateGame response gameId mRoom = do
   let broadcast :: Broadcast
@@ -224,8 +242,18 @@ updateGame response gameId mRoom = do
         queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
         genRef <- newIORef $ mkStdGen gameSeed
 
-        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer) do
-          runMessages (gameIdToText gameId) Nothing
+        -- Circuit breaker: cap runMessages at runMessagesTimeoutMicros so a
+        -- pathological game state (infinite loop / message-handler explosion)
+        -- can't hold a worker hostage and pin a FOR UPDATE lock on the game
+        -- row indefinitely. On timeout, throw RunMessagesTimeout -- this
+        -- aborts the surrounding DB transaction (rollback releases the lock)
+        -- and lets the worker return to the pool.
+        mResult <- liftIO $ timeout runMessagesTimeoutMicros do
+          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer) do
+            runMessages (gameIdToText gameId) Nothing
+        case mResult of
+          Just () -> pure ()
+          Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros
 
         ge <- readIORef gameRef
         let diffDown = diff ge arkhamGameCurrentData

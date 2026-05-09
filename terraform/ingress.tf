@@ -25,6 +25,17 @@ resource "digitalocean_certificate" "app" {
 
   lifecycle {
     create_before_destroy = true
+
+    # DigitalOcean auto-renews managed Let's Encrypt certs ~30 days before
+    # expiry and refreshes any attached load balancers in place. The cert
+    # UUID stays stable across renewals, but `not_after` and the fingerprint
+    # change — ignore those so a refresh after auto-renewal doesn't mark
+    # this resource as needing recreation (which would briefly drop the LB's
+    # cert binding).
+    ignore_changes = [
+      not_after,
+      sha1_fingerprint,
+    ]
   }
 }
 

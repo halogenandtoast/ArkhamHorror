@@ -316,16 +316,11 @@ displayCardType = \case
   InvestigatorType -> "investigator"
   KeyType -> "key"
 
--- | FOR NO KEY UPDATE is strictly weaker than FOR UPDATE: it still serializes
--- concurrent updateGame/stepBack calls for the same game, but does not conflict
--- with the FOR KEY SHARE locks taken by FK checks on arkham_steps,
--- arkham_log_entries, and arkham_players inserts. This avoids blocking
--- unrelated child-row inserts while a long-running game mutation holds the lock.
 lockGame :: ArkhamGameId -> DB ()
-lockGame gameId =
-  rawExecute
-    "SELECT 1 FROM arkham_games WHERE id = ? FOR NO KEY UPDATE"
-    [PersistText (toPathPiece gameId)]
+lockGame gameId = void $ select do
+  game <- from $ table @ArkhamGame
+  where_ $ game.id ==. val gameId
+  locking forUpdate
 
 atomicallyWithGame :: ArkhamGameId -> (ArkhamGame -> DB a) -> DB a
 atomicallyWithGame gameId f = do

@@ -56,11 +56,38 @@ v2-deploy:
 	    rollout status deployment/$(V2_DEPLOYMENT) --timeout=10m
 .PHONY: v2-deploy
 
+## Same as v2-deploy, but build+push both linux/amd64 and linux/arm64
+v2-deploy-multiarch: V2_PLATFORM = linux/amd64,linux/arm64
+v2-deploy-multiarch: v2-deploy
+.PHONY: v2-deploy-multiarch
+
+## Build+push linux/amd64 and linux/arm64 images to Docker Hub (no rollout)
+v2-push-multiarch:
+	@TAG=$$(git rev-parse --short HEAD); \
+	  DIRTY=$$(git status --porcelain | head -1); \
+	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
+	  docker buildx build --platform linux/amd64,linux/arm64 \
+	    --tag $(V2_IMAGE):$$TAG \
+	    --tag $(V2_IMAGE):latest \
+	    --push .
+.PHONY: v2-push-multiarch
+
 ## Tail logs from the DigitalOcean k8s deployment
 v2-logs:
 	KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) logs \
 	  -l app=$(V2_DEPLOYMENT) --tail=200 -f
 .PHONY: v2-logs
+
+## Report Postgres backends stuck idle-in-transaction blocking others
+db-unstick:
+	@./scripts/db-unstick.sh
+.PHONY: db-unstick
+
+## Same, but actually terminate the stuck holders (frees their locks)
+db-unstick-kill:
+	@./scripts/db-unstick.sh --kill
+.PHONY: db-unstick-kill
 
 ## Sync local images to s3 bucket
 sync-images:

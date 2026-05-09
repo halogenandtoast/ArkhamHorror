@@ -123,19 +123,33 @@ getApiV1AdminRoomsR = getRoomData
 
 getRoomData :: Handler [RoomData]
 getRoomData = do
-  roomsVar <- getsApp appGameRooms
-  rooms <- liftIO $ readMVar roomsVar
-
-  runDB do
-    rooms & Map.assocs & traverse \(arkhamGameId, room) -> do
-      mRoomLastUpdatedAt <- fmap arkhamGameUpdatedAt <$> E.get arkhamGameId
-      clients <- roomClientCount room
-      pure
-        $ RoomData
-          { roomClients = clients
-          , roomLastUpdatedAt = mRoomLastUpdatedAt
-          , roomArkhamGameId = arkhamGameId
-          }
+  -- When a Redis broker is configured, we aggregate room/client counts
+  -- across every API server through `arkham:rooms`. Otherwise fall back
+  -- to this server's in-memory map (single-server / dev setups).
+  mRedisCounts <- getRedisRoomCounts
+  case mRedisCounts of
+    Just counts -> runDB do
+      counts & Map.assocs & traverse \(arkhamGameId, clients) -> do
+        mRoomLastUpdatedAt <- fmap arkhamGameUpdatedAt <$> E.get arkhamGameId
+        pure
+          $ RoomData
+            { roomClients = clients
+            , roomLastUpdatedAt = mRoomLastUpdatedAt
+            , roomArkhamGameId = arkhamGameId
+            }
+    Nothing -> do
+      roomsVar <- getsApp appGameRooms
+      rooms <- liftIO $ readMVar roomsVar
+      runDB do
+        rooms & Map.assocs & traverse \(arkhamGameId, room) -> do
+          mRoomLastUpdatedAt <- fmap arkhamGameUpdatedAt <$> E.get arkhamGameId
+          clients <- roomClientCount room
+          pure
+            $ RoomData
+              { roomClients = clients
+              , roomLastUpdatedAt = mRoomLastUpdatedAt
+              , roomArkhamGameId = arkhamGameId
+              }
 
 deleteApiV1AdminRoomR :: ArkhamGameId -> Handler ()
 deleteApiV1AdminRoomR = deleteRoom

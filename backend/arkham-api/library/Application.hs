@@ -23,6 +23,7 @@ module Application (
   db,
 ) where
 
+import Api.Arkham.Helpers (roomHeartbeat)
 import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
@@ -163,8 +164,15 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   -- runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
-  -- Return the foundation
-  pure $ mkFoundation pool
+  let foundation = mkFoundation pool
+
+  -- Per-pod heartbeat for the cross-server room registry: refreshes the
+  -- 'arkham:rooms:seen' timestamps for any game this pod is still
+  -- serving, so admin counts age out automatically when a pod crashes.
+  -- No-op when no Redis broker is configured.
+  _ <- forkIO (roomHeartbeat foundation)
+
+  pure foundation
 
 {- | Convert our foundation to a WAI Application by calling @toWaiAppPlain@ and
  applying some additional middlewares.

@@ -58,6 +58,7 @@ gameStream gameId = catchingConnectionException do
 
   let cleanup subId = do
         unsubscribeFromRoom room subId
+        lift $ decrRoomMember gameId
         -- If this was the last subscriber, drop the room from the map so
         -- it doesn't accumulate orphaned entries.
         isEmpty <- liftIO $ atomically do
@@ -67,7 +68,12 @@ gameStream gameId = catchingConnectionException do
           liftIO $ modifyMVar_ roomsVar $ pure . Map.delete gameId
           lift $ removeChannel (gameChannel gameId)
 
-  bracket (subscribeToRoom room) (\(subId, _) -> cleanup subId) \(_subId, sub) -> do
+  let acquire = do
+        s <- subscribeToRoom room
+        lift $ incrRoomMember gameId
+        pure s
+
+  bracket acquire (\(subId, _) -> cleanup subId) \(_subId, sub) -> do
     let Subscriber {subQueue, subOverflow} = sub
     mtid <- case broker of
       RedisBroker redisConn _ -> do

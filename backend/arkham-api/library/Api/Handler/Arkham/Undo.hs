@@ -181,7 +181,10 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
             entries <- from $ table @ArkhamLogEntry
             where_ $ entries.arkhamGameId ==. val gameId
             where_ $ entries.step <. val (agame.step - n)
-            orderBy [desc entries.createdAt]
+            -- Order by step (monotonic per game) so the planner can use
+            -- idx_arkham_log_entry_gameid_step directly. id (bigserial)
+            -- is the within-step tiebreaker.
+            orderBy [desc entries.step, desc entries.id]
             pure entries.body
 
         let g =
@@ -228,9 +231,14 @@ stepBackScenario userId gameId = do
       pure steps
 
     lift do
+      -- Range delete by (game_id, step) instead of materializing every step's
+      -- UUID into an IN(...) list. Same row set, but the planner uses a single
+      -- index scan on steps_game_step_idx and there's no client->server
+      -- round-trip of N UUIDs.
       delete do
         xsteps <- from $ table @ArkhamStep
-        where_ $ xsteps.id `in_` valList (map entityKey steps)
+        where_ $ xsteps.arkhamGameId ==. val gameId
+        where_ $ xsteps.step >. val toStep
 
       delete do
         entries <- from $ table @ArkhamLogEntry

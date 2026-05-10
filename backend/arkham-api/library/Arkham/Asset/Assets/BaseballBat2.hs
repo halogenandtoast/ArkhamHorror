@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestSource)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -33,8 +34,8 @@ instance RunMessage BaseballBat2 where
           when (any (`elem` [Skull, AutoFail]) tokens) do
             afterSkillTest iid "Baseball Bat (2)" do
               chooseOneM iid do
-                labeled "Return baseball Bat to your hand after this attack" $ returnToHand iid attrs
-                labeled "This attack deals an additional +1 damage. Discard Baseball Bat after this attack" do
+                (cardI18n $ labeled' "baseballBat2.returnBaseballBatToYourHandAfterThisAttack") $ returnToHand iid attrs
+                (cardI18n $ labeled' "baseballBat2.thisAttackDealsAnAdditional1DamageDiscardBaseballBatAfterThi") do
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   toDiscardBy iid (attrs.ability 1) attrs
       pure a

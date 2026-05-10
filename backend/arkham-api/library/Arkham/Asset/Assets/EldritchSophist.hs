@@ -70,8 +70,7 @@ instance RunMessage EldritchSophist where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ [ Label
-            "Move Charge"
+        $ [ Label "$label.cards.eldritchSophist.moveCharge"
             [ chooseOne
                 player
                 [ targetLabel c [MoveTokens (attrs.ability 1) (toSource aid) (toTarget c) Charge 1]
@@ -80,8 +79,7 @@ instance RunMessage EldritchSophist where
             ]
           | hasCharge
           ]
-        <> [ Label
-            "Move Secret"
+        <> [ Label "$label.cards.eldritchSophist.moveSecret"
             [ chooseOne
                 player
                 [ targetLabel c [MoveTokens (attrs.ability 1) (toSource aid) (toTarget c) Secret 1]

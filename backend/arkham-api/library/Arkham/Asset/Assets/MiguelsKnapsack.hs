@@ -9,6 +9,7 @@ import Arkham.Helpers.Card (passesLimits)
 import Arkham.Helpers.Location (getConnectedLocations, withLocationOf)
 import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Helpers.Window (getPlayedEvent)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -52,9 +53,9 @@ instance RunMessage MiguelsKnapsack where
         if not playableAtCurrentLocation && notNull connectingLids
           then playAtConnectingLocation
           else chooseOneM iid do
-            labeled "Draw 1 card" do
+            (withI18n $ countVar 1 $ labeled' "drawCards") do
               drawCards iid (attrs.ability 1) 1
             when (notNull connectingLids) do
-              labeled "Play that event at a connecting location" playAtConnectingLocation
+              (cardI18n $ labeled' "miguelsKnapsack.playThatEventAtAConnectingLocation") playAtConnectingLocation
       pure a
     _ -> MiguelsKnapsack <$> liftRunMessage msg attrs

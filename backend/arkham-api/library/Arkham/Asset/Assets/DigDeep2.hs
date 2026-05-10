@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,10 +17,10 @@ digDeep2 = asset DigDeep2 Cards.digDeep2
 
 instance HasAbilities DigDeep2 where
   getAbilities (DigDeep2 a) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+    [ (cardI18n $ withI18nTooltip "digDeep2.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+    , (cardI18n $ withI18nTooltip "digDeep2.fastSpend1ResourceYouGet1AgilityForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

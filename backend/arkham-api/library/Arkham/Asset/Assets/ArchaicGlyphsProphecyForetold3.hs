@@ -32,7 +32,7 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       enemies <- select $ enemyEngagedWith iid
       unless (null enemies) do
         chooseOneM iid do
-          labeled "No evasion" nothing
+          labeledI "noEvasion" nothing
           targets enemies (automaticallyEvadeEnemy iid)
       pure a
     _ -> ArchaicGlyphsProphecyForetold3 <$> liftRunMessage msg attrs

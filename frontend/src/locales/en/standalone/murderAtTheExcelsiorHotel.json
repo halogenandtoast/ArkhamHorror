@@ -1,4 +1,10 @@
 {
+  "tooltips": {
+    "bloodstainedDagger": {
+      "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
+      "fightExhaust": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of _Guest_ enemies in play.",

@@ -50,9 +50,9 @@ instance RunMessage Geas2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [ Label "I shall not DRAW any cards during each of my turns" [DoStep DrawPromise msg]
-        , Label "I shall not PLAY any cards during each of my turns" [DoStep PlayPromise msg]
-        , Label "I shall not COMMIT any cards during each of my turns" [DoStep CommitPromise msg]
+        [ Label "$label.cards.geas2.iShallNotDrawAnyCardsDuringEachOfMyTurns" [DoStep DrawPromise msg]
+        , Label "$label.cards.geas2.iShallNotPlayAnyCardsDuringEachOfMyTurns" [DoStep PlayPromise msg]
+        , Label "$label.cards.geas2.iShallNotCommitAnyCardsDuringEachOfMyTurns" [DoStep CommitPromise msg]
         ]
       pure a
     DoStep n (UseThisAbility _iid (isSource attrs -> True) 1) -> do

@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
+import Arkham.I18n
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (EnemyDefeated)
@@ -44,7 +45,7 @@ instance RunMessage DetectivesColt1911s where
         insights <- filterCards (card_ $ #insight <> #event) <$> field InvestigatorDiscard iid
         unless (null insights) do
           chooseOneM iid do
-            labeled "Do not move an insight" nothing
+            (cardI18n $ labeled' "detectivesColt1911s.doNotMoveAnInsight") nothing
             targets insights $ putCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck)
       pure a
     _ -> DetectivesColt1911s <$> liftRunMessage msg attrs

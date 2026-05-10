@@ -43,7 +43,7 @@ instance RunMessage GrapplingHook where
       effectId <- getRandom
       builder <- makeEffectBuilder (toCardCode attrs) Nothing (attrs.ability 1) iid
       chooseOrRunOneM iid do
-        labeled "Take no more actions" nothing
+        labeledI "takeNoMoreActions" nothing
         for_ (filter ((`notElem` chosenAbilities meta) . (.different)) abilities') \ab -> do
           if #investigate `elem` ab.actions
             then do

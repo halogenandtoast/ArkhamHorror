@@ -7,6 +7,7 @@ import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.Vehicle
+import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -23,11 +24,10 @@ elinaHarpersCarRunning = asset ElinaHarpersCarRunning Cards.elinaHarpersCarRunni
 
 instance HasAbilities ElinaHarpersCarRunning where
   getAbilities (ElinaHarpersCarRunning x) =
-    [ withTooltip
-        "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)"
+    [ (cardI18n $ withI18nTooltip "elinaHarpersCarRunning.ifYouAreThisVehiclesDriverDrawTheTopCardOfTheEncounterDeckTh")
         $ groupLimit PerRound
         $ restrictedAbility x 1 driverCriteria actionAbility
-    , withTooltip "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    , (cardI18n $ withI18nTooltip "elinaHarpersCarRunning.ifYouAreThisVehiclesDriverYouStopTheCarFlipThisVehicleOver")
         $ restrictedAbility x 2 driverCriteria actionAbility
     ]
    where

@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
 
@@ -27,7 +28,7 @@ oldHuntingRifle3 = asset (OldHuntingRifle3 . (`with` Metadata NotJammed)) Cards.
 instance HasAbilities OldHuntingRifle3 where
   getAbilities (OldHuntingRifle3 (a `With` Metadata rifleStatus)) =
     fightAbility a 1 (assetUseCost a Ammo 1) (ControlsThis <> jammedRestriction)
-      : [ withTooltip "You clear the jam." $ restrictedAbility a 2 ControlsThis actionAbility
+      : [ (cardI18n $ withI18nTooltip "oldHuntingRifle3.youClearTheJam") $ restrictedAbility a 2 ControlsThis actionAbility
         | rifleStatus == Jammed
         ]
    where

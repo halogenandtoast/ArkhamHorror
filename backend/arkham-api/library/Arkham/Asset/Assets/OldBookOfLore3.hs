@@ -9,6 +9,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
 import Arkham.Helpers.Playable (getIsPlayableWithResources)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -66,7 +67,7 @@ instance RunMessage OldBookOfLore3 where
             pure $ guard playable $> card
           when (notNull choices) do
             chooseOneM iid do
-              labeled "Do not spend any secrets to play any cards" nothing
+              (cardI18n $ labeled' "oldBookOfLore3.doNotSpendAnySecretsToPlayAnyCards") nothing
               targets choices \card -> do
                 push $ SpendUses source (toTarget attrs) Secret 1
                 reduceCostOf attrs card 2

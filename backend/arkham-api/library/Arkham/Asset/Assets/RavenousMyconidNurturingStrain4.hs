@@ -9,6 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBondedJust)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -28,15 +29,14 @@ ravenousMyconidNurturingStrain4 =
 
 instance HasAbilities RavenousMyconidNurturingStrain4 where
   getAbilities (RavenousMyconidNurturingStrain4 a) =
-    [ withTooltip "Search your bonded cards for Uncanny Growth and add it to your hand."
+    [ (cardI18n $ withI18nTooltip "ravenousMyconidNurturingStrain4.searchYourBondedCardsForUncannyGrowthAndAddItToYourHand")
         $ playerLimit PerRound
         $ controlledAbility
           a
           1
           (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth)
         $ FastAbility Free
-    , withTooltip
-        "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid"
+    , (cardI18n $ withI18nTooltip "ravenousMyconidNurturingStrain4.eitherHealThatMuchDamagehorrorFromRavenousMyconidOrMoveThatM")
         $ controlledAbility
           a
           2
@@ -76,10 +76,9 @@ instance RunMessage RavenousMyconidNurturingStrain4 where
               <> oneOf [AssetWithDamage, AssetWithHorror]
           )
       chooseOrRunOne iid
-        $ [ Label "Heal that much damage/horror from Ravenous Myconid" [DoStep n (ForChoice 1 msg)] | hasDamage
+        $ [ Label "$label.cards.ravenousMyconidNurturingStrain4.healThatMuchDamagehorrorFromRavenousMyconid" [DoStep n (ForChoice 1 msg)] | hasDamage
           ]
-        <> [ Label
-            "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
+        <> [ Label "$label.cards.ravenousMyconidNurturingStrain4.moveThatMuchDamagehorrorFromInvestigatorOrAllyAssetsAtYourLo"
             [DoStep n (ForChoice 2 msg), CheckDefeated (attrs.ability 2) (toTarget attrs)]
            | canMoveDamage
            ]

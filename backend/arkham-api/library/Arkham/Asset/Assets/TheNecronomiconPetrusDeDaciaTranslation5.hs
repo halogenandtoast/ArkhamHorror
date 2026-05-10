@@ -6,6 +6,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -20,16 +21,16 @@ theNecronomiconPetrusDeDaciaTranslation5 =
 
 instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
   getAbilities (TheNecronomiconPetrusDeDaciaTranslation5 a) =
-    [ withTooltip "{fast} Spend 1 secret: You get +2 skill value for this skill test."
+    [ (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend1SecretYouGet2SkillValueForThisSkillTest")
         $ controlled a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (assetUseCost a #secret 1)
-    , withTooltip "{fast} Spend 2 secrets: Draw 2 cards."
+    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend2SecretsDraw2Cards")
         $ controlled a 2 CanDrawCards
         $ FastAbility (assetUseCost a #secret 2)
-    , withTooltip "{fast} Spend 3 secrets: Discover 1 clue at any location."
+    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend3SecretsDiscover1ClueAtAnyLocation")
         $ controlled a 3 (CanDiscoverCluesAt Anywhere)
         $ FastAbility (assetUseCost a #secret 3)
-    , withTooltip "{fast} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
+    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend4SecretsDeal3DamageToAnEnemyEngagedWithYou")
         $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a #secret 4)
         $ ControlsThis
         <> exists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))

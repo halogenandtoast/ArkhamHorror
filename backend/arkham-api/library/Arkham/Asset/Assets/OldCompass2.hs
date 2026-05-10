@@ -33,7 +33,7 @@ instance RunMessage OldCompass2 where
           sid <- getRandom
           mloc <- getSkillTestTargetedLocation
           chooseOneM iid do
-            labeled "Exhaust Old Compass" do
+            (cardI18n $ labeled' "oldCompass2.exhaustOldCompass") do
               exhaustThis attrs
               -- the -1 from above will be retained so we add another -1 to get to -2
               for_ mloc \loc -> skillTestModifier sid (attrs.ability 1) loc (ShroudModifier (-1))

@@ -44,8 +44,8 @@ instance RunMessage MedicalTexts2 where
       getSkillTestTarget >>= \case
         Just (InvestigatorTarget iid) -> do
           chooseOrRunOne iid
-            $ [Label "Exhaust Medical Texts" [Exhaust (mkExhaustion attrs attrs)] | attrs.ready]
-            <> [Label "Deal 1 damage to that investigator" [Msg.assignDamage iid (toAbilitySource attrs 1) 1]]
+            $ [Label "$label.cards.medicalTexts2.exhaustMedicalTexts" [Exhaust (mkExhaustion attrs attrs)] | attrs.ready]
+            <> [Label "$label.cards.medicalTexts2.deal1DamageToThatInvestigator" [Msg.assignDamage iid (toAbilitySource attrs 1) 1]]
         _ -> error "invalid target"
       pure a
     _ -> MedicalTexts2 <$> liftRunMessage msg attrs

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -26,10 +27,10 @@ instance RunMessage KnightOfSwords3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          labeled "Discard Knight of Swords to get +3 instead" do
+          (cardI18n $ labeled' "knightOfSwords3.discardKnightOfSwordsToGet3Instead") do
             skillTestModifier sid attrs iid (AnySkillValue 3)
             push RecalculateSkillTestResults
-          labeled "Do not discard" do
+          labeledI "doNotDiscardCard" do
             skillTestModifier sid attrs iid (AnySkillValue 1)
             push RecalculateSkillTestResults
       pure a

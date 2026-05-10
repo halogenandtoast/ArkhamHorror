@@ -10,6 +10,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -52,9 +53,9 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
 
       chooseOneM iid do
         when (hasItems && canGetItem) do
-          labeled "Return item to your hand" $ doStep 1 msg
+          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections.returnItemToYourHand") $ doStep 1 msg
         when hasLocations do
-          labeled "Discover a clue at a connecting location" $ doStep 2 msg
+          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections.discoverAClueAtAConnectingLocation") $ doStep 2 msg
 
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

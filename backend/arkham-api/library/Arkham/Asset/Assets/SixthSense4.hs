@@ -10,6 +10,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
@@ -71,16 +72,16 @@ instance RunMessage SixthSense4Effect where
             batchId <- getRandom
             currentTarget <- fromMaybe (toTarget lid) <$> getSkillTestTarget
             chooseOneM iid do
-              labeled "Do not choose other location" nothing
+              (cardI18n $ labeled' "sixthSense4.doNotChooseOtherLocation") nothing
               for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
                 targeting location do
                   batching batchId do
                     push $ PayAdditionalCost iid batchId cost
                     push $ SetSkillTestTarget (BothTarget (toTarget location) currentTarget)
                     chooseOneM iid do
-                      labeled "Use new location's shroud" do
+                      (cardI18n $ labeled' "sixthSense4.useNewLocationsShroud") do
                         skillTestModifier sid attrs.source sid (SetDifficulty shroud)
-                      labeled "Use original locations shroud" do
+                      (cardI18n $ labeled' "sixthSense4.useOriginalLocationsShroud") do
                         skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
             disable attrs
         _ -> error "Invalid target"

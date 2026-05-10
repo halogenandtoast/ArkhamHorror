@@ -39,7 +39,7 @@ instance RunMessage IsamaraOrdonezTheTorchSinger where
             unless (ControlledAssetsCannotReady `elem` modifiers) do
               chooseOneM iid $ withI18n do
                 questionLabeledCard attrs
-                labeled "Ready" $ push $ Ready $ toTarget attrs
+                (cardI18n $ labeled' "isamaraOrdonezTheTorchSinger.ready") $ push $ Ready $ toTarget attrs
                 skip_
           _ -> push (Ready $ toTarget attrs)
       pure a

@@ -25,8 +25,8 @@ instance RunMessage ArcaneInitiate3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [ Label "Place 1 doom" [Msg.placeDoom (attrs.ability 1) attrs 1]
-        , Label "Place 2 horror" [Msg.placeHorror (attrs.ability 1) attrs 2]
+        [ Label "$label.cards.arcaneInitiate3.place1Doom" [Msg.placeDoom (attrs.ability 1) attrs 1]
+        , Label "$label.cards.arcaneInitiate3.place2Horror" [Msg.placeHorror (attrs.ability 1) attrs 2]
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

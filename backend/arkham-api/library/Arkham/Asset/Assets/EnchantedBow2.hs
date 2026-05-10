@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Fight
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -72,9 +73,9 @@ instance RunMessage EnchantedBow2 where
         <> (guard (n > 0) *> [IgnoreAloof, IgnoreRetaliate])
 
       chooseOneM iid do
-        labeled "Use {willpower}" do
+        (withI18n $ skillVar #willpower $ labeled' "useSkill") do
           aspect iid source (#willpower `InsteadOf` #combat) fight
-        labeled "Use {agility}" do
+        (withI18n $ skillVar #agility $ labeled' "useSkill") do
           aspect iid source (#agility `InsteadOf` #combat) fight
       pure . EnchantedBow2 $ setMeta (n > 0) attrs
     ResolvedAbility ab | isSource attrs ab.source -> do

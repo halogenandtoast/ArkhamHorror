@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -48,9 +49,9 @@ instance RunMessage PetesGuitar where
       canGainResources <- can.gain.resources iid
       when (noEnemies && (canHeal || canGainResources)) do
         chooseOrRunOneM iid do
-          when canHeal $ labeled "Heal 1 Horror" do
+          when canHeal $ (cardI18n $ labeled' "petesGuitar.heal1Horror") do
             healHorror iid (attrs.ability 1) 1
-          when canGainResources $ labeled "Gain 1 resource" do
+          when canGainResources $ (withI18n $ countVar 1 $ labeled' "gainResources") do
             gainResourcesIfCan iid (attrs.ability 1) 1
       pure a
     _ -> PetesGuitar <$> liftRunMessage msg attrs

@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -73,13 +74,13 @@ instance RunMessage PendantOfTheQueen where
 
       chooseOrRunOneM iid do
         when (canMove && moveChoice) do
-          labeled "Move to this location" $ moveTo (attrs.ability 1) iid lid
+          (cardI18n $ labeled' "pendantOfTheQueen.moveToThisLocation") $ moveTo (attrs.ability 1) iid lid
 
         when discoverChoice do
-          labeled "Discover a clue at this location" $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
+          (cardI18n $ labeled' "pendantOfTheQueen.discoverAClueAtThisLocation") $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
 
         when (notNull enemies || notNull concealed) do
-          labeled "Evade an enemy at this location" do
+          (cardI18n $ labeled' "pendantOfTheQueen.evadeAnEnemyAtThisLocation") do
             chooseAutomaticallyEvadeAt iid (attrs.ability 1) (LocationWithId lid) AnyEnemy
       pure a
     _ -> PendantOfTheQueen <$> liftRunMessage msg attrs

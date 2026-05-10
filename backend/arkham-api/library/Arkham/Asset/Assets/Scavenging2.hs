@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Playable
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
@@ -30,8 +31,8 @@ instance RunMessage Scavenging2 where
         chooseOneM iid $ targets cards \card -> do
           unfocusCards
           chooseOrRunOneM iid do
-            labeled "Add to hand" $ drawCardFrom iid iid card
+            (cardI18n $ labeled' "scavenging2.addToHand") $ drawCardFrom iid iid card
             whenM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid) card) do
-              labeled "Play" $ playCardPayingCost iid card
+              (cardI18n $ labeled' "scavenging2.play") $ playCardPayingCost iid card
       pure a
     _ -> Scavenging2 <$> liftRunMessage msg attrs

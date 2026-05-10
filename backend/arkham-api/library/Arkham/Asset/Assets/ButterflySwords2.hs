@@ -36,6 +36,6 @@ instance RunMessage ButterflySwords2 where
       fight <- capture $ withCost iid (exhaust attrs) do
         skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
         chooseFightEnemy sid iid (attrs.ability 1)
-      chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]
+      chooseOrRunOne iid $ Label "$label.cards.butterflySwords2.doNotFightAgain" [] : [Label "$label.cards.butterflySwords2.fightAgain" fight | canFight]
       pure a
     _ -> ButterflySwords2 <$> liftRunMessage msg attrs

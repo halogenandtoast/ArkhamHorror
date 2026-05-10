@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -30,9 +31,9 @@ instance RunMessage SpiritSpeaker where
         for_ assetIdsWithChargeCounts \(aid, n) -> do
           targeting aid do
             chooseOneM iid do
-              labeled "Return to hand" $ returnToHand iid aid
+              (cardI18n $ labeled' "spiritSpeaker.returnToHand") $ returnToHand iid aid
               when (aid `elem` discardableAssetIds) do
-                labeled "Move all charges to your resource pool" do
+                (cardI18n $ labeled' "spiritSpeaker.moveAllChargesToYourResourcePool") do
                   spendUses (attrs.ability 1) aid Charge n
                   gainResources iid (attrs.ability 1) n
                   toDiscardBy iid (attrs.ability 1) aid

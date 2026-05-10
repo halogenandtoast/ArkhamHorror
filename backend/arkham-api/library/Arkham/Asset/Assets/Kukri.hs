@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -32,9 +33,9 @@ instance RunMessage Kukri where
         actionRemainingCount <- field InvestigatorRemainingActions iid
         when (actionRemainingCount > 0) do
           chooseOneM iid do
-            labeled "Spend 1 action to deal +1 damage" do
+            (cardI18n $ labeled' "kukri.spend1ActionToDeal1Damage") do
               loseActions iid (attrs.ability 1) 1
               skillTestModifier sid attrs iid (DamageDealt 1)
-            labeled "Skip additional Kukri damage" nothing
+            (cardI18n $ labeled' "kukri.skipAdditionalKukriDamage") nothing
       pure a
     _ -> Kukri <$> liftRunMessage msg attrs

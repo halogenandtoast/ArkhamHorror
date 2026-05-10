@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Window (Window (..))
@@ -43,9 +44,9 @@ instance RunMessage NephthysHuntressOfBast4 where
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
       chooseOrRunOneM iid do
-        labeled "Release 3 {bless} tokens" $ for_ blessTokens unsealChaosToken
+        (cardI18n $ labeled' "nephthysHuntressOfBast4.release3BlessTokens") $ for_ blessTokens unsealChaosToken
         when (notNull enemies || notNull concealed) do
-          labeled "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location" do
+          (cardI18n $ labeled' "nephthysHuntressOfBast4.return3BlessTokensToThePoolToDo2DamageToAnEnemyAtYourLocatio") do
             push $ ReturnChaosTokensToPool blessTokens
             chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy 2
       pure a

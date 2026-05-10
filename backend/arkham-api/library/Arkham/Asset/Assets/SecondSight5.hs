@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message (setOptionCriteria)
 import Arkham.Message.Lifted.Choose
@@ -44,8 +45,8 @@ instance RunMessage SecondSight5 where
         "Second Sight (5)"
         do
           chooseOneM iid do
-            labeled "Spend 1 charge to discover 1 additional clue" $ doStep 2 msg
-            labeled "Do not spend charge" nothing
+            (cardI18n $ labeled' "secondSight5.spend1ChargeToDiscover1AdditionalClue") $ doStep 2 msg
+            (cardI18n $ labeled' "secondSight5.doNotSpendCharge") nothing
       pure a
     DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       spendUses (attrs.ability 1) attrs Charge 1

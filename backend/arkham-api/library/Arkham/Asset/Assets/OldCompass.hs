@@ -32,7 +32,7 @@ instance RunMessage OldCompass where
         withSkillTest \stid -> do
           sid <- getRandom
           chooseOneM iid do
-            labeled "Exhaust Old Compass" do
+            (cardI18n $ labeled' "oldCompass.exhaustOldCompass") do
               exhaustThis attrs
               push $ RepeatSkillTest sid stid
             withI18n skip_

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.SeaChangeHarpoon (seaChangeHarpoon) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -31,8 +32,7 @@ instance RunMessage SeaChangeHarpoon where
     SkillTestEnds sid iid (isAbilitySource attrs 1 -> True) -> do
       skills <- select $ skillOwnedBy iid
       chooseOneM iid do
-        labeled
-          "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"
+        (cardI18n $ labeled' "seaChangeHarpoon.returnSeaChangeHarpoonToYourHandToReturnAllOfYourCommittedSk")
           do
             returnToHand iid attrs
             for_ skills \s -> skillTestModifier sid (attrs.ability 1) s ReturnToHandAfterTest

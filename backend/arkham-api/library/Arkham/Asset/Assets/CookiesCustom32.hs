@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -22,9 +23,9 @@ instance RunMessage CookiesCustom32 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseOneM iid do
-        labeled "Fight with a base {combat} skill of 5"
+        (cardI18n $ labeled' "cookiesCustom32.fightWithABaseCombatSkillOf5")
           $ skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
-        labeled "Get +2 {combat} for this attack"
+        (cardI18n $ labeled' "cookiesCustom32.get2CombatForThisAttack")
           $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       chooseFightEnemy sid iid (attrs.ability 1)

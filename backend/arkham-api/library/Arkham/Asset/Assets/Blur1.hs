@@ -27,8 +27,8 @@ instance RunMessage Blur1 where
       evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOne
         iid
-        [ Label "Use willpower" [toMessage $ withSkillType #willpower evade]
-        , Label "Use agility" [toMessage evade]
+        [ Label "$label.cards.blur1.useWillpower" [toMessage $ withSkillType #willpower evade]
+        , Label "$label.cards.blur1.useAgility" [toMessage evade]
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

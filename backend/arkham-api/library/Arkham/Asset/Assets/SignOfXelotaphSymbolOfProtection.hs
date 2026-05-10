@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Uses
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -28,8 +29,8 @@ instance RunMessage SignOfXelotaphSymbolOfProtection where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       if attrs.use Charge > 0
         then chooseOneM iid do
-          labeled "Spend 1 charge" $ spendUses (attrs.ability 1) attrs Charge 1
-          labeled "Discard Sign of Xelotaph" $ toDiscardBy iid (attrs.ability 1) attrs
+          (cardI18n $ labeled' "signOfXelotaphSymbolOfProtection.spend1Charge") $ spendUses (attrs.ability 1) attrs Charge 1
+          (cardI18n $ labeled' "signOfXelotaphSymbolOfProtection.discardSignOfXelotaph") $ toDiscardBy iid (attrs.ability 1) attrs
         else toDiscardBy iid (attrs.ability 1) attrs
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

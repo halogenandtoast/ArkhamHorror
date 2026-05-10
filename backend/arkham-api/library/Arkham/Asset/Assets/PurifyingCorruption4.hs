@@ -50,13 +50,12 @@ instance RunMessage PurifyingCorruption4 where
       canHealDamage <- canHaveDamageHealed (attrs.ability 2) iid
       canHealHorror <- canHaveHorrorHealed (attrs.ability 2) iid
       chooseOrRunOne iid
-        $ [ Label "Heal 1 damage and 1 horror"
+        $ [ Label "$label.cards.purifyingCorruption4.heal1DamageAnd1Horror"
               $ [HealDamage (toTarget iid) (attrs.ability 2) 1 | canHealDamage]
               <> [HealHorror (toTarget iid) (attrs.ability 2) 1 | canHealHorror]
           | canHealDamage || canHealHorror
           ]
-        <> [ Label
-               "Remove 1 corruption from this card"
+        <> [ Label "$label.cards.purifyingCorruption4.remove1CorruptionFromThisCard"
                [RemoveTokens (attrs.ability 2) (toTarget attrs) Corruption 1]
            | attrs.token Corruption > 0
            ]

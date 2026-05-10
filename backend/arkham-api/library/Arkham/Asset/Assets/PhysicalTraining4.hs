@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -30,7 +31,7 @@ instance RunMessage PhysicalTraining4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Willpower" $ skillTestModifier sid source iid (SkillModifier #willpower 1)
-          labeled "Choose Combat" $ skillTestModifier sid source iid (SkillModifier #combat 1)
+          (withI18n $ skillVar #willpower $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #willpower 1)
+          (withI18n $ skillVar #combat $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #combat 1)
       pure a
     _ -> PhysicalTraining4 <$> liftRunMessage msg attrs

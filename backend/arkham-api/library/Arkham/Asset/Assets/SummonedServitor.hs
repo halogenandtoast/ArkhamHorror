@@ -11,6 +11,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
 import Arkham.Helpers.SkillTest.Lifted (investigateLocation_)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -92,9 +93,9 @@ instance RunMessage SummonedServitor where
       pure . SummonedServitor $ overMeta (<>) [Action.Move] attrs
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       chooseOneM iid do
-        labeled "Move to location with Summoned Servitor (Wings of Night)"
+        (cardI18n $ labeled' "summonedServitor.moveToLocationWithSummonedServitorWingsOfNight")
           $ moveTo (attrs.ability 1) iid lid
-        labeled "Do not move" nothing
+        labeledI "doNotMove" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

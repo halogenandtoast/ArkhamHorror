@@ -24,8 +24,8 @@ instance RunMessage ThievesKit where
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
       chooseOne
         iid
-        [ Label "Use {agility}" [toMessage $ withSkillType #agility investigate']
-        , Label "Use {intellect}" [toMessage investigate']
+        [ Label "$label.cards.thievesKit.useAgility" [toMessage $ withSkillType #agility investigate']
+        , Label "$label.cards.thievesKit.useIntellect" [toMessage investigate']
         ]
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Damage
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -39,23 +40,21 @@ instance RunMessage HallowedChalice where
 
       chooseOneM iid do
         when attrs.ready do
-          labeled
-            "Exhaust Hallowed Chalice and place 1 doom on it to heal 2 damage or 2 horror from that investigator."
+          (cardI18n $ labeled' "hallowedChalice.exhaustHallowedChaliceAndPlace1DoomOnItToHeal2DamageOr2Horro")
             do
               exhaustThis attrs
               placeDoom (attrs.ability 1) attrs 1
               chooseOrRunOne
                 iid
-                $ [Label "Heal 2 damage" [HealDamage (toTarget iid') (attrs.ability 1) 2] | damageHealable]
-                <> [Label "Heal 2 horror" [HealHorror (toTarget iid') (attrs.ability 1) 2] | horrorHealable]
-        labeled
-          "Heal 1 damage or 1 horror from that investigator. If you heal the last damage or horror from that investigator, remove 1 doom from Hallowed Chalice."
+                $ [Label "$label.cards.hallowedChalice.heal2Damage" [HealDamage (toTarget iid') (attrs.ability 1) 2] | damageHealable]
+                <> [Label "$label.cards.hallowedChalice.heal2Horror" [HealHorror (toTarget iid') (attrs.ability 1) 2] | horrorHealable]
+        (cardI18n $ labeled' "hallowedChalice.heal1DamageOr1HorrorFromThatInvestigatorIfYouHealTheLastDama")
           do
             doStep 1 msg
             chooseOrRunOne
               iid
-              $ [Label "Heal 1 damage" [HealDamage (toTarget iid') (attrs.ability 1) 1] | damageHealable]
-              <> [Label "Heal 1 horror" [HealHorror (toTarget iid') (attrs.ability 1) 1] | horrorHealable]
+              $ [Label "$label.cards.hallowedChalice.heal1Damage" [HealDamage (toTarget iid') (attrs.ability 1) 1] | damageHealable]
+              <> [Label "$label.cards.hallowedChalice.heal1Horror" [HealHorror (toTarget iid') (attrs.ability 1) 1] | horrorHealable]
       pure a
     DoStep 1 (HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) _) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

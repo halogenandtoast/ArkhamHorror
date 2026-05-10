@@ -42,11 +42,11 @@ instance RunMessage SwordCane where
       canEvade <- hasEvadeTargets source iid
       sid <- getRandom
       chooseOrRunOneM iid do
-        when canEvade $ labeled "Evade" do
+        when canEvade $ labeledI "evade" do
           chooseOneM iid do
             for_ [#willpower, #agility] \sk -> do
               skillLabeled sk $ chooseEvadeEnemyEdit sid iid source (\ce -> ce {chooseEvadeSkillType = sk, chooseEvadeIsAction = True, chooseEvadePayCost = False})
-        when canFight $ labeled "Fight" do
+        when canFight $ labeledI "fight" do
           chooseOneM iid do
             for_ [#willpower, #combat] \sk -> do
               skillLabeled sk $ chooseFightEnemyEdit sid iid source (\cf -> cf {chooseFightSkillType = sk, chooseFightIsAction = True, chooseFightPayCost = False})

@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -54,19 +55,15 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
           damageX <-
             selectCount $ EffectWithTarget (toTarget tid) <> EffectWithCardCode cardCode <> EffectWithMetaInt 2
 
-          chooseOneM iid do
-            labeled
-              "The next time that card would be healed this round, heal +1 damage/horror (to a maximum of +3"
-              do
-                when (healX < 3) do
-                  createCardEffect Cards.graysAnatomyTheDoctorsBible5 (effectInt 1) (attrs.ability 1) tid
-                doStep (n - 1) msg'
-            labeled
-              "The next time that card would be dealt damage this round, deal +1 damage/horror (to a maximum of +3"
-              do
-                when (damageX < 3) do
-                  createCardEffect Cards.graysAnatomyTheDoctorsBible5 (effectInt 2) (attrs.ability 1) tid
-                doStep (n - 1) msg'
+          chooseOneM iid $ cardI18n do
+            labeled' "graysAnatomyTheDoctorsBible5.healPlus" do
+              when (healX < 3) do
+                createCardEffect Cards.graysAnatomyTheDoctorsBible5 (effectInt 1) (attrs.ability 1) tid
+              doStep (n - 1) msg'
+            labeled' "graysAnatomyTheDoctorsBible5.damagePlus" do
+              when (damageX < 3) do
+                createCardEffect Cards.graysAnatomyTheDoctorsBible5 (effectInt 2) (attrs.ability 1) tid
+              doStep (n - 1) msg'
       withSkillTestTarget \case
         AssetTarget aid -> handleIt aid
         EnemyTarget eid -> handleIt eid

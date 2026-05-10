@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight (withSkillType)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -32,10 +33,10 @@ instance RunMessage Katana where
       when attrs.ready do
         withSkillTest \sid -> do
           chooseOneM iid do
-            labeled "Exhaust Katana to deal +2 damage for this attack" do
+            (cardI18n $ labeled' "katana.exhaustKatanaToDeal2DamageForThisAttack") do
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
               exhaustThis attrs
-            labeled "Do not exhaust" nothing
+            labeledI "doNotExhaust" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

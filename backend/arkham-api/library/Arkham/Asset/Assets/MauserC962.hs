@@ -46,7 +46,7 @@ instance RunMessage MauserC962 where
           else
             push
               $ chooseOrRunOne player
-              $ [Label "Ready Mauser C962" [Ready (toTarget attrs)] | canReady]
-              <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
+              $ [Label "$label.cards.mauserC962.readyMauserC962" [Ready (toTarget attrs)] | canReady]
+              <> [Label "$label.cards.mauserC962.take1Resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]
       pure a
     _ -> MauserC962 <$> runMessage msg attrs

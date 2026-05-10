@@ -34,11 +34,11 @@ instance RunMessage SummonedHound1 where
       canInvestigate <- maybe (pure False) (`matches` InvestigatableLocation) =<< getMaybeLocation iid
       chooseOrRunOneM iid do
         when canFight do
-          labeled "Fight" do
+          labeledI "fight" do
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
             chooseFightEnemyEdit sid iid (attrs.ability 1) \cf -> cf {chooseFightIsAction = True}
         when canInvestigate do
-          labeled "Investigate" do
+          labeledI "investigate" do
             skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
             investigateEdit_ sid iid (attrs.ability 1) \i -> i {investigateIsAction = True}
       pure a

@@ -45,7 +45,7 @@ instance RunMessage Misdirection2 where
         locations <- getAccessibleLocations iid (attrs.ability 1)
         unless (null locations) do
           chooseOneM iid do
-            labeled "Do not move" nothing
+            labeledI "doNotMove" nothing
             targets locations (moveTo (attrs.ability 1) iid)
       pure a
     _ -> Misdirection2 <$> liftRunMessage msg attrs

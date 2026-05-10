@@ -59,12 +59,11 @@ instance RunMessage MedicoDellaPeste where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ [ Label
-            "Heal 1 damage"
+        $ [ Label "$label.cards.medicoDellaPeste.heal1Damage"
             [HealDamage (InvestigatorTarget iid) (attrs.ability 1) 1]
           | hasDamage
           ]
-        <> [ Label "Heal 1 horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
+        <> [ Label "$label.cards.medicoDellaPeste.heal1Horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
            | hasHorror
            ]
       pure a

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Modifier
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype BloodstainedDagger = BloodstainedDagger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -14,10 +15,11 @@ bloodstainedDagger = asset BloodstainedDagger Cards.bloodstainedDagger
 
 instance HasAbilities BloodstainedDagger where
   getAbilities (BloodstainedDagger a) =
-    [ withTooltip "{action}: _Fight_. You get +2 {combat} for this attack."
+    [ scenarioI18n
+        $ withI18nTooltip "bloodstainedDagger.fight"
         $ restricted a 1 ControlsThis fightAction_
-    , withTooltip
-        "{action}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {combat} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
+    , scenarioI18n
+        $ withI18nTooltip "bloodstainedDagger.fightExhaust"
         $ restricted a 2 ControlsThis
         $ fightAction (exhaust a <> HorrorCost (toSource a) YouTarget 1)
     ]

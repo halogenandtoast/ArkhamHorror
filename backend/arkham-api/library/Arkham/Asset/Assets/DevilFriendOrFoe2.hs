@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Token
@@ -31,8 +32,8 @@ instance RunMessage DevilFriendOrFoe2 where
       for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2
       getConcealed (ForExpose $ toSource iid) iid >>= traverse_ \concealed -> do
         chooseOneM iid do
-          labeled "Damage concealed card" $ doFlip iid (attrs.ability 2) concealed
-          labeled "Do not damage concealed card" nothing
+          (cardI18n $ labeled' "devilFriendOrFoe2.damageConcealedCard") $ doFlip iid (attrs.ability 2) concealed
+          (cardI18n $ labeled' "devilFriendOrFoe2.doNotDamageConcealedCard") nothing
 
       investigators <- select $ colocatedWith iid
       for_ investigators \iid' -> do

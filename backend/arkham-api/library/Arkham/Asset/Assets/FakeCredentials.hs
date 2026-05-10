@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Attack
 import Arkham.Helpers.SkillTest.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Token
@@ -40,10 +41,10 @@ instance RunMessage FakeCredentials where
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       chooseOneM iid do
-        labeled "Discard Fake Credentials" $ toDiscardBy iid (attrs.ability 1) attrs
+        (cardI18n $ labeled' "fakeCredentials.discardFakeCredentials") $ toDiscardBy iid (attrs.ability 1) attrs
         for_ (chosenEnemy meta) $ \eid -> do
           whenM (lift $ eid <=~> EnemyCanAttack (InvestigatorWithId iid)) do
-            labeled "The chosen enemy attacks you" do
+            (cardI18n $ labeled' "fakeCredentials.theChosenEnemyAttacksYou") do
               push $ EnemyAttack $ enemyAttack eid (attrs.ability 1) iid
       pure a
     _ -> FakeCredentials . (`with` meta) <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.KeenEye3 (keenEye3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher.SkillTest
 import Arkham.Modifier
 
@@ -15,10 +16,10 @@ keenEye3 = asset KeenEye3 Cards.keenEye3
 
 instance HasAbilities KeenEye3 where
   getAbilities (KeenEye3 a) =
-    [ withTooltip "{fast} Spend 2 resources: You get +1 {intellect} until the end of the phase."
+    [ (cardI18n $ withI18nTooltip "keenEye3.fastSpend2ResourcesYouGet1IntellectUntilTheEndOfThePhase")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ restricted a 1 ControlsThis (FastAbility $ ResourceCost 2)
-    , withTooltip "{fast} Spend 2 resources: You get +1 {combat} until the end of the phase."
+    , (cardI18n $ withI18nTooltip "keenEye3.fastSpend2ResourcesYouGet1CombatUntilTheEndOfThePhase")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ restricted a 2 ControlsThis (FastAbility $ ResourceCost 2)
     ]

@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -50,13 +51,13 @@ instance RunMessage GeneBeauregard3 where
 
       chooseOrRunOneM iid do
         when option1 do
-          labeled "Move 1 clue from your location to a connecting location" $ chooseOption 1
+          (cardI18n $ labeled' "geneBeauregard3.move1ClueFromYourLocationToAConnectingLocation") $ chooseOption 1
         when option2 do
-          labeled "Move 1 clue from a connecting location to your location" $ chooseOption 2
+          (cardI18n $ labeled' "geneBeauregard3.move1ClueFromAConnectingLocationToYourLocation") $ chooseOption 2
         when option3 do
-          labeled "Move an enemy from your location to a connecting location" $ chooseOption 3
+          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemyFromYourLocationToAConnectingLocation") $ chooseOption 3
         when option4 do
-          labeled "Move an enemy from a connecting location to your location" $ chooseOption 4
+          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemyFromAConnectingLocationToYourLocation") $ chooseOption 4
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do

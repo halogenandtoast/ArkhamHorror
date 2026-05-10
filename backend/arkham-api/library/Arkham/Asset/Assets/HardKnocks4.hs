@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -30,7 +31,7 @@ instance RunMessage HardKnocks4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Combat" $ skillTestModifier sid source iid (SkillModifier #combat 1)
-          labeled "Choose Agility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
+          (withI18n $ skillVar #combat $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #combat 1)
+          (withI18n $ skillVar #agility $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #agility 1)
       pure a
     _ -> HardKnocks4 <$> liftRunMessage msg attrs

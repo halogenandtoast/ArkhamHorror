@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Window (cardPlayed)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -37,9 +38,9 @@ instance RunMessage OccultLexicon3 where
       OccultLexicon3 <$> liftRunMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 2 (cardPlayed -> card) _ -> do
       chooseOneM iid do
-        labeled "Change each \"2\" to a \"3\"" do
+        (cardI18n $ labeled' "occultLexicon3.changeEach")2\" to a \"3\"" do
           cardResolutionModifier card (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
-        labeled "Shuffle it into your deck instead of discarding it" do
+        (cardI18n $ labeled' "occultLexicon3.shuffleItIntoYourDeckInsteadOfDiscardingIt") do
           cardResolutionModifier card (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
       pure a
     _ -> OccultLexicon3 <$> liftRunMessage msg attrs

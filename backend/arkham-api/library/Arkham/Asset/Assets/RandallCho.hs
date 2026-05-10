@@ -28,13 +28,11 @@ instance RunMessage RandallCho where
       push
         $ chooseOrRunOne player
         $ catMaybes
-          [ Label
-              "Heal 3 damage"
+          [ Label "$label.cards.randallCho.heal3Damage"
               [HealDamage (InvestigatorTarget iid) (toSource attrs) 3]
               <$ guard damage
           , Just
-              $ Label
-                "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
+              $ Label "$label.cards.randallCho.searchYourDeckAndDiscardPileForAWeaponAssetPlayItPayingItsCo"
                 [ search
                     iid
                     (attrs.ability 1)

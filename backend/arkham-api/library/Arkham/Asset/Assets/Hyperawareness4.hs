@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -30,7 +31,7 @@ instance RunMessage Hyperawareness4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Intellect" $ skillTestModifier sid source iid (SkillModifier #intellect 1)
-          labeled "Choose Agility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
+          (withI18n $ skillVar #intellect $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #intellect 1)
+          (withI18n $ skillVar #agility $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #agility 1)
       pure a
     _ -> Hyperawareness4 <$> liftRunMessage msg attrs

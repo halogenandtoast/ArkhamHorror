@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.DamageEffect
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -50,8 +51,8 @@ instance RunMessage Mk1Grenades4 where
       if null concealed
         then handleOptions (pure ())
         else chooseOneM iid do
-          labeled "Apply damage to concealed" $ handleOptions do
+          (cardI18n $ labeled' "mk1Grenades4.applyDamageToConcealed") $ handleOptions do
             targets concealed $ exposeConcealed iid source
-          labeled "Do not apply damage to concealed" $ handleOptions (pure ())
+          (cardI18n $ labeled' "mk1Grenades4.doNotApplyDamageToConcealed") $ handleOptions (pure ())
       pure a
     _ -> Mk1Grenades4 <$> liftRunMessage msg attrs

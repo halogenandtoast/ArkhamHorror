@@ -12,6 +12,7 @@ import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -45,7 +46,7 @@ instance HasModifiersFor TrueMagickReworkingReality5 where
 -- This tooltip is handled specially
 instance HasAbilities TrueMagickReworkingReality5 where
   getAbilities (TrueMagickReworkingReality5 (With attrs (Metadata Nothing))) =
-    [ withTooltip "Use True Magick"
+    [ (cardI18n $ withI18nTooltip "trueMagickReworkingReality5.useTrueMagick")
         $ doesNotProvokeAttacksOfOpportunity
         $ controlled attrs 1 HasTrueMagick aform
     | aform <- [ActionAbility mempty Nothing mempty, FastAbility Free, freeReaction AnyWindow]

@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -47,7 +48,7 @@ instance RunMessage TetsuoMori where
       discardWithItem <- fieldP InvestigatorDiscard (any (`cardMatch` CardWithTrait Item)) iid'
       chooseOrRunOneM iid' do
         when discardWithItem do
-          labeled "Search Discard" $ search iid' source iid' [fromDiscard] #item (DrawFound iid' 1)
-        labeled "Search Deck" $ search iid' source iid' [fromTopOfDeck 9] #item (DrawFound iid' 1)
+          (cardI18n $ labeled' "tetsuoMori.searchDiscard") $ search iid' source iid' [fromDiscard] #item (DrawFound iid' 1)
+        (cardI18n $ labeled' "tetsuoMori.searchDeck") $ search iid' source iid' [fromTopOfDeck 9] #item (DrawFound iid' 1)
       pure a
     _ -> TetsuoMori <$> liftRunMessage msg attrs

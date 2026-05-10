@@ -26,8 +26,8 @@ instance RunMessage TreasureHunter1 where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]
-          , Label "Discard Treasure Hunter" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
+        $ [ Label "$label.cards.treasureHunter1.pay1ResourceToTreasureHunter" [SpendResources iid 1]
+          , Label "$label.cards.treasureHunter1.discardTreasureHunter" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
           ]
       pure a
     _ -> TreasureHunter1 <$> runMessage msg attrs

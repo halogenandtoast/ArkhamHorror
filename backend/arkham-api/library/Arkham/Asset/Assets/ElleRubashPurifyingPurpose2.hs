@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelect)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -43,7 +44,7 @@ instance RunMessage ElleRubashPurifyingPurpose2 where
       let placeAsset = PlaceAsset aid (AttachedToAsset attrs.id (Just $ InPlayArea iid))
       chooseOrRunOneM iid do
         unless mustSwap do
-          labeled "Attach without swapping" $ push placeAsset
+          (cardI18n $ labeled' "elleRubashPurifyingPurpose2.attachWithoutSwapping") $ push placeAsset
         targets attached \otherAsset -> do
           push placeAsset
           push $ PlaceAsset otherAsset (InPlayArea iid)

@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers (withoutModifier)
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier hiding (EnemyFight)
@@ -38,7 +39,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
           enemies <- select $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
           canDealDamage <- withoutModifier iid CannotDealDamage
           chooseOrRunOneM iid do
-            labeled "Do not damage any enemies" nothing
+            (cardI18n $ labeled' "fortyFiveThompsonRogue3.doNotDamageAnyEnemies") nothing
             when canDealDamage do
               targets enemies \eid' -> do
                 spendUses (attrs.ability 1) attrs Ammo 1

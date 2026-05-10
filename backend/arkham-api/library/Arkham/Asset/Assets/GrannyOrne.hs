@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -31,10 +32,10 @@ instance RunMessage GrannyOrne where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
         chooseOneM iid do
-          labeled "Fail by 1 less" do
+          (cardI18n $ labeled' "grannyOrne.failBy1Less") do
             skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
             push RecalculateSkillTestResults
-          labeled "Fail by 1 more" do
+          (cardI18n $ labeled' "grannyOrne.failBy1More") do
             skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
             push RecalculateSkillTestResults
       pure a

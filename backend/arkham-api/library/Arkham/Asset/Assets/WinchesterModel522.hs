@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, withSkillTest)
+import Arkham.I18n
 import Arkham.Modifier
 
 newtype WinchesterModel522 = WinchesterModel522 AssetAttrs
@@ -19,13 +20,11 @@ winchesterModel522 = asset WinchesterModel522 Cards.winchesterModel522
 instance HasAbilities WinchesterModel522 where
   getAbilities (WinchesterModel522 a) =
     [ skillTestAbility
-        $ withTooltip
-          "{action}: Spend 1 ammo: _Fight ({combat})_. You get +3 {combat} and deal +1 damage for this attack."
+        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionSpend1Ammo_fightCombat_YouGet3CombatAndDeal1DamageForT")
         $ controlled_ a 1
         $ fightAction (assetUseCost a Ammo 1)
     , skillTestAbility
-        $ withTooltip
-          "{action}: Discard Winchester Model 52: _Fight ({combat})_. You get +3 {combat} for this attack. If you succeed, automatically evade the targeted enemy."
+        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionDiscardWinchesterModel52_fightCombat_YouGet3CombatForT")
         $ controlled_ a 2
         $ fightAction (discardCost a)
     ]

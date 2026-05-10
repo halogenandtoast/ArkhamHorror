@@ -46,10 +46,10 @@ instance RunMessage Zeal where
       pushM $ mkChooseFight sid iid source
       when discarded do
         chooseOrRunOneM iid do
-          questionLabeled "Put into play from discard"
+          questionLabeled "$label.cards.zeal.putIntoPlayFromDiscard"
           for_ catsInDiscard \card -> cardLabeled card do
             shuffleCardsIntoDeck iid (only zealCard)
             putCardIntoPlay iid card
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure a
     _ -> Zeal <$> liftRunMessage msg attrs

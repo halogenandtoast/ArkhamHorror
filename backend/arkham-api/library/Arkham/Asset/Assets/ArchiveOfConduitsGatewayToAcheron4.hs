@@ -48,8 +48,8 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
         targets locations \location -> do
           moveTo (attrs.ability 2) iid' location
           chooseOneM iid do
-            labeled "Do not remove Leyline" nothing
-            labeled "Remove Leyline" do
+            labeledI "doNotRemoveLeyline" nothing
+            labeledI "removeLeyline" do
               removeTokens (attrs.ability 2) (toTarget location) Token.Leyline 1
               investigateLocation_ sid iid' (attrs.ability 2) location
 

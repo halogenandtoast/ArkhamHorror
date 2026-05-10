@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -36,11 +37,11 @@ instance RunMessage TrustyBullwhipAdvanced where
             Just (EnemyTarget eid) -> do
               canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
               chooseOneM iid do
-                labeled "Deal + 1 damage for this attack and Automatically evade the enemy" do
+                (cardI18n $ labeled' "trustyBullwhipAdvanced.deal1DamageForThisAttackAndAutomaticallyEvadeTheEnemy") do
                   exhaustThis attrs
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   pushWhen canEvade $ EnemyEvaded iid eid
-                labeled "Do nothing" nothing
+                labeledI "doNothing" nothing
             _ -> error "TrustyBullwhipAdvanced: impossible"
       pure a
     _ -> TrustyBullwhipAdvanced <$> liftRunMessage msg attrs

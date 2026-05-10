@@ -25,7 +25,7 @@ instance RunMessage DarkRitual where
       push
         $ chooseOrRunOne
           player
-        $ [Label "Spend 1 resource" [SpendResources iid 1] | canSpendResources]
-        <> [Label "Discard Dark Ritual" [toDiscardBy iid (attrs.ability 1) attrs]]
+        $ [Label "$label.cards.darkRitual.spend1Resource" [SpendResources iid 1] | canSpendResources]
+        <> [Label "$label.cards.darkRitual.discardDarkRitual" [toDiscardBy iid (attrs.ability 1) attrs]]
       pure a
     _ -> DarkRitual <$> runMessage msg attrs

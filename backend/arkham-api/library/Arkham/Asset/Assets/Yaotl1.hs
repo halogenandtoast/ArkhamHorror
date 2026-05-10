@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -21,13 +22,12 @@ yaotl1 = ally Yaotl1 Cards.yaotl1 (2, 2)
 
 instance HasAbilities Yaotl1 where
   getAbilities (Yaotl1 a) =
-    [ withTooltip
-        "{fast} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {skillWild} icons)."
+    [ (cardI18n $ withI18nTooltip "yaotl1.fastExhaustYaotlDuringThisSkillTestYouGetABonusToEachSkillEq")
         $ wantsSkillTest (YourSkillTest #any)
         $ controlled a 1 DuringAnySkillTest
         $ FastAbility
         $ exhaust a
-    , withTooltip "{fast}: Discard the top card of your deck. (Limit once per phase.)"
+    , (cardI18n $ withI18nTooltip "yaotl1.fastDiscardTheTopCardOfYourDeckLimitOncePerPhase")
         $ playerLimit PerPhase
         $ controlled a 2 CanManipulateDeck
         $ FastAbility Free

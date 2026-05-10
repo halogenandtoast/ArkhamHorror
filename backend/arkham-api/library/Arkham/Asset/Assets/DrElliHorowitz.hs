@@ -53,7 +53,7 @@ instance RunMessage DrElliHorowitz where
           allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
       if null validCardsAfterSeal
-        then chooseOne iid [Label "No Cards Found" []]
+        then chooseOne iid [Label "$label.noCardsFound" []]
         else do
           assetId <- getRandom
           additionalTargets <- getAdditionalSearchTargets iid

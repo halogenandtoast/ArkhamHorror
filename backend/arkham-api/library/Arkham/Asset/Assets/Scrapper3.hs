@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,10 +17,10 @@ scrapper3 = asset Scrapper3 Cards.scrapper3
 
 instance HasAbilities Scrapper3 where
   getAbilities (Scrapper3 a) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+    [ (cardI18n $ withI18nTooltip "scrapper3.fastSpend1ResourceYouGet1CombatForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+    , (cardI18n $ withI18nTooltip "scrapper3.fastSpend1ResourceYouGet1AgilityForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

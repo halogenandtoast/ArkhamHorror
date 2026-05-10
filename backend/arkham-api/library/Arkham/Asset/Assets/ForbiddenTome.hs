@@ -39,9 +39,9 @@ instance RunMessage ForbiddenTome where
       player <- getPlayer iid
       pushWhen (n >= 10 && noUses)
         $ chooseOne player
-        $ [ Label "Discard Forbidden Tome"
+        $ [ Label "$label.cards.forbiddenTome.discardForbiddenTome"
               $ [toDiscardBy iid (toAbilitySource attrs 1) attrs, Record YouHaveTranslatedTheTome]
-          , Label "Do not discard Forbidden Tome" []
+          , Label "$label.cards.forbiddenTome.doNotDiscardForbiddenTome" []
           ]
       pure a
     _ -> ForbiddenTome <$> runMessage msg attrs

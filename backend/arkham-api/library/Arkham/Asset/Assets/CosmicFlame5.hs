@@ -40,10 +40,10 @@ instance RunMessage CosmicFlame5 where
         enemies <-
           select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
         unless (null enemies) do
-          chooseOneM iid do
-            labeled "Spend 1 charge to deal 1 damage to an enemy at your location" do
+          chooseOneM iid $ cardI18n do
+            labeled' "cosmicFlame5.spendChargeForDamage" do
               spendUses (attrs.ability 1) attrs Charge 1
               chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
-            withI18n skip_
+            unscoped skip_
       pure a
     _ -> CosmicFlame5 <$> liftRunMessage msg attrs

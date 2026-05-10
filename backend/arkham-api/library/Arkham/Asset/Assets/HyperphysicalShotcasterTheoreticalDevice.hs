@@ -19,6 +19,7 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.I18n
 import Arkham.Investigate qualified as Investigate
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -224,7 +225,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           -- If we have a valid target we can move any enemy to us, otherwise we have to move an evadeable enemy
           lid <- getJustLocation iid -- TODO: can we do this?
           chooseOneM iid do
-            when (notNull canEvade) $ labeled "Move nothing (before)" $ doStep 1 msg
+            when (notNull canEvade) $ (cardI18n $ labeled' "hyperphysicalShotcasterTheoreticalDevice.moveNothingBefore") $ doStep 1 msg
             targets canMoveEnemyToUs \enemy -> do
               if notNull canEvade
                 then enemyMoveTo attrs enemy lid
@@ -306,7 +307,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
       lid <- getJustLocation iid -- TODO: can we do this?
       chooseOneM iid do
-        labeled "Move nothing (after)" nothing
+        (cardI18n $ labeled' "hyperphysicalShotcasterTheoreticalDevice.moveNothingAfter") nothing
         targets canMoveEnemyToUs \e -> enemyMoveTo attrs e lid
         targets canMoveEnemyAway \e -> enemyMoveToMatch attrs e (connectedFrom $ LocationWithId lid)
         targets canMoveOtherInvestigatorsAway \i -> moveToMatch attrs i (ConnectedFrom ForMovement $ LocationWithId lid)
@@ -334,23 +335,23 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseOne iid
-        $ [ Label "Railshooter" [DoStep 0 msg]
+        $ [ Label "$label.cards.hyperphysicalShotcasterTheoreticalDevice.railshooter" [DoStep 0 msg]
           | attrs `hasCustomization` Railshooter
           , manifest meta /= Just Railshooter
           ]
-        <> [ Label "Telescanner" [DoStep 1 msg]
+        <> [ Label "$label.cards.hyperphysicalShotcasterTheoreticalDevice.telescanner" [DoStep 1 msg]
            | attrs `hasCustomization` Telescanner
            , manifest meta /= Just Telescanner
            ]
-        <> [ Label "Translocator" [DoStep 2 msg]
+        <> [ Label "$label.cards.hyperphysicalShotcasterTheoreticalDevice.translocator" [DoStep 2 msg]
            | attrs `hasCustomization` Translocator
            , manifest meta /= Just Translocator
            ]
-        <> [ Label "Realitycollapser" [DoStep 3 msg]
+        <> [ Label "$label.cards.hyperphysicalShotcasterTheoreticalDevice.realitycollapser" [DoStep 3 msg]
            | attrs `hasCustomization` Realitycollapser
            , manifest meta /= Just Realitycollapser
            ]
-        <> [ Label "Matterweaver" [DoStep 4 msg]
+        <> [ Label "$label.cards.hyperphysicalShotcasterTheoreticalDevice.matterweaver" [DoStep 4 msg]
            | attrs `hasCustomization` Matterweaver
            , manifest meta /= Just Matterweaver
            ]

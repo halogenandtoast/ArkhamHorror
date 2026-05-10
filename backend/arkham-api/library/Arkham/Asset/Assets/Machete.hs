@@ -10,6 +10,7 @@ import Arkham.Helpers.SkillTest (
   isSkillTestSource,
   withSkillTest,
  )
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -44,8 +45,8 @@ instance RunMessage Machete where
       when (attrs.cardCode.isChapterTwo && attrs.ready) do
         skillTestCardOptionEdit attrs preOriginalOption do
           chooseOneM iid do
-            labeled "Do not exhaust Machete" nothing
-            labeled "Exhaust Machete" do
+            (cardI18n $ labeled' "machete.doNotExhaustMachete") nothing
+            (cardI18n $ labeled' "machete.exhaustMachete") do
               exhaustThis attrs
               withSkillTest \sid ->
                 skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

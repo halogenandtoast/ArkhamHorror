@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.SkillTest (getIsCommittable, getSkillTestInvestigator, withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -52,7 +53,7 @@ instance RunMessage GuidedByTheUnseen3 where
           else withSkillTest \sid ->
             -- MustBeCommitted prevents being able to uncommit, as it is really "committed"
             chooseOneM iid do
-              labeled "Do not commit any cards" unfocusCards
+              (cardI18n $ labeled' "guidedByTheUnseen3.doNotCommitAnyCards") unfocusCards
               targets committable \card -> do
                 unfocusCards
                 push $ SpendUses (attrs.ability 1) (toTarget attrs) Secret 1

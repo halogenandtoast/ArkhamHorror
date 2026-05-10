@@ -10,6 +10,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Helpers.Message (createEnemyWithPlacement_)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Message.Lifted.Choose
@@ -99,24 +100,24 @@ instance RunMessage TheBeyondBleakNetherworld where
           ElderSign -> do
             canHeal <- canHaveHorrorHealed attrs iid
             chooseOrRunOneM iid do
-              when canHeal $ labeled "Heal 1 horror" $ healHorror iid attrs 1
+              when canHeal $ (withI18n $ countVar 1 $ labeled' "healHorror") $ healHorror iid attrs 1
               when (notNull $ spiritDeck meta)
-                $ labeled "Attach the top card of the spirit deck to The Beyond, as a spirit"
+                $ (cardI18n $ labeled' "theBeyondBleakNetherworld.attachTheTopCardOfTheSpiritDeckToTheBeyondAsASpirit")
                 $ doStep 1 msg
-              labeled "Do nothing" nothing
+              labeledI "doNothing" nothing
           AutoFail -> do
             toDiscardBy iid attrs aid
             chooseOneM iid do
-              labeled "Take 1 direct damage" $ directDamage iid attrs 1
-              labeled "Take 1 direct horror" $ directHorror iid attrs 1
+              (cardI18n $ labeled' "theBeyondBleakNetherworld.take1DirectDamage") $ directDamage iid attrs 1
+              (cardI18n $ labeled' "theBeyondBleakNetherworld.take1DirectHorror") $ directHorror iid attrs 1
           Skull -> do
             toDiscardBy iid attrs aid
             whenM (canHaveHorrorHealed attrs iid) do
               healHorror iid attrs 1
           other | other `elem` [Cultist, ElderThing, Tablet, CurseToken] -> do
             chooseOneM iid do
-              labeled "Discard this spirit" $ toDiscardBy iid attrs aid
-              labeled "Take 1 direct damage" $ directDamage iid attrs 1
+              (cardI18n $ labeled' "theBeyondBleakNetherworld.discardThisSpirit") $ toDiscardBy iid attrs aid
+              (cardI18n $ labeled' "theBeyondBleakNetherworld.take1DirectDamage") $ directDamage iid attrs 1
           _ -> toDiscardBy iid attrs aid
       pure a
     DoStep 1 (RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) _) -> do

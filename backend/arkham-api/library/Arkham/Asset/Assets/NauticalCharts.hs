@@ -37,8 +37,8 @@ instance RunMessage NauticalCharts where
         guard $ notNull hand
         lift $ withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled "Discard 1 card from your hand to discover 1 additional clue"
-            labeled "Do not discard card" nothing
+            questionLabeled "$label.cards.nauticalCharts.discard1CardFromYourHandToDiscover1AdditionalClue"
+            labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card
               skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)

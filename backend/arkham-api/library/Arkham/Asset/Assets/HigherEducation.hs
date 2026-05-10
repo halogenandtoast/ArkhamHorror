@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,10 +17,10 @@ higherEducation = asset HigherEducation Cards.higherEducation
 
 instance HasAbilities HigherEducation where
   getAbilities (HigherEducation x) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+    [ (cardI18n $ withI18nTooltip "higherEducation.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlledAbility x 1 restriction (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+    , (cardI18n $ withI18nTooltip "higherEducation.fastSpend1ResourceYouGet1IntellectForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlledAbility x 2 restriction (FastAbility $ ResourceCost 1)
     ]

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype Moxie1 = Moxie1 AssetAttrs
@@ -16,10 +17,10 @@ moxie1 = assetWith Moxie1 Cards.moxie1 (sanityL ?~ 1)
 
 instance HasAbilities Moxie1 where
   getAbilities (Moxie1 x) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+    [ (cardI18n $ withI18nTooltip "moxie1.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+    , (cardI18n $ withI18nTooltip "moxie1.fastSpend1ResourceYouGet1AgilityForThisSkillTest")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

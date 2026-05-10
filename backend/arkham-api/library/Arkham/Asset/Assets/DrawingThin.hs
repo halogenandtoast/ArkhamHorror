@@ -29,8 +29,8 @@ instance RunMessage DrawingThin where
         [ IncreaseSkillTestDifficulty 2
         , chooseOne
             player
-            [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
-            , Label "Draw 1 card" [drawing]
+            [ Label "$label.cards.drawingThin.take2Resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
+            , Label "$label.cards.drawingThin.draw1Card" [drawing]
             ]
         ]
       pure a

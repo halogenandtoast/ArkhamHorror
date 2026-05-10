@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -38,9 +39,9 @@ instance RunMessage AlyssaGraham where
       focusCards cards do
         chooseOrRunOneM iid do
           when canAffectOtherPlayers do
-            labeled "Add 1 Doom to Alyssa to move card to bottom" do
+            (cardI18n $ labeled' "alyssaGraham.add1DoomToAlyssaToMoveCardToBottom") do
               placeDoom (attrs.ability 1) attrs 1
               for_ cards $ putCardOnBottomOfDeck iid deck
-          labeled "Leave card on top" nothing
+          (cardI18n $ labeled' "alyssaGraham.leaveCardOnTop") nothing
       pure a
     _ -> AlyssaGraham <$> liftRunMessage msg attrs

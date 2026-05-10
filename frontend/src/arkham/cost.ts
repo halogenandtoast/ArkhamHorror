@@ -1,6 +1,6 @@
 // Renders a backend `Cost` value into a localized human-readable string.
 // Mirrors what the (now-removed) Haskell `displayCostType` produced. Each
-// branch maps onto an i18n key in `cost.*` (see locale files); unknown tags
+// branch maps onto an i18n key in `label.cost.*` (see locale files); unknown tags
 // fall back to a literal "X" so a missing case never breaks the UI.
 import type { Cost } from '@/arkham/types/Cost'
 
@@ -19,62 +19,62 @@ export function formatCost(cost: Cost, t: Translate): string {
 
   switch (tag) {
     case 'Free':
-      return t('cost.free')
+      return t('label.cost.free')
     case 'ActionCost': {
       const n = num(cost, 'contents')
-      return t('cost.action', { count: n })
+      return t('label.cost.action', { count: n })
     }
     case 'AdditionalActionCost':
     case 'AdditionalActionsCost':
     case 'AdditionalActionsCostThatReducesResourceCostBy':
-      return t('cost.additionalAction')
+      return t('label.cost.additionalAction')
     case 'ResourceCost':
-      return t('cost.resource', { count: num(cost, 'contents') })
+      return t('label.cost.resource', { count: num(cost, 'contents') })
     case 'ScenarioResourceCost':
-      return t('cost.scenarioResource', { count: num(cost, 'contents') })
+      return t('label.cost.scenarioResource', { count: num(cost, 'contents') })
     case 'ClueCostX':
-      return t('cost.clueX')
+      return t('label.cost.clueX')
     case 'ConcealedXCost':
-      return t('cost.concealedX')
+      return t('label.cost.concealedX')
     case 'UnpayableCost':
-      return t('cost.unpayable')
+      return t('label.cost.unpayable')
     case 'ExhaustCost':
-      return t('cost.exhaust')
+      return t('label.cost.exhaust')
     case 'ExhaustAssetCost':
-      return t('cost.exhaustAsset')
+      return t('label.cost.exhaustAsset')
     case 'RemoveCost':
-      return t('cost.remove')
+      return t('label.cost.remove')
     case 'RevealCost':
-      return t('cost.reveal')
+      return t('label.cost.reveal')
     case 'DiscardCardCost':
-      return t('cost.discardCard')
+      return t('label.cost.discardCard')
     case 'DiscardRandomCardCost':
-      return t('cost.discardRandomCard')
+      return t('label.cost.discardRandomCard')
     case 'DiscardDrawnCardCost':
-      return t('cost.discardDrawnCard')
+      return t('label.cost.discardDrawnCard')
     case 'DiscardHandCost':
-      return t('cost.discardHand')
+      return t('label.cost.discardHand')
     case 'DiscardAssetCost':
-      return t('cost.discardAsset')
+      return t('label.cost.discardAsset')
     case 'ReturnAssetToHandCost':
     case 'ReturnMatchingAssetToHandCost':
-      return t('cost.returnAssetToHand')
+      return t('label.cost.returnAssetToHand')
     case 'ReturnEventToHandCost':
-      return t('cost.returnEventToHand')
+      return t('label.cost.returnEventToHand')
     case 'ExileCost':
-      return t('cost.exile')
+      return t('label.cost.exile')
     case 'SpendTokenCost':
-      return t('cost.spendToken')
+      return t('label.cost.spendToken')
     case 'SealChaosTokenCost':
-      return t('cost.sealToken')
+      return t('label.cost.sealToken')
     case 'XCost':
     case 'OneOfDistanceCost': {
       const inner = get<Cost>(cost, 'contents')
-      return inner ? t('cost.x', { inner: formatCost(inner, t) }) : t('cost.x', { inner: '' })
+      return inner ? t('label.cost.x', { inner: formatCost(inner, t) }) : t('label.cost.x', { inner: '' })
     }
     case 'OptionalCost': {
       const inner = get<Cost>(cost, 'contents')
-      return inner ? t('cost.optional', { inner: formatCost(inner, t) }) : ''
+      return inner ? t('label.cost.optional', { inner: formatCost(inner, t) }) : ''
     }
     case 'NonBlankedCost':
     case 'CostWhenEnemy':
@@ -94,24 +94,24 @@ export function formatCost(cost: Cost, t: Translate): string {
     }
     case 'Costs': {
       const inner = get<Cost[]>(cost, 'contents') ?? []
-      return join(inner.map((c) => formatCost(c, t)), t('cost.separator'))
+      return join(inner.map((c) => formatCost(c, t)), t('label.cost.separator'))
     }
     case 'OrCost': {
       const inner = get<Cost[]>(cost, 'contents') ?? []
-      return join(inner.map((c) => formatCost(c, t)), t('cost.or'))
+      return join(inner.map((c) => formatCost(c, t)), t('label.cost.or'))
     }
     case 'DamageCost':
-      return t('cost.damage', { count: num(cost, 'contents') })
+      return t('label.cost.damage', { count: num(cost, 'contents') })
     case 'DirectDamageCost':
-      return t('cost.directDamage', { count: num(cost, 'contents') })
+      return t('label.cost.directDamage', { count: num(cost, 'contents') })
     case 'DirectHorrorCost':
-      return t('cost.directHorror', { count: num(cost, 'contents') })
+      return t('label.cost.directHorror', { count: num(cost, 'contents') })
     case 'HorrorCost':
-      return t('cost.horror', { count: num(cost, 'contents') })
+      return t('label.cost.horror', { count: num(cost, 'contents') })
     case 'HorrorCostX':
-      return t('cost.horrorX')
+      return t('label.cost.horrorX')
     case 'DoomCost':
-      return t('cost.doom', { count: num(cost, 'contents') })
+      return t('label.cost.doom', { count: num(cost, 'contents') })
     case 'LabeledCost': {
       const contents = get<unknown[]>(cost, 'contents')
       return typeof contents?.[0] === 'string' ? (contents[0] as string) : ''

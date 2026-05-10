@@ -43,6 +43,10 @@
   "readyToBegin": "You are now ready to begin.",
   "Yes": "Yes",
   "No": "No",
+  "On": "On",
+  "Off": "Off",
+  "Back": "Back",
+  "exchange": "Exchange",
   "Parley": "Parley",
   "Resign": "Resign",
   "Investigate": "Investigate",
@@ -263,7 +267,9 @@
     "searchCards": "Search cards...",
     "listView": "List view",
     "imageView": "Image view",
-    "includeEncounter": "Include Encounter"
+    "includeEncounter": "Include Encounter",
+    "chapter1": "Chapter 1",
+    "chapter2": "Chapter 2"
   },
   "cardsList": {
     "name": "Name",
@@ -385,6 +391,48 @@
   "chooseDeck": {
     "search": "Search…",
     "useThisDeck": "Use this deck"
+  },
+  "deckToolbar": {
+    "searchDecks": "Search decks…",
+    "sortName": "Sort: Name",
+    "sortClass": "Sort: Class"
+  },
+  "newDeck": {
+    "save": "Save",
+    "saveAndUse": "Save & Use",
+    "useWithoutSaving": "Use Without Saving",
+    "unimplementedError": "Could not create deck, the following cards are unimplemented:"
+  },
+  "claimSeat": {
+    "unableToLoad": "Unable to load game details.",
+    "goToGame": "Go to game →",
+    "loading": "Loading…"
+  },
+  "home": {
+    "dismiss": "Dismiss",
+    "noActiveGames": "No active games.",
+    "loadGame": "Load Game"
+  },
+  "about": {
+    "supportTitle": "Support",
+    "supportBody": "It's quite expensive to run the infrastructure for this service. This project relies on contributions from the community in order to cover those costs. Please visit our Patreon if you are able to financially support this project.",
+    "supportNote": "Please note that no features are locked behind a paywall. This project is free to use for everyone and will remain so for as long as it continues to run.",
+    "copyrightTitle": "Copyright Disclaimer",
+    "copyrightBody": "The information presented in this app about <a href=\"https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/\">Arkham Horror: The Card Game™</a>, both textual and graphical, is © Fantasy Flight Games 2024. This app is a fan project and is not produced, endorsed, or supported by, or affiliated with Fantasy Flight Games.",
+    "copyrightArtwork": "All artwork and illustrations are the intellectual property of their respective creators. All Arkham Horror: The Card Game™ images and graphics are copyrighted by Fantasy Flight Games.",
+    "projectTitle": "Project Details",
+    "projectBody": "This application was created by <a href=\"https://github.com/halogenandtoast\">halogenandtoast</a> and contributors to support the Arkham Horror: The Card Game community. The source code of this project is available at <a href=\"https://github.com/halogenandtoast/ArkhamHorror\">Github</a>. Feedback and bug reports are welcome via Github issues or the dedicated channel on the Mythos Busters discord server."
+  },
+  "settingsForm": {
+    "languageHelp": "This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.",
+    "enrollInBeta": "Enroll in beta",
+    "betaWarning": "Beta features are likely very broken and games may be unrecoverable, please only enable this if you are willing to provide feedback.",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Permanently delete your account and all associated data, including games and decks.",
+    "cannotBeUndone": "This cannot be undone.",
+    "deleteAccount": "Delete Account",
+    "deleteConfirm": "Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.",
+    "confirmPermanentDelete": "Yes, permanently delete my account"
   },
   "campaignLogTooltip": {
     "rememberedTitle": "Remembered",

@@ -388,7 +388,7 @@ const tabooList = function (investigator: Investigator) {
                 <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
               </div>
             </template>
-            <p v-else class="info">Waiting on other players...</p>
+            <p v-else class="info">{{ $t('upgrade.waitingOtherPlayer') }}</p>
           </div>
         </template>
       </template>

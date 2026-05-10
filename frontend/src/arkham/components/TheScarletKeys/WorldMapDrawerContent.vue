@@ -69,27 +69,27 @@ const dossierKey = computed<string | null>(() => {
 
   <div class="drawer-content">
     <template v-if="selectedLocation === mapData.current">
-      <p v-if="!isFinale">You are currently here.</p>
-      <button v-else class="action" @click="emit('travelTo')">Travel here</button>
+      <p v-if="!isFinale">{{ t('scarletKeys.youAreCurrentlyHere') }}</p>
+      <button v-else class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
     </template>
     <template v-else-if="embark">
-      <p><strong>Travel time:</strong> {{ locationData[selectedLocation].travel }}</p>
+      <p><strong>{{ t('scarletKeys.travelTime') }}:</strong> {{ locationData[selectedLocation].travel }}</p>
       <div v-if="selectedLocation === 'Venice'" class="side-story-info">
-        <p>This is a side-story location.</p>
-        <p>If you wish to add a side-story to this campaign, you may travel to this location and spend additional time equal to the normal experience for playing that side story.</p>
+        <p>{{ t('scarletKeys.sideStoryLocation') }}</p>
+        <p>{{ t('scarletKeys.sideStoryDescription') }}</p>
       </div>
       <template v-if="locationData[selectedLocation].unlocked">
-        <button class="action" @click="emit('travelTo')">Travel here</button>
+        <button class="action" @click="emit('travelTo')">{{ t('scarletKeys.travelHere') }}</button>
         <button
           v-if="mapData.hasTicket && (locationData[selectedLocation].travel ?? 0) > 1"
           class="action"
           @click="emit('travelWithTicket')"
-        >Travel with Expedited Ticket (1 time)</button>
-        <button class="action secondary" @click="emit('travelVia')">Travel here without stopping</button>
+        >{{ t('scarletKeys.travelWithExpeditedTicket') }}</button>
+        <button class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
       </template>
       <template v-else>
-        <p class="action locked">This location is currently locked.</p>
-        <button class="action secondary" @click="emit('travelVia')">Travel here without stopping</button>
+        <p class="action locked">{{ t('scarletKeys.locationLocked') }}</p>
+        <button class="action secondary" @click="emit('travelVia')">{{ t('scarletKeys.travelWithoutStopping') }}</button>
       </template>
     </template>
 

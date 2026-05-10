@@ -494,7 +494,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'AnySkillValue'">
             <span> {{modifier.type.contents}}</span>
-            <span class="text">{{ $t('skillValue') }}</span>
+            <span class="text">{{ $t('modifier.skillValue') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleSuccess'">
             <span class="text">{{ $t('modifier.doubleSuccess') }}</span>
@@ -545,13 +545,13 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         v-if="skipTriggersAction !== -1"
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
-      >{{ $t('skipTriggers') }}</button>
+      >{{ $t('investigator.skipTriggers') }}</button>
       <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"
         v-if="applyResultsAction !== -1"
         @click="choose(applyResultsAction)"
-      >{{ $t('Apply Results') }}</button>
+      >{{ $t('label.applyResults') }}</button>
     </div>
   </Draggable>
 </template>

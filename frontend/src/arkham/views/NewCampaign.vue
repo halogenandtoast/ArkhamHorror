@@ -347,7 +347,7 @@ async function start() {
             class="action secondary"
             @click="goBack"
           >
-            {{ $t('Back') ?? 'Back' }}
+            {{ $t('Back') }}
           </button>
 
           <button v-if="step === 'GameOptions'" class="primary-action" type="submit" :disabled="nextDisabled">

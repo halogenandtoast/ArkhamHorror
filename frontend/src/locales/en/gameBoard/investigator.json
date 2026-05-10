@@ -1,6 +1,7 @@
 {
     "discards": "Discards",
     "endTurn": "End turn",
+    "endTurnShort": "End",
     "skipTriggers": "Skip Triggers",
     "skipAllTriggers": "Skip Triggers for All Investigators",
     "devouredCards": "Devoured ({count})",

@@ -65,7 +65,7 @@ instance RunMessage GrislyTotemSeeker3Effect where
       withSkillTest \sid -> do
         when (isTarget sid attrs.target) do
           disable attrs
-          skillTestCardOption attrs do
+          skillTestCardOption Cards.grislyTotemSeeker3 do
             drawCardsIfCan iid attrs.source 1
       pure $ GrislyTotemSeeker3Effect $ attrs & finishedL .~ True
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e

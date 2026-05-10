@@ -66,7 +66,7 @@ const debug = useDebug()
 
 <template>
   <Draggable>
-    <template #handle><h2>Debug Concealed Card</h2></template>
+    <template #handle><h2>{{ $t('debug.concealedCard.title') }}</h2></template>
     <div class="concealed-card--outer">
       <div class="concealed-card" :data-index="card.id">
         <div class="card-frame">
@@ -76,7 +76,7 @@ const debug = useDebug()
         </div>
       </div>
       <div class="buttons">
-        <button @click="emit('close')">Close</button>
+        <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
     </div>
   </Draggable>

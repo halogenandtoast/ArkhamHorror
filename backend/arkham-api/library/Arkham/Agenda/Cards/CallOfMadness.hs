@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.I18n
+import Arkham.I18n hiding (cardI18n)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheHeartOfMadness.Helpers

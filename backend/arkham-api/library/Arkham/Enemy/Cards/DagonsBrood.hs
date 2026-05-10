@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.DagonsBrood (dagonsBrood, DagonsBrood (..)) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

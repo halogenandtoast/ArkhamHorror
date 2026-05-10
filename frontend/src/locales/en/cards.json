@@ -505,7 +505,7 @@
       "heal2Horror": "Heal 2 horror"
     },
     "hallowedMirror3": {
-      "changeEach": "Change each \\",
+      "changeEach": "Change each \"2\" to a \"3\"",
       "shuffleItIntoYourDeckInsteadOfDiscardingIt": "Shuffle it into your deck instead of discarding it"
     },
     "handCrankFlashlight": {
@@ -735,7 +735,7 @@
       "replenishSupply": "Replenish 1 supply on that asset"
     },
     "occultLexicon3": {
-      "changeEach": "Change each \\",
+      "changeEach": "Change each \"2\" to a \"3\"",
       "shuffleItIntoYourDeckInsteadOfDiscardingIt": "Shuffle it into your deck instead of discarding it"
     },
     "occultReliquary": {

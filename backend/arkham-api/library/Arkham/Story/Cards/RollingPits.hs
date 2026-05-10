@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.RollingPits (rollingPits) where
 
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

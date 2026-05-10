@@ -3,7 +3,6 @@ module Arkham.Location.Cards.TheMoonRoom (theMoonRoom, TheMoonRoom (..)) where
 import Arkham.Ability hiding (resignAction)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Constants
-import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards

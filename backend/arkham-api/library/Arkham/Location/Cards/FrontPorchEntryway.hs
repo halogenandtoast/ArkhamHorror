@@ -2,7 +2,6 @@ module Arkham.Location.Cards.FrontPorchEntryway (frontPorchEntryway, FrontPorchE
 
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

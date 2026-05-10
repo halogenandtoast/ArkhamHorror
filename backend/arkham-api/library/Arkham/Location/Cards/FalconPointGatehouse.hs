@@ -2,7 +2,6 @@ module Arkham.Location.Cards.FalconPointGatehouse (falconPointGatehouse, FalconP
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards

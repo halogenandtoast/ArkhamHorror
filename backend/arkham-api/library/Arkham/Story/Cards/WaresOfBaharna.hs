@@ -3,6 +3,7 @@ module Arkham.Story.Cards.WaresOfBaharna (waresOfBaharna) where
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

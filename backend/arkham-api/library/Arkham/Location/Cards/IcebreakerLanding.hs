@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Helpers.SkillTest.Lifted (parley)
-import Arkham.I18n
+import Arkham.I18n hiding (cardI18n)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

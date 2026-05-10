@@ -34,7 +34,10 @@ instance RunMessage TheGreatWebCosmicWeb where
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOrRunOneM iid do
         when canDiscard do
-          countVar n $ labeledI "discardCards" $ chooseAndDiscardCards iid (attrs.ability 1) n
-        scenarioI18n $ scope "theGreatWebCosmicWeb" $ labeled' "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+          withI18n $ countVar n $ labeledI "discardCards" $ chooseAndDiscardCards iid (attrs.ability 1) n
+        scenarioI18n
+          $ scope "theGreatWebCosmicWeb"
+          $ labeled' "placeDoom"
+          $ placeDoom (attrs.ability 1) attrs 1
       pure l
     _ -> TheGreatWebCosmicWeb <$> liftRunMessage msg attrs

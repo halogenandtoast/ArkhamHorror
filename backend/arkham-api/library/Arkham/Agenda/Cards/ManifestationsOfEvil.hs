@@ -10,7 +10,7 @@ import Arkham.Enemy.Types (Field (EnemyCardsUnderneath, EnemyLocation))
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Query (getLead)
-import Arkham.I18n
+import Arkham.I18n hiding (cardI18n)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

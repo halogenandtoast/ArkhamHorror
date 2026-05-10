@@ -41,7 +41,7 @@ instance RunMessage BlessedBlade4 where
         lift
           $ chooseOne
             st.investigator
-            [ Label (withI18n $ countVar blessTokens $ ikey' "label.cards.blessedBlade4.exhaustForBless")
+            [ Label (cardI18n $ countVar blessTokens $ ikey' "label.blessedBlade.exhaust")
                 $ Exhaust (mkExhaustion attrs attrs)
                 : replicate blessTokens (AddChaosToken #bless)
             , Label "$label.doNotExhaust" []

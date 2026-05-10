@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestResolvedChaosTokens)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -31,8 +32,8 @@ instance RunMessage StormRuler4 where
       tokens <- min 3 . count ((`elem` faces) . (.face)) <$> getSkillTestResolvedChaosTokens
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
       when (tokens > 0 && notNull enemies) do
-        chooseOneM iid do
-          labeled ("Exhaust Storm Ruler to deal " <> tshow tokens <> " damage to an enemy at your location") do
+        chooseOneM iid $ cardI18n do
+          countVar tokens $ labeled' "stormRuler.exhaust" do
             exhaustThis attrs
             chooseTargetM iid enemies (nonAttackEnemyDamage (Just iid) attrs tokens)
           labeledI "doNotExhaust" nothing

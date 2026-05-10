@@ -19,7 +19,9 @@
       "doNotResolveASecondOption": "Do not resolve a second option",
       "doneMoving": "Done Moving",
       "empowerIncreaseDifficultyBy2": "Empower (increase difficulty by 2)",
-      "resolveASecondOption": "Resolve a second option"
+      "resolveASecondOption": "Resolve a second option",
+      "placeChargeOrSecret": "Place {count} charge or secret on an asset you control | Place {count} charges or secrets on an asset you control",
+      "moveUpTo": "Move up to {count} times"
     },
     "alyssaGraham": {
       "addDoom": "Add 1 Doom to Alyssa to move card to bottom",
@@ -116,7 +118,8 @@
     },
     "blessedBlade": {
       "exhaustToAddBless": "Exhaust Blessed Blade to add 1 {'{'}bless{'}'} token",
-      "exhaustForBless": "Exhaust Blessed Blade to add 1 {'{'}bless{'}'} token"
+      "exhaustForBless": "Exhaust Blessed Blade to add 1 {'{'}bless{'}'} token",
+      "exhaust": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {count} {'{'}bless{'}'} tokens"
     },
     "blessedBlade4": {
       "exhaustForBless": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {'{'}count{'}'} {'{'}bless{'}'} tokens"
@@ -712,6 +715,9 @@
       "applyDamageToConcealed": "Apply damage to concealed",
       "doNotApplyDamageToConcealed": "Do not apply damage to concealed"
     },
+    "mrRook": {
+      "top": "Top {count}"
+    },
     "mysteriesRemain": {
       "placeClue": "Place 1 clue (from the token bank) on your location"
     },
@@ -907,7 +913,16 @@
       "doNotUseAdditionalImbueFromScriptweaver": "Do not use additional imbue from Scriptweaver ",
       "draw1Card": "Draw 1 card",
       "heal1Damage": "Heal 1 damage",
-      "heal1Horror": "Heal 1 horror"
+      "heal1Horror": "Heal 1 horror",
+      "inscription": {
+        "Accuracy": "Accuracy",
+        "Power": "Power",
+        "Glory": "Glory",
+        "Elders": "Elders",
+        "Hunt": "Hunt",
+        "Fury": "Fury"
+      },
+      "doNotUseAdditionalImbue": "Do not use additional imbue from Scriptweaver"
     },
     "salvage": {
       "remove": "Remove that asset from the game and gain resources equal to its cost.",
@@ -943,6 +958,10 @@
     },
     "sefinaRousseau": {
       "doneChoosingEvents": "Done Choosing Events"
+    },
+    "sergeantMonroe": {
+      "dealDamage": "Deal damage dealt ({count})",
+      "dealHorror": "Deal horror dealt ({count})"
     },
     "sharpshooter3": {
       "doBoth": "Do both",
@@ -1012,6 +1031,9 @@
     },
     "stickToThePlan3": {
       "chooseNoMoreEvents": "Choose no more events"
+    },
+    "stormRuler": {
+      "exhaust": "Exhaust Storm Ruler to deal {count} damage to an enemy at your location"
     },
     "stouthearted": {
       "done": "Done moving damage/horror"
@@ -1455,6 +1477,9 @@
     },
     "sledgehammer3": {
       "exhaustForDamage": "Exhaust Sledgehammer"
+    },
+    "smallRadio": {
+      "partner": "{name}"
     },
     "spectralRazor2": {
       "engageFirst": "Engage an enemy first",

@@ -3,6 +3,7 @@ module Arkham.Event.Events.StalkPrey (stalkPrey) where
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Zone
@@ -30,7 +31,7 @@ instance RunMessage StalkPrey where
       for_ menemy \eid -> do
         unlessM (eid <=~> EnemyAt (locationWithInvestigator iid)) do
           chooseOneM iid do
-            labeled "Move once toward its location" $ moveToward iid (locationWithEnemy eid)
-            labeled "Do not move" nothing
+            cardI18n $ scope "stalkPrey" $ labeled' "moveToward" $ moveToward iid (locationWithEnemy eid)
+            labeledI "doNotMove" nothing
       pure e
     _ -> StalkPrey <$> liftRunMessage msg attrs

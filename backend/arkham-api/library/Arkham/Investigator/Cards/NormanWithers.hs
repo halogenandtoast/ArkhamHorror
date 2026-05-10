@@ -72,7 +72,7 @@ instance RunMessage NormanWithers where
         player <- getPlayer iid
         push
           $ chooseOne player
-          $ Label "Do not swap" []
+          $ Label "$label.doNotSwap" []
           : [ targetLabel
                 (toCardId c)
                 [ drawCards iid (ChaosTokenEffectSource ElderSign) 1

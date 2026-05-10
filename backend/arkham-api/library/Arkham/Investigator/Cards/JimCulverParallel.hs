@@ -43,9 +43,9 @@ instance RunMessage JimCulverParallel where
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) do
         chooseOneM iid do
-          labeled "Resolve as {elderSign}" nothing
-          labeled "Resolve as {skull}" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]
-          labeled "Resolve as {curse}" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [CurseToken]
+          labeledI "resolveAsElderSign" nothing
+          labeledI "resolveAsSkull" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]
+          labeledI "resolveAsCurse" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [CurseToken]
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> AssetNotAtUsesX <> AssetWithUseType Charge

@@ -48,10 +48,9 @@ instance RunMessage BuriedSecrets where
         when canManipulateDeck $ do
           chooseOne
             iid
-            [ Label
-                "Take 2 horror to shuffle into your deck"
+            [ Label "$cards.label.buriedSecrets.takeHorror"
                 [Msg.assignHorror iid (attrs.ability 1) 2, Msg.shuffleIntoDeck iid attrs]
-            , Label "Do Nothing" []
+            , Label "$label.doNothing" []
             ]
       pure t
     _ -> BuriedSecrets <$> liftRunMessage msg attrs

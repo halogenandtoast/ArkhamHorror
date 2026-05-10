@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Cost.Status qualified as Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Upgrade
 
@@ -38,7 +39,7 @@ instance RunMessage CustomGrip where
       cards <- select $ PlayableCard (Cost.UnpaidCost Cost.NoAction) $ inHandOf ForPlay iid <> basic #firearm
       unless (null cards) do
         chooseOrRunOneM iid do
-          labeled "Do not play a Firearm" nothing
+          cardI18n $ scope "customGrip" $ labeled' "doNotPlayFirearm" nothing
           targets cards $ playCardPayingCost iid
       pure e
     _ -> CustomGrip <$> liftRunMessage msg attrs

@@ -40,6 +40,6 @@ instance RunMessage RaiseTheStakes where
       chooseOneM iid do
         scenarioI18n $ labeled' "cheated" $ remember $ Cheated $ Name.labeled name iid
         when hasResources $ withI18n $ countVar 5 $ labeled' "loseResources" $ loseResources iid attrs 5
-        scenarioI18n $ labeled "raiseTheStakes.place" $ place attrs (InThreatArea iid)
+        scenarioI18n $ scope "raiseTheStakes" $ labeled' "place" $ place attrs (InThreatArea iid)
       pure t
     _ -> RaiseTheStakes <$> liftRunMessage msg attrs

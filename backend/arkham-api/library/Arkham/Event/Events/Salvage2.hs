@@ -5,6 +5,7 @@ import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
@@ -29,13 +30,13 @@ instance RunMessage Salvage2 where
           targets cards \card -> do
             playable <- getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid) card
             let cost = maybe 0 toPrintedCost card.cost
-            chooseOneM iid do
+            chooseOneM iid $ cardI18n $ scope "salvage" do
               when (cost > 0) do
-                labeled "Remove that asset from the game and gain resources equal to its cost." do
+                labeled' "remove" do
                   obtainCard card
                   gainResourcesIfCan iid attrs cost
               when playable do
-                labeled "Play that asset (paying its cost)." $ playCardPayingCost iid card
+                labeled' "play" $ playCardPayingCost iid card
 
       pure e
     _ -> Salvage2 <$> liftRunMessage msg attrs

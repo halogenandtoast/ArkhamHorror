@@ -54,12 +54,12 @@ instance RunMessage CleanSneak4 where
       canDamage <- eid <=~> EnemyCanBeDamagedBySource (toSource attrs)
 
       chooseOne iid
-        $ [Label "Gain 2 resources" [DoStep 1 msg] | canGainResources && 1 `notElem` optionsChosen meta]
-        <> [Label "Deal 2 damage to that Enemy" [DoStep 2 msg] | canDamage && 2 `notElem` optionsChosen meta]
-        <> [ Label "Discover 1 clue at your location" [DoStep 3 msg]
+        $ [Label "$label.gainResources count=i:2" [DoStep 1 msg] | canGainResources && 1 `notElem` optionsChosen meta]
+        <> [Label "$cards.label.cleanSneak.damage" [DoStep 2 msg] | canDamage && 2 `notElem` optionsChosen meta]
+        <> [ Label "$label.discoverAtYourLocation count=i:1" [DoStep 3 msg]
            | canDiscoverClues && 3 `notElem` optionsChosen meta
            ]
-        <> [Label "Draw 1 card" [DoStep 4 msg] | canDrawCards && 4 `notElem` optionsChosen meta]
+        <> [Label "$label.drawCardOne" [DoStep 4 msg] | canDrawCards && 4 `notElem` optionsChosen meta]
       pure e
     DoStep n (HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid)) -> do
       case n of

@@ -29,12 +29,12 @@ newtype PowerWord = PowerWord EventAttrs
 
 commandLabel :: Command -> Text
 commandLabel = \case
-  GoCommand -> "Go"
-  CowerCommand -> "Cower"
-  BetrayCommand -> "Betray"
-  MercyCommand -> "Mercy"
-  ConfessCommand -> "Confess"
-  DistractCommand -> "Distract"
+  GoCommand -> "$cards.label.powerWord.go"
+  CowerCommand -> "$cards.label.powerWord.cower"
+  BetrayCommand -> "$cards.label.powerWord.betray"
+  MercyCommand -> "$cards.label.powerWord.mercy"
+  ConfessCommand -> "$cards.label.powerWord.confess"
+  DistractCommand -> "$cards.label.powerWord.distract"
 
 toKey :: Command -> Key
 toKey = \case
@@ -190,7 +190,7 @@ runAbility iid attrs canTonguetwister = do
 
   when (notNull choices) do
     chooseOne iid
-      $ [ Label "Do not use second command (Tonguetwister)" []
+      $ [ Label "$cards.label.powerWord.tonguetwisterSkip" []
         | not canTonguetwister && attrs `hasCustomization` Tonguetwister
         ]
       <> [Label (commandLabel cmd) (msgs <> tonguetwister) | ((cmd, _), msgs) <- choices]
@@ -251,10 +251,10 @@ instance RunMessage PowerWord where
                 if damage > 0 then select (HealableInvestigator source #damage $ colocatedWith iid) else pure []
               choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> capture do
                 chooseOrRunOne iid
-                  $ [ Label ("Heal " <> tshow damage <> " damage") [HealDamage (toTarget investigator) source damage]
+                  $ [ Label ("$label.healDamage count=i:" <> tshow damage) [HealDamage (toTarget investigator) source damage]
                     | investigator `elem` damageInvestigators
                     ]
-                  <> [ Label ("Heal " <> tshow horror <> " horror") [HealHorror (toTarget investigator) source horror]
+                  <> [ Label ("$label.healHorror count=i:" <> tshow horror) [HealHorror (toTarget investigator) source horror]
                      | investigator `elem` horrorInvestigators
                      ]
 

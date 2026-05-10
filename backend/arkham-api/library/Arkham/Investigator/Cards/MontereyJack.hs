@@ -49,8 +49,8 @@ instance RunMessage MontereyJack where
         mDrawCards <- lift $ Msg.drawCardsIfCan iid ElderSign 1
         lift
           $ (if distance >= 2 then (pushAll . map uiToRun) else chooseOrRunOne iid)
-          $ [Label "Gain 1 resource" [x] | x <- toList mGainResources]
-          <> [Label "Draw 1 card" [x] | x <- toList mDrawCards]
+          $ [Label "$label.gainOneResource" [x] | x <- toList mGainResources]
+          <> [Label "$label.drawCardOne" [x] | x <- toList mDrawCards]
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       void $ runMaybeT do
@@ -61,7 +61,7 @@ instance RunMessage MontereyJack where
         mDrawCards <- lift $ Msg.drawCardsIfCan iid ElderSign 1
         lift
           $ chooseOrRunOne iid
-          $ [Label "Gain 1 resource" [x] | x <- toList mGainResources]
-          <> [Label "Draw 1 card" [x] | x <- toList mDrawCards]
+          $ [Label "$label.gainOneResource" [x] | x <- toList mGainResources]
+          <> [Label "$label.drawCardOne" [x] | x <- toList mDrawCards]
       pure i
     _ -> MontereyJack <$> liftRunMessage msg attrs

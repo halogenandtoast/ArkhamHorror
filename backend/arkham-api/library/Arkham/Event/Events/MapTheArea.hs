@@ -7,6 +7,7 @@ import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype MapTheArea = MapTheArea EventAttrs
@@ -28,9 +29,9 @@ instance RunMessage MapTheArea where
   runMessage msg e@(MapTheArea attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      chooseOneM iid do
-        labeled "Add your {willpower}" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
-        labeled "Add your {agility}" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
+      chooseOneM iid $ cardI18n $ scope "mapTheArea" do
+        labeled' "willpower" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
+        labeled' "agility" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
       investigateEdit_ sid iid attrs (setTarget attrs)
       pure e
     Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do

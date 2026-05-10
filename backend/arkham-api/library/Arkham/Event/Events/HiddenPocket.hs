@@ -28,7 +28,7 @@ instance RunMessage HiddenPocket where
               $ AdjustableSlot (bothSource aid attrs) (Just $ CardWithTrait Illicit) [#hand, #accessory] []
 
       chooseOneM iid do
-        labeled "Start as hand slot" $ push $ addSlot #hand
-        labeled "Start as accessory slot" $ push $ addSlot #accessory
+        labeledI "addHandSlot" $ push $ addSlot #hand
+        labeledI "addAccessorySlot" $ push $ addSlot #accessory
       pure e
     _ -> HiddenPocket <$> liftRunMessage msg attrs

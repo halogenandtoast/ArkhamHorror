@@ -6,6 +6,7 @@ import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Deck (withDeck)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorCardsUnderneath))
@@ -92,13 +93,13 @@ instance RunMessage GloriaGoldberg where
                 abilityLabeled iid ab nothing
           else unless (null nonEliteCards) do
             chooseOneM iid $ for_ nonEliteCards \card -> do
-              targeting card $ chooseOneM iid do
-                labeled "Discard it" $ Arkham.Message.Lifted.discardCard iid (attrs.ability 1) card
-                labeled "Put it on top of the encounter deck" do
+              targeting card $ chooseOneM iid $ cardI18n $ scope "gloriaGoldberg" do
+                labeled' "discard" $ Arkham.Message.Lifted.discardCard iid (attrs.ability 1) card
+                labeled' "putOnTop" do
                   obtainCard card
                   putCardOnTopOfDeck iid Deck.EncounterDeck card
                 when (cardsUnderneathCount < 3) do
-                  labeled "Place it beneath Gloria Goldberg (max 3 cards beneath her)" do
+                  labeled' "placeBeneath" do
                     obtainCard card
                     placeUnderneath iid [card]
       pure . GloriaGoldberg $ attrs & setMeta (object ["gloria" .= False])
@@ -130,7 +131,7 @@ instance RunMessage GloriaGoldberg where
     SendMessage (isTarget attrs -> True) (ForInvestigators investigators AllDrawEncounterCard) -> do
       unless (null investigators) do
         chooseOrRunOneM attrs.id do
-          questionLabeled "Choose investigator to draw encounter card"
+          cardI18n $ scope "gloriaGoldberg" $ questionLabeled' "chooseDrawer"
           for_ (eachWithRest investigators) \(x, xs) -> do
             portraitLabeled x do
               forInvestigator x AllDrawEncounterCard

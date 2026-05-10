@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.SilasMarsh (silasMarsh) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
@@ -50,7 +51,7 @@ instance RunMessage SilasMarsh where
 
       focusCards skills do
         chooseOneM attrs.id do
-          labeled "Do not commit skills" nothing
+          cardI18n (scope "silasMarsh" $ labeled' "doNotCommit") nothing
           targets skills \card -> do
             commitCard attrs.id card
             withSkillTest \sid -> skillTestModifier sid ElderSign card ReturnToHandAfterTest

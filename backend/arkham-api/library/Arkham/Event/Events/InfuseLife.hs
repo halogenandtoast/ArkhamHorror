@@ -21,7 +21,7 @@ instance RunMessage InfuseLife where
       investigators <- selectTargets $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
       unless (null assets && null investigators) do
         chooseOneM iid do
-          labeled "Done healing" nothing
+          labeledI "doneHealing" nothing
           targets (assets <> investigators) \target -> do
             healDamage target attrs 1
             doStep (n - 1) msg'

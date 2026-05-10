@@ -35,7 +35,7 @@ instance RunMessage UncageTheSoul3 where
         then chooseTargetM iid assets' $ toDiscardBy iid attrs
         else unless (null assets) do
           chooseOneM iid do
-            labeled "Do not discard asset" nothing
+            labeledI "doNotDiscardAsset" nothing
             targets assets $ toDiscardBy iid attrs
       doStep 1 msg
       pure e

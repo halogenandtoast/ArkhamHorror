@@ -71,7 +71,7 @@ instance RunMessage RexMurphyParallel where
           let optionalTimes = max 0 $ min (n - mandatoryTimes) (curses `div` 2)
           if optionalTimes > 0
             then
-              questionLabel "Number of times to use Rex's conversion" iid
+              questionLabel "$cards.label.rexMurphyParallel.conversion" iid
                 $ DropDown
                   [ (tshow x, DoStep x msg)
                   | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
@@ -100,7 +100,7 @@ instance RunMessage RexMurphyParallel where
 
           if optionalTimes > 0
             then
-              questionLabel "Number of times to use Rex's conversion" iid
+              questionLabel "$cards.label.rexMurphyParallel.conversion" iid
                 $ DropDown
                   [ (tshow x, DoStep x msg)
                   | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]

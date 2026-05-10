@@ -29,7 +29,7 @@ instance RunMessage MotivationalSpeech where
       when (notNull allies) do
         focusCards allies do
           chooseOneM iid do
-            labeled "Do not play ally" unfocusCards
+            labeledI "doNotPlayAlly" unfocusCards
             targets allies \ally -> do
               unfocusCards
               costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)

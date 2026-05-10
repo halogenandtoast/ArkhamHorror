@@ -63,10 +63,10 @@ instance RunMessage MarieLambeau where
 
       push
         $ chooseOne player
-        $ Label "Add 1 doom" [chooseOrRunOne player $ targetLabels adds (only . place)]
+        $ Label "$cards.label.marieLambeau.addDoom" [chooseOrRunOne player $ targetLabels adds (only . place)]
         : ( mwhen (notNull removes)
-              $ [Label "Remove 1 doom" [chooseOrRunOne player $ targetLabels removes (only . remove)]]
+              $ [Label "$label.removeOneDoom" [chooseOrRunOne player $ targetLabels removes (only . remove)]]
           )
-          <> [Label "Do Nothing" []]
+          <> [Label "$label.doNothing" []]
       pure i
     _ -> MarieLambeau <$> runMessage msg attrs

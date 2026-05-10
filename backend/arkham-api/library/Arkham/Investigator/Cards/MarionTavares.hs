@@ -58,7 +58,7 @@ instance RunMessage MarionTavares where
           <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (nub $ ws <> defaultWindows iid)
       when (notNull cards) do
         chooseOneM iid do
-          labeled "Do not play another event" nothing
+          labeledI "doNotPlayAnotherEvent" nothing
           targets cards (playCardPayingCost iid)
       pure i
     _ -> MarionTavares <$> liftRunMessage msg attrs

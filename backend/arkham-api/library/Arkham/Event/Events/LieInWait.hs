@@ -7,6 +7,7 @@ import Arkham.Fight.Types
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (enteringEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -48,9 +49,9 @@ instance RunMessage LieInWait where
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       skillTestCardOptionEdit attrs preOriginalOption do
-        chooseOneM iid do
-          labeled "Do not discard Lie in Wait" nothing
-          labeled "Discard Lie in Wait to add +1 damage" do
+        chooseOneM iid $ cardI18n $ scope "lieInWait" do
+          labeled' "skip" nothing
+          labeled' "discard" do
             toDiscardBy iid (attrs.ability 1) attrs
             withSkillTest \sid ->
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

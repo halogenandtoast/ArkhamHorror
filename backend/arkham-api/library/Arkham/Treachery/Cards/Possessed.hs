@@ -32,7 +32,7 @@ instance RunMessage Possessed where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
-        labeled "Automatically fail this test" failSkillTest
+        labeledI "takeOneHorror" $ assignHorror iid (attrs.ability 1) 1
+        labeledI "automaticallyFailTest" failSkillTest
       pure t
     _ -> Possessed <$> liftRunMessage msg attrs

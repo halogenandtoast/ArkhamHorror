@@ -72,5 +72,32 @@
   "epilogue14": "<p>_Epilogue 14_: “What are you doing down here? No, your companions have already fled back to your world. It was a nice thought, but you’re on your own now. Yes, there are ways out of the underworld, but they’re not exactly easy to find. There are gugs, and ghasts, and ghouls, and…well, you’ll see. Honestly, why would you come down here? I guess I hope you make it back out some day. As for me? I have my own home to return to. Don’t worry. I’m sure you haven’t seen the last of me.”</p><ul><li>The two groups survived, but are forever separated.</li><li>The investigators win the campaign!</li></ul>",
   "epilogue15": "<p>_Epilogue 15_: The black cat watches your escape with bated breath. “Wow. I honestly did not see that one coming. They risked their lives for you, and now you risk yours for them. How interesting. Perhaps there is hope for your kind yet.” After a few moments, it grows bored. “Okay, enough of this. I have places to be. I see that you will be all right without me. Take care of both worlds for me, would you?”</p><ul><li>The two groups were reunited in the Dreamlands.</li><li>The investigators win the campaign!</li></ul>",
   "epilogue16": "<p>_Epilogue 16_: “Oh, what a tragedy of errors this has become. You just passed each other! Oh well. You’re on your own now. Yes, there are ways out of the underworld, but they’re not exactly easy to find. There’s gugs, and ghasts, and ghouls, and…well, you’ll see. Honestly, why would you come down here? I guess I hope you make it back out some day. As for me? I have my own home to return to. Don’t worry. I’m sure you haven’t seen the last of me.”</p><ul><li>The two groups survived, but are forever separated.</li><li>The investigators win the campaign!</li></ul>",
-  "brokeTheLawOfUlthar": "<div class='green'><p>_*If (your investigator name) has broken the law of Ulthar* and you are not killed or driven insane:_</p><p>You awaken one night to the sound of hissing all around you. Hundreds of piercing cat eyes glare at you in the dark. One of the creatures leaps onto your chest, its claws digging painfully into your skin. “Did you think we would not find you?” Its eyes flash. It bares its teeth, and the rest of the cats close in.</p><p class='basic right'>How dare you! You are _killed_.</p></div>"
+  "brokeTheLawOfUlthar": "<div class='green'><p>_*If (your investigator name) has broken the law of Ulthar* and you are not killed or driven insane:_</p><p>You awaken one night to the sound of hissing all around you. Hundreds of piercing cat eyes glare at you in the dark. One of the creatures leaps onto your chest, its claws digging painfully into your skin. “Did you think we would not find you?” Its eyes flash. It bares its teeth, and the rest of the cats close in.</p><p class='basic right'>How dare you! You are _killed_.</p></div>",
+  "label": {
+    "beyondTheGatesOfSleep": "Beyond the Gates of Sleep",
+    "wakingNightmare": "Waking Nightmare",
+    "darkSideOfTheMoon": "Dark Side of the Moon",
+    "pointOfNoReturn": "Point of No Return",
+    "whereTheGodsDwell": "Where the Gods Dwell",
+    "weaverOfTheCosmos": "Weaver of the Cosmos",
+    "theSearchForKadath": "The Search for Kadath",
+    "aThousandShapesOfHorror": "A Thousand Shapes of Horror",
+    "theBlackCat2NewsOfYourPlight": "Tell your companions of your quest, your plight, and your peril. The black cat will return to you once this message is delivered. This may put an undue burden on your companions.",
+    "theBlackCat2KnowledgeOfDreamlands": "Tell your companions about your new friends and about the Dreamlands.",
+    "theBlackCat2WarnTheOthers": "Tell your companions that they are in danger, and that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult.",
+    "theBlackCat2DontTrust": "You don't trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door.",
+    "blackCatWandersOff": "The black cat wanders off before you can reply, its pitch-black fur melding into the darkness of the Underworld.",
+    "youDidNotAskForItRequestAid": "Tell your companions that you are in trouble. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions.",
+    "youDidNotAskForItKnowledgeOfUnderworld": "Tell your companions about the Underworld. The black cat will then go elsewhere.",
+    "youDidNotAskForItWarnTheOthers": "Tell your companions that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult.",
+    "blackCatBoundsOff": "The black cat bounds off into the void of space before you get the chance to ask it anything else.",
+    "theGreatOnes1SpokeOfNyarlathotep": "Tell your companions about the threats that you face. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions.",
+    "theGreatOnes1SpokeOfAtlachNacha": "Tell your companions that you will be okay. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult."
+  },
+  "question": {
+    "whichScenarioToStart": "Which scenario would you like to start with",
+    "chooseDeckForPartA": "Choose Deck For Part A",
+    "chooseDeckForPartB": "Choose Deck For Part B",
+    "proceedToWhichScenario": "Proceed to which scenario"
+  }
 }

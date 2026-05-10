@@ -11,6 +11,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.FortuneAndFolly.Helpers (scenarioI18n)
 
 newtype IsamaraOrdonezTheTorchSinger = IsamaraOrdonezTheTorchSinger AssetAttrs
   deriving anyclass IsAsset
@@ -39,7 +40,7 @@ instance RunMessage IsamaraOrdonezTheTorchSinger where
             unless (ControlledAssetsCannotReady `elem` modifiers) do
               chooseOneM iid $ withI18n do
                 questionLabeledCard attrs
-                labeledI "readyAsset" $ push $ Ready $ toTarget attrs
+                scenarioI18n $ labeled' "isamaraOrdonezTheTorchSinger.ready" $ push $ Ready $ toTarget attrs
                 skip_
           _ -> push (Ready $ toTarget attrs)
       pure a

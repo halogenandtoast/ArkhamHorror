@@ -60,11 +60,11 @@ instance RunMessage MedicoDellaPeste where
       push
         $ chooseOrRunOne player
         $ [ Label
-            "$label.healDamage count=i:1"
+            "$standalone.carnevaleOfHorrors.label.medicoDellaPeste.heal1Damage"
             [HealDamage (InvestigatorTarget iid) (attrs.ability 1) 1]
           | hasDamage
           ]
-        <> [ Label "$label.healHorror count=i:1" [HealHorror (toTarget iid) (attrs.ability 1) 1]
+        <> [ Label "$standalone.carnevaleOfHorrors.label.medicoDellaPeste.heal1Horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
            | hasHorror
            ]
       pure a

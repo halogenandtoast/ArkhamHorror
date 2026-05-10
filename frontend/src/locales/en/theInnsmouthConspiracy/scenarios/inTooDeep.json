@@ -4,7 +4,12 @@
     "doNotTakeTeachings": "Do not take Teachings of the Order",
     "removeCultist": "Remove {'{'}cultist{'}'}",
     "removeTablet": "Remove {'{'}tablet{'}'}",
-    "removeElderThing": "Remove {'{'}elderThing{'}'}"
+    "removeElderThing": "Remove {'{'}elderThing{'}'}",
+    "teachingsOfTheOrder": {
+      "removeAllCurseTokensFromTheChaosBag": "Remove all {'{'}curse{'}'} tokens from the chaos bag.",
+      "removeAFloodTokenFromANon_sanctum_Location": "Remove a flood token from a non-_Sanctum_ location.",
+      "defeatANon_elite_EnemyAtYourLocation": "Defeat a non-_Elite_ enemy at your location."
+    }
   },
   "intro": {
     "title": "Scenario III: In Too Deep",

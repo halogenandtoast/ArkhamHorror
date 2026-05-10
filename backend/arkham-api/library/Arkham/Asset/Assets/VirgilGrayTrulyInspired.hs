@@ -7,6 +7,7 @@ import Arkham.Capability
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (scenarioI18n)
 
 newtype VirgilGrayTrulyInspired = VirgilGrayTrulyInspired AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -31,13 +32,13 @@ instance RunMessage VirgilGrayTrulyInspired where
   runMessage msg a@(VirgilGrayTrulyInspired attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       others <- select $ not_ (InvestigatorWithId iid)
-      chooseOneM iid $ withI18n $ countVar 1 do
+      chooseOneM iid do
         whenM (can.draw.cards iid) do
-          labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled' "drawCards") $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          cardNameVar attrs $ labeled' "healHorrorFromName" $ healHorror attrs (attrs.ability 1) 1
+          (scenarioI18n $ labeled' "virgilGrayTrulyInspired.heal1HorrorFromVirgilGray") $ healHorror attrs (attrs.ability 1) 1
       when (notNull others) $ chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do

@@ -9,6 +9,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheSearchForKadath.Helpers (scenarioI18n)
 
 newtype VirgilGray = VirgilGray AssetAttrs
   deriving anyclass IsAsset
@@ -38,13 +39,13 @@ instance HasAbilities VirgilGray where
 instance RunMessage VirgilGray where
   runMessage msg a@(VirgilGray attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid $ withI18n $ countVar 1 do
+      chooseOneM iid do
         whenM (can.draw.cards iid) do
-          labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled' "drawCards") $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          cardNameVar attrs $ labeled' "healHorrorFromName" $ healHorror attrs (attrs.ability 1) 1
+          (scenarioI18n $ labeled' "virgilGray.heal1HorrorFromVirgilGray") $ healHorror attrs (attrs.ability 1) 1
       others <- select $ not_ (InvestigatorWithId iid)
       when (notNull others) do
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)

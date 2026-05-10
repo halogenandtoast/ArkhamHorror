@@ -22,7 +22,10 @@
   "label": {
     "leaveEmptyHanded": "Leave empty-handed",
     "forceIntoTemple": "Force your way into the temple.",
-    "placeNightgaunt": "Place Tenebrous Nightgaunt in city location"
+    "placeNightgaunt": "Place Tenebrous Nightgaunt in city location",
+    "virgilGray": {
+      "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
+    }
   },
   "dreamlandsEclipse": {
     "label": {

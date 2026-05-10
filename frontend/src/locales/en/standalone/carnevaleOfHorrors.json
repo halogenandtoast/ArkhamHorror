@@ -1,6 +1,10 @@
 {
   "label": {
-    "doNotAddMask": "Do not add a mask"
+    "doNotAddMask": "Do not add a mask",
+    "medicoDellaPeste": {
+      "heal1Damage": "Heal 1 damage",
+      "heal1Horror": "Heal 1 horror"
+    }
   },
   "massHysteria": {
     "label": {

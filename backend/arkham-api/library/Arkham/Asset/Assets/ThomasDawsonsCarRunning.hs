@@ -11,6 +11,7 @@ import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
+import Arkham.Name
 import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
@@ -25,11 +26,11 @@ thomasDawsonsCarRunning = asset ThomasDawsonsCarRunning Cards.thomasDawsonsCarRu
 instance HasAbilities ThomasDawsonsCarRunning where
   getAbilities (ThomasDawsonsCarRunning x) =
     [ scenarioI18n
-        $ withI18nTooltip "thomasDawsonsCarRunning.drawAndMoveRoad"
+        $ withI18nTooltip "thomasDawsonsCarRunning.drive"
         $ groupLimit PerRound
         $ restrictedAbility x 1 driverCriteria actionAbility
     , scenarioI18n
-        $ withI18nTooltip "thomasDawsonsCarRunning.stopCar"
+        $ withI18nTooltip "thomasDawsonsCarRunning.stop"
         $ restrictedAbility x 2 driverCriteria actionAbility
     ]
    where
@@ -55,7 +56,7 @@ instance RunMessage ThomasDawsonsCarRunning where
       passengers <- select $ InVehicleMatching (be attrs)
       for_ (headMay passengers) \p -> do
         chooseOrRunOneM p do
-          withI18n $ cardNameVar attrs $ questionLabeled' "chooseNewDriverFor"
+          questionLabeled $ "Choose new driver for " <> toTitle attrs.name
           targets passengers $ push . SetDriver attrs.id
       pure . ThomasDawsonsCarRunning $ attrs' & driverL .~ Nothing
     Flip _ _ (isTarget attrs -> True) -> do

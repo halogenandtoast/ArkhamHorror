@@ -15,9 +15,8 @@ favorOfTheSun1 = asset FavorOfTheSun1 Cards.favorOfTheSun1
 
 instance HasAbilities FavorOfTheSun1 where
   getAbilities (FavorOfTheSun1 a) =
-    [ controlled_ a 1 $ triggered (WouldRevealChaosToken #when You) (exhaust a)
-    , controlled a 2 (thisExists a AssetWithoutSealedTokens) Anytime
-    ]
+    controlled_ a 1 (triggered (WouldRevealChaosToken #when You) (exhaust a))
+      : [controlled a 2 (thisExists a AssetWithoutSealedTokens) Anytime | toResultDefault True a.meta]
 
 instance RunMessage FavorOfTheSun1 where
   runMessage msg a@(FavorOfTheSun1 attrs) = runQueueT $ case msg of
@@ -30,7 +29,7 @@ instance RunMessage FavorOfTheSun1 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs
-      pure a
+      pure $ FavorOfTheSun1 $ attrs & setMeta False
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (ChaosTokenTarget token) -> do
       unsealChaosToken token
       forceChaosTokenDraw token

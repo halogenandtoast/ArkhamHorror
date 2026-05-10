@@ -14,7 +14,9 @@ captivatingGleam = treachery CaptivatingGleam Cards.captivatingGleam
 
 instance HasAbilities CaptivatingGleam where
   getAbilities (CaptivatingGleam a) =
-    [restricted a 1 (InThreatAreaOf You <> youExist (HandWith NoCards)) $ forced AnyWindow]
+    [ restricted a 1 (InThreatAreaOf You <> youExist (HandWith NoCards)) $ forced AnyWindow
+    | toResultDefault True a.meta
+    ]
 
 instance RunMessage CaptivatingGleam where
   runMessage msg t@(CaptivatingGleam attrs) = runQueueT $ case msg of
@@ -25,5 +27,5 @@ instance RunMessage CaptivatingGleam where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 5
       toDiscardBy iid (attrs.ability 1) attrs
-      pure t
+      pure $ CaptivatingGleam $ attrs & setMeta False
     _ -> CaptivatingGleam <$> liftRunMessage msg attrs

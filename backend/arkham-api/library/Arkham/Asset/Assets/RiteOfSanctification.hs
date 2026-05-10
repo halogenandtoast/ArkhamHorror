@@ -44,5 +44,5 @@ instance RunMessage RiteOfSanctification where
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       toDiscard (attrs.ability 2) attrs
-      pure a
+      pure $ RiteOfSanctification $ attrs & setMeta False
     _ -> RiteOfSanctification <$> liftRunMessage msg attrs

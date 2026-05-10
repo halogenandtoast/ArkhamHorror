@@ -17,7 +17,9 @@ evanescentMist = treachery EvanescentMist Cards.evanescentMist
 
 instance HasAbilities EvanescentMist where
   getAbilities (EvanescentMist a) =
-    [restricted a 1 (exists $ locationWithTreachery a <> LocationClearedOfMirages) $ forced AnyWindow]
+    [ restricted a 1 (exists $ locationWithTreachery a <> LocationClearedOfMirages) $ forced AnyWindow
+    | toResultDefault True a.meta
+    ]
 
 instance RunMessage EvanescentMist where
   runMessage msg t@(EvanescentMist attrs) = runQueueT $ case msg of
@@ -30,5 +32,5 @@ instance RunMessage EvanescentMist where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs
-      pure t
+      pure $ EvanescentMist $ attrs & setMeta False
     _ -> EvanescentMist <$> liftRunMessage msg attrs

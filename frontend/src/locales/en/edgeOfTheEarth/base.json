@@ -269,5 +269,21 @@
     "theTeamWasGuidedToTheHiddenTunnel": "The team was guided to the hidden tunnel",
     "theTruthOfTheMirageEludesYou": "The truth of the mirage eludes you",
     "wasKilledInThePlaneCrash": "Was killed in the plane crash"
+  },
+  "nightmarishVapors": {
+    "label": {
+      "shuffleTekeliliIntoYourDeck": "Shuffle the top {count} cards of the Tekeli-li deck into your deck without looking at them."
+    }
+  },
+  "apeirophobia": {
+    "label": {
+      "addFrostToken": "Add 1 {'{'}frost{'}'} token to the chaos bag."
+    }
+  },
+  "wukWukWuk": {
+    "label": {
+      "moveToYou": "Move it to your location",
+      "placeDoom": "Place 1 doom on it"
+    }
   }
 }

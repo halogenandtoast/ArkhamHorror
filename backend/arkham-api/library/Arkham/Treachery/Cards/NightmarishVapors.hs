@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.NightmarishVapors (nightmarishVapors) where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.Shuffle
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -24,10 +25,10 @@ instance RunMessage NightmarishVapors where
 
       chooseOneM iid do
         when (remainingActions >= 2 || length cards < 2 || not canShuffleIn) do
-          labeled "Lose 2 actions." $ loseActions iid attrs 2
+          withI18n $ countVar 2 $ labeled' "loseActions" $ loseActions iid attrs 2
 
         when (canShuffleIn && (length cards >= 2 || remainingActions < 2)) do
-          labeled "Shuffle the top 2 cards of the Tekeli-li deck into your deck without looking at them."
+          campaignI18n $ scope "nightmarishVapors" $ labeled' "shuffleTekeliliIntoYourDeck"
             $ addTekelili iid cards
 
       pure t

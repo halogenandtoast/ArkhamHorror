@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.ChillingPresence (chillingPresence, chillingPresenceEffect) where
 
 import Arkham.Effect.Import
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -32,11 +33,11 @@ instance RunMessage ChillingPresence where
       geists <- select $ enemyAtLocationWith iid <> EnemyWithTrait Geist
       when (notNull geists) $ do
         chooseOneM iid do
-          labeled "Deal 1 damage to a Geist enemy at your location" do
+          withI18n $ countVar 1 $ labeled' "dealDamageToGeistAtLocation" do
             chooseTargetM iid geists \enemy -> do
               nonAttackEnemyDamage (Just iid) (toSource attrs) 1 enemy
               doStep (n - 1) msg'
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure t
     _ -> ChillingPresence <$> liftRunMessage msg attrs
 
@@ -54,9 +55,9 @@ instance RunMessage ChillingPresenceEffect where
         geists <- select $ EnemyWithTrait Geist
         unless (null geists) $ do
           chooseOneM iid do
-            labeled "Deal 2 damage to a Geist enemy at any location" do
+            withI18n $ countVar 2 $ labeled' "dealDamageToGeistAtAnyLocation" do
               chooseTargetM iid geists $ nonAttackEnemyDamage (Just iid) attrs.source 2
-            labeled "Skip" nothing
+            labeledI "skip" nothing
       pure e
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e
     _ -> ChillingPresenceEffect <$> liftRunMessage msg attrs

@@ -451,5 +451,11 @@
   "increaseLocationFloodLevel": "Increase the flood level of your location",
   "removeOneDoomFromAgenda": "Remove 1 doom from the agenda",
   "flipBackToASide": "Flip back to a side",
-  "gainResourcesAmount": "Gain {count} resources"
+  "gainResourcesAmount": "Gain {count} resources",
+  "flipDisciplineToBroken": "Flip a Discipline you control to its Broken side. It cannot be flipped back this round.",
+  "discardAllyAsset": "Discard an Ally asset you control",
+  "discardEachFirearmAsset": "Discard each Firearm asset you control",
+  "dealDamageToGeistAtLocation": "Deal {count} damage to a Geist enemy at your location",
+  "dealDamageToGeistAtAnyLocation": "Deal {count} damage to a Geist enemy at any location",
+  "ignoreUseSkillTypeInsteadOf": "Ignore use {'{'}{skill}{'}'} instead of {'{'}{replacedSkill}{'}'}"
 }

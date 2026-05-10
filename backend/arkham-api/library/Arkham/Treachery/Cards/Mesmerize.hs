@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -33,7 +34,7 @@ instance RunMessage Mesmerize where
           maskedCarnevaleGoers <- selectTargets (at_ (be lid) <> AssetWithTitle "Masked Carnevale-Goer")
           player <- getPlayer iid
           case maskedCarnevaleGoers of
-            [] -> push $ chooseOne player [Label "Surge" [gainSurge attrs]]
+            [] -> push $ chooseOne player [Label (withI18n $ "$" <> ikey "label.gainSurge") [gainSurge attrs]]
             xs -> do
               enabled <- createCardEffect Cards.mesmerize Nothing attrs iid
               pushAll

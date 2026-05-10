@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.LooseCannon (looseCannon) where
 
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,9 +21,9 @@ instance RunMessage LooseCannon where
       resources <- iid.resources
       chooseOrRunOneM iid do
         when (notNull firearms) do
-          labeled "Discard each Firearm asset you control" do
+          labeledI "discardEachFirearmAsset" do
             chooseOneAtATimeM iid $ targets firearms $ toDiscardBy iid attrs
         when (resources >= 1) do
-          labeled "Lose 5 resources" $ loseResources iid attrs 5
+          withI18n $ countVar 5 $ labeled' "loseResources" $ loseResources iid attrs 5
       pure t
     _ -> LooseCannon <$> liftRunMessage msg attrs

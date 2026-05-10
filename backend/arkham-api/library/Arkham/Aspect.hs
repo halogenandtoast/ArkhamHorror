@@ -7,15 +7,24 @@ import Arkham.Classes.HasGame
 import Arkham.Evade.Types
 import Arkham.Fight.Types
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillType
 import Arkham.Source
 
 aspectMatches :: Aspect -> AspectMatcher -> Bool
 aspectMatches aspect' = \case
   AspectIs a -> aspect' == a
+
+skillTypeKey :: SkillType -> Text
+skillTypeKey = \case
+  SkillWillpower -> "willpower"
+  SkillIntellect -> "intellect"
+  SkillCombat -> "combat"
+  SkillAgility -> "agility"
 
 leftOr :: IsMessage msg => Either [Message] msg -> [Message]
 leftOr = either id (pure . toMessage)
@@ -53,9 +62,13 @@ instance IsAspect InsteadOf Investigate where
                     [ chooseOne
                         player
                         [ Label
-                            ("Ignore use " <> tshow skillType <> " instead of " <> tshow replaced)
+                            ( withI18n
+                                $ skillVar skillType
+                                $ keyVar "replacedSkill" (skillTypeKey replaced)
+                                $ "$" <> ikey "label.ignoreUseSkillTypeInsteadOf"
+                            )
                             [toMessage investigation]
-                        , Label "Do not ignore" [toMessage updated]
+                        , Label (withI18n $ "$" <> ikey "label.doNotIgnore") [toMessage updated]
                         ]
                     ]
                 else Right updated
@@ -76,9 +89,13 @@ instance IsAspect InsteadOf ChooseFight where
                     [ chooseOne
                         player
                         [ Label
-                            ("Ignore use " <> tshow skillType <> " instead of " <> tshow replaced)
+                            ( withI18n
+                                $ skillVar skillType
+                                $ keyVar "replacedSkill" (skillTypeKey replaced)
+                                $ "$" <> ikey "label.ignoreUseSkillTypeInsteadOf"
+                            )
                             [toMessage chooseFight]
-                        , Label "Do not ignore" [toMessage updated]
+                        , Label (withI18n $ "$" <> ikey "label.doNotIgnore") [toMessage updated]
                         ]
                     ]
                 else Right updated
@@ -99,9 +116,13 @@ instance IsAspect InsteadOf ChooseEvade where
                     [ chooseOne
                         player
                         [ Label
-                            ("Ignore use " <> tshow skillType <> " instead of " <> tshow replaced)
+                            ( withI18n
+                                $ skillVar skillType
+                                $ keyVar "replacedSkill" (skillTypeKey replaced)
+                                $ "$" <> ikey "label.ignoreUseSkillTypeInsteadOf"
+                            )
                             [toMessage chooseEvade]
-                        , Label "Do not ignore" [toMessage updated]
+                        , Label (withI18n $ "$" <> ikey "label.doNotIgnore") [toMessage updated]
                         ]
                     ]
                 else Right updated

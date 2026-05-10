@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.MassHysteria (massHysteria, MassHysteria (..)) where
 
 import Arkham.Classes
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -28,8 +29,8 @@ instance RunMessage MassHysteria where
           push
             $ chooseOne
               player
-              [ Label "Take 2 damage" [take2damage]
-              , Label "Shuffle Masked Carnevale-Goers" [RevelationChoice iid source 2]
+              [ Label (withI18n $ numberVar "count" 2 $ "$" <> ikey "label.takeDamage") [take2damage]
+              , Label (scenarioI18n $ scope "massHysteria" $ "$" <> ikey "label.shuffleMaskedCarnevaleGoers") [RevelationChoice iid source 2]
               ]
         else push take2damage
       pure t

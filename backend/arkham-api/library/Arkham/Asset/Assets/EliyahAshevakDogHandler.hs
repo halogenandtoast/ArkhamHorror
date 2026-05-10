@@ -38,7 +38,7 @@ instance RunMessage EliyahAshevakDogHandler where
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       connected <- getAccessibleLocations iid attrs
       chooseOrRunOneM iid do
-        labeled "Do not move to a connecting location" nothing
+        labeledI "doNotMoveToConnecting" nothing
         targets connected $ moveTo attrs iid
       pure a
     _ -> EliyahAshevakDogHandler <$> liftRunMessage msg attrs

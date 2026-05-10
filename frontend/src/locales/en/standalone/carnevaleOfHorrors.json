@@ -1,4 +1,10 @@
 {
+  "label": {
+    "medicoDellaPeste": {
+      "heal1Damage": "Heal 1 damage",
+      "heal1Horror": "Heal 1 horror"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the agenda deck.",

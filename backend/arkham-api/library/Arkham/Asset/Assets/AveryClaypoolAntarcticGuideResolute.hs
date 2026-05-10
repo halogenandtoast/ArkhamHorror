@@ -9,8 +9,10 @@ import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Helpers.Window (getChaosToken)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.FatalMirage.Helpers (scenarioI18n)
 
 newtype AveryClaypoolAntarcticGuideResolute = AveryClaypoolAntarcticGuideResolute AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -37,9 +39,9 @@ instance RunMessage AveryClaypoolAntarcticGuideResolute where
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       cancelChaosToken (attrs.ability 1) iid token
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
-      chooseOneM iid do
-        labeled "Reveal a new chaos token" do
+      chooseOneM iid $ scenarioI18n do
+        labeled' "averyClaypoolAntarcticGuideResolute.revealANewChaosToken" do
           getSkillTestInvestigator >>= traverse_ drawAnotherChaosToken
-        labeled "Spend 1 Supply" $ spendUses (attrs.ability 1) attrs Supply 1
+        labeled' "averyClaypoolAntarcticGuideResolute.spend1Supply" $ spendUses (attrs.ability 1) attrs Supply 1
       pure a
     _ -> AveryClaypoolAntarcticGuideResolute <$> liftRunMessage msg attrs

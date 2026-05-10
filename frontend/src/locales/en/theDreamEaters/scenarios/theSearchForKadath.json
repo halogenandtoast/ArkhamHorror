@@ -1,5 +1,10 @@
 {
   "heading": "Scenario II-A",
+  "label": {
+    "virgilGray": {
+      "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of Signs of the Gods the investigators have uncovered.",

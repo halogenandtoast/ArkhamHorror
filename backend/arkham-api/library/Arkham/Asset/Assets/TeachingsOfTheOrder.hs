@@ -5,10 +5,12 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Log
+import Arkham.I18n
 import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Scenarios.InTooDeep.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Sanctum))
 
 newtype TeachingsOfTheOrder = TeachingsOfTheOrder AssetAttrs
@@ -32,18 +34,18 @@ instance HasAbilities TeachingsOfTheOrder where
 instance RunMessage TeachingsOfTheOrder where
   runMessage msg a@(TeachingsOfTheOrder attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
+      chooseOneM iid $ scenarioI18n do
         unlessHasRecord Teachings1 do
           whenAny (ChaosTokenFaceIs #curse) do
-            labeled "Remove all {curse} tokens from the chaos bag." $ doStep 1 msg
+            labeled' "teachingsOfTheOrder.removeAllCurseTokensFromTheChaosBag" $ doStep 1 msg
 
         unlessHasRecord Teachings2 do
           whenAny (not_ (withTrait Sanctum) <> FloodedLocation) do
-            labeled "Remove a flood token from a non-_Sanctum_ location." $ doStep 2 msg
+            labeled' "teachingsOfTheOrder.removeAFloodTokenFromANon_sanctum_Location" $ doStep 2 msg
 
         unlessHasRecord Teachings3 do
           whenAny (enemyAtLocationWith iid <> NonEliteEnemy <> EnemyCanBeDefeatedBy (attrs.ability 1)) do
-            labeled "Defeat a non-_Elite_ enemy at your location." $ doStep 3 msg
+            labeled' "teachingsOfTheOrder.defeatANon_elite_EnemyAtYourLocation" $ doStep 3 msg
 
       pure a
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

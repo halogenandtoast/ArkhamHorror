@@ -33,6 +33,9 @@
     }
   },
   "label": {
+    "isamaraOrdonezTheTorchSinger": {
+      "ready": "Ready"
+    },
     "huntersHunger": {
       "discard": "Discard an _Ally_ asset you control. Each other investigator takes 1 horror.",
       "test": "Test {'{'}agility{'}'} (3). If you fail, take 1 direct damage and 1 direct horror."

@@ -1,5 +1,10 @@
 {
   "heading": "Scenario III-A",
+  "label": {
+    "virgilGrayTrulyInspired": {
+      "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half your alarm level (rounded up).",

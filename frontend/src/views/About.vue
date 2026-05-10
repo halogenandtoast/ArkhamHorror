@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
+const { t } = useI18n();
 const isSupportPage = computed(() => route.query.support !== undefined);
 
 </script>
@@ -10,29 +12,27 @@ const isSupportPage = computed(() => route.query.support !== undefined);
   <div class="page-container">
     <div class="page-content column">
       <section class="column" :class="{ focus: isSupportPage }">
-        <h2 class="title">Support</h2>
+        <h2 class="title">{{ t('about.supportTitle') }}</h2>
         <div class="box column">
-          <p>It's quite expensive to run the infrastructure for this service. This project relies on contributions from the community in order to cover those costs. Please visit our Patreon if you are able to financially support this project.</p>
+          <p>{{ t('about.supportBody') }}</p>
 
           <p><a href="https://patreon.com/HalogenAndToast?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink">Patreon</a></p>
 
-          <p>Please note that no features are locked behind a paywall. This project is free to use for everyone and will remain so for as long as it continues to run.</p>
+          <p>{{ t('about.supportNote') }}</p>
         </div>
       </section>
       <section class="column">
-        <h2 class="title">Copyright Disclaimer</h2>
+        <h2 class="title">{{ t('about.copyrightTitle') }}</h2>
         <div class="box column">
-          <p>The information presented in this app about <a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/">Arkham Horror: The Card Game™</a>, both textual and graphical, is © Fantasy Flight Games 2024. This app is a fan project and is not produced, endorsed, or supported by, or affiliated with Fantasy Flight Games.</p>
+          <p v-html="t('about.copyrightBody')"></p>
 
-          <p>All artwork and illustrations are the intellectual property of their respective creators. All Arkham Horror: The Card Game™ images and graphics are copyrighted by Fantasy Flight Games.</p>
+          <p>{{ t('about.copyrightArtwork') }}</p>
         </div>
       </section>
       <section class="column">
-        <h2 class="title">Project Details</h2>
+        <h2 class="title">{{ t('about.projectTitle') }}</h2>
 
-        <div class="box">
-          This application was created by <a href="https://github.com/halogenandtoast">halogenandtoast</a> and contributors to support the Arkham Horror: The Card Game community. The source code of this project is available at <a href="https://github.com/halogenandtoast/ArkhamHorror">Github</a>. Feedback and bug reports are welcome via Github issues or the dedicated channel on the Mythos Busters discord server.
-        </div>
+        <div class="box" v-html="t('about.projectBody')"></div>
       </section>
     </div>
   </div>

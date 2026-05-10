@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 import { capitalize } from '@/arkham/helpers'
+import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 
-withDefaults(defineProps<{
+const { t } = useI18n()
+
+const props = withDefaults(defineProps<{
   compact?: boolean
   searchPlaceholder?: string
-}>(), { compact: false, searchPlaceholder: 'Search decks…' })
+}>(), { compact: false, searchPlaceholder: '' })
+
+const effectivePlaceholder = computed(() => props.searchPlaceholder || t('deckToolbar.searchDecks'))
 
 const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
@@ -39,12 +45,12 @@ function toggleClass(c: string) {
       <input
         v-model="search"
         class="search-input"
-        :placeholder="searchPlaceholder"
+        :placeholder="effectivePlaceholder"
         type="search"
       />
       <select v-model="sortBy" class="sort-select">
-        <option value="name">Sort: Name</option>
-        <option value="class">Sort: Class</option>
+        <option value="name">{{ t('deckToolbar.sortName') }}</option>
+        <option value="class">{{ t('deckToolbar.sortClass') }}</option>
       </select>
     </div>
   </div>

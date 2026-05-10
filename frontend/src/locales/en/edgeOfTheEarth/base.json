@@ -335,5 +335,16 @@
       "moveToYou": "Move it to your location",
       "placeDoom": "Place 1 doom on it"
     }
+  },
+  "partnerNames": {
+    "08720": "Dr. Amy Kensler",
+    "08714": "Prof. William Dyer",
+    "08715": "Danforth",
+    "08721": "Roald Ellsworth",
+    "08722": "Takada Hiroko",
+    "08718": "Avery Claypool",
+    "08717": "Dr. Mala Sinha",
+    "08719": "James \"Cookie\" Fredericks",
+    "08716": "Eliyah Ashevak"
   }
 }

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { fetchCards } from '@/arkham/api';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
@@ -9,6 +10,8 @@ import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
+
+const { t } = useI18n()
 
 enum View {
   Image = "IMAGE",
@@ -466,11 +469,11 @@ const showSidebar = ref(false)
         <button
           :class="['chapter-tab', { active: activeChapter === 1 }]"
           @click="activeChapter = 1"
-        >Chapter 1</button>
+        >{{ t('cardsView.chapter1') }}</button>
         <button
           :class="['chapter-tab', { active: activeChapter === 2 }]"
           @click="activeChapter = 2"
-        >Chapter 2</button>
+        >{{ t('cardsView.chapter2') }}</button>
       </div>
       <nav class="cycles">
         <ol>

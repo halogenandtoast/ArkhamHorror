@@ -475,7 +475,7 @@ const spadeInjury = computed(() => {
             :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
             :disabled="endTurnAction == -1"
             @click="$emit('choose', endTurnAction)"
-            >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
+            >{{ isMobile ? $t('investigator.endTurnShort') : $t('investigator.endTurn') }}</button>
 
             <button
               v-if="devoured && devoured.length > 0"

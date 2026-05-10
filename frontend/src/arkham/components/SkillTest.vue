@@ -494,7 +494,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'AnySkillValue'">
             <span> {{modifier.type.contents}}</span>
-            <span class="text">{{ $t('skillValue') }}</span>
+            <span class="text">{{ $t('modifier.skillValue') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleSuccess'">
             <span class="text">{{ $t('modifier.doubleSuccess') }}</span>
@@ -551,7 +551,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         class="apply-results"
         v-if="applyResultsAction !== -1"
         @click="choose(applyResultsAction)"
-      >{{ $t('Apply Results') }}</button>
+      >{{ $t('label.applyResults') }}</button>
     </div>
   </Draggable>
 </template>

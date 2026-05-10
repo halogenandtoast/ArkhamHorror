@@ -31,7 +31,7 @@ const updateLanguage = async (a: Event) => {
 
       <section class="box column">
         <h3>{{$t('language')}}</h3>
-        <p>This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.</p>
+        <p>{{ $t('settingsForm.languageHelp') }}</p>
         <select v-model="$i18n.locale" @change="updateLanguage">
           <option value="de">Deutsch/German</option>
           <option value="en">English</option>
@@ -48,31 +48,31 @@ const updateLanguage = async (a: Event) => {
       </section>
 
       <section class="box column">
-        <h3>Enroll in beta</h3>
-        <p>Beta features are likely very broken and games may be unrecoverable, please only enable this if you are willing to provide feedback.</p>
+        <h3>{{ $t('settingsForm.enrollInBeta') }}</h3>
+        <p>{{ $t('settingsForm.betaWarning') }}</p>
         <div class="row">
           <label class="radio-label">
             <input type="radio" name="beta" value="On" v-model="beta" @change="betaUpdate" />
-            On
+            {{ $t('On') }}
           </label>
           <label class="radio-label">
             <input type="radio" name="beta" value="Off" v-model="beta" @change="betaUpdate" />
-            Off
+            {{ $t('Off') }}
           </label>
         </div>
       </section>
 
       <section class="box column danger-zone">
-        <h3 class="danger-title">Danger Zone</h3>
-        <p>Permanently delete your account and all associated data, including games and decks. <strong>This cannot be undone.</strong></p>
+        <h3 class="danger-title">{{ $t('settingsForm.dangerZone') }}</h3>
+        <p>{{ $t('settingsForm.dangerZoneDescription') }} <strong>{{ $t('settingsForm.cannotBeUndone') }}</strong></p>
         <div v-if="!showDeleteConfirm">
-          <button class="btn-danger" @click="showDeleteConfirm = true">Delete Account</button>
+          <button class="btn-danger" @click="showDeleteConfirm = true">{{ $t('settingsForm.deleteAccount') }}</button>
         </div>
         <div v-else class="column">
-          <p class="warning">Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.</p>
+          <p class="warning">{{ $t('settingsForm.deleteConfirm') }}</p>
           <div class="row">
-            <button class="btn-danger" @click="props.deleteAccount()">Yes, permanently delete my account</button>
-            <button @click="showDeleteConfirm = false">Cancel</button>
+            <button class="btn-danger" @click="props.deleteAccount()">{{ $t('settingsForm.confirmPermanentDelete') }}</button>
+            <button @click="showDeleteConfirm = false">{{ $t('cancel') }}</button>
           </div>
         </div>
       </section>

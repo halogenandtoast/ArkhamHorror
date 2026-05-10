@@ -117,7 +117,7 @@ const paymentAmountsLabel = computed(() => {
   }
 
   if (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return label(t('cost.pay', { cost: formatCost(question.value.cost, t) }))
+    return label(t('label.cost.pay', { cost: formatCost(question.value.cost, t) }))
   }
 
   return null
@@ -563,7 +563,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         <img :src="questionImage" class="card" />
       </div>
 
-      <legend>{{ t('cost.pay', { cost: formatCost(question.cost, t) }) }}</legend>
+      <legend>{{ t('label.cost.pay', { cost: formatCost(question.cost, t) }) }}</legend>
       <DropDown @choose="choose" :options="question.question.options" />
     </div>
 

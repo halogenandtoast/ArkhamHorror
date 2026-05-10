@@ -207,63 +207,63 @@ const displayKey = (key: string) => {
       value="08720"
       :id="`${setting.key}-kensler`"
     />
-    <label :for="`${setting.key}-kensler`">Dr. Amy Kensler</label>
+    <label :for="`${setting.key}-kensler`">{{ $t('edgeOfTheEarth.partnerNames.08720') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08714"
       :id="`${setting.key}-dyer`"
     />
-    <label :for="`${setting.key}-dyer`">Prof. William Dyer</label>
+    <label :for="`${setting.key}-dyer`">{{ $t('edgeOfTheEarth.partnerNames.08714') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08715"
       :id="`${setting.key}-danforth`"
     />
-    <label :for="`${setting.key}-danforth`">Danforth</label>
+    <label :for="`${setting.key}-danforth`">{{ $t('edgeOfTheEarth.partnerNames.08715') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08721"
       :id="`${setting.key}-ellsworth`"
     />
-    <label :for="`${setting.key}-ellsworth`">Roald Ellsworth</label>
+    <label :for="`${setting.key}-ellsworth`">{{ $t('edgeOfTheEarth.partnerNames.08721') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08722"
       :id="`${setting.key}-takada`"
     />
-    <label :for="`${setting.key}-takada`">Takada Hiroko</label>
+    <label :for="`${setting.key}-takada`">{{ $t('edgeOfTheEarth.partnerNames.08722') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08718"
       :id="`${setting.key}-claypool`"
     />
-    <label :for="`${setting.key}-claypool`">Avery Claypool</label>
+    <label :for="`${setting.key}-claypool`">{{ $t('edgeOfTheEarth.partnerNames.08718') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08717"
       :id="`${setting.key}-sinha`"
     />
-    <label :for="`${setting.key}-sinha`">Dr. Mala Sinha</label>
+    <label :for="`${setting.key}-sinha`">{{ $t('edgeOfTheEarth.partnerNames.08717') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08719"
       :id="`${setting.key}-cookie`"
     />
-    <label :for="`${setting.key}-cookie`">James "Cookie" Fredericks</label>
+    <label :for="`${setting.key}-cookie`">{{ $t('edgeOfTheEarth.partnerNames.08719') }}</label>
     <input
       type="radio"
       v-model="setting.content"
       value="08716"
       :id="`${setting.key}-ashevak`"
     />
-    <label :for="`${setting.key}-ashevak`">Eliyah Ashevak</label>
+    <label :for="`${setting.key}-ashevak`">{{ $t('edgeOfTheEarth.partnerNames.08716') }}</label>
   </div>
   <div v-else-if="setting.type === 'SetPartnerDetails'" class="partner">
     <h3 class="partner-name">{{setting.key}}</h3>

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
@@ -37,13 +38,13 @@ instance HasAbilities VirgilGray where
 instance RunMessage VirgilGray where
   runMessage msg a@(VirgilGray attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
+      chooseOneM iid $ withI18n $ countVar 1 do
         whenM (can.draw.cards iid) do
-          labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
+          labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          labeled "Gain 1 resource" $ gainResources iid (attrs.ability 1) 1
+          labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          labeled "Heal 1 horror from Virgil Gray" $ healHorror attrs (attrs.ability 1) 1
+          cardNameVar attrs $ labeled' "healHorrorFromName" $ healHorror attrs (attrs.ability 1) 1
       others <- select $ not_ (InvestigatorWithId iid)
       when (notNull others) do
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)

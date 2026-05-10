@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Taboo
 import Arkham.Message.Lifted.Choose
 
@@ -24,9 +25,9 @@ instance HasAbilities DavidRenfield where
 instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
-        labeled "Place doom on David Renfield" $ placeDoom (attrs.ability 1) attrs 1
-        labeled "Do not place doom on David Renfield" nothing
+      chooseOneM iid $ withI18n $ cardNameVar attrs $ countVar 1 do
+        labeled' "placeDoomOn" $ placeDoom (attrs.ability 1) attrs 1
+        labeled' "doNotPlaceDoomOn" nothing
 
       doStep 1 msg
       pure a

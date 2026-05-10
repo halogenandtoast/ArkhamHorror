@@ -42,8 +42,8 @@ instance RunMessage ScrollOfSecretsSeeker3 where
     DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          questionLabeled "Discard 1 card?"
-          labeled "Do not discard" $ unfocusCards >> doStep 2 msg'
+          questionLabeled "$label.discardCardQuestion"
+          labeledI "doNotDiscard" $ unfocusCards >> doStep 2 msg'
           targets cards \card -> do
             unfocusCards
             addToDiscard iid (only card)
@@ -58,8 +58,8 @@ instance RunMessage ScrollOfSecretsSeeker3 where
         then doStep 3 msg'
         else focusCards cards do
           chooseOneM iid do
-            questionLabeled "Add 1 card to hand?"
-            labeled "Do not add to hand" $ unfocusCards >> doStep 3 msg'
+            questionLabeled "$label.addCardToHandQuestion"
+            labeledI "doNotAddToHand" $ unfocusCards >> doStep 3 msg'
             targets playerCards \card -> do
               unfocusCards
               addToHand iid' (only card)
@@ -70,12 +70,12 @@ instance RunMessage ScrollOfSecretsSeeker3 where
         chooseOrRunOneM iid do
           targets cards \card -> do
             chooseOneM iid do
-              labeled "Place on bottom of deck" do
+              labeledI "placeOnBottomOfDeck" do
                 unfocusCards
                 focusCard card do
                   putCardOnBottomOfDeck iid deck card
                   doStep 3 $ SearchFound iid (toTarget attrs) deck (deleteFirst card cards)
-              labeled "Place on top of deck" do
+              labeledI "placeOnTopOfDeck" do
                 unfocusCards
                 focusCard card do
                   putCardOnTopOfDeck iid deck card

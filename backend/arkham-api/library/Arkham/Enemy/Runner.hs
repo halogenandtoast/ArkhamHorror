@@ -123,6 +123,7 @@ and if not more choices exist, remove the message entirely
 filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
 filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   QuestionLabel {} -> Just ask'
+  PayCostQuestion {} -> Just ask'
   Read {} -> Just ask'
   DropDown {} -> Just ask'
   PickSupplies {} -> Just ask'
@@ -1238,7 +1239,7 @@ instance RunMessage EnemyAttrs where
               then do
                 player <- getPlayer iid
                 when canIgnore do
-                  push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
+                  push $ chooseOne player [Label "$label.ignoreAttackOfOpportunity" [], Label "$label.doNotIgnore" [Do msg]]
               else push $ Do msg
           _ -> push $ Do msg
       pure $ a & wantsToAttackL .~ False
@@ -1537,7 +1538,7 @@ instance RunMessage EnemyAttrs where
                                                     | other <- excessDamageTargets
                                                     ]
                                                 ]
-                                            , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
+                                            , Label "$label.doNotDealExcessDamage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
                                             ]
                                         ]
                                     ]

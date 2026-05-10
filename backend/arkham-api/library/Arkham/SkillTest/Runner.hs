@@ -238,7 +238,7 @@ instance RunMessage SkillTest where
                 ]
               <> ( guard (RevealChaosTokensBeforeCommittingCards `notElem` modifiers'')
                      *> ( lockCommits
-                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "Done Committing" [CheckAllAdditionalCommitCosts]))
+                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts]))
                                ]
                         )
                  )
@@ -284,7 +284,7 @@ instance RunMessage SkillTest where
           then
             CommitToSkillTest
               s.id
-              (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
+              (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
           else RevealSkillTestChaosTokens iid
       for_ chaosTokens $ \chaosToken -> do
         let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken

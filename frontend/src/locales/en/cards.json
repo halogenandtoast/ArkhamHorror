@@ -1,16 +1,339 @@
 {
   "label": {
+    "alyssaGraham": {
+      "addDoom": "Add 1 Doom to Alyssa to move card to bottom"
+    },
+    "ariadnesTwine3": {
+      "moveSecretToResource": "Move 1 secret from an asset you control to your resource pool, as a resource",
+      "moveResourceToSecret": "Move 1 resource from your resource pool to an asset you control, as a secret"
+    },
+    "bloodRite": {
+      "gainResource": "Gain Resource",
+      "spendDealDamage": "Spend Resource and Deal 1 Damage To Enemy At Your Location"
+    },
+    "armageddon": {
+      "placeCharge": "Place 1 Charge on Armageddon",
+      "dealDamageToEnemy": "Deal 1 damage to an enemy at your location"
+    },
+    "beloved": {
+      "removeForAutoSuccess": "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\""
+    },
+    "blessedBlade": {
+      "exhaustToAddBless": "Exhaust Blessed Blade to add 1 {'{'}bless{'}'} token"
+    },
+    "armageddon4": {
+      "placeCharge": "Place 1 Charge on Armageddon4",
+      "dealDamageToEnemy": "Deal 1 damage to an enemy at your location"
+    },
+    "crisisOfFaith": {
+      "replaceBlessWithCurse": "Replace bless token with curse"
+    },
+    "elaborateDistraction": {
+      "evadeNonElite": "Automatically evade that enemy if it is not elite",
+      "dealDamage": "Deal 1 damage to that enemy"
+    },
+    "eldritchBrand5": {
+      "chooseCard": "Choose card for Eldritch Brand (5)"
+    },
+    "eyeOfChaos": {
+      "placeCharge": "Place 1 Charge on Eye of Chaos"
+    },
+    "eyeOfChaos4": {
+      "placeCharge": "Place 1 Charge on Eye of Chaos (4)"
+    },
+    "falseSurrender": {
+      "fightAgainstEnemy": "Take a fight action against that enemy",
+      "doNotFight": "Do not take a fight action"
+    },
+    "fatherMateo": {
+      "drawAndGain": "Draw 1 card and gain 1 resource"
+    },
+    "flamethrower5": {
+      "standardDamage": "Do standard damage",
+      "assignAmongEngaged": "Assign up to 4 damage among enemies engaged with you"
+    },
+    "flurryOfBlows5": {
+      "repeatEffect": "Repeat this effect (Flurry of Blows)"
+    },
+    "flare1": {
+      "searchForAlly": "Search for Ally"
+    },
+    "geas2": {
+      "drawPromise": "I shall not DRAW any cards during each of my turns",
+      "playPromise": "I shall not PLAY any cards during each of my turns",
+      "commitPromise": "I shall not COMMIT any cards during each of my turns"
+    },
+    "ghastlyRevelation": {
+      "giveClues": "Give any number of your clues to another investigator",
+      "placeClues": "Place any number of your clues on any location"
+    },
+    "holySpear5": {
+      "releaseBless": "Release a {'{'}bless{'}'} token",
+      "doNotReleaseBless": "Do not release a {'{'}bless{'}'} token"
+    },
+    "joeDiamond": {
+      "chooseHunchCards": "Choose 10 more cards for hunch deck"
+    },
+    "knowledgeIsPower": {
+      "discardToDraw": "Discard to draw 1 card"
+    },
+    "kukri": {
+      "spendActionForDamage": "Spend 1 action to deal +1 damage"
+    },
+    "manipulateDestiny2": {
+      "dealDamageToEnemy": "Deal 2 damage to an enemy at your location",
+      "healDamageFromInvestigatorOrAlly": "Heal 2 damage from an investigator or Ally asset at your location"
+    },
+    "medicalTexts2": {
+      "exhaust": "Exhaust Medical Texts",
+      "dealDamage": "Deal 1 damage to that investigator"
+    },
+    "minhThiPhan": {
+      "doNotReturnSkill": "Do not choose a skill to return to your hand"
+    },
+    "mk1Grenades4": {
+      "applyToConcealed": "Apply damage to concealed"
+    },
+    "nauticalProwess": {
+      "gainsWildIcons": "Nautical Prowess gains {'{'}wild{'}'}{'{'}wild{'}'}"
+    },
+    "nephthysHuntressOfBast4": {
+      "releaseBlessTokens": "Release 3 {'{'}bless{'}'} tokens",
+      "returnBlessForDamage": "Return 3 {'{'}bless{'}'} tokens to the pool to do 2 damage to an enemy at your location"
+    },
     "occultReliquary": {
       "choose": "Choose initial slot type for Occult Reliquary"
+    },
+    "oldBookOfLore3": {
+      "doNotSpendSecrets": "Do not spend any secrets to play any cards"
     },
     "oneTwoPunch": {
       "again": "Fight that enemy again",
       "skip": "Do not fight that enemy again"
+    },
+    "patriceHathaway": {
+      "shuffleDiscardKeepOne": "Shuffle all but 1 card from your discard pile into your deck",
+      "chooseOneCardToLeave": "Choose 1 card to leave in discard"
+    },
+    "ghastlyPossession1": {
+      "placeDoomGainIcons": "Place 1 doom on that asset. Ghastly Posession gains {'{'}wild{'}'}{'{'}wild{'}'}",
+      "removeDoomOrReplenish": "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)",
+      "removeDoomFromAsset": "Remove 1 doom from that asset",
+      "replenishUses": "Replenish half of its uses (rounded down)"
+    },
+    "grimResolve": {
+      "doneSwapping": "Done swapping",
+      "chooseHandToSwap": "Choose hand card to swap with",
+      "chooseUnderneathToSwap": "Choose card underneath to swap with"
+    },
+    "grizzled": {
+      "attachToEnemy": "Attach to enemy (Nemesis)",
+      "doNotAttachToEnemy": "Do not attach to enemy",
+      "addToVictory": "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)",
+      "doNotAddToVictory": "Do not add to victory"
+    },
+    "memoriesOfAnotherLife5": {
+      "removeFromGame": "Remove Memories of Another Life from the game",
+      "doNotRemove": "Do not remove Memories of Another Life"
+    },
+    "outOfSight": {
+      "disengageAndMove": "Disengage from each enemy and move to a connecting location."
+    },
+    "outOfSight3": {
+      "disengageAndMove2": "Disengage from each enemy and move to a revealed location up to 2 connections away."
+    },
+    "prescient": {
+      "even": "Even",
+      "odd": "Odd",
+      "symbol": "Symbol"
+    },
+    "priestOfTwoFaiths1": {
+      "discardName": "Discard {name}"
+    },
+    "quickWitted1": {
+      "shuffleOthers": "Shuffle each other Quick-Witted in your discard pile into your deck",
+      "doNotShuffleAny": "Do not shuffle any"
+    },
+    "purifyingCorruption4": {
+      "removeCorruption": "Remove 1 corruption from this card"
+    },
+    "riteOfEquilibrium5": {
+      "addCurseToAddBless": "Add X {'{'}curse{'}'} tokens to the chaos bag to add X {'{'}bless{'}'} tokens to the chaos bag.",
+      "removeBlessAndCurseToHeal": "Remove X {'{'}curse{'}'} and X {'{'}bless{'}'} tokens from the chaos bag to heal X total horror from among cards at your location."
+    },
+    "shroudOfShadows": {
+      "placeCharge": "Place 1 Charge on Shroud of Shadows"
+    },
+    "shroudOfShadows4": {
+      "placeCharge": "Place 1 Charge on Shroud of Shadows4"
+    },
+    "shrineOfTheMoirai3": {
+      "doneChoosingCards": "Done choosing cards"
+    },
+    "silassNet": {
+      "returnNetWithSkills": "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them"
+    },
+    "spiritSpeaker": {
+      "moveChargesToResources": "Move all charges to your resource pool"
+    },
+    "tommyMuldoon": {
+      "moveFromTommyToAsset": "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control",
+      "moveFromAssetToTommy": "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
     }
   },
   "tooltips": {
+    "joeyTheRatVigil3": {
+      "spendForItem": "Spend 1 resource: Choose an _Item_ asset from your hand and play it (paying its cost).",
+      "discardForResources": "Discard an _Item_ asset from play: Gain 2 resources."
+    },
+    "butterflySwords5": {
+      "doNotExhaust": "Do not exhaust",
+      "exhaustForDamage": "Exhaust to do +1 damage"
+    },
+    "aethericCurrentYuggoth": {
+      "exhaustEnemyAndMove": "Exhaust Enemy and move it",
+      "doNotExhaustEnemy": "Do not exhaust enemy"
+    },
+    "beguile": {
+      "moveAttachedEnemy": "Move attached enemy to a revealed connecting location",
+      "basicInvestigate": "Perform a basic investigate action at it's location",
+      "basicEvade": "Perform a basic evade action at it's location"
+    },
+    "callForBackup2": {
+      "rogueOption": "{'{'}rogue{'}'} card, you may move to a connecting location",
+      "guardianOption": "{'{'}guardian{'}'} card, deal 1 damage to an enemy at your location",
+      "seekerOption": "{'{'}seeker{'}'} card, discover 1 clue at your location",
+      "mysticOption": "{'{'}mystic{'}'} card, heal 1 horror from any card",
+      "survivorOption": "{'{'}survivor{'}'} card, heal 1 damage from any card"
+    },
+    "brokenBottle": {
+      "discardForDamage": "Discard to deal +1 damage"
+    },
+    "cosmicFlame": {
+      "spendChargeForDamage": "Spend 1 charge to deal +1 damage"
+    },
+    "cosmicFlame5": {
+      "spendChargeForDamage": "Spend 1 charge to deal 1 damage to an enemy at your location"
+    },
+    "cosmicRevelation1": {
+      "even": "Even",
+      "odd": "Odd",
+      "playRevealed": "play 1 revealed card"
+    },
+    "devilFriendOrFoe2": {
+      "damageConcealed": "Damage concealed card",
+      "doNotDamageConcealed": "Do not damage concealed card"
+    },
+    "doppelganger1": {
+      "moveToLocationOfDoppelganger": "Move to location of doppelganger",
+      "evadeEnemy": "Evade enemy"
+    },
+    "handCrankFlashlight": {
+      "discardForShroud": "Discard to deal give your location -1 shroud until the end of the round"
+    },
+    "localMap": {
+      "exhaustAndMove": "Exhaust Local Map and move to the investigated location"
+    },
+    "oldCompass": {
+      "exhaustToRepeat": "Exhaust Old Compass"
+    },
+    "secondSight": {
+      "spendChargeForClue": "Spend 1 charge to discover 1 additional clue"
+    },
+    "secondSight5": {
+      "spendChargeForClue": "Spend 1 charge to discover 1 additional clue",
+      "doNotSpendCharge": "Do not spend charge"
+    },
+    "sledgehammer3": {
+      "exhaustForDamage": "Exhaust Sledgehammer"
+    },
+    "combatTraining1": {
+      "spendForCombat": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
+      "spendForAgility": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test."
+    },
+    "moxie1": {
+      "spendForWillpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test.",
+      "spendForAgility": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test."
+    },
+    "onTheTrail1": {
+      "moveTwiceTowardsEnemy": "Move twice towards the enemy",
+      "discoverClueBetween": "Discover 1 clue at any empty location between you and the chosen enemy"
+    },
+    "protectingTheAnirniq2": {
+      "returnAssetToOwner": "Return that asset to its owner's hand",
+      "ownerDraws3": "Its owner draws 3 cards"
+    },
+    "holySpear5": {
+      "fightWithReleaseBless": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear.",
+      "fightWithSealBless": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack."
+    },
+    "oldHuntingRifle3": {
+      "clearJam": "You clear the jam."
+    },
+    "ornateBow3": {
+      "nockArrow": "You nock another arrow"
+    },
+    "ravenousMyconidNurturingStrain4": {
+      "searchForUncannyGrowth": "Search your bonded cards for Uncanny Growth and add it to your hand.",
+      "healOrMoveDamageHorror": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
+      "healFromMyconid": "Heal that much damage/horror from Ravenous Myconid",
+      "moveDamageToMyconid": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
+    },
+    "ravenousMyconidUnidentified": {
+      "searchForUncannyGrowth": "Search your bonded cards for Uncanny Growth and add it to you hand.",
+      "classifyNewSpecies": "Move each growth to your resource pool, as resources. Record in your Campaign Log that \"you have classified a new species\""
+    },
+    "scientificTheory1": {
+      "spendForIntellect": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
+      "spendForCombat": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+    },
+    "theRedClockBrokenButReliable2": {
+      "placeChargeHere": "Place 1 charge here",
+      "takeChargesAsResources": "Take all charges here as resources"
+    },
+    "theRedClockBrokenButReliable5": {
+      "takeChargesAsResources": "Take all charges here as resources",
+      "leaveCharges": "Leave charges"
+    },
+    "trustyBullwhipAdvanced": {
+      "dealDamageAndEvade": "Deal +1 damage for this attack and Automatically evade the enemy"
+    },
+    "twentyOneOrBust": {
+      "stopWith": "Stop with {total}",
+      "continue": "Continue"
+    },
+    "untimelyTransaction1": {
+      "noOnePays": "No one pays",
+      "playCard": "Play Card"
+    },
+    "taskForce": {
+      "resolveAbilityNoCost": "...resolve an {'{'}action{'}'} ability on an asset they control without paying its {'{'}action{'}'} cost.",
+      "moveToConnecting": "...move to a connecting location.",
+      "discoverClueAtTheirLocation": "...discover 1 clue at their location"
+    },
+    "spectralRazor2": {
+      "engageFirst": "Engage an enemy first",
+      "doNotEngage": "Do not engage an enemy"
+    },
+    "stouthearted": {
+      "doneMovingDamageHorror": "Done moving damage/horror"
+    },
+    "throwTheBookAtThem": {
+      "automaticallyEvade": "Automatically evade the attacked enemy",
+      "resolveAbilityOnTome": "After the attack ends, you may resolve an {'{'}action{'}'} or {'{'}fast{'}'} ability on the chosen asset (ignoring its {'{'}action{'}'} cost, if any)"
+    },
+    "tinker": {
+      "hand": "Hand",
+      "accessory": "Accessory"
+    },
     "shortcut": {
       "ability": "{'{'}fast{'}'} Exhaust Shortcut: _Move_ (to a connecting location). Any investigator at this location may trigger this ability."
+    },
+    "thirdTimesACharm2": {
+      "cancelAndReveal": "Cancel it, return it to the chaos bag, and reveal a new chaos token"
+    },
+    "transmogrify": {
+      "discoverClue": "Discover 1 clue at its location (Transmogrify)"
     }
   }
 }

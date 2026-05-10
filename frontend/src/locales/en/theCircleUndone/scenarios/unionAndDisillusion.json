@@ -41,6 +41,9 @@
     }
   },
   "label": {
+    "lightTheBrazier": "Light the brazier",
+    "unlightTheBrazier": "Unlight the brazier",
+    "leaveBrazierAlone": "Leave brazier alone",
     "unvisitedIsleMistyClearing": {
       "doom": "Place 1 doom on this location"
     },

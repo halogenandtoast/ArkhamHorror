@@ -60,7 +60,7 @@ instance RunMessage DianaStanley where
       unless (null cardsUnderneath) $ do
         focusCards cardsUnderneath do
           chooseOrRunOneM iid do
-            labeled "Do not add any cards to your Hand" nothing
+            labeledI "doNotAddCardsToHand" nothing
             targets cardsUnderneath (addToHand iid . only)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do

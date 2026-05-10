@@ -60,5 +60,13 @@
     "unlockedTheEntranceToTheCaves": "Unlocked the entrance to the caves",
     "unlockedTheThirdFloor": "Unlocked the third floor",
     "unlockedTheFinalDepths": "Unlocked the final depths"
+  },
+  "label": {
+    "discardTwoCards": "Discard 2 cards from your hand",
+    "discardAsset": "Discard an asset you control",
+    "takeControlOfThomasDawson": "Choose investigator to take control of Thomas Dawson",
+    "tellOceirosNothing": "Tell Oceiros nothing",
+    "lieToOceiros": "Lie to Oceiros",
+    "tellOceirosEverything": "Tell Oceiros everything"
   }
 }

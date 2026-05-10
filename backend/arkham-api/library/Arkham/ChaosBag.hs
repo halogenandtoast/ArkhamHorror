@@ -686,8 +686,8 @@ instance RunMessage ChaosBag where
                     [ FocusChaosTokens [token]
                     , chooseOne
                         player
-                        [ Label "Remove to Token Pool" [UnfocusChaosTokens, removeWindowMessage]
-                        , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
+                        [ Label "$label.chaosTokenRemoveToPool" [UnfocusChaosTokens, removeWindowMessage]
+                        , Label "$label.chaosTokenReturnToBag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
                         ]
                     ]
 

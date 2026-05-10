@@ -47,7 +47,7 @@ instance RunMessage Tinker where
         (True, False) -> doStep 1 msg
         (False, True) -> doStep 2 msg
         (False, False) -> pure ()
-        (True, True) -> chooseOne iid [Label "Hand" [DoStep 1 msg], Label "Accessory" [DoStep 2 msg]]
+        (True, True) -> chooseOne iid [Label "$cards.label.tinker.hand" [DoStep 1 msg], Label "$cards.label.tinker.accessory" [DoStep 2 msg]]
       pure e
     DoStep 1 (HandleTargetChoice iid (isSource attrs -> True) _) -> do
       push $ InvestigatorClearUnusedAssetSlots iid []

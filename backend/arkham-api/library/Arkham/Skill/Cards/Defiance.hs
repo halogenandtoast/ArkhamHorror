@@ -22,13 +22,13 @@ instance RunMessage Defiance where
       case attrs.placement of
         Limbo ->
           chooseOneM (skillOwner attrs) do
-            labeled "Choose {skull}"
+            labeledI "chooseSkull"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)
-            labeled "Choose {cultist}"
+            labeledI "chooseCultist"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Cultist)
-            labeled "Choose {tablet}"
+            labeledI "chooseTablet"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Tablet)
-            labeled "Choose {elderThing}"
+            labeledI "chooseElderThing"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget ElderThing)
         _ -> pure ()
       pure s

@@ -43,5 +43,18 @@
       "tablet": "-5. If you fail, choose a connecting location with no barriers between it and your location. Place 1 barrier between the two locations.",
       "elderThing": "-X. X is twice the number of barriers between your location and all connecting locations."
     }
+  },
+  "teachingsOfTheOrder": {
+    "label": {
+      "removeCurseTokens": "Remove all {'{'}curse{'}'} tokens from the chaos bag.",
+      "removeFlood": "Remove a flood token from a non-_Sanctum_ location.",
+      "defeatEnemy": "Defeat a non-_Elite_ enemy at your location."
+    }
+  },
+  "label": {
+    "doNotTakeTeachings": "Do not take Teachings of the Order",
+    "removeCultist": "Remove {'{'}cultist{'}'}",
+    "removeTablet": "Remove {'{'}tablet{'}'}",
+    "removeElderThing": "Remove {'{'}elderThing{'}'}"
   }
 }

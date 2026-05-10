@@ -30,11 +30,11 @@ instance RunMessage EldritchWhispers1 where
       let allAssets = nub $ chargeAssets <> secretAssets
       unless (null allAssets) do
         chooseOneM iid do
-          labeled "Done placing tokens" nothing
+          labeledI "donePlacingTokens" nothing
           targets allAssets \aid -> do
             chooseOrRunOneM iid do
-              when (aid `elem` chargeAssets) $ labeled "Charge" $ addUses attrs aid Uses.Charge 1
-              when (aid `elem` secretAssets) $ labeled "Secret" $ addUses attrs aid Uses.Secret 1
+              when (aid `elem` chargeAssets) $ labeledI "charge" $ addUses attrs aid Uses.Charge 1
+              when (aid `elem` secretAssets) $ labeledI "secret" $ addUses attrs aid Uses.Secret 1
             doStep (n - 1) msg'
       pure s
     _ -> EldritchWhispers1 <$> liftRunMessage msg attrs

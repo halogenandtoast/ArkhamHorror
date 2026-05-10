@@ -38,7 +38,7 @@ instance RunMessage DirtyDeeds3 where
         ]
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      chooseOne iid [Label "No Cards Found" []]
+      chooseOne iid [Label "$label.noCardsFound" []]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       abilities <-

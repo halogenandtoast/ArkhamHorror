@@ -527,11 +527,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     when (gamePerformTarotReadings g) do
       lead <- getLeadPlayer
       push
-        $ questionLabel "Choose Tarot Reading Type" lead
+        $ questionLabel "$label.chooseTarotReadingType" lead
         $ ChooseOne
-          [ Label "Chaos" [PerformReading Tarot.Chaos]
-          , Label "Balance" [PerformReading Tarot.Balance]
-          , Label "Choice" [PerformReading Tarot.Choice]
+          [ Label "$label.tarotChaos" [PerformReading Tarot.Chaos]
+          , Label "$label.tarotBalance" [PerformReading Tarot.Balance]
+          , Label "$label.tarotChoice" [PerformReading Tarot.Choice]
           ]
     pure g
   SetPerformTarotReadings b -> pure $ g & performTarotReadingsL .~ b
@@ -565,7 +565,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           $ [ targetLabel target [whenWindow, TargetResolveChaosToken target token tokenFace iid]
             | target <- resolutionChoices
             ]
-          <> [Label "Resolve Normally" [whenWindow, msg']]
+          <> [Label "$label.resolveNormally" [whenWindow, msg']]
     pure g
   CreateEffect builder -> do
     (effectId, effect) <- createEffect builder
@@ -1830,7 +1830,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             lead <- getLeadPlayer
             push
               $ Ask lead
-              $ ChooseOne (Label "Automatically handle all" [HandleGroupTargets Auto k targetMap] : opts)
+              $ ChooseOne (Label "$label.automaticallyHandleAll" [HandleGroupTargets Auto k targetMap] : opts)
           Manual -> do
             let
               opts =
@@ -1957,7 +1957,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           then pushAll msgs'
           else do
             askMap <-
-              fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
+              fmap (QuestionLabel "$label.chooseAfterSkillTestEffect" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
                 AfterSkillTestOption iid lbl xs -> do
                   playerId <- getPlayer iid
                   pure $ Just $ singletonMap playerId [Label lbl xs]
@@ -2171,7 +2171,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep
               NextInvestigatorsTurnBeginsStep
-              [ questionLabel "Choose player to take turn" player
+              [ questionLabel "$label.choosePlayerToTakeTurn" player
                   $ ChooseOne
                     [PortraitLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs]
               ]
@@ -2207,7 +2207,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   ChoosePlayerOrder lead investigatorIds orderedInvestigatorIds -> do
     player <- getPlayer lead
     push
-      $ questionLabel "Choose next in turn order" player
+      $ questionLabel "$label.chooseNextInTurnOrder" player
       $ ChooseOne
         [ PortraitLabel
             iid
@@ -2975,7 +2975,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                     [ Label
                         "Cancel card effects and discard it"
                         [UnfocusCards, CancelNext (modifierSource foresight) RevelationMessage, AddToEncounterDiscard card]
-                    , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
+                    , Label "$label.drawAsNormal" [UnfocusCards, whenDraw, Do msg]
                     ]
                 pure $ g & focusedCardsL %~ ([toCard card] :)
               else do

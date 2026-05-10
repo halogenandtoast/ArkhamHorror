@@ -38,7 +38,7 @@ instance RunMessage HypnoticTherapy where
         targets iids \i -> do
           healHorrorIfCan i (attrs.ability 1) 1
           chooseOneM i do
-            labeled "Do not draw" nothing
+            labeledI "doNotDraw" nothing
             deckLabeled i $ drawCards i (attrs.ability 1) 1
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws' _ -> do

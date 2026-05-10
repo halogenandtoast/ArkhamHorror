@@ -230,7 +230,7 @@ explore iid source cardMatcher exploreRule matchCount = do
         [] -> unless (null drawn) do
           focusCards drawn do
             chooseOneM iid do
-              labeled "No Matches Found" do
+              labeledI "noMatchesFound" do
                 unfocusCards
                 deck' <- shuffle (drawn <> rest)
                 setScenarioDeck ExplorationDeck deck'

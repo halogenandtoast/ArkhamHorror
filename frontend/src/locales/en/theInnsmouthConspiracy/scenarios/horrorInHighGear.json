@@ -27,5 +27,20 @@
       "tablet": "-3. For each point you fail by, an investigator in your vehicle loses 1 resource.",
       "elderThing": "-4. Resolve the hunter keyword on each enemy in play."
     }
+  },
+  "label": {
+    "discardAsset": "Discard an asset you control",
+    "whichVehicle": "Which vehicle will you start in?",
+    "whereWillEnemySpawn": "Where will the enemy spawn?"
+  },
+  "tooltips": {
+    "elinaHarpersCarRunning": {
+      "drawAndMoveRoad": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
+      "stopCar": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    },
+    "thomasDawsonsCarRunning": {
+      "drawAndMoveRoad": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
+      "stopCar": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    }
   }
 }

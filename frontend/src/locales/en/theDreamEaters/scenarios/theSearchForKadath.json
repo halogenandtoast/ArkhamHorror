@@ -13,5 +13,15 @@
       "tablet": "-3. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
       "elderThing": "+1. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
     }
+  },
+  "label": {
+    "leaveEmptyHanded": "Leave empty-handed",
+    "forceIntoTemple": "Force your way into the temple.",
+    "placeNightgaunt": "Place Tenebrous Nightgaunt in city location"
+  },
+  "dreamlandsEclipse": {
+    "label": {
+      "shroudPlus2": "Your location gets +2 shroud for this investigation"
+    }
   }
 }

@@ -58,7 +58,7 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
       enemies <- select $ enemyEngagedWith iid
       for_ enemies (disengageEnemy iid)
       chooseOneM iid do
-        labeled "Do not move" nothing
+        labeledI "doNotMove" nothing
         targets locations (moveTo source iid)
 
 scenarioI18n :: (HasI18n => a) -> a

@@ -49,7 +49,7 @@ instance RunMessage CallTheBeyond2 where
                 <> AbilityOnAsset (AssetWithId aid)
             )
       when (notNull abilities) do
-        chooseOne iid $ Label "Do not resolve an ability" []
+        chooseOne iid $ Label "$label.doNotResolveAbility" []
           : [AbilityLabel iid ab [] [] [] | ab <- abilities]
       pure e
     _ -> CallTheBeyond2 <$> liftRunMessage msg attrs

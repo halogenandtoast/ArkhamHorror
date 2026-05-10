@@ -343,14 +343,14 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
       getOwner Assets.ichtacaTheForgottenGuardian >>= \case
         Nothing -> invalidLabeled' "ichtaca"
         Just iid ->
-          labeled "ichtaca" do
+          labeled' "ichtaca" do
             flavor $ h "title" >> p "intro2"
             putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
 
       getOwner Assets.alejandroVela >>= \case
         Nothing -> invalidLabeled' "alejandro"
         Just iid ->
-          labeled "alejandro" do
+          labeled' "alejandro" do
             flavor $ h "title" >> p "intro3"
             putCampaignCardIntoPlay iid Assets.alejandroVela
 

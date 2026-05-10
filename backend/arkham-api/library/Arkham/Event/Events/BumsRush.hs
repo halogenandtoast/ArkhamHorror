@@ -34,7 +34,7 @@ instance RunMessage BumsRush where
         whenM (matches enemyId (InPlayEnemy NonEliteEnemy)) do
           choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
           chooseOrRunOneM iid do
-            labeled "Do not move enemy" nothing
+            labeledI "doNotMoveEnemy" nothing
             targets choices $ enemyMoveTo attrs enemyId
       pure e
     _ -> BumsRush <$> liftRunMessage msg attrs

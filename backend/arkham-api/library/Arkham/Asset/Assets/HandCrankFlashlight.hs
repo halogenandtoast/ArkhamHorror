@@ -28,8 +28,8 @@ instance RunMessage HandCrankFlashlight where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withLocationOf iid \lid -> do
-        chooseOneM iid do
-          labeled "Discard to deal give your location -1 shroud until the end of the round" do
+        chooseOneM iid $ cardI18n $ scope "handCrankFlashlight" do
+          labeled' "discardForShroud" do
             toDiscardBy iid (attrs.ability 1) attrs
             roundModifier (attrs.ability 1) lid $ ShroudModifier (-1)
           withI18n skip_

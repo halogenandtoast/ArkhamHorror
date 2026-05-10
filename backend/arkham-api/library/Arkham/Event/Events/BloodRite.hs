@@ -9,6 +9,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Enemy (getDamageableEnemies)
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
@@ -38,18 +39,17 @@ instance RunMessage BloodRite where
           targetsM iid.discardable \card -> do
             discardCard iid attrs card
             push $ PayForCardAbility iid (toSource attrs) windows 1 (DiscardCardPayment $ card : discards)
-          labeled ("Continue having discarded " <> tshow (length discards) <> " cards") do
-            doStep (length discards) msg
+          withI18n (countVar (length discards) $ labeled' "continueHavingDiscarded" $ doStep (length discards) msg)
       pure e
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
       enemies <- getDamageableEnemies iid attrs (enemyAtLocationWith iid)
       concealed <- getConcealed (ForExpose $ toSource iid) iid
-      chooseOneM iid do
+      chooseOneM iid $ cardI18n $ scope "bloodRite" do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
-          labeled "Gain Resource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
+          labeled' "gainResource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
         when ((notNull enemies || notNull concealed) && resources > 0) do
-          labeled "Spend Resource and Deal 1 Damage To Enemy At Your Location" do
+          labeled' "spendDealDamage" do
             spendResources iid 1
             chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
             doStep (n - 1) msg'

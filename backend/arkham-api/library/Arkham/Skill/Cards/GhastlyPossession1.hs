@@ -4,6 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Criteria
 import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestSource)
 import Arkham.Helpers.Use
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message qualified
 import Arkham.Message.Lifted.Choose
@@ -35,13 +36,12 @@ instance RunMessage GhastlyPossession1 where
             pure $ min (n - current) half
 
           withSkillTest \stId -> do
-            chooseOneM iid do
-              labeled "Place 1 doom on that asset. Ghastly Posession gains {wild}{wild}" do
+            chooseOneM iid $ cardI18n $ scope "ghastlyPossession1" do
+              labeled' "placeDoomGainIcons" do
                 placeDoom attrs (toTarget aid) 1
                 skillTestModifier stId attrs attrs.cardId $ AddSkillIcons [#wild, #wild]
               when (hasDoom || isJust mAddAmount) do
-                labeled
-                  "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)"
+                labeled' "removeDoomOrReplenish"
                   $ doStep 1 msg
       GhastlyPossession1 <$> liftRunMessage msg attrs
     DoStep 1 (InvestigatorCommittedSkill _iid sid) | sid == toId attrs -> do
@@ -78,12 +78,12 @@ instance RunMessage GhastlyPossession1 where
             pure (uType, min (n - current) half)
 
           when (hasDoom || isJust mAddAmount) do
-            chooseOneM iid do
+            chooseOneM iid $ cardI18n $ scope "ghastlyPossession1" do
               when hasDoom do
-                labeled "Remove 1 doom from that asset" do
+                labeled' "removeDoomFromAsset" do
                   removeDoom attrs (toTarget aid) 1
               for_ mAddAmount \(uType, n) ->
-                labeled "Replenish half of its uses (rounded down)" do
+                labeled' "replenishUses" do
                   placeTokens attrs (toTarget aid) uType n
       pure s
     _ -> GhastlyPossession1 <$> liftRunMessage msg attrs

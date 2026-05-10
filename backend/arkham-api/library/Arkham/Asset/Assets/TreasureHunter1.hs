@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -26,8 +27,8 @@ instance RunMessage TreasureHunter1 where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ Label "Pay 1 Resource to Treasure Hunter" [SpendResources iid 1]
-          , Label "Discard Treasure Hunter" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
+        $ [ Label (withI18n $ cardNameVar attrs $ ikey' "label.payResourceToName") [SpendResources iid 1]
+          , Label (withI18n $ cardNameVar attrs $ ikey' "label.discardName") [toDiscardBy iid (toAbilitySource attrs 1) attrs]
           ]
       pure a
     _ -> TreasureHunter1 <$> runMessage msg attrs

@@ -17,6 +17,12 @@
     "thePoliceAreOnYourSide": "The police are on your side.",
     "thePoliceDontBelieveYou": "The police don't believe you."
   },
+  "bloodstainedDagger": {
+    "tooltips": {
+      "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
+      "fightWithDamage": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
+    }
+  },
   "intro": {
     "title": "Murder at the Excelsior Hotel",
     "intro1": "<p>_Intro 1_: There have been reports of strange occurrences at Arkham’s Excelsior Hotel for over a month now. Disappearances. Bizarre sightings. Sudden closures, sometimes for days at a time, seemingly without warning. It’s like something out of a ghost story, but you know better than to simply dismiss these rumors. Too many people have whispered about the Excelsior…and to make matters worse, it seems the stories have only grown more unsettling in the last week. It’s time somebody looked into it all.</p><p>You’ve tried going to the police, but the grizzled and world‑weary Sergeant Monroe has dismissed you every time. You’ve been left to investigate on your own. Asking around at all the local hot-spots yields no leads. Velma’s Diner, Hibb’s Roadhouse, La Bella Luna; Each visit leaves you with only more questions. That is, until today.</p><p>While walking down Central Avenue in Downtown, minding your own business, you bump into a man in a long trench coat. You begin to apologize, but he simply continues walking briskly away from you. It isn’t until you return home that you find the note in your pocket—one that wasn’t there before.</p><p class='center cursive'>*I have answers.*<br>*Room 225. Tonight. Come alone.*<br>*They’re watching!*</p><p>Uncertain of what else you can do at this point, you begin making preparations to meet this mystery person.</p>",

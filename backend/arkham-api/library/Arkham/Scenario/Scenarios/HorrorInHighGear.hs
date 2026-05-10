@@ -136,7 +136,7 @@ instance RunMessage HorrorInHighGear where
         pure $ passengers < 2
 
       chooseOrRunOneM iid do
-        questionLabeled "Which vehicle will you start in?"
+        questionLabeled' "whichVehicle"
         targets vehicles $ push . PlaceInvestigator iid . InVehicle
       pure s
     DoStep 2 Setup -> do
@@ -148,7 +148,7 @@ instance RunMessage HorrorInHighGear where
             name <- field AssetName vehicle
             lead <- getLead
             chooseOrRunOneM lead do
-              questionLabeled $ "Who will drive " <> toTitle name <> "?"
+              withI18n $ keyVar "name" (toTitle name) $ questionLabeled' "whoWillDrive"
               targets passengers $ push . SetDriver vehicle
 
       pure s
@@ -157,7 +157,7 @@ instance RunMessage HorrorInHighGear where
         locations <- getRear
         lead <- getLead
         chooseOrRunOneM lead do
-          questionLabeled "Where will the enemy spawn?"
+          questionLabeled' "whereWillEnemySpawn"
           targets locations $ createEnemyAt_ card
       pure s
     FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do

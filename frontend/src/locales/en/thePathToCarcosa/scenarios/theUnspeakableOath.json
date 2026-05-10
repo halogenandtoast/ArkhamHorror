@@ -60,6 +60,8 @@
       "horror": "Take 1 horror and Clouded Memory gains surge."
 
     },
+    "placeMonsterUnderActDeck": "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it",
+    "thisTestAutomaticallyFails": "This test automatically fails",
     "infirmary": {
       "healDamage": "Heal 1 damage and take 1 direct horror",
       "healHorror": "Heal 1 horror and take 1 direct damage"

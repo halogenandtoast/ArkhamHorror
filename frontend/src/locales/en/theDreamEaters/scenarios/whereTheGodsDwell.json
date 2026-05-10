@@ -41,5 +41,10 @@
   "remembered": {
     "maneuveredThePriestCloser": "Maneuvered the high priest closer.",
     "stunnedThePriest": "Stunned the priest."
+  },
+  "label": {
+    "wakeUp": "Wake up",
+    "remainOnSurface": "Remain on the surface of the Dreamlands",
+    "ventureIntoUnderworld": "Venture into the Underworld to find your companions"
   }
 }

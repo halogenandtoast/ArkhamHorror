@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.ForMovement
 import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
@@ -59,10 +60,10 @@ instance RunMessage EyeOfChaosEffect where
                 when (stillInPlay || notNull lids) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
-                      labeled "Place 1 Charge on Eye of Chaos" do
+                      cardI18n $ scope "eyeOfChaos" $ labeled' "placeCharge" do
                         addUses attrs.source assetId Charge 1
                     unless (null lids) do
-                      labeled "Discover 1 clues at a connecting location" do
+                      withI18n $ countVar 1 $ labeled' "discoverCluesAtConnecting" do
                         chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
                 disable attrs
           case attrs.source of

@@ -64,6 +64,8 @@
   "label": {
     "chooseInvestigatorToPlaceClue": "Choose an investigator to place a clue",
     "cluesToSpend": "Number of clues to spend",
+    "doNotRemoveCluesFail": "Do not remove clues from Brood of Yog-Sothoth and fail skill test",
+    "doNotRemoveCluesTreatAsMinusFour": "Do not remove clues from Brood of Yog-Sothoth and treat as -4",
     "spawnSetAsideBrood": "Spawn a set aside Brood of Yog-Sothoth at a random location"
   }
 }

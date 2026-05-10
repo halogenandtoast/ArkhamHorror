@@ -47,6 +47,6 @@ instance RunMessage Hope where
             cardLabeled card do
               shuffleCardsIntoDeck iid (only hopeCard)
               putCardIntoPlay iid card
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure a
     _ -> Hope <$> liftRunMessage msg attrs

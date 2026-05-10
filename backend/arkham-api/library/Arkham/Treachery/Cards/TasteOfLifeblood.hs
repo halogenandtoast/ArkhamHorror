@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.TasteOfLifeblood (tasteOfLifeblood, TasteOfLifeblo
 
 import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher
 import Arkham.Projection
@@ -30,14 +31,14 @@ instance RunMessage TasteOfLifeblood where
       enemies <- select $ NearestEnemyToFallback iid AnyEnemy
       player <- getPlayer iid
       chooseOrRunOne iid
-        $ [Label "Take 1 damage" [Msg.assignDamage iid attrs 1]]
+        $ [Label (withI18n $ countVar 1 $ ikey' "label.takeDamage") [Msg.assignDamage iid attrs 1]]
         <> [ Label
-            "Place 1 of your clues on your location"
+            (withI18n $ countVar 1 $ ikey' "label.placeCluesOnYourLocation")
             [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
            | canPlaceClues
            ]
         <> [ Label
-            "Place 1 of your clues on nearest enemy"
+            (withI18n $ countVar 1 $ ikey' "label.placeCluesOnNearestEnemy")
             [ Msg.chooseOrRunOne
                 player
                 [ targetLabel enemy [Msg.MovedClues (toSource attrs) (toSource iid) (toTarget enemy) 1]

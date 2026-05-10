@@ -1,8 +1,9 @@
 module Arkham.Treachery.Cards.CloseWatch (closeWatch) where
 
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (raiseAlarmLevel)
+import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (raiseAlarmLevel, scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -21,10 +22,10 @@ instance RunMessage CloseWatch where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       anyAssets <- selectAny $ AssetWithHighestPrintedCost $ assetControlledBy iid <> DiscardableAsset
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n $ scope "closeWatch" do
         when anyAssets do
-          labeled "Discard the asset you control with the highest printed cost" do
+          labeled' "discardHighestCost" do
             chooseAndDiscardAssetMatching iid attrs $ AssetWithHighestPrintedCost AnyAsset
-          labeled "Raise your alarm level by 1" $ raiseAlarmLevel attrs [iid]
+          withI18n $ countVar 1 $ labeledI "raiseAlarmLevel" $ raiseAlarmLevel attrs [iid]
       pure t
     _ -> CloseWatch <$> liftRunMessage msg attrs

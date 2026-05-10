@@ -7,10 +7,11 @@ import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.Vehicle
+import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Name
+import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
 
@@ -23,11 +24,12 @@ elinaHarpersCarRunning = asset ElinaHarpersCarRunning Cards.elinaHarpersCarRunni
 
 instance HasAbilities ElinaHarpersCarRunning where
   getAbilities (ElinaHarpersCarRunning x) =
-    [ withTooltip
-        "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)"
+    [ scenarioI18n
+        $ withI18nTooltip "elinaHarpersCarRunning.drawAndMoveRoad"
         $ groupLimit PerRound
         $ restrictedAbility x 1 driverCriteria actionAbility
-    , withTooltip "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    , scenarioI18n
+        $ withI18nTooltip "elinaHarpersCarRunning.stopCar"
         $ restrictedAbility x 2 driverCriteria actionAbility
     ]
    where
@@ -53,7 +55,7 @@ instance RunMessage ElinaHarpersCarRunning where
       passengers <- select $ InVehicleMatching (be attrs)
       for_ (headMay passengers) \p -> do
         chooseOrRunOneM p do
-          questionLabeled $ "Choose new driver for " <> toTitle attrs.name
+          withI18n $ cardNameVar attrs $ questionLabeled' "chooseNewDriverFor"
           targets passengers $ push . SetDriver attrs.id
       pure . ElinaHarpersCarRunning $ attrs' & driverL .~ Nothing
     Flip _ _ (isTarget attrs -> True) -> do

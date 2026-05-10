@@ -1,6 +1,7 @@
 module Arkham.Investigator.Cards.RexMurphy (rexMurphy) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -35,8 +36,8 @@ instance RunMessage RexMurphy where
       discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      chooseOneM iid do
-        labeled "Automatically fail to draw 3" $ failSkillTest >> drawCards iid ElderSign 3
-        labeled "Resolve normally" nothing
+      chooseOneM iid $ withI18n $ countVar 3 do
+        labeled' "automaticallyFailToDraw" $ failSkillTest >> drawCards iid ElderSign 3
+        unscoped $ labeled' "resolveNormally" nothing
       pure i
     _ -> RexMurphy <$> liftRunMessage msg attrs

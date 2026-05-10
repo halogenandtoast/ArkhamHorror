@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Capability
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -31,7 +32,7 @@ instance RunMessage CovertOpsInTheShadows where
       drawOk <- can.draw.cards iid
       locations <- getConnectedMoveLocations iid (attrs.ability 1)
       chooseOneM iid do
-        when drawOk $ labeled "Draw 1 card" $ drawCards iid attrs 1
+        when drawOk $ withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
         targets locations $ moveTo (attrs.ability 1) iid
       pure a
     _ -> CovertOpsInTheShadows <$> liftRunMessage msg attrs

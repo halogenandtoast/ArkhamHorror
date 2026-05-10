@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.Fey1 (fey1, fey1Effect) where
 
 import Arkham.Effect.Import
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
@@ -40,7 +41,7 @@ instance RunMessage Fey1Effect where
       disable attrs
       when shouldReturn do
         chooseOneM owner do
-          labeled "Return Fey to hand" $ returnToHand owner card
-          labeled "Do not return" nothing
+          withI18n $ cardNameVar Cards.fey1 $ labeledI "returnNameToHand" $ returnToHand owner card
+          labeledI "doNotReturn" nothing
       pure e
     _ -> Fey1Effect <$> liftRunMessage msg attrs

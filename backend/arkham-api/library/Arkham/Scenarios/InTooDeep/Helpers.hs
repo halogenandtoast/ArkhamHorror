@@ -68,8 +68,8 @@ flashback iid f = case f of
     recoverMemory AFollowedLead
     iids <- select $ InvestigatorAt "The Little Bookshop"
     teachings <- getSetAsideCard Assets.teachingsOfTheOrder
-    chooseOrRunOneM iid do
-      labeled "Do not take Teachings of the Order" nothing
+    chooseOrRunOneM iid $ scenarioI18n do
+      labeled' "doNotTakeTeachings" nothing
       targets iids \iid' -> do
         addCampaignCardToDeck iid' DoNotShuffleIn Assets.teachingsOfTheOrder
         takeControlOfSetAsideAsset iid' teachings
@@ -80,6 +80,7 @@ flashback iid f = case f of
   Flashback8 -> do
     scenarioI18n $ story $ i18nWithTitle "flashback8"
     recoverMemory AJailbreak
-    chooseOneM iid do
-      for_ [Cultist, Tablet, ElderThing] \face ->
-        labeled ("Remove " <> toDisplay face) $ removeChaosToken face
+    chooseOneM iid $ scenarioI18n do
+      labeled' "removeCultist" $ removeChaosToken Cultist
+      labeled' "removeTablet" $ removeChaosToken Tablet
+      labeled' "removeElderThing" $ removeChaosToken ElderThing

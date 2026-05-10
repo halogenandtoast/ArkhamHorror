@@ -80,7 +80,7 @@ instance RunMessage AmandaSharpe where
       withSkillTest \sid -> do
         for_ (toResult @(Maybe CardId) attrs.meta) \cardId -> do
           chooseOneM iid do
-            labeled "Double skill icons" $ skillTestModifier sid (toSource attrs) cardId DoubleSkillIcons
-            labeled "Do not double skill icons" nothing
+            labeledI "doubleSkillIcons" $ skillTestModifier sid (toSource attrs) cardId DoubleSkillIcons
+            labeledI "doNotDoubleSkillIcons" nothing
       pure i
     _ -> AmandaSharpe <$> liftRunMessage msg attrs

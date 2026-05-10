@@ -63,5 +63,17 @@
       "tablet": "-5. If you fail, you must either increase the flood level of your location or take 1 damage.",
       "elderThing": "-6. If you fail and there is a key on your location, take 1 horror."
     }
+  },
+  "treacherousDepths": {
+    "label": {
+      "increaseFloodLevel": "Increase the flood level of your current location",
+      "discardAssetsToShroud": "Discard assets from your play area with a total resource cost of at least X, where X is your location's shroud value."
+    }
+  },
+  "conspiracyOfDeepOnes": {
+    "label": {
+      "placeDoomCanAdvance": "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)",
+      "ancientOneAttacks": "The nearest _Ancient One_ enemy in play attacks you"
+    }
   }
 }

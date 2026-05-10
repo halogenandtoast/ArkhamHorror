@@ -8,6 +8,7 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.RequestedChaosTokenStrategy
 
 newtype TwentyOneOrBust = TwentyOneOrBust EventAttrs
@@ -42,8 +43,8 @@ instance RunMessage TwentyOneOrBust where
           totalLabel = if totalA == totalB then tshow totalA else tshow totalA <> " or " <> tshow totalB
       chooseOne
         iid
-        [ Label ("Stop with " <> totalLabel) [DoStep 0 msg]
-        , Label "Continue" [RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
+        [ Label (withI18n $ keyVar "total" totalLabel $ ikey' "cards.label.twentyOneOrBust.stopWith") [DoStep 0 msg]
+        , Label "$cards.label.twentyOneOrBust.continue" [RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
         ]
       pure . TwentyOneOrBust $ attrs & setMeta @[ChaosTokenFace] (tokenFaces <> hand)
     DoStep 0 msg'@(RequestedChaosTokens (isSource attrs -> True) (Just iid) _) -> do

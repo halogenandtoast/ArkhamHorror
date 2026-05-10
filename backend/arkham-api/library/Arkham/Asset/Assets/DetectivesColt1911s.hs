@@ -44,7 +44,7 @@ instance RunMessage DetectivesColt1911s where
         insights <- filterCards (card_ $ #insight <> #event) <$> field InvestigatorDiscard iid
         unless (null insights) do
           chooseOneM iid do
-            labeled "Do not move an insight" nothing
+            labeledI "doNotMoveAnInsight" nothing
             targets insights $ putCardOnBottomOfDeck iid (Deck.InvestigatorDeckByKey iid HunchDeck)
       pure a
     _ -> DetectivesColt1911s <$> liftRunMessage msg attrs

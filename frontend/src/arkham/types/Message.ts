@@ -1,6 +1,7 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
+import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Target, targetDecoder } from '@/arkham/types/Target';
@@ -10,6 +11,7 @@ import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
   LABEL = 'Label',
+  COST_LABEL = 'CostLabel',
   INFO = 'Info',
   INVALID_LABEL = 'InvalidLabel',
   TARGET_LABEL = 'TargetLabel',
@@ -60,6 +62,11 @@ export type Done = {
 export type Label = {
   tag: MessageType.LABEL
   label: string
+}
+
+export type CostLabel = {
+  tag: MessageType.COST_LABEL
+  cost: Cost
 }
 
 export type InvalidLabel = {
@@ -351,6 +358,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
 
 export type Message =
   | Label
+  | CostLabel
   | Info
   | InvalidLabel
   | TooltipLabel
@@ -398,6 +406,12 @@ export const labelDecoder = JsonDecoder.object<Label>(
     tag: JsonDecoder.literal(MessageType.LABEL),
     label: JsonDecoder.string()
   }, 'Label')
+
+export const costLabelDecoder = JsonDecoder.object<CostLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.COST_LABEL),
+    cost: costDecoder
+  }, 'CostLabel')
 
 export const invalidLabelDecoder = JsonDecoder.object<InvalidLabel>(
   {
@@ -496,6 +510,7 @@ export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
+    costLabelDecoder,
     invalidLabelDecoder,
     infoDecoder,
     cardPileDecoder,
@@ -534,6 +549,7 @@ export function choiceRequiresModal(c: Message) {
   switch (c.tag) {
     case 'Done': return true;
     case 'Label': return true;
+    case 'CostLabel': return true;
     case 'SkillLabel': return true;
     case 'SkillLabelWithLabel': return true;
     case 'PortraitLabel': return true;

@@ -34,7 +34,9 @@
   "tooltips": {
     "attacksYou": "{name} attacks you",
     "takeControlOfKey": "Take control of {key} key",
-    "name": "{name}"
+    "name": "{name}",
+    "giveSeal": "Give Seal",
+    "takeSeal": "Take Seal"
   },
   "name": "{name}",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",

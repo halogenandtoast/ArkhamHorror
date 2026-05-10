@@ -26,6 +26,7 @@ import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Tarot
 import Arkham.Helpers.Window (checkWindows)
 import Arkham.History
+import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Matcher qualified as Matcher
@@ -293,7 +294,7 @@ instance RunMessage Scenario where
               enabled <- costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
               pure $ targetLabel c [enabled, PayCardCost investigator c [duringTurnWindow investigator]]
 
-            pure $ Just $ chooseOne player $ Label "Do not play asset" [] : choices
+            pure $ Just $ chooseOne player $ Label "$label.doNotPlayAsset" [] : choices
           pushAll msgs
           pure x
         UseAbility _ (isTarotSource -> True) _ -> do
@@ -376,15 +377,15 @@ instance RunMessage Scenario where
               canHealHorror <- Helpers.canHaveHorrorHealed source iid
               push
                 $ chooseOne player
-                $ Label "Skip" []
+                $ Label "$label.skip" []
                 : [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
                   <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
             Reversed -> do
               push
                 $ chooseOne
                   player
-                  [ Label "Take 1 damage" [assignDamage iid source 1]
-                  , Label "Take 1 horror" [assignHorror iid source 1]
+                  [ Label (withI18n $ countVar 1 $ ikey' "label.takeDamage") [assignDamage iid source 1]
+                  , Label (withI18n $ countVar 1 $ ikey' "label.takeHorror") [assignHorror iid source 1]
                   ]
           pure x
         UseCardAbility
@@ -405,10 +406,10 @@ instance RunMessage Scenario where
               $ chooseOne
                 player
                 [ Label
-                    "Shuffle the bottom 10 cards of your discard back into your Deck"
+                    (withI18n $ countVar (length cards) $ ikey' "label.shuffleBottomOfDiscardBackIntoDeck")
                     $ [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards]
                     <> maybeToList mDrawing
-                , Label "Do Nothing" []
+                , Label "$label.doNothing" []
                 ]
             pure x
         UseThisAbility _ source@(TarotSource card@(TarotCard Reversed TheMoonXVIII)) 1 -> do
@@ -456,9 +457,9 @@ instance RunMessage Scenario where
 
               pushAll
                 $ [ chooseOne player
-                      $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
-                      <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
-                      <> [Label "Do not remove trauma" []]
+                      $ [Label "$label.removePhysicalTrauma" [HealTrauma iid 1 0] | hasPhysical]
+                      <> [Label "$label.removeMentalTrauma" [HealTrauma iid 0 1] | hasMental]
+                      <> [Label "$label.doNotRemoveTrauma" []]
                   | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
                   ]
             Reversed -> do
@@ -468,8 +469,8 @@ instance RunMessage Scenario where
               pushAll
                 $ [ chooseOne
                       player
-                      [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                      , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                      [ Label (withI18n $ countVar 1 $ ikey' "label.sufferPhysicalTrauma") [SufferTrauma iid 1 0]
+                      , Label (withI18n $ countVar 1 $ ikey' "label.sufferMentalTrauma") [SufferTrauma iid 0 1]
                       ]
                   | (iid, player) <- defeatedInvestigatorPlayers
                   ]

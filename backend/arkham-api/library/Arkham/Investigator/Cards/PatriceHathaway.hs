@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.PatriceHathaway (patriceHathaway) where
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()
@@ -46,14 +47,14 @@ instance RunMessage PatriceHathaway where
       canHaveCardsLeaveDiscard <- can.have.cards.leaveDiscard attrs.id
       when (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1) do
         chooseOrRunOneM attrs.id do
-          labeled "Shuffle all but 1 card from your discard pile into your deck" $ doStep 2 msg'
-          labeled "Skip" nothing
+          cardI18n $ scope "patriceHathaway" $ labeled' "shuffleDiscardKeepOne" $ doStep 2 msg'
+          labeledI "skip" nothing
       pure i
     DoStep 2 (ElderSignEffect (is attrs -> True)) -> do
       let discards = map toCard attrs.discard
       focusCards discards do
         chooseOneM attrs.id do
-          questionLabeled "Choose 1 card to leave in discard"
+          questionLabeled "$cards.label.patriceHathaway.chooseOneCardToLeave"
           for_ (eachWithRest discards) \(card, rest) -> do
             targeting card do
               unfocusCards

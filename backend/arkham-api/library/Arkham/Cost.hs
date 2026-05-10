@@ -2,7 +2,6 @@
 
 module Arkham.Cost (module Arkham.Cost, module X) where
 
-import Arkham.Classes.GameLogger
 import Arkham.Cost.Status as X
 import Arkham.Zone as X
 
@@ -21,8 +20,6 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
 import Arkham.Matcher
-import Arkham.Name
-import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
@@ -34,7 +31,6 @@ import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
 import Data.Map.Strict qualified as Map
-import Data.Text qualified as T
 import GHC.Records
 
 decreaseActionCost :: Cost -> Int -> Cost
@@ -259,238 +255,6 @@ removeCost = RemoveCost . toTarget
 
 data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
   deriving stock (Show, Eq, Ord, Data)
-
-displayCostType :: Cost -> Text
-displayCostType = \case
-  SpendTokenCost {} -> "Spend token"
-  ConcealedXCost -> "Concealed X"
-  XCost c -> "X " <> displayCostType c
-  OneOfDistanceCost _ c -> "X " <> displayCostType c
-  LabeledCost lbl _ -> lbl
-  FlipScarletKeyCost -> "Flip a Stable key you control to its Unstable side"
-  ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
-  RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
-  SpendKeyCost k -> "Spend " <> keyName k <> " Key"
-  SpendTokenKeyCost n tkn -> "Spend " <> tshow n <> " " <> tshow tkn <> " " <> pluralize n "Key"
-  PlaceKeyCost _ k -> "Place " <> keyName k <> " Key"
-  GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
-  CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
-  GroupClueCostX _ -> "X {perPlayer} clues as a group"
-  DiscoveredCluesCost -> "Spend discovered clues"
-  ChooseEnemyCost _ -> "Choose an enemy"
-  ChooseEnemyCostAndMaybeFieldClueCost _ _ -> "Choose an enemy and spend X clues"
-  ChooseEnemyCostAndMaybeGroupFieldClueCost {} -> "Investigators spend X clues"
-  ChooseExtendedCardCost _ -> "Choose a card that matches"
-  ChosenEnemyCost _ -> "Choose an enemy"
-  ChosenCardCost _ -> "Choose a card that matches"
-  ExhaustXAssetCost _ -> "Exhaust X copies"
-  EnemyAttackCost _ -> "The chosen enemy makes an attack against you"
-  UnpayableCost -> "Unpayable"
-  OptionalCost c -> "Optional: " <> displayCostType c
-  DrawEncounterCardsCost n -> "Draw " <> pluralize n "Encounter Card"
-  NonBlankedCost c -> displayCostType c
-  GloriaCost ->
-    "Discard an encounter card that shares a Trait with that encounter card from beneath Gloria Goldberg"
-  ArchiveOfConduitsUnidentifiedCost ->
-    "Place 1 resource on 4 different locations, as leylines."
-  CostWhenEnemy _ c -> displayCostType c
-  CostWhenTreachery _ c -> displayCostType c
-  CostWhenTreacheryElse _ _ c -> displayCostType c
-  CostOnlyWhen _ c -> displayCostType c
-  CostIfEnemy _ _ c -> displayCostType c
-  CostIfCustomization _ _ c -> displayCostType c
-  CostIfRemembered _ _ c -> displayCostType c
-  AsIfAtLocationCost _ c -> displayCostType c
-  ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
-  AddFrostTokenCost n -> "Add " <> tshow n <> " {frost} " <> pluralize n "token" <> "to the chaos bag"
-  AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"
-  AddCurseTokensCost n m -> "Add " <> tshow n <> "-" <> tshow m <> " {curse} tokens to the chaos bag"
-  AddCurseTokensEqualToShroudCost -> "Add {curse} tokens to the chaos bag equal to your location's shroud value"
-  AddCurseTokensEqualToSkillTestDifficulty -> "Add {curse} tokens to this test's difficulty"
-  ShuffleIntoDeckCost _ -> "Shuffle into deck"
-  ShuffleBondedCost n cCode -> case lookupCardDef cCode of
-    Just def ->
-      "You must search your bonded cards for "
-        <> pluralize n "copy"
-        <> " of "
-        <> toTitle def
-        <> " into your deck"
-    Nothing -> error "ShuffleBondedCost: impossible"
-  ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
-  ActionCost n -> pluralize n "Action"
-  UnlessFastActionCost n -> pluralize n "Action"
-  DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
-  DiscardTopOfDeckWithTargetCost _ n -> pluralize n "Card" <> " from the top of your deck"
-  DiscardAssetCost _ -> "Discard matching asset"
-  DiscardCombinedCost n ->
-    "Discard cards with a total combined cost of at least " <> tshow n
-  DiscardHandCost -> "Discard your entire hand"
-  ShuffleDiscardCost n _ ->
-    "Shuffle " <> pluralize n "matching card" <> " into your deck"
-  AdditionalActionCost -> "Additional Action"
-  AdditionalActionsCost -> "Additional Action"
-  AdditionalActionsCostThatReducesResourceCostBy _ _ -> "Additional Action"
-  AssetClueCost lbl _ gv -> case gv of
-    Static n -> pluralize n "Clue" <> " from " <> lbl
-    PerPlayer n -> pluralize n "Clue" <> " per Player from " <> lbl
-    StaticWithPerPlayer n m ->
-      tshow n <> " + " <> tshow m <> " Clues per Player from " <> lbl
-    ByPlayerCount a b c d ->
-      tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Clues for 1, 2, 3, or 4 players from "
-        <> lbl
-  ClueCost gv -> case gv of
-    Static n -> pluralize n "Clue"
-    PerPlayer n -> pluralize n "Clue" <> " per Player"
-    StaticWithPerPlayer n m ->
-      tshow n <> " + " <> tshow m <> " Clues per Player"
-    ByPlayerCount a b c d ->
-      tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Clues for 1, 2, 3, or 4 players"
-  ClueCostX -> "Spend X Clues"
-  SameLocationGroupClueCost gv _ -> case gv of
-    Static n -> pluralize n "Clue" <> " as a Group"
-    PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"
-    StaticWithPerPlayer n m ->
-      tshow n <> " + " <> tshow m <> " Clues per Player"
-    ByPlayerCount a b c d ->
-      tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Clues for 1, 2, 3, or 4 players"
-  GroupClueCost gv _ -> case gv of
-    Static n -> pluralize n "Clue" <> " as a Group"
-    PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"
-    StaticWithPerPlayer n m ->
-      tshow n <> " + " <> tshow m <> " Clues per Player"
-    ByPlayerCount a b c d ->
-      tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Clues for 1, 2, 3, or 4 players"
-  GroupResourceCost gv _ -> case gv of
-    Static n -> pluralize n "Resource" <> " as a Group"
-    PerPlayer n -> pluralize n "Resource" <> " per Player as a Group"
-    StaticWithPerPlayer n m ->
-      tshow n <> " + " <> tshow m <> " Resources per Player"
-    ByPlayerCount a b c d ->
-      tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Resources for 1, 2, 3, or 4 players"
-  GroupDiscardCost gv _ _ -> case gv of
-    Static n -> "Discard " <> pluralize n "Card" <> " as a Group"
-    PerPlayer n -> "Discard " <> pluralize n "Card" <> " per Player as a Group"
-    StaticWithPerPlayer n m ->
-      "Discard " <> tshow n <> " + " <> tshow m <> " Cards per Player"
-    ByPlayerCount a b c d ->
-      "Discard "
-        <> tshow a
-        <> ", "
-        <> tshow b
-        <> ", "
-        <> tshow c
-        <> ", or "
-        <> tshow d
-        <> " Cards for 1, 2, 3, or 4 players"
-  GroupClueCostRange (sVal, eVal) _ ->
-    tshow sVal <> "-" <> pluralize eVal "Clue" <> " as a Group"
-  PlaceClueOnLocationCost n ->
-    "Place " <> pluralize n "Clue" <> " on your location"
-  ExhaustCost _ -> "Exhaust"
-  ExhaustAssetCost _ -> "Exhaust matching asset"
-  RemoveCost _ -> "Remove from play"
-  RevealCost _ -> "Reveal this card"
-  Costs cs -> T.intercalate ", " $ map displayCostType cs
-  OrCost cs -> T.intercalate " or " $ map displayCostType cs
-  DamageCost _ _ n -> tshow n <> " Damage"
-  DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
-  DirectHorrorCost _ _ n -> tshow n <> " Direct Horror"
-  DirectDamageAndHorrorCost _ _ m n -> tshow m <> " Direct Damage and " <> tshow n <> " Direct Horror"
-  InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
-  EachInvestigatorDamageCost _ _ _ n -> "Each investigator takes " <> tshow n <> " Damage"
-  DiscardCost zone _ -> "Discard from " <> zoneLabel zone
-  DiscardCardCost _ -> "Discard Card"
-  DiscardUnderneathCardCost _ _ -> "Discard card beneath"
-  DiscardRandomCardCost -> "Discard Random Card"
-  DiscardFromCost n _ _ -> "Discard " <> tshow n
-  DiscardDrawnCardCost -> "Discard Drawn Card"
-  DoomCost _ _ n -> pluralize n "Doom"
-  EnemyDoomCost n _ -> "Place " <> pluralize n "Doom" <> " on a matching enemy"
-  ExileCost _ -> "Exile"
-  HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
-  HandDiscardAnyNumberCost _ -> "Discard any number of cards from you hand"
-  ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
-  ReturnAssetToHandCost {} -> "Return asset to hand"
-  ReturnEventToHandCost {} -> "Return event to hand"
-  SkillIconCost n _ -> tshow n <> " Matching Icons"
-  SkillIconCostMatching n _ _ -> tshow n <> " Matching Icons"
-  SkillTestCost _ sType n -> "Test {" <> tshow sType <> "}(" <> tshow n <> ")"
-  SameSkillIconCost n -> tshow n <> " instances of the same skill icon"
-  SameSkillIconCostMatching n _ -> tshow n <> " instances of the same skill icon"
-  HorrorCost _ _ n -> tshow n <> " Horror"
-  HorrorCostX _ -> "Take X Horror"
-  Free -> "Free"
-  ResourceCost n -> pluralize n "Resource"
-  ScenarioResourceCost n -> pluralize n "Resource from the scenario reference"
-  EventUseCost _ b c -> displayCostType (UseCost AnyAsset b c)
-  AllUsesCost _ uType -> case uType of
-    Offering -> "All Offerings"
-    _ -> "All Uses"
-  UseCost _ uType n -> pluralize n (T.pack $ splitCamelCase $ show uType)
-  DynamicUseCost _ uType _ -> "X " <> pluralize_ 0 (T.pack $ splitCamelCase $ show uType)
-  UseCostUpTo _ uType n m -> tshow n <> "-" <> tshow m <> " " <> pluralize_ 0 (T.pack $ splitCamelCase $ show uType)
-  UpTo (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
-  UpTo _ c -> displayCostType c <> " up to X times"
-  AtLeastOne (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
-  AtLeastOne _ c -> displayCostType c <> " up to X times"
-  SealCost chaosTokenMatcher -> "Seal " <> toDisplay chaosTokenMatcher
-  SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"
-  SealChaosTokenCost _ -> "Seal token"
-  ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"
-  ReleaseChaosTokensCost 1 _ -> "Release a chaos token sealed here"
-  ReleaseChaosTokensCost _ _ -> "Release chaos tokens sealed here"
-  ReturnChaosTokensToPoolCost n (IncludeSealed _) ->
-    "Search the chaos bag and/or cards in play for a total of "
-      <> tshow n
-      <> " matching tokens and return them to the token pool"
-  ReturnChaosTokensToPoolCost n _ ->
-    "Search the chaos bag for a total of "
-      <> tshow n
-      <> " matching tokens and return them to the token pool"
-  ReturnChaosTokenToPoolCost token ->
-    "Return " <> format token <> " to the token pool"
-  FieldResourceCost {} -> "X"
-  MaybeFieldResourceCost {} -> "X"
-  CalculatedResourceCost {} -> "X"
-  CalculatedHandDiscardCost {} -> "X"
-  SupplyCost _ supply ->
-    "An investigator crosses off " <> tshow supply <> " from their supplies"
-  IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
 
 instance Semigroup Cost where
   OrCost cs <> OrCost ys = OrCost [c <> y | c <- cs, y <- ys]

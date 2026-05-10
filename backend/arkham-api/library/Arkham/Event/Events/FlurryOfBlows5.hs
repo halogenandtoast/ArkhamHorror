@@ -3,6 +3,7 @@ module Arkham.Event.Events.FlurryOfBlows5 (flurryOfBlows5) where
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -25,9 +26,9 @@ instance RunMessage FlurryOfBlows5 where
         <> #melee
         <> AssetWithPerformableAbility #fight [IgnoreActionCost]
       when (n - 1 > 0) do
-        chooseOneM iid do
-          labeled "Repeat this effect (Flurry of Blows)" $ doStep (n - 1) msg'
-          labeled "Done" nothing
+        chooseOneM iid $ cardI18n $ scope "flurryOfBlows5" do
+          labeled' "repeatEffect" $ doStep (n - 1) msg'
+          labeledI "done" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       abilities <-

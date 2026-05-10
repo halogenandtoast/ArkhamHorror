@@ -50,6 +50,6 @@ instance RunMessage Zeal where
           for_ catsInDiscard \card -> cardLabeled card do
             shuffleCardsIntoDeck iid (only zealCard)
             putCardIntoPlay iid card
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure a
     _ -> Zeal <$> liftRunMessage msg attrs

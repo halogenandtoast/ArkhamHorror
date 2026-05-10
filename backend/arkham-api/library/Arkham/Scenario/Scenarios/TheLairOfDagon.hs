@@ -156,7 +156,7 @@ instance RunMessage TheLairOfDagon where
           investigators <- getInvestigators
           thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
           leadChooseOneM do
-            questionLabeled "Choose investigator to take control of Thomas Dawson"
+            questionLabeled' "takeControlOfThomasDawson"
             questionLabeledCard Assets.thomasDawsonSoldierInANewWar
             portraits investigators (`takeControlOfAsset` thomasDawson)
         else setAside [Assets.thomasDawsonSoldierInANewWar]
@@ -207,9 +207,9 @@ instance RunMessage TheLairOfDagon where
           recordWhen gateKeeperDefeated TheGatekeeperHasBeenDefeated
           storyWithChooseOne
             (i18nWithTitle "resolution1")
-            [ Label "Tell Oceiros nothing" [R2]
-            , Label "Lie to Oceiros" [R3]
-            , Label "Tell Oceiros everything" [R4]
+            [ Label "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosNothing" [R2]
+            , Label "$theInnsmouthConspiracy.theLairOfDagon.label.lieToOceiros" [R3]
+            , Label "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosEverything" [R4]
             ]
         Resolution 2 -> do
           story $ i18nWithTitle "resolution2"

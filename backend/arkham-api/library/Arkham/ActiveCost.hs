@@ -260,7 +260,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           _ -> pure Nothing
       mVal <- fromMaybe 100 <$> go inner
       push
-        $ questionLabel "Spend X" player
+        $ questionLabel "$label.spendX" player
         $ DropDown
           [ (tshow n, pay (mconcat $ replicate n inner))
           | n <- [1 .. mVal]
@@ -442,11 +442,11 @@ payCost msg c iid skipAdditionalCosts cost = do
       xs' <- filterM (getCanAffordCost_ iid c.source actions c.windows c.canModify) xs
       push
         $ chooseOrRunOne player
-        $ map (\x -> Label (displayCostType x) [pay x]) xs'
+        $ map (\x -> CostLabel x [pay x]) xs'
       pure c
     OptionalCost x -> do
       canAfford <- getCanAffordCost iid c.source actions [] x
-      pushWhen canAfford $ chooseOne player [Label (displayCostType x) [pay x], Label "Do not pay" []]
+      pushWhen canAfford $ chooseOne player [CostLabel x [pay x], Label "$label.doNotPay" []]
       pure c
     Costs xs -> do
       pushAll $ map pay xs
@@ -467,8 +467,9 @@ payCost msg c iid skipAdditionalCosts cost = do
           choiceId <- getRandom
           pushWhen canAfford
             $ Ask player
+            $ PayCostQuestion cost
             $ ChoosePaymentAmounts
-              ("Pay " <> displayCostType cost)
+              ""
               Nothing
               [PaymentAmountChoice choiceId iid 0 maxUpTo name $ pay cost']
           pure c
@@ -488,8 +489,9 @@ payCost msg c iid skipAdditionalCosts cost = do
           choiceId <- getRandom
           pushWhen canAfford
             $ Ask player
+            $ PayCostQuestion cost
             $ ChoosePaymentAmounts
-              ("Pay " <> displayCostType cost)
+              ""
               Nothing
               [PaymentAmountChoice choiceId iid 1 maxUpTo name $ pay cost']
           pure c
@@ -858,7 +860,7 @@ payCost msg c iid skipAdditionalCosts cost = do
 
       push
         $ Ask player
-        $ QuestionLabel ("Pay " <> displayCostType cost) Nothing
+        $ PayCostQuestion cost
         $ DropDown
           [ (tshow x, pay (AddCurseTokenCost x))
           | x <- [n .. maxTokens]
@@ -935,7 +937,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                   rs2 <- getRandoms
                   push
                     $ Ask player
-                    $ ChoosePaymentAmounts ("Pay " <> tshow x <> " resources") (Just $ TotalAmountTarget x)
+                    $ PayCostQuestion (ResourceCost x)
+                    $ ChoosePaymentAmounts "" (Just $ TotalAmountTarget x)
                     $ map
                       ( \(choiceId, (iid', name, resources)) -> PaymentAmountChoice choiceId iid' 0 resources name (SpendResources iid' 1)
                       )
@@ -1103,8 +1106,9 @@ payCost msg c iid skipAdditionalCosts cost = do
 
       push
         $ Ask player
+        $ PayCostQuestion cost
         $ ChoosePaymentAmounts
-          ("Pay " <> displayCostType cost)
+          ""
           Nothing
           [ PaymentAmountChoice choiceId iid n maxUses name
               $ pay (UseCost assetMatcher uType 1)
@@ -1252,7 +1256,8 @@ payCost msg c iid skipAdditionalCosts cost = do
               lead <- getLeadPlayer
               push
                 $ Ask lead
-                $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalResources) paymentOptions
+                $ PayCostQuestion cost
+                $ ChoosePaymentAmounts "" (Just $ TotalAmountTarget totalResources) paymentOptions
       pure c
     GroupDiscardCost x extendedCardMatcher locationMatcher -> do
       totalCards <- getPlayerCountValue x
@@ -1284,7 +1289,8 @@ payCost msg c iid skipAdditionalCosts cost = do
               lead <- getLeadPlayer
               push
                 $ Ask lead
-                $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalCards) paymentOptions
+                $ PayCostQuestion cost
+                $ ChoosePaymentAmounts "" (Just $ TotalAmountTarget totalCards) paymentOptions
       pure c
     HandDiscardCost x extendedCardMatcher -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid

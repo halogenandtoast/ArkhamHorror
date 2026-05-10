@@ -86,22 +86,22 @@ instance RunMessage IntoTheMaelstrom where
       investigators <- allInvestigators
       when possessTheKey do
         chooseOneM lead do
-          questionLabeled "Choose an investigator to take control of the blue key"
+          withI18n $ keyVar "color" "blue" $ questionLabeled' "chooseInvestigatorForKey"
           targets investigators (`placeKey` BlueKey)
 
       when possessAMap do
         chooseOneM lead do
-          questionLabeled "Choose an investigator to take control of the red key"
+          withI18n $ keyVar "color" "red" $ questionLabeled' "chooseInvestigatorForKey"
           targets investigators (`placeKey` RedKey)
 
       when guardianDispatched do
         chooseOneM lead do
-          questionLabeled "Choose an investigator to take control of the green key"
+          withI18n $ keyVar "color" "green" $ questionLabeled' "chooseInvestigatorForKey"
           targets investigators (`placeKey` GreenKey)
 
       when recognized do
         chooseOneM lead do
-          questionLabeled "Choose an investigator to take control of the yellow key"
+          withI18n $ keyVar "color" "yellow" $ questionLabeled' "chooseInvestigatorForKey"
           targets investigators (`placeKey` YellowKey)
 
       let
@@ -155,8 +155,8 @@ instance RunMessage IntoTheMaelstrom where
               canIncrease <- lid <=~> CanHaveFloodLevelIncreased
               chooseOrRunOneM iid do
                 when canIncrease do
-                  labeled "Increase the flood level of your location" $ increaseThisFloodLevel lid
-                labeled "Take 1 damage" $ assignDamage iid Tablet 1
+                  labeledI "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel lid
+                withI18n $ countVar 1 $ labeledI "takeDamage" $ assignDamage iid Tablet 1
         ElderThing -> do
           withLocationOf iid \lid -> do
             whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1

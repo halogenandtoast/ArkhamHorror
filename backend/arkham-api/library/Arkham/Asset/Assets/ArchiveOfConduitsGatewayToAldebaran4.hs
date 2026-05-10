@@ -51,8 +51,8 @@ instance RunMessage ArchiveOfConduitsGatewayToAldebaran4 where
           disengageEnemy iid' enemy
           chooseOrRunOneM iid $ targets connectedLocations $ moveTo (attrs.ability 2) iid'
           chooseOneM iid do
-            labeled "Do not remove Leyline" nothing
-            labeled "Remove Leyline" do
+            labeledI "doNotRemoveLeyline" nothing
+            labeledI "removeLeyline" do
               removeTokens (attrs.ability 2) (toTarget enemy) Token.Leyline 1
               automaticallyEvadeEnemy iid enemy
 

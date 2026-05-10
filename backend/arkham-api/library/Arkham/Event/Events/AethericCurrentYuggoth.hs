@@ -9,6 +9,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Token
@@ -40,12 +41,12 @@ instance RunMessage AethericCurrentYuggoth where
           isNonElite <- eid <=~> NonEliteEnemy
           when isNonElite do
             locations <- select $ oneOf [LocationCanBeEnteredBy eid, locationWithEnemy eid]
-            chooseOneM iid do
-              labeled "Exhaust Enemy and move it" do
+            chooseOneM iid $ cardI18n $ scope "aethericCurrentYuggoth" do
+              labeled' "exhaustEnemyAndMove" do
                 exhaustWith attrs eid
                 chooseOneM iid do
                   for_ locations \lid -> targeting lid $ push $ EnemyMove eid lid
-              labeled "Do not exhaust enemy" nothing
+              labeled' "doNotExhaustEnemy" nothing
         _ -> pure ()
       pure e
     _ -> AethericCurrentYuggoth <$> liftRunMessage msg attrs

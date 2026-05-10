@@ -43,5 +43,9 @@
       "tablet": "-4. If you are not in a vehicle, take 1 damage.",
       "elderThing": "-5. If your location has a key on it, take 1 horror."
     }
+  },
+  "label": {
+    "shuffleThomasDawsonInto": "Choose an investigator to shuffle Thomas Dawson into",
+    "addThomasDawsonToHand": "Choose an investigator to add Thomas Dawson into their hand"
   }
 }

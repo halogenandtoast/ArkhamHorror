@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
+import Arkham.I18n (cardNameVar, withI18n)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
@@ -167,9 +168,9 @@ instance RunMessage UndimensionedAndUnseen where
       eachInvestigator \iid -> do
         mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
         for_ mcard $ \card -> do
-          chooseOneM iid do
-            labeled "Play Powder of Ibn-Ghazi" $ putCardIntoPlay iid card
-            labeled "Do no play Powder of Ibn-Ghazi" nothing
+          chooseOneM iid $ withI18n $ cardNameVar card do
+            labeled' "playName" $ putCardIntoPlay iid card
+            labeled' "doNotPlayName" nothing
         unlessStandalone do
           searchCollectionForRandom iid attrs
             $ BasicWeaknessCard
@@ -185,9 +186,9 @@ instance RunMessage UndimensionedAndUnseen where
       chooseOrRunOneM iid do
         if isHardExpert attrs
           then do
-            labeled "Do not remove clues from Brood of Yog-Sothoth and fail skill test" failSkillTest
+            labeled' "doNotRemoveCluesFail" failSkillTest
           else do
-            labeled "Do not remove clues from Brood of Yog-Sothoth and treat as -4" do
+            labeled' "doNotRemoveCluesTreatAsMinusFour" do
               withSkillTest \sid -> skillTestModifier sid Tablet drawnToken (ChangeChaosTokenModifier $ NegativeModifier 4)
 
         targets broodOfYogSothoth (removeAllClues Tablet)

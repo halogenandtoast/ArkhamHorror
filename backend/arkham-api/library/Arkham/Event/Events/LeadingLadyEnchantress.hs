@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Playable
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -28,9 +29,9 @@ instance RunMessage LeadingLadyEnchantress where
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       anyDoom <- select $ TargetControlledBy (affectsColocated iid) <> TargetWithDoom
       chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        unless (null anyDoom) $ labeled "Remove 1 doom from a player card at your location" do
+        withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
+        unless (null anyDoom) $ labeledI "removeDoomFromPlayerCard" do
           chooseTargetM iid anyDoom $ removeDoomFrom attrs 1
-        labeled "Do nothing" nothing
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyEnchantress <$> liftRunMessage msg attrs

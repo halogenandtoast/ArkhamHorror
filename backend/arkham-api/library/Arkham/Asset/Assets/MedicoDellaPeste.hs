@@ -60,11 +60,11 @@ instance RunMessage MedicoDellaPeste where
       push
         $ chooseOrRunOne player
         $ [ Label
-            "Heal 1 damage"
+            "$label.healDamage count=i:1"
             [HealDamage (InvestigatorTarget iid) (attrs.ability 1) 1]
           | hasDamage
           ]
-        <> [ Label "Heal 1 horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
+        <> [ Label "$label.healHorror count=i:1" [HealHorror (toTarget iid) (attrs.ability 1) 1]
            | hasHorror
            ]
       pure a

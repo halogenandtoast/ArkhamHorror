@@ -63,8 +63,8 @@ instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) _ -> do
       chooseOne
         iid
-        [ Label "Remove Leyline" [DoStep 2 msg]
-        , Label "Do not remove Leyline" [DoStep 1 msg]
+        [ Label "$label.removeLeyline" [DoStep 2 msg]
+        , Label "$label.doNotRemoveLeyline" [DoStep 1 msg]
         ]
       pure a
     DoStep n (HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid')) -> do

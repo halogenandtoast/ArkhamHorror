@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Location (getConnectedMoveLocations)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -26,10 +27,10 @@ instance RunMessage TheRedClockBrokenButReliable5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let charges = attrs.use Charge
       when (charges > 0) do
-        chooseOrRunOneM iid do
-          labeled "Take all charges here as resources"
+        chooseOrRunOneM iid $ cardI18n $ scope "theRedClockBrokenButReliable5" do
+          labeled' "takeChargesAsResources"
             $ moveTokens (attrs.ability 1) attrs (ResourceTarget iid) Charge charges
-          labeled "Leave charges" nothing
+          labeled' "leaveCharges" nothing
 
       addUses (attrs.ability 1) attrs.id Charge 1
       do_ msg
@@ -44,7 +45,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       locations <- getConnectedMoveLocations iid (attrs.ability 1)
       chooseOrRunOneM iid do
-        labeled "Do not move" nothing
+        labeledI "doNotMove" nothing
         targets locations \location -> do
           moveTo attrs iid location
           doStep (n - 1) msg'

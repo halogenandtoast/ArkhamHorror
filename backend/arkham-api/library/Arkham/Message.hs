@@ -1594,6 +1594,7 @@ defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
 uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs
+  CostLabel _ msgs -> Run msgs
   InvalidLabel {} -> error "InvalidLabel in uiToRun"
   Info {} -> error "Info in uiToRun"
   TooltipLabel _ _ msgs -> Run msgs

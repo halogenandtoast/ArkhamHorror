@@ -47,7 +47,7 @@ instance RunMessage TetsuoMori where
       discardWithItem <- fieldP InvestigatorDiscard (any (`cardMatch` CardWithTrait Item)) iid'
       chooseOrRunOneM iid' do
         when discardWithItem do
-          labeled "Search Discard" $ search iid' source iid' [fromDiscard] #item (DrawFound iid' 1)
-        labeled "Search Deck" $ search iid' source iid' [fromTopOfDeck 9] #item (DrawFound iid' 1)
+          labeledI "searchDiscard" $ search iid' source iid' [fromDiscard] #item (DrawFound iid' 1)
+        labeledI "searchDeck" $ search iid' source iid' [fromTopOfDeck 9] #item (DrawFound iid' 1)
       pure a
     _ -> TetsuoMori <$> liftRunMessage msg attrs

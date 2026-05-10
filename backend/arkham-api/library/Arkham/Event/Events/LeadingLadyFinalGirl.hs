@@ -7,6 +7,7 @@ import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Playable
+import Arkham.I18n
 import Arkham.Modifier
 
 newtype LeadingLadyFinalGirl = LeadingLadyFinalGirl EventAttrs
@@ -28,10 +29,10 @@ instance RunMessage LeadingLadyFinalGirl where
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       canHealDamage <- canHaveDamageHealed attrs iid
       canHealHorror <- canHaveHorrorHealed attrs iid
-      chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        when canHealDamage $ labeled "Heal 1 damage" $ healDamage attrs iid 1
-        when canHealHorror $ labeled "Heal 1 horror" $ healHorror attrs iid 1
-        labeled "Do nothing" nothing
+      chooseOneM iid $ withI18n $ countVar 1 do
+        labeledI "drawCards" $ drawCards iid attrs 1
+        when canHealDamage $ labeledI "healDamage" $ healDamage attrs iid 1
+        when canHealHorror $ labeledI "healHorror" $ healHorror attrs iid 1
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyFinalGirl <$> liftRunMessage msg attrs

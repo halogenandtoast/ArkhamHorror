@@ -38,7 +38,7 @@ instance RunMessage VantagePoint where
       pushAll
         $ enabled
         : [ chooseOne player
-            $ Label "Do not move a clue" []
+            $ Label "$label.doNotMoveClue" []
             : [ targetLabel
                 lid'
                 [ RemoveClues (toSource attrs) (LocationTarget lid') 1

@@ -23,6 +23,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
+import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -158,7 +159,7 @@ defaultCampaignRunner msg a = case msg of
             Nothing -> do
               pid <- getPlayer iid
               let cards = nub $ map toCardCode $ filterCards (card_ $ #asset <> #spell) (unDeck deck)
-              pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+              pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" Nothing $ ChooseOne $ flip map cards \c ->
                 CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
             Just _ -> pure Nothing
         else pure Nothing
@@ -188,8 +189,8 @@ defaultCampaignRunner msg a = case msg of
                   Just
                     $ chooseOne
                       pid
-                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
-                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      [ Label (withI18n $ countVar 1 $ ikey' "label.healPhysicalTrauma") [HealTrauma iid 1 0]
+                      , Label (withI18n $ countVar 1 $ ikey' "label.healMentalTrauma") [HealTrauma iid 0 1]
                       ]
               | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
               | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
@@ -220,7 +221,7 @@ defaultCampaignRunner msg a = case msg of
             Nothing -> do
               pid <- getPlayer iid
               let cards = nub $ map toCardCode $ filterCards (card_ #spell) (unDeck deck)
-              pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+              pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" Nothing $ ChooseOne $ flip map cards \c ->
                 CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
             Just _ -> pure Nothing
         else pure Nothing
@@ -259,8 +260,8 @@ defaultCampaignRunner msg a = case msg of
                   Just
                     $ chooseOne
                       pid
-                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
-                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      [ Label (withI18n $ countVar 1 $ ikey' "label.healPhysicalTrauma") [HealTrauma iid 1 0]
+                      , Label (withI18n $ countVar 1 $ ikey' "label.healMentalTrauma") [HealTrauma iid 0 1]
                       ]
               | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
               | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1

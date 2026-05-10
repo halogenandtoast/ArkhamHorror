@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Message.Lifted.Choose
@@ -21,7 +22,9 @@ joeyTheRatVigil3 = ally JoeyTheRatVigil3 Cards.joeyTheRatVigil3 (3, 2)
 
 instance HasAbilities JoeyTheRatVigil3 where
   getAbilities (JoeyTheRatVigil3 x) =
-    [ withTooltip "Spend 1 resource: Choose an _Item_ asset from your hand and play it (paying its cost)."
+    [ cardI18n
+        $ scope "joeyTheRatVigil3"
+        $ withI18nTooltip "spendForItem"
         $ controlledAbility
           x
           1
@@ -30,7 +33,9 @@ instance HasAbilities JoeyTheRatVigil3 where
               (InHandOf ForPlay You <> #item)
           )
           (FastAbility $ ResourceCost 1)
-    , withTooltip "Discard an _Item_ asset from play: Gain 2 resources."
+    , cardI18n
+        $ scope "joeyTheRatVigil3"
+        $ withI18nTooltip "discardForResources"
         $ controlledAbility x 2 (can.gain.resources You)
         $ FastAbility
         $ DiscardAssetCost #item

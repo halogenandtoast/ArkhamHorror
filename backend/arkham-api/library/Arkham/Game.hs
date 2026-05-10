@@ -6011,7 +6011,7 @@ runMessages gameId mLogger = do
                     else do
                       player <- runWithEnv $ getPlayer (g ^. leadInvestigatorIdL)
                       push
-                        $ questionLabel "Choose player to take turn" player
+                        $ questionLabel "$label.choosePlayerToTakeTurn" player
                         $ ChooseOne
                           [ PortraitLabel iid [ChoosePlayer iid SetTurnPlayer]
                           | iid <- xs

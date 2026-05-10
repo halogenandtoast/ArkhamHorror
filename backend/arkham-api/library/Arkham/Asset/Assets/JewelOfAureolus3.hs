@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Capability
 import Arkham.ChaosToken
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
@@ -37,8 +38,8 @@ instance RunMessage JewelOfAureolus3 where
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
       chooseOneM iid do
         whenM (can.draw.cards iid) do
-          labeled "Draw 1 Card" $ drawCards iid (attrs.ability 1) 1
+          withI18n $ countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          labeled "Take 2 Resources" $ gainResources iid (attrs.ability 1) 2
+          withI18n $ countVar 2 $ labeled' "takeResources" $ gainResources iid (attrs.ability 1) 2
       pure a
     _ -> JewelOfAureolus3 <$> liftRunMessage msg attrs

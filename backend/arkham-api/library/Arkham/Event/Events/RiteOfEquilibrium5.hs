@@ -52,8 +52,8 @@ instance RunMessage RiteOfEquilibrium5 where
 
       chooseOrRunOne iid
         $ [ Label
-            "Add X {curse} tokens to the chaos bag to add X {bless} tokens to the chaos bag."
-            [ Msg.questionLabel "Choose X" player
+            "$cards.label.riteOfEquilibrium5.addCurseToAddBless"
+            [ Msg.questionLabel "$label.chooseX" player
                 $ DropDown
                   [ (tshow x, msg')
                   | (x, msg') <- choices
@@ -62,8 +62,8 @@ instance RunMessage RiteOfEquilibrium5 where
           | x1 > 0
           ]
         <> [ Label
-            "Remove X {curse} and X {bless} tokens from the chaos bag to heal X total horror from among cards at your location."
-            [ Msg.questionLabel "Choose X" player
+            "$cards.label.riteOfEquilibrium5.removeBlessAndCurseToHeal"
+            [ Msg.questionLabel "$label.chooseX" player
                 $ DropDown
                   [ ( tshow x
                     , Run

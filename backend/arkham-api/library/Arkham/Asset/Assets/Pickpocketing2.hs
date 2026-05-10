@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Pickpocketing2 (pickpocketing2) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -32,8 +33,8 @@ instance RunMessage Pickpocketing2 where
         then do
           drawCards iid (attrs.ability 1) 1
           gainResources iid (attrs.ability 1) 1
-        else chooseOneM iid do
-          labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
-          labeled "Gain 1 resource" $ gainResources iid (attrs.ability 1) 1
+        else chooseOneM iid $ withI18n $ countVar 1 do
+          labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+          labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
       pure a
     _ -> Pickpocketing2 <$> liftRunMessage msg attrs

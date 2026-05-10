@@ -37,8 +37,8 @@ instance RunMessage SecondSight where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       when (attrs.use #charge > 0) do
         withSkillTest \sid ->
-          chooseOneM iid do
-            labeled "Spend 1 charge to discover 1 additional clue" do
+          chooseOneM iid $ cardI18n $ scope "secondSight" do
+            labeled' "spendChargeForClue" do
               removeTokens (attrs.ability 1) attrs Charge 1
               skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
             withI18n skip_

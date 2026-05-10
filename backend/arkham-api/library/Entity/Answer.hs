@@ -388,6 +388,16 @@ handleAnswerPure Game {..} playerId = \case
     case parQuestionVersion response of
       Just v | v /= gameScenarioSteps -> unhandled "Stale question"
       _ -> case Map.lookup playerId gameQuestion of
+        Just (PayCostQuestion _ (ChoosePaymentAmounts _ _ info)) -> do
+          let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
+          let
+            combinePaymentAmounts n = \case
+              PayCost acId iid skip (UseCost aMatcher uType m) -> [PayCost acId iid skip (UseCost aMatcher uType (n * m))]
+              PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
+              PayCost acId iid skip other -> [PayCost acId iid skip (fold $ replicate n other)]
+              payMsg -> replicate n payMsg
+          let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
+          handled $ concatMap handleCost $ Map.toList (parAmounts response)
         Just (ChoosePaymentAmounts _ _ info) -> do
           let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
           let
@@ -431,6 +441,7 @@ handleAnswerPure Game {..} playerId = \case
     -> [Message]
   go f q response = case q of
     QuestionLabel lbl mCard q' -> go (QuestionLabel lbl mCard) q' response
+    PayCostQuestion cost q' -> go (PayCostQuestion cost) q' response
     Read t (BasicReadChoices qs) mcs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ Read t (BasicReadChoices qs) mcs]
       Just msg -> [uiToRun msg]

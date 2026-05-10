@@ -28,10 +28,10 @@ instance RunMessage SpectralRazor where
         (True, []) -> doStep 1 msg
         (True, _ : _) -> do
           chooseOneM iid do
-            labeled "Engage an enemy first" do
+            labeledI "engageEnemyFirst" do
               push $ chooseEngageEnemy iid attrs
               doStep 1 msg
-            labeled "Do not engage an enemy" $ doStep 1 msg
+            labeledI "doNotEngageEnemy" $ doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       sid <- getRandom

@@ -17,6 +17,7 @@ import Arkham.Helpers.Modifiers hiding (roundModifier, skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -131,8 +132,8 @@ instance RunMessage TheSearchForKadath where
       pure s
     DoStep 5 PreScenarioSetup -> do
       storyWithChooseOneM intro5 do
-        labeled "Leave empty-handed" $ doStep 7 PreScenarioSetup
-        labeled "Force your way into the temple." $ doStep 8 PreScenarioSetup
+        labeled "$theDreamEaters.theSearchForKadath.label.leaveEmptyHanded" $ doStep 7 PreScenarioSetup
+        labeled "$theDreamEaters.theSearchForKadath.label.forceIntoTemple" $ doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
       story intro6
@@ -224,9 +225,9 @@ instance RunMessage TheSearchForKadath where
           LocationTarget lid <- MaybeT getSkillTestTarget
           lift $ roundModifier Cultist lid (ShroudModifier $ if isEasyStandard attrs then 1 else 2)
         Tablet -> do
-          chooseOneM iid do
-            labeled "Take 1 damage and 1 horror" $ assignDamageAndHorror iid Tablet 1 1
-            labeled "Place 1 doom on the current agenda" $ placeDoomOnAgenda 1
+          chooseOneM iid $ withI18n do
+            numberVar "damage" 1 $ numberVar "horror" 1 $ labeled' "takeDamageAndHorror" $ assignDamageAndHorror iid Tablet 1 1
+            countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -246,7 +247,7 @@ instance RunMessage TheSearchForKadath where
           [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
           _ ->
             [ Ask lead
-                $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
+                $ QuestionLabel "$theDreamEaters.theSearchForKadath.label.placeNightgaunt" Nothing
                 $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
             | t <- tenebrousNightgaunts
             ]

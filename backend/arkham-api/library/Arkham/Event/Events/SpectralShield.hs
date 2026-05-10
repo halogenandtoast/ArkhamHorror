@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Healing
 import Arkham.Helpers.Window (getDamageOrHorrorSource, getTotalDamageAmounts)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Taboo
@@ -50,9 +51,9 @@ instance RunMessage SpectralShield where
         AttachedToInvestigator iid -> do
           (damage, horror) <- getDamageAmounts iid
           if
-            | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelDamage iid 1
-                labeled "Cancel 1 Horror" $ push $ CancelHorror iid 1
+            | damage > 0 && horror > 0 -> chooseOneM iid $ withI18n $ countVar 1 do
+                labeledI "cancelDamage" $ push $ CancelDamage iid 1
+                labeledI "cancelHorror" $ push $ CancelHorror iid 1
             | damage > 0 -> push $ CancelDamage iid 1
             | horror > 0 -> push $ CancelHorror iid 1
             | otherwise -> pure ()
@@ -60,9 +61,9 @@ instance RunMessage SpectralShield where
           let (damage, horror) = findWithDefault (0, 0) dSource (getTotalDamageAmounts aid ws)
           iid <- fromMaybe iid' <$> field AssetOwner aid
           if
-            | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelAssetDamage aid dSource 1
-                labeled "Cancel 1 Horror" $ push $ CancelAssetHorror aid dSource 1
+            | damage > 0 && horror > 0 -> chooseOneM iid $ withI18n $ countVar 1 do
+                labeledI "cancelDamage" $ push $ CancelAssetDamage aid dSource 1
+                labeledI "cancelHorror" $ push $ CancelAssetHorror aid dSource 1
             | damage > 0 -> push $ CancelAssetDamage aid dSource 1
             | horror > 0 -> push $ CancelAssetHorror aid dSource 1
             | otherwise -> pure ()

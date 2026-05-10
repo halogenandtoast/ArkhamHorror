@@ -36,8 +36,8 @@ instance RunMessage EnchantedBladeGuardian3 where
       pushWhen (findWithDefault 0 Charge (assetUses attrs) > 0)
         $ chooseOne
           player
-          [ Label "Spend 1 use to empower" [DoStep 1 (SpendUses (attrs.ability 1) (toTarget attrs) Charge 1)]
-          , Label "Do not spend use" []
+          [ Label "$label.spendUseToEmpower" [DoStep 1 (SpendUses (attrs.ability 1) (toTarget attrs) Charge 1)]
+          , Label "$label.doNotSpendUse" []
           ]
       pure a
     DoStep 1 msg'@(SpendUses _ (isTarget attrs -> True) _ _) -> do

@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Action
 import Arkham.Strategy
@@ -27,8 +28,8 @@ instance RunMessage Flare1 where
       fightableEnemies <- getFightableEnemyIds iid attrs
       chooseOrRunOneM iid do
         when (notNull fightableEnemies) do
-          labeled "Fight" $ doStep 1 msg
-        labeled "Search for Ally" $ doStep 2 msg
+          labeledI "fight" $ doStep 1 msg
+        cardI18n $ scope "flare1" $ labeled' "searchForAlly" $ doStep 2 msg
       pure e
     DoStep n (CardEnteredPlay _iid (isCard attrs -> True)) -> do
       pure $ Flare1 $ setMeta n attrs

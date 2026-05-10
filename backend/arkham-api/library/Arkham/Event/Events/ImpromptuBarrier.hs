@@ -39,9 +39,9 @@ instance RunMessage ImpromptuBarrier where
             <> not_ (be enemyId)
             <> at_ (LocationWithId loc)
         chooseOrRunOneM iid do
-          questionLabeled "Evade another enemy"
+          questionLabeled "$label.evadeAnotherEnemy"
           questionLabeledCard attrs
-          labeled "Do not evade another enemy" nothing
+          labeledI "doNotEvadeAnotherEnemy" nothing
           targets enemies (automaticallyEvadeEnemy iid)
 
       pure e

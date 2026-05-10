@@ -14,6 +14,7 @@ import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -245,17 +246,17 @@ instance RunMessage BeyondTheGatesOfSleep where
       newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount
       focusCards cards do
         chooseOneM iid do
-          questionLabeled "Replace basic weakness with random and take 1 trauma of your choice?"
-          labeled "Do not replace" unfocusCards
+          questionLabeled "$theDreamEaters.beyondTheGatesOfSleep.label.replaceWeaknessQuestion"
+          labeled "$theDreamEaters.beyondTheGatesOfSleep.label.doNotReplace" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
             obtainCard card
             removeCardFromDeckForCampaign iid card
             shuffleCardsIntoDeck iid [newWeakness]
-            chooseOneM iid do
-              labeled "Take 1 Physical trauma" $ sufferPhysicalTrauma iid 1
-              labeled "Take 1 Mental trauma" $ sufferMentalTrauma iid 1
+            chooseOneM iid $ withI18n $ countVar 1 do
+              labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+              labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
       pure s
     SearchFound _ (LabeledTarget "Veteran" ScenarioTarget) _ _ -> do
       doStep 2 msg
@@ -263,11 +264,8 @@ instance RunMessage BeyondTheGatesOfSleep where
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          questionLabeled
-            $ "Choose up to "
-            <> tshow n
-            <> " Tactic and/or Supply cards and begin this scenario with them as additional cards in your opening hand."
-          labeled "Do not take any" unfocusCards
+          questionLabeled (withI18n $ countVar n $ ikey' "theDreamEaters.beyondTheGatesOfSleep.label.chooseUpToTacticSupply")
+          labeled "$theDreamEaters.beyondTheGatesOfSleep.label.doNotTakeAny" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)

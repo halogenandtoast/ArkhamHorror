@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -30,20 +31,18 @@ instance RunMessage SilassNet where
       when (Just iid == miid) do
         skills <- select $ skillOwnedBy iid
         chooseOneM iid do
-          labeled
-            "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them"
-            do
-              returnToHand iid attrs
-              for_ skills (returnToHand iid)
-          labeled "Do nothing" nothing
+          cardI18n $ scope "silassNet" $ labeled' "returnNetWithSkills" do
+            returnToHand iid attrs
+            for_ skills (returnToHand iid)
+          labeledI "doNothing" nothing
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTargetedEnemy >>= traverse_ \eid -> do
         otherEnemies <- select $ enemyEngagedWith iid <> not_ (EnemyWithId eid)
         when (notNull otherEnemies) do
           chooseOneM iid do
-            labeled "Automatically evade another enemy" do
+            labeledI "automaticallyEvadeAnotherEnemy" do
               chooseOrRunOneM iid $ targets otherEnemies (automaticallyEvadeEnemy iid)
-            labeled "Do not evade another enemy" nothing
+            labeledI "doNotEvadeAnotherEnemy" nothing
       pure a
     _ -> SilassNet <$> liftRunMessage msg attrs

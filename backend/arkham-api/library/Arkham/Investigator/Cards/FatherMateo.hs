@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.FatherMateo (fatherMateo) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Helpers.Window (getRevealedChaosTokens)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -44,11 +45,11 @@ instance RunMessage FatherMateo where
       canGainResources <- can.gain.resources iid
       chooseOrRunOneM iid do
         when (canDraw || canGainResources) do
-          labeled "Draw 1 card and gain 1 resource" do
+          cardI18n $ scope "fatherMateo" $ labeled' "drawAndGain" do
             drawCardsIfCan iid ElderSign 1
             gainResourcesIfCan iid ElderSign 1
         when isTurn do
-          labeled "Take an additional action this turn" $ gainActions iid ElderSign 1
+          labeledI "takeAdditionalActionThisTurn" $ gainActions iid ElderSign 1
       pure i
     UseCardAbility _ (isSource attrs -> True) 1 (getRevealedChaosTokens -> [token]) _ -> do
       chaosTokenEffect (attrs.ability 1) token (ChaosTokenFaceModifier [ElderSign])

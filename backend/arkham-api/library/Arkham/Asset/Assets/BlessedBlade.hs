@@ -40,9 +40,9 @@ instance RunMessage BlessedBlade where
           $ chooseOne
             st.investigator
             [ Label
-                "Exhaust Blessed Blade to add 1 {bless} token"
+                "$cards.label.blessedBlade.exhaustToAddBless"
                 [Exhaust (mkExhaustion attrs attrs), AddChaosToken #bless]
-            , Label "Do not exhaust" []
+            , Label "$label.doNotExhaust" []
             ]
       pure a
     _ -> BlessedBlade <$> liftRunMessage msg attrs

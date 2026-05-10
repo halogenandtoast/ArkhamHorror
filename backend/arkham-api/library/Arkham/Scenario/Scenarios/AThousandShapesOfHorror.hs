@@ -144,7 +144,7 @@ instance RunMessage AThousandShapesOfHorror where
           chooseOneM iid $ unscoped $ countVar 1 do
             labeledValidate' (playerClueCount > 0) "placeCluesOnYourLocation"
               $ placeCluesOnLocation iid ElderThing 1
-            labeled "takeDamage" $ assignDamage iid ElderThing 1
+            labeled' "takeDamage" $ assignDamage iid ElderThing 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do

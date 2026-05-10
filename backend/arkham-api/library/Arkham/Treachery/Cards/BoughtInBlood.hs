@@ -21,11 +21,11 @@ instance RunMessage BoughtInBlood where
         then shuffleIntoDeck iid attrs
         else chooseOrRunOneM iid do
           unless (null inPlay) do
-            labeled "Discard an Ally asset you control from play" do
+            labeledI "discardAllyAssetFromPlay" do
               chooseAndDiscardAssetMatching iid attrs #ally
 
           unless (null inHand) do
-            labeled "Discard each Ally asset from your hand" do
+            labeledI "discardAllyAssetsFromHand" do
               for_ inHand (discardCard iid attrs)
       pure t
     _ -> BoughtInBlood <$> liftRunMessage msg attrs

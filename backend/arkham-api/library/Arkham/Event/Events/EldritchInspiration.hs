@@ -38,29 +38,29 @@ instance RunMessage EldritchInspiration where
           for_ mCardDef $ \cardDef ->
             questionLabel (display $ cdName cardDef) iid
               $ ChooseOne
-                [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-                , Label "Resolve an additional time" [effectMsg]
+                [ Label "$label.cancelEffect" [ResolveEvent iid eid Nothing []]
+                , Label "$label.resolveAnAdditionalTime" [effectMsg]
                 ]
         Do (If (Window.RevealChaosTokenEventEffect _ _ eventId) _) -> do
           cardName <- cdName . toCardDef <$> field Field.EventCard eventId
           questionLabel (display cardName) iid
             $ ChooseOne
-              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-              , Label "Resolve an additional time" [effectMsg]
+              [ Label "$label.cancelEffect" [ResolveEvent iid eid Nothing []]
+              , Label "$label.resolveAnAdditionalTime" [effectMsg]
               ]
         Do (If (Window.RevealChaosTokenSkillEffect _ _ skillId) _) -> do
           cardName <- cdName . toCardDef <$> field Field.SkillCard skillId
           questionLabel (display cardName) iid
             $ ChooseOne
-              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-              , Label "Resolve an additional time" [effectMsg]
+              [ Label "$label.cancelEffect" [ResolveEvent iid eid Nothing []]
+              , Label "$label.resolveAnAdditionalTime" [effectMsg]
               ]
         Do (If (Window.RevealChaosTokenAssetAbilityEffect _ _ assetId) _) -> do
           cardName <- cdName . toCardDef <$> field AssetCard assetId
           questionLabel (display cardName) iid
             $ ChooseOne
-              [ Label "Cancel effect" [ResolveEvent iid eid Nothing []]
-              , Label "Resolve an additional time" [effectMsg]
+              [ Label "$label.cancelEffect" [ResolveEvent iid eid Nothing []]
+              , Label "$label.resolveAnAdditionalTime" [effectMsg]
               ]
         _ -> error "unhandled"
 

@@ -23,10 +23,10 @@ instance RunMessage ParallelFates where
       pure e
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
       if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
-        then chooseOneM iid $ labeled "Shuffle back in" nothing -- shuffle is default
+        then chooseOneM iid $ labeledI "shuffleBackIn" nothing -- shuffle is default
         else
           chooseOneM iid
-            $ labeled "Put Back on Top in any order"
+            $ labeledI "putBackOnTopInAnyOrder"
             $ push
             $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
       pure e

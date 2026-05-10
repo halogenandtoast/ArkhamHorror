@@ -1,5 +1,11 @@
 {
   "heading": "Scenario I-A",
+  "thePath": {
+    "label": {
+      "stepBack": "Step back and watch this surreal scene play out.",
+      "interrupt": "Interrupt the scarred cat and handle this yourself."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of cards in your hand (rounded up).",

@@ -1,5 +1,9 @@
 {
   "heading": "Scenario VIII",
+  "label": {
+    "ichtacaSetAgainst": "Ichtaca is set against you. Add 3 {'{'}tablet{'}'} tokens to the chaos bag.",
+    "alejandroSetAgainst": "Alejandro is set against you. Add 3 {'{'}cultist{'}'} tokens to the chaos bag."
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2 (-4 instead if the Relic of Ages is at your location).",

@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
 
 newtype ThePath = ThePath ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -29,9 +30,9 @@ instance RunMessage ThePath where
       record TheDreamersStrayedFromThePath
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      leadChooseOneM do
-        labeled "Step back and watch this surreal scene play out." $ push R1
-        labeled "Interrupt the scarred cat and handle this yourself." $ push R2
+      leadChooseOneM $ scenarioI18n $ scope "thePath" do
+        labeled' "stepBack" $ push R1
+        labeled' "interrupt" $ push R2
 
       pure a
     _ -> ThePath <$> liftRunMessage msg attrs

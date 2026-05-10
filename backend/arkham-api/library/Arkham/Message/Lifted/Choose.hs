@@ -511,6 +511,9 @@ questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = J
 questionLabeled' :: (HasI18n, ReverseQueue m) => Text -> ChooseT m ()
 questionLabeled' label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ "$" <> ikey ("label." <> label)}
 
+questionLabeledI :: ReverseQueue m => Text -> ChooseT m ()
+questionLabeledI label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ withI18n $ "$" <> ikey ("label." <> label)}
+
 questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}
 

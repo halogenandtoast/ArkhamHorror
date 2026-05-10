@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.DesertedStation (desertedStation) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -19,8 +20,7 @@ instance RunMessage DesertedStation where
       mAlaskanWilds <- getSetAsideCardMaybe Locations.alaskanWilds
 
       chooseOneM iid do
-        for_ mAlaskanWilds
-          $ labeled "Put the set-aside Alaskan Wilds location into play."
-          . placeLocation_
+        for_ mAlaskanWilds \loc ->
+          withI18n $ keyVar "name" "Alaskan Wilds" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
       pure s
     _ -> DesertedStation <$> liftRunMessage msg attrs

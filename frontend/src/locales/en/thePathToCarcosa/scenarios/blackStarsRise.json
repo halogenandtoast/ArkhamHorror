@@ -1,5 +1,10 @@
 {
   "heading": "Scenario VII",
+  "rollingPits": {
+    "label": {
+      "distributeClues": "Distribute remaining set-aside clues among copies of Sea of Pitch."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the highest amount of doom on an agenda in play.",

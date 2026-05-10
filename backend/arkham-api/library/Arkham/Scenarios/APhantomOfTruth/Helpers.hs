@@ -42,9 +42,8 @@ moveOrganistAwayFromNearestInvestigator = do
     emptyLids <- filterM (<=~> LocationWithoutInvestigators) lids
 
     let locations = if notNull emptyLids then emptyLids else lids
-    chooseOrRunOneM lead do
-      -- TODO: i18n
-      questionLabeled "Move the organist"
+    chooseOrRunOneM lead $ scenarioI18n do
+      questionLabeled' "moveTheOrganist"
       targets locations $ enemyMoveTo GameSource organist
 
 disengageEachEnemyAndMoveToConnectingLocation

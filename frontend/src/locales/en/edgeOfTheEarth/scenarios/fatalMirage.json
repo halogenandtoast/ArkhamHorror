@@ -1,5 +1,8 @@
 {
   "heading": "Scenario ???",
+  "label": {
+    "keepPlaying": "Keep playing"
+  },
   "tooltips": {
     "mirage": "Mirage"
   },

@@ -1,5 +1,9 @@
 {
   "heading": "Scenario IV",
+  "label": {
+    "placeMonsterUnderActDeck": "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it",
+    "automaticFail": "This test automatically fails"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-1. If you fail, randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it.",

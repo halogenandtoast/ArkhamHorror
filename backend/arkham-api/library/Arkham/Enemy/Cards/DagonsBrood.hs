@@ -6,6 +6,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 
 newtype DagonsBrood = DagonsBrood EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -42,8 +43,8 @@ instance RunMessage DagonsBrood where
         Just dagon -> placeDoom (attrs.ability 1) dagon 1
         Nothing -> do
           dagon <- selectJust $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
-          chooseOneM iid do
-            labeled "Place 1 doom on Dagon" $ placeDoom (attrs.ability 1) dagon 1
-            labeled "Dagon attacks you" $ initiateEnemyAttack dagon (attrs.ability 1) iid
+          chooseOneM iid $ scenarioI18n $ scope "dagonsBrood" do
+            labeled' "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
+            labeled' "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid
       pure e
     _ -> DagonsBrood <$> liftRunMessage msg attrs

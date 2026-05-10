@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.HedgeMaze (hedgeMaze) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -19,8 +20,7 @@ instance RunMessage HedgeMaze where
       mMoaiStatues <- getSetAsideCardMaybe Locations.moaiStatues
 
       chooseOneM iid do
-        for_ mMoaiStatues
-          $ labeled "Put the set-aside Mo'ai Statues location into play."
-          . placeLocation_
+        for_ mMoaiStatues \loc ->
+          withI18n $ keyVar "name" "Mo'ai Statues" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
       pure s
     _ -> HedgeMaze <$> liftRunMessage msg attrs

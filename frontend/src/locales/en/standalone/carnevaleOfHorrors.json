@@ -1,4 +1,7 @@
 {
+  "label": {
+    "doNotAddMask": "Do not add a mask"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the agenda deck.",

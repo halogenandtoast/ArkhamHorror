@@ -1,5 +1,10 @@
 {
   "heading": "Scenario VI",
+  "label": {
+    "lightBrazier": "Light the brazier",
+    "unlightBrazier": "Unlight the brazier",
+    "leaveBrazierAlone": "Leave brazier alone"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2. If this is a skill test during a _circle_ action, reveal another token.",

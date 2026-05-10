@@ -214,6 +214,7 @@
     "youKnowThePassphrase": "You know the passphrase"
   },
   "label": {
+    "chooseBearer": "Choose bearer",
     "empowered": "Spend empowerment instead of flipping to _Unstable_ side",
     "figuresInTheDark": {
       "attack": "Each enemy in the shadows attacks you.",

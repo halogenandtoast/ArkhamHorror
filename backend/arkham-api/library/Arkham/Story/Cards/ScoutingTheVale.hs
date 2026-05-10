@@ -30,7 +30,7 @@ instance RunMessage ScoutingTheVale where
       pure s
     DoStep x msg'@(SearchFound iid (isTarget attrs -> True) sig cards) | x > 0 -> do
       chooseOne iid
-        $ [Label "Done discarding" [msg']]
+        $ [Label "$label.doneDiscarding2" [msg']]
         <> [ TargetLabel
                (CardIdTarget $ toCardId c)
                [AddToEncounterDiscard ec, DoStep (x - 1) (SearchFound iid (toTarget attrs) sig rest)]

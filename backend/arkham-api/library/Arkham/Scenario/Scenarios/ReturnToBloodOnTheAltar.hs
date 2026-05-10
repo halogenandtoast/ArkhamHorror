@@ -155,7 +155,7 @@ instance RunMessage ReturnToBloodOnTheAltar where
       lead <- getLead
       locations <- select $ not_ $ orConnected NotForMovement $ location_ "Village Commons"
       chooseOneM lead do
-        questionLabeled "Choose where to place Hired Gun"
+        questionLabeled' "chooseHiredGunLocation"
         targets locations $ createEnemyAt_ Enemies.hiredGun
       pure s
     _ -> ReturnToBloodOnTheAltar <$> liftRunMessage msg bloodOnTheAltar'

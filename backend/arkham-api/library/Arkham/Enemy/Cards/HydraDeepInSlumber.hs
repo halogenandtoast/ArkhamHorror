@@ -9,6 +9,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 
 newtype HydraDeepInSlumber = HydraDeepInSlumber EnemyAttrs
   deriving anyclass IsEnemy
@@ -49,11 +50,11 @@ instance RunMessage HydraDeepInSlumber where
       beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 4)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n $ scope "hydraDeepInSlumber" do
         when attrs.ready do
-          labeled "Exhaust Hydra" $ exhaustThis attrs
+          labeled' "exhaustHydra" $ exhaustThis attrs
         when (attrs.doom > 0) do
-          labeled "Remove 1 doom from Hydra" $ removeDoom (attrs.ability 2) attrs 1
+          labeled' "removeDoomFromHydra" $ removeDoom (attrs.ability 2) attrs 1
       pure e
     FailedThisSkillTestBy _iid (isAbilitySource attrs 2 -> True) n | n >= 3 -> do
       placeDoom (attrs.ability 2) attrs 1

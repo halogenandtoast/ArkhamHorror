@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 
 newtype DagonDeepInSlumberIntoTheMaelstrom = DagonDeepInSlumberIntoTheMaelstrom EnemyAttrs
   deriving anyclass IsEnemy
@@ -57,11 +58,11 @@ instance RunMessage DagonDeepInSlumberIntoTheMaelstrom where
       beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 4)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n $ scope "dagonDeepInSlumber" do
         when attrs.ready do
-          labeled "Exhaust Dagon" $ exhaustThis attrs
+          labeled' "exhaustDagon" $ exhaustThis attrs
         when (attrs.doom > 0) do
-          labeled "Remove 1 doom from Dagon" $ removeDoom (attrs.ability 2) attrs 1
+          labeled' "removeDoomFromDagon" $ removeDoom (attrs.ability 2) attrs 1
       pure e
     FailedThisSkillTestBy _iid (isAbilitySource attrs 2 -> True) n | n >= 3 -> do
       placeDoom (attrs.ability 2) attrs 1

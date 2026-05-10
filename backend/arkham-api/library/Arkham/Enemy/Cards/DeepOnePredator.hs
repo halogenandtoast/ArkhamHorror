@@ -3,10 +3,12 @@ module Arkham.Enemy.Cards.DeepOnePredator (deepOnePredator, DeepOnePredator (..)
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.DevilReef.Helpers
 
 newtype DeepOnePredator = DeepOnePredator EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -32,11 +34,11 @@ instance RunMessage DeepOnePredator where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       ks <- iid.keys
       clues <- iid.clues
-      chooseOneM iid do
+      chooseOneM iid $ scenarioI18n $ scope "deepOnePredator" do
         for_ ks \k ->
-          labeled ("Move " <> keyName k <> " key to Deep One Predator") $ placeKey attrs k
+          keyVar "key" (keyName k) $ labeled' "moveKey" $ placeKey attrs k
         when (clues > 0) do
-          labeled "Move one of your clues to Deep One Predator" do
+          labeled' "moveClue" do
             moveTokens (attrs.ability 1) iid attrs #clue 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

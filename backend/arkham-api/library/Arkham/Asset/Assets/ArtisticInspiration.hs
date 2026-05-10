@@ -33,7 +33,7 @@ instance RunMessage ArtisticInspiration where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          (cardI18n $ labeled' "artisticInspiration.get1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 1)
-          (cardI18n $ labeled' "artisticInspiration.get1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue (-1))
+          (cardI18n $ labeled' "artisticInspiration.getPlus1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 1)
+          (cardI18n $ labeled' "artisticInspiration.getMinus1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue (-1))
       pure a
     _ -> ArtisticInspiration <$> liftRunMessage msg attrs

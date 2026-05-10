@@ -70,7 +70,8 @@
       "place1ChargeOnArmageddon4": "Place 1 Charge on Armageddon4"
     },
     "artisticInspiration": {
-      "get1": "Get -1"
+      "getPlus1": "Get +1",
+      "getMinus1": "Get -1"
     },
     "ashcanPeteParallel": {
       "skip": "Do not return any cards"

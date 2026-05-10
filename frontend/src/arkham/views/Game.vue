@@ -374,7 +374,6 @@ const handleResult = (result: ServerResult) => {
         .decodePromise(result as any)
         .then((r) => {
           // if it isn't for us, immediately unlock and continue draining
-          console.log(solo.value, r.player, playerId.value)
           if (!(solo.value === true || r.player === playerId.value)) {
             uiLock.value = false
             return

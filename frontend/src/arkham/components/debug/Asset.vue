@@ -75,7 +75,7 @@ const hasPool = computed(() => {
 
 <template>
   <Draggable>
-    <template #handle><h2>Debug Asset</h2></template>
+    <template #handle><h2>{{ $t('debug.asset.title') }}</h2></template>
     <div class="asset--outer">
       <div class="asset" :data-index="asset.cardId">
         <div class="card-frame">
@@ -114,27 +114,27 @@ const hasPool = computed(() => {
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">Place</button>
+        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">{{ $t('debug.common.place') }}</button>
       </div>
       <div v-if="showSlots" class="buttons">
         <div class="slots">{{slots}}</div>
-        <button @click="showSlots = false">Back</button>
+        <button @click="showSlots = false">{{ $t('debug.common.back') }}</button>
       </div>
       <div v-else-if="setModifiers" class="buttons">
-        <button @click="setModifiers = false">Back</button>
+        <button @click="setModifiers = false">{{ $t('debug.common.back') }}</button>
         <Modifier :modifier="modifier" v-for="(modifier, idx) in asset.modifiers" :key="idx" />
       </div>
       <div v-else class="buttons">
-        <button @click="placeTokens = true">Place Tokens</button>
-        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">Remove All Tokens</button>
-        <button v-if="asset.owner !== investigatorId" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
-        <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">Ready</button>
-        <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">Exhaust</button>
-        <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">Defeat</button>
-        <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
-        <button v-if="slots.length > 0" @click="showSlots = true">Show Slots</button>
-        <button @click="setModifiers = true">Modifiers</button>
-        <button @click="emit('close')">Close</button>
+        <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.common.removeAllTokens') }}</button>
+        <button v-if="asset.owner !== investigatorId" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">{{ $t('debug.asset.takeControl') }}</button>
+        <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.ready') }}</button>
+        <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.exhaust') }}</button>
+        <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">{{ $t('debug.asset.defeat') }}</button>
+        <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.discard') }}</button>
+        <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>
+        <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
+        <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
 
     </div>

@@ -209,5 +209,46 @@
         "resign": "\"I can't take it any more!\" You flee the sewers."
       }
     }
+  },
+  "debug": {
+    "asset": {
+      "title": "Debug Asset",
+      "takeControl": "Take control",
+      "ready": "Ready",
+      "exhaust": "Exhaust",
+      "defeat": "Defeat",
+      "discard": "Discard",
+      "showSlots": "Show Slots"
+    },
+    "concealedCard": {
+      "title": "Debug Concealed Card"
+    },
+    "enemy": {
+      "title": "Debug Enemy",
+      "increaseDamageDealt": "Increase Damage Dealt",
+      "addHunter": "Add Hunter",
+      "increaseHealth": "Increase Health",
+      "exhaust": "Exhaust",
+      "ready": "Ready",
+      "defeat": "Defeat",
+      "evade": "Evade",
+      "addDamage": "Add Damage"
+    },
+    "location": {
+      "title": "Debug Location",
+      "addPassageway": "Add Passageway",
+      "reveal": "Reveal",
+      "removeClues": "Remove Clues",
+      "placeClue": "Place Clue",
+      "reset": "Reset"
+    },
+    "common": {
+      "place": "Place",
+      "back": "Back",
+      "placeTokens": "Place Tokens",
+      "removeAllTokens": "Remove All Tokens",
+      "modifiers": "Modifiers",
+      "close": "Close"
+    }
   }
 }

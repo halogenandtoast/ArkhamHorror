@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite dev",
     "serve": "vite serve",
+    "prebuild": "node ./scripts/slim-cards.cjs",
     "build": "vite build",
     "tc": "vue-tsc --noEmit -p tsconfig.json --composite false",
-    "digest": "node ./scripts/digest.cjs"
+    "digest": "node ./scripts/digest.cjs",
+    "slim-cards": "node ./scripts/slim-cards.cjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

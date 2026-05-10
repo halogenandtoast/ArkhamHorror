@@ -2,6 +2,7 @@
 node_modules
 dist/*
 !dist/.gitkeep
+public/cards/
 
 
 # local env files

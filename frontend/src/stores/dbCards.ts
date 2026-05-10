@@ -65,7 +65,7 @@ export const useDbCardStore = defineStore("dbCards", {
     },
 
     async fetchDbCards() {
-      const data = await fetch(`/cards_${this.lang}.json`.replace(/^\//, '')).then(async (cardResponse) => {
+      const data = await fetch(`/cards/cards_${this.lang}.json`.replace(/^\//, '')).then(async (cardResponse) => {
         return await cardResponse.json()
       })
       this.dbCards = data

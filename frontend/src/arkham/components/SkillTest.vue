@@ -545,7 +545,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         v-if="skipTriggersAction !== -1"
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
-      >{{ $t('skipTriggers') }}</button>
+      >{{ $t('investigator.skipTriggers') }}</button>
       <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"

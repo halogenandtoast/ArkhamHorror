@@ -67,6 +67,7 @@ import Arkham.Key
 import Arkham.Location.Grid (Pos, isAdjacent)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
+import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Placement
@@ -105,7 +106,7 @@ passesCriteria
   -> [Window]
   -> Criterion
   -> m Bool
-passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCriteria" \currentSpan ->
+passesCriteria iid mcard source' requestor windows' ctr = withSpan' ("passesCriteria/" <> Metrics.messageTag ctr) \currentSpan ->
   addAttribute currentSpan "criterion" (tshow ctr) >> case ctr of
     Criteria.CanEnterThisVehicle -> do
       case source.asset of

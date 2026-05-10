@@ -174,6 +174,7 @@ onMounted(() => {
     el.style.top = `${initialTopPosition}px`
     el.style.position = 'absolute'
     el.style.transform = 'none'
+    moveUp()
   }
 })
 

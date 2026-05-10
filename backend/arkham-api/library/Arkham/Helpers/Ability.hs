@@ -23,6 +23,7 @@ import Arkham.Helpers.Window (getThatEnemy, windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
+import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
@@ -144,7 +145,10 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
     ConstantAbility -> pure False
 
 canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
+canDoAction iid ab a = withSpan_ ("canDoAction/" <> Metrics.messageTag a) $ canDoAction' iid ab a
+
+canDoAction' :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
     ConcealedCardSource _ -> pure True

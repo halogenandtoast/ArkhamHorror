@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
+import { useSettingsFocus } from '@/composeable/settingsFocus'
 
 const props = defineProps<{
   game: Game
@@ -99,6 +100,46 @@ const setOptionEnabled = async (o: RecommendedToggle, enabled: boolean) => {
     optionSaving.value = false
   }
 }
+
+const settingRefs: Record<string, HTMLElement | null> = {}
+const setSettingRef = (id: string) => (el: unknown) => {
+  settingRefs[id] = (el as HTMLElement | null) ?? null
+}
+
+const { focusedSettingId, clearFocus } = useSettingsFocus()
+const highlightedSetting = ref<string | null>(null)
+let highlightTimeout: ReturnType<typeof setTimeout> | null = null
+
+const focusOn = async (id: string) => {
+  await nextTick()
+  const el = settingRefs[id]
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  highlightedSetting.value = id
+  if (highlightTimeout) clearTimeout(highlightTimeout)
+  highlightTimeout = setTimeout(() => {
+    highlightedSetting.value = null
+  }, 2400)
+}
+
+watch(focusedSettingId, (id) => {
+  if (id) {
+    focusOn(id)
+    clearFocus()
+  }
+})
+
+onMounted(() => {
+  if (focusedSettingId.value) {
+    const id = focusedSettingId.value
+    focusOn(id)
+    clearFocus()
+  }
+})
+
+onBeforeUnmount(() => {
+  if (highlightTimeout) clearTimeout(highlightTimeout)
+})
 </script>
 <template>
   <div class="settings">
@@ -111,7 +152,7 @@ const setOptionEnabled = async (o: RecommendedToggle, enabled: boolean) => {
         <h3 class="section-title">{{ $t('gameBar.playerSettings') }}</h3>
 
         <div class="toggle-list">
-          <div class="toggle-row">
+          <div class="toggle-row" :ref="setSettingRef('skipTriggers')" :class="{ 'toggle-row--highlighted': highlightedSetting === 'skipTriggers' }">
             <div class="toggle-text">
               <div class="toggle-name">{{$t('gameBar.viewSettingSkipTriggersTitle')}}</div>
               <div class="toggle-desc">{{$t('gameBar.viewSettingSkipTriggers')}}</div>
@@ -252,6 +293,18 @@ const setOptionEnabled = async (o: RecommendedToggle, enabled: boolean) => {
 
 .toggle-row:hover {
   background: var(--background-mid);
+}
+
+.toggle-row--highlighted {
+  border-color: #FF00FF;
+  box-shadow: 0 0 0 1px #FF00FF, 0 0 12px rgba(255, 0, 255, 0.6);
+  animation: settingsFocusPulse 1.2s ease-out 2;
+}
+
+@keyframes settingsFocusPulse {
+  0% { box-shadow: 0 0 0 1px #FF00FF, 0 0 4px rgba(255, 0, 255, 0.3); }
+  50% { box-shadow: 0 0 0 1px #FF00FF, 0 0 18px rgba(255, 0, 255, 0.85); }
+  100% { box-shadow: 0 0 0 1px #FF00FF, 0 0 4px rgba(255, 0, 255, 0.3); }
 }
 
 .toggle-text {

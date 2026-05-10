@@ -509,7 +509,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   RemoveAllChaosTokens face -> do
     pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   UpdateGlobalSetting iid s | iid == a.id -> do
-    pure $ a & settingsL %~ updateGlobalSetting s
+    let attrs' = a & settingsL %~ updateGlobalSetting s
+    -- If a fast player window is open, re-evaluate so the choice list reflects
+    -- the new setting immediately (e.g. enabling/disabling Skip Triggers should
+    -- repopulate the current fast-window question without waiting for the next
+    -- one). The new WindowAsk replaces any pending question for this player.
+    currentWindows <- concat <$> getWindowStack
+    when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
+      push $ Do (CheckWindows currentWindows)
+    pure attrs'
   UpdateCardSetting iid cCode s | iid == a.id -> do
     pure $ a & settingsL %~ updateCardSetting cCode s
   EndOfGame _ -> do

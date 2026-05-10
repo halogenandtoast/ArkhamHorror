@@ -21,9 +21,13 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
+import { useMenu } from '@/composeable/menu';
+import { useSettingsFocus } from '@/composeable/settingsFocus';
 
 const debug = useDebug()
 const { t } = useI18n()
+const { menuItems } = useMenu()
+const { focusSetting } = useSettingsFocus()
 const props = defineProps<{
   game: Game
   skillTest: SkillTest
@@ -87,6 +91,20 @@ const modifiers = computed(() =>
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
+
+const currentInvestigator = computed(() =>
+  Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+)
+
+const skipTriggersEnabled = computed(() =>
+  Boolean(currentInvestigator.value?.settings?.globalSettings?.ignoreUnrelatedSkillTestTriggers)
+)
+
+const openSettings = () => {
+  focusSetting('skipTriggers')
+  const entry = menuItems.value?.find((e) => e.id === 'viewSettings')
+  if (entry) entry.action()
+}
 const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
@@ -353,6 +371,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <div v-tooltip="$t('skillTest.determineSuccessOrFailureOfSkillTestStep')" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
         <div v-tooltip="$t('skillTest.applySkillTestResultsStep')" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
         <div v-tooltip="$t('skillTest.skillTestEndsStep')" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
+      </div>
+      <div v-if="skipTriggersEnabled" class="skip-triggers-notice">
+        <span class="skip-triggers-notice__text">{{ $t('skillTest.skipTriggersActiveNotice') }}</span>
+        <button type="button" class="skip-triggers-notice__button" @click="openSettings">{{ $t('skillTest.skipTriggersAdjust') }}</button>
       </div>
       <div class="skill-test-contents">
         <div v-if="swarmEnemy" class="target-card swarming">
@@ -1058,6 +1080,65 @@ i.iconSkillAgility {
   background: #222;
   color: #888;
   padding: 5px;
+}
+
+.skip-triggers-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(45, 25, 55, 0.75);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  color: #e8dff0;
+  font-size: 0.85em;
+  text-align: left;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+.skip-triggers-notice__text {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.skip-triggers-notice__button {
+  flex-shrink: 0;
+  width: auto;
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  color: #f4ecf8;
+  font-family: Teutonic, serif;
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.skip-triggers-notice__button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+.skip-triggers-notice__button:active {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 600px) {
+  .skip-triggers-notice {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    text-align: center;
+  }
+  .skip-triggers-notice__button {
+    align-self: center;
+  }
 }
 
 </style>

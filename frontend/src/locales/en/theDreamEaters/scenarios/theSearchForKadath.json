@@ -1,5 +1,10 @@
 {
   "heading": "Scenario II-A",
+  "waresOfBaharna": {
+    "label": {
+      "chooseInvestigator": "Choose investigator to decide on returning discard"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of Signs of the Gods the investigators have uncovered.",

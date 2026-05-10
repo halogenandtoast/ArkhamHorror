@@ -88,9 +88,9 @@ mirageRunner storyCard mirageCards m msg attrs = case msg of
 mayAdvance :: (ReverseQueue m, Sourceable source) => source -> m ()
 mayAdvance source = do
   lead <- getLead
-  chooseOneM lead do
-    labeled "Advance the current act" $ advanceCurrentAct source
-    labeled "Keep playing" nothing
+  chooseOneM lead $ scenarioI18n do
+    labeledI "advanceCurrentAct" $ advanceCurrentAct source
+    labeled' "keepPlaying" nothing
 
 handleMemory
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ StoryId)

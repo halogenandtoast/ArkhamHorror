@@ -7,10 +7,12 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Location.Types (Field (..))
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype TheEyeOfChaos = TheEyeOfChaos AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -40,24 +42,22 @@ instance RunMessage TheEyeOfChaos where
 
         let investigatorsWithNyarlathotep = [iid | (_, HiddenInHand iid) <- nyarlathoteps]
         selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
-          chooseOneM iid do
-            labeled "Take 1 Damage" $ assignDamage iid attrs 1
-            labeled "Take 1 Horror" $ assignHorror iid attrs 1
+          chooseOneM iid $ withI18n $ countVar 1 do
+            labeled' "takeDamage" $ assignDamage iid attrs 1
+            labeled' "takeHorror" $ assignHorror iid attrs 1
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
             HiddenInHand iid -> do
               card <- field EnemyCard nyarlathotep
               push $ FocusCards [card]
-              chooseOneM iid do
-                questionLabeled "Choose:"
+              chooseOneM iid $ scenarioI18n $ scope "theEyeOfChaos" do
+                questionLabeled' "choose"
                 questionLabeledCard card
-                labeled "Nyarlathotep immediately attacks you and is shuffled into the encounter deck." do
+                labeled' "nyarlathotepAttackOnce" do
                   initiateEnemyAttack nyarlathotep attrs iid
                   shuffleBackIntoEncounterDeck nyarlathotep
-                labeled
-                  "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
-                  do
+                labeled' "nyarlathotepAttackThrice" do
                     initiateEnemyAttack nyarlathotep attrs iid
                     initiateEnemyAttack nyarlathotep attrs iid
                     initiateEnemyAttack nyarlathotep attrs iid

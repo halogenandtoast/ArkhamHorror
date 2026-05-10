@@ -130,6 +130,8 @@
     "robertFriendly": "Robert Friendly"
   },
   "label": {
+    "addElinaHarper": "Add Elina Harper to your deck",
+    "doNotAddElinaHarper": "Do not add Elina Harper to your deck",
     "noAir": "You did not find air, Take 5 direct damage",
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
   },

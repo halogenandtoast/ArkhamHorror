@@ -168,8 +168,8 @@ instance RunMessage UndimensionedAndUnseen where
         mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
         for_ mcard $ \card -> do
           chooseOneM iid do
-            labeled "Play Powder of Ibn-Ghazi" $ putCardIntoPlay iid card
-            labeled "Do no play Powder of Ibn-Ghazi" nothing
+            labeled' "playPowder" $ putCardIntoPlay iid card
+            labeled' "doNotPlayPowder" nothing
         unlessStandalone do
           searchCollectionForRandom iid attrs
             $ BasicWeaknessCard
@@ -185,9 +185,9 @@ instance RunMessage UndimensionedAndUnseen where
       chooseOrRunOneM iid do
         if isHardExpert attrs
           then do
-            labeled "Do not remove clues from Brood of Yog-Sothoth and fail skill test" failSkillTest
+            labeled' "doNotRemoveCluesAndFail" failSkillTest
           else do
-            labeled "Do not remove clues from Brood of Yog-Sothoth and treat as -4" do
+            labeled' "doNotRemoveCluesAndTreatAsNegative4" do
               withSkillTest \sid -> skillTestModifier sid Tablet drawnToken (ChangeChaosTokenModifier $ NegativeModifier 4)
 
         targets broodOfYogSothoth (removeAllClues Tablet)

@@ -1,4 +1,13 @@
 {
+  "label": {
+    "placeClueToTreatAsNegative": "Place one of your clues on your location to treat this as a -{count}"
+  },
+  "arkhamOfficer": {
+    "label": {
+      "automaticallyEvade": "Automatically evade Arkham Officer",
+      "flipDoomToClue": "Flip one of its doom to its clue side and take control of it."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of _Guest_ enemies in play.",

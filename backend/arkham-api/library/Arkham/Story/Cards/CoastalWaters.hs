@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.CoastalWaters (coastalWaters) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -20,11 +21,9 @@ instance RunMessage CoastalWaters where
       mOttomanFront <- getSetAsideCardMaybe Locations.ottomanFront
 
       chooseOneM iid do
-        for_ mAirfield
-          $ labeled "Put the set-aside Airfield location into play."
-          . placeLocation_
-        for_ mOttomanFront
-          $ labeled "Put the set-aside Ottoman Front location into play."
-          . placeLocation_
+        for_ mAirfield \loc ->
+          withI18n $ keyVar "name" "Airfield" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mOttomanFront \loc ->
+          withI18n $ keyVar "name" "Ottoman Front" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
       pure s
     _ -> CoastalWaters <$> liftRunMessage msg attrs

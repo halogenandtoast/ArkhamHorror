@@ -6,6 +6,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.BlackStarsRise.Helpers
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
@@ -62,8 +63,8 @@ instance RunMessage RollingPits where
       let seas = map fst $ filter ((== lowestCount) . snd) seasWithClues
       -- need to remove the story now so we can place clues correctly
       push $ RemoveStory (toId attrs)
-      chooseOneM iid do
-        questionLabeled "Distribute remaining set-aside clues among copies of Sea of Pitch."
+      chooseOneM iid $ scenarioI18n $ scope "rollingPits" do
+        questionLabeled' "distributeClues"
         targets seas \sea -> do
           placeClues attrs sea 1
           doStep 1 msg'

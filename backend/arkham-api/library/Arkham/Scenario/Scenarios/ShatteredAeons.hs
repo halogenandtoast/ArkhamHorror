@@ -224,12 +224,12 @@ instance RunMessage ShatteredAeons where
       setChaosTokens standaloneChaosTokens
       lead <- getLead
       chooseOneM lead do
-        labeled "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag." do
+        labeled' "ichtacaSetAgainst" do
           record IchtacaIsSetAgainstYou
           addChaosToken Tablet
           addChaosToken Tablet
           addChaosToken Tablet
-        labeled "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag." do
+        labeled' "alejandroSetAgainst" do
           record AlejandroIsSetAgainstYou
           addChaosToken Cultist
           addChaosToken Cultist

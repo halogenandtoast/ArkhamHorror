@@ -1,5 +1,11 @@
 {
   "heading": "Scenario V",
+  "label": {
+    "playPowder": "Play Powder of Ibn-Ghazi",
+    "doNotPlayPowder": "Do no play Powder of Ibn-Ghazi",
+    "doNotRemoveCluesAndFail": "Do not remove clues from Brood of Yog-Sothoth and fail skill test",
+    "doNotRemoveCluesAndTreatAsNegative4": "Do not remove clues from Brood of Yog-Sothoth and treat as -4"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-1 for each Brood of Yog-Sothoth in play.",

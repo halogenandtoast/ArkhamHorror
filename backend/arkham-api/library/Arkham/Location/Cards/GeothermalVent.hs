@@ -2,6 +2,7 @@ module Arkham.Location.Cards.GeothermalVent (geothermalVent) where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Helpers.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Ability
 import Arkham.Location.Import.Lifted
@@ -31,12 +32,12 @@ instance RunMessage GeothermalVent where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetAmount <- perPlayer 1
       iids <- select $ investigatorAt attrs
-      chooseOneM iid do
-        labeled "Spend 1 {perPlayer} clues as a group to activate the seal" do
+      chooseOneM iid $ withI18n $ countVar targetAmount do
+        labeled' "spendCluesToActivate" do
           push $ SpendClues targetAmount iids
           activateSeal SealD
           removeChaosToken #frost
-        labeled "Do not spend clues" nothing
+        labeled' "doNotSpendClues" nothing
 
       pure l
     _ -> GeothermalVent <$> liftRunMessage msg attrs

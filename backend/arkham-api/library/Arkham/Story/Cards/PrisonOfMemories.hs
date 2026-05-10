@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.PrisonOfMemories (prisonOfMemories) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -21,13 +22,12 @@ instance RunMessage PrisonOfMemories where
       mUniversityOfHalls <- getSetAsideCardMaybe Locations.universityHalls
 
       chooseOneM iid do
-        for_ mBaseCamp $ labeled "Put the set-aside Base Camp location into play." . placeLocation_
-        for_ mDeckOfTheTheodosia
-          $ labeled "Put the set-aside Deck of the Theodosia location into play."
-          . placeLocation_
-        for_ mUniversityOfHalls
-          $ labeled "Put the set-aside University Halls location into play."
-          . placeLocation_
+        for_ mBaseCamp \loc ->
+          withI18n $ keyVar "name" "Base Camp" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mDeckOfTheTheodosia \loc ->
+          withI18n $ keyVar "name" "Deck of the Theodosia" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mUniversityOfHalls \loc ->
+          withI18n $ keyVar "name" "University Halls" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
 
       pure s
     _ -> PrisonOfMemories <$> liftRunMessage msg attrs

@@ -4471,6 +4471,7 @@ library
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
+      Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
       Arkham.Scenarios.BlackStarsRise.Helpers
       Arkham.Scenarios.BloodOnTheAltar.Helpers
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers

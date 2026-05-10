@@ -112,8 +112,8 @@ instance RunMessage ReturnToUndimensionedAndUnseen where
         mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
         for_ mcard $ \card -> do
           chooseOneM iid do
-            labeled "Play Powder of Ibn-Ghazi" $ putCardIntoPlay iid card
-            labeled "Do no play Powder of Ibn-Ghazi" nothing
+            labeled' "playPowder" $ putCardIntoPlay iid card
+            labeled' "doNotPlayPowder" nothing
         unlessStandalone do
           searchCollectionForRandom iid attrs
             $ BasicWeaknessCard

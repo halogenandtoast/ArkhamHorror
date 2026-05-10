@@ -69,7 +69,7 @@ flashback iid f = case f of
     iids <- select $ InvestigatorAt "The Little Bookshop"
     teachings <- getSetAsideCard Assets.teachingsOfTheOrder
     chooseOrRunOneM iid do
-      labeled "Do not take Teachings of the Order" nothing
+      scenarioI18n $ labeled' "doNotTakeTeachingsOfTheOrder" nothing
       targets iids \iid' -> do
         addCampaignCardToDeck iid' DoNotShuffleIn Assets.teachingsOfTheOrder
         takeControlOfSetAsideAsset iid' teachings
@@ -82,4 +82,4 @@ flashback iid f = case f of
     recoverMemory AJailbreak
     chooseOneM iid do
       for_ [Cultist, Tablet, ElderThing] \face ->
-        labeled ("Remove " <> toDisplay face) $ removeChaosToken face
+        scenarioI18n $ tokenVar face $ labeled' "removeToken" $ removeChaosToken face

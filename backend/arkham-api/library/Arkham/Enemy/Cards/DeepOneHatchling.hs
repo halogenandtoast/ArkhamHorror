@@ -6,9 +6,11 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Investigator.Projection ()
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Scenarios.DevilReef.Helpers
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DeepOneHatchling = DeepOneHatchling EnemyAttrs
@@ -34,8 +36,8 @@ instance RunMessage DeepOneHatchling where
       remainingActions <- iid.remainingActions
       chooseOrRunOneM iid do
         when (remainingActions > 0) do
-          labeled "Lose 1 Action" $ push $ LoseActions iid (attrs.ability 1) 1
-        labeled "Deep One Hatchling attacks you" $ initiateEnemyAttack attrs (attrs.ability 1) iid
+          labeledI "loseOneAction" $ push $ LoseActions iid (attrs.ability 1) 1
+        scenarioI18n $ scope "deepOneHatchling" $ labeled' "attacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       deepOnes <-

@@ -93,6 +93,9 @@
     "fredericksAliveAndNotMissing": "<p class='basic'>_If James “Cookie” Fredericks is alive and not missing:_</p><p>Cookie loads bullets into his revolver with a faraway gaze. You get the sense this isn’t the first time he’s woken to such trauma. “We’re gonna find ‘em,” he intones over and over under his breath. “We’re gonna find ‘em.” You’re unsure who he is trying to convince.</p><p class='basic'>If James “Cookie” Fredericks is chosen to accompany an investigator this game, he enters play with 1 additional ammo.</p>",
     "takadaMissing": "<p class='basic'>_In addition, if Takada Hiroko is missing:_</p><p>“Dammit, Roko—I’m not losing you,” Cookie mutters angrily. “Yer comin’ back alive. Yeh damn well better.”</p><p class='basic'> James “Cookie” Fredericks must be chosen to accompany an investigator this game, if able.</p>",
     "resolutions": {
+      "label": {
+        "proceedToResolution1": "Proceed to _Resolution 1_"
+      },
       "noResolution": {
         "title": "No Resolution",
         "body": "<div class='resolution'><p><b>If no resolution was reached (each investigator was defeated):</b> As the night ends, the storm arrives in its full ferocity. Raging, icy winds and dense snowfall make your task impossible. You’ll never find the remaining team members in these conditions, and even if you did…</p><p>A hard lump of guilt and despair forms in your throat. There’s no way they would survive in this storm, not without supplies or shelter. That you are forced to choose between your life and theirs is a burden you will surely carry with you for the rest of your life. And you’ll be lucky if that’s more than a couple of days.</p><ul><li>Proceed to <b>Resolution 1</b></li></ul></div>"

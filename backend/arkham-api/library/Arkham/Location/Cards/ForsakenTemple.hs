@@ -3,6 +3,7 @@ module Arkham.Location.Cards.ForsakenTemple (forsakenTemple) where
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Helpers.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -32,12 +33,12 @@ instance RunMessage ForsakenTemple where
       targetAmount <- perPlayer 1
       iids <- select $ investigatorAt attrs
       sameSpoke <- getLocationsOnSameSpoke attrs.label UnrevealedLocation
-      chooseOneM iid do
-        labeled "Spend 1 {perPlayer} clues as a group to activate the seal" do
+      chooseOneM iid $ withI18n $ countVar targetAmount do
+        labeled' "spendCluesToActivate" do
           push $ SpendClues targetAmount iids
           activateSeal SealC
           chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
-        labeled "Do not spend clues" nothing
+        labeled' "doNotSpendClues" nothing
 
       pure l
     _ -> ForsakenTemple <$> liftRunMessage msg attrs

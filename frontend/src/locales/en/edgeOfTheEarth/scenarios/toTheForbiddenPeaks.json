@@ -70,5 +70,12 @@
     "addFrostToken": "Add 1 {'{'}frost{'}'} token to the chaos bag",
     "eachInvestigatorSuffersPhysicalTrauma": "Each investigator suffers {count} physical trauma.",
     "eachInvestigatorSuffersMentalTrauma": "Each investigator suffers {count} mental trauma."
+  },
+  "rooflessRampart": {
+    "label": {
+      "removeDoom": "Remove 1 doom from the agenda",
+      "discardEnemy": "Discard 1 non-Elite enemy",
+      "discardTreachery": "Discard 1 treachery"
+    }
   }
 }

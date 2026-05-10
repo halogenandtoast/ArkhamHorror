@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types
@@ -31,19 +32,17 @@ instance HasAbilities TheDoomThatCameBefore where
         $ forced AnyWindow
     ]
 
-toOption :: ReverseQueue m => Region -> ChooseT m ()
+toOption :: (HasI18n, ReverseQueue m) => Region -> ChooseT m ()
 toOption = \case
   Oriab ->
-    labeled "Visit the isle of Oriab to the south. Resolve Oriab Setup in the Campaign Guide."
+    labeled' "visitOriab"
       $ setScenarioMeta Oriab
   Mnar -> error "Not possible"
   ForbiddenLands ->
-    labeled
-      "Visit the Forbidden Lands to the north. Resolve Forbidden Lands Setup in the Campaign Guide."
+    labeled' "visitForbiddenLands"
       $ setScenarioMeta ForbiddenLands
   TimelessRealm ->
-    labeled
-      "Visit the kingdom of the Timeless Realm to the east. Resolve Timeless Realm Setup in the Campaign Guide."
+    labeled' "visitTimelessRealm"
       $ setScenarioMeta TimelessRealm
 
 instance RunMessage TheDoomThatCameBefore where
@@ -59,7 +58,7 @@ instance RunMessage TheDoomThatCameBefore where
       let availableRegions = filter (`notElem` regions n) [Oriab, ForbiddenLands, TimelessRealm]
       if null availableRegions
         then push R1
-        else chooseOrRunOneM lead $ traverse toOption availableRegions
+        else chooseOrRunOneM lead $ scenarioI18n $ scope "theDoomThatCameBefore" $ traverse toOption availableRegions
       shuffleEncounterDiscardBackIn
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

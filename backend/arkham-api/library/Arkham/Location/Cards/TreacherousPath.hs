@@ -2,6 +2,7 @@ module Arkham.Location.Cards.TreacherousPath (treacherousPath, TreacherousPath (
 
 import Arkham.Ability
 import Arkham.Helpers.Window (getRevealedChaosTokens)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
@@ -26,9 +27,9 @@ instance RunMessage TreacherousPath where
     UseCardAbility iid (isSource attrs -> True) 1 (getRevealedChaosTokens -> tokens) _ -> do
       let n = count ((== #frost) . (.face)) tokens
       repeated n do
-        chooseOneM iid do
-          labeled "Take damage" $ assignDamage iid (attrs.ability 1) 1
-          labeled "Take horror" $ assignHorror iid (attrs.ability 1) 1
+        chooseOneM iid $ withI18n do
+          countVar 1 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+          countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
 
       pure l
     _ -> TreacherousPath <$> liftRunMessage msg attrs

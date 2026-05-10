@@ -4,9 +4,11 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (Cultist, Guest, Innocent, Lead))
 
 newtype TheTrueCulpritV10 = TheTrueCulpritV10 AgendaAttrs
@@ -34,15 +36,14 @@ instance RunMessage TheTrueCulpritV10 where
     UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
       leadAssets <- select $ AssetWithTrait Lead <> assetControlledBy iid
       sid <- getRandom
-      chooseOneM iid do
-        labeled
-          "remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2"
+      chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
+        labeled' "removeClueLeadAsset"
           do
             chooseOrRunOneM iid do
               targets leadAssets \asset -> do
                 push $ RemoveClues (AbilitySource p 1) (toTarget asset) 1
                 skillTestModifier sid (AbilitySource p 1) sid (Difficulty (-2))
-        labeled "Skip" nothing
+        labeledI "skip" nothing
       chooseOneM iid do
         for_ [#willpower, #agility] \skill -> do
           skillLabeled skill $ beginSkillTest sid iid (AbilitySource p 1) iid skill (Fixed 4)

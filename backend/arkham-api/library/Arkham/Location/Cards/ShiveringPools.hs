@@ -40,7 +40,7 @@ instance RunMessage ShiveringPools where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled' "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
         when hasResources $ countVar 5 $ labeled' "loseResources" $ loseResources iid (attrs.ability 1) 5
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -23,5 +23,16 @@
     "doNotTakeAny": "Do not take any",
     "replaceWeaknessQuestion": "Replace basic weakness with random and take 1 trauma of your choice?",
     "chooseUpToTacticSupply": "Choose up to {count} Tactic and/or Supply cards and begin this scenario with them as additional cards in your opening hand."
+  },
+  "enchantedWoodsTheMoonTree": {
+    "label": {
+      "loseAllActions": "Lose all remaining actions"
+    }
+  },
+  "journeyThroughTheGates": {
+    "label": {
+      "testWillpower": "Test {'{'}willpower{'}'} (3) to remember that this is all a dream",
+      "doNotTest": "Do not test"
+    }
   }
 }

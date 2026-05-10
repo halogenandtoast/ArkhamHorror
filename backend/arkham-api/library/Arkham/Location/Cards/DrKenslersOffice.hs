@@ -6,6 +6,7 @@ import Arkham.Asset.Uses
 import Arkham.Card.CardDef
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -50,10 +51,10 @@ instance RunMessage DrKenslersOffice where
   runMessage msg l@(DrKenslersOffice attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> AssetWithUses Secret
-      chooseOneM iid do
-        labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
+      chooseOneM iid $ scenarioI18n $ scope "drKenslersOffice" do
+        countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         unless (null assets) do
-          labeled "Remove 1 secret from an asset you control" do
+          labeled' "removeSecret" do
             chooseTargetM iid assets \asset -> removeTokens (attrs.ability 1) asset Secret 1
       pure l
     _ -> DrKenslersOffice <$> mirageRunner Stories.drKenslersOffice mirageCards 2 msg attrs

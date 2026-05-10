@@ -3,6 +3,9 @@
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
       "fightExhaust": "{'{'}action{'}'}: Exhaust Bloodstained Dagger and take 1 horror: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack. If this attack defeats an enemy, draw 1 card."
+    },
+    "foyer": {
+      "resign": "You flee the scene of the crime."
     }
   },
   "tokens": {
@@ -114,6 +117,19 @@
     "label": {
       "automaticallyEvade": "Automatically evade Arkham Officer",
       "flipDoomToClue": "Flip one of its doom to its clue side and take control of it."
+    }
+  },
+  "restaurant": {
+    "label": {
+      "takeHorrorToHealDamage": "Take 1 Horror to heal 3 damage"
+    }
+  },
+  "theTrueCulprit": {
+    "label": {
+      "removeCluesToExhaust": "Remove 2 clues from Sinister Solution to either exhaust Otherworldly Meddler",
+      "removeCluesToDealDamage": "Remove 2 clues to deal it 2 damage",
+      "removeClueLeadAsset": "remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2",
+      "skip": "Skip"
     }
   }
 }

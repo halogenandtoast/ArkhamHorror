@@ -2,12 +2,14 @@ module Arkham.Location.Cards.LairOfDagon (lairOfDagon) where
 
 import Arkham.Ability
 import Arkham.Helpers.Investigator
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheLairOfDagon.Helpers
 
 newtype LairOfDagon = LairOfDagon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -49,10 +51,10 @@ instance RunMessage LairOfDagon where
         moveTokens (attrs.ability 2) iid act #clue 1
         ks <- iid.keys
         when (notNull ks && clues > 1) do
-          chooseOneM iid do
-            labeled "Do not spend key" nothing
+          chooseOneM iid $ scenarioI18n $ scope "lairOfDagon" do
+            labeled' "doNotSpendKey" nothing
             for_ ks \k -> do
-              labeled ("Spend " <> keyName k) do
+              keyVar "key" (keyName k) $ labeled' "spendKey" do
                 placeKey ScenarioTarget k
                 moveTokens (attrs.ability 2) iid act #clue 1
       pure l

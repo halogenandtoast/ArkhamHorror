@@ -43,7 +43,6 @@
     "resolution1": {
       "title": "Resolution 1",
       "body": "<p><b>Resolution 1:</b> You frantically make your way back to the entrance to the undersea city, hoping desperately to escape alive. You feel the familiar tugging of the currents all around you as you emerge on the other side of the otherworldly threshold. Your heart does not stop racing until you finally break the surface of the water and collapse on an outcropping of rock.</p>"
-
     },
     "resolution2": {
       "title": "Resolution 2",
@@ -98,6 +97,12 @@
     "label": {
       "placeDoomCanAdvance": "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)",
       "ancientOneAttacks": "The nearest _Ancient One_ enemy in play attacks you"
+    }
+  },
+  "cityOfTheDeep": {
+    "label": {
+      "continuePlaying": "Continue playing",
+      "proceedToR1": "Proceed immediately to (→R1)"
     }
   }
 }

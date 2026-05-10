@@ -24,7 +24,9 @@
     },
     "harvesterOfWoe": {
       "useTheParasol": "Use the parasol against her.",
-      "letHerGo": "Let her go."
+      "letHerGo": "Let her go.",
+      "cancelDamage": "Cancel 1 damage",
+      "cancelHorror": "Cancel 1 horror"
     },
     "spiritHarvest": {
       "damage": "Each investigator takes 1 damage and 1 horror.",

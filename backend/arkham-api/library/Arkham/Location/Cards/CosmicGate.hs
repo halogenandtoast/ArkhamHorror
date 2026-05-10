@@ -50,7 +50,7 @@ instance RunMessage CosmicGate where
       n <- getSpendableClueCount [iid]
       chooseOrRunOneM iid $ withI18n do
         when (n >= 1) $ countVar 1 $ labeled' "spendClues" $ spendClues iid 1
-        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 2) 1
+        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 2) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       investigators <- select $ investigatorAt attrs

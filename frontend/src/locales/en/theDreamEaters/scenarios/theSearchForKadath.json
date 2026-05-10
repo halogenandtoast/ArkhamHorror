@@ -28,5 +28,12 @@
     "label": {
       "shroudPlus2": "Your location gets +2 shroud for this investigation"
     }
+  },
+  "theDoomThatCameBefore": {
+    "label": {
+      "visitOriab": "Visit the isle of Oriab to the south. Resolve Oriab Setup in the Campaign Guide.",
+      "visitForbiddenLands": "Visit the Forbidden Lands to the north. Resolve Forbidden Lands Setup in the Campaign Guide.",
+      "visitTimelessRealm": "Visit the kingdom of the Timeless Realm to the east. Resolve Timeless Realm Setup in the Campaign Guide."
+    }
   }
 }

@@ -99,5 +99,10 @@
       "title": "Resolution 3",
       "body": "<p>_Resolution 3_: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. An unplanned foray into the Western Woods, at night. Local flora and fauna have evolved highly specialized behavior patterns after dark, likely dictated by extreme circadian rhythms and aggressive predation. A highly toxic environment. Identified a hitherto unknown symbiosis with a new strain of parasitic fungus. Further observation necessary.”</p><ul><li>Each investigator earns 1 bonus experience as they gain insight into Hemlock Isle’s unique ecosystem.<ul><li>Each investigator earns 1 additional experience if an investigator resigned with Bertie Musgrave under their control.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>Update your Campaign Log.<ul><li>If Ursine Hybrid is in the victory display, record *the bear was wounded*.</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *Western Woods*.</li></ul></li><li>Proceed to _Prelude: Dawn of the Second Day_.</li></ul>"
     }
+  },
+  "poisonedMarsh": {
+    "label": {
+      "assets": "Deal 1 damage to each of your assets"
+    }
   }
 }

@@ -10,9 +10,11 @@ import Arkham.Enemy.Types (Field (EnemyCardsUnderneath, EnemyLocation))
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.IceAndDeath.Helpers
 
 newtype ManifestationsOfEvil = ManifestationsOfEvil AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -61,11 +63,10 @@ instance RunMessage ManifestationsOfEvil where
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
-      chooseOneM lead do
+      chooseOneM lead $ cardI18n $ scope "manifestationsOfEvil" do
         whenM hasRemainingFrostTokens do
-          labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
-        labeled
-          "In player order, each investigator shuffles the top 2 cards of the Tekeli-li deck into their deck (each investigator who cannot takes 1 damage and 1 horror instead)."
+          labeled' "addFrost" $ addChaosToken #frost
+        labeled' "shuffleTekelili"
           $ eachInvestigator (`forInvestigator` msg)
       advanceAgendaDeck attrs
       pure a

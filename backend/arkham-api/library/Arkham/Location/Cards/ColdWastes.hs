@@ -33,7 +33,7 @@ instance RunMessage ColdWastes where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
       chooseOrRunOne iid
-        $ [Label "Take 1 damage" [Msg.assignDamage iid (attrs.ability 1) 1]]
-        <> [Label "Lose 1 action" [LoseActions iid (attrs.ability 1) 1] | actionRemainingCount > 0]
+        $ [Label "$label.takeDamage count=i:1" [Msg.assignDamage iid (attrs.ability 1) 1]]
+        <> [Label "$label.loseActions count=i:1" [LoseActions iid (attrs.ability 1) 1] | actionRemainingCount > 0]
       pure l
     _ -> ColdWastes <$> liftRunMessage msg attrs

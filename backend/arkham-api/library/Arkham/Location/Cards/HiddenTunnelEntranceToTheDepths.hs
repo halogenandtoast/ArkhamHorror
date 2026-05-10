@@ -2,6 +2,7 @@ module Arkham.Location.Cards.HiddenTunnelEntranceToTheDepths (hiddenTunnelEntran
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -9,6 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.CityOfTheElderThings.Helpers
 
 newtype HiddenTunnelEntranceToTheDepths = HiddenTunnelEntranceToTheDepths LocationAttrs
   deriving anyclass IsLocation
@@ -39,11 +41,11 @@ instance RunMessage HiddenTunnelEntranceToTheDepths where
           <$> field InvestigatorKeys iid
       case nonEmpty skullKeys of
         Just (k :| _) -> do
-          chooseOneM iid do
-            labeled "Spend Skull Key" do
+          chooseOneM iid $ scenarioI18n $ scope "hiddenTunnelEntranceToTheDepths" do
+            labeled' "spendSkullKey" do
               placeKey ScenarioTarget k
               doStep 2 msg
-            labeled "Do not Spend Skull Key" $ doStep 1 msg
+            labeled' "doNotSpendSkullKey" $ doStep 1 msg
         Nothing -> doStep 1 msg
       pure l
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do

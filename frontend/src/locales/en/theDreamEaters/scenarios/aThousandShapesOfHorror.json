@@ -53,5 +53,11 @@
     "studiedADesecratedPortrait": "Studied a Desecrated Portrait",
     "noticedTheMissingBones": "Noticed the Missing Bones",
     "foundACrackedMirror": "Found a Cracked Mirror"
+  },
+  "tooltips": {
+    "frontPorchEntryway": {
+      "revealUpstairs": "Reveal the Upstairs Hallway",
+      "placeUnmarkedTomb": "Put the set-aside Unmarked Tomb location into play."
+    }
   }
 }

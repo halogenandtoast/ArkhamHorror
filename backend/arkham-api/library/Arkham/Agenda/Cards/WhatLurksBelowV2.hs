@@ -6,11 +6,13 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.TheLairOfDagon.Helpers
 
 newtype WhatLurksBelowV2 = WhatLurksBelowV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -34,9 +36,9 @@ instance RunMessage WhatLurksBelowV2 where
         takeControlOfAsset iid thomasDawson
         ks <- scenarioField ScenarioKeys
         unless (null ks) do
-          chooseOneM iid do
-            labeled "Do not take a key" nothing
-            for_ ks \k -> labeled ("Take " <> keyName k <> " key") (placeKey iid k)
+          chooseOneM iid $ scenarioI18n $ scope "whatLurksBelow" do
+            labeled' "doNotTakeKey" nothing
+            for_ ks \k -> keyVar "key" (keyName k) $ labeled' "takeKey" (placeKey iid k)
       advanceAgendaDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

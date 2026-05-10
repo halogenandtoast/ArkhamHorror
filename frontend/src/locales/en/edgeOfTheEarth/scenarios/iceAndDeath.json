@@ -144,5 +144,17 @@
       "cultist": "–2. For each point you fail by, shuffle the top card of the Tekeli-li deck into your deck without looking at it (for each card you cannot shuffle, take 1 horror).",
       "tablet": "–4. For each point you fail by, discard the top card of your deck. Draw each weakness discarded by this effect."
     }
+  },
+  "icebreakerLanding": {
+    "label": {
+      "removeFrost": "Remove 1 {'{'}frost{'}'} token from the chaos bag",
+      "recordSmallRadio": "Record Small Radio in the \"Supplies Recovered\" section of the Campaign Log"
+    }
+  },
+  "manifestationsOfEvil": {
+    "label": {
+      "addFrost": "Add 1 {'{'}frost{'}'} token to the chaos bag",
+      "shuffleTekelili": "In player order, each investigator shuffles the top 2 cards of the Tekeli-li deck into their deck (each investigator who cannot takes 1 damage and 1 horror instead)."
+    }
   }
 }

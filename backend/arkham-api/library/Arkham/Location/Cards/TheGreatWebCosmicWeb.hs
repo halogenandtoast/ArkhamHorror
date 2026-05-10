@@ -3,11 +3,12 @@ module Arkham.Location.Cards.TheGreatWebCosmicWeb (theGreatWebCosmicWeb) where
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Plural
+import Arkham.Scenarios.WeaverOfTheCosmos.Helpers
 
 newtype TheGreatWebCosmicWeb = TheGreatWebCosmicWeb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -33,7 +34,7 @@ instance RunMessage TheGreatWebCosmicWeb where
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOrRunOneM iid do
         when canDiscard do
-          labeled ("Discard " <> pluralize n "card") $ chooseAndDiscardCards iid (attrs.ability 1) n
-        labeled "Place 1 doom on this location" $ placeDoom (attrs.ability 1) attrs 1
+          countVar n $ labeledI "discardCards" $ chooseAndDiscardCards iid (attrs.ability 1) n
+        scenarioI18n $ scope "theGreatWebCosmicWeb" $ labeled' "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
       pure l
     _ -> TheGreatWebCosmicWeb <$> liftRunMessage msg attrs

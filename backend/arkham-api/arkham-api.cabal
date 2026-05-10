@@ -4504,6 +4504,7 @@ library
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
       Arkham.Scenarios.OnThinIce.Helpers
+      Arkham.Scenarios.PointOfNoReturn.Helpers
       Arkham.Scenarios.QueenOfAsh.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
       Arkham.Scenarios.SanguineShadows.Helpers

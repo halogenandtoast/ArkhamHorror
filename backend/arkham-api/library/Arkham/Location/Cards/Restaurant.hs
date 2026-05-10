@@ -56,9 +56,9 @@ instance RunMessage RestaurantEffect where
             [ chooseOne
                 player
                 [ Label
-                    "Take 1 Horror to heal 3 damage"
+                    "$standalone.murderAtTheExcelsiorHotel.restaurant.label.takeHorrorToHealDamage"
                     [assignHorror iid (effectSource attrs) 1, HealDamage (toTarget iid) (effectSource attrs) 3]
-                , Label "Skip" []
+                , Label "$label.skip" []
                 ]
             , disable attrs
             ]

@@ -3,6 +3,7 @@ module Arkham.Location.Cards.TheMoonRoom (theMoonRoom, TheMoonRoom (..)) where
 import Arkham.Ability hiding (resignAction)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Constants
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -10,6 +11,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ALightInTheFog.Helpers
 
 newtype TheMoonRoom = TheMoonRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,9 +24,11 @@ instance HasAbilities TheMoonRoom where
   getAbilities (TheMoonRoom a) =
     extendRevealed
       a
-      [ withTooltip "You don one of the the empty diving suits and dive into the reflecting pool"
-          $ resignAction a
-          `withCriteria` (Here <> thisExists a (not_ FloodedLocation))
+      [ scenarioI18n
+          ( withI18nTooltip "theMoonRoom.resign"
+              $ resignAction a
+              `withCriteria` (Here <> thisExists a (not_ FloodedLocation))
+          )
       , restricted a 2 (thisExists a (not_ FullyFloodedLocation))
           $ forced
           $ RevealLocation #after Anyone (be a)

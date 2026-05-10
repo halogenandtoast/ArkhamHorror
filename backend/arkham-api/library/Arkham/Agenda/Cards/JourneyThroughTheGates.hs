@@ -5,9 +5,11 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Act
+import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
 import Arkham.Trait (Trait (Steps))
 
 newtype JourneyThroughTheGates = JourneyThroughTheGates AgendaAttrs
@@ -42,11 +44,10 @@ instance RunMessage JourneyThroughTheGates where
         else do
           eachInvestigator \iid -> do
             sid <- getRandom
-            chooseOneM iid do
-              labeled
-                "Test {willpower} (3) to remember that this is all a dream"
+            chooseOneM iid $ scenarioI18n $ scope "journeyThroughTheGates" do
+              labeled' "testWillpower"
                 $ beginSkillTest sid iid attrs iid #willpower (Fixed 3)
-              labeled "Do not test" do
+              labeled' "doNotTest" do
                 sufferPhysicalTrauma iid 1
                 investigatorDefeated attrs iid
       pure a

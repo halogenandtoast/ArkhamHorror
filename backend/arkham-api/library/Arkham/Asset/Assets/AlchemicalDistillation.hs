@@ -9,10 +9,10 @@ import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (abilityModifier)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Plural
 
 newtype AlchemicalDistillation = AlchemicalDistillation AssetAttrs
   deriving anyclass IsAsset
@@ -72,40 +72,38 @@ instance RunMessage AlchemicalDistillation where
         Just (InvestigatorTarget iid) -> do
           mDrawCards <- runMaybeT do
             cards <- MaybeT $ Msg.drawCardsIfCan iid (attrs.ability 1) (modify 2)
-            pure $ Label ("Draw " <> tshow (modify 2) <> " cards") [cards]
+            pure $ Label (withI18n $ countVar (modify 2) $ ikey' "label.drawCards") [cards]
           mGainResources <- runMaybeT do
             resources <- MaybeT $ Msg.gainResourcesIfCan iid (attrs.ability 1) (modify 2)
-            pure $ Label ("Gain " <> tshow (modify 2) <> " resources") [resources]
+            pure $ Label (withI18n $ countVar (modify 2) $ ikey' "label.gainResources") [resources]
           mMendingDistillate <- runMaybeT do
             guard $ attrs `hasCustomization` MendingDistillate
             guardM $ lift $ iid <=~> HealableInvestigator (attrs.ability 1) #damage Anyone
             pure
               $ Label
-                ("Heal " <> tshow (modify 2) <> " damage")
+                (withI18n $ countVar (modify 2) $ ikey' "label.healDamage")
                 [HealDamage (toTarget iid) (attrs.ability 1) (modify 2)]
           mCalmingDistillate <- runMaybeT do
             guard $ attrs `hasCustomization` CalmingDistillate
             guardM $ lift $ iid <=~> HealableInvestigator (attrs.ability 1) #horror Anyone
             pure
               $ Label
-                ("Heal " <> tshow (modify 2) <> " horror")
+                (withI18n $ countVar (modify 2) $ ikey' "label.healHorror")
                 [HealHorror (toTarget iid) (attrs.ability 1) (modify 2)]
           mEnlighteningDistillate <- runMaybeT do
             guard $ attrs `hasCustomization` EnlighteningDistillate
             guardM $ lift $ selectAny $ assetControlledBy iid <> oneOf (AssetCanHaveUses <$> [Charge, Secret])
             pure
               $ Label
-                ( "Place "
-                    <> pluralize (modify 1) "charge"
-                    <> " or "
-                    <> pluralize_ (modify 1) "secret"
-                    <> " on an asset you control"
-                )
+                (cardI18n $ countVar (modify 1) $ ikey' "label.alchemicalDistillation.placeChargeOrSecret")
                 [ForInvestigator iid (DoStep 1 msg')]
           mQuickeningDistillate <- runMaybeT do
             guard $ attrs `hasCustomization` QuickeningDistillate
             guardM $ lift $ notNull <$> getAccessibleLocations iid attrs
-            pure $ Label ("Move up to " <> tshow (modify 2) <> " times") [ForInvestigator iid (DoStep 2 msg')]
+            pure
+              $ Label
+                (cardI18n $ countVar (modify 2) $ ikey' "label.alchemicalDistillation.moveUpTo")
+                [ForInvestigator iid (DoStep 2 msg')]
           let choices =
                 catMaybes
                   [ mDrawCards
@@ -130,12 +128,12 @@ instance RunMessage AlchemicalDistillation where
           x
           [ Msg.chooseOrRunOne player
               $ [ Label
-                    ("Place " <> tshow (modify 1) <> " Charge")
+                    (withI18n $ countVar (modify 1) $ tokenVar Charge $ ikey' "label.placeToken")
                     [PlaceTokens (attrs.ability 1) (toTarget x) Charge (modify 1)]
                 | x `elem` chargeAssets
                 ]
               <> [ Label
-                     ("Place " <> tshow (modify 1) <> " Secret")
+                     (withI18n $ countVar (modify 1) $ tokenVar Secret $ ikey' "label.placeToken")
                      [PlaceTokens (attrs.ability 1) (toTarget x) Secret (modify 1)]
                  | x `elem` secretAssets
                  ]

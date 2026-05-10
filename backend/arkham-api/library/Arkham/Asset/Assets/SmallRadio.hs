@@ -25,6 +25,7 @@ import Arkham.Asset.Uses
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.GameT
+import Arkham.I18n
 import Arkham.Name
 import Control.Monad.Trans.Class
 
@@ -119,7 +120,7 @@ instance HasAbilities SmallRadio where
     whenPartner p s =
       map
         ( \ab ->
-            withTooltip (toTitle p.name)
+            cardI18n (nameVar p.name $ withI18nTooltip "smallRadio.partner")
               $ ab
                 { abilityCriteria = ab.criteria <> PartnerHasStatus p.cardCode s
                 , abilitySource = proxy (CardCodeSource p.cardCode) a

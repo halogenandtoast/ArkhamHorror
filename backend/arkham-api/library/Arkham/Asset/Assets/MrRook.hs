@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -34,9 +35,9 @@ instance HasAbilities MrRook where
 instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
+      chooseOneM iid $ cardI18n do
         for_ [3, 6, 9] \x ->
-          labeled ("Top " <> tshow x) do
+          countVar x $ labeled' "mrRook.top" do
             search iid (attrs.ability 1) iid [fromTopOfDeck x] #any (defer attrs IsDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do

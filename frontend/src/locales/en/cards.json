@@ -6,11 +6,41 @@
     "oneTwoPunch": {
       "again": "Fight that enemy again",
       "skip": "Do not fight that enemy again"
+    },
+    "mrRook": {
+      "top": "Top {count}"
+    },
+    "stormRuler": {
+      "exhaust": "Exhaust Storm Ruler to deal {count} damage to an enemy at your location"
+    },
+    "blessedBlade": {
+      "exhaust": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {count} {'{'}bless{'}'} tokens"
+    },
+    "sergeantMonroe": {
+      "dealDamage": "Deal damage dealt ({count})",
+      "dealHorror": "Deal horror dealt ({count})"
+    },
+    "alchemicalDistillation": {
+      "placeChargeOrSecret": "Place {count} charge or secret on an asset you control | Place {count} charges or secrets on an asset you control",
+      "moveUpTo": "Move up to {count} times"
+    },
+    "runicAxe": {
+      "inscription": {
+        "Accuracy": "Accuracy",
+        "Power": "Power",
+        "Glory": "Glory",
+        "Elders": "Elders",
+        "Hunt": "Hunt",
+        "Fury": "Fury"
+      }
     }
   },
   "tooltips": {
     "shortcut": {
       "ability": "{'{'}fast{'}'} Exhaust Shortcut: _Move_ (to a connecting location). Any investigator at this location may trigger this ability."
+    },
+    "smallRadio": {
+      "partner": "{name}"
     }
   }
 }

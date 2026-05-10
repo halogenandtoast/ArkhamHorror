@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait (Trait (Innocent))
@@ -58,7 +59,7 @@ instance RunMessage SergeantMonroe where
               . (`EnemyDamage` nonAttack (Just iid) (toAbilitySource attrs 1) n)
       push
         $ chooseOrRunOne player
-        $ [Label ("Deal damage dealt (" <> tshow damage <> ")") [deal damage] | damage > 0]
-        <> [Label ("Deal horror dealt (" <> tshow horror <> ")") [deal horror] | horror > 0]
+        $ [Label (cardI18n $ countVar damage $ ikey' "label.sergeantMonroe.dealDamage") [deal damage] | damage > 0]
+        <> [Label (cardI18n $ countVar horror $ ikey' "label.sergeantMonroe.dealHorror") [deal horror] | horror > 0]
       pure a
     _ -> SergeantMonroe <$> runMessage msg attrs

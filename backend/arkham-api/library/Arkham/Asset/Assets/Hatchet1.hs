@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
@@ -21,7 +22,7 @@ instance HasAbilities Hatchet1 where
     [restricted a 1 ControlsThis fightAction_]
       <> case a.placement of
         AttachedToEnemy eid ->
-          [ withTooltip "Take control of Hatchet"
+          [ (cardI18n $ withI18nTooltip "hatchet1.takeControlOfHatchet")
               $ restricted (proxied eid a) 2 OnSameLocation
               $ freeReaction
               $ Matcher.EnemyDefeated #when Anyone ByAny (be eid)

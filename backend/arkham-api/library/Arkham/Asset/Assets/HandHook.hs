@@ -36,9 +36,8 @@ instance RunMessage HandHook where
         guard $ notNull hand
         lift $ withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled
-              "Discard 1 card from your hand to deal +1 damage"
-            labeled "Do not discard card" nothing
+            questionLabeled "$label.cards.handHook.discardForDamage"
+            labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

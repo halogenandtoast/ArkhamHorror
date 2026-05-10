@@ -36,8 +36,8 @@ instance RunMessage BerettaM19184 where
             push
               $ chooseOne
                 player
-                [ Label "Ready Beretta M1918" [ready attrs]
-                , Label "Deal an additional +1 damage" [additionalDamageDealt]
+                [ Label "$label.cards.berettaM19184.readyBerettaM1918" [ready attrs]
+                , Label "$label.cards.berettaM19184.dealAnAdditional1Damage" [additionalDamageDealt]
                 ]
       pure a
     _ -> BerettaM19184 <$> runMessage msg attrs

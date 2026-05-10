@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestTargetedLocation, withSkillTest)
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -35,19 +36,19 @@ instance RunMessage IcePick3 where
       when usedHere $ withSkillTest \sid -> do
         when (action == #fight) do
           chooseOneM iid do
-            labeled "Discard Ice Pick (3) to do +1 damage" do
+            (cardI18n $ labeled' "icePick3.discardIcePick3ToDo1Damage") do
               toDiscardBy iid (attrs.ability 1) attrs
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-            labeled "Do not Discard" nothing
+            labeledI "doNotDiscardCard" nothing
         when (action == #investigate) do
           withLocationOf iid \loc -> do
             mTargetLoc <- getSkillTestTargetedLocation
             chooseOneM iid do
-              labeled "Discard Ice Pick (3) to discover 1 additional clue at your location" do
+              (cardI18n $ labeled' "icePick3.discardIcePick3ToDiscover1AdditionalClueAtYourLocation") do
                 toDiscardBy iid (attrs.ability 1) attrs
                 if mTargetLoc == Just loc
                   then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
                   else skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
-              labeled "Do not Discard" nothing
+              labeledI "doNotDiscardCard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

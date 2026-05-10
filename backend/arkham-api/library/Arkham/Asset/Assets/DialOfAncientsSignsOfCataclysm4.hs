@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -39,8 +40,8 @@ instance RunMessage DialOfAncientsSignsOfCataclysm4 where
         then do
           focusChaosTokens [token] \unfocus -> do
             chooseOneM iid do
-              questionLabeled "Spend 1 charge or release this token"
-              labeled "Spend 1 charge" $ spendUses (attrs.ability 2) attrs Charge 1
+              questionLabeled "$label.cards.dialOfAncientsSignsOfCataclysm4.spend1ChargeOrReleaseThisToken"
+              (cardI18n $ labeled' "dialOfAncientsSignsOfCataclysm4.spend1Charge") $ spendUses (attrs.ability 2) attrs Charge 1
               targeting token $ push $ UnsealChaosToken token
 
             push unfocus

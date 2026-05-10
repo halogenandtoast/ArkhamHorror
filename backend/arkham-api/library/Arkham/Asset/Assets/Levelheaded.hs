@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getIsScenarioAbility, withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,12 +17,10 @@ levelheaded = asset Levelheaded Cards.levelheaded
 
 instance HasAbilities Levelheaded where
   getAbilities (Levelheaded a) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test. (+2 {willpower} instead if this test is on a scenario card)."
+    [ (cardI18n $ withI18nTooltip "levelheaded.fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {agility} for this skill test. (+2 {agility} instead if this test is on a scenario card)."
+    , (cardI18n $ withI18nTooltip "levelheaded.fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

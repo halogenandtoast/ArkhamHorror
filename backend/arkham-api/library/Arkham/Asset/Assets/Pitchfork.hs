@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Modifier
 import Arkham.Placement
 
@@ -19,7 +20,7 @@ instance HasAbilities Pitchfork where
     controlled_ a 1 fightAction_
       : case a.placement of
         AttachedToLocation lid ->
-          [ withTooltip "Take control of Pitchfork" $ restrictedAbility (proxied lid a) 2 Here actionAbility
+          [ (cardI18n $ withI18nTooltip "pitchfork.takeControlOfPitchfork") $ restrictedAbility (proxied lid a) 2 Here actionAbility
           ]
         _ -> []
 

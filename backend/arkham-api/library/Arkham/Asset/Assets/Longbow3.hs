@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -17,7 +18,7 @@ longbow3 = asset Longbow3 Cards.longbow3
 instance HasAbilities Longbow3 where
   getAbilities (Longbow3 a) =
     [ skillTestAbility $ controlled_ a 1 $ fightActionWith #agility $ assetUseCost a Ammo 1
-    , withTooltip "You nock another arrow" $ controlled a 2 (thisExists a AssetNotAtUsesX) actionAbility
+    , (cardI18n $ withI18nTooltip "longbow3.youNockAnotherArrow") $ controlled a 2 (thisExists a AssetNotAtUsesX) actionAbility
     ]
 
 instance RunMessage Longbow3 where

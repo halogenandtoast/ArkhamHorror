@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
@@ -23,13 +24,13 @@ anyuChoices :: ReverseQueue m => AssetAttrs -> InvestigatorId -> ChooseT m ()
 anyuChoices attrs iid = do
   locations <- getAccessibleLocations iid (attrs.ability 1)
   unless (null locations) do
-    labeled "Move to a connecting location" do
+    labeledI "moveToConnecting" do
       chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
-  labeled "You get +2 skill value for your next skill test this round" do
+  (cardI18n $ labeled' "anyuFaithfulCompanion.youGet2SkillValueForYourNextSkillTestThisRound") do
     nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue 2)
   canEvade <- hasEvadeTargets (attrs.ability 1) iid
   when canEvade do
-    labeled "_Evade_. Attempt to evade with a base {agility} skill of 4" do
+    (cardI18n $ labeled' "anyuFaithfulCompanion._evade_AttemptToEvadeWithABaseAgilitySkillOf4") do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #agility 4)
       chooseEvadeEnemy sid iid (attrs.ability 1)
@@ -39,7 +40,7 @@ instance RunMessage AnyuFaithfulCompanion where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         anyuChoices attrs iid
-        labeled "Discard Anyu to choose up to three, in any order" do
+        (cardI18n $ labeled' "anyuFaithfulCompanion.discardAnyuToChooseUpToThreeInAnyOrder") do
           toDiscardBy iid (attrs.ability 1) attrs
           chooseUpToNM iid 3 "Done choosing options" $ anyuChoices attrs iid
       pure a

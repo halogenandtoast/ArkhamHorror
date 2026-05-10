@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -22,9 +23,9 @@ instance RunMessage KenslersLog where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseOneM iid do
-        labeled "Investigate with a base {intellect} skill of 5"
+        (cardI18n $ labeled' "kenslersLog.investigateWithABaseIntellectSkillOf5")
           $ skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
-        labeled "Get +2 {intellect} for this investigation"
+        (cardI18n $ labeled' "kenslersLog.get2IntellectForThisInvestigation")
           $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
       skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       investigate sid iid (attrs.ability 1)

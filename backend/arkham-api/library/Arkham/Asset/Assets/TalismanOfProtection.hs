@@ -60,7 +60,7 @@ instance RunMessage TalismanOfProtection where
       h <- field InvestigatorAssignedHorror iid
       d <- field InvestigatorAssignedDamage iid
       chooseOrRunOne iid
-        $ Label "Done canceling" []
+        $ Label "$label.cards.talismanOfProtection.doneCanceling" []
         : [HorrorLabel iid [CancelAssignedDamage (toTarget iid) 0 1, DoStep (n - 1) msg'] | h > 0]
           <> [DamageLabel iid [CancelAssignedDamage (toTarget iid) 1 0, DoStep (n - 1) msg'] | d > 0]
       pure a

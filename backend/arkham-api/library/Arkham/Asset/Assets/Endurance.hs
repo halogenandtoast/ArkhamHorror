@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest, getSkillTestAction)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,12 +17,10 @@ endurance = asset Endurance Cards.endurance
 
 instance HasAbilities Endurance where
   getAbilities (Endurance a) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {combat} for this skill test. (+2 {combat} instead if this is an attack or evasion)."
+    [ (cardI18n $ withI18nTooltip "endurance.fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {agility} for this skill test. (+2 {agility} instead if this is an attack or evasion)."
+    , (cardI18n $ withI18nTooltip "endurance.fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

@@ -42,7 +42,7 @@ instance RunMessage Hope where
         catsInDiscard <-
           fieldMap InvestigatorDiscard (filterCards (mapOneOf cardIs [Cards.zeal, Cards.augur])) iid
         chooseOrRunOneM iid do
-          questionLabeled "Put into play from discard"
+          questionLabeled "$label.cards.hope.putIntoPlayFromDiscard"
           for_ catsInDiscard $ \card -> do
             cardLabeled card do
               shuffleCardsIntoDeck iid (only hopeCard)

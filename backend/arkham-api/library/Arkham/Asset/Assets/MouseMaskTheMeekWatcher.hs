@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (windowMatches)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -32,9 +33,9 @@ instance RunMessage MouseMaskTheMeekWatcher where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          labeled "Get +2 {willpower}"
+          (withI18n $ countVar 2 $ skillVar #willpower $ labeled' "getPlus")
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
-          labeled "Get +2 {intellect}"
+          (withI18n $ countVar 2 $ skillVar #intellect $ labeled' "getPlus")
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
       pure a
     Do (CheckWindows ws) -> do

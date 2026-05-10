@@ -35,7 +35,7 @@ instance RunMessage EliyahAshevakDogHandlerResolute where
       unless (null connected) do
         additionalSkillTestOption "Eliyah Ashevak" do
           chooseOrRunOneM iid do
-            labeled "Do not move to a connecting location" nothing
+            labeledI "doNotMoveToConnecting" nothing
             targets connected $ moveTo attrs iid
       pure a
     _ -> EliyahAshevakDogHandlerResolute <$> liftRunMessage msg attrs

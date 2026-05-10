@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -32,7 +33,7 @@ instance RunMessage ArtisticInspiration where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          labeled "Get +1" $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 1)
-          labeled "Get -1" $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue (-1))
+          (cardI18n $ labeled' "artisticInspiration.get1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 1)
+          (cardI18n $ labeled' "artisticInspiration.get1") $ skillTestModifier sid (attrs.ability 2) iid (AnySkillValue (-1))
       pure a
     _ -> ArtisticInspiration <$> liftRunMessage msg attrs

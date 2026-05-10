@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 -- import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 -- import Arkham.Window qualified as Window
@@ -30,8 +31,8 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
       let cIn = filter ((== #curse) . (.face)) tokens
 
       chooseOrRunOneM iid do
-        when (length bIn >= length cIn) $ labeled "Resolve {bless} token" $ doStep 1 msg
-        when (length cIn >= length bIn) $ labeled "Resolve {curse} token" $ doStep 2 msg
+        when (length bIn >= length cIn) $ (cardI18n $ labeled' "bookOfLivingMythsChronicleOfWonders.resolveBlessToken") $ doStep 1 msg
+        when (length cIn >= length bIn) $ (cardI18n $ labeled' "bookOfLivingMythsChronicleOfWonders.resolveCurseToken") $ doStep 2 msg
       pure a
     DoStep n (UseThisAbility _iid (isSource attrs -> True) 1) -> do
       tokens <- getOnlyChaosTokensInBag

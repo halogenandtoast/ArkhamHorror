@@ -26,8 +26,8 @@ instance RunMessage ThievesKit3 where
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
         iid
-        [ Label "Use {agility}" [toMessage $ withSkillType #agility investigate']
-        , Label "Use {intellect}" [toMessage investigate']
+        [ Label "$label.cards.thievesKit3.useAgility" [toMessage $ withSkillType #agility investigate']
+        , Label "$label.cards.thievesKit3.useIntellect" [toMessage investigate']
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

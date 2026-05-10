@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -29,9 +30,9 @@ instance RunMessage ArcaneStudies4 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          labeled "Choose Willpower"
+          (withI18n $ skillVar #willpower $ labeled' "chooseSkill")
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
-          labeled "Choose Intellect"
+          (withI18n $ skillVar #intellect $ labeled' "chooseSkill")
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
       pure a
     _ -> ArcaneStudies4 <$> liftRunMessage msg attrs

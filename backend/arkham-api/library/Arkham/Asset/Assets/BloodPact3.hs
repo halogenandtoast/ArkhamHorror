@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,13 +17,11 @@ bloodPact3 = asset BloodPact3 Cards.bloodPact3
 
 instance HasAbilities BloodPact3 where
   getAbilities (BloodPact3 x) =
-    [ withTooltip
-        "{fast} Add 1 doom to Blood Pact: You get +3 {willpower} for this skill test. (Limit once per test.)"
+    [ (cardI18n $ withI18nTooltip "bloodPact3.fastAdd1DoomToBloodPactYouGet3WillpowerForThisSkillTestLimit")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 1) (toTarget x) 1)
-    , withTooltip
-        "{fast} Add 1 doom to Blood Pact: You get +3 {combat} for this skill test. (Limit once per test.)"
+    , (cardI18n $ withI18nTooltip "bloodPact3.fastAdd1DoomToBloodPactYouGet3CombatForThisSkillTestLimitOnc")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 2 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 2) (toTarget x) 1)

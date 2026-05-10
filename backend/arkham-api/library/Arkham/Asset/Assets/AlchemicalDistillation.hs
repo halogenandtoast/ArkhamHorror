@@ -9,6 +9,7 @@ import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (abilityModifier)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -37,14 +38,14 @@ instance RunMessage AlchemicalDistillation where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       if attrs `hasCustomization` Empowered
         then chooseOneM iid do
-          labeled "Empower (increase difficulty by 2)" do
+          (cardI18n $ labeled' "alchemicalDistillation.empowerIncreaseDifficultyBy2") do
             abilityModifier
               (AbilityRef (toSource attrs) 1)
               (attrs.ability 1)
               attrs
               (MetaModifier $ object ["empowered" .= True])
             do_ msg
-          labeled "Do not empower" $ do_ msg
+          (cardI18n $ labeled' "alchemicalDistillation.doNotEmpower") $ do_ msg
         else do_ msg
       pure a
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
@@ -61,8 +62,8 @@ instance RunMessage AlchemicalDistillation where
       when (n >= 2 && attrs `hasCustomization` Perfected) do
         getSkillTestTarget >>= \case
           Just (InvestigatorTarget iid) -> chooseOneM iid do
-            labeled "Resolve a second option" $ do_ msg
-            labeled "Do not resolve a second option" nothing
+            (cardI18n $ labeled' "alchemicalDistillation.resolveASecondOption") $ do_ msg
+            (cardI18n $ labeled' "alchemicalDistillation.doNotResolveASecondOption") nothing
           _ -> pure ()
       pure a
     Do msg'@(PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)) -> do
@@ -150,7 +151,7 @@ instance RunMessage AlchemicalDistillation where
       msg'@(ForInvestigator iid (DoStep 2 (PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)))) | n > 0 -> do
         locations <- getAccessibleLocations iid attrs
         chooseOneM iid do
-          labeled "Done Moving" nothing
+          (cardI18n $ labeled' "alchemicalDistillation.doneMoving") nothing
           targets locations \lid -> moveTo attrs iid lid >> doStep (n - 1) msg'
         pure a
     _ -> AlchemicalDistillation <$> liftRunMessage msg attrs

@@ -30,10 +30,10 @@ instance RunMessage FleshWard where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
+        $ [ Label "$label.cards.fleshWard.cancel1Damage" [CancelDamage iid 1, ignoreWindow]
           | dealtDamage windows' > 0
           ]
-        <> [ Label "Cancel 1 horror" [CancelHorror iid 1, ignoreWindow]
+        <> [ Label "$label.cards.fleshWard.cancel1Horror" [CancelHorror iid 1, ignoreWindow]
            | dealtHorror windows' > 0
            ]
       pure a

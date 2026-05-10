@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestSource, withSkillTest)
 import Arkham.Helpers.Source (sourceMatches)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Ritual, Spell))
@@ -18,12 +19,10 @@ spiritualIntuition3 = asset SpiritualIntuition3 Cards.spiritualIntuition3
 
 instance HasAbilities SpiritualIntuition3 where
   getAbilities (SpiritualIntuition3 a) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test. (+2 {willpower} instead if this test is on a _Spell_ or _Ritual_ card)."
+    [ (cardI18n $ withI18nTooltip "spiritualIntuition3.fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {combat} for this skill test. (+2 {combat} instead if this test is on a _Spell_ or _Ritual_ card)."
+    , (cardI18n $ withI18nTooltip "spiritualIntuition3.fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

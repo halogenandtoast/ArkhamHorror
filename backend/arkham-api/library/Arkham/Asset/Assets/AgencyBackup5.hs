@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -23,13 +24,11 @@ instance HasModifiersFor AgencyBackup5 where
 
 instance HasAbilities AgencyBackup5 where
   getAbilities (AgencyBackup5 a) =
-    [ withTooltip
-        "{fast} Exhaust Agency Backup and deal 1 damage to it: Deal 1 damage to an enemy at your location."
+    [ (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgencyBackupAndDeal1DamageToItDeal1DamageToAnEnem")
         $ fastAbility a 1 (exhaust a <> damageCost a 1)
         $ ControlsThis
         <> canDamageEnemyAt (a.ability 1) YourLocation
-    , withTooltip
-        "{fast} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
+    , (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgencyBackupAndDeal1HorrorToItDiscover1ClueAtYour")
         $ fastAbility a 2 (exhaust a <> horrorCost a 1)
         $ ControlsThis
         <> CanDiscoverCluesAt YourLocation

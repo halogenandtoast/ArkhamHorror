@@ -91,9 +91,7 @@
   "doNotHeal": "Do not heal",
   "doNotIgnore": "Do not ignore",
   "doNotIgnoreEffect": "Do not ignore effect",
-  "doNotEvadeAnotherEnemy": "Do not evade another enemy",
   "doNotExposeConcealed": "Do not expose concealed card",
-  "doNotHeal": "Do not heal",
   "doNotModify": "Do not modify",
   "doNotMove": "Do not move",
   "doNotMoveEnemy": "Do not move enemy",
@@ -351,5 +349,15 @@
     "mutated": {
       "option": "Each investigator at your location takes 1 horror"
     }
-  }
+  },
+  "doNotExhaust": "Do not exhaust",
+  "doNotDiscardCard": "Do not discard card",
+  "discardThis": "Discard {name}",
+  "exhaustThis": "Exhaust {name}",
+  "readyThis": "Ready {name}",
+  "getPlus": "Get +{count} {'{'}{skill}{'}'}",
+  "chooseSkill": "Choose {'{'}{skill}{'}'}",
+  "discardToDealAdditionalDamage": "Discard to deal +{count} damage",
+  "discardCard": "Discard Card",
+  "leaveCard": "Leave card"
 }

@@ -45,7 +45,7 @@ instance RunMessage Shadowmeld5 where
         locations <- select $ LocationWithDistanceFromAtMost 2 (locationWithInvestigator iid) Anywhere
         unless (null locations) do
           chooseOrRunOneM iid do
-            labeled "Do not move" nothing
+            labeledI "doNotMove" nothing
             targets locations \lid -> do
               removeTokens (attrs.ability 1) attrs Charge 1
               moveTo attrs iid lid

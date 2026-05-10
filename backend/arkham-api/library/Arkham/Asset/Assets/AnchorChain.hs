@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -36,10 +37,9 @@ instance RunMessage AnchorChain where
         hand <- lift $ select $ InHandOf NotForPlay (be iid) <> basic DiscardableCard
         liftGuardM $ not <$> isMatch enemy EliteEnemy
         guard $ notNull hand
-        lift $ chooseOneM iid do
-          questionLabeled
-            "Discard 1 card from your hand to prevent that enemy from readying during the next upkeep phase?"
-          labeled "Do not discard card" nothing
+        lift $ chooseOneM iid $ cardI18n do
+          questionLabeled' "anchorChain.discardPrompt"
+          unscoped $ labeled' "doNotDiscardCard" nothing
           targets hand \card -> do
             discardCard iid (attrs.ability 1) card
             nextPhaseModifier #upkeep (attrs.ability 1) enemy DoesNotReadyDuringUpkeep

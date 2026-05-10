@@ -21,7 +21,7 @@ spec = describe "Dreamlands Eclipse" $ do
         [investigateAction] <- self `getActionsFrom` ancientStone
         self `useAbility` investigateAction
         useDreamlandsEclipseForcedAbility dreamlandsEclipse
-        chooseLabel "Your location gets +2 shroud for this investigation"
+        chooseLabel "$theDreamEaters.theSearchForKadath.dreamlandsEclipse.label.shroudPlus2"
 
         skillTest <- getJustSkillTest
         difficulty <- getModifiedSkillTestDifficulty skillTest
@@ -37,7 +37,7 @@ spec = describe "Dreamlands Eclipse" $ do
         [investigateAction] <- self `getActionsFrom` ancientStone
         self `useAbility` investigateAction
         useDreamlandsEclipseForcedAbility dreamlandsEclipse
-        chooseLabel "Take 1 horror"
+        chooseLabel "$label.takeHorror"
 
         skillTest <- getJustSkillTest
         difficulty <- getModifiedSkillTestDifficulty skillTest

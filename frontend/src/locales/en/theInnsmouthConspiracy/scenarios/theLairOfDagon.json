@@ -60,5 +60,28 @@
     "unlockedTheEntranceToTheCaves": "Unlocked the entrance to the caves",
     "unlockedTheThirdFloor": "Unlocked the third floor",
     "unlockedTheFinalDepths": "Unlocked the final depths"
+  },
+  "hallOfLoyalty": {
+    "label": {
+      "addBlessTokens": "Add 4 {'{'}bless{'}'} tokens",
+      "addBlessTokensPartial": "Add 4 (actual {actual}) {'{'}bless{'}'} tokens"
+    }
+  },
+  "lairOfDagon": {
+    "label": {
+      "doNotSpendKey": "Do not spend key",
+      "spendKey": "Spend {key}"
+    }
+  },
+  "whatLurksBelow": {
+    "label": {
+      "doNotTakeKey": "Do not take a key",
+      "takeKey": "Take {key} key"
+    }
+  },
+  "tooltips": {
+    "grandEntryway": {
+      "resign": "You've had enough of this place."
+    }
   }
 }

@@ -5,10 +5,12 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
 import Arkham.Helpers.Cost (getCanAffordCost, payEffectCost)
 import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 
@@ -40,13 +42,13 @@ instance RunMessage PrivateRoom where
           when canAfford $ do
             investigators <- select $ investigatorAt (toId attrs)
             randolph <- getSetAsideCard Assets.randolphCarterChainedToTheWakingWorld
-            chooseOneM iid do
-              labeled "Pay 1{perPlayer} clues" do
+            chooseOneM iid $ scenarioI18n $ scope "privateRoom" do
+              labeled' "payClues" do
                 payEffectCost iid attrs cost
                 chooseOrRunOneM iid do
                   targets investigators (`takeControlOfSetAsideAsset` randolph)
 
-              labeled "Do not pay" nothing
+              labeled' "doNotPay" nothing
         _ -> error "invalid skill type"
       pure l
     _ -> PrivateRoom <$> liftRunMessage msg attrs

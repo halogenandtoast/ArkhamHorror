@@ -52,5 +52,16 @@
       "tablet": "–4. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it. (If you fail by 2 or more, do both instead.)",
       "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
     }
+  },
+  "deckOfTheTheodosia": {
+    "label": {
+      "addShroud": "Give it +2 shroud for this investigation",
+      "spendAdditionalAction": "Spend 1 additional action"
+    }
+  },
+  "drKenslersOffice": {
+    "label": {
+      "removeSecret": "Remove 1 secret from an asset you control"
+    }
   }
 }

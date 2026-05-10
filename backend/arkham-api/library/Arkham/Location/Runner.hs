@@ -478,7 +478,7 @@ instance RunMessage LocationAttrs where
         & (floodLevelL %~ maybe Nothing (Just . min maxFloodLevel))
     LookAtRevealed iid source target | isTarget a target -> do
       player <- getPlayer iid
-      push $ chooseOne player [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
+      push $ chooseOne player [Label "$label.continue" [After (LookAtRevealed iid source $ toTarget a)]]
       pure $ a & revealedL .~ True
     After (LookAtRevealed _ _ target) | isTarget a target -> do
       pure $ a & revealedL .~ False

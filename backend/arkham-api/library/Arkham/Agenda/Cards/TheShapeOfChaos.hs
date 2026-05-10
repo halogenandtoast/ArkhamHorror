@@ -6,11 +6,13 @@ import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.GameValue (getGameValue)
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype TheShapeOfChaos = TheShapeOfChaos AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -40,24 +42,23 @@ instance RunMessage TheShapeOfChaos where
 
         let investigatorsWithNyarlathotep = [iid | (_, HiddenInHand iid) <- nyarlathoteps]
         selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
-          chooseOneM iid do
-            labeled "Take 1 Damage" $ assignDamage iid attrs 1
-            labeled "Take 1 Horror" $ assignHorror iid attrs 1
+          chooseOneM iid $ withI18n do
+            countVar 1 $ labeledI "takeDamage" $ assignDamage iid attrs 1
+            countVar 1 $ labeledI "takeHorror" $ assignHorror iid attrs 1
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
             HiddenInHand iid -> do
               card <- field EnemyCard nyarlathotep
               focusCard card do
-                chooseOneM iid do
-                  questionLabeled "Choose:"
+                chooseOneM iid $ scenarioI18n $ scope "theShapeOfChaos" do
+                  questionLabeled' "choose"
                   questionLabeledCard card
-                  labeled "Nyarlathotep immediately attacks you and is shuffled into the encounter deck." do
+                  labeled' "shuffled" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
                     shuffleBackIntoEncounterDeck nyarlathotep
-                  labeled
-                    "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+                  labeled' "returned"
                     do
                       unfocusCards
                       initiateEnemyAttack nyarlathotep attrs iid

@@ -63,6 +63,7 @@
   "neither": "Neither",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",
+  "noLocationsFound": "No locations found",
   "odd": "Odd",
   "placeAgendaDoom": "Place 1 doom on the current agenda. | Place {count} doom on the current agenda.",
   "placeAgendaDoomCanAdvance": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance. | Place {count} doom on the current agenda. This effect can cause the current agenda to advance.",

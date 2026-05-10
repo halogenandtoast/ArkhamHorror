@@ -43,5 +43,10 @@
       "tablet": "-5. If you fail, choose a connecting location with no barriers between it and your location. Place 1 barrier between the two locations.",
       "elderThing": "-X. X is twice the number of barriers between your location and all connecting locations."
     }
+  },
+  "tooltips": {
+    "railroadStation": {
+      "resign": "You escape the submerged town"
+    }
   }
 }

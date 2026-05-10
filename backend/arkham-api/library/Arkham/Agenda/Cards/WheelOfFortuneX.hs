@@ -59,7 +59,7 @@ instance RunMessage WheelOfFortuneX where
           chooseOrRunOneM iid $ scenarioI18n do
             for_ mLeftLocation $ labeled' "moveToLeftLocation" . moveTo attrs iid
             when canMoveLocationLeft do
-              labeled "moveYourLocationLeftOnce" do
+              labeled' "moveYourLocationLeftOnce" do
                 handleTarget iid attrs location
 
       pure a

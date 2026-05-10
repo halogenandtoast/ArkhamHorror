@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Token
 
 newtype WaitingRoom = WaitingRoom LocationAttrs
@@ -22,7 +23,7 @@ instance HasAbilities WaitingRoom where
   getAbilities (WaitingRoom attrs) =
     withRevealedAbilities
       attrs
-      [ withTooltip "You flee the hospital, leaving your companions behind." $ locationResignAction attrs
+      [ scenarioI18n $ withI18nTooltip "waitingRoom.resign" $ locationResignAction attrs
       | not isInfested
       ]
    where

@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
 
 newtype CallOfMadness = CallOfMadness AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -24,10 +26,10 @@ instance RunMessage CallOfMadness where
       pure a
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
       cards <- getTekelili 3
-      chooseOneM iid do
-        labeled "Take 1 mental trauma" $ sufferMentalTrauma iid 1
+      chooseOneM iid $ cardI18n $ scope "callOfMadness" do
+        countVar 1 $ labeledI "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         when (length cards == 3) do
-          labeled "Shuffle the top 3 cards of the Tekeli-li deck into their deck" $ addTekelili iid cards
+          labeled' "shuffleTekelili" $ addTekelili iid cards
       investigatorDefeated attrs iid
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

@@ -5,10 +5,12 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Investigator
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.CityOfTheElderThings.Helpers
 
 newtype PursuitOfTheUnknownV1 = PursuitOfTheUnknownV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -36,9 +38,9 @@ instance RunMessage PursuitOfTheUnknownV1 where
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
-        chooseOneM iid do
-          labeled "Do not take healing" nothing
-          labeled "Heal 1 damage, 1 horror, and 1 trauma" do
+        chooseOneM iid $ scenarioI18n $ scope "pursuitOfTheUnknown" do
+          labeled' "doNotTakeHealing" nothing
+          labeled' "healAll" do
             whenM (canHaveDamageHealed (attrs.ability 1) iid) do
               healDamage iid (attrs.ability 1) 1
 
@@ -50,9 +52,9 @@ instance RunMessage PursuitOfTheUnknownV1 where
 
             if
               | hasPhysicalTrauma && hasMentalTrauma -> do
-                  chooseOneM iid do
-                    labeled "Heal 1 physical trauma" $ push $ HealTrauma iid 1 0
-                    labeled "Heal 1 mental trauma" $ push $ HealTrauma iid 0 1
+                  chooseOneM iid $ scenarioI18n $ scope "pursuitOfTheUnknown" do
+                    labeled' "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+                    labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
               | hasPhysicalTrauma -> push $ HealTrauma iid 1 0
               | hasMentalTrauma -> push $ HealTrauma iid 0 1
               | otherwise -> pure ()

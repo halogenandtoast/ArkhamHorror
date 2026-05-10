@@ -30,7 +30,7 @@ instance RunMessage OutOfThisWorld where
       let locationCards = filterLocations cards
       focusCards (map toCard cards) do
         chooseOneM iid do
-          when (null locationCards) $ labeled "No locations found" unfocusCards
+          when (null locationCards) $ labeledI "noLocationsFound" unfocusCards
           targets locationCards \location -> do
             unfocusCards
             push $ ResolveRevelation iid (toCard location)

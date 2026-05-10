@@ -29,6 +29,9 @@ import Arkham.Trait (Trait (AncientOne))
 scenarioI18n :: Int -> (HasI18n => a) -> a
 scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
 
+cardI18n :: (HasI18n => a) -> a
+cardI18n a = campaignI18n $ scope "theHeartOfMadness" a
+
 sealAtLocationOf :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 sealAtLocationOf iid =
   getLocationOf iid >>= \case

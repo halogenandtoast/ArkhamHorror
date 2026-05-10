@@ -63,5 +63,11 @@
       "tablet": "-5. If you fail, you must either increase the flood level of your location or take 1 damage.",
       "elderThing": "-6. If you fail and there is a key on your location, take 1 horror."
     }
+  },
+  "cityOfTheDeep": {
+    "label": {
+      "continuePlaying": "Continue playing",
+      "proceedToR1": "Proceed immediately to (→R1)"
+    }
   }
 }

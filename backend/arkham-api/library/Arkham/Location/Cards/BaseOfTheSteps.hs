@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted hiding (discardCard)
@@ -40,8 +41,8 @@ instance RunMessage BaseOfTheSteps where
       hand <- field InvestigatorHand iid
       for_ hand \card -> do
         focusCard card do
-          chooseOneM iid do
-            labeled "Discard" $ discardCard iid (attrs.ability 1) card
-            labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
+          chooseOneM iid $ withI18n do
+            labeledI "discard" $ discardCard iid (attrs.ability 1) card
+            countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure l
     _ -> BaseOfTheSteps <$> liftRunMessage msg attrs

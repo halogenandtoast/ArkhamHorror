@@ -3,6 +3,7 @@ module Arkham.Location.Cards.UndercityAltar (undercityAltar) where
 import Arkham.Helpers.Cost
 import Arkham.Helpers.GameValue
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
@@ -39,11 +40,11 @@ instance RunMessage UndercityAltar where
         n <- getSpendableClueCount investigators
         x <- perPlayer 1
         when (n >= x) do
-          chooseOneM iid do
-            labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" do
+          chooseOneM iid $ cardI18n $ scope "seal" do
+            labeled' "spendClueGroupTakeControl" do
               spendCluesAsAGroup investigators x
               placeSeal iid k
-            labeled "Do not spend clues" nothing
+            countVar 2 $ labeledI "doNotSpendClues" nothing
       
       pure l
     _ -> UndercityAltar <$> liftRunMessage msg attrs

@@ -2,11 +2,13 @@ module Arkham.Location.Cards.FrontPorchEntryway (frontPorchEntryway, FrontPorchE
 
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
+import Arkham.Scenarios.AThousandShapesOfHorror.Helpers
 
 newtype FrontPorchEntryway = FrontPorchEntryway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,19 +21,23 @@ instance HasAbilities FrontPorchEntryway where
   getAbilities (FrontPorchEntryway attrs) =
     extendRevealed
       attrs
-      [ withTooltip "Reveal the Upstairs Hallway"
-          $ restrictedAbility attrs 1 (Here <> exists (UnrevealedLocation <> "Upstairs Hallway"))
-          $ FastAbility
-          $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)
-      , withTooltip "Put the set-aside Unmarked Tomb location into play."
-          $ restrictedAbility
-            attrs
-            2
-            ( Here
-                <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
-                <> notExists (LocationWithTitle "Unmarked Tomb")
-            )
-          $ FastAbility Free
+      [ scenarioI18n
+          ( withI18nTooltip "frontPorchEntryway.revealUpstairs"
+              $ restrictedAbility attrs 1 (Here <> exists (UnrevealedLocation <> "Upstairs Hallway"))
+              $ FastAbility
+              $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)
+          )
+      , scenarioI18n
+          ( withI18nTooltip "frontPorchEntryway.placeUnmarkedTomb"
+              $ restrictedAbility
+                attrs
+                2
+                ( Here
+                    <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
+                    <> notExists (LocationWithTitle "Unmarked Tomb")
+                )
+              $ FastAbility Free
+          )
       ]
 
 instance RunMessage FrontPorchEntryway where

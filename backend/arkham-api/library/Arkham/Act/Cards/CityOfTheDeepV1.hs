@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 import Arkham.Trait (Trait (AncientOne, Lair, Sanctum))
 
 newtype CityOfTheDeepV1 = CityOfTheDeepV1 ActAttrs
@@ -36,9 +38,9 @@ instance RunMessage CityOfTheDeepV1 where
       if otherActs
         then do
           lead <- getLead
-          chooseOneM lead do
-            labeled "Continue playing" nothing
-            labeled "Proceed immediately to (→R1)" $ push R1
+          chooseOneM lead $ scenarioI18n $ scope "cityOfTheDeep" do
+            labeled' "continuePlaying" nothing
+            labeled' "proceedToR1" $ push R1
         else push R1
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

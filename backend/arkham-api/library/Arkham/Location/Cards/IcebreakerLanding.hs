@@ -4,10 +4,12 @@ import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IceAndDeath.Helpers
 
 newtype IcebreakerLanding = IcebreakerLanding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,10 +33,10 @@ instance RunMessage IcebreakerLanding where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       oncePerCampaign "icebreakerLanding" do
-        chooseOneM iid do
+        chooseOneM iid $ cardI18n $ scope "icebreakerLanding" do
           whenAny (ChaosTokenFaceIs #frost) do
-            labeled "Remove 1 {frost} token from the chaos bag" $ removeChaosToken #frost
-          labeled "Record Small Radio in the \"Supplies Recovered\" section of the Campaign Log"
+            labeled' "removeFrost" $ removeChaosToken #frost
+          labeled' "recordSmallRadio"
             $ recoverSupply SmallRadio
 
       pure l

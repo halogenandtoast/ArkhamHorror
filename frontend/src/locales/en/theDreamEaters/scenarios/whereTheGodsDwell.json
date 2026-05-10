@@ -41,5 +41,19 @@
   "remembered": {
     "maneuveredThePriestCloser": "Maneuvered the high priest closer.",
     "stunnedThePriest": "Stunned the priest."
+  },
+  "theEyeOfChaos": {
+    "label": {
+      "choose": "Choose:",
+      "shuffled": "Nyarlathotep immediately attacks you and is shuffled into the encounter deck.",
+      "returned": "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+    }
+  },
+  "theShapeOfChaos": {
+    "label": {
+      "choose": "Choose:",
+      "shuffled": "Nyarlathotep immediately attacks you and is shuffled into the encounter deck.",
+      "returned": "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+    }
   }
 }

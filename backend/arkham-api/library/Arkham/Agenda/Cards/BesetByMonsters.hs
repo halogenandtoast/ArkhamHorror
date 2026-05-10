@@ -29,8 +29,8 @@ instance RunMessage BesetByMonsters where
 
         when (resources > 0 || notNull hand) do
           chooseOrRunOne iid
-            $ [Label "Discard 1 card at random" [toMessage $ randomDiscard iid attrs] | notNull hand]
-            <> [Label "Lost 2 resources" [LoseResources iid (toSource attrs) 2] | resources > 0]
+            $ [Label "$theDreamEaters.pointOfNoReturn.besetByMonsters.label.discardRandom" [toMessage $ randomDiscard iid attrs] | notNull hand]
+            <> [Label "$label.loseResources count=i:2" [LoseResources iid (toSource attrs) 2] | resources > 0]
       shuffleEncounterDiscardBackIn
       push $ ScenarioCountIncrementBy Distortion 1
       push $ DoStep 1 msg

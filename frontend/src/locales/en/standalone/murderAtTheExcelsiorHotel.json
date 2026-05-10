@@ -94,5 +94,23 @@
       "title": "Resolution 3",
       "body": "<p>_Resolution 3_: You sit in a cold, dank holding cell awaiting your arraignment. You have no doubt that with the evidence the police gathered, you’ll be spending the rest of your life behind bars. You have sworn high and low that you had nothing to do with the murder, but doubt lingers in your mind. Could it have been you, somehow? What really happened in the Excelsior that night?</p><p>Just then, you hear rapping on the bars of your cell. An officer stands just outside, looking away from you. He slips a folded note between the bars of your cell. Knowing better than to ask his intentions out loud, you slowly walk over and unfold the note, your fingers shaking with trepidation.</p><p class='center cursive'>It’s all a facade.<br>Room 225. Tonight.<br> This isn’t over.</p><p>Just as you finish reading the note, you hear the click of the cell’s latch unlocking. The officer is gone, and the door to your cell swings open.</p><ul><li>If this is the first time you have played this scenario during this campaign, you may replay it. Reset the game to this scenario’s Setup. Do not record anything else in your Campaign Log except for any trauma suffered. No experience points are earned from your previous game.</li><li>Otherwise,<ul><li>In your Campaign Log, record *the murders continue, unsolved*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>The lead investigator must add the What Have You Done? weakness to their deck. They may also choose to add the Bloodstained Dagger story asset to their deck as well. Both cards do not count toward that investigator’s deck size.</li><li>Search the collection for a _Detective_ or _Madness_ weakness and add it to the lead investigator’s deck.</li></ul></li></ul>"
     }
+  },
+  "restaurant": {
+    "label": {
+      "takeHorrorToHealDamage": "Take 1 Horror to heal 3 damage"
+    }
+  },
+  "tooltips": {
+    "foyer": {
+      "resign": "You flee the scene of the crime."
+    }
+  },
+  "theTrueCulprit": {
+    "label": {
+      "removeCluesToExhaust": "Remove 2 clues from Sinister Solution to either exhaust Otherworldly Meddler",
+      "removeCluesToDealDamage": "Remove 2 clues to deal it 2 damage",
+      "removeClueLeadAsset": "remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2",
+      "skip": "Skip"
+    }
   }
 }

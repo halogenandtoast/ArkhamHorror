@@ -71,5 +71,11 @@
     "backAlley" : {
       "resign": "We can get out this way!"
     }
+  },
+  "returnToCloverClubLounge": {
+    "label": {
+      "putIntoPlay": "Put it into play",
+      "doNotPutIntoPlay": "Do not put it into play"
+    }
   }
 }

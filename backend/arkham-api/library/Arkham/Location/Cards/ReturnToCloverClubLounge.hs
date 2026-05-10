@@ -3,10 +3,12 @@ module Arkham.Location.Cards.ReturnToCloverClubLounge (returnToCloverClubLounge)
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Strategy
 
 newtype ReturnToCloverClubLounge = ReturnToCloverClubLounge LocationAttrs
@@ -37,17 +39,17 @@ instance RunMessage ReturnToCloverClubLounge where
       case cards of
         [card] ->
           if card `cardMatch` card_ (#ally <> #asset)
-            then chooseOneM iid do
-              labeled "Put it into play" $ putCardIntoPlay iid card
-              labeled "Do not put it into play" nothing
+            then chooseOneM iid $ scenarioI18n $ scope "returnToCloverClubLounge" do
+              labeled' "putIntoPlay" $ putCardIntoPlay iid card
+              labeled' "doNotPutIntoPlay" nothing
             else whenM (can.draw.cards iid) $ drawCard iid card
         xs ->
           chooseOneAtATimeM iid do
             targets xs \card ->
               if card `cardMatch` card_ (#ally <> #asset)
-                then chooseOneM iid do
-                  labeled "Put it into play" $ putCardIntoPlay iid card
-                  labeled "Do not put it into play" nothing
+                then chooseOneM iid $ scenarioI18n $ scope "returnToCloverClubLounge" do
+                  labeled' "putIntoPlay" $ putCardIntoPlay iid card
+                  labeled' "doNotPutIntoPlay" nothing
                 else whenM (can.draw.cards iid) $ drawCard iid card
       pure l
     _ -> ReturnToCloverClubLounge <$> liftRunMessage msg attrs

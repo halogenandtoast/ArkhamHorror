@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf, getLocationOf)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -11,6 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
+import Arkham.Scenarios.ALightInTheFog.Helpers
 
 newtype WorshippersOfTheDeep = WorshippersOfTheDeep ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -33,13 +35,13 @@ instance RunMessage WorshippersOfTheDeep where
   runMessage msg a@(WorshippersOfTheDeep attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       selectEach (InvestigatorAt FullyFloodedLocation) \iid -> do
-        chooseOrRunOneM iid do
-          labeled "Take 3 damage" $ assignDamage iid (attrs.ability 1) 3
+        chooseOrRunOneM iid $ scenarioI18n $ scope "worshippersOfTheDeep" do
+          countVar 3 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 3
           withLocationOf iid \lid -> void $ runMaybeT do
             pos <- MaybeT $ field LocationPosition lid
             below <- MaybeT $ selectOne $ LocationInPosition (Pos pos.column (pos.row - 1))
             lift
-              $ labeled "Move to the location directly below their location"
+              $ labeled' "moveBelow"
               $ moveTo (attrs.ability 1) iid below
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

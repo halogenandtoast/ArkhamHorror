@@ -43,5 +43,24 @@
       "tablet": "-3. If you fail this test and your location is flooded, take 2 damage.",
       "elderThing": "-4. Move the nearest unengaged enemy once toward your location. It loses aloof during this movement."
     }
+  },
+  "pumpRoom": {
+    "label": {
+      "decreaseFlood": "Choose location to decrease flood level",
+      "increaseFlood": "Choose location to increase flood level"
+    }
+  },
+  "tooltips": {
+    "theMoonRoom": {
+      "resign": "You don one of the the empty diving suits and dive into the reflecting pool"
+    },
+    "falconPointGatehouse": {
+      "resign": "You head back into the woods, leaving the lighthouse and its mysteries behind."
+    }
+  },
+  "worshippersOfTheDeep": {
+    "label": {
+      "moveBelow": "Move to the location directly below their location"
+    }
   }
 }

@@ -59,5 +59,12 @@
   "theMountainPass": {
     "scouted": "<p>_If the investigators scouted the mountain pass:_</p><p>You seek out the safe pass that you and Ellsworth scouted last night, guiding the rest of the team onward. Sheer cliffs flank you as you approach the foothills, blocking the chill wind. The shortcut gives you swift passage as you begin your trek up to the peaks…</p><p class='basic'>During setup, when you reveal the starting location, reduce its clue value by half (rounded up).</p>",
     "otherwise": "<p>_Otherwise:_</p><p>The frozen tundra leading up to the foothills of the jagged mountains is hard terrain to traverse. Even prepared as you are with snowshoes and warm clothes to fight the cold, the going is slow and rough. The wind fights you at every turn, its gusts strong enough to knock you over. But you continue onward, undeterred.</p><p class='basic'>The investigators suffer no ill effects.</p>"
+  },
+  "rooflessRampart": {
+    "label": {
+      "removeDoom": "Remove 1 doom from the agenda",
+      "discardEnemy": "Discard 1 non-Elite enemy",
+      "discardTreachery": "Discard 1 treachery"
+    }
   }
 }

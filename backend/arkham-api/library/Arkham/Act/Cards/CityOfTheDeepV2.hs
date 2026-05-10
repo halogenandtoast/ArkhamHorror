@@ -3,10 +3,12 @@ module Arkham.Act.Cards.CityOfTheDeepV2 (CityOfTheDeepV2 (..), cityOfTheDeepV2) 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 
 newtype CityOfTheDeepV2 = CityOfTheDeepV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -38,9 +40,9 @@ instance RunMessage CityOfTheDeepV2 where
       if otherActs
         then do
           lead <- getLead
-          chooseOneM lead do
-            labeled "Continue playing" nothing
-            labeled "Proceed immediately to (→R1)" $ push R1
+          chooseOneM lead $ scenarioI18n $ scope "cityOfTheDeep" do
+            labeled' "continuePlaying" nothing
+            labeled' "proceedToR1" $ push R1
         else push R1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

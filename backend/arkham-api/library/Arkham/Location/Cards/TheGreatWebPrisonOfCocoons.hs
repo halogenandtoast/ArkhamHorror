@@ -6,7 +6,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Plural
 import Arkham.Projection
 
 newtype TheGreatWebPrisonOfCocoons = TheGreatWebPrisonOfCocoons LocationAttrs
@@ -36,10 +35,10 @@ instance RunMessage TheGreatWebPrisonOfCocoons where
       actions <- field InvestigatorRemainingActions iid
       chooseOrRunOne
         iid
-        $ [ Label ("Lose " <> pluralize n "action") [LoseActions iid (attrs.ability 1) n]
+        $ [ Label ("$label.loseActions count=i:" <> tshow n) [LoseActions iid (attrs.ability 1) n]
           | actions > 0
           ]
-        <> [ Label "Place 1 doom on this location" [PlaceDoom (attrs.ability 1) (toTarget attrs) 1]
+        <> [ Label "$theDreamEaters.weaverOfTheCosmos.theGreatWebPrisonOfCocoons.label.placeDoom" [PlaceDoom (attrs.ability 1) (toTarget attrs) 1]
            ]
 
       pure l

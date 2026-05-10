@@ -5,10 +5,12 @@ import Arkham.Capability
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
 
 newtype TitanicRamp_185 = TitanicRamp_185 LocationAttrs
   deriving anyclass IsLocation
@@ -39,15 +41,14 @@ instance HasAbilities TitanicRamp_185 where
 instance RunMessage TitanicRamp_185 where
   runMessage msg l@(TitanicRamp_185 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
-        labeled
-          "Any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
+      chooseOneM iid $ cardI18n $ scope "titanicRamp" do
+        labeled' "spendClue"
           do
             withCost
               iid
               (GroupClueCost (Static 1) (orConnected NotForMovement $ locationWithInvestigator iid))
               $ withSkillTest \sid -> skillTestAutomaticallySucceeds (attrs.ability 1) sid
-        labeled "Do not spend clues" nothing
+        countVar 2 $ labeledI "doNotSpendClues" nothing
       pure l
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       cancelMovement attrs iid

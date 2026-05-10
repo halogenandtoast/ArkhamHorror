@@ -44,5 +44,11 @@
       "title": "Resolution 3",
       "body": "<p>_Resolution 3_: Somehow, you have managed to quell the rage and bloodlust of the curse within the creature, and in moments the shape of a young, dark-skinned man stands before you, panting and sweating. He seems to only just now understand everything he's done, and agrees to flee to a secluded corner of the earth where he can harm no one. However, the curse lives on. He sees it in your eyes and grips your arm tightly. \"Don't let it take control,\" he warns. \"I was weak, but you-I can tell you are strong. Control the curse as I could not.\"</p><ul><li>In your Campaign Log, record that *the Rougarou escaped, and you embraced the curse*. The bearer of the Curse of the Rougarou weakness must add Monstrous Transformation to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
     }
+  },
+  "huntingTheRougarou": {
+    "label": {
+      "resolution3": "Resolution 3",
+      "flipBack": "Flip back to a side"
+    }
   }
 }

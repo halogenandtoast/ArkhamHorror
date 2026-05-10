@@ -129,7 +129,7 @@ chooseSomeM iid txt choices = do
 chooseSomeM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSomeM' iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  let lbl = "$" <> ikey ("label." <> txt)
+  let lbl = "$" <> labelKey txt
   unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome iid lbl choices'
@@ -146,7 +146,7 @@ chooseSome1M iid txt choices = do
 chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSome1M' iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  let lbl = "$" <> ikey ("label." <> txt)
+  let lbl = "$" <> labelKey txt
   unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome1 iid lbl choices'
@@ -201,12 +201,12 @@ chooseUpToNM_ iid n choices = chooseUpToNMI' iid n "done" choices
 
 chooseUpToNM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM' iid n done choices = do
-  let lbl = "$" <> ikey ("label." <> done)
+  let lbl = "$" <> labelKey done
   chooseUpToNM iid n lbl choices
 
 chooseUpToNMI' :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNMI' iid n done choices = do
-  let lbl = withI18n $ "$" <> ikey ("label." <> done)
+  let lbl = withI18n $ "$" <> labelKey done
   chooseUpToNM iid n lbl choices
 
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
@@ -235,7 +235,7 @@ labeled label action = unterminated do
 labeled' :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeled' label action = unterminated do
   msgs <- lift $ capture action
-  tell [Label ("$" <> ikey ("label." <> label)) msgs]
+  tell [Label ("$" <> labelKey label) msgs]
 
 info' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m ()
 info' flavor = unterminated $ tell [Info $ buildFlavor flavor]
@@ -243,18 +243,18 @@ info' flavor = unterminated $ tell [Info $ buildFlavor flavor]
 labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeledI label action = unterminated do
   msgs <- lift $ capture action
-  tell [Label (withI18n $ "$" <> ikey ("label." <> label)) msgs]
+  tell [Label (withI18n $ "$" <> labelKey label) msgs]
 
 labeledValidate' :: (HasI18n, ReverseQueue m) => Bool -> Text -> QueueT Message m () -> ChooseT m ()
 labeledValidate' valid label action = unterminated do
   if valid
     then do
       msgs <- lift $ capture action
-      tell [Label ("$" <> ikey ("label." <> label)) msgs]
-    else tell [InvalidLabel ("$" <> ikey ("label." <> label))]
+      tell [Label ("$" <> labelKey label) msgs]
+    else tell [InvalidLabel ("$" <> labelKey label)]
 
 invalidLabeled' :: (HasI18n, ReverseQueue m) => Text -> ChooseT m ()
-invalidLabeled' label = unterminated $ tell [InvalidLabel ("$" <> ikey ("label." <> label))]
+invalidLabeled' label = unterminated $ tell [InvalidLabel ("$" <> labelKey label)]
 
 chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
 chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
@@ -366,7 +366,7 @@ tarotLabeled tarotCard action = unterminated do
 scenarioLabeled' :: (HasI18n, ReverseQueue m) => Text -> Text -> QueueT Message m () -> ChooseT m ()
 scenarioLabeled' label scenarioId action = unterminated do
   msgs <- lift $ capture action
-  tell [ScenarioLabel ("$" <> ikey ("label." <> label)) scenarioId msgs]
+  tell [ScenarioLabel ("$" <> labelKey label) scenarioId msgs]
 
 cardsLabeled :: (ReverseQueue m, HasCardCode a) => [a] -> (a -> QueueT Message m ()) -> ChooseT m ()
 cardsLabeled as action = traverse_ (\a -> cardLabeled a (action a)) as
@@ -509,10 +509,10 @@ questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
 questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}
 
 questionLabeled' :: (HasI18n, ReverseQueue m) => Text -> ChooseT m ()
-questionLabeled' label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ "$" <> ikey ("label." <> label)}
+questionLabeled' label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ "$" <> labelKey label}
 
 questionLabeledI :: ReverseQueue m => Text -> ChooseT m ()
-questionLabeledI label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ withI18n $ "$" <> ikey ("label." <> label)}
+questionLabeledI label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ withI18n $ "$" <> labelKey label}
 
 questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}

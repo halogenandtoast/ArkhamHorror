@@ -48,6 +48,19 @@ ikey t = intercalate "." (?scope <> [t]) <> varStr
     String n -> "s:" <> tshow n
     _ -> ""
 
+-- | Build a label key with "label" inserted at the correct position.
+--
+-- Locale JSON groups labels under a top-level "label" section per source file
+-- (e.g. cards.json has @{ label: { cosmicFlame5: { spendChargeForDamage: ... } } }@).
+-- When @cardI18n@ sets the scope to @["cards"]@ and a card adds @scope "cosmicFlame5"@,
+-- a naive @label.<key>@ append produces @cards.cosmicFlame5.label.spendChargeForDamage@,
+-- which doesn't match the JSON structure. We rewrite the scope so "label" lands
+-- right after "cards", yielding @cards.label.cosmicFlame5.spendChargeForDamage@.
+labelKey :: HasI18n => Text -> Text
+labelKey t = case ?scope of
+  ("cards" : rest) -> let ?scope = "cards" : "label" : rest in ikey t
+  _ -> ikey ("label." <> t)
+
 countVar :: HasI18n => Int -> (HasI18n => a) -> a
 countVar = numberVar "count"
 

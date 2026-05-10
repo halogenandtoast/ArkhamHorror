@@ -1187,10 +1187,10 @@ prompt iid lbl body = do
 promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
 promptI iid lbl body = do
   msgs <- capture body
-  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> ikey ("label." <> lbl)) msgs]
+  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> labelKey lbl) msgs]
 
 prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
-prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> ikey ("label." <> lbl)) []]
+prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> labelKey lbl) []]
 
 promptI_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
 promptI_ iid lbl = withI18n $ prompt_ iid lbl
@@ -1444,7 +1444,7 @@ chooseAmount' iid label choiceLabel minVal maxVal target = do
   Msg.pushM
     $ Msg.chooseAmounts
       player
-      ("$" <> ikey ("label." <> label))
+      ("$" <> labelKey label)
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target
@@ -1465,8 +1465,8 @@ chooseAmountLabeled' iid title label choiceLabel minVal maxVal target = do
   Msg.pushM
     $ Msg.chooseAmountsLabeled
       player
-      ("$" <> ikey ("label." <> title))
-      ("$" <> ikey ("label." <> label))
+      ("$" <> labelKey title)
+      ("$" <> labelKey label)
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target

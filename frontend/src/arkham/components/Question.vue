@@ -207,8 +207,13 @@ watch(
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
-  if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    const target = question.value.paymentAmountTargetValue
+  const paymentAmountsQ = question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
+    ? question.value
+    : (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
+        ? question.value.question
+        : null)
+  if (paymentAmountsQ) {
+    const target = paymentAmountsQ.paymentAmountTargetValue
     if (target) {
       switch(target.tag) {
         case 'MaxAmountTarget':

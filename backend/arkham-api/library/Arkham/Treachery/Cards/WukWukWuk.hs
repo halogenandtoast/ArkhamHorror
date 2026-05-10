@@ -1,7 +1,9 @@
 module Arkham.Treachery.Cards.WukWukWuk (wukWukWuk) where
 
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -26,7 +28,7 @@ instance RunMessage WukWukWuk where
             chooseOneM iid do
               withLocationOf iid \lid -> do
                 whenM (eid <=~> (notAt_ (LocationWithId lid) <> EnemyCanEnter (LocationWithId lid))) do
-                  labeled "Move it to your location" $ enemyMoveTo attrs eid lid
-              labeled "Place 1 doom on it" $ placeDoom attrs eid 1
+                  campaignI18n (scope "wukWukWuk" $ labeled' "moveToYou") $ enemyMoveTo attrs eid lid
+              campaignI18n (scope "wukWukWuk" $ labeled' "placeDoom") $ placeDoom attrs eid 1
       pure t
     _ -> WukWukWuk <$> liftRunMessage msg attrs

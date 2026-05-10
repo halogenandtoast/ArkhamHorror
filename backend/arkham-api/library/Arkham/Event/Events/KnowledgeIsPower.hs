@@ -7,6 +7,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -45,10 +46,10 @@ instance RunMessage KnowledgeIsPower where
       inHand <- selectMap toCardId $ InHandOf NotForPlay (InvestigatorWithId iid)
       when (cid `elem` inHand) do
         chooseOneM iid do
-          labeled "Discard to draw 1 card" do
+          cardI18n (scope "knowledgeIsPower" $ labeled' "discard") do
             push $ DiscardCard iid (toSource attrs) cid
             drawCards iid attrs 1
-          labeled "Do not discard" nothing
+          labeledI "doNotDiscard" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]

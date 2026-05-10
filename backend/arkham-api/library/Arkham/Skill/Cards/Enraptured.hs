@@ -23,8 +23,8 @@ instance RunMessage Enraptured where
         chooseTargetM attrs.owner (nub $ chargeAssets <> secretAssets) \aid -> do
           chooseOrRunOneM attrs.owner do
             when (aid `elem` chargeAssets) do
-              labeled "Charge" $ addUses attrs aid Uses.Charge 1
+              labeledI "charge" $ addUses attrs aid Uses.Charge 1
             when (aid `elem` secretAssets) do
-              labeled "Secret" $ addUses attrs aid Uses.Secret 1
+              labeledI "secret" $ addUses attrs aid Uses.Secret 1
       pure s
     _ -> Enraptured <$> liftRunMessage msg attrs

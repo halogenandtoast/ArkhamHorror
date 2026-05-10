@@ -5,6 +5,7 @@ import Arkham.Enemy.Types qualified as Enemy (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier (ModifierType (..))
 
@@ -38,10 +39,10 @@ instance RunMessage ImpromptuBarrier where
             $ EnemyWithMaybeFieldLessThanOrEqualTo n Enemy.EnemyEvade
             <> not_ (be enemyId)
             <> at_ (LocationWithId loc)
-        chooseOrRunOneM iid do
-          questionLabeled "Evade another enemy"
+        chooseOrRunOneM iid $ cardI18n $ scope "impromptuBarrier" do
+          questionLabeled' "evadeAnother"
           questionLabeledCard attrs
-          labeled "Do not evade another enemy" nothing
+          labeled' "skip" nothing
           targets enemies (automaticallyEvadeEnemy iid)
 
       pure e

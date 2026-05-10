@@ -41,9 +41,8 @@ instance RunMessage StellaClark where
         healHorror <- canHaveHorrorHealed attrs iid
         chooseOne
           iid
-          [ Label "Resolve as Elder Sign" []
-          , Label
-              "Automatically fail this skill test to heal 1 damage and 1 horror"
+          [ Label "$cards.label.stellaClark.resolve" []
+          , Label "$cards.label.stellaClark.fail"
               $ FailSkillTest
               : [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
                 <> [HealHorror (toTarget attrs) (toSource attrs) 1 | healHorror]

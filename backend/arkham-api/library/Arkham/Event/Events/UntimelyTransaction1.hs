@@ -47,10 +47,10 @@ instance RunMessage UntimelyTransaction1 where
           push
             $ AskMap
             $ mapFromList
-            $ (player, ChooseOne [Label "No one pays" [UnfocusCards]])
+            $ (player, ChooseOne [Label "$label.noOnePays" [UnfocusCards]])
             : [ ( otherPlayer
                 , ChooseOne
-                    [ Label "Play Card" $ UnfocusCards
+                    [ Label "$label.playCard" $ UnfocusCards
                         : PayCardCost otherInvestigator card (defaultWindows otherInvestigator)
                         : played
                     ]

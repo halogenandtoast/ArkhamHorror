@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
@@ -60,7 +61,7 @@ instance RunMessage DianaStanley where
       unless (null cardsUnderneath) $ do
         focusCards cardsUnderneath do
           chooseOrRunOneM iid do
-            labeled "Do not add any cards to your Hand" nothing
+            cardI18n (scope "dianaStanley" $ labeled' "doNotAdd") nothing
             targets cardsUnderneath (addToHand iid . only)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do

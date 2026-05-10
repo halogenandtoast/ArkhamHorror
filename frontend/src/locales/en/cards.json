@@ -6,11 +6,419 @@
     "oneTwoPunch": {
       "again": "Fight that enemy again",
       "skip": "Do not fight that enemy again"
+    },
+    "bloodRite": {
+      "continueDiscarded": "Continue having discarded {count} cards",
+      "gainResource": "Gain Resource",
+      "spendDamage": "Spend Resource and Deal 1 Damage To Enemy At Your Location"
+    },
+    "callForBackup": {
+      "rogue": "{'{'}rogue{'}'} card, you may move to a connecting location",
+      "guardian": "{'{'}guardian{'}'} card, deal 1 damage to an enemy at your location",
+      "seeker": "{'{'}seeker{'}'} card, discover 1 clue at your location",
+      "mystic": "{'{'}mystic{'}'} card, heal 1 horror from any card",
+      "survivor": "{'{'}survivor{'}'} card, heal 1 damage from any card"
+    },
+    "cosmicRevelation": {
+      "draw": "draw 1 card",
+      "play": "play 1 revealed card"
+    },
+    "customGrip": {
+      "doNotPlayFirearm": "Do not play a Firearm"
+    },
+    "decoy": {
+      "evadeOne": "Evade 1 enemy",
+      "evadeTwo": "Evade 2 enemies"
+    },
+    "flurryOfBlows": {
+      "repeat": "Repeat this effect (Flurry of Blows)"
+    },
+    "friendsInLowPlaces": {
+      "doNotSpend": "Do not spend 1 resource to add a card to your hand",
+      "swiftSkip": "Do no play cards (Swift)",
+      "versatileSkip": "Do not add a card to your hand for free (Versatile)"
+    },
+    "glassing": {
+      "discard": "Discard Glassing to discover 1 additional clue",
+      "doNotDiscard": "Do not discard"
+    },
+    "guerrillaTactics": {
+      "fight": "Fight ({'{'}combat{'}'})",
+      "evade": "Evade ({'{'}agility{'}'})"
+    },
+    "leadingLadyEnchantress": {
+      "removeDoom": "Remove 1 doom from a player card at your location"
+    },
+    "logicalReasoning": {
+      "discardTerror": "Discard a Terror"
+    },
+    "rightUnderTheirNoses": {
+      "discover": "Discover at connected location",
+      "skip": "Do not discover at connected location"
+    },
+    "salvage": {
+      "remove": "Remove that asset from the game and gain resources equal to its cost.",
+      "play": "Play that asset (paying its cost)."
+    },
+    "smuggledGoods": {
+      "deck": "Search deck",
+      "discard": "Search discard"
+    },
+    "theRavenQuill": {
+      "search": "Search your deck, discard pile, and hand for a copy of a named asset and play it (paying its cost). Then, attach The Raven Quill to it.",
+      "doNotSearch": "Do not search",
+      "deckbuilding": "Either mark a checkbox on The Raven Quill's upgrade sheet, or reduce the experience cost to upgrade the attached asset before the next scenario by 1. (NOTE: you must handle this update manually when upgrading your deck via ArkhamDB)",
+      "moveSecret": "Move secret",
+      "moveCharge": "Move charge",
+      "doNotReady": "Do not ready asset"
+    },
+    "trialByFire": {
+      "all": "Set the base value of each of your skills to 5",
+      "one": "Set the base value of one of your skills to 7"
+    },
+    "aethericCurrentYuggoth": {
+      "exhaust": "Exhaust Enemy and move it",
+      "skip": "Do not exhaust enemy"
+    },
+    "atACrossroads": {
+      "act": "The chosen investigator must immediately take an action as if it were their turn, then discards 1 card at random from their hand.",
+      "draw": "The chosen investigator loses 1 action during their next turn, then draws 3 cards."
+    },
+    "beguile": {
+      "move": "Move attached enemy to a revealed connecting location",
+      "investigate": "Perform a basic investigate action at it's location",
+      "evade": "Perform a basic evade action at it's location"
+    },
+    "blackMarket": {
+      "missingOwner": "A set aside card was missing its owner. Please select the correct owner"
+    },
+    "cleanSneak": {
+      "damage": "Deal 2 damage to that Enemy"
+    },
+    "decoyTrap": {
+      "discardMove": "Discard Decoy Trap to move to its location"
+    },
+    "elaborateDistraction": {
+      "evade": "Automatically evade that enemy if it is not elite"
+    },
+    "fangOfTyrthrha": {
+      "moveToEnemy": "Move to enemy location"
+    },
+    "flare": {
+      "searchAlly": "Search for Ally"
+    },
+    "ghastlyRevelation": {
+      "giveClues": "Give any number of your clues to another investigator",
+      "placeClues": "Place any number of your clues on any location"
+    },
+    "honedInstinct": {
+      "another": "Perform another action and remove this from game (Force of Habit)",
+      "skip": "Do not perform another action"
+    },
+    "impromptuBarrier": {
+      "evadeAnother": "Evade another enemy",
+      "skip": "Do not evade another enemy"
+    },
+    "lieInWait": {
+      "skip": "Do not discard Lie in Wait",
+      "discard": "Discard Lie in Wait to add +1 damage"
+    },
+    "manipulateDestiny": {
+      "damage": "Deal 2 damage to an enemy at your location",
+      "heal": "Heal 2 damage from an investigator or Ally asset at your location"
+    },
+    "mysteriesRemain": {
+      "placeClue": "Place 1 clue (from the token bank) on your location"
+    },
+    "powerWord": {
+      "go": "Go",
+      "cower": "Cower",
+      "betray": "Betray",
+      "mercy": "Mercy",
+      "confess": "Confess",
+      "distract": "Distract",
+      "tonguetwisterSkip": "Do not use second command (Tonguetwister)"
+    },
+    "predatorOrPrey": {
+      "enemiesMove": "Each unengaged enemy moves once toward the nearest investigator.",
+      "investigatorsMove": "Each investigator disengages from each enemy engaged with them and moves once away from the nearest enemy."
+    },
+    "protectingTheAnirniq": {
+      "return": "Return that asset to its owner's hand",
+      "draw": "Its owner draws 3 cards"
+    },
+    "psychoanalysis": {
+      "draw": "Draw 1 revealed card and shuffle the rest into your deck",
+      "heal": "Heal 2 horror and return revealed cards to top in any order"
+    },
+    "riteOfEquilibrium": {
+      "add": "Add X {'{'}curse{'}'} tokens to the chaos bag to add X {'{'}bless{'}'} tokens to the chaos bag.",
+      "remove": "Remove X {'{'}curse{'}'} and X {'{'}bless{'}'} tokens from the chaos bag to heal X total horror from among cards at your location."
+    },
+    "stalkPrey": {
+      "moveToward": "Move once toward its location"
+    },
+    "stouthearted": {
+      "done": "Done moving damage/horror"
+    },
+    "taskForce": {
+      "ability": "...resolve an {'{'}action{'}'} ability on an asset they control without paying its {'{'}action{'}'} cost.",
+      "move": "...move to a connecting location.",
+      "discover": "...discover 1 clue at their location"
+    },
+    "throwTheBookAtThem": {
+      "afterAttack": "After the attack ends, you may resolve an {'{'}action{'}'} or {'{'}fast{'}'} ability on the chosen asset (ignoring its {'{'}action{'}'} cost, if any)"
+    },
+    "wordOfWeal": {
+      "shuffle": "Shuffle Word of Woe into your deck"
+    },
+    "wordOfWoe": {
+      "shuffle": "Shuffle Word of Weal into your deck"
+    },
+    "delayTheInevitable": {
+      "discard": "Discard Delay the Inevitable"
+    },
+    "doppelganger": {
+      "moveToDoppelganger": "Move to location of doppelganger",
+      "evadeEnemy": "Evade enemy"
+    },
+    "emergencyCache": {
+      "takeResource": "Take Resource",
+      "addSupply": "Add Supply"
+    },
+    "fickleFortune": {
+      "place": "Place 1 doom on the current agenda. Each investigator heals 3 damage and 3 horror.",
+      "remove": "Remove 1 doom from the current agenda. Each investigator takes 1 direct damage and 1 direct horror. Remove Fickle Fortune from the game."
+    },
+    "hypnoticGaze": {
+      "health": "Deal health damage",
+      "sanity": "Deal sanity damage"
+    },
+    "imDoneRunnin": {
+      "skip": "Do not damage enemy",
+      "damage": "Damage enemy"
+    },
+    "knowledgeIsPower": {
+      "discard": "Discard to draw 1 card"
+    },
+    "mapTheArea": {
+      "willpower": "Add your {'{'}willpower{'}'}",
+      "agility": "Add your {'{'}agility{'}'}"
+    },
+    "onTheTrail": {
+      "moveTowards": "Move twice towards the enemy",
+      "discoverBetween": "Discover 1 clue at any empty location between you and the chosen enemy"
+    },
+    "searchForTheTruthAdvanced": {
+      "draw": "Draw 1 Card",
+      "place": "Place that clue on your location and return any card from your discard pile to your hand",
+      "skip": "Do nothing (finishes this card)"
+    },
+    "tinker": {
+      "hand": "Hand",
+      "accessory": "Accessory"
+    },
+    "twentyOneOrBust": {
+      "stop": "Stop with {total}"
+    },
+    "wrongPlaceRightTime": {
+      "done": "Done moving damage/horror"
+    },
+    "acridMiasma": {
+      "hunter": "Resolve the hunter keyword on each enemy in play"
+    },
+    "agathaCrane": {
+      "cancel": "Cancel this token and draw another. If you do, draw 1 card",
+      "skip": "Do not cancel this token"
+    },
+    "buriedSecrets": {
+      "takeHorror": "Take 2 horror to shuffle into your deck"
+    },
+    "crisisOfFaith": {
+      "swap": "Replace bless token with curse"
+    },
+    "encephalonSignal": {
+      "damage": "Deal 2 damage to an investigator or Humanoid enemy at your location"
+    },
+    "agnesBakerParallel": {
+      "shuffle": "Shuffle event back in instead of discard?"
+    },
+    "amandaSharpe": {
+      "double": "Double skill icons",
+      "skip": "Do not double skill icons"
+    },
+    "ashcanPeteParallel": {
+      "skip": "Do not return any cards"
+    },
+    "beloved": {
+      "remove": "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\"",
+      "skip": "Do not remove"
+    },
+    "carolynFern": {
+      "doNotHeal": "Do not heal anything"
+    },
+    "daisyWalkerParallel": {
+      "skip": "Do not use Daisy's ability"
+    },
+    "defiance": {
+      "skull": "Choose {'{'}skull{'}'}",
+      "cultist": "Choose {'{'}cultist{'}'}",
+      "tablet": "Choose {'{'}tablet{'}'}",
+      "elderThing": "Choose {'{'}elderThing{'}'}"
+    },
+    "dexterDrake": {
+      "skip": "Do no return an asset"
+    },
+    "dianaStanley": {
+      "doNotAdd": "Do not add any cards to your Hand"
+    },
+    "fatherMateo": {
+      "drawAndGain": "Draw 1 card and gain 1 resource"
+    },
+    "fey": {
+      "return": "Return Fey to hand"
+    },
+    "finnEdwards": {
+      "skip": "Do not discover a clue"
+    },
+    "ghastlyPossession": {
+      "placeDoom": "Place 1 doom on that asset. Ghastly Posession gains {'{'}wild{'}'}{'{'}wild{'}'}",
+      "ifSuccess": "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)",
+      "removeDoom": "Remove 1 doom from that asset",
+      "replenish": "Replenish half of its uses (rounded down)"
+    },
+    "gloriaGoldberg": {
+      "discard": "Discard it",
+      "putOnTop": "Put it on top of the encounter deck",
+      "placeBeneath": "Place it beneath Gloria Goldberg (max 3 cards beneath her)",
+      "chooseDrawer": "Choose investigator to draw encounter card"
+    },
+    "grimResolve": {
+      "chooseHandCard": "Choose hand card to swap with",
+      "chooseUnderCard": "Choose card underneath to swap with"
+    },
+    "grizzled": {
+      "attach": "Attach to enemy (Nemesis)",
+      "doNotAttach": "Do not attach to enemy",
+      "addVictory": "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)",
+      "skipVictory": "Do not add to victory"
+    },
+    "inquisitive": {
+      "passByTwoMore": "Pass by 2 more",
+      "passByOneMore": "Pass by 1 more",
+      "doNotModify": "Do not modify",
+      "passByOneLess": "Pass by 1 less",
+      "passByTwoLess": "Pass by 2 less"
+    },
+    "joeDiamond": {
+      "chooseHunch": "Choose 10 more cards for hunch deck",
+      "doNotMove": "Do not move an insight"
+    },
+    "kateWinthrop": {
+      "doNotMove": "Do not move clues back"
+    },
+    "kohakuNarukami": {
+      "addBless": "Add 1 {'{'}bless{'}'} token",
+      "addCurse": "Add 1 {'{'}curse{'}'} token",
+      "removeAction": "Remove 2 {'{'}bless{'}'} tokens and 2 {'{'}curse{'}'} tokens from the chaos bag to take an additional action this turn"
+    },
+    "lukeRobinson": {
+      "currentLocation": "Play at current location",
+      "connectingLocation": "Play at connecting location"
+    },
+    "mandyThompson": {
+      "additionalCards": "Search 3 additional cards",
+      "additionalTargets": "Resolve 1 additional target of the search"
+    },
+    "marieLambeau": {
+      "addDoom": "Add 1 doom"
+    },
+    "memoriesOfAnotherLife": {
+      "remove": "Remove Memories of Another Life from the game",
+      "skip": "Do not remove Memories of Another Lift"
+    },
+    "michaelMcGlen": {
+      "doNotAdd": "Do not add any ammo"
+    },
+    "minhThiPhan": {
+      "skip": "Do not choose a skill to return to your hand"
+    },
+    "nathanielCho": {
+      "elderSign": "{'{'}elderSign{'}'}: return an event from your discard pile to your hand."
+    },
+    "nauticalProwess": {
+      "wild": "Nautical Prowess gains {'{'}wild{'}'}{'{'}wild{'}'}"
+    },
+    "outOfSight": {
+      "disengage": "Disengage from each enemy and move to a revealed location up to 2 connections away."
+    },
+    "patriceHathaway": {
+      "shuffle": "Shuffle all but 1 card from your discard pile into your deck",
+      "leaveInDiscard": "Choose 1 card to leave in discard"
+    },
+    "prescient": {
+      "doNotReturn": "Do not return spell card"
+    },
+    "quickWitted": {
+      "shuffle": "Shuffle each other Quick-Witted in your discard pile into your deck",
+      "skip": "Do not shuffle any"
+    },
+    "rexMurphy": {
+      "fail": "Automatically fail to draw 3"
+    },
+    "rexMurphyParallel": {
+      "conversion": "Number of times to use Rex's conversion"
+    },
+    "ritaYoung": {
+      "damage": "Damage enemy"
+    },
+    "silasMarsh": {
+      "doNotCommit": "Do not commit skills"
+    },
+    "stellaClark": {
+      "resolve": "Resolve as Elder Sign",
+      "fail": "Automatically fail this skill test to heal 1 damage and 1 horror"
+    },
+    "strokeOfLuck": {
+      "exile": "Exile Stroke of Luck to automatically succeed",
+      "skip": "Do not exile"
+    },
+    "subject5U21": {
+      "doNotReturnDevoured": "Do not return a devoured card"
+    },
+    "survivalInstinct": {
+      "disengage": "Disengage from each other enemy",
+      "evadeOther": "Evade each other enemy"
+    },
+    "tommyMuldoon": {
+      "moveToAsset": "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control",
+      "moveToTommy": "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon",
+      "doNotMove": "Do not move any damage and/or horror",
+      "done": "Done moving damage/horror"
+    },
+    "trishScarborough": {
+      "discover": "Discover 1 additional clue at that location",
+      "evade": "Automatically evade that enemy",
+      "doNotChooseLocation": "Do not choose a different location"
+    },
+    "wendyAdamsParallel": {
+      "sealOne": "Seal 1 {'{'}bless{'}'} or {'{'}curse{'}'} token from the chaos bag",
+      "sealAny": "Seal any {'{'}bless{'}'} or {'{'}curse{'}'} tokens revealed from the chaos bag during this test"
     }
   },
   "tooltips": {
+    "decoy": {
+      "twoEnemies": "{'{'}reaction{'}'}  When you play Decoy, increase its cost by 2: Change \"a non-Elite enemy\" to \"up to 2 non-Elite enemies.\"",
+      "twoConnections": "{'{'}reaction{'}'} When you play Decoy, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
+    },
     "shortcut": {
       "ability": "{'{'}fast{'}'} Exhaust Shortcut: _Move_ (to a connecting location). Any investigator at this location may trigger this ability."
+    },
+    "thirdTimesACharm": {
+      "cancel": "Cancel it, return it to the chaos bag, and reveal a new chaos token"
+    },
+    "transmogrify": {
+      "discover": "Discover 1 clue at its location (Transmogrify)"
     }
   }
 }

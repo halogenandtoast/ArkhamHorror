@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.Hypothermia (hypothermia) where
 
 import Arkham.Helpers.ChaosBag
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
@@ -24,10 +25,10 @@ instance RunMessage Hypothermia where
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      chooseOneM iid do
+      chooseOneM iid $ scenarioI18n $ scope "hypothermia" do
         whenM hasRemainingFrostTokens do
-          labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
-        labeled ("Take 1 horror for each point you failed by (" <> tshow n <> ")")
+          labeled' "addFrost" $ addChaosToken #frost
+        countVar n $ labeled' "takeHorror"
           $ assignHorror iid attrs n
       pure t
     _ -> Hypothermia <$> liftRunMessage msg attrs

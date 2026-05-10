@@ -30,8 +30,8 @@ instance RunMessage CrisisOfFaith where
       x <- getRemainingCurseTokens
       chooseOrRunOne
         iid
-        [ Label "Replace bless token with curse" [SwapChaosToken BlessToken CurseToken | x > 0]
-        , Label "Take 1 horror" [Msg.assignHorror iid attrs 1]
+        [ Label "$cards.label.crisisOfFaith.swap" [SwapChaosToken BlessToken CurseToken | x > 0]
+        , Label "$label.takeOneHorror" [Msg.assignHorror iid attrs 1]
         ]
       push $ DoStep (n - 1) msg'
       pure t

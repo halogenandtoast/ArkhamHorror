@@ -61,7 +61,7 @@ instance RunMessage KateWinthrop where
     ElderSignEffect iid | iid == toId attrs -> do
       assets <- select $ assetControlledBy iid <> AssetWithAnyClues
       when (notNull assets) do
-        chooseOne iid $ Label "Do not move clues back" []
+        chooseOne iid $ Label "$cards.label.kateWinthrop.doNotMove" []
           : [ targetLabel asset [MoveTokens (attrs.ability 2) (toSource asset) (toTarget attrs) Clue 1]
             | asset <- assets
             ]

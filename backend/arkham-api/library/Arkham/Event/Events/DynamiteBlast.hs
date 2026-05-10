@@ -32,7 +32,7 @@ instance RunMessage DynamiteBlast where
               for_ investigators \iid' -> assignDamage iid' attrs 3
               unless (null concealed) do
                 chooseOneM iid do
-                  labeled "Expose concealed card" $ chooseTargetM iid concealed $ exposeConcealed iid attrs
-                  labeled "Do not expose concealed card" nothing
+                  labeledI "exposeConcealedCard" $ chooseTargetM iid concealed $ exposeConcealed iid attrs
+                  labeledI "doNotExposeConcealedCard" nothing
       pure e
     _ -> DynamiteBlast <$> liftRunMessage msg attrs

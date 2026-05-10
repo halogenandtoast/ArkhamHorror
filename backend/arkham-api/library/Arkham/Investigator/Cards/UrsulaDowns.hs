@@ -55,9 +55,9 @@ instance RunMessage UrsulaDowns where
     SkillTestEnds {} | moveAfterTest metadata -> do
       xs <- getAccessibleLocations (toId attrs) attrs
       chooseOrRunOneM attrs.id do
-        labeled "Do not move to a connecting location" nothing
+        labeledI "doNotMoveToConnecting" nothing
         when (notNull xs) do
-          labeled "Move to a connecting location" do
+          labeledI "moveToConnecting" do
             chooseTargetM attrs.id xs (moveTo attrs attrs.id)
       pure $ UrsulaDowns $ attrs `with` Metadata False
     ForInvestigators _ ResetGame -> do

@@ -51,8 +51,8 @@ instance RunMessage SpectralShield where
           (damage, horror) <- getDamageAmounts iid
           if
             | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelDamage iid 1
-                labeled "Cancel 1 Horror" $ push $ CancelHorror iid 1
+                labeledI "cancelDamage" $ push $ CancelDamage iid 1
+                labeledI "cancelHorror" $ push $ CancelHorror iid 1
             | damage > 0 -> push $ CancelDamage iid 1
             | horror > 0 -> push $ CancelHorror iid 1
             | otherwise -> pure ()
@@ -61,8 +61,8 @@ instance RunMessage SpectralShield where
           iid <- fromMaybe iid' <$> field AssetOwner aid
           if
             | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelAssetDamage aid dSource 1
-                labeled "Cancel 1 Horror" $ push $ CancelAssetHorror aid dSource 1
+                labeledI "cancelDamage" $ push $ CancelAssetDamage aid dSource 1
+                labeledI "cancelHorror" $ push $ CancelAssetHorror aid dSource 1
             | damage > 0 -> push $ CancelAssetDamage aid dSource 1
             | horror > 0 -> push $ CancelAssetHorror aid dSource 1
             | otherwise -> pure ()

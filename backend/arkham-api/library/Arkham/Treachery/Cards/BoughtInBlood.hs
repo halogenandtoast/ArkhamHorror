@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.BoughtInBlood (boughtInBlood) where
 
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,13 +20,13 @@ instance RunMessage BoughtInBlood where
       inHand <- select $ inHandOf NotForPlay iid <> basic #ally
       if null inPlay && null inHand
         then shuffleIntoDeck iid attrs
-        else chooseOrRunOneM iid do
+        else chooseOrRunOneM iid $ cardI18n $ scope "boughtInBlood" do
           unless (null inPlay) do
-            labeled "Discard an Ally asset you control from play" do
+            labeled' "discardPlay" do
               chooseAndDiscardAssetMatching iid attrs #ally
 
           unless (null inHand) do
-            labeled "Discard each Ally asset from your hand" do
+            labeled' "discardHand" do
               for_ inHand (discardCard iid attrs)
       pure t
     _ -> BoughtInBlood <$> liftRunMessage msg attrs

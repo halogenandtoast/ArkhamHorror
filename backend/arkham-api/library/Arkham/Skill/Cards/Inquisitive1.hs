@@ -1,5 +1,6 @@
 module Arkham.Skill.Cards.Inquisitive1 (inquisitive1) where
 
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
@@ -20,11 +21,11 @@ instance RunMessage Inquisitive1 where
           go x = do
             skillTestModifier sid attrs sid (SkillTestResultValueModifier x)
             push RecalculateSkillTestResults
-        chooseOneM iid do
-          labeled "Pass by 2 more" (go 2)
-          labeled "Pass by 1 more" (go 1)
-          labeled "Do not modify" nothing
-          when (n > 0) $ labeled "Pass by 1 less" (go (-1))
-          when (n > 1) $ labeled "Pass by 2 less" (go (-2))
+        chooseOneM iid $ cardI18n $ scope "inquisitive" do
+          labeled' "passByTwoMore" (go 2)
+          labeled' "passByOneMore" (go 1)
+          labeled' "doNotModify" nothing
+          when (n > 0) $ labeled' "passByOneLess" (go (-1))
+          when (n > 1) $ labeled' "passByTwoLess" (go (-2))
       pure s
     _ -> Inquisitive1 <$> liftRunMessage msg attrs

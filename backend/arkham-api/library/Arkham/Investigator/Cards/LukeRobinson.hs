@@ -16,6 +16,7 @@ import Arkham.Helpers.Modifiers (
   withModifiers,
  )
 import Arkham.Helpers.Playable (getIsPlayable, getPlayableCards)
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -130,13 +131,13 @@ instance RunMessage LukeRobinson where
       if card `elem` concatMap snd lukePlayable && Just card.id /= mCardId
         then do
           let lids = map fst $ filter (elem card . snd) lukePlayable
-          chooseOrRunOneM iid do
+          chooseOrRunOneM iid $ cardI18n $ scope "lukeRobinson" do
             when playable do
-              labeled "Play at current location" do
+              labeled' "currentLocation" do
                 doStep 1 msg
                 playCard
             when (notNull lids) do
-              labeled "Play at connecting location" $ do
+              labeled' "connectingLocation" $ do
                 handleTarget iid attrs attrs
                 chooseOrRunOneM iid do
                   targets lids \lid -> do

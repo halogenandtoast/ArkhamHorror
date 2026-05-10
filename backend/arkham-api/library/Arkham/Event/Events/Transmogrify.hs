@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Projection
@@ -25,7 +26,8 @@ instance HasModifiersFor Transmogrify where
 instance HasAbilities Transmogrify where
   getAbilities (Transmogrify x) = case x.placement of
     AttachedToEnemy eid ->
-      [ withTooltip "Discover 1 clue at its location (Transmogrify)"
+      [ cardI18n
+          $ withI18nTooltip "transmogrify.discover"
           $ playerLimit PerRound
           $ restricted
             (proxied eid x)

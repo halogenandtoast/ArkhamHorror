@@ -28,7 +28,7 @@ instance RunMessage Teamwork where
       let resolveAgain = do_ msg'
 
       chooseOneM iid do
-        labeled "Done Trading" nothing
+        labeledI "doneTrading" nothing
         for_ assetsWithInvestigator \(iid', aid) -> do
           targeting aid do
             beginTrade iid' aid

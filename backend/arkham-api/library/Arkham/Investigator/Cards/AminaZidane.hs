@@ -46,7 +46,7 @@ instance RunMessage AminaZidane where
       validTargets <- select $ TargetAtLocation (locationWithInvestigator iid)
 
       when (length hasDoom > 1 || length validTargets > 1) do
-        chooseOne iid $ Label "Do not move doom" []
+        chooseOne iid $ Label "$label.doNotMoveDoom" []
           : targetLabels hasDoom (only . handleTargetChoice iid attrs)
       pure i
     HandleTargetChoice iid (isSource attrs -> True) target -> do

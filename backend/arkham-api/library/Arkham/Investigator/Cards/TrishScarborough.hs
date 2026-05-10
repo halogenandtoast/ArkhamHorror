@@ -8,6 +8,7 @@ import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Window (discoveredLocation)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (DiscoverClues)
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -48,11 +49,11 @@ instance RunMessage TrishScarborough where
       ok <- getCanDiscoverClues IsInvestigate iid lid
       enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy source
       concealed <- getConcealedIds (ForExpose $ toSource iid) iid
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ cardI18n $ scope "trishScarborough" do
         when ok do
-          labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source 1 lid
+          labeled' "discover" $ discoverAt NotInvestigate iid source 1 lid
         when (notNull enemies || notNull concealed) do
-          labeled "Automatically evade that enemy" do
+          labeled' "evade" do
             chooseAutomaticallyEvadeAt iid iid (LocationWithId lid) AnyEnemy
       pure i
     ElderSignEffect (is attrs -> True) -> do
@@ -60,7 +61,7 @@ instance RunMessage TrishScarborough where
         locations <- select . (RevealedLocation <>) . maybe Anywhere (not_ . be) =<< getLocationOf attrs.id
         when (notNull locations) do
           withSkillTest \sid -> chooseOneM attrs.id do
-            labeled "Do not choose a different location" nothing
+            cardI18n (scope "trishScarborough" $ labeled' "doNotChooseLocation") nothing
             targets locations \location -> do
               push $ SetSkillTestTarget (toTarget location)
               skillTestModifier sid ElderSign attrs (AsIfAt location)

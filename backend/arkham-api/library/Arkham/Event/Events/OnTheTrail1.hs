@@ -6,6 +6,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (handleTargetChoice)
+import Arkham.I18n
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Move
 import Arkham.Movement
@@ -35,13 +36,13 @@ instance RunMessage OnTheTrail1 where
               (LocationWithId lid)
               (EmptyLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid))
 
-        chooseOrRunOneM iid do
+        chooseOrRunOneM iid $ cardI18n $ scope "onTheTrail" do
           when canMoveTowards do
-            labeled "Move twice towards the enemy" do
+            labeled' "moveTowards" do
               moveToEdit attrs iid lid \m -> m {moveMeans = TowardsN 2}
 
           when (notNull canDiscoverClues) do
-            labeled "Discover 1 clue at any empty location between you and the chosen enemy" do
+            labeled' "discoverBetween" do
               chooseTargetM iid canDiscoverClues $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> OnTheTrail1 <$> liftRunMessage msg attrs

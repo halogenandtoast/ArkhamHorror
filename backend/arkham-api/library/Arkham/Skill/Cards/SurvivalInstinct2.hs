@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.SurvivalInstinct2 (survivalInstinct2) where
 
 import Arkham.Action qualified as Action
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Message.Lifted.Choose
@@ -26,12 +27,12 @@ instance RunMessage SurvivalInstinct2 where
         additionalSkillTestOption "Survival Instinct (2)" do
           unless (null enemies) do
             chooseOneM iid do
-              labeled "Evade each other enemy" do
+              cardI18n (scope "survivalInstinct" $ labeled' "evadeOther") do
                 for_ enemies (push . EnemyEvaded iid)
-              labeled "Skip" nothing
+              labeledI "skip" nothing
 
           unless (null locations) $ chooseOrRunOneM iid do
-            labeled "Do not move to a connecting location" nothing
+            labeledI "doNotMoveToConnecting" nothing
             targets locations (moveTo attrs iid)
       pure s
     _ -> SurvivalInstinct2 <$> liftRunMessage msg attrs

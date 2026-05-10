@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.GrimResolve (grimResolve, grimResolveEffect) where
 
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -45,18 +46,18 @@ instance RunMessage GrimResolveEffect where
 
         when (notNull under && notNull hand) do
           sendShowUnder iid
-          chooseOneM iid do
-            labeled "Done swapping" nothing
+          chooseOneM iid $ cardI18n $ scope "grimResolve" do
+            labeledI "doneSwapping" nothing
             targets under \card -> do
               chooseOneM iid do
-                questionLabeled "Choose hand card to swap with"
+                questionLabeled' "chooseHandCard"
                 targets hand \handCard -> do
                   addToHand iid (only card)
                   placeUnderneath iid [handCard]
                   push msg
             targets hand \handCard -> do
               chooseOneM iid do
-                questionLabeled "Choose card underneath to swap with"
+                questionLabeled' "chooseUnderCard"
                 targets under \card -> do
                   addToHand iid (only card)
                   placeUnderneath iid [handCard]

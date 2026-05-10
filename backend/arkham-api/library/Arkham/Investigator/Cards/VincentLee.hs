@@ -78,7 +78,7 @@ instance RunMessage VincentLee where
           <*> selectTargets
             (HealableAsset (toSource attrs) #damage $ (AssetControlledBy $ affectsOthers $ colocatedWith iid))
       when (notNull targets) do
-        chooseOne iid $ Label "Do not heal" []
+        chooseOne iid $ Label "$label.doNotHeal" []
           : [targetLabel target [HealDamage target (toSource attrs) 1] | target <- targets]
 
       pure i

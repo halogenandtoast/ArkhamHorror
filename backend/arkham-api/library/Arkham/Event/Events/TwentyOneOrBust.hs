@@ -42,8 +42,8 @@ instance RunMessage TwentyOneOrBust where
           totalLabel = if totalA == totalB then tshow totalA else tshow totalA <> " or " <> tshow totalB
       chooseOne
         iid
-        [ Label ("Stop with " <> totalLabel) [DoStep 0 msg]
-        , Label "Continue" [RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
+        [ Label ("$cards.label.twentyOneOrBust.stop total=s:\"" <> totalLabel <> "\"") [DoStep 0 msg]
+        , Label "$label.continue" [RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside]
         ]
       pure . TwentyOneOrBust $ attrs & setMeta @[ChaosTokenFace] (tokenFaces <> hand)
     DoStep 0 msg'@(RequestedChaosTokens (isSource attrs -> True) (Just iid) _) -> do

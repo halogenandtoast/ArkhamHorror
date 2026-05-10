@@ -1,7 +1,9 @@
 module Arkham.Treachery.Cards.FurtiveLocals (furtiveLocals, FurtiveLocals (..)) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -31,8 +33,8 @@ instance RunMessage FurtiveLocals where
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        labeled "Take 1 damage" $ assignDamage iid (attrs.ability 1) 1
-        labeled "Put Furtive Locals into play next to the agenda deck."
+        labeledI "takeOneDamage" $ assignDamage iid (attrs.ability 1) 1
+        campaignI18n (scope "furtiveLocals" $ labeled' "putIntoPlay")
           $ placeTreachery attrs NextToAgenda
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

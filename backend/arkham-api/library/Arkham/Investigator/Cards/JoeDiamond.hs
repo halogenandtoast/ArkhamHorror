@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Import.Lifted
@@ -92,7 +93,7 @@ instance RunMessage JoeDiamond where
             remainingInsights = filter (/= unsolvedCase) insights
           focusCards (map toCard remainingInsights) do
             push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
-            questionLabel "Choose 10 more cards for hunch deck" iid
+            questionLabel "$cards.label.joeDiamond.chooseHunch" iid
               $ ChooseN 10
               $ [ targetLabel insight.id [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
                 | insight <- remainingInsights
@@ -125,7 +126,7 @@ instance RunMessage JoeDiamond where
       insights <- filter (`cardMatch` (CardWithTrait Insight <> #event)) <$> field InvestigatorDiscard iid
       when (notNull insights) do
         chooseOneM iid do
-          labeled "Do not move an insight" nothing
+          cardI18n (scope "joeDiamond" $ labeled' "doNotMove") nothing
           targets insights $ putCardOnBottomOfDeck iid (Deck.HunchDeck iid)
       pure i
     PutCardOnBottomOfDeck _ (Deck.HunchDeck iid) insight | attrs `is` iid -> do

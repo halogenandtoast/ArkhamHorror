@@ -3,8 +3,9 @@ module Arkham.Skill.Cards.Defiance (defiance, defianceEffect) where
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Modifier
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -21,14 +22,14 @@ instance RunMessage Defiance where
     BeforeRevealChaosTokens -> do
       case attrs.placement of
         Limbo ->
-          chooseOneM (skillOwner attrs) do
-            labeled "Choose {skull}"
+          chooseOneM (skillOwner attrs) $ cardI18n $ scope "defiance" do
+            labeled' "skull"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)
-            labeled "Choose {cultist}"
+            labeled' "cultist"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Cultist)
-            labeled "Choose {tablet}"
+            labeled' "tablet"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Tablet)
-            labeled "Choose {elderThing}"
+            labeled' "elderThing"
               $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget ElderThing)
         _ -> pure ()
       pure s

@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.MichaelMcGlen (michaelMcGlen) where
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Capability
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -53,7 +54,7 @@ instance RunMessage MichaelMcGlen where
       firearms <- select $ assetControlledBy iid <> #firearm
       unless (null firearms) do
         chooseOneM iid do
-          labeled "Do not add any ammo" nothing
+          cardI18n (scope "michaelMcGlen" $ labeled' "doNotAdd") nothing
           targets firearms \firearm -> addUses ElderSign firearm Ammo 1
       pure i
     _ -> MichaelMcGlen <$> liftRunMessage msg attrs

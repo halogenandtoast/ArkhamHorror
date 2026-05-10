@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.Beloved (beloved) where
 
 import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
@@ -21,14 +22,12 @@ instance RunMessage Beloved where
         Just sid ->
           if toResult attrs.meta
             then do
-              chooseOneM attrs.owner do
-                labeled
-                  "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\""
-                  do
-                    removeFromGame attrs
-                    skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
-                    passSkillTest
-                labeled "Do not remove" nothing
+              chooseOneM attrs.owner $ cardI18n $ scope "beloved" do
+                labeled' "remove" do
+                  removeFromGame attrs
+                  skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
+                  passSkillTest
+                labeled' "skip" nothing
               pure $ Beloved $ attrs & setMeta False
             else pure s
     _ -> Beloved <$> liftRunMessage msg attrs

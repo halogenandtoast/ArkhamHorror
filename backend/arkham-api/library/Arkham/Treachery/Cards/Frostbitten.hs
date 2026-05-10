@@ -32,7 +32,7 @@ instance RunMessage Frostbitten where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        labeled "Take 1 damage" $ assignDamage iid (attrs.ability 1) 1
-        labeled "Automatically fail this test" failSkillTest
+        labeledI "takeOneDamage" $ assignDamage iid (attrs.ability 1) 1
+        labeledI "automaticallyFailTest" failSkillTest
       pure t
     _ -> Frostbitten <$> liftRunMessage msg attrs

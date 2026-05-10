@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (PlayCard)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Data.Aeson
@@ -17,15 +18,13 @@ decoy :: EventCard Decoy
 decoy = event Decoy Cards.decoy
 
 instance HasAbilities Decoy where
-  getAbilities (Decoy a) =
-    [ withTooltip
-        "{reaction}  When you play Decoy, increase its cost by 2: Change \"a non-Elite enemy\" to \"up to 2 non-Elite enemies.\""
+  getAbilities (Decoy a) = cardI18n $ scope "decoy"
+    [ withI18nTooltip "twoEnemies"
         $ mkAbility a 1
         $ triggered
           (PlayCard #when You (basic $ CardWithId a.cardId))
           (IncreaseCostOfThis (toCardId a) 2)
-    , withTooltip
-        "{reaction} When you play Decoy, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
+    , withI18nTooltip "twoConnections"
         $ mkAbility a 2
         $ ForcedWhen (not_ $ exists $ at_ YourLocation <> NonEliteEnemy)
         $ triggered
@@ -76,9 +75,9 @@ instance RunMessage Decoy where
             )
             NonEliteEnemy
       if enemyCount == 2 && length enemies > 1
-        then chooseOneM iid do
-          labeled "Evade 1 enemy" handleOne
-          labeled "Evade 2 enemies" do
+        then chooseOneM iid $ cardI18n $ scope "decoy" do
+          labeled' "evadeOne" handleOne
+          labeled' "evadeTwo" do
             chooseAutomaticallyEvadeNAt
               iid
               attrs

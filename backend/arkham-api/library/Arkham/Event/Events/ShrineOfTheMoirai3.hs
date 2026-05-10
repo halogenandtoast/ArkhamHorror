@@ -42,7 +42,7 @@ instance RunMessage ShrineOfTheMoirai3 where
     DoStep n (UseThisAbility iid (isProxySource attrs -> True) 1) -> do
       cs <- select $ inDiscardOf iid <> basic (CardWithMaxLevel n)
       chooseOrRunOne iid
-        $ Label "Done choosing cards" []
+        $ Label "$label.doneChoosingCards" []
         : [targetLabel c [Msg.addToHand iid c] | c <- cs]
       pure e
     _ -> ShrineOfTheMoirai3 <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Event.Events.EmergencyCache3 (emergencyCache3) where
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype EmergencyCache3 = EmergencyCache3 EventAttrs
@@ -23,9 +24,9 @@ instance RunMessage EmergencyCache3 where
       if null supplyAssets
         then pushAll [TakeResources iid 4 (toSource attrs) False]
         else replicateM_ 4 do
-          chooseOneM iid do
-            labeled "Take Resource" $ gainResourcesIfCan iid attrs 1
-            labeled "Add Supply" do
+          chooseOneM iid $ cardI18n $ scope "emergencyCache" do
+            labeled' "takeResource" $ gainResourcesIfCan iid attrs 1
+            labeled' "addSupply" do
               chooseTargetM iid supplyAssets \asset ->
                 push $ AddUses (toSource attrs) asset Supply 1
       pure e

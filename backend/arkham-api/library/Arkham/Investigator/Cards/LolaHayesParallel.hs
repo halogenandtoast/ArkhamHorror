@@ -81,7 +81,7 @@ instance RunMessage LolaHayesParallel where
       ok <- selectNone $ inHandOf NotForPlay iid <> basic (cardIs Assets.samuelBlakeObsessiveProducer)
       when ok do
         chooseOneM iid do
-          labeled "Switch Role" $ switchRole attrs
+          labeledI "switchRole" $ switchRole attrs
           withI18n skip_
       pure i
     InvestigatorSpecific iid "switchRole" _ | iid == attrs.id -> do

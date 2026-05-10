@@ -22,8 +22,8 @@ instance RunMessage WardOfRadiance where
     RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do
       chooseOneM iid do
         if any ((`elem` [#bless, #eldersign]) . chaosTokenFace) tokens
-          then labeled "Cancel Revelation Effect" $ cancelRevelation attrs (cardDrawn attrs.windows)
-          else labeled "No matching tokens" nothing
+          then labeledI "cancelRevelationEffect" $ cancelRevelation attrs (cardDrawn attrs.windows)
+          else labeledI "noMatchingTokens" nothing
 
       push $ ResetChaosTokens (toSource attrs)
       pure e

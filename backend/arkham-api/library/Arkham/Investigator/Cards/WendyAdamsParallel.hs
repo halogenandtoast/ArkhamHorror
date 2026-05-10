@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher hiding (RevealChaosToken)
@@ -39,11 +40,11 @@ instance RunMessage WendyAdamsParallel where
       revealedTokens <- filter ((`elem` [#curse, #bless]) . (.face)) <$> getSkillTestRevealedChaosTokens
       inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
 
-      chooseOneM iid do
+      chooseOneM iid $ cardI18n $ scope "wendyAdamsParallel" do
         when (notNull inBag) do
-          labeled "Seal 1 {bless} or {curse} token from the chaos bag" $ doStep 1 msg
+          labeled' "sealOne" $ doStep 1 msg
         when (notNull revealedTokens) do
-          labeled "Seal any {bless} or {curse} tokens revealed from the chaos bag during this test" do
+          labeled' "sealAny" do
             doStep 2 msg
       pure i
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

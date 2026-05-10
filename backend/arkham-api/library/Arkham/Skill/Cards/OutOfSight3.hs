@@ -18,7 +18,7 @@ instance RunMessage OutOfSight3 where
   runMessage msg s@(OutOfSight3 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
       chooseOneM iid do
-        labeled "Disengage from each enemy and move to a revealed location up to 2 connections away."
+        cardI18n (scope "outOfSight" $ labeled' "disengage")
           $ doStep 1 msg
         withI18n skip_
       pure s

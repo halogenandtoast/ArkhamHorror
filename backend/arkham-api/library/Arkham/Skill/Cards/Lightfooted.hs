@@ -26,7 +26,7 @@ instance RunMessage Lightfooted where
         guard $ notNull otherEnemies
         lift $ additionalSkillTestOption "Lightfooted" do
           chooseOneM attrs.owner do
-            labeled "Do not evade another enemy" nothing
+            labeledI "doNotEvadeAnother" nothing
             targets otherEnemies $ automaticallyEvadeEnemy attrs.owner
             targets concealed $ exposeConcealed attrs.owner attrs
       pure s

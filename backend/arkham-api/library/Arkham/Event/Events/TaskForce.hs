@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
+import Arkham.I18n
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
@@ -44,12 +45,12 @@ instance RunMessage TaskForce where
             )
 
       when (canUseAbility || canMove || canDiscover) do
-        chooseOneM iid do
+        chooseOneM iid $ cardI18n $ scope "taskForce" do
           when canUseAbility do
-            labeled "...resolve an {action} ability on an asset they control without paying its {action} cost."
+            labeled' "ability"
               $ doStep 1 msg'
-          when canMove $ labeled "...move to a connecting location." $ doStep 2 msg'
-          when canDiscover $ labeled "...discover 1 clue at their location" $ doStep 3 msg'
+          when canMove $ labeled' "move" $ doStep 2 msg'
+          when canDiscover $ labeled' "discover" $ doStep 3 msg'
       pure e
     DoStep 1 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <- select $ colocatedWith iid

@@ -41,7 +41,7 @@ instance RunMessage TrishScarborough2 where
     ElderSignEffect iid | attrs `is` iid -> do
       afterSkillTest iid "Trish Scarborough" do
         chooseOneM iid do
-          labeled "Disengage from each enemy and move to a connecting location." $ doStep 1 msg
+          labeledI "disengageAndMove" $ doStep 1 msg
           withI18n skip_
       pure i
     DoStep 1 (ElderSignEffect iid) | attrs `is` iid -> do

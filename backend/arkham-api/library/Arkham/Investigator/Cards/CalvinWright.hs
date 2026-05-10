@@ -35,11 +35,11 @@ instance RunMessage CalvinWright where
       canHealHorror <- canHaveHorrorHealed attrs iid
       canHealDamage <- canHaveDamageHealed attrs iid
       chooseOne iid
-        $ [Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
-        <> [Label "Heal 1 Horror" [HealHorror (toTarget attrs) (toSource attrs) 1] | canHealHorror]
-        <> [ Label "Take 1 Direct Damage" [Msg.directDamage iid attrs 1]
-           , Label "Take 1 Direct Horror" [Msg.directHorror iid attrs 1]
-           , Label "Do not use elder sign ability" []
+        $ [Label "$label.healDamage count=i:1" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
+        <> [Label "$label.healHorror count=i:1" [HealHorror (toTarget attrs) (toSource attrs) 1] | canHealHorror]
+        <> [ Label "$label.takeOneDirectDamage" [Msg.directDamage iid attrs 1]
+           , Label "$label.takeOneDirectHorror" [Msg.directHorror iid attrs 1]
+           , Label "$label.doNotUseElderSign" []
            ]
       pure i
     _ -> CalvinWright <$> liftRunMessage msg attrs

@@ -43,8 +43,8 @@ instance RunMessage FinnEdwards where
           discovery <- discoverAtYourLocation attrs 1
           pushWhen (hasClues && canDiscover)
             $ chooseOne player
-            $ [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid discovery]
-              , Label "Do not discover a clue" []
+            $ [ Label "$label.discoverAtYourLocation count=i:1" [Msg.DiscoverClues iid discovery]
+              , Label "$cards.label.finnEdwards.skip" []
               ]
       pure i
     _ -> FinnEdwards <$> runMessage msg attrs

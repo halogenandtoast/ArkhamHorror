@@ -25,19 +25,19 @@ instance RunMessage ParallelFates2 where
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
       focusCards cards do
         chooseOneM iid do
-          labeled "Shuffle them in" nothing
-          labeled "Put back in any order" do
+          labeledI "shuffleThemIn" nothing
+          labeledI "putBackInAnyOrder" do
             push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
       pure e
     SearchFound iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') cards -> do
       focusCards cards do
         chooseOneM iid do
-          labeled "Shuffle them in" nothing
-          labeled "Put back in any order" do
+          labeledI "shuffleThemIn" nothing
+          labeledI "putBackInAnyOrder" do
             push $ UpdateSearchReturnStrategy iid' FromDeck PutBackInAnyOrder
       afterSearch do
         chooseOrRunOneM iid' do
-          labeled "Do not draw" nothing
-          whenM (can.draw.cards iid') $ labeled "Draw 1 card" $ drawCards iid' attrs 1
+          labeledI "doNotDraw" nothing
+          whenM (can.draw.cards iid') $ labeledI "drawCardOne" $ drawCards iid' attrs 1
       pure e
     _ -> ParallelFates2 <$> liftRunMessage msg attrs

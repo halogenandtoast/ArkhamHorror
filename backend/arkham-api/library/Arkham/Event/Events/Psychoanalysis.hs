@@ -3,6 +3,7 @@ module Arkham.Event.Events.Psychoanalysis (psychoanalysis) where
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Strategy
 import Arkham.Zone
@@ -23,10 +24,10 @@ instance RunMessage Psychoanalysis where
       pure e
     SearchFound _iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') cards -> do
       focusCards cards do
-        chooseOneM iid' do
-          labeled "Draw 1 revealed card and shuffle the rest into your deck" do
+        chooseOneM iid' $ cardI18n $ scope "psychoanalysis" do
+          labeled' "draw" do
             chooseOrRunOneM iid' $ targets cards $ drawCard iid'
-          labeled "Heal 2 horror and return revealed cards to top in any order" do
+          labeled' "heal" do
             healHorror iid' attrs 2
             push $ UpdateSearchReturnStrategy iid' FromDeck PutBackInAnyOrder
       pure e

@@ -66,7 +66,7 @@ instance RunMessage WilsonRichards where
         cost <- field AssetCost aid
         pure $ any (\c -> maybe False ((<= cost) . toPrintedCost) c.cost) handTools
       when (notNull validPlayAreaTools) do
-        chooseOne iid $ Label "Do not swap" []
+        chooseOne iid $ Label "$label.doNotSwap" []
           : targetLabels validPlayAreaTools (only . Msg.handleTargetChoice iid attrs)
       pure i
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do

@@ -34,7 +34,7 @@ instance RunMessage PracticeMakesPerfect where
         else ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) cards
       withSkillTest \sid -> do
         chooseNM iid (1 + additionalTargets) do
-          when (null committable) $ labeled "No cards found" nothing
+          when (null committable) $ labeledI "noCardsFound" nothing
           targets committable \card -> do
             skillTestModifiers sid attrs card [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
             push $ SkillTestCommitCard iid card

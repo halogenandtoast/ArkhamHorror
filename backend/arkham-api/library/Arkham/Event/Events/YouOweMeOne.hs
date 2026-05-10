@@ -30,7 +30,7 @@ instance RunMessage YouOweMeOne where
           $ filter (`cardMatch` (NonWeakness <> NonSignature)) cards
       focusCards cards do
         chooseOneM iid do
-          labeled "Do not play a card" nothing
+          labeledI "doNotPlayCard" nothing
           targets relevantCards \card -> do
             playCardPayingCost iid card
             drawCards iid attrs 1

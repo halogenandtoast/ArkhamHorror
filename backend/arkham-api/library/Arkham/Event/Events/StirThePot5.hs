@@ -43,7 +43,7 @@ instance RunMessage StirThePot5 where
       locations <- getAccessibleLocations iid attrs
       when (notNull locations) do
         chooseOneM iid do
-          labeled "Do Not Move" nothing
+          labeledI "doNotMove" nothing
           targets locations (moveTo attrs iid)
       pure e
     _ -> StirThePot5 <$> liftRunMessage msg attrs

@@ -29,9 +29,9 @@ instance RunMessage LeadingLadyFinalGirl where
       canHealDamage <- canHaveDamageHealed attrs iid
       canHealHorror <- canHaveHorrorHealed attrs iid
       chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        when canHealDamage $ labeled "Heal 1 damage" $ healDamage attrs iid 1
-        when canHealHorror $ labeled "Heal 1 horror" $ healHorror attrs iid 1
-        labeled "Do nothing" nothing
+        labeledI "drawCardOne" $ drawCards iid attrs 1
+        when canHealDamage $ labeledI "healOneDamage" $ healDamage attrs iid 1
+        when canHealHorror $ labeledI "healOneHorror" $ healHorror attrs iid 1
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyFinalGirl <$> liftRunMessage msg attrs

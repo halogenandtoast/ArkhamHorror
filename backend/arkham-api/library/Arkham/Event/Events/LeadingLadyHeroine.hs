@@ -30,8 +30,8 @@ instance RunMessage LeadingLadyHeroine where
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
       chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        when canFight $ labeled "Take fight action" $ performActionAction iid attrs #fight
-        labeled "Do nothing" nothing
+        labeledI "drawCardOne" $ drawCards iid attrs 1
+        when canFight $ labeledI "takeFightAction" $ performActionAction iid attrs #fight
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyHeroine <$> liftRunMessage msg attrs

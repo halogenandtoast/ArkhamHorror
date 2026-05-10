@@ -20,7 +20,7 @@ instance RunMessage OutOfSight where
   runMessage msg s@(OutOfSight attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       chooseOneM iid do
-        labeled "Disengage from each enemy and move to a connecting location." $ doStep 1 msg
+        labeledI "disengageAndMove" $ doStep 1 msg
         withI18n skip_
       pure s
     DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do

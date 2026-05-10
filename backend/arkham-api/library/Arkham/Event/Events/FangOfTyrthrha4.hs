@@ -4,6 +4,7 @@ import Arkham.Criteria
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -34,7 +35,7 @@ instance RunMessage FangOfTyrthrha4 where
       yourLocation <- field InvestigatorLocation iid
       when (Just enemyLocation /= yourLocation) do
         chooseOneM iid do
-          labeled "Move to enemy location" $ moveTo attrs iid enemyLocation
-          labeled "Don't move" nothing
+          cardI18n (scope "fangOfTyrthrha" $ labeled' "moveToEnemy") $ moveTo attrs iid enemyLocation
+          labeledI "doNotMove" nothing
       pure e
     _ -> FangOfTyrthrha4 <$> liftRunMessage msg attrs

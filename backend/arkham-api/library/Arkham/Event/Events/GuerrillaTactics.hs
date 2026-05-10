@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight.Types
 import Arkham.ForMovement
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -23,14 +24,14 @@ connectingEnemyMatcher = fightOverride $ EnemyAt (orConnected NotForMovement You
 instance RunMessage GuerrillaTactics where
   runMessage msg e@(GuerrillaTactics attrs) = runQueueT $ case msg of
     BeforePlayEvent iid eid acId | eid == toId attrs -> do
-      chooseOneM iid do
-        labeled "Fight ({combat})" do
+      chooseOneM iid $ cardI18n $ scope "guerrillaTactics" do
+        labeled' "fight" do
           pushAll
             [ UpdateEventMeta eid (toJSON (#fight :: Action))
             , SetActiveCostChosenAction acId #fight
             , CreatedCost acId
             ]
-        labeled "Evade ({agility})" do
+        labeled' "evade" do
           pushAll
             [ UpdateEventMeta eid (toJSON (#evade :: Action))
             , SetActiveCostChosenAction acId #evade

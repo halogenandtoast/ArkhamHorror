@@ -73,7 +73,7 @@ instance RunMessage WilliamYorickEffect where
         lift do
           focusCards (map toCard discards) do
             chooseOneM iid do
-              labeled "Do not return card to hand" nothing
+              labeledI "doNotReturnToHand" nothing
               targets discards $ addToHand iid . only
       disableReturn e
     SkillTestEnds {} -> disableReturn e

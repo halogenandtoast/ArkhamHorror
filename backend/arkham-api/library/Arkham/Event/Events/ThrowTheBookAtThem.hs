@@ -5,6 +5,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
@@ -37,10 +38,8 @@ instance RunMessage ThrowTheBookAtThem where
           canEvade <- eid <=~> EnemyCanBeEvadedBy (toSource attrs)
           chooseOrRunOneM iid do
             when canEvade do
-              labeled "Automatically evade the attacked enemy" $ automaticallyEvadeEnemy iid eid
-            labeled
-              "After the attack ends, you may resolve an {action} or {fast} ability on the chosen asset (ignoring its {action} cost, if any)"
-              $ doStep 1 msg
+              labeledI "automaticallyEvadeAttackedEnemy" $ automaticallyEvadeEnemy iid eid
+            cardI18n $ scope "throwTheBookAtThem" $ labeled' "afterAttack" $ doStep 1 msg
         _ -> pure ()
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
@@ -57,6 +56,6 @@ instance RunMessage ThrowTheBookAtThem where
                   <> PerformableAbility [IgnoreActionCost]
               )
         when (notNull abilities) do
-          chooseOne iid $ Label "Do not use ability" [] : [AbilityLabel iid ab [] [] [] | ab <- abilities]
+          chooseOne iid $ Label "$label.doNotUseAbility" [] : [AbilityLabel iid ab [] [] [] | ab <- abilities]
       pure e
     _ -> ThrowTheBookAtThem . (`with` meta) <$> liftRunMessage msg attrs

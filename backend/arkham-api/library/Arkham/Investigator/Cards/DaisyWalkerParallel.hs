@@ -4,6 +4,7 @@ import Arkham.Ability
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -69,6 +70,6 @@ instance RunMessage DaisyWalkerParallel where
     ElderSignEffect iid | attrs `is` iid -> do
       chooseOneM iid do
         targeting iid $ search iid attrs attrs [fromDiscard] (basic $ #asset <> #tome) $ DrawFound iid 1
-        labeled "Do not use Daisy's ability" nothing
+        cardI18n (scope "daisyWalkerParallel" $ labeled' "skip") nothing
       pure i
     _ -> DaisyWalkerParallel <$> liftRunMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Card
 import Arkham.GameT
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
@@ -47,14 +48,14 @@ agathaRunner f msg attrs = runQueueT $ case msg of
       playCardPayingCost iid card
     pure $ f attrs
   ResolveChaosToken token ElderSign iid | iid == attrs.id -> do
-    chooseOneM iid do
-      labeled "Cancel this token and draw another. If you do, draw 1 card" do
+    chooseOneM iid $ cardI18n $ scope "agathaCrane" do
+      labeled' "cancel" do
         cancelChaosToken ElderSign iid token
         returnChaosTokens [token]
         unfocusChaosTokens
         drawAnotherChaosToken iid
         drawCards iid ElderSign 1
-      labeled "Do not cancel this token" nothing
+      labeled' "skip" nothing
     pure $ f attrs
   ChaosTokenIgnored iid _ _ | iid == attrs.id -> do
     result <- liftRunMessage msg attrs

@@ -30,8 +30,8 @@ instance RunMessage LeadingLadyFemmeFatale where
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       canEvade <- hasEvadeActions iid attrs (DuringTurn You) (defaultWindows iid)
       chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        when canEvade $ labeled "Take fight action" $ performActionAction iid attrs #evade
-        labeled "Do nothing" nothing
+        labeledI "drawCardOne" $ drawCards iid attrs 1
+        when canEvade $ labeledI "takeFightAction" $ performActionAction iid attrs #evade
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyFemmeFatale <$> liftRunMessage msg attrs

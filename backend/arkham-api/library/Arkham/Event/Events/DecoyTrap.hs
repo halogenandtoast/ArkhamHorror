@@ -7,6 +7,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getCanMoveTo)
 import Arkham.Helpers.Window (enteringEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
@@ -54,9 +55,9 @@ instance RunMessage DecoyTrap where
         when (iidLocation /= lid) do
           whenM (getCanMoveTo iid (toSource attrs) lid) do
             chooseOneM iid do
-              labeled "Discard Decoy Trap to move to its location" do
+              cardI18n (scope "decoyTrap" $ labeled' "discardMove") do
                 toDiscardBy iid (toSource attrs) attrs
                 moveTo attrs iid lid
-              labeled "Do not move" nothing
+              labeledI "doNotMove" nothing
       pure e
     _ -> DecoyTrap <$> liftRunMessage msg attrs

@@ -33,7 +33,7 @@ instance RunMessage PrimedForAction where
           upgrades <- select $ PlayableCard (UnpaidCost NoAction) (inHandOf ForPlay attrs.owner <> basic #upgrade)
           focusCards upgrades do
             chooseOrRunOneM iid do
-              labeled "Do not play upgrade" nothing
+              labeledI "doNotPlayUpgrade" nothing
               targets upgrades $ playCardPayingCost iid
       case masset of
         Nothing -> playUpgrade

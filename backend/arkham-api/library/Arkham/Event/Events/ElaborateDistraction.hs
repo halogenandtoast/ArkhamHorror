@@ -2,6 +2,7 @@ module Arkham.Event.Events.ElaborateDistraction (elaborateDistraction) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype ElaborateDistraction = ElaborateDistraction EventAttrs
@@ -24,10 +25,10 @@ instance RunMessage ElaborateDistraction where
       canBeDamaged <- eid <=~> EnemyCanBeDamagedBySource (toSource attrs)
       chooseOrRunOneM iid do
         when canBeEvaded
-          $ labeled "Automatically evade that enemy if it is not elite"
+          $ cardI18n (scope "elaborateDistraction" $ labeled' "evade")
           $ automaticallyEvadeEnemy iid eid
         when canBeDamaged
-          $ labeled "Deal 1 damage to that enemy"
+          $ labeledI "dealDamageToEnemy"
           $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> ElaborateDistraction <$> liftRunMessage msg attrs

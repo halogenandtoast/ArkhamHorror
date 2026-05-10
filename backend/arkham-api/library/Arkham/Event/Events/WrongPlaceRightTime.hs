@@ -44,7 +44,7 @@ instance RunMessage WrongPlaceRightTime where
         else do
           player <- getPlayer iid
           chooseOne iid
-            $ Label "Done moving damage/horror" [DoStep 0 msg']
+            $ Label "$cards.label.wrongPlaceRightTime.done" [DoStep 0 msg']
             : [ DamageLabel
                   iid
                   [ Msg.chooseOne

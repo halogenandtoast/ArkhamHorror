@@ -6,6 +6,7 @@ import Arkham.Effect.Import
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (evadedEnemy)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -56,10 +57,10 @@ instance RunMessage RitaYoung where
       connectingLocations <- getAccessibleLocations iid attrs
       chooseOrRunOneM iid do
         when canDamage do
-          labeled "Damage enemy" do
+          cardI18n (scope "ritaYoung" $ labeled' "damage") do
             push $ EnemyDamage enemyId $ nonAttack (Just iid) (attrs.ability 1) 1
         when (notNull connectingLocations) do
-          labeled "Move to a connecting location" do
+          labeledI "moveToConnecting" do
             chooseOneM iid $ targets connectingLocations $ moveTo attrs iid
       pure i
     _ -> RitaYoung <$> liftRunMessage msg attrs

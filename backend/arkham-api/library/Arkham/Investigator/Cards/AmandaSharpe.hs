@@ -5,6 +5,7 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
@@ -79,8 +80,8 @@ instance RunMessage AmandaSharpe where
     ElderSignEffect iid | attrs `is` iid -> do
       withSkillTest \sid -> do
         for_ (toResult @(Maybe CardId) attrs.meta) \cardId -> do
-          chooseOneM iid do
-            labeled "Double skill icons" $ skillTestModifier sid (toSource attrs) cardId DoubleSkillIcons
-            labeled "Do not double skill icons" nothing
+          chooseOneM iid $ cardI18n $ scope "amandaSharpe" do
+            labeled' "double" $ skillTestModifier sid (toSource attrs) cardId DoubleSkillIcons
+            labeled' "skip" nothing
       pure i
     _ -> AmandaSharpe <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Event.Events.RightUnderTheirNoses (rightUnderTheirNoses) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest (getsSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
@@ -25,10 +26,10 @@ instance RunMessage RightUnderTheirNoses where
               <> locationWithDiscoverableCluesBy iid
           if null hasConnected
             then discoverAtYourLocation NotInvestigate iid attrs 1
-            else chooseOneM iid do
-              labeled "Discover at connected location" do
+            else chooseOneM iid $ cardI18n $ scope "rightUnderTheirNoses" do
+              labeled' "discover" do
                 chooseTargetM iid hasConnected $ discoverAt NotInvestigate iid attrs 1
-              labeled "Do not discover at connected location" do
+              labeled' "skip" do
                 discoverAtYourLocation NotInvestigate iid attrs 1
         _ -> discoverAtYourLocation NotInvestigate iid attrs 1
       pure e

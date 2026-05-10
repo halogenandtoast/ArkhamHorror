@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (canDiscoverCluesAtYourLocation)
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -83,28 +84,28 @@ instance RunMessage CallForBackup2 where
           ]
 
       when (hasRogue || hasGuardian || hasSeeker || hasMystic || hasSurvivor) do
-        chooseOneM iid do
+        chooseOneM iid $ cardI18n $ scope "callForBackup" do
           when hasRogue do
-            labeled "{rogue} card, you may move to a connecting location" do
+            labeled' "rogue" do
               doStep 1 msg'
               do_ msg'
           when hasGuardian do
-            labeled "{guardian} card, deal 1 damage to an enemy at your location" do
+            labeled' "guardian" do
               doStep 2 msg'
               do_ msg'
           when hasSeeker do
-            labeled "{seeker} card, discover 1 clue at your location" do
+            labeled' "seeker" do
               doStep 3 msg'
               do_ msg'
           when hasMystic do
-            labeled "{mystic} card, heal 1 horror from any card" do
+            labeled' "mystic" do
               doStep 4 msg'
               do_ msg'
           when hasSurvivor do
-            labeled "{survivor} card, heal 1 damage from any card" do
+            labeled' "survivor" do
               doStep 5 msg'
               do_ msg'
-          labeled "Done choosing options" nothing
+          labeledI "doneChoosingOptions" nothing
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       locations <- getAccessibleLocations iid attrs

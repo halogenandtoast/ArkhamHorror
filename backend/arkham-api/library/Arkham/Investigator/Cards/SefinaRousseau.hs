@@ -37,7 +37,7 @@ instance RunMessage SefinaRousseau where
       pure i
     ElderSignEffect (is attrs -> True) -> do
       chooseOrRunOneM attrs.id do
-        labeled "Do not use elder sign ability" nothing
+        labeledI "doNotUseElderSign" nothing
         targets attrs.cardsUnderneath (addToHand attrs.id . only)
       pure i
     DrawStartingHand (is attrs -> True) -> do

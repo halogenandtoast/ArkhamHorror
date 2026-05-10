@@ -1,6 +1,7 @@
 module Arkham.Investigator.Cards.MandyThompson (mandyThompson) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -48,9 +49,9 @@ instance RunMessage MandyThompson where
   runMessage msg i@(MandyThompson attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getInvestigator -> iid') _ -> do
       let source = toAbilitySource attrs 1
-      chooseOneM iid do
-        labeled "Search 3 additional cards" $ searchModifier source iid' $ SearchDepth 3
-        labeled "Resolve 1 additional target of the search" do
+      chooseOneM iid $ cardI18n $ scope "mandyThompson" do
+        labeled' "additionalCards" $ searchModifier source iid' $ SearchDepth 3
+        labeled' "additionalTargets" do
           searchModifier source iid' $ AdditionalTargets 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

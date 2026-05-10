@@ -33,7 +33,7 @@ instance RunMessage Stouthearted where
       if health > 0
         then
           chooseOne iid
-            $ Label "Done moving damage/horror" [DoStep 0 msg']
+            $ Label "$cards.label.stouthearted.done" [DoStep 0 msg']
             : [ DamageLabel
                   iid
                   [MoveTokens (toSource attrs) (toSource iid) (toTarget eid) #damage 1, DoStep (n - 1) msg']

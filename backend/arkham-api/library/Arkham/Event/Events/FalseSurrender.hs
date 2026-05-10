@@ -50,9 +50,9 @@ instance RunMessage FalseSurrender where
             =<< selectMap nullifyActionCost (AbilityIsAction #fight <> AssetAbility (AssetWithId asset))
         when (notNull abilities) do
           chooseOneM iid do
-            labeled "Take a fight action against that enemy" do
+            labeledI "takeFightAction" do
               chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]
-            labeled "Do not take a fight action" $ doStep 3 msg
+            labeledI "doNotTakeFightAction" $ doStep 3 msg
       pure e
     DoStep 3 (HandleTargetChoice _ (isSource attrs -> True) _) -> do
       pure . FalseSurrender $ With attrs (Meta Nothing)

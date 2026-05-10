@@ -7,13 +7,13 @@ defineProps<{
 
 <template>
   <div class="log-section">
-    <h3 class="section-title">Expedition Team</h3>
+    <h3 class="section-title">{{ $t('partners.expeditionTeam') }}</h3>
     <table>
       <thead>
         <tr>
           <th></th>
-          <th>Damage</th>
-          <th>Horror</th>
+          <th>{{ $t('partners.damage') }}</th>
+          <th>{{ $t('partners.horror') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +25,7 @@ defineProps<{
         >
           <td v-if="partner.status === 'TheEntity'" class="partner-name">
             <span class="name"><s>{{ cardCodeToTitle(cCode) }}</s></span>
-            <span class="name">The Entity</span>
+            <span class="name">{{ $t('partners.theEntity') }}</span>
           </td>
           <td v-else class="partner-name">
             <span class="name">{{ cardCodeToTitle(cCode) }}</span>

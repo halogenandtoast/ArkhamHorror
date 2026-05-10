@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { LottieAnimation } from "lottie-web-vue"
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import processingJSON from "@/assets/processing.json"
 import { ref, provide, watch, computed, onMounted, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
@@ -16,6 +17,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 const debug = ref(false)
 provide('debug', debug)
 const ready = ref(false)
@@ -121,18 +123,18 @@ onUnmounted(() => clearInterval(interval.value))
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
         <div class="controls">
-          <button v-tooltip="'Restart'" :disabled="processing" @click="restart"><BackspaceIcon size="25" /></button>
-          <button v-tooltip="'Step back'" :disabled="processing" @click="goBack"><BackwardIcon size="25" /></button>
-          <button v-tooltip="'Play'" v-if="!play" @click="play = true"><PlayIcon size="25" /></button>
-          <button v-tooltip="'Stop'" v-else @click="play = false"><StopIcon size="25" /></button>
-          <button v-tooltip="'Step forward'" :disabled="processing" @click="goForward"><ForwardIcon size="25" /></button>
+          <button v-tooltip="t('replay.restart')" :disabled="processing" @click="restart"><BackspaceIcon size="25" /></button>
+          <button v-tooltip="t('replay.stepBack')" :disabled="processing" @click="goBack"><BackwardIcon size="25" /></button>
+          <button v-tooltip="t('replay.play')" v-if="!play" @click="play = true"><PlayIcon size="25" /></button>
+          <button v-tooltip="t('replay.stop')" v-else @click="play = false"><StopIcon size="25" /></button>
+          <button v-tooltip="t('replay.stepForward')" :disabled="processing" @click="goForward"><ForwardIcon size="25" /></button>
         </div>
         <div class="steps">
           <p>{{currentStep}} / {{totalSteps}}</p>
         </div>
       </div>
       <div v-if="gameOver">
-        <p>Game over</p>
+        <p>{{ $t('game.gameOver') }}</p>
 
         <div v-for="entry in recorded" :key="entry">
           {{entry}}

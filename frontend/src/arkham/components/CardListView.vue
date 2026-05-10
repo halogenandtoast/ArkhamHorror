@@ -86,13 +86,13 @@ const cardSetText = (card: Arkham.CardDef) => {
     <table class="card-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Class</th>
-          <th>Cost</th>
-          <th>Type</th>
-          <th>Icons</th>
-          <th class="traits-col">Traits</th>
-          <th class="set-col">Set</th>
+          <th>{{ $t('cardsList.name') }}</th>
+          <th>{{ $t('cardsList.class') }}</th>
+          <th>{{ $t('cardsList.cost') }}</th>
+          <th>{{ $t('cardsList.type') }}</th>
+          <th>{{ $t('cardsList.icons') }}</th>
+          <th class="traits-col">{{ $t('cardsList.traits') }}</th>
+          <th class="set-col">{{ $t('cardsList.set') }}</th>
         </tr>
       </thead>
       <tbody>

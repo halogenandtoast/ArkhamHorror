@@ -546,7 +546,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           />
           <span class="deck-size">{{hunchDeck.length}}</span>
         </div>
-        <button v-if="debug" @click="showHunchDeck">View Deck</button>
+        <button v-if="debug" @click="showHunchDeck">{{ $t('player.viewDeck') }}</button>
       </div>
 
       <div class="investigator-and-deck">

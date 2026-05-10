@@ -134,14 +134,14 @@ const activeSettings = computed(() => {
 
 <template>
   <div class="container scroll-container">
-    <h2>Standalone Settings</h2>
+    <h2>{{ $t('scenarioSettings.title') }}</h2>
     <div v-if="activeSettings.length == 0">
-      <p>There are currently no standalone settings available for this scenario.</p>
+      <p>{{ $t('scenarioSettings.noSettings') }}</p>
     </div>
     <div v-for="setting in activeSettings" :key="setting.key">
       <ScenarioSetting :setting="setting" :scenario="scenario" :game="game" :playerId="playerId" />
     </div>
-    <button @click="submit">Begin</button>
+    <button @click="submit">{{ $t('scenarioSettings.begin') }}</button>
   </div>
 </template>
 

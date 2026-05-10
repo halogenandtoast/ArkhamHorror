@@ -223,13 +223,13 @@ const needsReply = computed(() => {
               <div v-if="deckType == 'UseExistingDeck'" class="deck-picker">
                 <DeckToolbar
                   compact
-                  search-placeholder="Search…"
+                  :search-placeholder="$t('chooseDeck.search')"
                   v-model:search="searchText"
                   v-model:filterClasses="filterClasses"
                   v-model:sortBy="sortBy"
                 />
                 <div class="deck-list">
-                  <div v-if="filteredDecks.length === 0" class="deck-list-empty">No decks match your filters</div>
+                  <div v-if="filteredDecks.length === 0" class="deck-list-empty">{{ $t('noDecksMatchFilters') }}</div>
                   <div
                     v-for="deck in filteredDecks"
                     :key="deck.id"
@@ -245,7 +245,7 @@ const needsReply = computed(() => {
                       </span>
                       <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
                     </div>
-                    <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" title="Use this deck">
+                    <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
                       <font-awesome-icon icon="chevron-right" />
                     </button>
                   </div>

@@ -68,7 +68,7 @@ const deck = computed(() => {
         </div>
         <span class="name">{{ getInvestigatorName(investigator.name.title) }}</span>
         <slot name="back" :investigator="props.investigator">
-          <button v-if="showExpand" class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? 'Collapse' : 'Expand'">
+          <button v-if="showExpand" class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? $t('investigatorRow.collapse') : $t('investigatorRow.expand')">
             <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
           </button>
         </slot>
@@ -80,12 +80,12 @@ const deck = computed(() => {
         </div>
         <div class="stat-chip stat-health">
           <svg class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
-          <span class="stat-label">Physical</span>
+          <span class="stat-label">{{ $t('investigatorRow.physical') }}</span>
           <span class="stat-value">{{ investigator.physicalTrauma }}</span>
         </div>
         <div class="stat-chip stat-sanity">
           <svg class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>
-          <span class="stat-label">Mental</span>
+          <span class="stat-label">{{ $t('investigatorRow.mental') }}</span>
           <span class="stat-value">{{ investigator.mentalTrauma }}</span>
         </div>
       </div>
@@ -93,7 +93,7 @@ const deck = computed(() => {
 
     <div v-if="expanded" class="expanded-details">
       <section v-if="storyCards.length > 0" class="inner-section">
-        <h2>Earned Cards</h2>
+        <h2>{{ $t('investigatorRow.earnedCards') }}</h2>
         <div class="earned-cards">
           <div v-for="card in storyCards">
             <Card :game="game" :card="card" :playerId="investigator.id" />

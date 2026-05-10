@@ -147,13 +147,13 @@ const canSubmit = computed(() => {
     <div v-if="showModePicker" class="mode-section">
       <div class="mode-picker">
         <input type="radio" v-model="importMode" value="Solo" id="mode-solo" />
-        <label for="mode-solo">Solo</label>
+        <label for="mode-solo">{{ $t('importGame.solo') }}</label>
         <input type="radio" v-model="importMode" value="WithFriends" id="mode-multi" />
-        <label for="mode-multi">Multiplayer</label>
+        <label for="mode-multi">{{ $t('importGame.multiplayer') }}</label>
       </div>
       <p class="mode-description">
-        <template v-if="importMode === 'Solo'">You will control all investigators.</template>
-        <template v-else>You will receive an invite link so others can join and claim their investigators.</template>
+        <template v-if="importMode === 'Solo'">{{ $t('importGame.soloDescription') }}</template>
+        <template v-else>{{ $t('importGame.multiplayerDescription') }}</template>
       </p>
     </div>
 

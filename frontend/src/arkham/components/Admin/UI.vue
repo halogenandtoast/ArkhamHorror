@@ -12,38 +12,38 @@ const toggleSidebar = () => (sidebarOpen.value = !sidebarOpen.value)
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="brand">
-        <span>Admin</span>
+        <span>{{ $t('admin.title') }}</span>
       </div>
 
       <nav class="nav">
         <a class="nav-link" :class="{ active: selected == 'dashboard' }" href="#/admin">
           <!-- dashboard icon -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
-          Dashboard
+          {{ $t('admin.dashboard') }}
         </a>
         <a class="nav-link" :class="{ active: selected == 'rooms' }" href="#/admin/rooms">
           <!-- users icon -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v3H4V5zm0 6h10v3H4v-3zm0 6h7v3H4v-3z" fill="currentColor"/></svg>
-          Rooms
+          {{ $t('admin.rooms') }}
         </a>
         <a class="nav-link" href="#">
           <!-- users icon -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V20h6v-3.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
-          Users
+          {{ $t('admin.users') }}
         </a>
         <a class="nav-link" href="#">
           <!-- games icon -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 6h-7V3H3v15h3v3h15V6zm-2 13H8v-3H6V5h6v3h7v11z" fill="currentColor"/></svg>
-          Games
+          {{ $t('admin.games') }}
         </a>
 
-        <div class="nav-section">Insights</div>
-        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2zM3 17h2v-2H3v2zm4 0h14v-2H7v2zM3 9h2V7H3v2zm4 0h14V7H7v2z" fill="currentColor"/></svg>Reports</a>
-        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor"/></svg>Status</a>
+        <div class="nav-section">{{ $t('admin.insights') }}</div>
+        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2zM3 17h2v-2H3v2zm4 0h14v-2H7v2zM3 9h2V7H3v2zm4 0h14V7H7v2z" fill="currentColor"/></svg>{{ $t('admin.reports') }}</a>
+        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor"/></svg>{{ $t('admin.status') }}</a>
       </nav>
 
       <div class="sidebar-footer">
-        <button class="collapse" @click="toggleSidebar" aria-label="Toggle sidebar">
+        <button class="collapse" @click="toggleSidebar" :aria-label="$t('admin.toggleSidebar')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l6 6-6 6V6z" fill="currentColor"/></svg>
         </button>
       </div>

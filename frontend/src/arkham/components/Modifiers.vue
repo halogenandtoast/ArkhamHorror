@@ -10,11 +10,11 @@ defineEmits<{ close: [] }>()
 
 <template>
   <Draggable>
-    <template #handle><header><h2>Modifiers</h2></header></template>
+    <template #handle><header><h2>{{ $t('modifiersTitle') }}</h2></header></template>
     <div class="modifiers">
       <View :modifier="modifier" :game="game" v-for="(modifier, idx) in modifiers" :key="idx" />
     </div>
-    <button class="close button" @click="$emit('close')">Close</button>
+    <button class="close button" @click="$emit('close')">{{ $t('close') }}</button>
   </Draggable>
 </template>
 

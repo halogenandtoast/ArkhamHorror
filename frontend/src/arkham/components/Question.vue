@@ -481,7 +481,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div v-if="cardLabels.length > 0" class="cardLabels">
       <div v-if="cardLabels.length > 10" class="filter">
-        <input v-model="cardFilter" @keydown.stop placeholder="Filter" />
+        <input v-model="cardFilter" @keydown.stop :placeholder="$t('questionFilter.filter')" />
       </div>
       <template v-for="{choice, index} in filteredCards" :key="index">
         <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />

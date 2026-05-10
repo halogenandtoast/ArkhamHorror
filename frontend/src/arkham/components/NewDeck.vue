@@ -185,8 +185,8 @@ async function createDeck() {
         <input v-if="investigator" v-model="deckName" />
         <div v-if="!alwaysSave" class="save-option" :class="{ active: saveDeck }" @click="saveDeckToggle = !saveDeckToggle" role="checkbox" :aria-checked="saveDeck">
           <div class="save-option-body">
-            <span class="save-option-title">Save to Deck List</span>
-            <span class="save-option-desc">Keep this deck available for future campaigns</span>
+            <span class="save-option-title">{{ $t('deckList.saveToDeckList') }}</span>
+            <span class="save-option-desc">{{ $t('deckList.saveToDeckListDescription') }}</span>
           </div>
           <div class="save-option-toggle" :class="{ on: saveDeck }">
             <div class="save-option-thumb" />

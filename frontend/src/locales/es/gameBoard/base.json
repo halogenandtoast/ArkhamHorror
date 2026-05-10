@@ -11,7 +11,7 @@
     "watchReplay": "Ver repetición",
 
     "submit": "Enviar",
-    "sancel": "Cancelar",
+    "cancel": "Cancelar",
     "close": "Cerrar",
 
     "outOfSyncHint": "Tu partida no está sincronizada, intentando reconectar...",

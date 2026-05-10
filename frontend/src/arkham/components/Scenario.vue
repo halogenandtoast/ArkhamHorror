@@ -1094,7 +1094,7 @@ async function addChaosToken(face: any){
             <div v-if="discards.length > 0" class="buttons">
               <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
               <template v-if="debug.active">
-                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">Shuffle Back In</button>
+                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
               </template>
             </div>
           </div>

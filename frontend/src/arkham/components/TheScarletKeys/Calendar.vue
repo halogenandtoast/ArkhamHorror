@@ -15,7 +15,7 @@ function symbolForDay(day: number): string | null {
 
 <template>
   <div class="time">
-    <h2>Time Passed</h2>
+    <h2>{{ $t('calendar.timePassed') }}</h2>
     <div class='calendar'>
       <!-- we need 35 cells each with an empty div a div with a number and another empty div -->
       <div class='day' v-for="n in 35" :key="n">

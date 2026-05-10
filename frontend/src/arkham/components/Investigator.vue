@@ -500,7 +500,7 @@ const spadeInjury = computed(() => {
             <button
               v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
               @click="showModifiers = true"
-              >Show Modifiers</button>
+              >{{ $t('investigatorRow.showModifiers') }}</button>
 
             <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
 

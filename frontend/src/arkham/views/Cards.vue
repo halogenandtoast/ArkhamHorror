@@ -497,21 +497,21 @@ const showSidebar = ref(false)
     </div>
     <div class="results">
       <header>
-        <button class="sidebar-toggle" @click="showSidebar = !showSidebar" title="Browse sets">
+        <button class="sidebar-toggle" @click="showSidebar = !showSidebar" :title="$t('cardsView.browseSets')">
           <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
           <font-awesome-icon icon="book" />
         </button>
         <form @submit.prevent="setFilter">
-          <input v-model="query" placeholder="Search cards..." />
+          <input v-model="query" :placeholder="$t('cardsView.searchCards')" />
           <button type="submit"><font-awesome-icon icon="search" /></button>
         </form>
         <div class="view-controls">
-          <button @click.prevent="view = View.List" :class="{ active: view == View.List }" title="List view"><font-awesome-icon icon="list" /></button>
-          <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" title="Image view"><font-awesome-icon icon="image" /></button>
+          <button @click.prevent="view = View.List" :class="{ active: view == View.List }" :title="$t('cardsView.listView')"><font-awesome-icon icon="list" /></button>
+          <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
         <label class="encounter-toggle">
           <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
-          <span>Include Encounter</span>
+          <span>{{ $t('cardsView.includeEncounter') }}</span>
         </label>
       </header>
       <CardImageView v-if="view == View.Image" :cards="cards" />

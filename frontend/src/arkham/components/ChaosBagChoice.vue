@@ -100,7 +100,7 @@ const allResolved = computed(() => {
 
     <div class="token-choices-inner">
       <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx" class="token-choice" :class="{ 'token-choice-multi': tokenChoice.tag === 'Resolved' && tokenChoice.tokens.length > 1 }">
-        <span v-if="tokenChoice.tag === 'Resolved' && tokenChoice.tokens.length > 1">Grouped</span>
+        <span v-if="tokenChoice.tag === 'Resolved' && tokenChoice.tokens.length > 1">{{ $t('chaosBagChoice.grouped') }}</span>
         <template v-if="tokenChoice.tag ==='Resolved'">
           <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :playerId="playerId" @choose="choose" />
         </template>

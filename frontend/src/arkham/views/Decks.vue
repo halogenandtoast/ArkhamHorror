@@ -8,6 +8,9 @@ import Deck from '@/arkham/components/DeckRow.vue';
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useToast } from "vue-toastification";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const allDecks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)
@@ -66,7 +69,7 @@ const decks = computed(() => {
 
 async function sync(deck: Arkham.Deck) {
   syncDeck(deck.id).then(() => {
-    toast.success("Deck synced successfully", { timeout: 3000 })
+    toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
   })
 }
 </script>
@@ -75,8 +78,8 @@ async function sync(deck: Arkham.Deck) {
   <div class="page-container">
     <div id="decks">
       <header class="decks-header">
-        <h2>Decks</h2>
-        <PrimaryButton :label="showNewDeck ? 'Cancel' : 'New Deck'" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
+        <h2>{{ $t('decks') }}</h2>
+        <PrimaryButton :label="showNewDeck ? t('cancel') : t('newDeck')" :danger="showNewDeck" @click="showNewDeck = !showNewDeck" />
       </header>
 
       <div v-if="showNewDeck" class="new-deck-panel">
@@ -91,7 +94,7 @@ async function sync(deck: Arkham.Deck) {
       />
 
       <div v-if="decks.length === 0" class="empty-state">
-        <p>No decks match your filters.</p>
+        <p>{{ $t('noDecksMatchFilters') }}</p>
       </div>
       <div v-else class="deck-grid">
         <Deck
@@ -105,7 +108,7 @@ async function sync(deck: Arkham.Deck) {
 
       <Prompt
         v-if="deleteId"
-        prompt="Are you sure you want to delete this deck?"
+        :prompt="t('areYouSureDeleteDeck')"
         :yes="deleteDeckEvent"
         :no="() => deleteId = null"
       />

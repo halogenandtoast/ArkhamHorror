@@ -33,9 +33,9 @@ const toBearer = (cardCode: string): string | null => {
 
 <template>
   <div class="campaign-log column box keys-status">
-    <header><h2>Keys</h2></header>
+    <header><h2>{{ $t('keysStatus.keys') }}</h2></header>
     <table>
-      <thead><tr><th><span>Name of Paradimensional Artifact</span></th><th><span>Bearer</span></th></tr></thead>
+      <thead><tr><th><span>{{ $t('keysStatus.nameOfArtifact') }}</span></th><th><span>{{ $t('keysStatus.bearer') }}</span></th></tr></thead>
       <tbody>
         <tr v-for="[cardCode, scarletKey] in Object.entries(allScarletKeys)" :key="scarletKey">
           <td><span class='checkbox'>{{props.keys[cardCode] ? "✓" : null}}</span>{{ scarletKey }}</td>

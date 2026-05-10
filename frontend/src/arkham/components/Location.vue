@@ -468,10 +468,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
         />
 
 
-        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">Under ({{ playerCardsUnderneath.length }})</button>
+        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">{{ $t('location.under', { count: playerCardsUnderneath.length }) }}</button>
 
         <template v-if="debug.active">
-          <button @click="debugging = true">Debug</button>
+          <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
         </template>
       </div>
       <div class="attachments" v-if="hasAttachments">

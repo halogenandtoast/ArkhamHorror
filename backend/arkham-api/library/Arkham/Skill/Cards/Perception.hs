@@ -14,7 +14,7 @@ instance RunMessage Perception where
   runMessage msg s@(Perception attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       let drawer = if attrs.cardCode.isChapterTwo then iid else attrs.owner
-      additionalSkillTestOption "Perception" do
+      skillTestCardOption attrs do
         drawCards drawer attrs 1
       pure s
     _ -> Perception <$> liftRunMessage msg attrs

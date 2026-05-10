@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher hiding (PlayCard)
 
 newtype Geas2 = Geas2 AssetAttrs
@@ -39,7 +40,7 @@ checkPromise attrs iid promise = do
   if isTurn && toResult @Promise attrs.meta == promise
     then do
       n <- min 10 <$> getRemainingCurseTokens
-      send "You have broken the geas!"
+      send (withI18n $ ikey' "cards.label.geas2.broken")
       toDiscardBy iid attrs attrs
       replicateM_ n $ addChaosToken #curse
       pure $ setMeta @Promise 0 attrs

@@ -5,6 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), withModifiersOf)
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Window
 
@@ -26,7 +27,7 @@ instance RunMessage EverVigilant1 where
         filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'')
           =<< select (InHandOf ForPlay (be iid) <> #asset)
       when (notNull cards) do
-        chooseUpToNM iid 1 "Do not play asset" do
+        cardI18n $ scope "everVigilant1" $ chooseUpToNM' iid 1 "doNotPlayAsset" do
           targets cards \c -> do
             reduceCostOf attrs c 1
             playCardPayingCostWithWindows iid c windows''

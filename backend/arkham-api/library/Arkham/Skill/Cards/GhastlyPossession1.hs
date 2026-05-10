@@ -55,14 +55,14 @@ instance RunMessage GhastlyPossession1 where
       when active do
         withSkillTestSource \source -> do
           for_ source.asset \aid -> do
-            additionalSkillTestOptionEdit
+            skillTestCardOptionEdit
+              attrs
               ( \opt ->
                   opt
                     { Arkham.Message.criteria =
                         Just (exists $ AssetWithId aid <> oneOf [AssetWithAnyDoom, AssetNotAtUsesX])
                     }
               )
-              "Ghastly Possession (1)"
               (do_ msg)
       pure s
     Do (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do

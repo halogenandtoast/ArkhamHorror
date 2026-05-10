@@ -14,7 +14,7 @@ instance RunMessage ManualDexterity where
   runMessage msg s@(ManualDexterity attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       let drawer = if attrs.cardCode.isChapterTwo then iid else attrs.owner
-      additionalSkillTestOption "Manual Dexterity" do
+      skillTestCardOption attrs do
         drawCards drawer attrs 1
       pure s
     _ -> ManualDexterity <$> liftRunMessage msg attrs

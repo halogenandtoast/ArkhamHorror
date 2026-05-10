@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Modifiers hiding (costModifier)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -48,7 +49,7 @@ instance RunMessage WoodenSledge where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards do
-        chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
+        cardI18n $ scope "woodenSledge" $ chooseUpToNM' iid 3 "donePlacingCards" do
           targets cards (placeUnderneath attrs . only)
       pure a
     _ -> WoodenSledge <$> liftRunMessage msg attrs

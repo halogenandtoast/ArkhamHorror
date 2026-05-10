@@ -3,7 +3,6 @@ module Arkham.Skill.Cards.MemoriesOfAnotherLife5 (memoriesOfAnotherLife5) where
 import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Helpers.Playable
-import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.PlayerCard
 import Arkham.Skill.Cards qualified as Cards
@@ -20,10 +19,10 @@ memoriesOfAnotherLife5 = skill MemoriesOfAnotherLife5 Cards.memoriesOfAnotherLif
 instance RunMessage MemoriesOfAnotherLife5 where
   runMessage msg s@(MemoriesOfAnotherLife5 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      additionalSkillTestOption "Memories of Another Life (5)" do
-        chooseOneM attrs.owner $ cardI18n $ scope "memoriesOfAnotherLife5" do
-          labeled' "removeFromGame" (doStep 1 msg)
-          labeled' "doNotRemove" nothing
+      skillTestCardOption attrs do
+        chooseOneM attrs.owner do
+          labeled "Remove Memories of Another Life from the game" (doStep 1 msg)
+          labeled "Do not remove Memories of Another Lift" nothing
       pure s
     DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       let iid = attrs.owner

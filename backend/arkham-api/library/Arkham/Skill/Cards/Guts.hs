@@ -14,6 +14,6 @@ instance RunMessage Guts where
   runMessage msg s@(Guts attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       let drawer = if attrs.cardCode.isChapterTwo then iid else attrs.owner
-      additionalSkillTestOption "Guts" $ drawCards drawer attrs 1
+      skillTestCardOption attrs $ drawCards drawer attrs 1
       pure s
     _ -> Guts <$> liftRunMessage msg attrs

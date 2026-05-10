@@ -29,13 +29,13 @@ instance RunMessage AugurOfElokoss3 where
       withSkillTest \sid -> priority $ skillTestModifier sid attrs iid $ DiscoveredClues 1
       faces <- map (.face) <$> getSkillTestRevealedChaosTokens
       when (any isSymbolChaosToken faces) do
-        additionalSkillTestOptionEdit
+        skillTestCardOptionEdit
+          attrs
           ( setOptionCriteria
               $ exists
               $ TreacheryInThreatAreaOf (affectsOthersKnown iid Anyone)
               <> hasAnyTrait [Terror, Hex]
           )
-          "Augur of Elokoss"
           (do_ msg)
       pure e
     Do (PassedThisSkillTest iid (isSource attrs -> True)) -> do

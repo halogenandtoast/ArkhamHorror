@@ -18,9 +18,9 @@ instance RunMessage StunningBlow where
   runMessage msg s@(StunningBlow attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
       withSkillTestEnemyTarget \eid ->
-        additionalSkillTestOptionEdit
+        skillTestCardOptionEdit
+          attrs
           (optionWhenExists $ InPlayEnemy $ EnemyWithId eid <> enemyCanBeEvadedBy attrs)
-          "Stunning Blow"
           (automaticallyEvadeEnemy iid eid)
       pure s
     _ -> StunningBlow <$> liftRunMessage msg attrs

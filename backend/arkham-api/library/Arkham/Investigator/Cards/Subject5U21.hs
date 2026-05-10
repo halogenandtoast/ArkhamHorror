@@ -129,7 +129,7 @@ instance RunMessage Subject5U21 where
       let allDevoured = devouredRavenous <> devoured meta
 
       focusCards allDevoured do
-        chooseUpToNM attrs.id 3 "Do not regurgitate any more cards" do
+        cardI18n $ scope "subject5U21" $ chooseUpToNM' attrs.id 3 "doNotRegurgitateAnyMoreCards" do
           for_ allDevoured \case
             card@(PlayerCard pc) -> for_ (pcOwner pc) \owner ->
               targeting card do

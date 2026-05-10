@@ -13,6 +13,6 @@ arrogance = skill Arrogance Cards.arrogance
 instance RunMessage Arrogance where
   runMessage msg s@(Arrogance attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      additionalSkillTestOption "Arrogance" $ returnToHand attrs.owner attrs
+      skillTestCardOption attrs $ returnToHand attrs.owner attrs
       pure s
     _ -> Arrogance <$> liftRunMessage msg attrs

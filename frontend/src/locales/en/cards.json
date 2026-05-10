@@ -33,14 +33,21 @@
     "anchorChain": {
       "discardPrompt": "Discard 1 card from your hand to prevent that enemy from readying during the next upkeep phase?"
     },
+    "antediluvianHymn": {
+      "doNotAddCurseToken": "Do not add 1 {'{'}curse{'}'} token to place a card on the bottom of the encounter deck"
+    },
     "anyuFaithfulCompanion": {
       "_evade_AttemptToEvadeWithABaseAgilitySkillOf4": "_Evade_. Attempt to evade with a base {'{'}agility{'}'} skill of 4",
       "discardAnyuToChooseUpToThreeInAnyOrder": "Discard Anyu to choose up to three, in any order",
-      "youGet2SkillValueForYourNextSkillTestThisRound": "You get +2 skill value for your next skill test this round"
+      "youGet2SkillValueForYourNextSkillTestThisRound": "You get +2 skill value for your next skill test this round",
+      "doneChoosingOptions": "Done choosing options"
     },
     "arcaneInitiate3": {
       "place1Doom": "Place 1 doom",
       "place2Horror": "Place 2 horror"
+    },
+    "archaicGlyphsMarkingsOfIsis3": {
+      "doNotPlayAsset": "Do not play an asset"
     },
     "ariadnesTwine3": {
       "moveSecretToResource": "Move 1 secret from an asset you control to your resource pool, as a resource",
@@ -101,7 +108,8 @@
     },
     "bewitching3": {
       "draw1AttachedCard": "Draw 1 attached card",
-      "searchTheTop9CardsOfYourDeckForACopyOfAnAttachedCardDrawItAn": "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck"
+      "searchTheTop9CardsOfYourDeckForACopyOfAnAttachedCardDrawItAn": "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck",
+      "chooseNoMoreTrickCards": "Choose no more Trick cards"
     },
     "blackMarket": {
       "missingOwner": "A set aside card was missing its owner. Please select the correct owner"
@@ -331,6 +339,9 @@
     "eonChart4": {
       "move": "Move"
     },
+    "everVigilant1": {
+      "doNotPlayAsset": "Do not play asset"
+    },
     "extraRations1": {
       "heal1DamageFromYourself": "Heal 1 damage from yourself"
     },
@@ -343,6 +354,9 @@
       "placeCharge": "Place 1 Charge on Eye of Chaos (4)",
       "discover1CluesAtAConnectingLocation": "Discover 1 clues at a connecting location",
       "place1ChargeOnEyeOfChaos4": "Place 1 Charge on Eye of Chaos (4)"
+    },
+    "eyeOfTheDjinnVesselOfGoodAndEvil2": {
+      "gainedAction": "Gained 1 action from Eye of the Djinn"
     },
     "fakeCredentials": {
       "discardFakeCredentials": "Discard Fake Credentials",
@@ -408,7 +422,8 @@
       "commitPromise": "I shall not COMMIT any cards during each of my turns",
       "iShallNotCommitAnyCardsDuringEachOfMyTurns": "I shall not COMMIT any cards during each of my turns",
       "iShallNotDrawAnyCardsDuringEachOfMyTurns": "I shall not DRAW any cards during each of my turns",
-      "iShallNotPlayAnyCardsDuringEachOfMyTurns": "I shall not PLAY any cards during each of my turns"
+      "iShallNotPlayAnyCardsDuringEachOfMyTurns": "I shall not PLAY any cards during each of my turns",
+      "broken": "You have broken the geas!"
     },
     "geneBeauregard3": {
       "move1ClueFromAConnectingLocationToYourLocation": "Move 1 clue from a connecting location to your location",
@@ -831,6 +846,9 @@
       "discardProtectiveIncantation": "Discard Protective Incantation",
       "spend1Resource": "Spend 1 resource"
     },
+    "prudenceDouglas": {
+      "doneDiscarding": "Done discarding"
+    },
     "psychoanalysis": {
       "draw": "Draw 1 revealed card and shuffle the rest into your deck",
       "heal": "Heal 2 horror and return revealed cards to top in any order"
@@ -881,6 +899,9 @@
       "discardTheRevealedAssetToDraw1Card": "Discard the revealed asset to draw 1 card",
       "playCardPayingCost": "Play card paying cost"
     },
+    "rodOfCarnamagosScepterOfTheMadSeer2": {
+      "doneAttachingRots": "Done attaching Rots"
+    },
     "runicAxe": {
       "doNotSpendCharges": "Do not spend charges",
       "doNotUseAdditionalImbueFromScriptweaver": "Do not use additional imbue from Scriptweaver ",
@@ -919,6 +940,9 @@
     "secondSight5": {
       "doNotSpendCharge": "Do not spend charge",
       "spend1ChargeToDiscover1AdditionalClue": "Spend 1 charge to discover 1 additional clue"
+    },
+    "sefinaRousseau": {
+      "doneChoosingEvents": "Done Choosing Events"
     },
     "sharpshooter3": {
       "doBoth": "Do both",
@@ -986,6 +1010,9 @@
       "resolve": "Resolve as Elder Sign",
       "fail": "Automatically fail this skill test to heal 1 damage and 1 horror"
     },
+    "stickToThePlan3": {
+      "chooseNoMoreEvents": "Choose no more events"
+    },
     "stouthearted": {
       "done": "Done moving damage/horror"
     },
@@ -994,7 +1021,8 @@
       "skip": "Do not exile"
     },
     "subject5U21": {
-      "doNotReturnDevoured": "Do not return a devoured card"
+      "doNotReturnDevoured": "Do not return a devoured card",
+      "doNotRegurgitateAnyMoreCards": "Do not regurgitate any more cards"
     },
     "summonedServitor": {
       "moveToLocationWithSummonedServitorWingsOfNight": "Move to location with Summoned Servitor (Wings of Night)"
@@ -1022,6 +1050,9 @@
       "defeatANon_elite_EnemyAtYourLocation": "Defeat a non-_Elite_ enemy at your location.",
       "removeAFloodTokenFromANon_sanctum_Location": "Remove a flood token from a non-_Sanctum_ location.",
       "removeAllCurseTokensFromTheChaosBag": "Remove all {'{'}curse{'}'} tokens from the chaos bag."
+    },
+    "terribleSecret": {
+      "keepRemainingCards": "Keep Remaining Cards"
     },
     "tetsuoMori": {
       "searchDeck": "Search Deck",
@@ -1117,6 +1148,9 @@
       "placeTheRestOnTheBottomInAnyOrder": "Place the rest on the bottom, in any order",
       "spend1ResourceToDraw1OfThem": "Spend 1 resource to draw 1 of them"
     },
+    "unrelenting1": {
+      "doneSealingTokens": "Done sealing tokens"
+    },
     "virgilGray": {
       "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
     },
@@ -1129,7 +1163,12 @@
     },
     "wendyAdamsParallel": {
       "sealOne": "Seal 1 {'{'}bless{'}'} or {'{'}curse{'}'} token from the chaos bag",
-      "sealAny": "Seal any {'{'}bless{'}'} or {'{'}curse{'}'} tokens revealed from the chaos bag during this test"
+      "sealAny": "Seal any {'{'}bless{'}'} or {'{'}curse{'}'} tokens revealed from the chaos bag during this test",
+      "doneSealingTokens": "Done sealing tokens",
+      "doNotChooseAnyMoreTokens": "Do not choose any more tokens"
+    },
+    "woodenSledge": {
+      "donePlacingCards": "Done placing cards underneath Wooden Sledge"
     },
     "wordOfWeal": {
       "shuffle": "Shuffle Word of Woe into your deck"

@@ -33,7 +33,7 @@ instance RunMessage DreamersChronicle where
       canDiscover <-
         selectAny $ locationWithInvestigator iid <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       when canDiscover do
-        additionalSkillTestOption "Dreamer's Chronicle" do
+        skillTestCardOption attrs do
           chooseOneM iid do
             (cardI18n $ labeled' "dreamersChronicle.take1HorrorToDiscover1AdditionalClueAtYourLocation") do
               assignHorror iid (attrs.ability 1) 1

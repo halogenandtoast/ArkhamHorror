@@ -23,7 +23,7 @@ instance RunMessage SurvivalInstinct2 where
       locations <- getAccessibleLocations iid attrs
 
       unless (null enemies && null locations) do
-        additionalSkillTestOption "Survival Instinct (2)" do
+        skillTestCardOption attrs do
           unless (null enemies) do
             chooseOneM iid do
               labeledI "evadeOtherEnemies" do

@@ -7,7 +7,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource, getSkillTestTarget)
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -78,21 +77,21 @@ instance RunMessage Grizzled where
           when (attrs `hasCustomization` Nemesis) do
             enemyTraits <- field EnemyTraits eid
             when (any (`elem` traits) enemyTraits) do
-              additionalSkillTestOption "Grizzled" do
-                chooseOneM iid $ cardI18n $ scope "grizzled" do
-                  labeled' "attachToEnemy" do
+              skillTestCardOption attrs do
+                chooseOneM iid do
+                  labeled "Attach to enemy (Nemesis)" do
                     place attrs $ AttachedToEnemy eid
-                  labeled' "doNotAttachToEnemy" nothing
+                  labeled "Do not attach to enemy" nothing
         TreacheryTarget tid -> do
           when (attrs `hasCustomization` MythosHardened) do
             treacheryTraits <- field TreacheryTraits tid
             when (any (`elem` traits) treacheryTraits) do
-              additionalSkillTestOption "Grizzled" do
-                chooseOneM iid $ cardI18n $ scope "grizzled" do
-                  labeled' "addToVictory" do
+              skillTestCardOption attrs do
+                chooseOneM iid do
+                  labeled "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)" do
                     addToVictory iid attrs
                     addToVictory iid tid
-                  labeled' "doNotAddToVictory" nothing
+                  labeled "Do not add to victory" nothing
         _ -> pure ()
       pure s
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do

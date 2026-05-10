@@ -42,6 +42,6 @@ instance RunMessage AnyuFaithfulCompanion where
         anyuChoices attrs iid
         (cardI18n $ labeled' "anyuFaithfulCompanion.discardAnyuToChooseUpToThreeInAnyOrder") do
           toDiscardBy iid (attrs.ability 1) attrs
-          chooseUpToNM iid 3 "Done choosing options" $ anyuChoices attrs iid
+          cardI18n $ scope "anyuFaithfulCompanion" $ chooseUpToNM' iid 3 "doneChoosingOptions" $ anyuChoices attrs iid
       pure a
     _ -> AnyuFaithfulCompanion <$> liftRunMessage msg attrs

@@ -24,7 +24,7 @@ instance RunMessage Lightfooted where
           select $ enemyAtLocationWith attrs.owner <> EnemyCanBeEvadedBy (toSource attrs) <> not_ (be eid)
         concealed <- getConcealedIds (ForExpose $ toSource attrs) attrs.owner
         guard $ notNull otherEnemies
-        lift $ additionalSkillTestOption "Lightfooted" do
+        lift $ skillTestCardOption attrs do
           chooseOneM attrs.owner do
             labeledI "doNotEvadeAnotherEnemy" nothing
             targets otherEnemies $ automaticallyEvadeEnemy attrs.owner

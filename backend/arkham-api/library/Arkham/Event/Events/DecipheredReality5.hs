@@ -29,9 +29,9 @@ instance RunMessage DecipheredReality5 where
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use
       -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
       -- standard rewards for successfully investigating.
-      additionalSkillTestOptionEdit
+      skillTestCardOptionEdit
+        attrs
         (optionWhenExists $ RevealedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid))
-        "Deciphered Reality (5)"
         (doStep 1 msg)
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do

@@ -33,7 +33,7 @@ instance RunMessage EliyahAshevakDogHandlerResolute where
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       connected <- getAccessibleLocations iid attrs
       unless (null connected) do
-        additionalSkillTestOption "Eliyah Ashevak" do
+        skillTestCardOption attrs do
           chooseOrRunOneM iid do
             labeledI "doNotMoveToConnecting" nothing
             targets connected $ moveTo attrs iid

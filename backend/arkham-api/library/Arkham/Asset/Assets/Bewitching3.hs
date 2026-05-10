@@ -44,7 +44,7 @@ instance RunMessage Bewitching3 where
       let underTitles = map toTitle attrs.cardsUnderneath
       let tricks = cards & filterCards (CardWithTrait Trait.Trick) & filter ((`notElem` underTitles) . toTitle)
       unless (null tricks) do
-        chooseUpToNM iid 1 "Choose no more Trick cards" do
+        cardI18n $ scope "bewitching3" $ chooseUpToNM' iid 1 "chooseNoMoreTrickCards" do
           targets tricks \card -> do
             push $ RemoveCardFromSearch iid card.id
             push $ PlaceUnderneath (toTarget attrs) [card]

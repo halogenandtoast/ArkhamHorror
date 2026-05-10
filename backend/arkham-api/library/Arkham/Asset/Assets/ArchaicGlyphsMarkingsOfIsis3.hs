@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
@@ -33,7 +34,7 @@ instance RunMessage ArchaicGlyphsMarkingsOfIsis3 where
           $ filterBy [(`cardMatch` AssetType), isJust . cdCost . toCardDef, (<= n) . getCost]
 
       unless (null assets) do
-        chooseUpToNM iid 1 "Do not play an asset" do
+        cardI18n $ scope "archaicGlyphsMarkingsOfIsis3" $ chooseUpToNM' iid 1 "doNotPlayAsset" do
           targets assets \card -> putCardIntoPlay iid card
       push $ Successful (#investigate, toTarget lid) iid source (toTarget lid) n
       pure a

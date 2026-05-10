@@ -26,7 +26,6 @@ import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.GameT
 import Arkham.I18n
-import Arkham.Name
 import Control.Monad.Trans.Class
 
 newtype SmallRadio = SmallRadio AssetAttrs
@@ -94,8 +93,7 @@ instance HasAbilities SmallRadio where
       <> whenPartner
         professorWilliamDyerProfessorOfGeology
         Resolute
-        ( getAbilities (cbCardBuilder professorWilliamDyerProfessorOfGeologyResolute a.cardId (a.id, a.owner))
-        )
+        (getAbilities (cbCardBuilder professorWilliamDyerProfessorOfGeologyResolute a.cardId (a.id, a.owner)))
       <> whenPartner
         roaldEllsworthIntrepidExplorer
         Safe

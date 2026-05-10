@@ -7,7 +7,6 @@ import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Helpers.Vehicle
-import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement

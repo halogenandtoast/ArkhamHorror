@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Log
-import Arkham.I18n
 import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

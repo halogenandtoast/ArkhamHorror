@@ -9,7 +9,6 @@ import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Helpers.Window (getChaosToken)
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.FatalMirage.Helpers (scenarioI18n)

@@ -7,7 +7,6 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers (campaignI18n)
 import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 

@@ -469,7 +469,7 @@ function onDrop(event: DragEvent) {
       />
 
       <template v-if="debug.active">
-        <button @click="debugging = true">Debug</button>
+        <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
     </div>
 

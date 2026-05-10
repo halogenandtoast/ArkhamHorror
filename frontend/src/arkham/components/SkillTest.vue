@@ -425,8 +425,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
       </div>
       <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
-        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
-        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
+        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">{{ $t('skillTestActions.passSkillTest') }}</button>
+        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">{{ $t('skillTestActions.failSkillTest') }}</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">
@@ -452,20 +452,20 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'Difficulty'">
             <span><template v-if="modifier.type.contents >= 0">+</template>{{modifier.type.contents}}</span>
-            Difficulty
+            {{ $t('modifier.difficulty') }}
           </template>
           <template v-if="modifier.type.tag === 'CancelEffects'">
-            <span class="text">Cancel Effects</span>
+            <span class="text">{{ $t('modifier.cancelEffects') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'CannotPerformSkillTest'">
-            <span class="text">Cannot Perform Skill Test</span>
+            <span class="text">{{ $t('modifier.cannotPerformSkillTest') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />
           </template>
           <template v-if="modifier.type.tag === 'SkillTestResultValueModifier'">
-            <span class="text">Result</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
+            <span class="text">{{ $t('modifier.result') }}</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
           </template>
           <template v-if="modifier.type.tag === 'DamageDealt'">
             <span>+{{modifier.type.contents}}</span>
@@ -497,28 +497,28 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <span class="text">{{ $t('skillValue') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleSuccess'">
-            <span class="text">Double Success</span>
+            <span class="text">{{ $t('modifier.doubleSuccess') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleDifficulty'">
-            <span class="text">Double Difficulty</span>
+            <span class="text">{{ $t('modifier.doubleDifficulty') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosToken'">
-            <span class="text">Cancel Matching Chaos Tokens</span>
+            <span class="text">{{ $t('modifier.cancelMatchingChaosTokensShort') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
-            <span class="text">May Ignore Location Effects</span>
+            <span class="text">{{ $t('modifier.mayIgnoreLocationEffects') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
-            <span class="text">Skill Icons Subtract</span>
+            <span class="text">{{ $t('modifier.skillIconsSubtract') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
-            <span class="text">Skill test automatically succeeds</span>
+            <span class="text">{{ $t('modifier.skillTestAutomaticallySucceeds') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
-            <span class="text">Reveal another chaos token</span>
+            <span class="text">{{ $t('modifier.revealAnotherChaosToken') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
-            <span class="text">Cancel matching chaos tokens and reveal another</span>
+            <span class="text">{{ $t('modifier.cancelMatchingChaosTokens') }}</span>
           </template>
         </div>
       </div>

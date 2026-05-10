@@ -812,7 +812,7 @@ function debugExport (exportType: ExportType) {
   })
   .catch((e) => {
     console.log(e)
-    alert('Unable to download export')
+    alert(t('game.unableToDownloadExport'))
   })
 }
 
@@ -900,7 +900,7 @@ onUnmounted(() => {
 
         <div class="shortcuts-body">
           <section class="shortcuts-section">
-            <h3 class="section-title">Game</h3>
+            <h3 class="section-title">{{ $t('game.shortcutSection.game') }}</h3>
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutSkipTriggers') }}</div>
@@ -922,32 +922,32 @@ onUnmounted(() => {
           </section>
 
           <section class="shortcuts-section">
-            <h3 class="section-title">Undo</h3>
+            <h3 class="section-title">{{ $t('game.shortcutSection.undo') }}</h3>
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutUndo') }}</div>
                 <div class="shortcut-keys"><kbd>u</kbd></div>
               </div>
               <div class="shortcut-row">
-                <div class="shortcut-name">Undo to start of action</div>
+                <div class="shortcut-name">{{ $t('game.shortcutUndoActionStart') }}</div>
                 <div class="shortcut-keys">
                   <kbd>U</kbd><span class="chord-arrow">+</span><kbd>A</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
-                <div class="shortcut-name">Undo to start of turn</div>
+                <div class="shortcut-name">{{ $t('game.shortcutUndoTurnStart') }}</div>
                 <div class="shortcut-keys">
                   <kbd>U</kbd><span class="chord-arrow">+</span><kbd>T</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
-                <div class="shortcut-name">Undo to start of phase</div>
+                <div class="shortcut-name">{{ $t('game.shortcutUndoPhaseStart') }}</div>
                 <div class="shortcut-keys">
                   <kbd>U</kbd><span class="chord-arrow">+</span><kbd>P</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
-                <div class="shortcut-name">Undo to start of round</div>
+                <div class="shortcut-name">{{ $t('game.shortcutUndoRoundStart') }}</div>
                 <div class="shortcut-keys">
                   <kbd>U</kbd><span class="chord-arrow">+</span><kbd>R</kbd>
                 </div>
@@ -962,7 +962,7 @@ onUnmounted(() => {
           </section>
 
           <section class="shortcuts-section">
-            <h3 class="section-title">View</h3>
+            <h3 class="section-title">{{ $t('game.shortcutSection.view') }}</h3>
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutShowOrHideShortcuts') }}</div>
@@ -1065,34 +1065,34 @@ onUnmounted(() => {
             </MenuItem>
             <div v-if="canUndoAction || canUndoTurn || canUndoPhase || canUndoRound || canUndoScenario" class="undo-jump-group" :class="{ armed: undoChordArmed }">
               <div class="undo-jump-header">
-                <span>Undo to</span>
+                <span>{{ $t('game.undoTo') }}</span>
                 <span class="chord-prefix"><kbd>U</kbd> + <span class="chord-hint">…</span></span>
               </div>
               <MenuItem v-if="canUndoAction" v-slot="{ active }">
                 <button class="undo-jump scope-action" :class="{ active }" @click="undoActionStart">
                   <ArrowUturnLeftIcon aria-hidden="true" />
-                  <span class="undo-jump-label">Start of action</span>
+                  <span class="undo-jump-label">{{ $t('game.startOfAction') }}</span>
                   <kbd class="chord-key">A</kbd>
                 </button>
               </MenuItem>
               <MenuItem v-if="canUndoTurn" v-slot="{ active }">
                 <button class="undo-jump scope-turn" :class="{ active }" @click="undoTurnStart">
                   <ClockIcon aria-hidden="true" />
-                  <span class="undo-jump-label">Start of turn</span>
+                  <span class="undo-jump-label">{{ $t('game.startOfTurn') }}</span>
                   <kbd class="chord-key">T</kbd>
                 </button>
               </MenuItem>
               <MenuItem v-if="canUndoPhase" v-slot="{ active }">
                 <button class="undo-jump scope-phase" :class="{ active }" @click="undoPhaseStart">
                   <RectangleStackIcon aria-hidden="true" />
-                  <span class="undo-jump-label">Start of phase</span>
+                  <span class="undo-jump-label">{{ $t('game.startOfPhase') }}</span>
                   <kbd class="chord-key">P</kbd>
                 </button>
               </MenuItem>
               <MenuItem v-if="canUndoRound" v-slot="{ active }">
                 <button class="undo-jump scope-round" :class="{ active }" @click="undoRoundStart">
                   <ArrowPathIcon aria-hidden="true" />
-                  <span class="undo-jump-label">Start of round</span>
+                  <span class="undo-jump-label">{{ $t('game.startOfRound') }}</span>
                   <kbd class="chord-key">R</kbd>
                 </button>
               </MenuItem>
@@ -1141,13 +1141,13 @@ onUnmounted(() => {
                 <img v-if="gameCard.card.tag === 'PlayerCard'" :src="imgsrc('player_back.jpg')" class="card back" />
                 <img v-else :src="imgsrc('back.png')" class="card back" />
               </div>
-              <button @click="continueUI">OK</button>
+              <button @click="continueUI">{{ $t('ok') }}</button>
             </div>
           </div>
         </div>
         <div v-if="playabilityInfo && debug.active" class="debug-modal-overlay" @click.self="playabilityInfo = null">
           <div class="debug-playability-modal">
-            <h3>Playability Checks</h3>
+            <h3>{{ $t('game.playabilityChecks') }}</h3>
             <div class="debug-playability-content">
               <img
                 class="debug-card-image"
@@ -1165,7 +1165,7 @@ onUnmounted(() => {
                 </li>
               </ul>
             </div>
-            <button @click="playabilityInfo = null">Close</button>
+            <button @click="playabilityInfo = null">{{ $t('close') }}</button>
           </div>
         </div>
         <div v-if="tarotCards.length > 0" class="revelation">
@@ -1183,7 +1183,7 @@ onUnmounted(() => {
                   <img :src="imgsrc('tarot/back.jpg')" class="card back" />
                 </div>
               </div>
-              <button @click="continueUI">OK</button>
+              <button @click="continueUI">{{ $t('ok') }}</button>
             </div>
           </div>
         </div>
@@ -1229,10 +1229,10 @@ onUnmounted(() => {
       </div>
     </template>
     <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
-      <p>Are you sure you wish to undo to the beginning of the scenario?</p>
+      <p>{{ $t('game.areYouSureUndoScenario') }}</p>
       <div class="buttons">
-        <button @click="undoScenario()">Yes</button>
-        <button @click="undoScenarioDialog?.close()">No</button>
+        <button @click="undoScenario()">{{ $t('Yes') }}</button>
+        <button @click="undoScenarioDialog?.close()">{{ $t('No') }}</button>
       </div>
     </dialog>
   </div>

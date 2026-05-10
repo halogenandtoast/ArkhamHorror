@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { fetchOpenSeats, claimSeat } from '@/arkham/api'
 import { useClipboard } from '@vueuse/core'
 import { imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   gameId: string
@@ -62,7 +65,7 @@ async function claim(investigatorId: string) {
     await claimSeat(props.gameId, normalized)
     myClaimed.value = normalized
   } catch {
-    error.value = 'Could not claim this seat. It may have already been taken.'
+    error.value = t('lobby.couldNotClaimSeat')
   } finally {
     loading.value = false
   }
@@ -80,14 +83,14 @@ function onContinue() {
     <div class="next-scenario">
       <div class="next-scenario-info">
         <div class="scenario-info">
-          <h3>{{ game.scenario ? 'Scenario' : game.campaign ? 'Campaign' : 'Multiplayer' }}</h3>
-          <h2>{{ game.scenario?.name.title ?? game.campaign?.name ?? 'Waiting for Players' }}</h2>
+          <h3>{{ game.scenario ? $t('lobby.scenario') : game.campaign ? $t('lobby.campaign') : $t('lobby.multiplayer') }}</h3>
+          <h2>{{ game.scenario?.name.title ?? game.campaign?.name ?? $t('lobby.waitingForPlayers') }}</h2>
         </div>
         <div class="invite-section">
-          <p class="invite-label">Invite others to join:</p>
+          <p class="invite-label">{{ $t('lobby.inviteOthers') }}</p>
           <div class="invite-link">
             <input type="text" :value="effectiveInviteUrl" readonly />
-            <button type="button" @click="copy()">{{ copied ? '✓ Copied' : 'Copy' }}</button>
+            <button type="button" @click="copy()">{{ copied ? $t('lobby.copied') : $t('lobby.copy') }}</button>
           </div>
         </div>
       </div>
@@ -113,10 +116,10 @@ function onContinue() {
             :disabled="loading"
             @click="claim(investigator.id)"
             type="button"
-          >Claim</button>
-          <span v-else-if="investigator.id === myClaimed" class="status-pill joined">Claimed</span>
-          <span v-else-if="isOpen(investigator.id)" class="status-pill open">Waiting</span>
-          <span v-else class="status-pill joined">Joined</span>
+          >{{ $t('lobby.claim') }}</button>
+          <span v-else-if="investigator.id === myClaimed" class="status-pill joined">{{ $t('lobby.claimed') }}</span>
+          <span v-else-if="isOpen(investigator.id)" class="status-pill open">{{ $t('lobby.waiting') }}</span>
+          <span v-else class="status-pill joined">{{ $t('lobby.joined') }}</span>
         </template>
       </InvestigatorRow>
     </div>
@@ -124,11 +127,11 @@ function onContinue() {
     <p v-if="error" class="error-msg">{{ error }}</p>
 
     <div v-if="investigators.length === 0 && game.gameState.tag === 'IsPending'" class="player-count">
-      {{ `Waiting for ${game.playerCount - game.gameState.contents.length} more ${game.playerCount - game.gameState.contents.length === 1 ? 'player' : 'players'}` }}
+      {{ $t('lobby.waitingForMorePlayers', { remaining: game.playerCount - game.gameState.contents.length }, game.playerCount - game.gameState.contents.length) }}
     </div>
 
     <div v-else-if="allClaimed" class="actions">
-      <button class="continue-btn" @click="onContinue" type="button">Continue</button>
+      <button class="continue-btn" @click="onContinue" type="button">{{ $t('continue') }}</button>
     </div>
 
   </div>

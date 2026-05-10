@@ -205,6 +205,234 @@
   "fromDeck": "From Deck",
   "fromHand": "From Hand",
   "fromDiscard": "From Discard",
+  "ok": "OK",
+  "back": "Back",
+  "join": "Join",
+  "joinGame": "Join Game",
+  "decks": "Decks",
+  "newDeck": "New Deck",
+  "deckSyncedSuccessfully": "Deck synced successfully",
+  "areYouSureDeleteDeck": "Are you sure you want to delete this deck?",
+  "noDecksMatchFilters": "No decks match your filters.",
+  "deck": {
+    "viewOnArkhamDb": "View on ArkhamDB",
+    "syncDeck": "Sync deck",
+    "deleteDeck": "Delete deck"
+  },
+  "deckList": {
+    "saveToDeckList": "Save to Deck List",
+    "saveToDeckListDescription": "Keep this deck available for future campaigns"
+  },
+  "lobby": {
+    "scenario": "Scenario",
+    "campaign": "Campaign",
+    "multiplayer": "Multiplayer",
+    "waitingForPlayers": "Waiting for Players",
+    "inviteOthers": "Invite others to join:",
+    "copy": "Copy",
+    "copied": "✓ Copied",
+    "claim": "Claim",
+    "claimed": "Claimed",
+    "waiting": "Waiting",
+    "joined": "Joined",
+    "couldNotClaimSeat": "Could not claim this seat. It may have already been taken.",
+    "waitingForMorePlayers": "Waiting for {remaining} more player | Waiting for {remaining} more players"
+  },
+  "game": {
+    "areYouSureUndoScenario": "Are you sure you wish to undo to the beginning of the scenario?",
+    "playabilityChecks": "Playability Checks",
+    "unableToDownloadExport": "Unable to download export",
+    "shortcutSection": {
+      "game": "Game",
+      "undo": "Undo",
+      "view": "View"
+    },
+    "undoTo": "Undo to",
+    "startOfAction": "Start of action",
+    "startOfTurn": "Start of turn",
+    "startOfPhase": "Start of phase",
+    "startOfRound": "Start of round",
+    "shortcutUndoActionStart": "Undo to start of action",
+    "shortcutUndoTurnStart": "Undo to start of turn",
+    "shortcutUndoPhaseStart": "Undo to start of phase",
+    "shortcutUndoRoundStart": "Undo to start of round",
+    "gameOver": "Game over"
+  },
+  "cardsView": {
+    "browseSets": "Browse sets",
+    "searchCards": "Search cards...",
+    "listView": "List view",
+    "imageView": "Image view",
+    "includeEncounter": "Include Encounter"
+  },
+  "cardsList": {
+    "name": "Name",
+    "class": "Class",
+    "cost": "Cost",
+    "type": "Type",
+    "icons": "Icons",
+    "traits": "Traits",
+    "set": "Set"
+  },
+  "scenarioSettings": {
+    "title": "Standalone Settings",
+    "noSettings": "There are currently no standalone settings available for this scenario.",
+    "begin": "Begin"
+  },
+  "campaignSettings": {
+    "title": "Campaign Settings"
+  },
+  "sideStory": {
+    "selectSideScenario": "Select a side scenario to add"
+  },
+  "partners": {
+    "expeditionTeam": "Expedition Team",
+    "damage": "Damage",
+    "horror": "Horror",
+    "theEntity": "The Entity"
+  },
+  "partnerStatus": {
+    "safe": "Safe",
+    "resolute": "Resolute",
+    "eliminated": "Eliminated"
+  },
+  "campaignLog": {
+    "chaosBag": "Chaos Bag",
+    "remembered": "Remembered",
+    "campaignNotes": "Campaign Notes"
+  },
+  "campaignLogView": {
+    "noEntriesYet": "No entries yet.",
+    "recordedSets": "Recorded Sets",
+    "recordedCounts": "Recorded Counts"
+  },
+  "investigatorRow": {
+    "physical": "Physical",
+    "mental": "Mental",
+    "earnedCards": "Earned Cards",
+    "showModifiers": "Show Modifiers",
+    "expand": "Expand",
+    "collapse": "Collapse"
+  },
+  "treachery": {
+    "discard": "Discard"
+  },
+  "modifier": {
+    "cannotCommitCards": "Cannot Commit Cards",
+    "difficulty": "Difficulty",
+    "cancelEffects": "Cancel Effects",
+    "cannotPerformSkillTest": "Cannot Perform Skill Test",
+    "result": "Result",
+    "skillValue": "Skill Value",
+    "doubleSuccess": "Double Success",
+    "doubleDifficulty": "Double Difficulty",
+    "mayIgnoreLocationEffects": "May Ignore Location Effects",
+    "skillIconsSubtract": "Skill Icons Subtract",
+    "skillTestAutomaticallySucceeds": "Skill test automatically succeeds",
+    "revealAnotherChaosToken": "Reveal another chaos token",
+    "cancelMatchingChaosTokens": "Cancel matching chaos tokens and reveal another",
+    "cancelMatchingChaosTokensShort": "Cancel Matching Chaos Tokens"
+  },
+  "modifiersTitle": "Modifiers",
+  "skillTestActions": {
+    "passSkillTest": "Pass Skill Test",
+    "failSkillTest": "Fail Skill Test"
+  },
+  "draw": {
+    "shuffleBackIn": "Shuffle Back In",
+    "selectDraw": "Select Draw",
+    "shuffle": "Shuffle"
+  },
+  "encounterDeck": {
+    "draw": "Draw"
+  },
+  "scenarioComponent": {
+    "shuffleBackIn": "Shuffle Back In"
+  },
+  "scenarioDeck": {
+    "showCards": "Show Cards"
+  },
+  "chaosBagChoice": {
+    "grouped": "Grouped"
+  },
+  "player": {
+    "viewDeck": "View Deck"
+  },
+  "enemy": {
+    "debug": "Debug"
+  },
+  "location": {
+    "under": "Under ({count})"
+  },
+  "concealedCard": {
+    "debug": "Debug"
+  },
+  "importGame": {
+    "solo": "Solo",
+    "multiplayer": "Multiplayer",
+    "soloDescription": "You will control all investigators.",
+    "multiplayerDescription": "You will receive an invite link so others can join and claim their investigators."
+  },
+  "questionFilter": {
+    "filter": "Filter"
+  },
+  "resourcesAria": {
+    "assignAllHorror": "Assign all horror"
+  },
+  "pickSupplies": {
+    "investigatorPortrait": "Investigator Portrait"
+  },
+  "chooseDeck": {
+    "search": "Search…",
+    "useThisDeck": "Use this deck"
+  },
+  "campaignLogTooltip": {
+    "rememberedTitle": "Remembered",
+    "campaignNotesTitle": "Campaign Notes"
+  },
+  "worldMap": {
+    "toggleFullscreen": "Toggle fullscreen"
+  },
+  "admin": {
+    "title": "Admin",
+    "toggleSidebar": "Toggle sidebar",
+    "dashboard": "Dashboard",
+    "rooms": "Rooms",
+    "users": "Users",
+    "games": "Games",
+    "insights": "Insights",
+    "reports": "Reports",
+    "status": "Status"
+  },
+  "calendar": {
+    "timePassed": "Time Passed"
+  },
+  "keysStatus": {
+    "keys": "Keys",
+    "nameOfArtifact": "Name of Paradimensional Artifact",
+    "bearer": "Bearer"
+  },
+  "scarletKeys": {
+    "dossierHeader": "You may read this dossier at any time",
+    "youAreCurrentlyHere": "You are currently here.",
+    "travelHere": "Travel here",
+    "travelTime": "Travel time",
+    "sideStoryLocation": "This is a side-story location.",
+    "sideStoryDescription": "If you wish to add a side-story to this campaign, you may travel to this location and spend additional time equal to the normal experience for playing that side story.",
+    "travelWithExpeditedTicket": "Travel with Expedited Ticket (1 time)",
+    "travelWithoutStopping": "Travel here without stopping",
+    "locationLocked": "This location is currently locked."
+  },
+  "gameRow": {
+    "solo": "Solo"
+  },
+  "replay": {
+    "restart": "Restart",
+    "stepBack": "Step back",
+    "play": "Play",
+    "stop": "Stop",
+    "stepForward": "Step forward"
+  },
   "core2": {
     "tooltips": {
       "sewerCulvert": {

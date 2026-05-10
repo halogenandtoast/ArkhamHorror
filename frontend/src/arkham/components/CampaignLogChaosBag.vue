@@ -11,7 +11,7 @@ const sortedFaces = computed(() =>
 
 <template>
   <div class="log-section">
-    <h3 class="section-title">Chaos Bag</h3>
+    <h3 class="section-title">{{ $t('campaignLog.chaosBag') }}</h3>
     <div class="tokens">
       <img
         v-for="(face, idx) in sortedFaces"

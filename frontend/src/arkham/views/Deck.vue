@@ -12,6 +12,9 @@ import CardImageView from '@/arkham/components/CardImageView.vue'
 import { useToast } from "vue-toastification";
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { displayTabooId } from '@/arkham/taboo'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 export interface Props {
   deckId: string
@@ -109,7 +112,7 @@ async function deleteDeckEvent() {
 async function sync() {
   if (deck.value) {
     syncDeck(deck.value.id).then((newData) => {
-      toast.success("Deck synced successfully", { timeout: 3000 })
+      toast.success(t('deckSyncedSuccessfully'), { timeout: 3000 })
       deck.value = newData
     })
   }
@@ -179,9 +182,9 @@ watch(deckRef, (el) => {
               </button>
             </div>
             <div class="deck-actions">
-              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB"><font-awesome-icon icon="external-link" /></a>
-              <a v-if="deck.url" class="action-btn" href="#" title="Sync deck" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-              <a class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')"><font-awesome-icon icon="external-link" /></a>
+              <a v-if="deck.url" class="action-btn" href="#" :title="$t('deck.syncDeck')" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+              <a class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
             </div>
           </div>
         </template>
@@ -191,7 +194,7 @@ watch(deckRef, (el) => {
     </div>
     <Prompt
       v-if="deleting"
-      prompt="Are you sure you want to delete this deck?"
+      :prompt="t('areYouSureDeleteDeck')"
       :yes="deleteDeckEvent"
       :no="() => deleting = false"
     />

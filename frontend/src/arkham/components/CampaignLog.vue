@@ -527,11 +527,11 @@ const mapData = computed(() => {
           </div>
         </div>
 
-        <div v-if="emptyLog" class="empty-state">No entries yet.</div>
+        <div v-if="emptyLog" class="empty-state">{{ $t('campaignLogView.noEntriesYet') }}</div>
 
         <CampaignLogSection
           v-if="remembered.length > 0"
-          title="Remembered"
+          :title="t('campaignLog.remembered')"
           :items="remembered"
         />
 
@@ -572,7 +572,7 @@ const mapData = computed(() => {
 
           <CampaignLogSection
             v-if="recorded.length > 0"
-            title="Campaign Notes"
+            :title="t('campaignLog.campaignNotes')"
             :items="recorded.map(r => t(r))"
           />
 

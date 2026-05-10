@@ -12,7 +12,7 @@
     "watchReplay": "Watch Replay",
 
     "submit": "Submit",
-    "sancel": "Cancel",
+    "cancel": "Cancel",
     "close": "Close",
 
     "outOfSyncHint": "Your game is out of sync, trying to reconnect...",

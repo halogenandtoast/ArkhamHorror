@@ -196,7 +196,7 @@ async function clicked() {
       @choose="chooseAbility"
     />
     <template v-if="debug.active">
-      <button @click="debugging = true">Debug</button>
+      <button @click="debugging = true">{{ $t('concealedCard.debug') }}</button>
     </template>
     <DebugConcealedCard v-if="debugging" :game="game" :card="card" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>

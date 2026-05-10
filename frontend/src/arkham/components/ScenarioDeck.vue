@@ -86,7 +86,7 @@ const deckLabel = computed(() => {
     <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     <span class="deck-size">{{deck[1].length}}</span>
   </div>
-  <button v-if="debug.active" @click="showCards">Show Cards</button>
+  <button v-if="debug.active" @click="showCards">{{ $t('scenarioDeck.showCards') }}</button>
 </template>
 
 <style scoped>

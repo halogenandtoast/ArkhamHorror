@@ -45,7 +45,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
   <div id="pick-supplies">
     <div class="pick-supplies-top">
       <div class="pick-supplies-portrait">
-        <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
+        <img :src="portrait(investigatorId)" :alt="$t('pickSupplies.investigatorPortrait')" class="portrait" />
       </div>
       <FormattedEntry class="pick-supplies-contents" :entry="{ tag: 'I18nEntry', key: `theForgottenAge.${context}.pickSupplies`}" />
     </div>

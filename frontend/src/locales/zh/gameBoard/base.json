@@ -12,7 +12,7 @@
     "watchReplay": "观看回放",
 
     "submit": "提交",
-    "sancel": "取消",
+    "cancel": "取消",
     "close": "关闭",
 
     "outOfSyncHint": "连接中断，尝试重连中...",

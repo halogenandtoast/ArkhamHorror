@@ -359,7 +359,7 @@ function startDrag(event: DragEvent) {
       />
       <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">
-        <button @click="debugging = true">Debug</button>
+        <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
       <template v-if="isTheBeyond">
         <div v-if="(asset.assets?.length ?? 0) > 0 || (asset.enemies?.length ?? 0) > 0" class="spirit-manifest-row">

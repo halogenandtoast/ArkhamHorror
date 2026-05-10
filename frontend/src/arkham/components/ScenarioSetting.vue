@@ -268,14 +268,14 @@ const displayKey = (key: string) => {
   <div v-else-if="setting.type === 'SetPartnerDetails'" class="partner">
     <h3 class="partner-name">{{setting.key}}</h3>
     <div class="options">
-      <label :for="`${setting.key}-damage`">Damage:</label>
+      <label :for="`${setting.key}-damage`">{{ $t('partners.damage') }}:</label>
       <input type="number" v-model="setting.content.damage" :id="`${setting.key}-damage`" :min="0" :max="setting.maxDamage" />
-      <label :for="`${setting.key}-horror`">Horror:</label>
+      <label :for="`${setting.key}-horror`">{{ $t('partners.horror') }}:</label>
       <input type="number" v-model="setting.content.horror" :id="`${setting.key}-horror`" :min="0" :max="setting.maxHorror" />
       <select v-model="setting.content.status" :id="`${setting.key}-status`">
-        <option value="Safe">Safe</option>
-        <option value="Resolute">Resolute</option>
-        <option value="Eliminated">Eliminated</option>
+        <option value="Safe">{{ $t('partnerStatus.safe') }}</option>
+        <option value="Resolute">{{ $t('partnerStatus.resolute') }}</option>
+        <option value="Eliminated">{{ $t('partnerStatus.eliminated') }}</option>
       </select>
     </div>
   </div>

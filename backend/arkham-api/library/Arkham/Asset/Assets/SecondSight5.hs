@@ -36,12 +36,12 @@ instance RunMessage SecondSight5 where
         else removeTokens (attrs.ability 1) attrs Charge 1
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      additionalSkillTestOptionEdit
+      skillTestCardOptionEdit
+        attrs
         ( setOptionCriteria
             $ exists (orConnected_ (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid)
             <> thisExists attrs (AssetWithSpendableUses (atLeast 1) Charge)
         )
-        "Second Sight (5)"
         do
           chooseOneM iid do
             labeled "Spend 1 charge to discover 1 additional clue" $ doStep 2 msg

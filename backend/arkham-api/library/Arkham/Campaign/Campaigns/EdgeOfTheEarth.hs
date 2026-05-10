@@ -204,7 +204,7 @@ instance RunMessage EdgeOfTheEarth where
                           "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                         portraitLabeled iid do
                           cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                          chooseUpToNM iid 5 "Do not remove anymore" do
+                          chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                             for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                       doStep (n - 1) msg'
@@ -448,7 +448,7 @@ instance RunMessage EdgeOfTheEarth where
                             "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            chooseUpToNM iid 5 "Do not remove anymore" do
+                            chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                               for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'
@@ -747,7 +747,7 @@ instance RunMessage EdgeOfTheEarth where
                             "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            chooseUpToNM iid 5 "Do not remove anymore" do
+                            chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                               for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'

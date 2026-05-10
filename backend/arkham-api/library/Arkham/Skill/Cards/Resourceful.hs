@@ -22,7 +22,7 @@ instance RunMessage Resourceful where
         cards <- select $ inDiscardOf attrs.owner <> basic (#survivor <> not_ (CardWithTitle "Resourceful"))
         unless (null cards) do
           discards <- map toCard <$> attrs.owner.discard
-          additionalSkillTestOption "Resourceful" do
+          skillTestCardOption attrs do
             focusCards discards do
               chooseTargetM attrs.owner cards \card -> do
                 unfocusCards

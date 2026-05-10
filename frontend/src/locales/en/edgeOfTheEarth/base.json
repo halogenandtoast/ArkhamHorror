@@ -68,6 +68,9 @@
     "xp": {
       "cookiesAdvice": "Cookie's Advice"
     },
+    "label": {
+      "doNotRemoveAnymore": "Do not remove anymore"
+    },
     "restfulNight1": {
       "title": "Interlude I: Restful Night",
       "body": "<p>_Restful Night 1_: Safe at last, you and the remaining members of the expedition take stock of your situation. You have lost several members of the team, but your numbers remain strong. Part of you knows that staying any longer would prove foolish or deadly. But a great many questions crowd your thoughts, demanding answers despite your worries. What were those uncanny, phantasmal creatures? What happened here after Dyer’s expedition left the icy wastes behind?</p><p>You and the others discuss the situation at length and consider various plans. Some believe in the total abandonment of the expedition. But to return empty-handed now would prove disastrous for the university, frustrate the scientific community, and possibly cost the remaining crew their careers. After all, very few believed Dyer’s outlandish claims—who would believe this?</p><p>In the end, you decide to press onward. Another flight is out of the question, of course. That thing in the sky must still be out there. It was a miracle you survived one aeroplane crash, let alone two. No, there’s only one way to reach the site described in Dyer’s report now: you must travel on foot.</p><p>The decision made, you retire to get what meager rest you can before the grueling trek ahead.</p><p class='basic'>You only have enough time to check on a few team members (regardless of whether they are alive or crossed out). One at a time, choose and read three of the sections below (four instead if the team fled to the mountains). If the game effect of the chosen section cannot be performed, it does not count toward this total and you may choose a new section instead. Once you have read the appropriate number of sections, proceed to _Restful Night 2_.</p>"
@@ -103,6 +106,9 @@
   "interlude2": {
     "xp": {
       "cookiesAdvice": "Cookie's Advice"
+    },
+    "label": {
+      "doNotRemoveAnymore": "Do not remove anymore"
     },
     "endlessNight1": {
       "title": "Interlude II: Endless Night",
@@ -142,6 +148,9 @@
     "ashevakIsCrossedOut": "<p>_If Eliyah Ashevak is crossed out and an investigator did not already earn his *Memorial of the Lost* card from Interlude I:_</p><p>As you sit at the edge of camp and ponder what fate might have in store for you in the coming days, a gentle nudge stirs you from your thoughts. You turn in shock, prepared to see another one of those horrid creatures emerging from the ice—but it’s only Anyu, Eliyah’s loyal companion. The big gray dog looks up at you with pleading eyes. You shake your head and rise, heavy, to your feet. That’s enough mourning for one night. As you venture back to camp, soft footfalls trail through the snow just behind you. You stop and glance at Anyu. Once again, she looks up to meet your gaze. Is she looking for comfort, or guidance? You kneel and run your gloved fingers through her thick fur, speaking soothingly to reassure the both of you. Yes, Eliyah is gone. No, I don’t know if we are safe, either. Do you want to stick with me? Anyu wags her tail. All right, then.</p><p class='basic'>Any one investigator may add the Anyu story asset to their deck. This card can be found in the Memorials of the Lost encounter set. It does not count toward that investigator’s deck size.</p>"
   },
   "interlude3": {
+    "label": {
+      "doNotRemoveAnymore": "Do not remove anymore"
+    },
     "finalNight1": {
       "title": "Interlude III: Final Night",
       "body": "<p>_Final Night 1_: You would hesitate to call the darkened pit you find yourself in “safe” by any means, but you feel as though this is as good a place as any to rest. It was hard enough to tell the time with the sun always lingering in the Antarctic sky—now, deep underground with no sunlight to speak of, it is impossible. When one of your companions checks their pocketwatch and informs the team that fourteen hours have passed since you went underground, the response is one of utter disbelief. You do not remember traveling that long, but your body is weary enough to prove it.</p><p>In gloomy silence, you and the others set up camp once more. Your numbers have dwindled to only yourself and the few experts who remain from those originally introduced to you by Dr. Kensler. The rest of the students and researchers are either back at the barrier camp where you first disembarked from the Theodosia, or…no longer with you.</p><p>The cavern is easily large enough for what few of you remain, and the icy floor brittle enough to stake down your tents. Even so, it does not truly feel safe. You wonder if you will ever feel safe again.</p><p class='basic'>You only have enough time to check on a few team members (regardless of whether they are alive or crossed out). One at a time, choose and read three of the sections below (four instead if the team was guided to the hidden tunnel). If the game effect of the chosen section cannot be performed, it does not count toward this total and you may choose a new section instead. Once you have read the appropriate number of sections, proceed to _Final Night 2_.</p>"

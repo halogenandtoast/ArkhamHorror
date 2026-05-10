@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
@@ -41,6 +42,6 @@ instance RunMessage AnyuFaithfulCompanion where
         anyuChoices attrs iid
         labeled "Discard Anyu to choose up to three, in any order" do
           toDiscardBy iid (attrs.ability 1) attrs
-          chooseUpToNM iid 3 "Done choosing options" $ anyuChoices attrs iid
+          cardI18n $ scope "anyuFaithfulCompanion" $ chooseUpToNM' iid 3 "doneChoosingOptions" $ anyuChoices attrs iid
       pure a
     _ -> AnyuFaithfulCompanion <$> liftRunMessage msg attrs

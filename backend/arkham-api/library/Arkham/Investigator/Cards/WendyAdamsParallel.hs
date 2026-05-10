@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher hiding (RevealChaosToken)
@@ -56,7 +57,7 @@ instance RunMessage WendyAdamsParallel where
       withSkillTestEnemyTarget \eid -> do
         revealedTokens <- filter ((`elem` [#curse, #bless]) . (.face)) <$> getSkillTestRevealedChaosTokens
         focusChaosTokens_ revealedTokens do
-          chooseUpToNM iid (length revealedTokens) "Done sealing tokens" do
+          cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM' iid (length revealedTokens) "doneSealingTokens" do
             targets revealedTokens $ sealChaosToken iid eid
       pure i
     ElderSignEffect (is attrs -> True) -> do
@@ -64,7 +65,7 @@ instance RunMessage WendyAdamsParallel where
         tokens <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
         when (notNull tokens) do
           focusChaosTokens_ tokens do
-            chooseUpToNM attrs.id 2 "Do not choose any more tokens" do
+            cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM' attrs.id 2 "doNotChooseAnyMoreTokens" do
               targets tokens \token -> do
                 skillTestModifiers
                   sid

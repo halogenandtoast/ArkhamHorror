@@ -1,11 +1,60 @@
 {
   "label": {
+    "antediluvianHymn": {
+      "doNotAddCurseToken": "Do not add 1 {'{'}curse{'}'} token to place a card on the bottom of the encounter deck"
+    },
+    "anyuFaithfulCompanion": {
+      "doneChoosingOptions": "Done choosing options"
+    },
+    "archaicGlyphsMarkingsOfIsis3": {
+      "doNotPlayAsset": "Do not play an asset"
+    },
+    "bewitching3": {
+      "chooseNoMoreTrickCards": "Choose no more Trick cards"
+    },
+    "everVigilant1": {
+      "doNotPlayAsset": "Do not play asset"
+    },
+    "eyeOfTheDjinnVesselOfGoodAndEvil2": {
+      "gainedAction": "Gained 1 action from Eye of the Djinn"
+    },
+    "geas2": {
+      "broken": "You have broken the geas!"
+    },
     "occultReliquary": {
       "choose": "Choose initial slot type for Occult Reliquary"
     },
     "oneTwoPunch": {
       "again": "Fight that enemy again",
       "skip": "Do not fight that enemy again"
+    },
+    "prudenceDouglas": {
+      "doneDiscarding": "Done discarding"
+    },
+    "rodOfCarnamagosScepterOfTheMadSeer2": {
+      "doneAttachingRots": "Done attaching Rots"
+    },
+    "sefinaRousseau": {
+      "doneChoosingEvents": "Done Choosing Events"
+    },
+    "stickToThePlan3": {
+      "chooseNoMoreEvents": "Choose no more events"
+    },
+    "subject5U21": {
+      "doNotRegurgitateAnyMoreCards": "Do not regurgitate any more cards"
+    },
+    "terribleSecret": {
+      "keepRemainingCards": "Keep Remaining Cards"
+    },
+    "unrelenting1": {
+      "doneSealingTokens": "Done sealing tokens"
+    },
+    "wendyAdamsParallel": {
+      "doneSealingTokens": "Done sealing tokens",
+      "doNotChooseAnyMoreTokens": "Do not choose any more tokens"
+    },
+    "woodenSledge": {
+      "donePlacingCards": "Done placing cards underneath Wooden Sledge"
     }
   },
   "tooltips": {

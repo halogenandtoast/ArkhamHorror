@@ -77,7 +77,7 @@ instance RunMessage Grizzled where
           when (attrs `hasCustomization` Nemesis) do
             enemyTraits <- field EnemyTraits eid
             when (any (`elem` traits) enemyTraits) do
-              additionalSkillTestOption "Grizzled" do
+              skillTestCardOption attrs do
                 chooseOneM iid do
                   labeled "Attach to enemy (Nemesis)" do
                     place attrs $ AttachedToEnemy eid
@@ -86,7 +86,7 @@ instance RunMessage Grizzled where
           when (attrs `hasCustomization` MythosHardened) do
             treacheryTraits <- field TreacheryTraits tid
             when (any (`elem` traits) treacheryTraits) do
-              additionalSkillTestOption "Grizzled" do
+              skillTestCardOption attrs do
                 chooseOneM iid do
                   labeled "Add both the treachery and Grizzled to the victory display (Mythos-Hardened)" do
                     addToVictory iid attrs

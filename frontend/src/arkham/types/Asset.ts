@@ -38,6 +38,7 @@ export type Asset = {
   modifiers?: Modifier[];
   mutated?: string;
   placement: Placement
+  rifleStatus?: 'Jammed' | 'NotJammed';
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -67,4 +68,8 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   mutated: v2Optional(JsonDecoder.string()),
   placement: placementDecoder,
+  rifleStatus: v2Optional(JsonDecoder.oneOf<'Jammed' | 'NotJammed'>([
+    JsonDecoder.isExactly('Jammed'),
+    JsonDecoder.isExactly('NotJammed'),
+  ], 'RifleStatus')),
 }, 'Asset');

@@ -1,7 +1,9 @@
 {
   "heading": "Scenario ???",
   "label": {
-    "keepPlaying": "Keep playing"
+    "keepPlaying": "Keep playing",
+    "moveToPrisonOfMemories": "Move to the Prison of Memories",
+    "shuffleTekeliliIntoYourDeck": "Shuffle the top card of the Tekeli-li deck into your deck without looking at it."
   },
   "tooltips": {
     "mirage": "Mirage"

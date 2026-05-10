@@ -2,6 +2,16 @@
   "label": {
     "doNotAddMask": "Do not add a mask"
   },
+  "massHysteria": {
+    "label": {
+      "shuffleMaskedCarnevaleGoers": "Shuffle Masked Carnevale-Goers"
+    }
+  },
+  "lostInVenice": {
+    "label": {
+      "moveAcross": "Move to the location across from you"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the agenda deck.",

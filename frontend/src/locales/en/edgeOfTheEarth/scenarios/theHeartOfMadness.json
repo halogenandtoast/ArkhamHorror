@@ -123,6 +123,13 @@
     }
   },
   "part2": {
+    "label": {
+      "chooseSealCount": "The investigators may choose how many seals they have:",
+      "easierExperienceSeals": "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”",
+      "averageExperienceSeals": "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used.",
+      "harderExperienceSeals": "For a harder experience, one random seal is “Placed,” and the other four are not used.",
+      "nightmarishExperienceSeals": "For a nightmarish experience, no seals are used."
+    },
     "intro1": {
       "check": "Check the Campaign Log:",
       "intro2": "If Dr. Kensler is still alive and *Dr. Kensler understands the true nature of the miasma*, proceed to _Intro 2._",

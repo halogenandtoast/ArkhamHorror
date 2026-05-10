@@ -89,17 +89,11 @@ instance RunMessage TheHeartOfMadnessPart2 where
       setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
       lead <- getLead
       chooseOneM lead do
-        questionLabeled "The investigators may choose how many seals they have:"
-        labeled
-          "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”"
-          (doStep 1 msg)
-        labeled
-          "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used."
-          (doStep 2 msg)
-        labeled
-          "For a harder experience, one random seal is “Placed,” and the other four are not used."
-          (doStep 3 msg)
-        labeled "For a nightmarish experience, no seals are used." nothing
+        questionLabeled' "chooseSealCount"
+        labeled' "easierExperienceSeals" (doStep 1 msg)
+        labeled' "averageExperienceSeals" (doStep 2 msg)
+        labeled' "harderExperienceSeals" (doStep 3 msg)
+        labeled' "nightmarishExperienceSeals" nothing
       pure s
     DoStep n StandaloneSetup -> do
       (placed, recovered) <- case n of

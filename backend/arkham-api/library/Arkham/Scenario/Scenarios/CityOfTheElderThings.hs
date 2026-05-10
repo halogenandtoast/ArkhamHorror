@@ -131,9 +131,9 @@ instance RunMessage CityOfTheElderThings where
             else do
               lead <- getLead
               chooseOneM lead do
-                labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
-                labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
-                labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
+                labeled' "v1" $ doStep 1 PreScenarioSetup
+                labeled' "v2" $ doStep 2 PreScenarioSetup
+                labeled' "v3" $ doStep 3 PreScenarioSetup
           if attrs.hasOption IncludePartners
             then do
               eachInvestigator (`forInvestigator` PreScenarioSetup)

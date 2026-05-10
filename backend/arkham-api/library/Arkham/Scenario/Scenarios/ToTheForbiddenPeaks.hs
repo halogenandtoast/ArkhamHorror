@@ -112,8 +112,8 @@ instance RunMessage ToTheForbiddenPeaks where
       unless claypoolIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
-          labeled "Each investigator suffers 1 physical trauma." $ eachInvestigator (`sufferPhysicalTrauma` 1)
+            labeled' "addFrostToken" $ addChaosToken #frost
+          countVar 1 $ labeled' "eachInvestigatorSuffersPhysicalTrauma" $ eachInvestigator (`sufferPhysicalTrauma` 1)
       doStep 2 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
@@ -127,8 +127,8 @@ instance RunMessage ToTheForbiddenPeaks where
       unless takadaIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled "Add 1 {frost} token to the chaos bag" $ addChaosToken #frost
-          labeled "Each investigator suffers 1 mental trauma." $ eachInvestigator (`sufferMentalTrauma` 1)
+            labeled' "addFrostToken" $ addChaosToken #frost
+          countVar 1 $ labeled' "eachInvestigatorSuffersMentalTrauma" $ eachInvestigator (`sufferMentalTrauma` 1)
       doStep 3 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do

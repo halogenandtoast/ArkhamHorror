@@ -303,5 +303,21 @@
     "beginScenarioIIIWithExtraResources": "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool.",
     "stayAndStudyTheGreatDoor": "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._",
     "passThroughTheGate": "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
+  },
+  "nightmarishVapors": {
+    "label": {
+      "shuffleTekeliliIntoYourDeck": "Shuffle the top {count} cards of the Tekeli-li deck into your deck without looking at them."
+    }
+  },
+  "apeirophobia": {
+    "label": {
+      "addFrostToken": "Add 1 {'{'}frost{'}'} token to the chaos bag."
+    }
+  },
+  "wukWukWuk": {
+    "label": {
+      "moveToYou": "Move it to your location",
+      "placeDoom": "Place 1 doom on it"
+    }
   }
 }

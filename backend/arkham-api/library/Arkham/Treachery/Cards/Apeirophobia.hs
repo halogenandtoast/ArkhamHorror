@@ -4,6 +4,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -26,11 +27,11 @@ instance RunMessage Apeirophobia where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       canPlaceClues <- canPlaceCluesOnYourLocation iid
-      chooseOneM iid do
-        labeled "Take 1 horror for each point you failed by." $ assignHorror iid attrs n
+      chooseOneM iid $ withI18n do
+        countVar n $ labeled' "takeHorrorForEachPointOfFailure" $ assignHorror iid attrs n
         when canPlaceClues do
-          labeled "Place 2 of your clues on your location." $ placeCluesOnLocation iid attrs 2
+          countVar 2 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 2
         whenM hasRemainingFrostTokens do
-          labeled "Add 1 {frost} token to the chaos bag." $ addChaosToken #frost
+          campaignI18n $ scope "apeirophobia" $ labeled' "addFrostToken" $ addChaosToken #frost
       pure t
     _ -> Apeirophobia <$> liftRunMessage msg attrs

@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.MorbidAwareness (morbidAwareness, MorbidAwareness 
 
 import Arkham.Classes
 import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
+import Arkham.I18n
 import Arkham.Message
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
@@ -28,11 +29,11 @@ instance RunMessage MorbidAwareness where
       push
         $ chooseOrRunOne player
         $ [ Label
-            "Place 1 of your clues on your location"
+            (withI18n $ numberVar "count" 1 $ "$" <> ikey "label.placeCluesOnYourLocation")
             [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
           | canPlaceClues
           ]
-        <> [Label "Take 2 horror" [assignHorror iid (toSource attrs) 2]]
+        <> [Label (withI18n $ numberVar "count" 2 $ "$" <> ikey "label.takeHorror") [assignHorror iid (toSource attrs) 2]]
 
       pure t
     _ -> MorbidAwareness <$> runMessage msg attrs

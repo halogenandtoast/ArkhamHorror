@@ -17,10 +17,10 @@ sharpRhetoric = asset SharpRhetoric Cards.sharpRhetoric
 
 instance HasAbilities SharpRhetoric where
   getAbilities (SharpRhetoric a) =
-    [ (cardI18n $ withI18nTooltip "sharpRhetoric.fastSpend1ResourceYouGet1IntellectForThisSkillTest2Intellect")
+    [ (cardI18n $ withI18nTooltip "sharpRhetoric.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "sharpRhetoric.fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower")
+    , (cardI18n $ withI18nTooltip "sharpRhetoric.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

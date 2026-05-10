@@ -19,10 +19,10 @@ thermos = asset Thermos Cards.thermos
 
 instance HasAbilities Thermos where
   getAbilities (Thermos a) =
-    [ (cardI18n $ withI18nTooltip "thermos.heal1DamageFromAnInvestigatorAtYourLocation2DamageInsteadIfH")
+    [ (cardI18n $ withI18nTooltip "thermos.heal")
         $ controlled a 1 (exists $ HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
-    , (cardI18n $ withI18nTooltip "thermos.heal1HorrorFromAnInvestigatorAtYourLocation2HorrorInsteadIfH")
+    , (cardI18n $ withI18nTooltip "thermos.heal2")
         $ controlled a 2 (exists $ HealableInvestigator (toSource a) #horror $ colocatedWithMatch You)
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
     ]

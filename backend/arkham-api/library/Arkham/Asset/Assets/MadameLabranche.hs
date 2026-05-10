@@ -16,10 +16,10 @@ madameLabranche = ally MadameLabranche Cards.madameLabranche (2, 2)
 
 instance HasAbilities MadameLabranche where
   getAbilities (MadameLabranche attrs) =
-    [ (cardI18n $ withI18nTooltip "madameLabranche.fastIfYouHaveNoCardsInYourHandExhaustMadameLabrancheDraw1Car")
+    [ (cardI18n $ withI18nTooltip "madameLabranche.fastIfYou")
         $ controlled attrs 1 (youExist $ HandWith (LengthIs $ EqualTo $ Static 0))
         $ FastAbility (exhaust attrs)
-    , (cardI18n $ withI18nTooltip "madameLabranche.fastIfYouHaveNoResourcesExhaustMadameLabrancheGain1Resource")
+    , (cardI18n $ withI18nTooltip "madameLabranche.fastIfYou2")
         $ controlled attrs 2 (youExist $ InvestigatorWithResources (EqualTo $ Static 0))
         $ FastAbility (exhaust attrs)
     ]

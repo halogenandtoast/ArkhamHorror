@@ -35,7 +35,7 @@ instance RunMessage DreamersChronicle where
       when canDiscover do
         skillTestCardOption attrs do
           chooseOneM iid do
-            (cardI18n $ labeled' "dreamersChronicle.take1HorrorToDiscover1AdditionalClueAtYourLocation") do
+            (cardI18n $ labeled' "dreamersChronicle.takeHorror") do
               assignHorror iid (attrs.ability 1) 1
               discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
             labeledI "skip" nothing

@@ -17,10 +17,10 @@ arcaneStudies2 = asset ArcaneStudies2 Cards.arcaneStudies2
 
 instance HasAbilities ArcaneStudies2 where
   getAbilities (ArcaneStudies2 a) =
-    [ (cardI18n $ withI18nTooltip "arcaneStudies2.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "arcaneStudies2.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "arcaneStudies2.fastSpend1ResourceYouGet1IntellectForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "arcaneStudies2.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

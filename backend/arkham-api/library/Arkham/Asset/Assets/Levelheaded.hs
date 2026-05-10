@@ -17,10 +17,10 @@ levelheaded = asset Levelheaded Cards.levelheaded
 
 instance HasAbilities Levelheaded where
   getAbilities (Levelheaded a) =
-    [ (cardI18n $ withI18nTooltip "levelheaded.fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower")
+    [ (cardI18n $ withI18nTooltip "levelheaded.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "levelheaded.fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst")
+    , (cardI18n $ withI18nTooltip "levelheaded.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

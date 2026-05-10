@@ -15,9 +15,9 @@ keenEye = asset KeenEye Cards.keenEye
 
 instance HasAbilities KeenEye where
   getAbilities (KeenEye a) =
-    [ (cardI18n $ withI18nTooltip "keenEye.fastSpend2ResourcesYouGet1IntellectUntilTheEndOfThePhase")
+    [ (cardI18n $ withI18nTooltip "keenEye.fastSpend2Resources2")
         $ restrictedAbility a 1 ControlsThis (FastAbility $ ResourceCost 2)
-    , (cardI18n $ withI18nTooltip "keenEye.fastSpend2ResourcesYouGet1CombatUntilTheEndOfThePhase")
+    , (cardI18n $ withI18nTooltip "keenEye.fastSpend2Resources")
         $ restrictedAbility a 2 ControlsThis (FastAbility $ ResourceCost 2)
     ]
 

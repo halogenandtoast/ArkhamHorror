@@ -33,7 +33,7 @@ instance RunMessage CyclopeanHammer5 where
           withSkillTestTargetedEnemy \enemy -> do
             chooseOrRunOneM iid do
               when (n >= 3) do
-                (cardI18n $ labeled' "cyclopeanHammer5.exhaustCyclopeanHammerToInsteadDeal2DamageAndMoveTheEnemyUpT")
+                (cardI18n $ labeled' "cyclopeanHammer5.exhaustForExtraDamage")
                   do
                     exhaustThis attrs
                     doStep 1 msg

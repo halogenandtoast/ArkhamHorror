@@ -21,7 +21,7 @@ theKeyOfSolomonSecretsOfTheUnknown4 = asset TheKeyOfSolomonSecretsOfTheUnknown4 
 
 instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
   getAbilities (TheKeyOfSolomonSecretsOfTheUnknown4 a) =
-    [ (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAreMoreBlessThanCurseTokensInTheChaosBagRemove1BlessT")
+    [ (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAre")
         $ controlledAbility
           a
           1
@@ -38,7 +38,7 @@ instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
                 ]
           )
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #bless)
-    , (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAreMoreCurseThanBlessTokensInTheChaosBagRemove1CurseT")
+    , (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAre2")
         $ controlledAbility a 2 (HasMoreCurseThanBlessTokens <> can.gain.resources You)
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #curse)
     ]

@@ -19,10 +19,10 @@ spiritualIntuition = asset SpiritualIntuition Cards.spiritualIntuition
 
 instance HasAbilities SpiritualIntuition where
   getAbilities (SpiritualIntuition a) =
-    [ (cardI18n $ withI18nTooltip "spiritualIntuition.fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower")
+    [ (cardI18n $ withI18nTooltip "spiritualIntuition.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "spiritualIntuition.fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea")
+    , (cardI18n $ withI18nTooltip "spiritualIntuition.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

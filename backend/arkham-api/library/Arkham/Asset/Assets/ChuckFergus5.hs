@@ -64,7 +64,7 @@ instance RunMessage ChuckFergus5 where
               (cardI18n $ labeled' "chuckFergus5.thatEventCosts2FewerResourcesToPlay") do
                 eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
 
-            (cardI18n $ labeled' "chuckFergus5.youGet2SkillValueWhilePerformingASkillTestDuringTheResolutio") do
+            (cardI18n $ labeled' "chuckFergus5.gain2SkillValue") do
               eventModifier attrs iid $ AnySkillValue 2
 
       pure a

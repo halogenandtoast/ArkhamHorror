@@ -22,12 +22,12 @@ yaotl1 = ally Yaotl1 Cards.yaotl1 (2, 2)
 
 instance HasAbilities Yaotl1 where
   getAbilities (Yaotl1 a) =
-    [ (cardI18n $ withI18nTooltip "yaotl1.fastExhaustYaotlDuringThisSkillTestYouGetABonusToEachSkillEq")
+    [ (cardI18n $ withI18nTooltip "yaotl1.fastExhaustYaotl")
         $ wantsSkillTest (YourSkillTest #any)
         $ controlled a 1 DuringAnySkillTest
         $ FastAbility
         $ exhaust a
-    , (cardI18n $ withI18nTooltip "yaotl1.fastDiscardTheTopCardOfYourDeckLimitOncePerPhase")
+    , (cardI18n $ withI18nTooltip "yaotl1.fastDiscardThe")
         $ playerLimit PerPhase
         $ controlled a 2 CanManipulateDeck
         $ FastAbility Free

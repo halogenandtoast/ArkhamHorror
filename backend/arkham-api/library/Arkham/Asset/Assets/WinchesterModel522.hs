@@ -20,11 +20,11 @@ winchesterModel522 = asset WinchesterModel522 Cards.winchesterModel522
 instance HasAbilities WinchesterModel522 where
   getAbilities (WinchesterModel522 a) =
     [ skillTestAbility
-        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionSpend1Ammo_fightCombat_YouGet3CombatAndDeal1DamageForT")
+        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionSpend1Ammo")
         $ controlled_ a 1
         $ fightAction (assetUseCost a Ammo 1)
     , skillTestAbility
-        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionDiscardWinchesterModel52_fightCombat_YouGet3CombatForT")
+        $ (cardI18n $ withI18nTooltip "winchesterModel522.actionDiscardWinchester")
         $ controlled_ a 2
         $ fightAction (discardCost a)
     ]

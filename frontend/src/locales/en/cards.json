@@ -39,9 +39,9 @@
       "doNotAddCurseToken": "Do not add 1 {'{'}curse{'}'} token to place a card on the bottom of the encounter deck"
     },
     "anyuFaithfulCompanion": {
-      "_evade_AttemptToEvadeWithABaseAgilitySkillOf4": "_Evade_. Attempt to evade with a base {'{'}agility{'}'} skill of 4",
+      "attemptToEvadeWithABaseAgilitySkillOf4": "_Evade_. Attempt to evade with a base {'{'}agility{'}'} skill of 4",
       "discardAnyuToChooseUpToThreeInAnyOrder": "Discard Anyu to choose up to three, in any order",
-      "youGet2SkillValueForYourNextSkillTestThisRound": "You get +2 skill value for your next skill test this round",
+      "gain2SkillValue": "You get +2 skill value for your next skill test this round",
       "doneChoosingOptions": "Done choosing options"
     },
     "arcaneInitiate3": {
@@ -54,8 +54,8 @@
     "ariadnesTwine3": {
       "moveSecretToResource": "Move 1 secret from an asset you control to your resource pool, as a resource",
       "moveResourceToSecret": "Move 1 resource from your resource pool to an asset you control, as a secret",
-      "move1ResourceFromYourResourcePoolToAnAssetYouControlAsASecre": "Move 1 resource from your resource pool to an asset you control, as a secret",
-      "move1SecretFromAnAssetYouControlToYourResourcePoolAsAResourc": "Move 1 secret from an asset you control to your resource pool, as a resource"
+      "moveResourceToSecret2": "Move 1 resource from your resource pool to an asset you control, as a secret",
+      "moveSecretToResource2": "Move 1 secret from an asset you control to your resource pool, as a resource"
     },
     "armageddon": {
       "placeCharge": "Place 1 Charge on Armageddon",
@@ -91,8 +91,8 @@
       "take1DamageAndShuffleItIntoYourDeck": "Take 1 damage and shuffle it into your deck"
     },
     "baseballBat2": {
-      "returnBaseballBatToYourHandAfterThisAttack": "Return baseball Bat to your hand after this attack",
-      "thisAttackDealsAnAdditional1DamageDiscardBaseballBatAfterThi": "This attack deals an additional +1 damage. Discard Baseball Bat after this attack"
+      "returnToHand": "Return baseball Bat to your hand after this attack",
+      "extraDamage": "This attack deals an additional +1 damage. Discard Baseball Bat after this attack"
     },
     "beguile": {
       "move": "Move attached enemy to a revealed connecting location",
@@ -110,7 +110,7 @@
     },
     "bewitching3": {
       "draw1AttachedCard": "Draw 1 attached card",
-      "searchTheTop9CardsOfYourDeckForACopyOfAnAttachedCardDrawItAn": "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck",
+      "searchTopOfDeck": "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck",
       "chooseNoMoreTrickCards": "Choose no more Trick cards"
     },
     "blackMarket": {
@@ -169,12 +169,12 @@
       "doNotHeal": "Do not heal anything"
     },
     "ceremonialSickle": {
-      "exhaustCeremonialSickleAndPlace1DoomOnItToGet1SkillValueAndD": "Exhaust Ceremonial Sickle and place 1 doom on it to get +1 skill value and deal +1 damage for this attack.",
-      "ifThisAttackDefeatsAnEnemyRemove1DoomFromCeremonialSickle": "If this attack defeats an enemy, remove 1 doom from Ceremonial Sickle"
+      "exhaustForBoost": "Exhaust Ceremonial Sickle and place 1 doom on it to get +1 skill value and deal +1 damage for this attack.",
+      "onDefeatEnemy": "If this attack defeats an enemy, remove 1 doom from Ceremonial Sickle"
     },
     "ceremonialSickle4": {
-      "exhaustCeremonialSickleAndPlace1DoomOnItToGet3SkillValueAndD": "Exhaust Ceremonial Sickle and place 1 doom on it to get +3 skill value and deal +1 damage for this attack.",
-      "ifThisAttackDefeatsAnEnemyReadyCeremonialSickleAndRemoveAllD": "If this attack defeats an enemy, ready Ceremonial Sickle and remove all doom from it."
+      "exhaustForBoost": "Exhaust Ceremonial Sickle and place 1 doom on it to get +3 skill value and deal +1 damage for this attack.",
+      "onDefeatEnemy": "If this attack defeats an enemy, ready Ceremonial Sickle and remove all doom from it."
     },
     "chainsaw4": {
       "deal1DamageToTheAttackedEnemy": "Deal 1 damage to the attacked enemy",
@@ -183,12 +183,12 @@
     "chuckFergus2": {
       "thatEventCosts2FewerResourcesToPlay": "That event costs 2 fewer resources to play.",
       "thatEventGainsFast": "That event gains fast",
-      "youGet2SkillValueWhilePerformingASkillTestDuringTheResolutio": "You get +2 skill value while performing a skill test during the resolution of that event."
+      "gain2SkillValue": "You get +2 skill value while performing a skill test during the resolution of that event."
     },
     "chuckFergus5": {
       "thatEventCosts2FewerResourcesToPlay": "That event costs 2 fewer resources to play.",
       "thatEventGainsFast": "That event gains fast",
-      "youGet2SkillValueWhilePerformingASkillTestDuringTheResolutio": "You get +2 skill value while performing a skill test during the resolution of that event."
+      "gain2SkillValue": "You get +2 skill value while performing a skill test during the resolution of that event."
     },
     "cleanSneak": {
       "damage": "Deal 2 damage to that Enemy"
@@ -216,7 +216,7 @@
     },
     "cyclopeanHammer5": {
       "doNotMoveEnemy": "Do not move enemy",
-      "exhaustCyclopeanHammerToInsteadDeal2DamageAndMoveTheEnemyUpT": "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you.",
+      "exhaustForExtraDamage": "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you.",
       "moveEnemy": "Move enemy",
       "moveEnemyAway": "Move enemy away"
     },
@@ -227,8 +227,8 @@
       "doNotSpendEvidence": "Do not spend Evidence",
       "investigateTheEnemysLocation": "Investigate the enemy's location",
       "investigateYourLocation": "Investigate your location",
-      "spend1EvidenceToAutomaticallyEvadeTheChosenEnemy": "Spend 1 Evidence to automatically evade the chosen enemy.",
-      "spend1EvidenceToDiscover1AdditionalClueAtTheChosenEnemysLoca": "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."
+      "spendEvidence": "Spend 1 Evidence to automatically evade the chosen enemy.",
+      "spendForClue": "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."
     },
     "darkRitual": {
       "discardDarkRitual": "Discard Dark Ritual",
@@ -288,12 +288,12 @@
       "evadeEnemy": "Evade enemy"
     },
     "dowsingRod": {
-      "exhaustDowsingRodAndPlace1DoomOnItToMoveToAConnectingLocatio": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location.",
-      "ifThisInvestigationDiscoversTheLastClueAtALocationRemove1Doo": "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod."
+      "exhaustForBoost": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location.",
+      "onLastClue": "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod."
     },
     "dowsingRod4": {
-      "exhaustDowsingRodAndPlace1DoomOnItToMoveToAConnectingLocatio": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location and get +2 skill value for this investigation.",
-      "ifThisInvestigationDiscoversTheLastClueAtALocationReadyDowsi": "If this investigation discovers the last clue at a location, ready Dowsing Rod and remove all doom from it."
+      "exhaustForBoost": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location and get +2 skill value for this investigation.",
+      "onLastClue": "If this investigation discovers the last clue at a location, ready Dowsing Rod and remove all doom from it."
     },
     "drWilliamTMaleson2": {
       "chooseCardToResolve": "Choose card to resolve"
@@ -303,7 +303,7 @@
       "take2Resources": "Take 2 resources"
     },
     "dreamersChronicle": {
-      "take1HorrorToDiscover1AdditionalClueAtYourLocation": "Take 1 horror to discover 1 additional clue at your location"
+      "takeHorror": "Take 1 horror to discover 1 additional clue at your location"
     },
     "earthlySerenity1": {
       "doNotSpendAChargeToHeal": "Do not spend a charge to heal",
@@ -388,7 +388,7 @@
     "flamethrower5": {
       "standardDamage": "Do standard damage",
       "assignAmongEngaged": "Assign up to 4 damage among enemies engaged with you",
-      "assignUpTo4DamageAmongEnemiesEngagedWithYou": "Assign up to 4 damage among enemies engaged with you",
+      "assignUpTo4": "Assign up to 4 damage among enemies engaged with you",
       "doStandardDamage": "Do standard damage"
     },
     "flare": {
@@ -423,16 +423,16 @@
       "drawPromise": "I shall not DRAW any cards during each of my turns",
       "playPromise": "I shall not PLAY any cards during each of my turns",
       "commitPromise": "I shall not COMMIT any cards during each of my turns",
-      "iShallNotCommitAnyCardsDuringEachOfMyTurns": "I shall not COMMIT any cards during each of my turns",
+      "iShallNot": "I shall not COMMIT any cards during each of my turns",
       "iShallNotDrawAnyCardsDuringEachOfMyTurns": "I shall not DRAW any cards during each of my turns",
       "iShallNotPlayAnyCardsDuringEachOfMyTurns": "I shall not PLAY any cards during each of my turns",
       "broken": "You have broken the geas!"
     },
     "geneBeauregard3": {
-      "move1ClueFromAConnectingLocationToYourLocation": "Move 1 clue from a connecting location to your location",
-      "move1ClueFromYourLocationToAConnectingLocation": "Move 1 clue from your location to a connecting location",
-      "moveAnEnemyFromAConnectingLocationToYourLocation": "Move an enemy from a connecting location to your location",
-      "moveAnEnemyFromYourLocationToAConnectingLocation": "Move an enemy from your location to a connecting location"
+      "move1ClueFrom": "Move 1 clue from a connecting location to your location",
+      "move1ClueFrom2": "Move 1 clue from your location to a connecting location",
+      "moveAnEnemy": "Move an enemy from a connecting location to your location",
+      "moveAnEnemy2": "Move an enemy from your location to a connecting location"
     },
     "ghastlyPossession": {
       "placeDoom": "Place 1 doom on that asset. Ghastly Posession gains {'{'}wild{'}'}{'{'}wild{'}'}",
@@ -500,19 +500,19 @@
       "doNotCommitAnyCards": "Do not commit any cards"
     },
     "hallowedChalice": {
-      "exhaustHallowedChaliceAndPlace1DoomOnItToHeal2DamageOr2Horro": "Exhaust Hallowed Chalice and place 1 doom on it to heal 2 damage or 2 horror from that investigator.",
+      "exhaustForBoost": "Exhaust Hallowed Chalice and place 1 doom on it to heal 2 damage or 2 horror from that investigator.",
       "heal1Damage": "Heal 1 damage",
-      "heal1DamageOr1HorrorFromThatInvestigatorIfYouHealTheLastDama": "Heal 1 damage or 1 horror from that investigator. If you heal the last damage or horror from that investigator, remove 1 doom from Hallowed Chalice.",
+      "healFromThatInvestigator": "Heal 1 damage or 1 horror from that investigator. If you heal the last damage or horror from that investigator, remove 1 doom from Hallowed Chalice.",
       "heal1Horror": "Heal 1 horror",
       "heal2Damage": "Heal 2 damage",
       "heal2Horror": "Heal 2 horror"
     },
     "hallowedMirror3": {
       "changeEach": "Change each \"2\" to a \"3\"",
-      "shuffleItIntoYourDeckInsteadOfDiscardingIt": "Shuffle it into your deck instead of discarding it"
+      "shuffleItInto": "Shuffle it into your deck instead of discarding it"
     },
     "handCrankFlashlight": {
-      "discardToDealGiveYourLocation1ShroudUntilTheEndOfTheRound": "Discard to deal give your location -1 shroud until the end of the round"
+      "discardForDamage": "Discard to deal give your location -1 shroud until the end of the round"
     },
     "handHook": {
       "discardForDamage": "Discard 1 card from your hand to deal +1 damage"
@@ -557,7 +557,7 @@
       "sanity": "Deal sanity damage"
     },
     "icePick3": {
-      "discardIcePick3ToDiscover1AdditionalClueAtYourLocation": "Discard Ice Pick (3) to discover 1 additional clue at your location",
+      "discardIcePick3": "Discard Ice Pick (3) to discover 1 additional clue at your location",
       "discardIcePick3ToDo1Damage": "Discard Ice Pick (3) to do +1 damage"
     },
     "idolOfXanatosWatcherBeyondTime": {
@@ -630,11 +630,11 @@
       "discard": "Discard Lie in Wait to add +1 damage"
     },
     "livingInk": {
-      "doNotChargeFromLivingInkAndIgnoreItsAbilityForTheRemainderOf": "Do not charge from Living Ink and ignore its ability for the remainder of the round (Subtle Depiction)",
+      "doNotCharge": "Do not charge from Living Ink and ignore its ability for the remainder of the round (Subtle Depiction)",
       "remove1Charge": "Remove 1 charge"
     },
     "localMap": {
-      "exhaustLocalMapAndMoveToTheInvestigatedLocation": "Exhaust Local Map and move to the investigated location"
+      "exhaust": "Exhaust Local Map and move to the investigated location"
     },
     "logicalReasoning": {
       "discardTerror": "Discard a Terror"
@@ -725,7 +725,7 @@
       "elderSign": "{'{'}elderSign{'}'}: return an event from your discard pile to your hand."
     },
     "nauticalCharts": {
-      "discard1CardFromYourHandToDiscover1AdditionalClue": "Discard 1 card from your hand to discover 1 additional clue"
+      "discard1CardFrom": "Discard 1 card from your hand to discover 1 additional clue"
     },
     "nauticalProwess": {
       "gainsWildIcons": "Nautical Prowess gains {'{'}wild{'}'}{'{'}wild{'}'}",
@@ -735,14 +735,14 @@
       "releaseBlessTokens": "Release 3 {'{'}bless{'}'} tokens",
       "returnBlessForDamage": "Return 3 {'{'}bless{'}'} tokens to the pool to do 2 damage to an enemy at your location",
       "release3BlessTokens": "Release 3 {'{'}bless{'}'} tokens",
-      "return3BlessTokensToThePoolToDo2DamageToAnEnemyAtYourLocatio": "Return 3 {'{'}bless{'}'} tokens to the pool to do 2 damage to an enemy at your location"
+      "returnBlessForDamage2": "Return 3 {'{'}bless{'}'} tokens to the pool to do 2 damage to an enemy at your location"
     },
     "noseToTheGrindstone": {
       "replenishSupply": "Replenish 1 supply on that asset"
     },
     "occultLexicon3": {
       "changeEach": "Change each \"2\" to a \"3\"",
-      "shuffleItIntoYourDeckInsteadOfDiscardingIt": "Shuffle it into your deck instead of discarding it"
+      "shuffleItInto": "Shuffle it into your deck instead of discarding it"
     },
     "occultReliquary": {
       "choose": "Choose initial slot type for Occult Reliquary"
@@ -769,12 +769,12 @@
       "skip": "Do not fight that enemy again"
     },
     "onyxPentacle": {
-      "exhaustOnyxPentacleAndPlace1DoomOnItToTargetAnyEnemyAtYourLo": "Exhaust Onyx Pentacle and place 1 doom on it to target any enemy at your location or a connecting location, and get +1 skill value for this evasion attempt.",
-      "ifYouSucceedBy2OrMoreRemove1DoomFromOnyxPentacle": "If you succeed by 2 or more, remove 1 doom from Onyx Pentacle."
+      "exhaustToTarget": "Exhaust Onyx Pentacle and place 1 doom on it to target any enemy at your location or a connecting location, and get +1 skill value for this evasion attempt.",
+      "succeedBy2": "If you succeed by 2 or more, remove 1 doom from Onyx Pentacle."
     },
     "onyxPentacle4": {
-      "exhaustOnyxPentacle4AndPlace1DoomOnItToTargetAnyEnemyAtYourL": "Exhaust Onyx Pentacle4 and place 1 doom on it to target any enemy at your location or a connecting location, and get +3 skill value for this evasion attempt.",
-      "ifYouSucceedBy2OrMoreReadyOnyxPentacleAndRemoveAllDoomFromIt": "If you succeed by 2 or more, ready Onyx Pentacle and remove all doom from it."
+      "exhaustToTarget": "Exhaust Onyx Pentacle4 and place 1 doom on it to target any enemy at your location or a connecting location, and get +3 skill value for this evasion attempt.",
+      "succeedBy2": "If you succeed by 2 or more, ready Onyx Pentacle and remove all doom from it."
     },
     "outOfSight": {
       "disengageAndMove": "Disengage from each enemy and move to a connecting location.",
@@ -806,7 +806,7 @@
     },
     "polishedCane": {
       "doNotEvade": "Do not evade",
-      "exhaustPolishedCaneToAutomaticallyEvadeThisEnemy": "Exhaust Polished Cane to automatically evade this enemy"
+      "exhaust": "Exhaust Polished Cane to automatically evade this enemy"
     },
     "powerWord": {
       "go": "Go",
@@ -834,7 +834,7 @@
     },
     "prismaticSpectaclesLensToTheOtherworld2": {
       "doNotExaust": "Do not exaust",
-      "exhaustPrismaticSpectaclesToDiscover1AdditionalClueAtYourLoc": "Exhaust Prismatic Spectacles to discover 1 additional clue at your location"
+      "exhaustForClue": "Exhaust Prismatic Spectacles to discover 1 additional clue at your location"
     },
     "professorWilliamWebbFinderOfHiddenConnections": {
       "discoverAClueAtAConnectingLocation": "Discover a clue at a connecting location",
@@ -874,11 +874,11 @@
     },
     "randallCho": {
       "heal3Damage": "Heal 3 damage",
-      "searchYourDeckAndDiscardPileForAWeaponAssetPlayItPayingItsCo": "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
+      "searchDeck": "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
     },
     "ravenousMyconidNurturingStrain4": {
-      "healThatMuchDamagehorrorFromRavenousMyconid": "Heal that much damage/horror from Ravenous Myconid",
-      "moveThatMuchDamagehorrorFromInvestigatorOrAllyAssetsAtYourLo": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
+      "heal": "Heal that much damage/horror from Ravenous Myconid",
+      "moveThatMuch": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid"
     },
     "rexMurphy": {
       "fail": "Automatically fail to draw 3"
@@ -942,7 +942,7 @@
       "doNotAddToHand": "Do not add to hand"
     },
     "seaChangeHarpoon": {
-      "returnSeaChangeHarpoonToYourHandToReturnAllOfYourCommittedSk": "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"
+      "returnToHand": "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"
     },
     "searchForTheTruthAdvanced": {
       "draw": "Draw 1 Card",
@@ -965,8 +965,8 @@
     },
     "sharpshooter3": {
       "doBoth": "Do both",
-      "thisAttackUsesAgilityInsteadOfCombatAllModifiersToYourCombat": "This attack uses {'{'}agility{'}'} instead of {'{'}combat{'}'}. All modifiers to your {'{'}combat{'}'} for this attack modify your instead.",
-      "useTheAttackedEnemysEvadeValueForThisAttackInsteadOfTheirFig": "Use the attacked enemy's evade value for this attack, instead of their fight value."
+      "attackUsesAlt": "This attack uses {'{'}agility{'}'} instead of {'{'}combat{'}'}. All modifiers to your {'{'}combat{'}'} for this attack modify your instead.",
+      "useEnemyEvadeForAttack": "Use the attacked enemy's evade value for this attack, instead of their fight value."
     },
     "shrineOfTheMoirai3": {
       "doneChoosingCards": "Done choosing cards"
@@ -990,7 +990,7 @@
       "returnNetWithSkills": "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them",
       "automaticallyEvadeAnotherEnemy": "Automatically evade another enemy",
       "doNotEvadeAnotherEnemy": "Do not evade another enemy",
-      "returnSilassNetToYourHandToReturnAllOfYourCommittedSkillCard": "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them"
+      "returnNet": "Return Silas's Net to your hand to return all of your committed skill cards to your hand instead of discarding them"
     },
     "sinEater3": {
       "addCharge": "Add Charge",
@@ -1047,7 +1047,7 @@
       "doNotRegurgitateAnyMoreCards": "Do not regurgitate any more cards"
     },
     "summonedServitor": {
-      "moveToLocationWithSummonedServitorWingsOfNight": "Move to location with Summoned Servitor (Wings of Night)"
+      "moveToLocation": "Move to location with Summoned Servitor (Wings of Night)"
     },
     "surgicalKit3": {
       "draw1CardAndHeal1Horror": "Draw 1 card and heal 1 horror",
@@ -1070,7 +1070,7 @@
     },
     "teachingsOfTheOrder": {
       "defeatANon_elite_EnemyAtYourLocation": "Defeat a non-_Elite_ enemy at your location.",
-      "removeAFloodTokenFromANon_sanctum_Location": "Remove a flood token from a non-_Sanctum_ location.",
+      "removeAFlood": "Remove a flood token from a non-_Sanctum_ location.",
       "removeAllCurseTokensFromTheChaosBag": "Remove all {'{'}curse{'}'} tokens from the chaos bag."
     },
     "terribleSecret": {
@@ -1081,7 +1081,7 @@
       "searchDiscard": "Search Discard"
     },
     "theBeyondBleakNetherworld": {
-      "attachTheTopCardOfTheSpiritDeckToTheBeyondAsASpirit": "Attach the top card of the spirit deck to The Beyond, as a spirit",
+      "attachTheTop": "Attach the top card of the spirit deck to The Beyond, as a spirit",
       "discardThisSpirit": "Discard this spirit",
       "take1DirectDamage": "Take 1 direct damage",
       "take1DirectHorror": "Take 1 direct horror"
@@ -1145,7 +1145,7 @@
     "toolBelt": {
       "attachAToolAssetInYourPlayAreaToToolBelt": "Attach a Tool asset in your play area to Tool Belt",
       "detachAnAttachedAsset": "Detach an attached asset.",
-      "switchAToolAssetInYourPlayAreaWithAnAttachedAsset": "Switch a Tool asset in your play area with an attached asset"
+      "switchATool": "Switch a Tool asset in your play area with an attached asset"
     },
     "treasureHunter1": {
       "discardTreasureHunter": "Discard Treasure Hunter",
@@ -1161,7 +1161,7 @@
       "doNotChooseLocation": "Do not choose a different location"
     },
     "trustyBullwhipAdvanced": {
-      "deal1DamageForThisAttackAndAutomaticallyEvadeTheEnemy": "Deal + 1 damage for this attack and Automatically evade the enemy"
+      "deal1DamageFor": "Deal + 1 damage for this attack and Automatically evade the enemy"
     },
     "twentyOneOrBust": {
       "stop": "Stop with {total}"
@@ -1180,7 +1180,7 @@
       "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
     },
     "vowOfDrzytelech": {
-      "putVowOfDrzytelechIntoPlayInYourThreatArea": "Put Vow of Drzytelech into play in your threat area",
+      "putIntoPlay": "Put Vow of Drzytelech into play in your threat area",
       "take1HorrorAndShuffleItIntoYourDeck": "Take 1 horror and shuffle it into your deck"
     },
     "wendyAdamsParallel": {
@@ -1211,16 +1211,16 @@
       "doNotExhaustEnemy": "Do not exhaust enemy"
     },
     "agencyBackup5": {
-      "fastExhaustAgencyBackupAndDeal1DamageToItDeal1DamageToAnEnem": "{'{'}fast{'}'} Exhaust Agency Backup and deal 1 damage to it: Deal 1 damage to an enemy at your location.",
-      "fastExhaustAgencyBackupAndDeal1HorrorToItDiscover1ClueAtYour": "{'{'}fast{'}'} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
+      "fastExhaustAgency": "{'{'}fast{'}'} Exhaust Agency Backup and deal 1 damage to it: Deal 1 damage to an enemy at your location.",
+      "fastExhaustAgency2": "{'{'}fast{'}'} Exhaust Agency Backup and deal 1 horror to it: Discover 1 clue at your location."
     },
     "arcaneStudies": {
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "arcaneStudies2": {
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "beguile": {
       "moveAttachedEnemy": "Move attached enemy to a revealed connecting location",
@@ -1228,12 +1228,12 @@
       "basicEvade": "Perform a basic evade action at it's location"
     },
     "bloodPact": {
-      "fastAdd1DoomToBloodPactYouGet2CombatForThisSkillTestLimitOnc": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +2 {'{'}combat{'}'} for this skill test. (Limit once per test.)",
-      "fastAdd1DoomToBloodPactYouGet2WillpowerForThisSkillTestLimit": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +2 {'{'}willpower{'}'} for this skill test. (Limit once per test.)"
+      "fastAdd1Doom": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +2 {'{'}combat{'}'} for this skill test. (Limit once per test.)",
+      "fastAdd1Doom2": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +2 {'{'}willpower{'}'} for this skill test. (Limit once per test.)"
     },
     "bloodPact3": {
-      "fastAdd1DoomToBloodPactYouGet3CombatForThisSkillTestLimitOnc": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}combat{'}'} for this skill test. (Limit once per test.)",
-      "fastAdd1DoomToBloodPactYouGet3WillpowerForThisSkillTestLimit": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}willpower{'}'} for this skill test. (Limit once per test.)"
+      "fastAdd1Doom": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}combat{'}'} for this skill test. (Limit once per test.)",
+      "fastAdd1Doom2": "{'{'}fast{'}'} Add 1 doom to Blood Pact: You get +3 {'{'}willpower{'}'} for this skill test. (Limit once per test.)"
     },
     "brokenBottle": {
       "discardForDamage": "Discard to deal +1 damage"
@@ -1252,8 +1252,8 @@
     "combatTraining1": {
       "spendForCombat": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
       "spendForAgility": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
     },
     "cosmicFlame": {
       "spendChargeForDamage": "Spend 1 charge to deal +1 damage"
@@ -1267,8 +1267,8 @@
       "playRevealed": "play 1 revealed card"
     },
     "cryptographicCipher": {
-      "exhaustCryptographicCipherAndSpend1SecretInvestigateYourLoca": "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets +1 shroud for this investigation.",
-      "exhaustCryptographicCipherAndSpend1SecretInvestigateYourLoca1": "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets -2 shroud for this investigation."
+      "exhaust": "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets +1 shroud for this investigation.",
+      "exhaust2": "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets -2 shroud for this investigation."
     },
     "decoy": {
       "twoEnemies": "{'{'}reaction{'}'}  When you play Decoy, increase its cost by 2: Change \"a non-Elite enemy\" to \"up to 2 non-Elite enemies.\"",
@@ -1279,97 +1279,97 @@
       "doNotDamageConcealed": "Do not damage concealed card"
     },
     "digDeep": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "digDeep2": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "doppelganger1": {
       "moveToLocationOfDoppelganger": "Move to location of doppelganger",
       "evadeEnemy": "Evade enemy"
     },
     "elinaHarpersCarRunning": {
-      "ifYouAreThisVehiclesDriverDrawTheTopCardOfTheEncounterDeckTh": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
-      "ifYouAreThisVehiclesDriverYouStopTheCarFlipThisVehicleOver": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+      "ifYouAre": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
+      "ifYouAre2": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
     },
     "empiricalHypothesis": {
       "dynamicTrigger": "When {trigger}, you may exhaust Empirical Hypothesis to add 1 evidence to it.",
       "fastSpend1EvidenceDraw1Card": "{'{'}fast{'}'} Spend 1 evidence: Draw 1 card.",
-      "fastSpend2EvidenceReduceTheCostOfTheNextCardYouPlayBy3": "{'{'}fast{'}'} Spend 2 evidence: Reduce the cost of the next card you play by 3.",
-      "fastSpend3EvidenceDiscover1ClueAtYourLocation": "{'{'}fast{'}'} Spend 3 evidence: Discover 1 clue at your location.",
+      "fastSpend2Evidence": "{'{'}fast{'}'} Spend 2 evidence: Reduce the cost of the next card you play by 3.",
+      "fastSpend3Evidence": "{'{'}fast{'}'} Spend 3 evidence: Discover 1 clue at your location.",
       "alternativeHypothesis": "You may resolve its forced effect, choosing a criteria you have not chosen this round. Then, ready it."
     },
     "endurance": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
     },
     "endurance3": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an attack or evasion).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this is an attack or evasion)."
     },
     "handCrankFlashlight": {
       "discardForShroud": "Discard to deal give your location -1 shroud until the end of the round"
     },
     "hardKnocks": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
     },
     "hardKnocks2": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
     },
     "hatchet1": {
       "takeControlOfHatchet": "Take control of Hatchet"
     },
     "higherEducation": {
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "higherEducation3": {
-      "fastSpend1ResourceYouGet2IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +2 {'{'}intellect{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet2WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +2 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +2 {'{'}intellect{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +2 {'{'}willpower{'}'} for this skill test."
     },
     "holySpear5": {
       "fightWithReleaseBless": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear.",
       "fightWithSealBless": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
-      "actionSearchTheChaosBagFor2BlessTokensAndSealThemOnHolySpear": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
-      "action_fight_YouGet2WillpowerAndDeal1DamageForThisAttackWhen": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear."
+      "actionSearchThe": "{'{'}action{'}'} Search the chaos bag for 2 {'{'}bless{'}'} tokens and seal them on Holy Spear: _Fight_. You get +4{'{'}combat{'}'} and deal +2 damage for this attack.",
+      "actionYouGet2": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}willpower{'}'} and deal +1 damage for this attack. When you initiate this ability, you may release a {'{'}bless{'}'} token sealed on Holy Spear."
     },
     "hyperawareness": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
     },
     "hyperawareness2": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
     },
     "joeyTheRatVigil3": {
       "spendForItem": "Spend 1 resource: Choose an _Item_ asset from your hand and play it (paying its cost).",
       "discardForResources": "Discard an _Item_ asset from play: Gain 2 resources.",
-      "discardAn_item_AssetFromPlayGain2Resources": "Discard an _Item_ asset from play: Gain 2 resources.",
-      "spend1ResourceChooseAn_item_AssetFromYourHandAndPlayItPaying": "Spend 1 resource: Choose an _Item_ asset from your hand and play it (paying its cost)."
+      "discardAnAsset": "Discard an _Item_ asset from play: Gain 2 resources.",
+      "spend": "Spend 1 resource: Choose an _Item_ asset from your hand and play it (paying its cost)."
     },
     "keenEye": {
-      "fastSpend2ResourcesYouGet1CombatUntilTheEndOfThePhase": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}combat{'}'} until the end of the phase",
-      "fastSpend2ResourcesYouGet1IntellectUntilTheEndOfThePhase": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}intellect{'}'} until the end of the phase"
+      "fastSpend2Resources": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}combat{'}'} until the end of the phase",
+      "fastSpend2Resources2": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}intellect{'}'} until the end of the phase"
     },
     "keenEye3": {
-      "fastSpend2ResourcesYouGet1CombatUntilTheEndOfThePhase": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}combat{'}'} until the end of the phase.",
-      "fastSpend2ResourcesYouGet1IntellectUntilTheEndOfThePhase": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}intellect{'}'} until the end of the phase."
+      "fastSpend2Resources": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}combat{'}'} until the end of the phase.",
+      "fastSpend2Resources2": "{'{'}fast{'}'} Spend 2 resources: You get +1 {'{'}intellect{'}'} until the end of the phase."
     },
     "levelheaded": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this test is on a scenario card).",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a scenario card)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this test is on a scenario card).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a scenario card)."
     },
     "levelheaded3": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this test is on a scenario card).",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a scenario card)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this test is on a scenario card).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a scenario card)."
     },
     "livreDeibon": {
-      "fastExhaustLivreDeibonCommitTheTopCardOfYourDeckToAnEligible": "{'{'}fast{'}'} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location.",
-      "fastExhaustLivreDeibonSwapTheTopCardOfYourDeckWithACardInYou": "{'{'}fast{'}'} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
+      "fastExhaustLivre": "{'{'}fast{'}'} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location.",
+      "fastExhaustLivre2": "{'{'}fast{'}'} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
     },
     "localMap": {
       "exhaustAndMove": "Exhaust Local Map and move to the investigated location"
@@ -1378,14 +1378,14 @@
       "youNockAnotherArrow": "You nock another arrow"
     },
     "madameLabranche": {
-      "fastIfYouHaveNoCardsInYourHandExhaustMadameLabrancheDraw1Car": "{'{'}fast{'}'} If you have no cards in your hand, exhaust Madame Labranche: Draw 1 card.",
-      "fastIfYouHaveNoResourcesExhaustMadameLabrancheGain1Resource": "{'{'}fast{'}'} If you have no resources, exhaust Madame Labranche: Gain 1 resource."
+      "fastIfYou": "{'{'}fast{'}'} If you have no cards in your hand, exhaust Madame Labranche: Draw 1 card.",
+      "fastIfYou2": "{'{'}fast{'}'} If you have no resources, exhaust Madame Labranche: Gain 1 resource."
     },
     "moxie1": {
       "spendForWillpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test.",
       "spendForAgility": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "oldCompass": {
       "exhaustToRepeat": "Exhaust Old Compass"
@@ -1403,55 +1403,55 @@
       "youNockAnotherArrow": "You nock another arrow"
     },
     "physicalTraining": {
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "physicalTraining2": {
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "pitchfork": {
       "takeControlOfPitchfork": "Take control of Pitchfork"
     },
     "plucky1": {
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test."
     },
     "protectingTheAnirniq2": {
       "returnAssetToOwner": "Return that asset to its owner's hand",
       "ownerDraws3": "Its owner draws 3 cards"
     },
     "quickdrawHolster4": {
-      "fastChooseA_firearm_AssetTakingUpOnly1HandSlotInYourPlayArea": "{'{'}fast{'}'}: Choose a _Firearm_ asset taking up only 1 hand slot in your play area. Attach it to Quickdraw Holster, or switch it with the attached asset. The attached asset takes up no hand slots. (Limit 1 attached asset.)",
-      "fastExhaustQuickdrawHolsterPerformAFightActionOnTheAttachedA": "{'{'}fast{'}'} Exhaust Quickdraw Holster: Perform a fight action on the attached asset without paying its {'{'}action{'}'} cost."
+      "fastChooseA": "{'{'}fast{'}'}: Choose a _Firearm_ asset taking up only 1 hand slot in your play area. Attach it to Quickdraw Holster, or switch it with the attached asset. The attached asset takes up no hand slots. (Limit 1 attached asset.)",
+      "fastExhaustQuickdraw": "{'{'}fast{'}'} Exhaust Quickdraw Holster: Perform a fight action on the attached asset without paying its {'{'}action{'}'} cost."
     },
     "ravenousMyconidNurturingStrain4": {
       "searchForUncannyGrowth": "Search your bonded cards for Uncanny Growth and add it to your hand.",
       "healOrMoveDamageHorror": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
       "healFromMyconid": "Heal that much damage/horror from Ravenous Myconid",
       "moveDamageToMyconid": "Move that much damage/horror from investigator or Ally assets at your location to Ravenous Myconid",
-      "eitherHealThatMuchDamagehorrorFromRavenousMyconidOrMoveThatM": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
-      "searchYourBondedCardsForUncannyGrowthAndAddItToYourHand": "Search your bonded cards for Uncanny Growth and add it to your hand."
+      "eitherHealThat": "Either heal that much damage/horror from Ravenous Myconid, or move that much damage/horror from investigators or _Ally_ assets at your location to Ravenous Myconid",
+      "search": "Search your bonded cards for Uncanny Growth and add it to your hand."
     },
     "ravenousMyconidUnidentified": {
       "searchForUncannyGrowth": "Search your bonded cards for Uncanny Growth and add it to you hand.",
       "classifyNewSpecies": "Move each growth to your resource pool, as resources. Record in your Campaign Log that \"you have classified a new species\"",
-      "moveEachGrowthToYourResourcePoolAsResourcesRecordInYourCampa": "Move each growth to your resource pool, as resources. Record in your Campaign Log that \\",
-      "searchYourBondedCardsForUncannyGrowthAndAddItToYouHand": "Search your bonded cards for Uncanny Growth and add it to you hand."
+      "moveEachGrowth": "Move each growth to your resource pool, as resources. Record in your Campaign Log that \\",
+      "search": "Search your bonded cards for Uncanny Growth and add it to you hand."
     },
     "scientificTheory1": {
       "spendForIntellect": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test.",
       "spendForCombat": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test."
     },
     "scrapper": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
     },
     "scrapper3": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test.",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test."
     },
     "secondSight": {
       "spendChargeForClue": "Spend 1 charge to discover 1 additional clue"
@@ -1461,19 +1461,19 @@
       "doNotSpendCharge": "Do not spend charge"
     },
     "sharpRhetoric": {
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest2Intellect": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an investigation or parley).",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this is an investigation or parley)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an investigation or parley).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this is an investigation or parley)."
     },
     "shortcut": {
       "ability": "{'{'}fast{'}'} Exhaust Shortcut: _Move_ (to a connecting location). Any investigator at this location may trigger this ability."
     },
     "silverTongue": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an evasion or parley).",
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest2Intellect": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an evasion or parley)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an evasion or parley).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an evasion or parley)."
     },
     "silverTongue3": {
-      "fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an evasion or parley).",
-      "fastSpend1ResourceYouGet1IntellectForThisSkillTest2Intellect": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an evasion or parley)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}agility{'}'} for this skill test. (+2 {'{'}agility{'}'} instead if this is an evasion or parley).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}intellect{'}'} for this skill test. (+2 {'{'}intellect{'}'} instead if this is an evasion or parley)."
     },
     "sledgehammer3": {
       "exhaustForDamage": "Exhaust Sledgehammer"
@@ -1486,23 +1486,23 @@
       "doNotEngage": "Do not engage an enemy"
     },
     "spiritualIntuition": {
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this test is on a _Spell_ or _Ritual_ card).",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a a _Spell_ or _Ritual_ card)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this test is on a _Spell_ or _Ritual_ card).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a a _Spell_ or _Ritual_ card)."
     },
     "spiritualIntuition3": {
-      "fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this test is on a _Spell_ or _Ritual_ card).",
-      "fastSpend1ResourceYouGet1WillpowerForThisSkillTest2Willpower": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a _Spell_ or _Ritual_ card)."
+      "fastSpend1Resource": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}combat{'}'} for this skill test. (+2 {'{'}combat{'}'} instead if this test is on a _Spell_ or _Ritual_ card).",
+      "fastSpend1Resource2": "{'{'}fast{'}'} Spend 1 resource: You get +1 {'{'}willpower{'}'} for this skill test. (+2 {'{'}willpower{'}'} instead if this test is on a _Spell_ or _Ritual_ card)."
     },
     "stouthearted": {
       "doneMovingDamageHorror": "Done moving damage/horror"
     },
     "streetwise": {
-      "fastSpend2ResourcesYouGet2AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 2 resources: You get +2 {'{'}agility{'}'} for this skill test.",
-      "fastSpend2ResourcesYouGet2IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 2 resources: You get +2 {'{'}intellect{'}'} for this skill test."
+      "fastSpend2Resources": "{'{'}fast{'}'} Spend 2 resources: You get +2 {'{'}agility{'}'} for this skill test.",
+      "fastSpend2Resources2": "{'{'}fast{'}'} Spend 2 resources: You get +2 {'{'}intellect{'}'} for this skill test."
     },
     "streetwise3": {
-      "fastSpend2ResourcesYouGet3AgilityForThisSkillTest": "{'{'}fast{'}'} Spend 2 resources: You get +3 {'{'}agility{'}'} for this skill test.",
-      "fastSpend2ResourcesYouGet3IntellectForThisSkillTest": "{'{'}fast{'}'} Spend 2 resources: You get +3 {'{'}intellect{'}'} for this skill test."
+      "fastSpend2Resources": "{'{'}fast{'}'} Spend 2 resources: You get +3 {'{'}agility{'}'} for this skill test.",
+      "fastSpend2Resources2": "{'{'}fast{'}'} Spend 2 resources: You get +3 {'{'}intellect{'}'} for this skill test."
     },
     "taskForce": {
       "resolveAbilityNoCost": "...resolve an {'{'}action{'}'} ability on an asset they control without paying its {'{'}action{'}'} cost.",
@@ -1510,14 +1510,14 @@
       "discoverClueAtTheirLocation": "...discover 1 clue at their location"
     },
     "theKeyOfSolomonSecretsOfTheUnknown4": {
-      "ifThereAreMoreBlessThanCurseTokensInTheChaosBagRemove1BlessT": "If there are more {'{'}bless{'}'} than {'{'}curse{'}'} tokens in the chaos bag, remove 1 {'{'}bless{'}'} token from the chaos bag and exhaust The Key of Solomon: Heal up to 2 damage and/or horror from an investigator or _Ally_ asset at your location.",
-      "ifThereAreMoreCurseThanBlessTokensInTheChaosBagRemove1CurseT": " If there are more {'{'}curse{'}'} than {'{'}bless{'}'} tokens in the chaos bag, remove 1 {'{'}curse{'}'} token from the chaos bag and exhaust The Key of Solomon: Gain 2 resources."
+      "ifThereAre": "If there are more {'{'}bless{'}'} than {'{'}curse{'}'} tokens in the chaos bag, remove 1 {'{'}bless{'}'} token from the chaos bag and exhaust The Key of Solomon: Heal up to 2 damage and/or horror from an investigator or _Ally_ asset at your location.",
+      "ifThereAre2": " If there are more {'{'}curse{'}'} than {'{'}bless{'}'} tokens in the chaos bag, remove 1 {'{'}curse{'}'} token from the chaos bag and exhaust The Key of Solomon: Gain 2 resources."
     },
     "theNecronomiconPetrusDeDaciaTranslation5": {
-      "fastSpend1SecretYouGet2SkillValueForThisSkillTest": "{'{'}fast{'}'} Spend 1 secret: You get +2 skill value for this skill test.",
+      "fastSpend1Secret": "{'{'}fast{'}'} Spend 1 secret: You get +2 skill value for this skill test.",
       "fastSpend2SecretsDraw2Cards": "{'{'}fast{'}'} Spend 2 secrets: Draw 2 cards.",
-      "fastSpend3SecretsDiscover1ClueAtAnyLocation": "{'{'}fast{'}'} Spend 3 secrets: Discover 1 clue at any location.",
-      "fastSpend4SecretsDeal3DamageToAnEnemyEngagedWithYou": "{'{'}fast{'}'} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
+      "fastSpend3Secrets": "{'{'}fast{'}'} Spend 3 secrets: Discover 1 clue at any location.",
+      "fastSpend4Secrets": "{'{'}fast{'}'} Spend 4 secrets: Deal 3 damage to an enemy engaged with you."
     },
     "theRedClockBrokenButReliable2": {
       "placeChargeHere": "Place 1 charge here",
@@ -1528,8 +1528,8 @@
       "leaveCharges": "Leave charges"
     },
     "thermos": {
-      "heal1DamageFromAnInvestigatorAtYourLocation2DamageInsteadIfH": "Heal 1 damage from an investigator at your location (2 damage instead if he or she has 2 or more physical trauma).",
-      "heal1HorrorFromAnInvestigatorAtYourLocation2HorrorInsteadIfH": "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
+      "heal": "Heal 1 damage from an investigator at your location (2 damage instead if he or she has 2 or more physical trauma).",
+      "heal2": "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
     },
     "thirdTimesACharm": {
       "cancel": "Cancel it, return it to the chaos bag, and reveal a new chaos token"
@@ -1538,16 +1538,16 @@
       "cancelAndReveal": "Cancel it, return it to the chaos bag, and reveal a new chaos token"
     },
     "thomasDawsonsCarRunning": {
-      "ifYouAreThisVehiclesDriverDrawTheTopCardOfTheEncounterDeckTh": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
-      "ifYouAreThisVehiclesDriverYouStopTheCarFlipThisVehicleOver": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+      "ifYouAre": "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)",
+      "ifYouAre2": "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
     },
     "throwTheBookAtThem": {
       "automaticallyEvade": "Automatically evade the attacked enemy",
       "resolveAbilityOnTome": "After the attack ends, you may resolve an {'{'}action{'}'} or {'{'}fast{'}'} ability on the chosen asset (ignoring its {'{'}action{'}'} cost, if any)"
     },
     "timewornBrand5": {
-      "actionExhaustTimewornBrand_fight_AddYourWillpowerToYourSkill": "{'{'}action{'}'} Exhaust Timeworn Brand: _Fight_. Add your {'{'}willpower{'}'} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)",
-      "actionIfTimewornBrandIsReady_fight_YouGet2CombatAndDeal1Dama": "{'{'}action{'}'} If Timeworn Brand is ready: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack."
+      "actionExhaustTimeworn": "{'{'}action{'}'} Exhaust Timeworn Brand: _Fight_. Add your {'{'}willpower{'}'} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)",
+      "actionIfTimeworn": "{'{'}action{'}'} If Timeworn Brand is ready: _Fight_. You get +2 {'{'}combat{'}'} and deal +1 damage for this attack."
     },
     "tinker": {
       "hand": "Hand",
@@ -1572,12 +1572,12 @@
       "playCard": "Play Card"
     },
     "winchesterModel522": {
-      "actionDiscardWinchesterModel52_fightCombat_YouGet3CombatForT": "{'{'}action{'}'}: Discard Winchester Model 52: _Fight ({'{'}combat{'}'})_. You get +3 {'{'}combat{'}'} for this attack. If you succeed, automatically evade the targeted enemy.",
-      "actionSpend1Ammo_fightCombat_YouGet3CombatAndDeal1DamageForT": "{'{'}action{'}'}: Spend 1 ammo: _Fight ({'{'}combat{'}'})_. You get +3 {'{'}combat{'}'} and deal +1 damage for this attack."
+      "actionDiscardWinchester": "{'{'}action{'}'}: Discard Winchester Model 52: _Fight ({'{'}combat{'}'})_. You get +3 {'{'}combat{'}'} for this attack. If you succeed, automatically evade the targeted enemy.",
+      "actionSpend1Ammo": "{'{'}action{'}'}: Spend 1 ammo: _Fight ({'{'}combat{'}'})_. You get +3 {'{'}combat{'}'} and deal +1 damage for this attack."
     },
     "yaotl1": {
-      "fastDiscardTheTopCardOfYourDeckLimitOncePerPhase": "{'{'}fast{'}'}: Discard the top card of your deck. (Limit once per phase.)",
-      "fastExhaustYaotlDuringThisSkillTestYouGetABonusToEachSkillEq": "{'{'}fast{'}'} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {'{'}skillWild{'}'} icons)."
+      "fastDiscardThe": "{'{'}fast{'}'}: Discard the top card of your deck. (Limit once per phase.)",
+      "fastExhaustYaotl": "{'{'}fast{'}'} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {'{'}skillWild{'}'} icons)."
     }
   }
 }

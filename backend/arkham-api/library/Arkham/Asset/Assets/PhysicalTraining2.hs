@@ -17,10 +17,10 @@ physicalTraining2 = asset PhysicalTraining2 Cards.physicalTraining2
 
 instance HasAbilities PhysicalTraining2 where
   getAbilities (PhysicalTraining2 a) =
-    [ (cardI18n $ withI18nTooltip "physicalTraining2.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "physicalTraining2.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "physicalTraining2.fastSpend1ResourceYouGet1CombatForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "physicalTraining2.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

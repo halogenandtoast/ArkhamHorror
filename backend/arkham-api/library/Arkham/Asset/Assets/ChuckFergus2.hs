@@ -57,7 +57,7 @@ instance RunMessage ChuckFergus2 where
             (cardI18n $ labeled' "chuckFergus2.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
             (cardI18n $ labeled' "chuckFergus2.thatEventCosts2FewerResourcesToPlay") do
               eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
-            (cardI18n $ labeled' "chuckFergus2.youGet2SkillValueWhilePerformingASkillTestDuringTheResolutio") do
+            (cardI18n $ labeled' "chuckFergus2.gain2SkillValue") do
               eventModifier attrs iid $ AnySkillValue 2
 
       pure a

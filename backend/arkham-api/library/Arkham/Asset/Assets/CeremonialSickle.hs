@@ -25,9 +25,9 @@ instance RunMessage CeremonialSickle where
       sid <- getRandom
       chooseOneM iid do
         when attrs.ready do
-          (cardI18n $ labeled' "ceremonialSickle.exhaustCeremonialSickleAndPlace1DoomOnItToGet1SkillValueAndD")
+          (cardI18n $ labeled' "ceremonialSickle.exhaustForBoost")
             $ doStep 1 msg
-        (cardI18n $ labeled' "ceremonialSickle.ifThisAttackDefeatsAnEnemyRemove1DoomFromCeremonialSickle") $ doStep 2 msg
+        (cardI18n $ labeled' "ceremonialSickle.onDefeatEnemy") $ doStep 2 msg
       fight <- mkChooseFight sid iid (attrs.ability 1)
       chooseOneM iid do
         (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower fight

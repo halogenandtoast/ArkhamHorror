@@ -40,7 +40,7 @@ instance RunMessage HallowedChalice where
 
       chooseOneM iid do
         when attrs.ready do
-          (cardI18n $ labeled' "hallowedChalice.exhaustHallowedChaliceAndPlace1DoomOnItToHeal2DamageOr2Horro")
+          (cardI18n $ labeled' "hallowedChalice.exhaustForBoost")
             do
               exhaustThis attrs
               placeDoom (attrs.ability 1) attrs 1
@@ -48,7 +48,7 @@ instance RunMessage HallowedChalice where
                 iid
                 $ [Label "$label.cards.hallowedChalice.heal2Damage" [HealDamage (toTarget iid') (attrs.ability 1) 2] | damageHealable]
                 <> [Label "$label.cards.hallowedChalice.heal2Horror" [HealHorror (toTarget iid') (attrs.ability 1) 2] | horrorHealable]
-        (cardI18n $ labeled' "hallowedChalice.heal1DamageOr1HorrorFromThatInvestigatorIfYouHealTheLastDama")
+        (cardI18n $ labeled' "hallowedChalice.healFromThatInvestigator")
           do
             doStep 1 msg
             chooseOrRunOne

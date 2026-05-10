@@ -32,7 +32,7 @@ instance RunMessage PolishedCane where
         eid <- MaybeT getSkillTestTargetedEnemy
         liftGuardM $ eid <=~> (NonEliteEnemy <> EnemyCanBeEvadedBy (attrs.ability 1))
         lift $ chooseOneM iid do
-          (cardI18n $ labeled' "polishedCane.exhaustPolishedCaneToAutomaticallyEvadeThisEnemy") do
+          (cardI18n $ labeled' "polishedCane.exhaust") do
             exhaustThis attrs
             automaticallyEvadeEnemy iid eid
           (cardI18n $ labeled' "polishedCane.doNotEvade") nothing

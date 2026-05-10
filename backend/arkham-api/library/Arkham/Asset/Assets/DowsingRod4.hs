@@ -36,9 +36,9 @@ instance RunMessage DowsingRod4 where
       accessibleLocations <- getAccessibleLocations iid attrs
       chooseOneM iid do
         when (attrs.ready && notNull accessibleLocations) $ forcedWhen isForced do
-          (cardI18n $ labeled' "dowsingRod4.exhaustDowsingRodAndPlace1DoomOnItToMoveToAConnectingLocatio")
+          (cardI18n $ labeled' "dowsingRod4.exhaustForBoost")
             $ doStep 2 msg
-        (cardI18n $ labeled' "dowsingRod4.ifThisInvestigationDiscoversTheLastClueAtALocationReadyDowsi")
+        (cardI18n $ labeled' "dowsingRod4.onLastClue")
           $ doStep 3 msg
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2" . unsetMetaKey "option1") a

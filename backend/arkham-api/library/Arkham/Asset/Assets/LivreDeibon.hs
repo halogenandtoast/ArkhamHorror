@@ -21,10 +21,10 @@ livreDeibon = asset LivreDeibon Cards.livreDeibon
 
 instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
-    [ (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivreDeibonSwapTheTopCardOfYourDeckWithACardInYou")
+    [ (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivre2")
         $ controlledAbility a 1 CanManipulateDeck
         $ FastAbility (exhaust a)
-    , (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivreDeibonCommitTheTopCardOfYourDeckToAnEligible")
+    , (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivre")
         $ controlledAbility
           a
           2

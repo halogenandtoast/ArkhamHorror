@@ -17,9 +17,9 @@ timewornBrand5 = asset TimewornBrand5 Cards.timewornBrand5
 
 instance HasAbilities TimewornBrand5 where
   getAbilities (TimewornBrand5 a) =
-    [ (cardI18n $ withI18nTooltip "timewornBrand5.actionIfTimewornBrandIsReady_fight_YouGet2CombatAndDeal1Dama")
+    [ (cardI18n $ withI18nTooltip "timewornBrand5.actionIfTimeworn")
         $ controlled a 1 (thisIs a $ asset_ #ready) fightAction_
-    , (cardI18n $ withI18nTooltip "timewornBrand5.actionExhaustTimewornBrand_fight_AddYourWillpowerToYourSkill")
+    , (cardI18n $ withI18nTooltip "timewornBrand5.actionExhaustTimeworn")
         $ limitedAbility (MaxPer Cards.timewornBrand5 PerGame 1)
         $ restricted a 2 ControlsThis
         $ fightAction (exhaust a)

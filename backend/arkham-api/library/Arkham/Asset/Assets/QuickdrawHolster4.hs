@@ -22,7 +22,7 @@ instance HasModifiersFor QuickdrawHolster4 where
 
 instance HasAbilities QuickdrawHolster4 where
   getAbilities (QuickdrawHolster4 x) =
-    [ (cardI18n $ withI18nTooltip "quickdrawHolster4.fastChooseA_firearm_AssetTakingUpOnly1HandSlotInYourPlayArea")
+    [ (cardI18n $ withI18nTooltip "quickdrawHolster4.fastChooseA")
         $ controlled
           x
           1
@@ -33,7 +33,7 @@ instance HasAbilities QuickdrawHolster4 where
               <> not_ (AssetAttachedToAsset $ be x)
           )
           (FastAbility Free)
-    , (cardI18n $ withI18nTooltip "quickdrawHolster4.fastExhaustQuickdrawHolsterPerformAFightActionOnTheAttachedA")
+    , (cardI18n $ withI18nTooltip "quickdrawHolster4.fastExhaustQuickdraw")
         $ controlled
           x
           2

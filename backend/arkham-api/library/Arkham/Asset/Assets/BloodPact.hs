@@ -17,11 +17,11 @@ bloodPact = asset BloodPact Cards.bloodPact
 
 instance HasAbilities BloodPact where
   getAbilities (BloodPact x) =
-    [ (cardI18n $ withI18nTooltip "bloodPact.fastAdd1DoomToBloodPactYouGet2WillpowerForThisSkillTestLimit")
+    [ (cardI18n $ withI18nTooltip "bloodPact.fastAdd1Doom2")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 1) (toTarget x) 1)
-    , (cardI18n $ withI18nTooltip "bloodPact.fastAdd1DoomToBloodPactYouGet2CombatForThisSkillTestLimitOnc")
+    , (cardI18n $ withI18nTooltip "bloodPact.fastAdd1Doom")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 2 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 2) (toTarget x) 1)

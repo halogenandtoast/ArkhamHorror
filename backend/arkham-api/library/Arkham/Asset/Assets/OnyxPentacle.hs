@@ -41,9 +41,9 @@ instance RunMessage OnyxPentacle where
       chooseOneM iid do
         when attrs.ready do
           forcedWhen isForced
-            $ (cardI18n $ labeled' "onyxPentacle.exhaustOnyxPentacleAndPlace1DoomOnItToTargetAnyEnemyAtYourLo")
+            $ (cardI18n $ labeled' "onyxPentacle.exhaustToTarget")
             $ doStep 1 msg
-        (cardI18n $ labeled' "onyxPentacle.ifYouSucceedBy2OrMoreRemove1DoomFromOnyxPentacle") $ doStep 2 msg
+        (cardI18n $ labeled' "onyxPentacle.succeedBy2") $ doStep 2 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       exhaustThis attrs

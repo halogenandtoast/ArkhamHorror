@@ -30,7 +30,7 @@ instance RunMessage Sharpshooter3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       anyFightableWithEvade <- selectAny $ CanFightEnemy (toAbilitySource attrs 1) <> EnemyWithEvade
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "sharpshooter3.thisAttackUsesAgilityInsteadOfCombatAllModifiersToYourCombat")
+        (cardI18n $ labeled' "sharpshooter3.attackUsesAlt")
           do
             thisSkillTestModifiers
               iid
@@ -38,7 +38,7 @@ instance RunMessage Sharpshooter3 where
               iid
               [UseSkillInsteadOf #combat #agility, SkillModifiersAffectOtherSkill #combat #agility]
         when anyFightableWithEvade do
-          (cardI18n $ labeled' "sharpshooter3.useTheAttackedEnemysEvadeValueForThisAttackInsteadOfTheirFig") do
+          (cardI18n $ labeled' "sharpshooter3.useEnemyEvadeForAttack") do
             thisSkillTestModifier
               iid
               attrs

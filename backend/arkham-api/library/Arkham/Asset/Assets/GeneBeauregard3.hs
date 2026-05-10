@@ -51,13 +51,13 @@ instance RunMessage GeneBeauregard3 where
 
       chooseOrRunOneM iid do
         when option1 do
-          (cardI18n $ labeled' "geneBeauregard3.move1ClueFromYourLocationToAConnectingLocation") $ chooseOption 1
+          (cardI18n $ labeled' "geneBeauregard3.move1ClueFrom2") $ chooseOption 1
         when option2 do
-          (cardI18n $ labeled' "geneBeauregard3.move1ClueFromAConnectingLocationToYourLocation") $ chooseOption 2
+          (cardI18n $ labeled' "geneBeauregard3.move1ClueFrom") $ chooseOption 2
         when option3 do
-          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemyFromYourLocationToAConnectingLocation") $ chooseOption 3
+          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemy2") $ chooseOption 3
         when option4 do
-          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemyFromAConnectingLocationToYourLocation") $ chooseOption 4
+          (cardI18n $ labeled' "geneBeauregard3.moveAnEnemy") $ chooseOption 4
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do

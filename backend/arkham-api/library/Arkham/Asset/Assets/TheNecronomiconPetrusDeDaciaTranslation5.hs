@@ -21,16 +21,16 @@ theNecronomiconPetrusDeDaciaTranslation5 =
 
 instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
   getAbilities (TheNecronomiconPetrusDeDaciaTranslation5 a) =
-    [ (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend1SecretYouGet2SkillValueForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend1Secret")
         $ controlled a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (assetUseCost a #secret 1)
     , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend2SecretsDraw2Cards")
         $ controlled a 2 CanDrawCards
         $ FastAbility (assetUseCost a #secret 2)
-    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend3SecretsDiscover1ClueAtAnyLocation")
+    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend3Secrets")
         $ controlled a 3 (CanDiscoverCluesAt Anywhere)
         $ FastAbility (assetUseCost a #secret 3)
-    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend4SecretsDeal3DamageToAnEnemyEngagedWithYou")
+    , (cardI18n $ withI18nTooltip "theNecronomiconPetrusDeDaciaTranslation5.fastSpend4Secrets")
         $ withCriteria (mkAbility a 4 $ FastAbility $ assetUseCost a #secret 4)
         $ ControlsThis
         <> exists (EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (toSource a))

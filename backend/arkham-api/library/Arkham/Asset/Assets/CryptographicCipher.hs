@@ -19,10 +19,10 @@ cryptographicCipher =
 
 instance HasAbilities CryptographicCipher where
   getAbilities (CryptographicCipher x) =
-    [ (cardI18n $ withI18nTooltip "cryptographicCipher.exhaustCryptographicCipherAndSpend1SecretInvestigateYourLoca")
+    [ (cardI18n $ withI18nTooltip "cryptographicCipher.exhaust")
         $ restricted x 1 ControlsThis
         $ FastAbility' (assetUseCost x Secret 1 <> exhaust x) #investigate
-    , (cardI18n $ withI18nTooltip "cryptographicCipher.exhaustCryptographicCipherAndSpend1SecretInvestigateYourLoca1")
+    , (cardI18n $ withI18nTooltip "cryptographicCipher.exhaust2")
         $ investigateAbility x 2 (assetUseCost x Secret 1 <> exhaust x) ControlsThis
     ]
 

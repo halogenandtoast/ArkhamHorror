@@ -41,7 +41,7 @@ instance RunMessage TeachingsOfTheOrder where
 
         unlessHasRecord Teachings2 do
           whenAny (not_ (withTrait Sanctum) <> FloodedLocation) do
-            labeled' "teachingsOfTheOrder.removeAFloodTokenFromANon_sanctum_Location" $ doStep 2 msg
+            labeled' "teachingsOfTheOrder.removeAFlood" $ doStep 2 msg
 
         unlessHasRecord Teachings3 do
           whenAny (enemyAtLocationWith iid <> NonEliteEnemy <> EnemyCanBeDefeatedBy (attrs.ability 1)) do

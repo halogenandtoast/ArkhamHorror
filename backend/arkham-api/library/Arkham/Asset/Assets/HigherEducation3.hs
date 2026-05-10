@@ -17,10 +17,10 @@ higherEducation3 = asset HigherEducation3 Cards.higherEducation3
 
 instance HasAbilities HigherEducation3 where
   getAbilities (HigherEducation3 x) =
-    [ (cardI18n $ withI18nTooltip "higherEducation3.fastSpend1ResourceYouGet2WillpowerForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "higherEducation3.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlledAbility x 1 restriction (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "higherEducation3.fastSpend1ResourceYouGet2IntellectForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "higherEducation3.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlledAbility x 2 restriction (FastAbility $ ResourceCost 1)
     ]

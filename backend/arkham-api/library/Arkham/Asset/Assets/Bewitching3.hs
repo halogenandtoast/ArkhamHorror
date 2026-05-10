@@ -56,7 +56,7 @@ instance RunMessage Bewitching3 where
         (cardI18n $ labeled' "bewitching3.draw1AttachedCard") do
           focusCards attrs.cardsUnderneath $ chooseTargetM iid attrs.cardsUnderneath $ drawCard iid
         when canSearch do
-          (cardI18n $ labeled' "bewitching3.searchTheTop9CardsOfYourDeckForACopyOfAnAttachedCardDrawItAn")
+          (cardI18n $ labeled' "bewitching3.searchTopOfDeck")
             do
               let cardMatcher = mapOneOf (CardWithTitle . toTitle) attrs.cardsUnderneath
               search iid attrs iid [fromTopOfDeck 9] (basic cardMatcher) (DrawFound iid 1)

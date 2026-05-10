@@ -31,13 +31,13 @@ instance HasAbilities EmpiricalHypothesis where
         $ FastAbility
         $ assetUseCost a Evidence 1
     ]
-      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend2EvidenceReduceTheCostOfTheNextCardYouPlayBy3")
+      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend2Evidence")
             $ restricted a 3 (exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 2
          | a `hasCustomization` ResearchGrant
          ]
-      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend3EvidenceDiscover1ClueAtYourLocation")
+      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend3Evidence")
             $ restricted a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 3

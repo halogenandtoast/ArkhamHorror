@@ -27,11 +27,11 @@ anyuChoices attrs iid = do
   unless (null locations) do
     labeledI "moveToConnecting" do
       chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
-  (campaignI18n $ labeled' "anyuFaithfulCompanion.youGet2SkillValueForYourNextSkillTestThisRound") do
+  (campaignI18n $ labeled' "anyuFaithfulCompanion.gain2SkillValue") do
     nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue 2)
   canEvade <- hasEvadeTargets (attrs.ability 1) iid
   when canEvade do
-    (campaignI18n $ labeled' "anyuFaithfulCompanion._evade_AttemptToEvadeWithABaseAgilitySkillOf4") do
+    (campaignI18n $ labeled' "anyuFaithfulCompanion.attemptToEvadeWithABaseAgilitySkillOf4") do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #agility 4)
       chooseEvadeEnemy sid iid (attrs.ability 1)

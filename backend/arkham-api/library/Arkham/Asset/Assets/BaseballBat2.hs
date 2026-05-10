@@ -34,8 +34,8 @@ instance RunMessage BaseballBat2 where
           when (any (`elem` [Skull, AutoFail]) tokens) do
             afterSkillTest iid "Baseball Bat (2)" do
               chooseOneM iid do
-                (cardI18n $ labeled' "baseballBat2.returnBaseballBatToYourHandAfterThisAttack") $ returnToHand iid attrs
-                (cardI18n $ labeled' "baseballBat2.thisAttackDealsAnAdditional1DamageDiscardBaseballBatAfterThi") do
+                (cardI18n $ labeled' "baseballBat2.returnToHand") $ returnToHand iid attrs
+                (cardI18n $ labeled' "baseballBat2.extraDamage") do
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                   toDiscardBy iid (attrs.ability 1) attrs
       pure a

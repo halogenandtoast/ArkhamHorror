@@ -17,10 +17,10 @@ endurance = asset Endurance Cards.endurance
 
 instance HasAbilities Endurance where
   getAbilities (Endurance a) =
-    [ (cardI18n $ withI18nTooltip "endurance.fastSpend1ResourceYouGet1CombatForThisSkillTest2CombatInstea")
+    [ (cardI18n $ withI18nTooltip "endurance.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "endurance.fastSpend1ResourceYouGet1AgilityForThisSkillTest2AgilityInst")
+    , (cardI18n $ withI18nTooltip "endurance.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

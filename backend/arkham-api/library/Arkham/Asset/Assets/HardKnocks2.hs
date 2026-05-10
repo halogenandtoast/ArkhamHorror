@@ -17,10 +17,10 @@ hardKnocks2 = asset HardKnocks2 Cards.hardKnocks2
 
 instance HasAbilities HardKnocks2 where
   getAbilities (HardKnocks2 a) =
-    [ (cardI18n $ withI18nTooltip "hardKnocks2.fastSpend1ResourceYouGet1CombatForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "hardKnocks2.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "hardKnocks2.fastSpend1ResourceYouGet1AgilityForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "hardKnocks2.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

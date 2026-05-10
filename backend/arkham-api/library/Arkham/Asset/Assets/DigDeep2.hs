@@ -17,10 +17,10 @@ digDeep2 = asset DigDeep2 Cards.digDeep2
 
 instance HasAbilities DigDeep2 where
   getAbilities (DigDeep2 a) =
-    [ (cardI18n $ withI18nTooltip "digDeep2.fastSpend1ResourceYouGet1WillpowerForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "digDeep2.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , (cardI18n $ withI18nTooltip "digDeep2.fastSpend1ResourceYouGet1AgilityForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "digDeep2.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

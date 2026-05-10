@@ -44,7 +44,7 @@ instance RunMessage IcePick3 where
           withLocationOf iid \loc -> do
             mTargetLoc <- getSkillTestTargetedLocation
             chooseOneM iid do
-              (cardI18n $ labeled' "icePick3.discardIcePick3ToDiscover1AdditionalClueAtYourLocation") do
+              (cardI18n $ labeled' "icePick3.discardIcePick3") do
                 toDiscardBy iid (attrs.ability 1) attrs
                 if mTargetLoc == Just loc
                   then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)

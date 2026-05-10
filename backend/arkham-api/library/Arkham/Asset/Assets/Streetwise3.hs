@@ -17,10 +17,10 @@ streetwise3 = asset Streetwise3 Cards.streetwise3
 
 instance HasAbilities Streetwise3 where
   getAbilities (Streetwise3 a) =
-    [ (cardI18n $ withI18nTooltip "streetwise3.fastSpend2ResourcesYouGet3IntellectForThisSkillTest")
+    [ (cardI18n $ withI18nTooltip "streetwise3.fastSpend2Resources2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlledAbility a 1 DuringAnySkillTest (FastAbility $ ResourceCost 2)
-    , (cardI18n $ withI18nTooltip "streetwise3.fastSpend2ResourcesYouGet3AgilityForThisSkillTest")
+    , (cardI18n $ withI18nTooltip "streetwise3.fastSpend2Resources")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlledAbility a 2 DuringAnySkillTest (FastAbility $ ResourceCost 2)
     ]

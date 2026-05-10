@@ -35,7 +35,7 @@ instance RunMessage ToolBelt where
           when (notNull inPlay) do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
         when (notNull inPlay && notNull underneath) do
-          (cardI18n $ labeled' "toolBelt.switchAToolAssetInYourPlayAreaWithAnAttachedAsset") do
+          (cardI18n $ labeled' "toolBelt.switchATool") do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
             focusCards (map snd underneath) do
               chooseOneM iid do

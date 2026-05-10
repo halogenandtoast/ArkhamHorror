@@ -24,11 +24,11 @@ instance HasModifiersFor AgencyBackup5 where
 
 instance HasAbilities AgencyBackup5 where
   getAbilities (AgencyBackup5 a) =
-    [ (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgencyBackupAndDeal1DamageToItDeal1DamageToAnEnem")
+    [ (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgency")
         $ fastAbility a 1 (exhaust a <> damageCost a 1)
         $ ControlsThis
         <> canDamageEnemyAt (a.ability 1) YourLocation
-    , (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgencyBackupAndDeal1HorrorToItDiscover1ClueAtYour")
+    , (cardI18n $ withI18nTooltip "agencyBackup5.fastExhaustAgency2")
         $ fastAbility a 2 (exhaust a <> horrorCost a 1)
         $ ControlsThis
         <> CanDiscoverCluesAt YourLocation

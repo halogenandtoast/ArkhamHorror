@@ -65,7 +65,7 @@ instance RunMessage PrismaticSpectaclesLensToTheOtherworld2Effect where
           metaTarget <- hoistMaybe attrs.metaTarget
           guard $ isTarget sid metaTarget
           lift $ chooseOneM iid do
-            (cardI18n $ labeled' "prismaticSpectaclesLensToTheOtherworld2.exhaustPrismaticSpectaclesToDiscover1AdditionalClueAtYourLoc") do
+            (cardI18n $ labeled' "prismaticSpectaclesLensToTheOtherworld2.exhaustForClue") do
               exhaustWith attrs aid
               skillTestModifier sid attrs.source iid (DiscoveredClues 1)
             (cardI18n $ labeled' "prismaticSpectaclesLensToTheOtherworld2.doNotExaust") nothing

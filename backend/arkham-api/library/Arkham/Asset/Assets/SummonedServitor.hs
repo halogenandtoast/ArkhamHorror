@@ -93,7 +93,7 @@ instance RunMessage SummonedServitor where
       pure . SummonedServitor $ overMeta (<>) [Action.Move] attrs
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       chooseOneM iid do
-        (cardI18n $ labeled' "summonedServitor.moveToLocationWithSummonedServitorWingsOfNight")
+        (cardI18n $ labeled' "summonedServitor.moveToLocation")
           $ moveTo (attrs.ability 1) iid lid
         labeledI "doNotMove" nothing
       pure a

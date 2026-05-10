@@ -1,17 +1,19 @@
 module Arkham.Asset.Assets.CaptivatingPerformance3 (captivatingPerformance3) where
 
 import Arkham.Ability
+import Arkham.Action (Action)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Action (canDo_, getActions, getCanAfford)
 import Arkham.Helpers.Modifiers (ModifierType (..), withGrantedAction, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCards)
-import Arkham.Investigator.Types (Field (..), Investigator)
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Window (defaultWindows)
+import Arkham.Window (Window (..), defaultWindows, _PerformedDifferentTypesOfActionsInARow)
+import Control.Lens (_3)
 
 newtype CaptivatingPerformance3 = CaptivatingPerformance3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -26,10 +28,15 @@ instance HasAbilities CaptivatingPerformance3 where
         $ triggered (PerformedDifferentTypesOfActionsInARow #after You 3 AnyAction) (exhaust a)
     ]
 
+getStreakTypes :: [Window] -> [Action]
+getStreakTypes = concatMap ((^. _PerformedDifferentTypesOfActionsInARow . _3) . windowType)
+
 instance RunMessage CaptivatingPerformance3 where
   runMessage msg a@(CaptivatingPerformance3 attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      as' <- nub . concat <$> field InvestigatorActionsTaken iid
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      resolveAbilityAndThen (Just $ AbilityRef (toSource attrs) 1) $ doStep 1 msg
+      pure a
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 (getStreakTypes -> as') _) -> do
       let as = filter (`notElem` as') [minBound ..]
       a' <- getAttrs @Investigator iid
       actions <- withGrantedAction iid attrs do

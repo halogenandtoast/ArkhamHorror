@@ -206,15 +206,26 @@ instance RunMessage Investigator where
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
-longestUniqueStreak :: Ord a => [[a]] -> [[a]]
+-- Longest prefix admitting a system of distinct representatives: multi-type actions
+-- (e.g. Fight+Activate from a bold-Fight play) contribute one chosen type per action.
+longestUniqueStreak :: Eq a => [[a]] -> [[a]]
 longestUniqueStreak = go []
  where
-  go uniq [] = uniq
-  go uniq (xs : xss) =
-    let seen = mconcat uniq
-     in if any (`notElem` seen) xs
-          then go (xs : uniq) xss
-          else uniq
+  go acc [] = acc
+  go acc (xs : xss)
+    | sdrExists (xs : acc) = go (xs : acc) xss
+    | otherwise = acc
+
+sdrExists :: Eq a => [[a]] -> Bool
+sdrExists [] = True
+sdrExists (xs : rest) = any (\x -> sdrExists (map (filter (/= x)) rest)) xs
+
+pickSDR :: Eq a => [[a]] -> [a]
+pickSDR = fromMaybe [] . go
+ where
+  go [] = Just []
+  go (xs : rest) = listToMaybe . catMaybes $
+    [fmap (x :) (go (map (filter (/= x)) rest)) | x <- xs]
 
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case
@@ -4075,7 +4086,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
     let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
-    let streakTypes = nub (concat streak)
+    let streakTypes = pickSDR streak
 
     when (notNull duplicated)
       $ pushM

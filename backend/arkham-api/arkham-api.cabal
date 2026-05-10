@@ -5809,6 +5809,7 @@ test-suite spec
       Arkham.Asset.Assets.BrandOfCthugha4Spec
       Arkham.Asset.Assets.BulletproofVest3Spec
       Arkham.Asset.Assets.BurglarySpec
+      Arkham.Asset.Assets.CaptivatingPerformance3Spec
       Arkham.Asset.Assets.CatBurglar1Spec
       Arkham.Asset.Assets.CrystallizerOfDreamsSpec
       Arkham.Asset.Assets.DaisysToteBagSpec

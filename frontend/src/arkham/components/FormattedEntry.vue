@@ -317,6 +317,10 @@ p.indented, :deep(p.indented) {
   margin-inline: 50px;
 }
 
+div:has(p.unindented), :deep(div:has(p.unindented)) {
+  padding-inline: 0px;
+}
+
 p.billenia, :deep(p.billenia) {
   font-family: "Billenia";
   font-weight: 500;

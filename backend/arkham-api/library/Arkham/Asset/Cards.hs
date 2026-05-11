@@ -1115,6 +1115,7 @@ allEncounterAssetCards =
       , bertieMusgraveATrueAesthete
       , drRosaMarquezBestInHerField
       , dianneDevineHidingAnOathUnspoken
+      , littleSylvie
       , partyGuest
       , nightgauntSteed
       , jewelOfSarnath

@@ -37,38 +37,6 @@
     "title": "New Keywords",
     "body": "<h3>Alert</h3><p class='basic'>Some enemies in this campaign have the alert keyword. Each time an investigator fails a skill test while attempting to evade an enemy with the alert keyword, after applying all results for that skill test, that enemy performs an attack against the evading investigator. An enemy does not exhaust after performing an alert attack. This attack occurs whether the enemy is engaged with the evading investigator or not.</p><h3>Day {'{'}day{'}'} and Night {'{'}night{'}'}</h3><p class='basic'>During setup during this campaign, players may be instructed to put the Time Marker card into play. To do so, find the Time Marker card in the *The First Day*, *The Second Day*, or *The Final Day* encounter sets that corresponds to the current day and place it next to the agenda deck. This is the current day and time.</p><p class='basic'>Some cards have different effects depending on whether the scenario takes place during the Day or Night. Text following a _(Day {'{'}day{'}'})_ or _(Night {'{'}night{'}'})_ keyword is only active if the scenario or prelude being played is during the Day or Night, respectively. Any other ability not preceded by these keywords is active regardless of the time period.</p><p class='basic'>Setup instructions may have specific instructions depending on the current day and time. (*e.g.* “If it is _Day 2_, put River Hawthorne into play at the Cranberry Bog” *only applies when playing that scenario as a* _Day 2_ *scenario and not a* _Night 2_ *scenario*).</p><h3>Elusive</h3><p class='basic'>Some enemies in this campaign have the elusive keyword. Elusive enemies represent enemies who want to avoid the investigators for their own survival or to accomplish their own goals.</p><p class='basic'>If a ready enemy with the elusive keyword attacks or is attacked, after that attack resolves, that enemy immediately disengages from all investigators, moves to a connecting location (with no investigators, if able), and exhausts. This effect occurs whether the enemy was engaged with the attacking investigator or not.</p><h3>Patrol</h3><p class='basic'>Some enemies in this campaign have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location via a path that is blocked by a card ability, the enemy does not move.</li></ul>"
   },
-  "hemlockHouse": {
-    "intro1": {
-      "title": "Hemlock House — Day 1",
-      "body": "<p>“Oh, please, it’s not haunted.” Theo smiles nonchalantly as he pulls his truck to a stop in front of the towering, shingle style manor. “Old Gideon says a lot of things about this place. But old Gideon also believes in underwater kingdoms filled with fish people,” he laughs. Brother William asked Ms. Park to repair the place and clear out whatever was hiding in the walls, but she hasn’t gotten around to it yet.</p><p>You unload several planks of wood, a box of tools, and a bucket of some foul-smelling chemical mixture from the back of Theo’s truck. As he drives off, you stare up at the crumbling manor.</p>"
-    },
-    "intro2": {
-      "title": "Hemlock House — Day 2",
-      "body": "<p>The rear wheels of Theo’s truck spit up mud as it putters toward the cape, where the shingle style manor towers atop a ruinous hill, barely visible through a torrent of rain. Having seen firsthand the kinds of terrors that dwell on Hemlock Isle, you know better than to assume the house’s other inhabitants to be mere rats or raccoons.</p>"
-    },
-    "intro3": {
-      "title": "Hemlock House — Day 3",
-      "body": "<p>Dark clouds loom over the gambrel roofs of the towering, shingle style manor. Its attic truss is burnt almost to the frame, its outer wall exposed to the elements by extensive fire damage. Something slithers just out of view from the exposed floor of the attic. You ask Theo if he saw it, but he only shrugs.</p>"
-    },
-    "intro4": {
-      "title": "Hemlock House — Night",
-      "body": "<p>From what you’ve been told, the old Hemlock House is infested with something or other — what exactly is a matter of some debate. Approaching the crumbling manor, you find a stockpile of supplies tucked away near its entrance: several planks of wood, a box of tools, and a bucket of some foul-smelling chemical mixture.</p>"
-    },
-    "resolutions": {
-      "noResolution": {
-        "title": "No Resolution",
-        "body": "<p>An awful clamor resounds through the house as the walls close in, threatening to collapse — to consume you like prey. Terrified, you burst through the front door and flee.</p>"
-      },
-      "resolution1": {
-        "title": "Resolution 1",
-        "body": "<p>At long last, the horrors of Hemlock House are behind you. You can only hope the house’s “infestation” is gone.</p>"
-      },
-      "resolution2": {
-        "title": "Resolution 2",
-        "body": "<p>Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. Survey of Hemlock House complete. Organism defies comprehension. Colony of octopodial and gastropodial species infested the entire house. Creature(s) appear to have evolved in the house proper. Further observation needed.</p>"
-      }
-    }
-  },
   "prelude1": {
     "label": {
       "survey": "The investigators must choose where to survey today! You will have the opportunity to survey multiple areas over the course of the campaign.",

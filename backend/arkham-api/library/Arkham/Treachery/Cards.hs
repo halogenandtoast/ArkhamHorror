@@ -207,6 +207,7 @@ allEncounterTreacheryCards =
       , accosted
       , acridMiasma
       , action
+      , alienWhispers
       , alteredBeast
       , anamnesis
       , ancestralFear
@@ -310,6 +311,7 @@ allEncounterTreacheryCards =
       , deepOneInvasion
       , delusoryEvils
       , descentIntoMadness
+      , desiccation
       , despoiled
       , dholeTunnel
       , diabolicVoices
@@ -334,6 +336,7 @@ allEncounterTreacheryCards =
       , encephalonSignal
       , endlessDescent
       , endlessWeaving
+      , enervation
       , entombed
       , entrap
       , ephemeralExhibits
@@ -353,6 +356,7 @@ allEncounterTreacheryCards =
       , figuresInTheDark
       , finalMistake
       , fineDining
+      , fire
       , flipTheScript
       , fogOverInnsmouth
       , forcedIntoHiding
@@ -366,6 +370,7 @@ allEncounterTreacheryCards =
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , fulfillTheOaths
+      , fungalRot
       , furtiveLocals
       , ghostlyPresence
       , giftOfMadnessMisery
@@ -482,6 +487,8 @@ allEncounterTreacheryCards =
       , onWingsOfDarkness
       , oozeAndFilth
       , oppressiveMists
+      , otherworldlyVisions
+      , outOfTheWalls
       , outbreak
       , outsmarted
       , overgrowth
@@ -509,6 +516,7 @@ allEncounterTreacheryCards =
       , psychotropicSpores
       , pulledBack
       , pulledByTheStars
+      , pulledIn
       , punishment
       , pushedIntoTheBeyond
       , pushedIntoTheBeyondTheMidwinterGala
@@ -568,6 +576,7 @@ allEncounterTreacheryCards =
       , stoneBarrier
       , stowaway
       , straitjacket
+      , strangeMutations
       , strangeSigns
       , substanceDissimulation
       , supernaturalTempest
@@ -3214,6 +3223,18 @@ wildRide =
     { cdCardTraits = setFromList [Hazard]
     }
 
+outOfTheWalls :: CardDef
+outOfTheWalls =
+  (treachery "10545" "Out of the Walls" HemlockHouse 4)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+pulledIn :: CardDef
+pulledIn =
+  (treachery "10546" "Pulled In" HemlockHouse 2)
+    { cdCardTraits = setFromList [Blunder]
+    }
+
 deepShadows :: CardDef
 deepShadows =
   (treachery "10622" "Deep Shadows" TheTwistedHollow 2)
@@ -3245,6 +3266,12 @@ downpour =
     { cdCardTraits = setFromList [Hazard]
     }
 
+otherworldlyVisions :: CardDef
+otherworldlyVisions =
+  (treachery "10680" "Otherworldly Visions" TheFinalDay 3)
+    { cdCardTraits = setFromList [Terror, Power]
+    }
+
 chromaBlight :: CardDef
 chromaBlight =
   (treachery "10722" "Chroma Blight" HorrorsInTheRock 2)
@@ -3255,6 +3282,36 @@ calcification :: CardDef
 calcification =
   (treachery "10723" "Calcification" HorrorsInTheRock 2)
     { cdCardTraits = setFromList [Hazard, Trait.Blight]
+    }
+
+alienWhispers :: CardDef
+alienWhispers =
+  (treachery "10725" "Alien Whispers" AgentsOfTheColour 2)
+    { cdCardTraits = setFromList [Power, Colour]
+    }
+
+strangeMutations :: CardDef
+strangeMutations =
+  (treachery "10726" "Strange Mutations" Transfiguration 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+fungalRot :: CardDef
+fungalRot =
+  (treachery "10727" "Fungal Rot" Transfiguration 2)
+    { cdCardTraits = setFromList [Hazard, Trait.Blight]
+    }
+
+enervation :: CardDef
+enervation =
+  (treachery "10728" "Enervation" EncounterSet.Blight 2)
+    { cdCardTraits = setFromList [Hazard, Trait.Blight]
+    }
+
+desiccation :: CardDef
+desiccation =
+  (treachery "10729" "Desiccation" EncounterSet.Blight 2)
+    { cdCardTraits = setFromList [Trait.Blight]
     }
 
 empyreanBrilliance :: CardDef
@@ -3292,6 +3349,12 @@ psychotropicSpores :: CardDef
 psychotropicSpores =
   (treachery "10740" "Psychotropic Spores" Myconids 2)
     { cdCardTraits = setFromList [Hazard, Flora]
+    }
+
+fire :: CardDef
+fire =
+  (treachery "10743" "Fire!" Fire 5)
+    { cdCardTraits = singleton Hazard
     }
 
 illDoItMyself :: CardDef

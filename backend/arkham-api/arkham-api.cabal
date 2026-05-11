@@ -1196,6 +1196,7 @@ library
       Arkham.Asset.Assets.LiquidCourage
       Arkham.Asset.Assets.LiquidCourage1
       Arkham.Asset.Assets.LitaChantler
+      Arkham.Asset.Assets.LittleSylvie
       Arkham.Asset.Assets.LivingInk
       Arkham.Asset.Assets.LivreDeibon
       Arkham.Asset.Assets.LocalMap
@@ -2126,6 +2127,7 @@ library
       Arkham.Enemy.Cards.GoatSpawn
       Arkham.Enemy.Cards.Golem
       Arkham.Enemy.Cards.GrapplingHorror
+      Arkham.Enemy.Cards.GrapplingSpawn
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
       Arkham.Enemy.Cards.GreyWeaver
@@ -2230,6 +2232,7 @@ library
       Arkham.Enemy.Cards.MemoryOfARavagedCountry
       Arkham.Enemy.Cards.MemoryOfARegretfulVoyage
       Arkham.Enemy.Cards.MemoryOfATerribleDiscovery
+      Arkham.Enemy.Cards.MiasmaticShadow
       Arkham.Enemy.Cards.MimeticNemesisInfiltratorOfRealities
       Arkham.Enemy.Cards.MimeticNemesisOtherworldlySubjugator
       Arkham.Enemy.Cards.MindlessDancer
@@ -4957,6 +4960,7 @@ library
       Arkham.Treachery.Cards.AcrossSpaceAndTime
       Arkham.Treachery.Cards.Action
       Arkham.Treachery.Cards.AerialPursuit
+      Arkham.Treachery.Cards.AlienWhispers
       Arkham.Treachery.Cards.AlteredBeast
       Arkham.Treachery.Cards.Amnesia
       Arkham.Treachery.Cards.Anamnesis
@@ -5091,6 +5095,7 @@ library
       Arkham.Treachery.Cards.DeepShadows
       Arkham.Treachery.Cards.DelusoryEvils
       Arkham.Treachery.Cards.DescentIntoMadness
+      Arkham.Treachery.Cards.Desiccation
       Arkham.Treachery.Cards.Despoiled
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DholeTunnel
@@ -5126,6 +5131,7 @@ library
       Arkham.Treachery.Cards.EncephalonSignal
       Arkham.Treachery.Cards.EndlessDescent
       Arkham.Treachery.Cards.EndlessWeaving
+      Arkham.Treachery.Cards.Enervation
       Arkham.Treachery.Cards.Entombed
       Arkham.Treachery.Cards.Entrap
       Arkham.Treachery.Cards.EphemeralExhibits
@@ -5152,6 +5158,7 @@ library
       Arkham.Treachery.Cards.FinalRhapsodyAdvanced
       Arkham.Treachery.Cards.FineDining
       Arkham.Treachery.Cards.FinePrint
+      Arkham.Treachery.Cards.Fire
       Arkham.Treachery.Cards.Fire1
       Arkham.Treachery.Cards.FlashFlood
       Arkham.Treachery.Cards.FlipTheScript
@@ -5169,6 +5176,7 @@ library
       Arkham.Treachery.Cards.FrozenInFear
       Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
       Arkham.Treachery.Cards.FulfillTheOaths
+      Arkham.Treachery.Cards.FungalRot
       Arkham.Treachery.Cards.FurtiveLocals
       Arkham.Treachery.Cards.GhostlyPresence
       Arkham.Treachery.Cards.GiftOfMadnessMisery
@@ -5312,8 +5320,10 @@ library
       Arkham.Treachery.Cards.OnWingsOfDarkness
       Arkham.Treachery.Cards.OozeAndFilth
       Arkham.Treachery.Cards.OppressiveMists
+      Arkham.Treachery.Cards.OtherworldlyVisions
       Arkham.Treachery.Cards.Outbreak
       Arkham.Treachery.Cards.OutOfBodyExperience
+      Arkham.Treachery.Cards.OutOfTheWalls
       Arkham.Treachery.Cards.Outsmarted
       Arkham.Treachery.Cards.Overconfident
       Arkham.Treachery.Cards.Overgrowth
@@ -5348,6 +5358,7 @@ library
       Arkham.Treachery.Cards.PsychotropicSpores
       Arkham.Treachery.Cards.PulledBack
       Arkham.Treachery.Cards.PulledByTheStars
+      Arkham.Treachery.Cards.PulledIn
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.Pursued
       Arkham.Treachery.Cards.PushedIntoTheBeyond
@@ -5429,6 +5440,7 @@ library
       Arkham.Treachery.Cards.StoneBarrier
       Arkham.Treachery.Cards.Stowaway
       Arkham.Treachery.Cards.Straitjacket
+      Arkham.Treachery.Cards.StrangeMutations
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.Stupor
       Arkham.Treachery.Cards.SubstanceDissimulation

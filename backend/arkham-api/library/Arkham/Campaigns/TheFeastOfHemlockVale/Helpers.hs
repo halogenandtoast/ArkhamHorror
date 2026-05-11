@@ -122,6 +122,13 @@ pattern Phi = 103
 pattern Sigma :: Int
 pattern Sigma = 104
 
+-- | Sigma sub-branches: "The Argument" outcomes from Codex Σ.
+pattern SigmaJudithRight :: Int
+pattern SigmaJudithRight = 105
+
+pattern SigmaWilliamRight :: Int
+pattern SigmaWilliamRight = 106
+
 data Resident
   = WilliamHemlock
   | RiverHawthorne

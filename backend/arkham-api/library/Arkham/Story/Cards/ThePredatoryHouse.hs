@@ -47,6 +47,12 @@ instance RunMessage ThePredatoryHouse where
       pure
         $ ThePredatoryHouse
         $ attrs {storyFlipped = False, storyMeta = toJSON bag', storyRemoveAfterResolution = False}
+    SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) | (predationBag attrs).cancelNext -> do
+      -- Codex 6 (Gideon Mizrah): cancel the next predation that would take place.
+      let bag = predationBag attrs
+      let bag' = bag {predationCancelNext = False}
+      send "Predation test canceled (Gideon Mizrah)"
+      pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) -> do
       let bag = predationBag attrs
       lead <- getLead
@@ -113,4 +119,16 @@ instance RunMessage ThePredatoryHouse where
               , predationCurrentToken = Nothing
               }
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
+    SendMessage (isTarget attrs -> True) (ScenarioSpecific "predationCleanup" _) -> do
+      -- Resolution 2: "Remove 1 [tablet] token from the predation bag. Return
+      -- any remaining [tablet] tokens in the predation bag to the chaos bag for
+      -- the remainder of the campaign."
+      let bag = predationBag attrs
+      let allTablets = filter (\t -> t.face == Tablet) (allBagTokens bag)
+      let extraTablets = drop 1 allTablets
+      for_ extraTablets $ \_ -> addChaosToken Tablet
+      pure $ ThePredatoryHouse attrs
+    SendMessage (isTarget attrs -> True) (ScenarioSpecific "cancelNextPredation" _) -> do
+      let bag = predationBag attrs
+      pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag {predationCancelNext = True}}
     _ -> ThePredatoryHouse <$> liftRunMessage msg attrs

@@ -595,6 +595,14 @@ prismaticShardAlienMeteorite =
     , cdUses = uses Brilliance 4
     }
 
+littleSylvie :: CardDef
+littleSylvie =
+  (storyAsset "10548" ("Little Sylvie" <:> "A Cracked Memento") 1 HemlockHouse)
+    { cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdUnique = True
+    , cdSlots = [#accessory]
+    }
+
 valeLanternBeaconOfHope :: CardDef
 valeLanternBeaconOfHope =
   (storyAsset "10610a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)

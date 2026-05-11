@@ -1,0 +1,110 @@
+{
+  "intro": {
+    "title": "Scenario: Hemlock House",
+    "body": "<p class='basic unindented'>Check your Campaign Log.</p>",
+    "nightSkip": "If it is _Night 1_ or _Night 2_, skip to _Intro 4_. Otherwise:",
+    "day1": "If it is _Day 1_, proceed to _Intro 1_.",
+    "day2": "If it is _Day 2_, skip to _Intro 2_.",
+    "day3": "If it is _Day 3_, skip to _Intro 3_.",
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: “Oh, please, it’s not haunted.” Theo smiles nonchalantly as he pulls his truck to a stop in front of the towering, shingle style manor. “Old Gideon says a lot of things about this place. But old Gideon also believes in underwater kingdoms filled with fish people,” he laughs. “I’m sure there’s something to it. Rumor is, there’s some kinda infestation in there. Rats, probably. Maybe even some wild animals taking refuge from the woods. It’s an old house, y’know? Lots of nooks in the walls, places for them to hide. Brother William asked Ms. Park to find and repair ’em, clear out whatever’s hiding in the walls, but she hasn’t gotten around to it yet. I still got all those supplies in my truck, if you feel like helping out.”</p><p>You unload several planks of wood, a box of tools, and a bucket of some foul-smelling chemical mixture from the back of Theo’s truck. As he drives off, you stare up at the crumbling manor. There is something crooked and unsettling in the arrangement of its windows, the slant of its gambrel roofs. The house’s previous grandeur has not set right with the landscape, perhaps by some crack in its foundation—or, if the rumors are right, whatever lives within its walls.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: The rear wheels of Theo’s truck spit up mud as it putters toward the cape, where the shingle style manor towers atop a ruinous hill. “There it is,” Theo says, pointing at the silhouette of the manor, barely visible through the torrent of rain beating down on the windshield. “Old Gideon says a lot of things about this place. But old Gideon also believes in underwater kingdoms filled with fish people,” he laughs. “I’m sure there’s something to it. Rumor is, there’s some kinda infestation in there. Rats, probably. Maybe even some wild animals taking refuge from the woods. It’s an old house, y’know? Lots of nooks in the walls, places for them to hide. Gotta be even worse with all this rain.”</p><p>Having seen firsthand the kinds of terrors that dwell on Hemlock Isle, you know better than to assume the house’s other inhabitants to be mere rats or raccoons. You ask Theo what Mr. Hemlock wants done to the place, which elicits a brief chuckle. “He asked Ms. Park to repair the place and clear out whatever’s hiding in the walls. They’re both there right now, I think, if you wanna help out or chat with them. Can’t believe he still thinks the place is salvageable, but hey, who am I to judge?”</p><p>Theo drops you off in front of the crumbling manor so you don’t have to plod through mud and rain. You shudder as you glance up at its crooked frame. There is something deeply unsettling about the arrangement of its windows and the slant of its gambrel roofs. Whatever grandeur this house may have had in its past life is long gone. It is but a shell of its former self—and you suspect the cause still dwells within its walls.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: “Considering what Brother William was prattling on about last night at the dance? Yeah, maybe it is haunted. I dunno.” Theo sighs as his truck pulls to a stop in front of the towering, shingle style manor. Dark clouds loom over its gambrel roofs, its frame crooked and misshapen. Its attic truss is burnt almost to the frame, its outer wall exposed to the elements by extensive fire damage. “Old Gideon says a lot of things about this place. But old Gideon also believes in underwater kingdoms filled with fish people. Still…” Theo sighs, shaking his head. “Maybe there is something to it all. I thought if there was an infestation, it was probably rats, y’know? Maybe even some wild animals taking refuge from the woods. But Brother William looked downright terrified when he came back into town yesterday. Who knows?”</p><p>You ask Theo what Mr. Hemlock was doing here—perhaps you can help figure out what’s wrong with the place. “Last I checked, he asked Ms. Park to repair the place and clear out whatever’s hiding in the walls. That was a couple days ago. Ms. Park’s still here, but after yesterday I don’t think Brother William’s gonna be venturing anywhere near this place until it’s cleaned up.”</p><p>You point the fire damage out to Theo, who gives a whistle in response. “Yeah, that’s new. I did hear some pretty close thunder during that storm last night. Wouldn’t be surprised if that was from lightning. Lucky the rain must’ve put the fire out.” You wonder if it was in fact fortune that kept the old manor standing, or something else entirely. As if in response to your ruminations, something slithers just out of view from the exposed floor of the attic. You ask Theo if he saw it, but he only shrugs. “Saw what? You don’t plan on heading up there, do you? Be careful. This place was decrepit even before the storm.” He turns the ignition off and gets out of the truck, joining you under the awning of the manor’s front porch. “I’ll come with, ok? I won’t go all the way up there, but just in case something happens, I’ll be here.”</p><p>You nod. Having seen firsthand the kinds of terrors that dwell on Hemlock Isle, you know better than to assume the house’s other inhabitants to be mere rats or raccoons. It might be nice having Theo and his truck on hand for a swift exit. Taking in a deep breath, you glance once more at the manor’s crooked frame. There is something deeply unsettling about the arrangement of its windows and the slant of its roofs. Whatever grandeur this house may have had in its past life is long gone. It is but a shell of its former self—and you suspect the cause still dwells within its walls.</p><p>Upon entering the house, you immediately climb its inner staircase up to the attic, leaving Theo downstairs. Scarred by fire damage and partially exposed to the wind, the decrepit bedroom bears no trace of whatever creature you saw from below. With each of your steps, the old building groans precariously. You cannot help but wonder if it is in fact the rumbling of an empty stomach…</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: Theo’s truck slows to a halt as you pull up in front of the towering, shingle style manor. From what you’ve been told, the old Hemlock House is infested with something or other—what exactly is a matter of some debate. Before lending you his truck for the night, Theo made mention of rats in the walls, or potentially wild animals taking refuge from the woods, not to mention the storm brewing on the horizon. But you’re not so sure. After all, you’ve already seen firsthand the kinds of terrors that dwell on Hemlock Isle—you know better than to assume mere rats or raccoons to be the issue.</p><p>Approaching the crumbling manor, you find a stockpile of supplies tucked away near its entrance: several planks of wood, a box of tools, and a bucket of some foul-smelling chemical mixture. According to Theo, Mr. Hemlock had asked Judith to try to fix the place up and clear out whatever was infesting its walls. Seems like she hasn’t gotten very far yet. You look up at the house’s crooked frame, set against a backdrop of dark stormclouds. There is something deeply unsettling about the arrangement of its windows and the slant of its gambrel roofs. Whatever grandeur this house may have had in its past life is long gone. It is but a shell of its former self—and you suspect the cause still dwells within its walls.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Hemlock House*, *Agents of the Colour*, *Blight*, *Fire!*, *Transfiguration*, *Locked Doors*, and *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/hemlock-house.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/fire.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "againstTheHouse": "Set Act 2a: _Against the House_ aside, out of play.",
+    "houseStirsV2": "If it is _Day/Night 1_ or _Day 3_, remove Agenda 2a: _The House Stirs (v.II)_ from the game.",
+    "houseStirsV1": "Otherwise, remove Agenda 2a: _The House Stirs (v.I)_ from the game.",
+    "locations": "Gather all 13 locations. Set the _Shapeless Cellar_ location and one random copy of the _Bedroom_ location aside, out of play. Put each remaining location into play, _Dormant_ side faceup, according to the Location Placement diagram on page 15.",
+    "firstFloor": "Place the _Parlor_, _Foyer_, and _Dining Room_ in a row exactly as shown. This is the 1st Floor.",
+    "shuffleFloors": "Shuffle each remaining location and place six of these locations into play in two rows above the 1st Floor.",
+    "topBedroom": "Put the set-aside _Bedroom_ location into play in the middle column on the 4th Floor.",
+    "removeRemaining": "Remove each remaining location from the game.",
+    "startAtFoyer": "If it is _Day/Night 1_ or _Day/Night 2_, each investigator begins play at the Foyer.",
+    "startAtBedroom": "If it is _Day 3_, each investigator begins play at the Bedroom on the 4th floor.",
+    "residents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "gideonAndSylvie": "If it is _Day 1_, put _Gideon Mizrah_ into play at the Parlor location. Put the _Little Sylvie_ story asset into play at a Bedroom location on the lowest floor.",
+    "william": "If it is _Day 1_ or _Day 2_, put _William Hemlock_ into play at the Bedroom location on the 4th Floor.",
+    "judith": "If it is _Day 2_ or _Day 3_, put _Judith Park_ into play at the Parlor location.",
+    "theo": "If it is _Day 3_, put _Theo Peters_ into play at the Foyer location.",
+    "removeResidents": "Remove the rest of the *Residents* encounter set from the game.",
+    "predatoryHouse": "Set the double-sided _The Predatory House_ story card aside, out of play. This story card has a different scenario reference card on its other side and will enter play during the scenario.",
+    "setOutOfPlay": "Set all five _Fire!_ treacheries and all copies of the _Out of the Walls_ and _Pulled In_ treacheries aside, out of play.",
+    "shuffleEncounter": "Shuffle the remaining encounter cards to build the encounter deck."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_No Resolution_: An awful clamor resounds through the house as the walls close in, threatening to collapse—to consume you like prey. Terrified, you burst through the front door and flee.</p><p class='basic right'>Skip to _Resolution 2_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: At long last, the horrors of Hemlock House are behind you. You can only hope the house’s “infestation” is gone.</p><p class='basic right'>Proceed to _Resolution 2_.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. Survey of Hemlock House complete. Organism defies comprehension. Colony of octopodial and gastropodial species infested the entire house. Creature(s) appear to have evolved in the house proper. Further observation needed.”</p><ul><li>Remove 1 {'{'}tablet{'}'} token from the predation bag. Return any remaining {'{'}tablet{'}'} tokens in the predation bag to the chaos bag for the remainder of the campaign.</li><li>If the investigators “found _Little Sylvie_,” an investigator may add the _Little Sylvie_ story asset to their deck. It does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Bonus experience is awarded based on the number of seals in play and the number of enemy-locations in the victory display when the scenario ended.</li><li>In the “Areas Surveyed” section of your Campaign Log, check off _Hemlock Harbor_.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Bonus experience",
+      "sealsBonus": "for sealing the house",
+      "enemyLocationsBonus": "for taming the predators"
+    }
+  },
+  "codex": {
+    "label": {
+      "judithRight": "Judith was right.",
+      "williamRight": "William was right."
+    },
+    "william": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "body": "<p>You find William pacing among the family heirlooms. He turns to you, his eyes wide with concern. “Help me find Judith, won’t you?”</p>"
+    },
+    "gideon": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "body": "<p>Gideon barely looks up from a musty book as you approach, rambling about an old fishing vessel called the _Delilah_. The old man is looking for a map somewhere in the parlor.</p>"
+    },
+    "judith": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "body": "<p>Judith rolls her eyes and steadies her rifle. “This place is a wreck. Let’s find William and leave this place to rot.”</p>"
+    },
+    "theo": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<p>“No no no no no!” You hear Theo’s scream long before you see him barrel into you. “You look like you might need some protection,” he puts on a fake swagger as he helps you to your feet.</p>"
+    },
+    "marquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<p>“I hate all of this,” Dr. Marquez inspects a bookshelf. “Earlier, I was in the library and it came alive. There’s something almost…reanimating the dead wood. I’d say it was impossible, but nothing feels impossible anymore,” she laughs emptily.</p>"
+    },
+    "argument1": {
+      "title": "{'{'}codex{'}'} Codex Σ: The Argument",
+      "body": "<p>“Look, William, this place is a dump. Whatever is living in the walls, it sure as hell isn’t rats,” Judith explains. William scowls. “This ‘dump’ is my childhood home. My family’s enduring legacy.” The two continue arguing until you realize this argument won’t resolve itself on its own. You step in, voicing your thoughts…</p>"
+    },
+    "argument2": {
+      "title": "{'{'}codex{'}'} The Argument 2",
+      "body": "<p>William’s gaze snaps to you, eyes pleading. “Alright, then,” he almost whispers. “Do as you will. The legacy of the Hemlocks is in tatters, and nobody seems to care. Why should you?” He departs, head hung low.</p>"
+    },
+    "argument3": {
+      "title": "{'{'}codex{'}'} The Argument 3",
+      "body": "<p>Judith glares at you. “Really? You too?” She rubs her eyes and swears under her breath. “Fine. Hold the whole festival here for all I care. But don’t come asking me for help when the place falls down. Or worse.” She gathers her things and makes for the door.</p>"
+    },
+    "xp": {
+      "bonus": "Bonus experience"
+    }
+  }
+}

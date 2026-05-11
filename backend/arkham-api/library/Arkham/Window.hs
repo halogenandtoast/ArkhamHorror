@@ -191,6 +191,7 @@ data WindowType
   | Discarded (Maybe InvestigatorId) Source Card
   | DiscardedFromHand InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
+  | WouldDiscardFromDeck InvestigatorId Source
   | DiscoverClues InvestigatorId LocationId Source Int
   | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int

@@ -3274,7 +3274,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (usedAdditionalActionsL .~ mempty)
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
-  DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
+  DiscardTopOfDeck iid _n source _mTarget | iid == investigatorId -> do
+    ok <- can.manipulate.deck iid
+    if ok
+      then do
+        -- Push a WouldDiscardFromDeck checkpoint so cards like Little Sylvie can
+        -- intercept and replace the upcoming `Do (DiscardTopOfDeck ...)` with a
+        -- put-on-top-of-deck. If nothing reacts, the Do branch runs as before.
+        wouldWindow <-
+          checkWindows [mkWindow #when (Window.WouldDiscardFromDeck iid source)]
+        pushAll [wouldWindow, Do msg]
+        pure a
+      else pure a
+  Do (DiscardTopOfDeck iid n source mTarget) | iid == investigatorId -> do
     ok <- can.manipulate.deck iid
     if ok
       then do

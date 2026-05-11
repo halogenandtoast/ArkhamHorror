@@ -1,9 +1,8 @@
 module Arkham.Treachery.Cards.HeavyRain (heavyRain) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.I18n
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -24,11 +23,11 @@ instance RunMessage HeavyRain where
       doStep n msg
       pure t
     DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
-      clues <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOneM iid $ withI18n do
         countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
         countVar 1
-          $ labeledValidate' (clues > 0) "placeCluesOnYourLocation"
+          $ labeledValidate' canPlaceClues "placeCluesOnYourLocation"
           $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'
       pure t

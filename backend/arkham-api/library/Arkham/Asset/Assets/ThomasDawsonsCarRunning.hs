@@ -11,6 +11,7 @@ import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Name
+import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
 
@@ -23,11 +24,12 @@ thomasDawsonsCarRunning = asset ThomasDawsonsCarRunning Cards.thomasDawsonsCarRu
 
 instance HasAbilities ThomasDawsonsCarRunning where
   getAbilities (ThomasDawsonsCarRunning x) =
-    [ withTooltip
-        "If you are this vehicle's driver: Draw the top card of the encounter deck. Then, move this vehicle to a connecting _Road_ location. (Max once per round.)"
+    [ scenarioI18n
+        $ withI18nTooltip "thomasDawsonsCarRunning.drive"
         $ groupLimit PerRound
         $ restrictedAbility x 1 driverCriteria actionAbility
-    , withTooltip "If you are this vehicle's driver: You stop the car. Flip this vehicle over."
+    , scenarioI18n
+        $ withI18nTooltip "thomasDawsonsCarRunning.stop"
         $ restrictedAbility x 2 driverCriteria actionAbility
     ]
    where

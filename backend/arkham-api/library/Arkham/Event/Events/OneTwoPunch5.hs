@@ -40,9 +40,9 @@ instance RunMessage OneTwoPunch5 where
       when fightable do
         sid <- getRandom
         chooseOneM iid do
-          labeled "Fight again" do
+          labeledI "fightAgain" do
             skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
             chooseFightEnemy sid iid attrs
-          labeled "Do not fight again" nothing
+          labeledI "doNotFightAgain" nothing
       pure . OneTwoPunch5 $ attrs `with` Metadata False
     _ -> OneTwoPunch5 . (`with` metadata) <$> liftRunMessage msg attrs

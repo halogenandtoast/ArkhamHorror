@@ -23,7 +23,7 @@ spec = describe "Mandy Thompson" $ do
       chooseTarget roland
       useReaction
       chooseOptionMatching "3 additional cards" \case
-        Label "Search 3 additional cards" _ -> True
+        Label "$label.searchAdditionalCards count=i:3.0" _ -> True
         _ -> False
       -- all cards should be targetable
       for_ cards assertTarget
@@ -40,7 +40,7 @@ spec = describe "Mandy Thompson" $ do
       chooseTarget roland
       useReaction
       chooseOptionMatching "Additional Target" \case
-        Label "Resolve 1 additional target of the search" _ -> True
+        Label "$label.resolveAdditionalTarget" _ -> True
         _ -> False
       chooseTarget c1
       chooseTarget c3
@@ -75,7 +75,7 @@ spec = describe "Mandy Thompson" $ do
           (DrawFound (toId roland) 1)
       useReaction
       chooseOptionMatching "3 additional cards" \case
-        Label "Search 3 additional cards" _ -> True
+        Label "$label.searchAdditionalCards count=i:3.0" _ -> True
         _ -> False
       -- all cards should be targetable
       for_ cards assertTarget
@@ -105,7 +105,7 @@ spec = describe "Mandy Thompson" $ do
           (DrawFound (toId roland) 1)
       useReaction
       chooseOptionMatching "1 additional target" \case
-        Label "Resolve 1 additional target of the search" _ -> True
+        Label "$label.resolveAdditionalTarget" _ -> True
         _ -> False
       chooseTarget c1
       chooseTarget c2
@@ -137,7 +137,7 @@ spec = describe "Mandy Thompson" $ do
       skip
       chooseTarget manualDexterity
       chooseOptionMatching "Commit" \case
-        Label "Commit to skill test" _ -> True
+        Label "$label.commitToSkillTest" _ -> True
         _ -> False
       assertPassedSkillTest
       self.hand `shouldReturn` []

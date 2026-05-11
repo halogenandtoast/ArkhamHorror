@@ -25,7 +25,8 @@ instance HasModifiersFor CrypticGrimoireTextOfTheElderHerald4 where
   getModifiersFor (CrypticGrimoireTextOfTheElderHerald4 a) = case a.controller of
     Just iid -> do
       yourTurn <- iid <=~> TurnInvestigator
-      modifiedWhen_ a (yourTurn && a.use Secret >= 2) iid $ [CanReduceCostOf (CardWithTrait Insight) 1]
+      modifiedWhen_ a (yourTurn && a.use Secret >= 2) iid
+        $ [CanBecomeFast (CardWithTrait Insight), CanReduceCostOf (CardWithTrait Insight) 1]
     Nothing -> pure mempty
 
 instance HasAbilities CrypticGrimoireTextOfTheElderHerald4 where
@@ -44,6 +45,7 @@ instance RunMessage CrypticGrimoireTextOfTheElderHerald4 where
       push $ AddUses (attrs.ability 1) attrs.id Secret n
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (cardPlayed -> c) _ -> do
-      pushM $ costModifier (attrs.ability 1) iid (ReduceCostOf (CardWithId c.id) 1)
+      pushM $ costModifier (attrs.ability 2) c (BecomesFast FastPlayerWindow)
+      pushM $ costModifier (attrs.ability 2) iid (ReduceCostOf (CardWithId c.id) 1)
       pure a
     _ -> CrypticGrimoireTextOfTheElderHerald4 <$> runMessage msg attrs

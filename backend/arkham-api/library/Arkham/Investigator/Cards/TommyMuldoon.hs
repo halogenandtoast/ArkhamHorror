@@ -68,16 +68,16 @@ instance RunMessage TommyMuldoon where
 
       chooseOrRunOne iid
         $ [ Label
-              "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
+              "$cards.label.tommyMuldoon.moveFromTommyToAsset"
               [HandleAbilityOption iid (toSource ElderSign) 1]
           | (hasDamage && assetsWithHealth) || (hasHorror && assetsWithSanity)
           ]
         <> [ Label
-               "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
+               "$cards.label.tommyMuldoon.moveFromAssetToTommy"
                [HandleAbilityOption iid (toSource ElderSign) 2]
            | assetsWithDamage || assetsWithHorror
            ]
-        <> [Label "Do not move any damage and/or horror" []]
+        <> [Label "$label.doNotMoveAnyDamageHorror" []]
       pure i
     HandleAbilityOption (is attrs -> True) _ n | n `elem` [1, 11] -> do
       hasDamage <- fieldSome InvestigatorDamage attrs.id
@@ -87,7 +87,7 @@ instance RunMessage TommyMuldoon where
 
       when ((hasDamage && notNull assetsWithHealth) || (hasHorror && notNull assetsWithSanity)) $ do
         chooseOrRunOne attrs.id
-          $ [Label "Done moving damage/horror" [] | n == 11]
+          $ [Label "$label.doneMovingDamageHorror" [] | n == 11]
           <> [ AssetHorrorLabel asset
                  $ MoveTokensNoDefeated #elderSign (toSource attrs.id) (toTarget asset) #horror 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
@@ -110,7 +110,7 @@ instance RunMessage TommyMuldoon where
       assetsWithHorror <- select (AssetWithHorror <> assetControlledBy attrs.id)
       when (notNull assetsWithDamage || notNull assetsWithHorror) do
         chooseOrRunOne attrs.id
-          $ [Label "Done moving damage/horror" [] | n == 22]
+          $ [Label "$label.doneMovingDamageHorror" [] | n == 22]
           <> [ AssetHorrorLabel asset
                  $ MoveTokensNoDefeated #elderSign (toSource asset) (toTarget attrs) #horror 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]

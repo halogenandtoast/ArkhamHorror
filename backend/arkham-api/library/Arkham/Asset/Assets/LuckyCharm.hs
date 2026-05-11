@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Ref
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Token
@@ -61,12 +62,12 @@ instance RunMessage LuckyCharm where
           else pure []
 
       chooseTargetM iid (nub $ horrorTargets <> damageTargets) \destination -> do
-        chooseOrRunOneM iid do
+        chooseOrRunOneM iid $ withI18n $ countVar 1 do
           when (destination `elem` horrorTargets) do
-            labeled "Move 1 horror"
+            labeledI "moveHorror"
               $ moveTokens (attrs.ability 1) (targetToSource from) destination Horror 1
           when (destination `elem` damageTargets)
-            $ labeled "Move 1 damage"
+            $ labeledI "moveDamage"
             $ moveTokens (attrs.ability 1) (targetToSource from) destination Damage 1
       pure a
     _ -> LuckyCharm <$> liftRunMessage msg attrs

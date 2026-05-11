@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Effect.Import
 import Arkham.Fight
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -58,12 +59,12 @@ instance RunMessage ArmageddonEffect where
                 stillInPlay <- selectAny $ AssetWithId assetId
 
                 when (stillInPlay || notNull enemies || notNull concealed) do
-                  chooseOrRunOneM iid do
+                  chooseOrRunOneM iid $ cardI18n $ scope "armageddon" do
                     when stillInPlay do
-                      labeled "Place 1 Charge on Armageddon" do
+                      labeled' "placeCharge" do
                         push $ AddUses attrs.source assetId Charge 1
                     when (notNull enemies || notNull concealed) do
-                      labeled "Deal 1 damage to an enemy at your location" do
+                      labeled' "dealDamageToEnemy" do
                         chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
 
                   disable attrs

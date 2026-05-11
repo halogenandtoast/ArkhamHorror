@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.CyclopeanRuins_176b (
-  cyclopeanRuins_176b,
-  CyclopeanRuins_176b (..),
-)
-where
+module Arkham.Location.Cards.CyclopeanRuins_176b (cyclopeanRuins_176b) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
@@ -27,13 +23,14 @@ instance HasAbilities CyclopeanRuins_176b where
       $ extendRevealed
         a
         [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-        , restricted
-            a
-            2
-            ( Here
-                <> exists (at_ (be a) <> InvestigatorWithKey BlueKey)
-                <> exists (at_ (be a) <> InvestigatorWithKey GreenKey)
-            )
+        , onlyOnce
+            $ restricted
+              a
+              2
+              ( Here
+                  <> exists (at_ (be a) <> InvestigatorWithKey BlueKey)
+                  <> exists (at_ (be a) <> InvestigatorWithKey GreenKey)
+              )
             $ FastAbility
             $ GroupClueCost (PerPlayer 3) (be a)
         ]

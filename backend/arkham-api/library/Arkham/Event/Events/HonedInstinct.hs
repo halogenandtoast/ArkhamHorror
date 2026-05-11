@@ -4,6 +4,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers hiding (eventModifiers)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype HonedInstinct = HonedInstinct EventAttrs
@@ -27,10 +28,10 @@ instance RunMessage HonedInstinct where
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
-        chooseOneM iid do
-          labeled "Perform another action and remove this from game (Force of Habit)" do
+        chooseOneM iid $ cardI18n $ scope "honedInstinct" do
+          labeled' "another" do
             removeFromGame attrs
             takeActionAsIfTurn iid attrs
-          labeled "Do not perform another action" nothing
+          labeled' "skip" nothing
       pure e
     _ -> HonedInstinct <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Story.Cards.WaresOfBaharna (waresOfBaharna) where
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -10,6 +11,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheSearchForKadath.Helpers
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Item, Supply))
@@ -31,8 +33,8 @@ instance RunMessage WaresOfBaharna where
           <> can.have.cards.leaveDiscard
 
       lead <- getLead
-      chooseOrRunOneAtATimeM lead do
-        questionLabeled "Choose investigator to decide on returning discard"
+      chooseOrRunOneAtATimeM lead $ scenarioI18n $ scope "waresOfBaharna" do
+        questionLabeled' "chooseInvestigator"
         targets investigators (handleTarget lead attrs)
 
       remember ObtainedSuppliesFromBaharna
@@ -42,7 +44,7 @@ instance RunMessage WaresOfBaharna where
       let cards = filter (`cardMatch` hasAnyTrait @CardMatcher [Item, Supply]) discards
       focusCards discards do
         chooseOneM iid do
-          labeled "Do not return card" nothing
+          labeledI "doNotReturnCard" nothing
           targets cards (addToHand iid . only)
 
       pure s

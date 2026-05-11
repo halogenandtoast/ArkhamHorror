@@ -11,5 +11,16 @@
       "cultist": "Reveal another chaos token. If it is agenda 2 or 3, make an infestation test.",
       "elderThing": "-X. X is 1 higher than the number of infested locations."
     }
+  },
+  "tooltips": {
+    "waitingRoom": {
+      "resign": "You flee the hospital, leaving your companions behind."
+    }
+  },
+  "privateRoom": {
+    "label": {
+      "payClues": "Pay 1{'{'}perPlayer{'}'} clues",
+      "doNotPay": "Do not pay"
+    }
   }
 }

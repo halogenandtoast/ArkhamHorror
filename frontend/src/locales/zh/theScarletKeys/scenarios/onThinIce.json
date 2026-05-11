@@ -1,0 +1,72 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of _Hazard_ treacheries in play.",
+      "cultist": "-4. If you fail, choose a non-weakness card in your hand and set it aside, out of play, as a hollow.",
+      "tablet": "-2 (-5 instead if Void Chimera is at your location).",
+      "elderThing": "-3. If you fail, look at the top card of your deck. If it is not a weakness, set it aside, out of play, as a hollow."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of _Hazard_ treacheries in play.",
+      "cultist": "-5. Choose a non-weakness card in your hand and set it aside, out of play, as a hollow.",
+      "tablet": "-3. If Void Chimera is at your location, you automatically fail, instead.",
+      "elderThing": "-4. Look at the top card of your deck. If it is not a weakness, set it aside, out of play, as a hollow."
+    }
+  },
+  "tooltips": {
+    "anchorage": {
+      "resign": "\"I thought Alaska was supposed to be nice this time of year!\""
+    }
+  },
+  "intro": {
+    "title": "On Thin Ice",
+    "introPart1": "<p class='file'>你才刚入住安克拉治的一间小木屋就收到了一个匿名的包裹：</p><p class='typewriter'>探员，<p><p class='typewriter'>我们近几周在阿拉斯加中心地带失去了数个调查员，极可能是出自结社的手笔。其中一名调查员发现了可能的线索：一个明显具有超次元力量的透镜。附件是探勘者瑞德·兰德里的日志，他正被收容在奥勒冈州的晨边疗养院。</p><p class='typewriter'>如果透镜是密钥，不计一切代价也要获得。</p><p class='accountant right'>~Q. 泰勒</p><p>你花了一整天翻阅日志，大多数都是野生动物的素描跟采矿的注记。但最后一段记载让你心底发寒：</p><p class='indented'>“1923年10月4号：</p><p class='indented'>今晚我将被诅咒的透镜埋回了我找到它的地方。</p><p class='indented'>刚找到它时我不敢在日志中做任何记录，但我现在没什么好失去了。我在探勘新矿脉时在岩石中发现了这个透镜。它无法透光而且本身散发着奇异的微光，拿着它让我感到很特别，像是被选中了 一样。我在透镜里看见了不可思议的动植物、人类、建筑，一个截然不同的世界，一个不属于我们的世界。这个世界一定存在，它是我们世界的黑暗倒影：一切被遗忘的事物与记忆的避风港。这个透镜——黑曜透镜，让我看见另一个世界的真相。</p><p class='indented'>我居然以为可以将它纳为己用，我真是太愚蠢了！我观察那个世界的同时，那个世界也在观察我。我在注视透镜时一定不小心召唤了某种危险、未知的生物过来。越来越多与我同行的探勘者在森林中；同时也在记忆中消失。我的伙伴、我的家、我的一切都被我在黑曜透镜瞥见的怪物吞噬了。而现在我还是能在另一个世界看见牠们。</p><p class='indented'>在森林里游荡的怪物似乎没有固定的形体，牠的外型一直在改变，同时具有许多不同动物的特征，就像神话中的混种怪物。我试着使用黑曜透镜猎捕牠，但光是看着透镜就让我感到头晕目眩。在探索周边区域后，我想我靠陷阱杀死了一只：一只巨大的狼形生物，牠嚎叫着消散不见。但当我隔天回到营地，营地已经被牠袭击了。我的同伴们消失并从记忆里被抹去。</p><p class='indented'>有关当局认为我疯了，应该被收治。我唯一的办法就是将透镜放回我找到的地方，希望能弥补这一切。也许一切都会恢复正常。”</p><p class='indented'>在记录旁有一堆黑色的素描，看起来是匆促间的随笔涂鸦，但在看过兰德里的经历后，你认为这是他尝试要画出那个生物的外 型。隔天你开始调查任何关于兰德里发现的金矿记录，你从安克拉治市政厅发放的许可证跟当地图书馆开始寻找。在一整天徒劳无功的调查后，你依然找不到任何与瑞德·兰德里相关的脉记录。当你晚上回到木屋时，你看见一个高挑的身影站在堆满装备的雪橇旁，他戴着一条显眼的红领巾。</p><p>那人带着自恋的笑容问候你：“你好，你一定是大家在谈论的那个大麻烦。很高兴认识你，我是索恩。”他自信地伸出手与你握手。“既然你在这里，我只能推测我们是为了同样的目标而来。请多加小心天气，费尔班克斯可是很冷的！愿最厉害的人获胜。”说完索恩对你眨了眨眼，然后坐上雪橇离去。</p><p>你思考着索恩提到费尔班克斯是刻意误导还是友善的提醒。你四处询问后，一名接待员提到了你对手做的准备：“一开始我很困惑，直到他们问起部落保留区的事情，在那里探勘不需要许可证。”你又追问了一些细节，现在你对于索恩的去向跟矿脉的位置多了一些把握。</p>",
+    "wayfarer": "<div class='red'><p>_如果有旅人属性的调查员，阅读:_</p><p>不管去哪，跟着河流走就对了。金矿场通常会建在离河流100码以内，而且通常会有渠道连接河流，便于取得清水跟运送泥沙。</p></div>",
+    "introPart2": "<p>你出发前找了一位部落向导问路，你认为你的目标就在他们部落的领土内。他们很担心有更多外来者在打他们土地的主意，同时有鉴于最近探勘者消失的事件，他们也担心你的安全。你解释道你不是为了黄金而来，你是为了调查在兰德里先生身上发生的奇怪事件。为了展现善意，你将探勘者的日志和奇怪的素描展示给他看。这似乎让他对你多了一点信任，他为你指引了方向。</p><p> 他告诉你：“在这个时期过河要格外小心，你有可能会迷路，甚至踏破冰层跌进水里。如果不够谨慎的话你会死的。”</p><p class='basic right'>进入_冒险设置_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *On Thin Ice*, *Agents of the Outside*, *Agents of Yuggoth*, *Crimson Conspiracy*, *Dark Veiling*, *Outsiders*, *Spatial Anomaly*, *Chilling Cold*。 These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/on-thin-ice.png'><img src='{setImgPath}/agents-of-the-outside.png'><img src='{setImgPath}/agents-of-yuggoth.png'><img src='{setImgPath}/crimson-conspiracy.png'><img src='{setImgPath}/dark-veiling.png'><img src='{setImgPath}/outsiders.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/chilling-cold.png'></section>",
+    "placeLocations": "将安克拉治地点和费尔班克斯地点放置入场。每位调查员从安克拉治开始游戏。",
+    "wilderness": "面朝下混洗三张阿拉斯加荒野地点(山中小涧、冰冻的湖、孤寂小径)，使你无法分辨。将每张放置入场，放到费尔班克斯旁。将剩余的三个边疆荒野地点放在一旁，置于场外。",
+    "setOutOfPlay": "将下列卡牌放在一旁，置于场外：黑曜透镜密钥、双面的索恩敌人/剧情支援、每张虚空混源体敌人。",
+    "miniCards": "拿取每张诱饵小卡和以下的小卡：犹格斯星的使者、结社探员(A、B和C)。也拿取虚空混源体的小卡与其四张特殊的虚空混源体诱饵小卡。将它们放在一旁，置于场外。",
+    "time": "检查剧本日志上经过多少 _时间_ 。每经过 5 _时间_ ，在密谋1上放置1个毁灭标记。"
+  },
+  "rawDeal": {
+    "label": {
+      "option3": "“我们可以合作，暂时的。”",
+      "option4": "“不，我赢了，光明正大。”",
+      "option5": "“我不能让密钥落入结社手中！”"
+    },
+    "checkAgenda": "检查当前密谋。",
+    "agenda1": "If it is agenda 1, proceed to _临时交易 1_.",
+    "notAgenda1": "If it is agenda 2 or 3, skip to _临时交易 2_.",
+    "rawDeal1": "<p>_Raw Deal 1_: “令人喜悦的重逢啊！”索恩宣告着。“看来你在这场小竞赛中堂堂正正地打败我了。你让我印象深刻，在过去的经验中，基石对我来说毫无挑战性。现在，我想我们有笔生意要谈，请坐。”索恩弹了下手指，几个结社成员领着你到一个有火堆与几张椅子的帐篷。都入座后，索恩清清喉咙说：“现在，我们都清楚你有一样我想要的东西，一个无价之宝。我很怀疑你会对金钱有兴趣，但如果我告诉你有个更大的威胁呢？”他的声音听起来在开玩笑，但表情很严肃，你要求他解释。“你一定有察觉到，我不是这里最大的威胁。有某种可怕的东西在森林里游荡，最终极的猎杀者。只要你持有透镜，就等同放弃自己的生命，牠会追杀你到天涯海角，直到把你吃到一点都不剩，已经有很多人受害了。”你点头，思考着索恩的话。“你很幸运，我跟这种生物是老对手了，我非常擅长追踪牠的动向，也知道怎么将牠引出来。”索恩倾身向前，“我只要求黑曜透镜做为回报。相信我，你会希望它被保管在知道如何控制它的人手中。”索恩对你伸出他戴手套的手：“请告诉我，我们达成共识了吗？”</p><p class='basic'>The investigators must decide (choose one).</p><ul><li>*“我们可以合作，暂时的。”* 跳到_临时交易 3_.</li><li>*“不，我赢了，光明正大。”* 跳到_临时交易 4_.</li></ul>",
+    "rawDeal2": "<p>_Raw Deal 2_: “老天啊，”索恩边说边从矿坑中走出来，“你们这些笨蛋，快把枪放下，这可不是待客之道。”他对两个守卫弹了手指，他们将枪放下。“你晚来一步了，或是来的正好，取决你从哪个角度来看。”索恩微笑着晃了晃手中黑曜石制的透镜。你想起基石的档案，开口询问有没有协商密钥归属的可能性。索恩挥挥手：“恐怕不行，小可爱。密钥是无价之宝，我不会为了任何东西放弃。”寒风吹过，他手中紧抓着黑曜透镜。“不过，我们还是可以做个交易。你如果不是笨蛋的话，就会察觉到这个地区笼罩在巨大的危险中。有某种可怕的东西在森林里游荡，最终极的猎杀者。事实上，牠已经知道我们在这了。”索恩看着你，“依我看来，你可以在这里自怨自艾，也可以帮我追踪我的猎物。帮我的话我就欠你个人情，等待日后回报。我们达成共识了吗？”</p><p class='basic'>The investigators must decide (choose one).</p><ul><li>*“我们可以合作，暂时的。”* 进入_临时交易 3_.</li><li>*“我不能让密钥落入结社手中！”* 跳到_临时交易 5_.</li></ul>",
+    "rawDeal3": "<p>_Raw Deal 3_: “太好了！事情结束后我们该开瓶香槟庆祝。”索恩弹个手指，召集他的追随者。“我们有工作要做了。”</p><ul><li>In your Campaign Log, record *与索恩达成交易*。</li><li>Remove 1 {'{'}elderThing{'}'} token from the chaos bag. Add 1 {'{'}tablet{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>将索恩剧情支援放置入场，位于调查员队长的控制之下。将黑曜透镜密钥附属到索恩身上，_稳定_面朝上。</li><li>查找遭遇牌堆、弃牌堆和所有玩家区域，找出所有*绯红阴谋*遭遇组的卡牌并将其全部从游戏中移除。</li></ul>",
+    "rawDeal4": "<p>_Raw Deal 4_: 索恩脸色大变，伸出的手悬在空中。终于他清了清喉咙，调整他的领巾。“真可惜，我原本期待更好的结果。算了，完成目标也不只一种手段。”然后他就一言不发的离开了矿坑。</p><ul><li>Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}elderThing{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>将黑曜透镜密钥放置入场，置于调查员队长控制之下。</li><li>将索恩敌人生成到山中小涧地点。</li></ul>",
+    "rawDeal5": "<p>_Raw Deal 5_: 索恩耸了耸肩，用手指抚摸着透镜的外缘。“这是你的损失。我们本来可以在这件事上合作的，但我想我可能得多费点力气了。很好。”他拿着战利品离开了矿坑，弹了一下手指示意其他人跟上。</p><ul><li>Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}elderThing{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>将索恩敌人生成到山中小涧地点。将黑曜透镜密钥附属到索恩身上，_不稳定_面朝上。</li></ul>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: 你对这一切超次元事件感到精疲力尽且惶惶不安，但至少你活下来了。你准备离开阿拉斯加时，在行李中找出那本探勘者的日志。你叹了口气，将它放在小木屋的床边桌上。希望下一个看到它的人能完成你办不到的事。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。<li>In your Campaign Log, record *虚空混源体逃脱*。</li><li>依照以下记录在剧本日志中的密钥部分：<ul><li>检查剧本日志。 如果*与索恩达成交易* 或没有调查员控制黑曜透镜, 索恩是黑曜透镜承受者。</li><li>如果有调查员控制黑曜透镜, 控制黑曜透镜的调查员是黑曜透镜的承受者。 In your Campaign Log, record *未得知索恩最后的下落*。</li></ul></li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 一股新鲜空气从现实的裂缝吹来，你发现自己终于回到原来的世界。回到阿拉斯加，那个怪物将你拉进巢穴的地方。你起身看到索恩拿出手帕将袖子上黏液一般的怪物鲜血擦掉。他对你挑起一边眉毛说：“也许我对基石的认知错了。至少，你在战斗中很有一套。我建议你也重新认识我跟我结社的弟兄们，我绝对不是唯一一个愿意暂时放下争端来共同面对……”他暂停了一下，你突然感受到索恩的年迈，以及他背负的重担。“这种巨大的危机的人。”说完索恩快速的转过身，“很高兴跟你做生意。我不会忘记我们之间的约定。”他拍拍放在胸前口袋内的黑曜透镜，朝着荒野走去。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>索恩是黑曜透镜承受者，并将此记录在剧本日志中。</li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 一股新鲜空气从现实的裂缝吹来，你发现自己终于回到原来的世界。回到阿拉斯加，那个怪物将你拉进巢穴的地方。你挣扎起身时，索恩来了，而且拉了你一把。“既然你，嗯，还活着，我猜那头怪物已经被消灭了吧，干的好！”索恩微笑着对你眨眼，你下意识地摸向黑曜透镜。“呿，别把我当成卑鄙小人”他说，“你赢了，光明正大，我可不是那种死缠烂打的人。事实上，如果你之前愿意跟我合作，我还打算向结社保荐你呢。”他叹了口气，你突然感受到索恩的年迈，以及他背负的重担。“提醒你，不是每个我的弟兄都像我一样好心。但也别把我的好心当成弱点了，小可爱。误判会导致更大的悲剧。”他对你眨眨眼，转身朝荒野走去。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知索恩最后的下落.*</li><li>控制黑曜透镜的调查员是黑曜透镜的承受者。</li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 一股新鲜空气从现实的裂缝吹来，你发现自己终于回到原来的世界。回到阿拉斯加，那个怪物将你拉进巢穴的地方。周围的的森林一片死寂，只有山中小涧潺潺的流水声传来。不见任何尸体或痕迹，你怀疑自己是否真的除掉那只怪物了，抑或只是消灭了他众多形体的其中一个。反射在白雪上的阳光十分刺眼，你设法穿越荒野回到安全的地方。在翻过一座山丘后你转身看见有个身影站在广阔的蓝天下。你定睛一看，看见了索恩标志性的红领巾跟他白金色的头发和翻飞的大衣，他回看着你，笑容欢快。</p><p>鸡皮疙瘩爬上你的后颈，脑袋隐隐作痛。索恩就静静的站着，纹风不动。你举起手挥手，他如镜像般也对你挥手，在你突然放下手的同时也放下手。他的样子让你有种不祥的预感，你将这个念头赶出脑海，背过身继续前进。当你越过另一个山丘时回头看，那个身影依然站在那，一动也不动。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *索恩消失*。</li><li>依照以下记录在剧本日志中的密钥部分：<ul><li>如果有调查员控制黑曜透镜, 控制黑曜透镜的调查员是黑曜透镜的承受者。</li><li>如果没有调查员控制黑曜透镜, 索恩是黑曜透镜承受者。</li></ul></li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_结局4_: 你在安克拉治的小木屋惊醒，你似乎做了可怕的噩梦，但无论怎么回想都想不起来。你在城镇中乱逛，完全想不起来这里的原因。你用电报告知基石这件事后，受到了一封措辞严厉的回复，警告你不能随意浪费组织的资源。你依然无法摆脱自己好像忘了什么事的感觉。</p><ul><li>本场冒险从未发生过。<ul><li>不要在剧本日志中标记任何时间。</li><li>不要在剧本日志中记录在如履薄冰中取得的任何经验值或创伤。</li><li>不要更新记录剧本日志中密钥部分。</li><li>在剧本日志中，记录下在安克拉治无迹可寻。在此剧本结束前你无法再次停留到此处。</li></ul></li><li>你可以启程了, departing from 安克拉治.</li></ul>"
+    }
+  }
+}

@@ -12,6 +12,7 @@
     "shortcutDraw": "Robar del mazo / mazo de Encuentro",
     "shortcutTakeResources": "Tomar Recursos",
     "shortcutEndTurn": "Terminar Turno",
+    "shortcutRestartScenario": "Reiniciar Escenario",
 
     "viewSettings": "Ver Configuración",
     "viewSettingTitle": "Configuración para {investigator}",

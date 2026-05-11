@@ -12,6 +12,7 @@
     "shortcutDraw": "덱에서 뽑기 / 조우 덱에서 뽑기",
     "shortcutTakeResources": "자원 획득하기",
     "shortcutEndTurn": "차례 마치기",
+    "shortcutRestartScenario": "시나리오 재시작",
 
     "viewSettings": "설정 보기",
     "viewSettingTitle": "{investigator} 조사자의 설정 보기",

@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.StrokeOfLuck2 (strokeOfLuck2) where
 
 import Arkham.ChaosToken
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -16,9 +17,9 @@ instance RunMessage StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | chaosTokenFace token /= AutoFail -> do
       chooseOneM iid do
-        labeled "Exile Stroke of Luck to automatically succeed" do
+        withI18n $ cardNameVar attrs $ labeled' "exileNameToAutoSucceed" do
           exile attrs
           passSkillTest
-        labeled "Do not exile" nothing
+        labeledI "doNotExile" nothing
       pure s
     _ -> StrokeOfLuck2 <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.PhysicalTraining (physicalTraining) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -15,10 +16,10 @@ physicalTraining = asset PhysicalTraining Cards.physicalTraining
 
 instance HasAbilities PhysicalTraining where
   getAbilities (PhysicalTraining a) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+    [ (cardI18n $ withI18nTooltip "physicalTraining.fastSpend1Resource2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+    , (cardI18n $ withI18nTooltip "physicalTraining.fastSpend1Resource")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

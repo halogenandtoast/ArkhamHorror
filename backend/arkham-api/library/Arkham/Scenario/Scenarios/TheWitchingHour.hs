@@ -189,6 +189,7 @@ instance RunMessage TheWitchingHour where
           leadPlayer <- getLeadPlayer
           storyWithChooseOneM' (setTitle "title" >> p "choose") do
             labeled' "performTarotReading" do
+              push $ SetPerformTarotReadings False
               push
                 $ Ask leadPlayer
                 $ PickDestiny

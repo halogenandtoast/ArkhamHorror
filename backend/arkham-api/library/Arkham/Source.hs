@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Types (
+  AbilityMatcher (..),
   ActMatcher,
   AgendaMatcher,
   AssetMatcher,
@@ -191,6 +192,20 @@ isPlayerCardSource = \case
   InvestigatorSource _ -> True
   _ -> False
 
+isEncounterCardSource :: Source -> Bool
+isEncounterCardSource = \case
+  AbilitySource s _ -> isEncounterCardSource s
+  UseAbilitySource _ s _ -> isEncounterCardSource s
+  PaymentSource s -> isEncounterCardSource s
+  IndexedSource _ s -> isEncounterCardSource s
+  ProxySource s _ -> isEncounterCardSource s
+  TreacherySource _ -> True
+  EnemySource _ -> True
+  LocationSource _ -> True
+  AgendaSource _ -> True
+  ActSource _ -> True
+  _ -> False
+
 -- | Static check: would this SourceMatcher potentially match a player card source?
 -- Used for playability checks where we don't have a specific source but need to know
 -- if player card sources are allowed through.
@@ -199,6 +214,7 @@ allowsPlayerCardSource = \case
   SourceIsPlayerCard -> True
   SourceIsPlayerCardAbility -> True
   AnySource -> True
+  SourceIsAbility BasicAbility -> True
   SourceMatchesAny ms -> any allowsPlayerCardSource ms
   SourceMatches ms -> all allowsPlayerCardSource ms
   NotSource m -> not (allowsPlayerCardSource m)

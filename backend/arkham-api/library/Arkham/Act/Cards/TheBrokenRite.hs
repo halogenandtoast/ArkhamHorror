@@ -18,6 +18,8 @@ newtype TheBrokenRite = TheBrokenRite ActAttrs
 theBrokenRite :: ActCard TheBrokenRite
 theBrokenRite = act (4, A) TheBrokenRite Cards.theBrokenRite Nothing
 
+-- Due to how the Spectral Watcher works, we have to explicitly use the
+-- EnemyDefeated timing window here, rather than IfEnemyDefeated
 instance HasAbilities TheBrokenRite where
   getAbilities = actAbilities \x ->
     [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)

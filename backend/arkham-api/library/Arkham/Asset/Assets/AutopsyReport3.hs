@@ -17,7 +17,7 @@ autopsyReport3 = asset AutopsyReport3 Cards.autopsyReport3
 
 instance HasAbilities AutopsyReport3 where
   getAbilities (AutopsyReport3 a) =
-    [controlled_ a 1 $ triggered (EnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)) (exhaust a)]
+    [controlled_ a 1 $ triggered (IfEnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)) (exhaust a)]
 
 instance RunMessage AutopsyReport3 where
   runMessage msg a@(AutopsyReport3 attrs) = runQueueT $ case msg of

@@ -7,8 +7,11 @@ import Arkham.Prelude
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
-data Timing = When | AtIf | After
+data Timing = Cancel | When | AtIf | After
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "cancel" Timing where
+  fromLabel = Cancel
 
 instance IsLabel "when" Timing where
   fromLabel = When

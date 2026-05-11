@@ -27,7 +27,7 @@ instance HasAbilities SacrificialDoll where
   getAbilities (SacrificialDoll a) =
     [ controlled a 1 (DuringSkillTest $ YourSkillTest AnySkillTest)
         $ triggered
-          (RevealChaosToken #after You (not_ #autofail))
+          (RevealChaosToken #cancel You (not_ #autofail))
           (DirectDamageCost (toSource a) You 1 <> exhaust a)
     ]
 

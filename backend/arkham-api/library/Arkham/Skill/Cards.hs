@@ -196,7 +196,7 @@ viciousBlow :: CardDef
 viciousBlow =
   (skill "01025" "Vicious Blow" [#combat] Guardian)
     { cdCardTraits = setFromList [Practiced]
-    , cdAlternateCardCodes = ["01525", "60119", "12025"]
+    , cdAlternateCardCodes = ["01525", "60119", "12025", "60169"]
     }
 
 deduction :: CardDef
@@ -1347,7 +1347,7 @@ cosmicGuidance =
 
 eldritchWhispers1 :: CardDef
 eldritchWhispers1 =
-  (skill "60471" "Eldritch Whispers" [#wild, #wild] Mystic)
+  (skill "60471" "Eldritch Whispers" [#willpower, #willpower] Mystic)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1

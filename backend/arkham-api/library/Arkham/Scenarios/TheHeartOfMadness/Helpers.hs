@@ -12,6 +12,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario (toChaosTokenValue)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Label
 import Arkham.Layout
 import Arkham.Location.Types (Field (..))
@@ -28,11 +29,21 @@ import Arkham.Trait (Trait (AncientOne))
 scenarioI18n :: Int -> (HasI18n => a) -> a
 scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
 
+scenarioI18n' :: (HasI18n => a) -> a
+scenarioI18n' a = campaignI18n $ scope "theHeartOfMadness" a
+
+cardI18n :: (HasI18n => a) -> a
+cardI18n a = campaignI18n $ scope "theHeartOfMadness" a
+
 sealAtLocationOf :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 sealAtLocationOf iid =
   getLocationOf iid >>= \case
     Nothing -> pure False
-    Just lid -> fieldMap LocationSeals (not . null) lid
+    Just lid ->
+      orM
+        [ fieldMap LocationSeals (not . null) lid
+        , not . all null <$> selectField InvestigatorSeals (investigatorAt lid)
+        ]
 
 placeSeal :: (ReverseQueue m, Targetable target) => target -> Seal -> m ()
 placeSeal target = push . PlaceSeal (toTarget target)
@@ -88,8 +99,8 @@ getChaosTokenValueFromScenario iid tokenFace (toAttrs -> attrs) = case tokenFace
     ancient <- selectAny $ withTrait AncientOne <> EnemyAt (locationWithInvestigator iid)
     pure
       $ if ancient
-        then toChaosTokenValue attrs Skull 2 4
-        else toChaosTokenValue attrs Skull 1 3
+        then toChaosTokenValue attrs Skull 3 4
+        else toChaosTokenValue attrs Skull 1 2
   Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 1)
   Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
   ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5

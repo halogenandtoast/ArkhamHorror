@@ -96,6 +96,12 @@ data Game = Game
     gamePerformTarotReadings :: Bool
   , gameCurrentBatchId :: Maybe BatchId
   , gameScenarioSteps :: Int
+  , -- gameScenarioSteps value at the point each boundary message was processed
+    -- (i.e. the scenario step we'd undo TO when undoing back to that boundary).
+    gameUndoActionStep :: Maybe Int
+  , gameUndoTurnStep :: Maybe Int
+  , gameUndoPhaseStep :: Maybe Int
+  , gameUndoRoundStep :: Maybe Int
   , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
   }
   deriving stock (Eq, Show)

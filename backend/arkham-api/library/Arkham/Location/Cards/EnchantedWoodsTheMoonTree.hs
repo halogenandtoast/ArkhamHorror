@@ -31,8 +31,8 @@ instance RunMessage EnchantedWoodsTheMoonTree where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ [Label "Take 2 horror" [assignHorror iid (toAbilitySource attrs 1) 2]]
-        <> [ Label "Lose all remaining actions" [SetActions iid (toAbilitySource attrs 1) 0]
+        $ [Label "$label.takeHorror count=i:2" [assignHorror iid (toAbilitySource attrs 1) 2]]
+        <> [ Label "$theDreamEaters.beyondTheGatesOfSleep.enchantedWoodsTheMoonTree.label.loseAllActions" [SetActions iid (toAbilitySource attrs 1) 0]
            | remainingActions > 0
            ]
       pure l

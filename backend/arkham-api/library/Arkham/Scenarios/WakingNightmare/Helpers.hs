@@ -1,11 +1,13 @@
 module Arkham.Scenarios.WakingNightmare.Helpers where
 
+import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Queue (ReverseQueue)
@@ -16,6 +18,9 @@ import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Timing (Timing)
 import Arkham.Tracing
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "wakingNightmare" a
 
 pattern InfestedLocation :: LocationMatcher
 pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))

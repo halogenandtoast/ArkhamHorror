@@ -87,7 +87,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
-import Arkham.Message as X (AndThen (..), getChoiceAmount)
+import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
@@ -120,6 +120,11 @@ import Data.Typeable
 
 capture :: MonadIO m => QueueT msg m a -> m [msg]
 capture = evalQueueT
+
+withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
+withoutRunWindows body = do
+  msgs <- capture body
+  pushAll $ SetGameRunWindows False : msgs <> [SetGameRunWindows True]
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -521,6 +526,34 @@ findEncounterCardIn iid target cardMatcher scenarioZones =
       (toTarget target)
       scenarioZones
       (toCardMatcher cardMatcher)
+      LeadChooses
+
+findRandomEncounterCard
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> m ()
+findRandomEncounterCard iid target cardMatcher =
+  findRandomEncounterCardIn iid target cardMatcher [FromEncounterDeck, FromEncounterDiscard]
+
+findRandomEncounterCardIn
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> [ScenarioZone]
+  -> m ()
+findRandomEncounterCardIn iid target cardMatcher scenarioZones =
+  push
+    $ Msg.FindEncounterCard
+      iid
+      (toTarget target)
+      scenarioZones
+      (toCardMatcher cardMatcher)
+      RandomSelect
 
 beginSkillTest
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1154,10 +1187,10 @@ prompt iid lbl body = do
 promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
 promptI iid lbl body = do
   msgs <- capture body
-  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> ikey ("label." <> lbl)) msgs]
+  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> labelKey lbl) msgs]
 
 prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
-prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> ikey ("label." <> lbl)) []]
+prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> labelKey lbl) []]
 
 promptI_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
 promptI_ iid lbl = withI18n $ prompt_ iid lbl
@@ -1178,6 +1211,9 @@ questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message ->
 questionLabel lbl iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl Nothing q)
+
+questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
+questionLabel' lbl = Arkham.Message.Lifted.questionLabel ("$" <> lbl)
 
 questionLabelWithCard
   :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
@@ -1408,7 +1444,7 @@ chooseAmount' iid label choiceLabel minVal maxVal target = do
   Msg.pushM
     $ Msg.chooseAmounts
       player
-      ("$" <> ikey ("label." <> label))
+      ("$" <> labelKey label)
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target
@@ -1429,8 +1465,8 @@ chooseAmountLabeled' iid title label choiceLabel minVal maxVal target = do
   Msg.pushM
     $ Msg.chooseAmountsLabeled
       player
-      ("$" <> ikey ("label." <> title))
-      ("$" <> ikey ("label." <> label))
+      ("$" <> labelKey title)
+      ("$" <> labelKey label)
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target
@@ -2210,8 +2246,16 @@ skillTestResultOptionEdit kind f label body = do
 additionalSkillTestOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 additionalSkillTestOption = skillTestResultOptionEdit AdditionalOptionKind id
 
-skillTestCardOption :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
+skillTestCardOption
+  :: (ReverseQueue m, HasCardCode card, Named card) => card -> QueueT Message m () -> m ()
 skillTestCardOption card = withI18n $ additionalSkillTestOption (cardNameVar card $ ikey' "name")
+
+skillTestCardOptionEdit
+  :: (ReverseQueue m, HasCardCode card, Named card)
+  => card -> (SkillTestOption -> SkillTestOption) -> QueueT Message m () -> m ()
+skillTestCardOptionEdit card f body =
+  withI18n
+    $ additionalSkillTestOptionEdit f (cardNameVar card $ ikey' "name") body
 
 tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
 tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
@@ -4068,5 +4112,5 @@ clearAbilityUse = push . ClearAbilityUse
 removeActDeck :: ReverseQueue m => m ()
 removeActDeck = push $ SetCurrentActDeck 1 []
 
-setCurrentAgendaDeck :: (ReverseQueue m) => [Card] -> m ()
+setCurrentAgendaDeck :: ReverseQueue m => [Card] -> m ()
 setCurrentAgendaDeck = push . SetCurrentAgendaDeck 1

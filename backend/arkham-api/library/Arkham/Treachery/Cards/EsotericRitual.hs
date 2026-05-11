@@ -5,6 +5,7 @@ import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheLairOfDagon.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -25,13 +26,13 @@ instance RunMessage EsotericRitual where
       tokens <- count ((== #curse) . (.face)) <$> getSkillTestRevealedChaosTokens
       hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       hasDiscardableCard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
-      chooseNM iid (if tokens > 0 then 2 else 1) do
+      chooseNM iid (if tokens > 0 then 2 else 1) $ scenarioI18n do
         when hasDiscardableCard
-          $ labeled "Discard 2 cards from your hand"
+          $ labeled' "discardTwoCards"
           $ discardFromHand iid attrs DiscardChoose 2
 
         when hasDiscardableAssets
-          $ labeled "Discard an asset you control"
+          $ labeled' "discardAsset"
           $ chooseAndDiscardAsset iid attrs
       pure t
     _ -> EsotericRitual <$> liftRunMessage msg attrs

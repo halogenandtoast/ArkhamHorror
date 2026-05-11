@@ -8,6 +8,8 @@
     "determineInvestigatorsModifiedSkillValueStep": "Determine investigator's modified skill value.",
     "determineSuccessOrFailureOfSkillTestStep": "Determine success/failure of skill test.",
     "applySkillTestResultsStep": "Apply skill test results.",
-    "skillTestEndsStep": "Skill test ends."
+    "skillTestEndsStep": "Skill test ends.",
 
+    "skipTriggersActiveNotice": "Skip Triggers is on — fast triggers unrelated to this test are being hidden.",
+    "skipTriggersAdjust": "Adjust"
 }

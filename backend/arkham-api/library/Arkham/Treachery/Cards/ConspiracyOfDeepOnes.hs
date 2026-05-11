@@ -1,8 +1,10 @@
 module Arkham.Treachery.Cards.ConspiracyOfDeepOnes (conspiracyOfDeepOnes, ConspiracyOfDeepOnes (..)) where
 
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (AncientOne, Sanctum))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -27,11 +29,10 @@ instance RunMessage ConspiracyOfDeepOnes where
           $ NearestEnemyToFallback iid
           $ withTrait AncientOne
           <> mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
-      chooseOneM iid do
-        labeled
-          "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)"
+      chooseOneM iid $ scenarioI18n $ scope "conspiracyOfDeepOnes" do
+        labeled' "placeDoomCanAdvance"
           $ placeDoomOnAgendaAndCheckAdvance 1
-        labeled "The nearest _Ancient One_ enemy in play attacks you" do
+        labeled' "ancientOneAttacks" do
           chooseTargetM iid nearest \enemy -> initiateEnemyAttack enemy attrs iid
 
       pure t

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -23,8 +24,8 @@ instance HasModifiersFor HiredMuscle1 where
 instance RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
-        labeled "Pay 1 Resource to Hired Muscle" $ spendResources iid 1
-        labeled "Discard Hired Muscle" $ toDiscardBy iid (attrs.ability 1) attrs
+      chooseOneM iid $ withI18n $ cardNameVar attrs do
+        labeled' "payResourceToName" $ spendResources iid 1
+        labeled' "discardName" $ toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> HiredMuscle1 <$> liftRunMessage msg attrs

@@ -79,7 +79,7 @@ import Arkham.Helpers.Card (
   getModifiedCardCost,
   passesLimits,
  )
-import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources)
+import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources, hasSkillTestCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
@@ -102,7 +102,7 @@ import Arkham.Helpers.Slot (
   removeIfMatchesOnce,
   slotItems,
  )
-import Arkham.Helpers.Source (sourceMatches, sourceTraits)
+import Arkham.Helpers.Source (getSourceController, sourceMatches, sourceTraits)
 import Arkham.Helpers.Window (
   batchedTimings,
   checkAfter,
@@ -117,7 +117,7 @@ import Arkham.Helpers.Window (
  )
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
-import Arkham.I18n (withI18n)
+import Arkham.I18n (cardNameVar, countVar, ikey', withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
@@ -125,6 +125,7 @@ import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
+  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -205,15 +206,26 @@ instance RunMessage Investigator where
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
-longestUniqueStreak :: Ord a => [[a]] -> [[a]]
+-- Longest prefix admitting a system of distinct representatives: multi-type actions
+-- (e.g. Fight+Activate from a bold-Fight play) contribute one chosen type per action.
+longestUniqueStreak :: Eq a => [[a]] -> [[a]]
 longestUniqueStreak = go []
  where
-  go uniq [] = uniq
-  go uniq (xs : xss) =
-    let seen = mconcat uniq
-     in if any (`notElem` seen) xs
-          then go (xs : uniq) xss
-          else go [] xss
+  go acc [] = acc
+  go acc (xs : xss)
+    | sdrExists (xs : acc) = go (xs : acc) xss
+    | otherwise = acc
+
+sdrExists :: Eq a => [[a]] -> Bool
+sdrExists [] = True
+sdrExists (xs : rest) = any (\x -> sdrExists (map (filter (/= x)) rest)) xs
+
+pickSDR :: Eq a => [[a]] -> [a]
+pickSDR = fromMaybe [] . go
+ where
+  go [] = Just []
+  go (xs : rest) = listToMaybe . catMaybes $
+    [fmap (x :) (go (map (filter (/= x)) rest)) | x <- xs]
 
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case
@@ -327,6 +339,14 @@ getWindowSkippable
       when (not isFast && asAction) do
         liftGuardM $ getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
       liftGuardM $ withAlteredGame withoutCanModifiers $ passesLimits iid card
+getWindowSkippable
+  attrs
+  _ws
+  ( windowTiming &&& windowType ->
+      (Timing.When, Window.PlayEvent iid eid)
+    ) | iid == toId attrs = do
+    card <- field EventCard eid
+    withAlteredGame withoutCanModifiers $ passesLimits iid card
 getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []
@@ -464,6 +484,12 @@ runWindow attrs windows actions playableCards = do
               actionsWithMatchingWindows
             <> [SkipTriggersButton iid | skippable]
 
+sourcePerformerHasModifier :: (HasGame m, Tracing m) => Source -> ModifierType -> m Bool
+sourcePerformerHasModifier source m =
+  getSourceController source >>= \case
+    Nothing -> pure False
+    Just iid -> hasModifier iid m
+
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigatorMessage" $ runQueueT $ case msg of
   ClearAbilityUse ref -> do
@@ -483,7 +509,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   RemoveAllChaosTokens face -> do
     pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   UpdateGlobalSetting iid s | iid == a.id -> do
-    pure $ a & settingsL %~ updateGlobalSetting s
+    let attrs' = a & settingsL %~ updateGlobalSetting s
+    -- If a fast player window is open, re-evaluate so the choice list reflects
+    -- the new setting immediately (e.g. enabling/disabling Skip Triggers should
+    -- repopulate the current fast-window question without waiting for the next
+    -- one). The new WindowAsk replaces any pending question for this player.
+    currentWindows <- concat <$> getWindowStack
+    when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
+      push $ Do (CheckWindows currentWindows)
+    pure attrs'
   UpdateCardSetting iid cCode s | iid == a.id -> do
     pure $ a & settingsL %~ updateCardSetting cCode s
   EndOfGame _ -> do
@@ -669,7 +703,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     if null mulliganableHand || unableToMulligan
       then push $ FinishedWithMulligan investigatorId
       else Choose.chooseOneM iid do
-        Choose.labeled "Done With Mulligan" $ push $ FinishedWithMulligan investigatorId
+        Choose.labeledI "doneWithMulligan" $ push $ FinishedWithMulligan investigatorId
         for_ mulliganableHand \card ->
           when (cdCanReplace $ toCardDef card) do
             Choose.targeting card do
@@ -732,7 +766,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       unless (null startingCardsInDeck) do
         Lifted.focusCards startingCardsInDeck do
           Choose.chooseOneM iid do
-            Choose.labeled "Do not add a Starting card to hand" Choose.nothing
+            Choose.labeledI "doNotAddStartingCard" Choose.nothing
             for_ startingCardsInDeck \card ->
               Choose.targeting card do
                 Lifted.drawToHand iid [PlayerCard card]
@@ -985,7 +1019,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
     discardableHand <-
-      select $ inHandOf NotForPlay investigatorId <> CardWithoutModifier CannotLeaveYourHand
+      select $ inHandOf NotForPlay investigatorId
+        <> CardWithoutModifier CannotLeaveYourHand
+        <> basic handDiscard.filter
     when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull discardableHand)) do
       wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
       pushAll [wouldDiscard, Do msg]
@@ -1008,7 +1044,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               pushWhen (n > 0)
                 $ chooseN player n
                 $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-                  | c <- cs
+                  | c <- cs'
                   ]
               for_ handDiscard.target \target ->
                 push $ DiscardedCards investigatorId handDiscard.source target cs'
@@ -1123,6 +1159,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             Lifted.shuffleCardsIntoDeck iid (only card)
             push $ After msg
         pure a
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+    pure a
+  PutOnTopOfDeck _ (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) card
+    pure a
+  PutOnBottomOfDeck _ (Deck.InvestigatorDeck iid) (CardIdTarget cid) | iid == investigatorId -> do
+    card <- getCard cid
+    push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
+    pure a
   Discarded (AssetTarget aid) _ (PlayerCard card) -> do
     -- TODO: This message is ugly, we should do something different
     -- TODO: There are a number of messages here that mean the asset is no longer in play, we should consolidate to a singular message
@@ -1606,25 +1654,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               runAtIfEntering <- checkWindows [atIfEntering]
               runAfterMoves <- checkWindows [afterMoves]
 
+              let
+                postEnterMsgs =
+                  [ runWhenMoves
+                  , runAtIfMoves
+                  , ResolveMovement iid
+                  , runAfterMoves
+                  , ResolvedMovement iid movement.id
+                  ]
+                    <> maybeToList mRunAfterLeaving
+                innerMsgs =
+                  [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
+                    <> [runWhenEntering, runAtIfEntering, PayAdditionalCost iid batchId enterCosts]
+                    <> if hasSkillTestCost enterCosts
+                      then [MoveWithSkillTest (WhenCanMove iid postEnterMsgs)]
+                      else postEnterMsgs
+                whenCanMoveMsg = WhenCanMove iid innerMsgs
+                wrapLeave = if hasSkillTestCost leaveCosts then MoveWithSkillTest else id
               pushBatched batchId
                 $ maybeToList mRunWouldMove
                 <> maybeToList mRunWhenLeaving
                 <> maybeToList mRunAtIfLeaving
-                <> [ PayAdditionalCost iid batchId leaveCosts
-                   , WhenCanMove
-                       iid
-                       $ [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-                       <> [ runWhenEntering
-                          , runAtIfEntering
-                          , PayAdditionalCost iid batchId enterCosts
-                          , runWhenMoves
-                          , runAtIfMoves
-                          , ResolveMovement iid
-                          , runAfterMoves
-                          , ResolvedMovement iid movement.id
-                          ]
-                       <> maybeToList mRunAfterLeaving
-                   ]
+                <> [PayAdditionalCost iid batchId leaveCosts]
+              push (wrapLeave whenCanMoveMsg)
             Place -> do
               -- like Direct, but no moves windows and no costs
 
@@ -2300,8 +2352,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         if
           | notNull concealed && clueCount > 0 ->
               Choose.chooseOneM iid do
-                Choose.labeled "Expose concealed" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
-                Choose.labeled "Discover normally" defaultDiscover
+                Choose.labeledI "exposeConcealedCard" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
+                Choose.labeledI "discoverNormally" defaultDiscover
           | notNull concealed -> chooseExposeConcealedAt iid iid (LocationWithId lid)
           | otherwise -> defaultDiscover
 
@@ -2618,12 +2670,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage' - 1) horror'
           | damage' == 0 && horror' > 0 ->
               push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' (horror' - 1)
-          | otherwise -> Choose.chooseOneM iid do
-              Choose.labeled "Cancel 1 damage"
+          | otherwise -> Choose.chooseOneM iid $ withI18n $ countVar 1 do
+              Choose.labeled' "cancelDamage"
                 $ push
                 $ DoStep 1
                 $ Msg.InvestigatorDamage iid source (damage' - 1) horror'
-              Choose.labeled "Cancel 1 horror"
+              Choose.labeled' "cancelHorror"
                 $ push
                 $ DoStep 1
                 $ Msg.InvestigatorDamage iid source damage' (horror' - 1)
@@ -2689,8 +2741,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
       & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
   ApplyHealing source -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
     let totalSanity = sanity + investigatorHorrorHealed
@@ -2703,8 +2755,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       push $ Do msg
     pure a
   Do (ApplyHealing source) -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
     let totalSanity = sanity + investigatorHorrorHealed
@@ -2743,7 +2795,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (horrorHealedL .~ 0)
   HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]
     canHealAtFull <-
       if null canHealAtFullSources
@@ -2767,20 +2819,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           push
             $ chooseOne player
             $ [ Label
-                  ("Heal " <> toTitle c)
+                  (withI18n $ cardNameVar c $ ikey' "label.healName")
                   $ toDiscardBy iid source t
                   : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
               | (t, c) <- dmgTreacheries
               ]
-            <> [Label "Heal remaining damage normally" [whenWindow, Do msg] | investigatorHealthDamage a > 0]
+            <> [Label "$label.healRemainingDamageNormally" [whenWindow, Do msg] | investigatorHealthDamage a > 0]
     pure a
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     unless cannotHealDamage do
       pushAll [HealDamageDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
     pure a
   HealDamageDelayed (isTarget a -> True) source n -> do
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     if cannotHealDamage
       then pure a
       else pure $ a & assignedHealthHealL %~ insertWith (+) source n
@@ -2790,7 +2842,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     -- TODO: HERE  MAYBE
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
       else do
@@ -2802,12 +2854,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     mods <- getModifiers a
     let n = sum [x | HealingTaken x <- mods]
     let amount = amount' + n
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     unless cannotHealHorror
       $ pushAll [HealHorrorDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
     pure a
   HealHorrorDelayed target@(isTarget a -> True) source n | n > 0 -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
 
     -- afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source n]
 
@@ -2848,7 +2900,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pure a
   Do (HealHorrorDelayed (isTarget a -> True) source n) -> do
     let iid = investigatorId
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     unless cannotHealHorror do
       hrrTreacheries <-
         selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfHorror
@@ -2859,17 +2911,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           push
             $ chooseOne player
             $ [ Label
-                  ("Heal " <> toTitle c)
+                  (withI18n $ cardNameVar c $ ikey' "label.healName")
                   $ toDiscardBy iid source t
                   : [Do (HealHorrorDelayed (InvestigatorTarget iid) source (n - 1)) | n - 1 > 0]
               | (t, c) <- hrrTreacheries
               ]
-            <> [ Label "Heal remaining horror normally" [Do (HealHorror (toTarget iid) source n)]
+            <> [ Label "$label.healRemainingHorrorNormally" [Do (HealHorror (toTarget iid) source n)]
                | investigatorSanityDamage a > 0
                ]
     pure a
   Do (HealHorror (isTarget a -> True) source n) -> do
-    cannotHealHorror <- hasModifier a CannotHealHorror
+    cannotHealHorror <- sourcePerformerHasModifier source CannotHealHorror
     if cannotHealHorror
       then pure a
       else pure $ a & assignedSanityHealL %~ insertWith (+) source n
@@ -2947,7 +2999,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (unhealedHorrorThisRoundL %~ min 0 . subtract amount)
   HealDamageDirectly (InvestigatorTarget iid) source amount | iid == investigatorId && amount > 0 -> do
     -- USE ONLY WHEN NO CALLBACKS
-    cannotHealDamage <- hasModifier a CannotHealDamage
+    cannotHealDamage <- sourcePerformerHasModifier source CannotHealDamage
     if cannotHealDamage
       then pure a
       else do
@@ -3046,7 +3098,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           pushAll
             [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
-            , After (WhenWillEnterLocation iid lid)
             , After (MoveTo movement)
             , EnterLocation iid lid
             ]
@@ -3067,8 +3118,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
     whenM (getCanMoveTo iid' (moveSource movement) lid) do
       Choose.chooseOneM iid' do
-        Choose.labeled "Move too" $ moveToEdit iid' iid' lid (\m -> m {moveSkipEngagement = True})
-        Choose.labeled "Skip" Choose.nothing
+        Choose.labeledI "moveToo" $ moveToEdit iid' iid' lid (\m -> m {moveSkipEngagement = True})
+        Choose.labeledI "skip" Choose.nothing
 
     pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
@@ -3389,9 +3440,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         -- or her deck, then draws the card, and upon completion of the entire draw
         -- takes one horror.
 
-        let
-          source = cardDrawSource cardDraw
-          n = cardDrawAmount cardDraw
+        let n = cardDrawAmount cardDraw
 
         modifiers' <- getModifiers (toTarget a)
 
@@ -3464,6 +3513,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               & (drawnCardsL .~ mempty)
               & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
 
+        -- Continue an in-progress draw after a reshuffle / partial draw,
+        -- preserving rules and filters from the original draw (e.g.
+        -- AfterDrawDiscard) but resetting per-draw bookkeeping so the
+        -- remaining cards are drawn cleanly. cardDrawAndThen is dropped
+        -- because the original DoDrawCards already pushed it.
+        let
+          continueDraw amount =
+            DrawCards iid
+              $ cardDraw
+                { cardDrawAmount = amount
+                , cardDrawState = UnresolvedCardDraw
+                , cardDrawAndThen = Nothing
+                , cardDrawAlreadyDrawn = []
+                }
         if null investigatorDeck
           then do
             -- What happens if the Yorick player has Graveyard Ghouls engaged
@@ -3478,7 +3541,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             if canShuffle
               then do
                 wouldDo
-                  (EmptyDeck iid (Just $ drawCards iid source n))
+                  (EmptyDeck iid (Just $ continueDraw n))
                   (Window.DeckWouldRunOutOfCards iid)
                   (Window.DeckHasNoCards iid)
                 pure a
@@ -3490,7 +3553,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             let deck = unDeck investigatorDeck
             if length deck < n
               then do
-                push $ drawCards iid source (n - length deck)
+                push $ continueDraw (n - length deck)
                 pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
               else do
                 let (drawn, deck') = splitAt n deck
@@ -3536,7 +3599,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                        ]
                    | playable
                    ]
-                <> [Label "Draw normally" $ maybeToList mWhenDraw <> [UnfocusCards, Do msg]]
+                <> [Label "$label.drawNormally" $ maybeToList mWhenDraw <> [UnfocusCards, Do msg]]
             ]
       else pushAll $ FocusCards [toCard card] : maybeToList mWhenDraw <> [UnfocusCards, Do msg]
     pure a
@@ -3698,7 +3761,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     pushAll
       $ [EmptyDeck iid mDrawing]
       <> maybeToList mDrawing
-      <> [chooseOne player [Label "Your deck is empty, take 1 horror" [assignHorror iid EmptyDeckSource 1]]]
+      <> [chooseOne player [Label "$label.yourDeckIsEmptyTakeHorror" [assignHorror iid EmptyDeckSource 1]]]
     pure a
   EmptyDeck iid _ | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -4031,6 +4094,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
     let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
+    let streakTypes = pickSDR streak
 
     when (notNull duplicated)
       $ pushM
@@ -4039,7 +4103,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     when (length streak > 1)
       $ pushM
       $ checkWindows
-        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) (nub $ concat streak))]
+        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) streakTypes)]
 
     when (#parley `elem` actions && #parley `notElem` previous)
       $ pushM
@@ -4296,8 +4360,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 ( \c ->
                     [ chooseOne
                         player
-                        [ Label "Place on top" [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)]
-                        , Label "Place on bottom" [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') (toCard c)]
+                        [ Label "$label.placeOnTop" [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)]
+                        , Label "$label.placeOnBottom" [PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') (toCard c)]
                         ]
                     ]
                 )
@@ -4447,13 +4511,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
               let choices = [card | (_, cards) <- mapToList targetCards, card <- cards]
               if null choices
-                then Lifted.prompt iid "No cards found" Choose.nothing
+                then Lifted.promptI iid "noCardsFound" Choose.nothing
                 else Choose.chooseNM iid (min n (length choices)) do
                   Choose.targets choices \card -> do
                     Choose.chooseOrRunOneM iid do
-                      Choose.labeled "Add to hand" $ Lifted.addToHand iid (only card)
+                      Choose.labeledI "addToHandSimple" $ Lifted.addToHand iid (only card)
                       when (card `elem` playableCards) do
-                        Choose.labeled "Play Card" $ Lifted.playCardPayingCost iid card
+                        Choose.labeledI "playCard" $ Lifted.playCardPayingCost iid card
             DrawOrCommitFound who n -> do
               -- [TODO] We need this to determine what state the skill test
               -- is in, if we are committing cards we need to use
@@ -4467,8 +4531,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                           then
                             chooseOne
                               player
-                              [ Label "Draw it" [drawFoundToHand]
-                              , Label "Commit to skill test" [CommitCard who card]
+                              [ Label "$label.drawIt" [drawFoundToHand]
+                              , Label "$label.commitToSkillTest" [CommitCard who card]
                               ]
                           else drawFoundToHand
                       ]
@@ -4478,7 +4542,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
               push
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
+                  then chooseOne player [Label "$label.noCardsFound" []]
                   else chooseN player (min n (length choices)) choices
             RemoveFoundFromGame _ n -> do
               let
@@ -4489,7 +4553,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
               push
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
+                  then chooseOne player [Label "$label.noCardsFound" []]
                   else chooseN player (min n (length choices)) choices
             AddFoundToHand who n -> do
               let
@@ -4502,7 +4566,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
               push
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
+                  then chooseOne player [Label "$label.noCardsFound" []]
                   else chooseN player (min n (length choices)) choices
             DrawFound who n -> do
               canModify <- can.draw.cards iid
@@ -4517,7 +4581,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
               push
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
+                  then chooseOne player [Label "$label.noCardsFound" []]
                   else chooseN player (min n (length choices)) choices
               let
                 foundKey = \case
@@ -4538,7 +4602,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
               push
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
+                  then chooseOne player [Label "$label.noCardsFound" []]
                   else chooseUpToN player n "Do not draw more cards" choices
             PlayFound who n -> do
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
@@ -4551,7 +4615,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]
-              push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+              push $ chooseN player n $ if null choices then [Label "$label.noCardsFound" []] else choices
             PlayFoundNoCost who n -> do
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
               playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
@@ -4563,7 +4627,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]
-              push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+              push $ chooseN player n $ if null choices then [Label "$label.noCardsFound" []] else choices
             DeferSearchedToTarget searchTarget _ -> do
               -- N.B. You must handle target duplication (see Mandy Thompson) yourself
               if all null (toList targetCards)
@@ -4591,7 +4655,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               pushAll
                 $ if null choices
                   then
-                    [ chooseOne player [Label "No cards found" [ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle]]
+                    [ chooseOne player [Label "$label.noCardsFound" [ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle]]
                     ]
                   else
                     let cards = concat $ toList targetCards
@@ -4726,27 +4790,49 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = do
-        Action.Investigate <- maybeToList mAction
-        go =<< maybeToList mTarget
-      go = \case
-        ProxyTarget t _ -> go t
-        LocationTarget lid -> [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> go t1 <> go t2
+      goLocation = \case
+        ProxyTarget t _ -> goLocation t
+        LocationTarget lid -> do
+          clues <- field LocationClues lid
+          pure
+            $ mkWhen (Window.PassInvestigationSkillTest iid lid n)
+            : [mkWhen (Window.SuccessfullyInvestigateWithNoClues iid lid) | clues == 0]
+        BothTarget t1 t2 -> (<>) <$> goLocation t1 <*> goLocation t2
+        _ -> pure []
+      goEnemy mk = \case
+        ProxyTarget t _ -> goEnemy mk t
+        EnemyTarget eid -> [mkWhen $ mk eid n]
+        BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
+    windows <- case mAction of
+      Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
+      Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      _ -> pure []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
     pure a
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
-      windows = do
-        Action.Investigate <- maybeToList mAction
-        go =<< maybeToList mTarget
-      go = \case
-        ProxyTarget t _ -> go t
-        LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
-        BothTarget t1 t2 -> go t1 <> go t2
+      goLocation = \case
+        ProxyTarget t _ -> goLocation t
+        LocationTarget lid -> do
+          clues <- field LocationClues lid
+          pure
+            $ mkAfter (Window.PassInvestigationSkillTest iid lid n)
+            : [mkAfter (Window.SuccessfullyInvestigateWithNoClues iid lid) | clues == 0]
+        BothTarget t1 t2 -> (<>) <$> goLocation t1 <*> goLocation t2
+        _ -> pure []
+      goEnemy mk = \case
+        ProxyTarget t _ -> goEnemy mk t
+        EnemyTarget eid -> [mkAfter $ mk eid n]
+        BothTarget t1 t2 -> goEnemy mk t1 <> goEnemy mk t2
         _ -> []
+    windows <- case mAction of
+      Just Action.Investigate -> concat <$> traverse goLocation (maybeToList mTarget)
+      Just Action.Fight -> pure $ goEnemy (Window.SuccessfulAttackEnemy iid source) =<< maybeToList mTarget
+      Just Action.Evade -> pure $ goEnemy (Window.SuccessfulEvadeEnemy iid source) =<< maybeToList mTarget
+      _ -> pure []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional immediate | iid == investigatorId -> do
@@ -4994,7 +5080,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       [] -> pushAll resolveAbility
       [x] -> do
         after <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect x.source (toCardId <$> x.card)
-        push $ chooseOne player [Label "Ignore effect" [after], Label "Do not ignore effect" resolveAbility]
+        push $ chooseOne player [Label "$label.ignoreEffect" [after], Label "$label.doNotIgnoreEffect" resolveAbility]
       _ -> error "Multiple may ignore modifiers, not sure which one to use"
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
@@ -5147,9 +5233,10 @@ takeUpkeepResources a = do
           push
             $ chooseOne
               player
-              [ Label "Do not take resource(s)" []
-              , Label "Take resource(s)" [TakeResources (toId a) amount (ResourceSource $ toId a) False]
+              [ Label "$label.doNotTakeResources" []
+              , Label (withI18n $ countVar amount $ ikey' "label.takeResources") [TakeResources (toId a) amount (ResourceSource $ toId a) False]
               ]
           pure a
         else
           pure $ a & tokensL %~ addTokens Resource amount
+

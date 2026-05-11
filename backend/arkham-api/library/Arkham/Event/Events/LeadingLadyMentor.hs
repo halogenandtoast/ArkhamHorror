@@ -7,6 +7,7 @@ import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action
 import Arkham.Helpers.Playable
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (defaultWindows)
@@ -30,8 +31,8 @@ instance RunMessage LeadingLadyMentor where
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       canInvestigate <- hasInvestigateActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
       chooseOneM iid do
-        labeled "Draw 1 card" $ drawCards iid attrs 1
-        when canInvestigate $ labeled "Take investigate action" $ performActionAction iid attrs #investigate
-        labeled "Do nothing" nothing
+        withI18n $ countVar 1 $ labeledI "drawCards" $ drawCards iid attrs 1
+        when canInvestigate $ labeledI "takeInvestigateAction" $ performActionAction iid attrs #investigate
+        labeledI "doNothing" nothing
       pure e
     _ -> LeadingLadyMentor <$> liftRunMessage msg attrs

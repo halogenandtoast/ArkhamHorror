@@ -5,6 +5,7 @@ module Arkham.Card.PlayerCard where
 import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CardType
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -31,6 +32,9 @@ data PlayerCard = MkPlayerCard
   , pcMutated :: Maybe Text
   }
   deriving stock (Show, Ord, Data)
+
+instance HasField "kind" PlayerCard CardType where
+  getField = (.kind) . toCardDef
 
 instance HasField "victoryPoints" PlayerCard (Maybe Int) where
   getField = (.victoryPoints) . toCardDef
@@ -112,7 +116,7 @@ setTaboo mtaboo pc = pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo p
 
 tabooMutated :: Maybe TabooList -> PlayerCard -> Maybe Text
 tabooMutated Nothing _ = Nothing
-tabooMutated jtbl pc = tabooMutated' jtbl (pcCardCode pc)
+tabooMutated jtbl pc = asum $ map (tabooMutated' jtbl) (toCardDef pc).cardCodes
 
 tabooMutated' :: Maybe TabooList -> CardCode -> Maybe Text
 tabooMutated' = \case

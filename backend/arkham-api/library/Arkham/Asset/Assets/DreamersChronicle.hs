@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -32,12 +33,12 @@ instance RunMessage DreamersChronicle where
       canDiscover <-
         selectAny $ locationWithInvestigator iid <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       when canDiscover do
-        additionalSkillTestOption "Dreamer's Chronicle" do
+        skillTestCardOption attrs do
           chooseOneM iid do
-            labeled "Take 1 horror to discover 1 additional clue at your location" do
+            (cardI18n $ labeled' "dreamersChronicle.takeHorror") do
               assignHorror iid (attrs.ability 1) 1
-              discoverAtYourLocation IsInvestigate iid (attrs.ability 1) 1
-            labeled "Skip" nothing
+              discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
+            labeledI "skip" nothing
       pure a
     _ -> DreamersChronicle <$> liftRunMessage msg attrs
 

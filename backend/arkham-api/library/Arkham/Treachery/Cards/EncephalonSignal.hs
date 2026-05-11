@@ -35,9 +35,8 @@ instance RunMessage EncephalonSignal where
       push
         $ chooseOne
           player
-          [ Label "Take 2 horror" [assignHorror iid (toSource attrs) 2]
-          , Label
-              "Deal 2 damage to an investigator or Humanoid enemy at your location"
+          [ Label "$label.takeHorror count=i:2" [assignHorror iid (toSource attrs) 2]
+          , Label "$cards.label.encephalonSignal.damage"
               [ chooseOrRunOne player
                   $ [ targetLabel investigator [assignDamage investigator (toSource attrs) 2]
                     | investigator <- investigators

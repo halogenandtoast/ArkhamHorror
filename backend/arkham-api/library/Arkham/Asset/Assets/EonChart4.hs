@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
@@ -74,9 +75,9 @@ chooseAction :: ReverseQueue m => InvestigatorId -> AssetAttrs -> Message -> [Ac
 chooseAction iid attrs msg canDoActions = do
   actions' <- getAvailableActionTypes iid attrs canDoActions
   chooseOrRunOneM iid do
-    when (#move `elem` actions') $ labeled "Move" $ forAction #move msg
-    when (#evade `elem` actions') $ labeled "Evade" $ forAction #evade msg
-    when (#investigate `elem` actions') $ labeled "Investigate" $ forAction #investigate msg
+    when (#move `elem` actions') $ (cardI18n $ labeled' "eonChart4.move") $ forAction #move msg
+    when (#evade `elem` actions') $ labeledI "evade" $ forAction #evade msg
+    when (#investigate `elem` actions') $ labeledI "investigate" $ forAction #investigate msg
 
 instance RunMessage EonChart4 where
   runMessage msg a@(EonChart4 attrs) = runQueueT $ case msg of

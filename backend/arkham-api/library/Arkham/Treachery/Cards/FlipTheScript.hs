@@ -1,10 +1,9 @@
 module Arkham.Treachery.Cards.FlipTheScript (flipTheScript) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.I18n
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -26,11 +25,11 @@ instance RunMessage FlipTheScript where
       doStep (min 3 n) msg
       pure t
     DoStep n msg'@(PassedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
-      playerClueCount <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid $ withI18n do
         countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
         countVar 1
-          $ labeledValidate' (playerClueCount > 0) "placeCluesOnYourLocation"
+          $ labeledValidate' canPlaceClues "placeCluesOnYourLocation"
           $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'
       pure t

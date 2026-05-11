@@ -3,9 +3,11 @@ module Arkham.Treachery.Cards.TreacherousDepths (treacherousDepths, TreacherousD
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Location.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -19,13 +21,12 @@ treacherousDepths = treachery TreacherousDepths Cards.treacherousDepths
 instance RunMessage TreacherousDepths where
   runMessage msg t@(TreacherousDepths attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      chooseOneM iid do
+      chooseOneM iid $ scenarioI18n $ scope "treacherousDepths" do
         withLocationOf iid \lid -> do
           whenM (lid <=~> CanHaveFloodLevelIncreased) do
-            labeled "Increase the flood level of your current location" $ increaseThisFloodLevel lid
+            labeled' "increaseFloodLevel" $ increaseThisFloodLevel lid
           whenM (selectAny $ DiscardableAsset <> assetControlledBy iid) do
-            labeled
-              "Discard assets from your play area with a total resource cost of at least X, where X is your location's shroud value."
+            labeled' "discardAssetsToShroud"
               do
                 shroud <- lift $ fromMaybe 0 <$> lid.shroud
                 doStep shroud msg

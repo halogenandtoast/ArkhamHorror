@@ -20,7 +20,7 @@ instance HasModifiersFor BoxingGloves3 where
 
 instance HasAbilities BoxingGloves3 where
   getAbilities (BoxingGloves3 a) =
-    [restricted a 1 ControlsThis $ triggered (EnemyDefeated #after You ByAny AnyEnemy) (exhaust a)]
+    [restricted a 1 ControlsThis $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust a)]
 
 instance RunMessage BoxingGloves3 where
   runMessage msg a@(BoxingGloves3 attrs) = case msg of

@@ -91,12 +91,12 @@ instance RunMessage HuntingTheRougarou where
         , protectedOurselves
         , calmedItDown
         ]
-        then push $ chooseOne lead [Label "Resolution 3" [R3]]
+        then push $ chooseOne lead [Label "$standalone.curseOfTheRougarou.huntingTheRougarou.label.resolution3" [R3]]
         else
           push
             $ chooseOne
               lead
-              [Label "Flip back to a side" [RevertAct $ toId attrs]]
+              [Label "$standalone.curseOfTheRougarou.huntingTheRougarou.label.flipBack" [RevertAct $ toId attrs]]
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 B)
     RevertAct aid | aid == toId attrs && onSide B attrs -> do
       pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 A)

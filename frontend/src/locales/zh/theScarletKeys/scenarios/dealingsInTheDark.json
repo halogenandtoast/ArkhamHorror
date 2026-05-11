@@ -1,0 +1,105 @@
+{
+  "heading": "档案#21-F",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of clues on a _Cultist_ enemy in play, to a maximum of 3. (If it is act 3, X is 3.)",
+      "cultist": "-5. You may place 1 doom on the nearest _Cultist_ enemy to change this token's modifier to -1.",
+      "tablet": "-3. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-2. If you fail, place 1 doom on the nearest _Cultist_ enemy."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of clues on _Cultist_ enemies in play, to a maximum of 4. (If it is act 3, X is 4.)",
+      "cultist": "-7. You may place 1 doom on the nearest _Cultist_ enemy to change this token's modifier to -3.",
+      "tablet": "-4. If you fail, place 1 of your clues on your location.",
+      "elderThing": "-2. Place 1 doom on the nearest _Cultist_ enemy."
+    }
+  },
+  "ui": {
+    "entrance": "入口",
+    "eastGate": "东门"
+  },
+  "tooltips": {
+    "grandBazaarJewelersRoad": {
+      "investigate": "_Investigate_. If you succeed, instead of discovering clues, you may play a _Charm_ or _Relic_ asset from your hand, reducing its cost by 1 for each point you succeeded by (*to a minimum of 0*)."
+    }
+  },
+  "label": {
+    "agentsOfTheDark": {
+      "cluesUnveiled": "Place 1 clue (*from the token pool*) on Clues Unveiled",
+      "cultist": "Search the encounter deck and discard pile for a Cultist enemy and draw it"
+    },
+    "lightOutOfVoid": {
+      "doom": "Place 1 doom on the _Cultist_ enemy in play with the highest evade."
+    }
+  },
+  "intro": {
+    "label": {
+      "giveToEce": "“好吧，我会找到它，交给妳保管。”",
+      "giveToEceLying": "“好吧，我会找到它，交给妳保管。”(你在说谎。)",
+      "takeForOurselves": "“我们会一起找到这个护符。但必须置于我们这边的保管下。”"
+    },
+    "title": "File #21–F: Dealings in the Dark",
+    "intro1Part1": "<p class='file'>_引言1_: 海鸥在你走过加拉塔桥时在空中鸣叫，这座桥梁连接了君士坦丁堡的旧城区与加拉塔、贝伊奥卢、希什利跟哈尔比耶这些较现代化的区域，大多数外国商人及外交人员都在这几个区域生活与工作。你已经知道目的地，而且时间跟隐密性非常关键，所以你决定不雇用翻译，迳直前往苏莱曼尼耶清真寺，你的目标——艾洁·沙辛女士应该在那工作。</p><p>沙辛女士在数个学术领域都饱负盛名，尤其是在文物及艺术史的方面。根据你的情报，她目前在新成立的土耳其及伊斯兰艺术博物馆担任馆长。你很惊讶关于她的资料如此巨细靡遗，从她求学时期到她早年的生活都有记录。这只有两个可能性：她要不是没有像其他结社成员一样神秘；就是她假造了一个几可乱真的背景。</p><p>根据报告，沙辛女士主动与基石联络，提供会面的机会。这可能是陷阱，但如果她是真心想会面，你不能放过这次机会。幸运的是她的办公室不难找，门上用土耳其文及其他语言写着她的完整职称。你敲门并听到她说请进，你小心翼翼推开门，眼睛下意识地瞄向房间里每个角落跟可能藏身的地方。</p><p>房间很温暖，充满了各种装饰，墙上挂满了美丽的挂毯跟画作，从古老到现代一应俱全，架上放着五颜六色的陶罐、玻璃瓶跟发霉的书籍。“你好。”沙辛女士带着一个足以点亮房间的笑容招呼你。她是一位深色皮肤的年轻女性，有着绿褐色的眼睛，散发出资深学者的气质。“我可以为你做什么？”</p><p>你告诉她你们收到她先前的“联络”，说她想与你们会面。当她理解过来后瞳孔随之放大。</p><p>“哦！所以你是——”她清了清喉咙，没有将话说完。“我了解了，请坐。我们有很多东西要讨论。”</p><p>你告诉沙辛女士可以从她与结社有何关联开始解释，你注意到当你提到这个组织的名称时，她不自在的动了一下。</p><p>“结社在世界各地都有行动在进行，但这你应该已经知道了。”她小心翼翼的选择适当的用词。“但他们——我们的目的跟你们没有太大不同。我担任组织的研究员许多年，找寻着跟你们一样的东西：那些具有法力的物件。利用它们来保护人类免于不可见的威胁。”</p>",
+    "key": "<div class='red'><p>_如果至少有一个秘钥绑定调查员，阅读_: 你向她展示你持有的密钥，想确认这是否是她提及的物件之一。“看来你已经取得其中一样了。你在哪里找到的？”</p><p>你告诉她你是在她的一位同志使用它造成更大的破坏前，从他手中夺来的。</p><p>“密钥？你们是这么称呼它的？很有趣，但也不意外，它们在人类历史上有过许多的名字。你们的称呼很恰当，它们是取得其他次元力量的关键，足以拯救世界，或是毁灭世界。”</p></div>",
+    "intro1Part2": "<p>或是支配人类，你补充到。</p><p>沙辛女士叹了口气。“你说的没错。但我保证不是每个结社成员都想这样做。有些人，包括我，只想用它们造福他人。”</p><p>你问她自己为什么要相信她，毕竟结社成员在世界上其他地方做了那种事。</p><p>她解释道：“我们不是一个有领袖或统治阶层的组织。我们各自独立行动，为了一个共通的目标努力。但有些人……”她冷颤着咽下一口口水：“我不同意他们的做法。他们的手段非常恶心，而且坦白说，令我恐惧。”</p><p>你依然不知道该不该信任她，但不利用她的情报就太傻了。你询问目前君士坦丁堡有什么状况，还有她为什么要找上基石。“伊斯坦堡。”她纠正你。“这里的人民已经不再用那个名字了。”你暗自记下这件事。“其中一样你们搜寻的物件就在这里，在伊斯坦堡。我已经追查它好几年了，它是一个护符，里面束缚着力量强大的灵体，有些人会叫祂‘精灵’。在传说跟故事中，这是一种拥有自由意志的非人类灵体。”</p><p>她轻蔑的解释令你感觉她不是真的相信精灵的说法。“精灵？不，我不认为这个护符里住着精灵。我怀疑它的主人是更强大的存在，不属于人类，甚至不属于地球。而且不只我们两个在找它，在大战过后，奥斯曼帝国瓦解，许多记录在混乱中遗失了。但有更多从尘封的文献出现，其中就有关于护符的线索。有另一个团体在寻找它，他们以知识为名做出的事情……”她的脸色发白，努力想保持镇定，“他们不择手段想得到它，谋杀跟刑求对他们来说只是工具。我不愿去想像他们得到它后能做出什么更可怕的事。最糟的是，我认为有一位我的同志是幕后黑手。我就快找到它了，但如果他们抢先一步……”</p><p>你终于了解为什么沙辛女士会找上你们了，如果这个邪教背后有结社成员在操控，那她就不能冒险将情报透漏给结社内的人。但你依然对她抱持着怀疑。她请求你：“拜托，抢在他们之前找到护符。我会尽我所能帮助你，只要你答应将护符置于我的保护下。作为回报，我保证绝不会将它交给组织里其他……危险的成员中。我能维持护符的稳定，但如果你自己掌控的话，我不敢保证你能做到。拜托，我们是站在同一边的，我发誓。”</p><p class='basic'>调查员必须决定以下一项：</p><ul><li>“好吧，我会找到它，交给妳保管。” 进入_引言2_.</li><li>“好吧，我会找到它，交给妳保管。”(你在说谎。) 跳到_引言3_.</li><li>“我们会一起找到这个护符。但必须置于我们这边的保管下。” 跳到_引言4_.</li></ul>",
+    "intro2": "<p class='file'>_引言2_: 艾洁看起来松了一口气。“谢谢你，我承认我之前不确定自己能不能信任你。很高兴知道我们双方的组织能在危机面前携手合作，毕竟我们有着同样的理念。”她起身与你握手。</p><p>你问沙辛女士应该从何处着手。“文献上记载护符最后一次出现是在15世纪城市被征服时。为了不被入侵的奥斯曼人找到，它很可能被隐藏起来了。自此之后它销声匿迹了几百年，只剩下口耳相传的传说跟谣言。但鉴于最近的情势……协约国刚占领了城市，以及突然兴起了寻找护符的关注，这两件事有相关的话我一点都不意外。但我们不要只是臆测，如果我是你，我会开始调查没被奥斯曼征服者破坏的地方，你也可以在大学找到更多资讯。至于我，虽然打斗时我帮不上忙，但我会用我的方式提供你协助。”</p><p class='basic right'>In your Campaign Log, record *与艾洁合作。*.</p><ul><li>从混乱袋中移除1个 {'{'}elderThing{'}'} 标记，并加入1个 {'{'}tablet{'}'} 标记 (if there are already 4, each investigator earns 1 experience instead).</li></ul><p class='basic right'>进入_冒险设置_.</p>",
+    "intro3": "<p class='file'>_引言3_:艾洁看起来松了一口气。“谢谢你，我承认我之前不确定自己能不能信任你。很高兴知道我们双方的组织能在危机面前携手合作，毕竟我们有着同样的理念。”她起身与你握手。你对欺骗她感到一丝内疚，但你不能让密钥落在他人手中，而且沙辛女士依然可能是披着羊皮的狼。</p><p>你问她应该从何处着手。“文献上记载护符最后一次出现是在15世纪城市被征服时。为了不被入侵的奥斯曼人找到，它很可能被隐藏起来了。自此之后它销声匿迹了几百年，只剩下口耳相传的传说跟谣言。但鉴于最近的情势……协约国刚占领了城市，以及突然兴起了寻找护符的关注，这两件事有相关的话我一点都不意外。但我们不要只是臆测，如果我是你，我会开始调查没被奥斯曼人破坏的地方，你也可以在大学找到更多资讯。至于我，虽然打斗时我帮不上忙，但我会用我的方式提供你协助。”</p><p>你点头，感觉到她的目光盯着你。她发现了真正的想法吗？这是她要求跟你一起行动的原因吗？这些都不重要了，木已成舟，接下来只要找到密钥就行了。</p><ul><li>In your Campaign Log, record *欺骗艾洁。*.</li><li>从混乱袋中移除1个 {'{'}tablet{'}'} 标记，并加入1个 {'{'}elderThing{'}'} 标记 (if there are already 4, each investigator earns 1 experience instead).</li></ul><p class='basic right'>进入_冒险设置_.</p>",
+    "intro4": "<p class='file'>_引言4_: 艾洁失望的低下头：“我了解。我很希望我们双方的组织能携手合作，毕竟我们有同样的理念。”她叹口气继续说：“但至少我很感谢你的诚实，在经历这么多阴谋跟谎言后，这样也不错。”</p><p>你询问这样会让你们之间发生什么问题，暗自希望自己不用同时对付两个对手。“听着，我说的是实话，我的目的只是不让护符落在错误的、会对人类造成伤害的人手中。我希望能信任对的人，但既然你不愿意让我监管护符……”她边说边旋转着她的笔。“那就我目前所知，你跟那群人目的是一样的。我不会妨碍你，但……如果你想要将密钥据为己有，我也无法昧着良心帮助你。”</p><p>你想要反驳，但发现自己站不住脚。你选择不信任她，而她也做出相同的决定。当然你寻找密钥的目的只是为了保护人类，但除了口头承诺，你无法向她证明什么。“你最大的希望是从15世纪奥斯曼人入侵时没被破坏的区域开始调查，在大学也许也能找到更多资讯。”</p><p>她起身送你到门外，祝你顺利，然后一言不发的关上了门。</p><p class='basic right'>In your Campaign Log, record *拒绝艾洁*.</p><p class='basic right'>进入_冒险设置_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Dealings in the Dark*, *Agents of Yuggoth*, *Dark Veiling*, *Ancient Evils*, *Dark Cult*, *Locked Doors*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dealings-in-the-dark.png' /><img src='{setImgPath}/agents-of-yuggoth.png' /><img src='{setImgPath}/dark-veiling.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the five treachery cards (2x False 线索 and 3x Hunting Shadow). Do not gather the locations, acts, agendas, and scenario reference cards from that set.",
+    "theUnveiling": "将双面的“揭幕/解封”剧情卡牌放置入场，放到冒险参考卡牌上，揭幕面朝上。",
+    "timePassed": "检查剧本日志上经过多少 _时间_ ",
+    "tenOrFewerTime": "如果经过了小于等于10 _时间_ ，不作任何改变。",
+    "elevenToSeventeenTime": "如果经过了 11–17 _时间_ ，在揭幕上放置等同于调查员人数一半的线索数量(向上取整)。",
+    "eighteenToTwentyFourTime": " 如果经过了 18–24 _时间_ ，在揭幕上放置等同于调查员人数的线索数量。",
+    "twentyFiveOrMoreTime": "如果经过了大于等于 25 or more _时间_ ，在揭幕上放置等同于两倍调查员人数的线索数量。",
+    "placeLocations": "将下列地点放置入场：圣索菲亚大教堂、伊斯坦堡大学、迪奥多西方尖碑和加拉塔。圣索菲亚大教堂必须被放在玩家区域的右手边。",
+    "beginPlay": "每位调查员从圣索菲亚大教堂开始游戏。",
+    "checkCampaignLog": "检查剧本日志。",
+    "eceInvolved": "如果*与艾洁合作*, 或是 *欺骗艾洁*, 将艾洁·沙辛剧情支援放置入场，位于任意一位调查员的控制之下。",
+    "eceNotInvolved": "如果*拒绝艾洁*, 将艾洁·沙辛剧情支援从游戏中移除。",
+    "setAside": "将下列卡牌放在一旁，置于场外：七张大市集地点、厄影先驱敌人、犹格斯星的使者敌人、加拉塔码头地点、扭曲棱镜密钥、追逐战场景/密谋卡牌。",
+    "miniCards": "将下列卡牌放在一旁，置于场外：七张大市集地点、厄影先驱敌人、犹格斯星的使者敌人、加拉塔码头地点、扭曲棱镜密钥、追逐战场景/密谋卡牌。",
+    "cultists": "一次一位，按照玩家顺序，每位调查员从遭遇牌顶弃牌，直到弃掉一张异教徒敌人。每位调查员抽取各自弃掉的敌人，结算其隐蔽关键字(密谋1a给予的能力)。在所有调查员都执行了这个步骤后，将遭遇弃牌堆洗入遭遇牌堆。"
+  },
+  "resolutions": {
+    "checkCampaignLog": "检查剧本日志。",
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached because each investigator was defeated, and it is act 1 or 2_: 寻找护符的过程比你想像中更加困难，也更加危险。艾洁是对的，这些邪教徒会不择手段取得密钥，而你无法阻止他们。你希望基石能在护符中的灵体被释放并造成重大破坏前取回护符。但现在你让自己暂时不去思考这件事，如果像艾洁说的，有结社成员在幕后操纵，那你一定会再见到这个护符。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>戴红手套的男子是扭曲棱镜承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "noResolutionAct3": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated) and it is act 3_: 寻找护符的过程比你想像中更加困难，也更加危险。艾洁是对的，这些邪教徒会不择手段取得密钥，而你无法阻止他们……</p><ul><li>跳到_结局6_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 当你跟艾洁安全逃离城市后，你立刻将护符放回盒子中封存，念出正确的咒语来抑制它的力量，天空中异常的日蚀很快的消散了。</p>",
+      "theCellRefusedEcesOffer": "如果*拒绝艾洁*, skip to _结局2_.",
+      "theCellIsWorkingWithEce": "如果*与艾洁合作*, 或是 *欺骗艾洁*, skip to _结局3_"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 海面在归来的阳光照射下闪闪发光，你花了片刻时间欣赏美丽的海洋与海浪。你终于成功离开伊斯坦堡，心中燃起一丝希望。也许你该多信任艾洁一点的，但是……抱着沉重的决心，你摇了摇头。不，这个物件必须由你自己保护。其他人可能会利用它从事邪恶的目的，至少在你手里你能确定它是安全的。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>选择一位调查员成为扭曲棱镜承受者，并将此记录在剧本日志中。</li><li>Mark 2 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 艾洁似乎还没松懈下来，她的表情写着担忧。“他们也许会认出我，看来我最好暂时离开伊斯坦堡，我得通知博物馆我将缺席一阵子。现在……”她转身面向你，挑起眉毛问道：“关于我们的协议……？”</p>",
+      "theCellIsWorkingWithEce": "如果*与艾洁合作*, proceed to _结局4_.",
+      "theCellIsDeceivingEce": "如果*欺骗艾洁*, proceed to _结局5_."
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_结局4_: 你交出护符，相信艾洁会保护好它，就像她承诺过的那样。她松了口气，将护符收进背包里。“谢谢你信任我。我会无时无刻带着它。”海面在归来的阳光照射下闪闪发光，你花了片刻时间欣赏美丽的海洋与海浪。终于，你问艾洁既然无法回到伊斯坦堡，她准备去哪里。她回答：“有一个结社秘密集会的场所，我们会在那里讨论……重要的议题。我们不常聚会，但我认为最近的事件必须召开会议进行讨论，我会连络其他人来集合。”她偷偷看了你一眼后说：“也许，当时机到来，我们会再见面。”当你终于成功离开伊斯坦堡时，心中燃起一丝希望。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *赢得艾洁的信任*。</li><li>艾洁·沙辛是扭曲棱镜承受者，并将此记录在剧本日志中。</li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_结局5_: 你带着抱歉的目光看着艾洁，解释你不能将护符交给她，尤其是在看到它解除封印后能带来什么灾难。她的脸色变的难看，充满冷冽的愤怒。她瞇起眼说：“我懂了，你从一开始就没打算交给我。”她猜中了，你试着解释，但被她打断。“不，我了解，真的。”她满怀戒备的向后退，“你就跟他们一样，不择手段就只为得到密钥对吧？”你抗议，你不是为了自己，只是为了保护它们。它们在你的看顾下会很安全，甚至能用来保护人类。“你以为他们不是这样说的吗？”艾洁吼到，“梓？永生花？阿瓦雷兹？他们都这样说，‘为了全人类的利益’，然后为此不择手段。”她转身离开留下最后一句话：“你跟结社会很合得来的。”当你终于离开伊斯坦堡，你不断翻转着封印的盒子，反思着你的决定。你知道自己是正确的，但艾洁的话在你心中盘旋不去。也许某天你们能够和解……如果她还愿意听你说话的话。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *失去艾洁的信任*。</li><li>选择一位调查员成为扭曲棱镜承受者，并将此记录在剧本日志中。</li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>_结局6_: 你终于找到了护符的所在，但邪教成员抢先你抵达将其带走了。在你发觉前，他们已经解除了其中灵体的封印并离开了城市，没人知道他们释放了什么恐怖的存在到这世界上。你希望基石能在护符中的灵体造成重大破坏前取回护符。但现在你让自己暂时不去思考这件事，如果像艾洁说的，有结社成员在幕后操纵，那你一定会再见到这个护符。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>戴红手套的男子是扭曲棱镜承受者，并将此记录在剧本日志中。</li><li>Mark 2 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    }
+  }
+}

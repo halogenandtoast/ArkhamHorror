@@ -17,7 +17,7 @@ ancestralToken = assetWith AncestralToken Cards.ancestralToken (sanityL ?~ 2)
 
 instance HasAbilities AncestralToken where
   getAbilities (AncestralToken a) =
-    [restricted a 1 ControlsThis $ triggered (EnemyDefeated #after You ByAny AnyEnemy) (exhaust a)]
+    [restricted a 1 ControlsThis $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust a)]
 
 instance RunMessage AncestralToken where
   runMessage msg a@(AncestralToken attrs) = runQueueT $ case msg of

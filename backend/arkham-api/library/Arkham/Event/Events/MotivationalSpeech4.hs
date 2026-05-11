@@ -25,7 +25,7 @@ instance RunMessage MotivationalSpeech4 where
       when (notNull allies) do
         focusCards allies do
           chooseOneM iid do
-            labeled "Do not play ally" unfocusCards
+            labeledI "doNotPlayAlly" unfocusCards
             targets allies \ally -> do
               unfocusCards
               putCardIntoPlay iid ally
@@ -41,7 +41,7 @@ instance RunMessage MotivationalSpeech4 where
         abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
         unless (null abilities') do
           chooseOneM iid do
-            labeled "Do not trigger ability" nothing
+            labeledI "doNotTriggerAbility" nothing
             for_ abilities' \ab -> abilityLabeled iid ab nothing
         pure e
     _ -> MotivationalSpeech4 <$> liftRunMessage msg attrs

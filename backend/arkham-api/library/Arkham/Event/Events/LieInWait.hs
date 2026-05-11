@@ -5,7 +5,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight.Types
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (enteringEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -34,12 +36,7 @@ instance RunMessage LieInWait where
       sid <- getRandom
       let
         using sk = skillLabeled sk do
-          chooseOneM iid do
-            labeled "Fight without discarding (+1 skill)" do
-              skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
-            labeled "Discard Lie in Wait to fight with +1 skill and +1 damage" do
-              toDiscardBy iid (attrs.ability 1) attrs
-              skillTestModifiers sid (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
+          skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
           chooseFightEnemyEdit sid iid (attrs.ability 1) \cf ->
             cf
               { chooseFightEnemyMatcher = fightOverride (EnemyWithId eid)
@@ -49,5 +46,14 @@ instance RunMessage LieInWait where
       chooseOneM iid do
         using #combat
         using #agility
+      pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      skillTestCardOptionEdit attrs preOriginalOption do
+        chooseOneM iid $ cardI18n $ scope "lieInWait" do
+          labeled' "skip" nothing
+          labeled' "discard" do
+            toDiscardBy iid (attrs.ability 1) attrs
+            withSkillTest \sid ->
+              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure e
     _ -> LieInWait <$> liftRunMessage msg attrs

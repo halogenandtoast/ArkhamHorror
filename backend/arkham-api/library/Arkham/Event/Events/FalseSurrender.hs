@@ -6,6 +6,7 @@ import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
@@ -49,10 +50,10 @@ instance RunMessage FalseSurrender where
           filterM (getCanPerformAbility iid (defaultWindows iid))
             =<< selectMap nullifyActionCost (AbilityIsAction #fight <> AssetAbility (AssetWithId asset))
         when (notNull abilities) do
-          chooseOneM iid do
-            labeled "Take a fight action against that enemy" do
+          chooseOneM iid $ cardI18n $ scope "falseSurrender" do
+            labeled' "fightAgainstEnemy" do
               chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]
-            labeled "Do not take a fight action" $ doStep 3 msg
+            labeled' "doNotFight" $ doStep 3 msg
       pure e
     DoStep 3 (HandleTargetChoice _ (isSource attrs -> True) _) -> do
       pure . FalseSurrender $ With attrs (Meta Nothing)

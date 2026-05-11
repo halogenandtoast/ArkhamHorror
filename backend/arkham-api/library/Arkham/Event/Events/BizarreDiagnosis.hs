@@ -15,7 +15,7 @@ instance RunMessage BizarreDiagnosis where
   runMessage msg e@(BizarreDiagnosis attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       placeCluesOnLocation iid attrs 1
-      assets <- selectTargets $ HealableAsset (toSource attrs) #damage (assetAtLocationWith iid)
+      assets <- selectTargets $ HealableAsset (toSource attrs) #damage (AllyAsset <> assetAtLocationWith iid)
       investigators <- selectTargets $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
       chooseOneM iid $ targets (assets <> investigators) \target -> healDamage target attrs 3
       pure e

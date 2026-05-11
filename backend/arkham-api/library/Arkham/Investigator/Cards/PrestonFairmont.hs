@@ -56,8 +56,8 @@ instance RunMessage PrestonFairmont where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label "Resolve normally" []
-        : [Label "Automatically succeed" [SpendResources iid 2, PassSkillTest] | hasResources]
+        $ Label "$label.resolveNormally" []
+        : [Label "$label.automaticallySucceed" [SpendResources iid 2, PassSkillTest] | hasResources]
       pure i
     Blanked msg'@(SpendResources iid _) | iid == toId attrs -> runMessage msg' i
     SpendResources iid n | iid == toId attrs -> do

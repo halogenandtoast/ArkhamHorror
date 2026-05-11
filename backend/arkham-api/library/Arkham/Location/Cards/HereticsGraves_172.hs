@@ -27,7 +27,7 @@ instance HasAbilities HereticsGraves_172 where
       a
       [ mkAbility a 1
           $ forced
-          $ EnemyDefeated #after Anyone ByAny
+          $ IfEnemyDefeated #after Anyone ByAny
           $ enemyAt (toId a)
           <> EnemyWithTrait Witch
       , scenarioI18n $ hauntedI "hereticsGraves_172.haunted" a 2

@@ -31,10 +31,10 @@ instance RunMessage CleanSweep where
         guard (clues == 1)
         locations <- lift $ getAccessibleLocations iid attrs
         guard (notNull locations)
-        lift $ additionalSkillTestOption "Clean sweep" do
+        lift $ skillTestCardOption attrs do
           chooseOneM iid do
-            labeled "Do not move" nothing
-            labeled "Move to a connecting location" do
+            labeledI "doNotMove" nothing
+            labeledI "moveToConnecting" do
               chooseTargetM iid locations $ moveTo attrs iid
       pure e
     _ -> CleanSweep <$> liftRunMessage msg attrs

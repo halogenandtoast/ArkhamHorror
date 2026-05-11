@@ -2,6 +2,7 @@ module Arkham.Event.Events.TrialByFire3 (trialByFire3, TrialByFire3 (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Modifier
 import Arkham.SkillType
 
@@ -15,10 +16,10 @@ trialByFire3 = event TrialByFire3 Cards.trialByFire3
 instance RunMessage TrialByFire3 where
   runMessage msg e@(TrialByFire3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      chooseOneM iid do
-        labeled "Set the base value of each of your skills to 5" do
+      chooseOneM iid $ cardI18n $ scope "trialByFire" do
+        labeled' "all" do
           turnModifiers iid attrs iid $ map (`BaseSkillOf` 5) allSkills
-        labeled "Set the base value of one of your skills to 7" do
+        labeled' "one" do
           chooseOneM iid do
             for_ allSkills \skill -> do
               skillLabeled skill $ turnModifier iid attrs iid $ BaseSkillOf skill 7

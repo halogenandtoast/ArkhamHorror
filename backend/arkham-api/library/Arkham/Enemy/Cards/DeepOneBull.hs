@@ -20,7 +20,7 @@ instance HasAbilities DeepOneBull where
     extend
       a
       [ forcedAbility a 1 $ EnemyEngaged #after You (be a)
-      , forcedAbility a 2 $ EnemyDefeated #after investigator ByAny (not_ (be a) <> EnemyWithTrait DeepOne)
+      , forcedAbility a 2 $ IfEnemyDefeated #after investigator ByAny (not_ (be a) <> EnemyWithTrait DeepOne)
       ]
    where
     investigator = if a.exhausted then Anyone else at_ (not_ $ locationWithEnemy a.id)

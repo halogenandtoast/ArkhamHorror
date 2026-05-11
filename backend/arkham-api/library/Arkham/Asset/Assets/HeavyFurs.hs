@@ -17,7 +17,7 @@ instance HasAbilities HeavyFurs where
   getAbilities (HeavyFurs attrs) =
     [ controlled attrs 1 (DuringSkillTest $ YourSkillTest #any)
         $ triggered
-          (RevealChaosToken #after You (not_ #autofail <> IsSymbol))
+          (RevealChaosToken #cancel You (not_ #autofail <> IsSymbol))
           (DamageCost (attrs.ability 1) (toTarget attrs) 1)
     ]
 

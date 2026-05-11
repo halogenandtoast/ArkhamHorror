@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -32,12 +33,11 @@ instance RunMessage CyclopeanHammer5 where
           withSkillTestTargetedEnemy \enemy -> do
             chooseOrRunOneM iid do
               when (n >= 3) do
-                labeled
-                  "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you."
+                (cardI18n $ labeled' "cyclopeanHammer5.exhaustForExtraDamage")
                   do
                     exhaustThis attrs
                     doStep 1 msg
-              labeled "Do not exhaust" do
+              labeledI "doNotExhaust" do
                 whenM (enemy <=~> NonEliteEnemy) do
                   choices <-
                     select
@@ -45,10 +45,10 @@ instance RunMessage CyclopeanHammer5 where
                       <> LocationCanBeEnteredBy enemy
                   when (notNull choices) do
                     chooseOneM iid do
-                      labeled "Do not move enemy" nothing
-                      labeled "Move enemy" do
+                      (cardI18n $ labeled' "cyclopeanHammer5.doNotMoveEnemy") nothing
+                      (cardI18n $ labeled' "cyclopeanHammer5.moveEnemy") do
                         chooseOneM iid do
-                          questionLabeled "Move enemy away"
+                          questionLabeled "$label.cards.cyclopeanHammer5.moveEnemyAway"
                           targets choices (push . EnemyMove enemy)
         else doStep 1 msg
       pure a
@@ -65,10 +65,10 @@ instance RunMessage CyclopeanHammer5 where
                   (LocationCanBeEnteredBy enemy <> not_ (locationWithInvestigator iid))
             when (notNull choices) do
               chooseOneM iid do
-                labeled "Do not move enemy" nothing
-                labeled "Move enemy" do
+                (cardI18n $ labeled' "cyclopeanHammer5.doNotMoveEnemy") nothing
+                (cardI18n $ labeled' "cyclopeanHammer5.moveEnemy") do
                   chooseOneM iid do
-                    questionLabeled "Move enemy away"
+                    questionLabeled "$label.cards.cyclopeanHammer5.moveEnemyAway"
                     targets choices (push . EnemyMove enemy)
       pure a
     _ -> CyclopeanHammer5 <$> liftRunMessage msg attrs

@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.GrandEntryway (grandEntryway) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (resignAction)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -9,6 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheLairOfDagon.Helpers
 import Arkham.Trait (Trait (Cave))
 
 newtype GrandEntryway = GrandEntryway LocationAttrs
@@ -29,7 +30,7 @@ instance HasAbilities GrandEntryway where
   getAbilities (GrandEntryway attrs) =
     extendRevealed
       attrs
-      [ withTooltip "You've had enough of this place." $ resignAction attrs
+      [ scenarioI18n $ withI18nTooltip "grandEntryway.resign" $ resignAction attrs
       , restricted attrs 1 Here
           $ actionAbilityWithCost
           $ GroupSpendKeyCost PurpleKey (be attrs)

@@ -8,6 +8,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.Window (cardPlayed)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -57,13 +58,13 @@ instance RunMessage ChuckFergus5 where
         when (n' > 0) $ do
           chooseNM iid n' do
             when canAffordActionCost do
-              labeled "That event gains fast" $ eventModifier attrs card $ BecomesFast FastPlayerWindow
+              (cardI18n $ labeled' "chuckFergus5.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
 
             when canAffordCost do
-              labeled "That event costs 2 fewer resources to play." do
+              (cardI18n $ labeled' "chuckFergus5.thatEventCosts2FewerResourcesToPlay") do
                 eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
 
-            labeled "You get +2 skill value while performing a skill test during the resolution of that event." do
+            (cardI18n $ labeled' "chuckFergus5.gain2SkillValue") do
               eventModifier attrs iid $ AnySkillValue 2
 
       pure a

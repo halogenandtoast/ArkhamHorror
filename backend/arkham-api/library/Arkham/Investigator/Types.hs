@@ -30,6 +30,7 @@ import Arkham.Discard
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Helpers
+import Arkham.I18n
 import Arkham.Id
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Cards
@@ -582,7 +583,7 @@ instance HasAbilities Investigator where
           actionAbility
       | notNull (investigatorKeys $ toAttrs a)
       ]
-        <> [ withTooltip "Give Seal"
+        <> [ withI18n (withI18nTooltip "giveSeal")
                $ restricted
                  i
                  501
@@ -590,7 +591,7 @@ instance HasAbilities Investigator where
                  actionAbility
            | notNull (investigatorSeals $ toAttrs a)
            ]
-        <> [ withTooltip "Take Seal"
+        <> [ withI18n (withI18nTooltip "takeSeal")
                $ restricted
                  i
                  502

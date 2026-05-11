@@ -49,7 +49,7 @@ instance RunMessage DisciplineBalanceOfBody where
           <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
 
       chooseOrRunOneM iid do
-        labeled "Take no more actions" nothing
+        labeledI "takeNoMoreActions" nothing
         for_ (filter ((`notElem` chosenAbilities meta) . (.different)) abilities') \ab -> do
           abilityLabeled iid (overCost (`decreaseActionCost` 1) ab) do
             handleTarget iid (toSource attrs) (AbilityTarget iid ab.ref)

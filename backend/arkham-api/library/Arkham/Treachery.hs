@@ -933,4 +933,43 @@ allTreacheries =
         SomeTreacheryCard yaztaroth
       , --- Dark Revelations
         SomeTreacheryCard liberOmniumFinium
+      , --- Core 2026
+        --- Cosmic Evils
+        SomeTreacheryCard cosmicEvils
+      , --- Eldritch Lore
+        SomeTreacheryCard unspeakableTruths
+      , SomeTreacheryCard forbiddenSecrets
+      , --- Hallucinations
+        SomeTreacheryCard extraplanarVisions
+      , SomeTreacheryCard wildCompulsion
+      , --- Fire!
+        SomeTreacheryCard fire1
+      , SomeTreacheryCard noxiousSmoke
+      , --- Mad Science
+        SomeTreacheryCard mutated1
+      , --- Arcane Lock
+        SomeTreacheryCard arcaneLock
+      , --- Bad Weather
+        SomeTreacheryCard downpour_BadWeather
+      , SomeTreacheryCard flashFlood
+      , --- Dead Ends
+        SomeTreacheryCard raisingSuspicions
+      , SomeTreacheryCard redHerring
+      , --- Torment
+        SomeTreacheryCard aerialPursuit
+      , --- Gangs of Arkham
+        SomeTreacheryCard crossfire
+      , --- Whippoorwills (Chapter 2)
+        SomeTreacheryCard eagerForDeath2
+      , --- Cultists
+        SomeTreacheryCard blasphemousInvocation
+      , --- Reeking Decay
+        SomeTreacheryCard unnaturalDecay
+      , SomeTreacheryCard putridVapors
+      , --- Flying Terrors
+        SomeTreacheryCard languor
+      , SomeTreacheryCard dissonance
+      , SomeTreacheryCard torment
+      , SomeTreacheryCard markOfElokoss
+      , SomeTreacheryCard ashenRebirth
       ]

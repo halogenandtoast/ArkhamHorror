@@ -36,7 +36,7 @@ instance RunMessage JimCulver where
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) do
         chooseOneM iid do
-          labeled "Resolve as {elderSign}" nothing
-          labeled "Resolve as {skull}" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]
+          labeledI "resolveAsElderSign" nothing
+          labeledI "resolveAsSkull" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]
       pure i
     _ -> JimCulver <$> liftRunMessage msg attrs

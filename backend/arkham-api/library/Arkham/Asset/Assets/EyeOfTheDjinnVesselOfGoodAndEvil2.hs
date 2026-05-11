@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (getSkillTestId, getSkillTestSkillTypes, withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn, RevealChaosToken, SkillTestEnded)
 import Arkham.Modifier
 
@@ -69,7 +70,7 @@ instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2Effect where
               disable attrs
               readyThis aid
           InvestigatorTarget iid -> when (token.face == #curse) do
-            send "Gained 1 action from Eye of the Djinn"
+            send (withI18n $ ikey' "cards.label.eyeOfTheDjinnVesselOfGoodAndEvil2.gainedAction")
             disable attrs
             gainActions iid attrs.source 1
           _ -> error "Invalid target"

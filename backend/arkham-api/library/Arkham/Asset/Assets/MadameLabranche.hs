@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype MadameLabranche = MadameLabranche AssetAttrs
@@ -15,10 +16,10 @@ madameLabranche = ally MadameLabranche Cards.madameLabranche (2, 2)
 
 instance HasAbilities MadameLabranche where
   getAbilities (MadameLabranche attrs) =
-    [ withTooltip "{fast} If you have no cards in your hand, exhaust Madame Labranche: Draw 1 card."
+    [ (cardI18n $ withI18nTooltip "madameLabranche.fastIfYou")
         $ controlled attrs 1 (youExist $ HandWith (LengthIs $ EqualTo $ Static 0))
         $ FastAbility (exhaust attrs)
-    , withTooltip "{fast} If you have no resources, exhaust Madame Labranche: Gain 1 resource."
+    , (cardI18n $ withI18nTooltip "madameLabranche.fastIfYou2")
         $ controlled attrs 2 (youExist $ InvestigatorWithResources (EqualTo $ Static 0))
         $ FastAbility (exhaust attrs)
     ]

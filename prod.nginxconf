@@ -6,6 +6,25 @@ http {
     '' close;
   }
 
+  gzip on;
+  gzip_static on;
+  gzip_vary on;
+  gzip_comp_level 6;
+  gzip_min_length 1024;
+  gzip_proxied any;
+  gzip_types
+    application/json
+    application/javascript
+    application/xml
+    application/rss+xml
+    application/atom+xml
+    application/wasm
+    image/svg+xml
+    text/css
+    text/javascript
+    text/plain
+    text/xml;
+
   server {
     listen 3000;
     server_name .arkhamhorror.app;

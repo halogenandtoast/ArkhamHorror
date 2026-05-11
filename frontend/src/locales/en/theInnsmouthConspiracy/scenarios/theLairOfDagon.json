@@ -1,8 +1,16 @@
 {
   "heading": "Scenario VII",
+  "label": {
+    "discardTwoCards": "Discard 2 cards from your hand",
+    "discardAsset": "Discard an asset you control",
+    "takeControlOfThomasDawson": "Choose investigator to take control of Thomas Dawson",
+    "tellOceirosNothing": "Tell Oceiros nothing",
+    "lieToOceiros": "Lie to Oceiros",
+    "tellOceirosEverything": "Tell Oceiros everything"
+  },
   "intro1": {
     "title": "Scenario VII: The Lair of Dagon",
-    "body": "<header><p>THURSDAY, SEPTEMBER 15, 1927</p><p>ONE WEEK EARLIER</p></header><p><b>Intro 1:</b> You stand outside the cracked marble steps leading up to the masonic hall of the Esoteric Order of Dagon. All of your evidence has lead you here. Whatever is going on in this town, this Order is behind it. You’re sure of it… though their ultimate goal remains a mystery.</p><p>The town is eerily quiet as you stand before the building’s entrance. Once, this place might have been impressive and opulent. Years of disrepair and flood damage have reduced it to to near-ruin. Its once-white paint is gray and peeling, and many of the pillars outside the entryway are beginning to crumble. Still, it is one of the more intimidating places in Innsmouth, projecting authority despite its decrepitude. No, not authority—something darker. A looming, unspoken threat.</p><p>“Are you ready?” Agent Dawson asks. His usually calm demeanor has vanished, replaced with a humorless gravity that throws you off guard. “This is it. This is where we’ll find answers.”</p><p>You’re not so sure. Every other lead you’ve followed has led to only more questions.</p>"
+    "body": "<header><p>THURSDAY, SEPTEMBER 15, 1927</p><p>ONE WEEK EARLIER</p></header><p><b>Intro 1:</b> You stand outside the cracked marble steps leading up to the masonic hall of the Esoteric Order of Dagon. All of your evidence has lead you here. Whatever is going on in this town, this Order is behind it. You’re sure of it… though their ultimate goal remains a mystery.</p><p>The town is eerily quiet as you stand before the building’s entrance. Once, this place might have been impressive and opulent. Years of disrepair and flood damage have reduced it to near-ruin. Its once-white paint is gray and peeling, and many of the pillars outside the entryway are beginning to crumble. Still, it is one of the more intimidating places in Innsmouth, projecting authority despite its decrepitude. No, not authority—something darker. A looming, unspoken threat.</p><p>“Are you ready?” Agent Dawson asks. His usually calm demeanor has vanished, replaced with a humorless gravity that throws you off guard. “This is it. This is where we’ll find answers.”</p><p>You’re not so sure. Every other lead you’ve followed has led to only more questions.</p>"
   },
   "intro2": {
     "title": "Scenario VII: The Lair of Dagon",
@@ -60,5 +68,28 @@
     "unlockedTheEntranceToTheCaves": "Unlocked the entrance to the caves",
     "unlockedTheThirdFloor": "Unlocked the third floor",
     "unlockedTheFinalDepths": "Unlocked the final depths"
+  },
+  "hallOfLoyalty": {
+    "label": {
+      "addBlessTokens": "Add 4 {'{'}bless{'}'} tokens",
+      "addBlessTokensPartial": "Add 4 (actual {actual}) {'{'}bless{'}'} tokens"
+    }
+  },
+  "lairOfDagon": {
+    "label": {
+      "doNotSpendKey": "Do not spend key",
+      "spendKey": "Spend {key}"
+    }
+  },
+  "whatLurksBelow": {
+    "label": {
+      "doNotTakeKey": "Do not take a key",
+      "takeKey": "Take {key} key"
+    }
+  },
+  "tooltips": {
+    "grandEntryway": {
+      "resign": "You've had enough of this place."
+    }
   }
 }

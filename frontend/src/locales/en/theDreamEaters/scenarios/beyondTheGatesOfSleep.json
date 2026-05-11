@@ -1,5 +1,11 @@
 {
   "heading": "Scenario I-A",
+  "thePath": {
+    "label": {
+      "stepBack": "Step back and watch this surreal scene play out.",
+      "interrupt": "Interrupt the scarred cat and handle this yourself."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of cards in your hand (rounded up).",
@@ -10,6 +16,23 @@
       "skull": "-X. X is the number of cards in your hand.",
       "cultist": "-X. X is the number of revealed _Woods_ locations.",
       "tablet": "-2. If this is an attack or evasion attempt against a swarming enemy, add 1 swarm card to it."
+    }
+  },
+  "label": {
+    "doNotReplace": "Do not replace",
+    "doNotTakeAny": "Do not take any",
+    "replaceWeaknessQuestion": "Replace basic weakness with random and take 1 trauma of your choice?",
+    "chooseUpToTacticSupply": "Choose up to {count} Tactic and/or Supply cards and begin this scenario with them as additional cards in your opening hand."
+  },
+  "enchantedWoodsTheMoonTree": {
+    "label": {
+      "loseAllActions": "Lose all remaining actions"
+    }
+  },
+  "journeyThroughTheGates": {
+    "label": {
+      "testWillpower": "Test {'{'}willpower{'}'} (3) to remember that this is all a dream",
+      "doNotTest": "Do not test"
     }
   }
 }

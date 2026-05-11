@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Healing
 import Arkham.Helpers.Window (getDamageOrHorrorSource, getTotalDamageAmounts)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Taboo
@@ -50,9 +51,9 @@ instance RunMessage SpectralShield where
         AttachedToInvestigator iid -> do
           (damage, horror) <- getDamageAmounts iid
           if
-            | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelDamage iid 1
-                labeled "Cancel 1 Horror" $ push $ CancelHorror iid 1
+            | damage > 0 && horror > 0 -> chooseOneM iid $ withI18n $ countVar 1 do
+                labeledI "cancelDamage" $ push $ CancelDamage iid 1
+                labeledI "cancelHorror" $ push $ CancelHorror iid 1
             | damage > 0 -> push $ CancelDamage iid 1
             | horror > 0 -> push $ CancelHorror iid 1
             | otherwise -> pure ()
@@ -60,17 +61,24 @@ instance RunMessage SpectralShield where
           let (damage, horror) = findWithDefault (0, 0) dSource (getTotalDamageAmounts aid ws)
           iid <- fromMaybe iid' <$> field AssetOwner aid
           if
-            | damage > 0 && horror > 0 -> chooseOneM iid do
-                labeled "Cancel 1 Damage" $ push $ CancelAssetDamage aid dSource 1
-                labeled "Cancel 1 Horror" $ push $ CancelAssetHorror aid dSource 1
+            | damage > 0 && horror > 0 -> chooseOneM iid $ withI18n $ countVar 1 do
+                labeledI "cancelDamage" $ push $ CancelAssetDamage aid dSource 1
+                labeledI "cancelHorror" $ push $ CancelAssetHorror aid dSource 1
             | damage > 0 -> push $ CancelAssetDamage aid dSource 1
             | horror > 0 -> push $ CancelAssetHorror aid dSource 1
             | otherwise -> pure ()
         _ -> error "unpexpected placement"
 
+      cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
+      doStep 1 msg
+      pure e
+    DoStep 1 (UseThisAbility _iid' (isSource attrs -> True) 1) -> do
       chargeAssets <- select $ assetControlledBy attrs.owner <> AssetWithUses Charge
       if null chargeAssets
-        then toDiscard (attrs.ability 1) attrs
+        then do
+          -- a bit of a hack here but with abilities like Diana's this card can
+          -- leave play before we get to this step, in that case we skip this
+          when attrs.placement.isInPlay $ toDiscard (attrs.ability 1) attrs
         else chooseOneM attrs.owner do
           targets chargeAssets \chargeAsset -> removeTokens (attrs.ability 1) chargeAsset Charge 1
       pure e

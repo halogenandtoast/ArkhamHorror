@@ -132,11 +132,11 @@ instance RunMessage LukeRobinson where
           let lids = map fst $ filter (elem card . snd) lukePlayable
           chooseOrRunOneM iid do
             when playable do
-              labeled "Play at current location" do
+              labeledI "playAtCurrentLocation" do
                 doStep 1 msg
                 playCard
             when (notNull lids) do
-              labeled "Play at connecting location" $ do
+              labeledI "playAtConnectingLocation" $ do
                 handleTarget iid attrs attrs
                 chooseOrRunOneM iid do
                   targets lids \lid -> do

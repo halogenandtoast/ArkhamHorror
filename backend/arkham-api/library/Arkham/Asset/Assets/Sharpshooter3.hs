@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Field
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -29,8 +30,7 @@ instance RunMessage Sharpshooter3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       anyFightableWithEvade <- selectAny $ CanFightEnemy (toAbilitySource attrs 1) <> EnemyWithEvade
       chooseOrRunOneM iid do
-        labeled
-          "This attack uses {agility} instead of {combat}. All modifiers to your {combat} for this attack modify your instead."
+        (cardI18n $ labeled' "sharpshooter3.attackUsesAlt")
           do
             thisSkillTestModifiers
               iid
@@ -38,13 +38,13 @@ instance RunMessage Sharpshooter3 where
               iid
               [UseSkillInsteadOf #combat #agility, SkillModifiersAffectOtherSkill #combat #agility]
         when anyFightableWithEvade do
-          labeled "Use the attacked enemy's evade value for this attack, instead of their fight value." do
+          (cardI18n $ labeled' "sharpshooter3.useEnemyEvadeForAttack") do
             thisSkillTestModifier
               iid
               attrs
               iid
               (AlternateFightField (SomeField Field.EnemyEvade))
-          labeled "Do both" do
+          (cardI18n $ labeled' "sharpshooter3.doBoth") do
             thisSkillTestModifiers
               iid
               attrs

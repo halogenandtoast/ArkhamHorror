@@ -25,7 +25,7 @@ instance RunMessage InhabitantsOfTheVale where
 
       selectEach (investigatorAt peaksOfThok) $ \iid' -> do
         mDrawing <- Msg.drawCardsIfCan iid' attrs 2
-        for_ mDrawing $ \drawing -> chooseOne iid' [Label "Do no draw 2 cards" [], Label "Draw 2 cards" [drawing]]
+        for_ mDrawing $ \drawing -> chooseOne iid' [Label "$label.doNotDrawTwoCards" [], Label "$label.drawTwoCards" [drawing]]
 
       push $ DoStep 1 msg
       pure s

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype CombatTraining1 = CombatTraining1 AssetAttrs
@@ -16,10 +17,14 @@ combatTraining1 = assetWith CombatTraining1 Cards.combatTraining1 (sanityL ?~ 1)
 
 instance HasAbilities CombatTraining1 where
   getAbilities (CombatTraining1 x) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+    [ cardI18n
+        $ scope "combatTraining1"
+        $ withI18nTooltip "spendForCombat"
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+    , cardI18n
+        $ scope "combatTraining1"
+        $ withI18nTooltip "spendForAgility"
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlled x 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]

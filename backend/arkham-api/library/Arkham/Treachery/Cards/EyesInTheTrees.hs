@@ -1,12 +1,13 @@
 module Arkham.Treachery.Cards.EyesInTheTrees (eyesInTheTrees, EyesInTheTrees (..)) where
 
 import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorPlacement))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Plural
 import Arkham.Projection
+import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -36,8 +37,8 @@ instance RunMessage EyesInTheTrees where
 
       chooseOneM iid do
         when cards do
-          labeled ("Choose and discard " <> pluralize n "card") $ chooseAndDiscardCards iid attrs n
+          withI18n $ countVar n $ labeledI "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
         when (notNull assets) do
-          labeled "Discard an asset you control" $ chooseTargetM iid assets $ toDiscardBy iid attrs
+          scenarioI18n $ labeled' "discardAsset" $ chooseTargetM iid assets $ toDiscardBy iid attrs
       pure t
     _ -> EyesInTheTrees <$> liftRunMessage msg attrs

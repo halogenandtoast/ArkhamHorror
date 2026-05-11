@@ -165,10 +165,10 @@ instance RunMessage WhereTheGodsDwell where
           knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
           chooseOne
             lead
-            $ [ Label "Wake up" [R3]
-              , Label "Remain on the surface of the Dreamlands" [R4]
+            $ [ Label "$theDreamEaters.whereTheGodsDwell.label.wakeUp" [R3]
+              , Label "$theDreamEaters.whereTheGodsDwell.label.remainOnSurface" [R4]
               ]
-            <> [ Label "Venture into the Underworld to find your companions" [R5]
+            <> [ Label "$theDreamEaters.whereTheGodsDwell.label.ventureIntoUnderworld" [R5]
                | knowOfAnotherPath
                ]
         Resolution 2 -> do
@@ -180,10 +180,10 @@ instance RunMessage WhereTheGodsDwell where
           knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
           chooseOne
             lead
-            $ [ Label "Wake up" [R3]
-              , Label "Remain on the surface of the Dreamlands" [R4]
+            $ [ Label "$theDreamEaters.whereTheGodsDwell.label.wakeUp" [R3]
+              , Label "$theDreamEaters.whereTheGodsDwell.label.remainOnSurface" [R4]
               ]
-            <> [ Label "Venture into the Underworld to find your companions" [R5]
+            <> [ Label "$theDreamEaters.whereTheGodsDwell.label.ventureIntoUnderworld" [R5]
                | knowOfAnotherPath
                ]
         Resolution 3 -> do

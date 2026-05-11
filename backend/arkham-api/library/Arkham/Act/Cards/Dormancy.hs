@@ -17,13 +17,11 @@ dormancy :: ActCard Dormancy
 dormancy = act (1, A) Dormancy Cards.dormancy Nothing
 
 instance HasAbilities Dormancy where
-  getAbilities (Dormancy a) =
-    extend
-      a
-      [ restricted a 1 (exists $ "The Gate of Y'quaa" <> LocationWithAnyActiveSeal)
-          $ Objective
-          $ forced AnyWindow
-      ]
+  getAbilities = actAbilities \a ->
+    [ restricted a 1 (exists $ "The Gate of Y'quaa" <> LocationWithAnyActiveSeal)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage Dormancy where
   runMessage msg a@(Dormancy attrs) = runQueueT $ case msg of

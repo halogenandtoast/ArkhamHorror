@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Fight
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -46,8 +47,8 @@ instance RunMessage BritishBullDog2 where
           $ CanFightEnemyWithOverride
           $ CriteriaOverride canFightIgnoreAloof
       chooseOneM iid do
-        labeled "Use {agility}" $ push $ withSkillType #agility fight
-        labeled "Use {combat}" $ push fight
+        (withI18n $ skillVar #agility $ labeled' "useSkill") $ push $ withSkillType #agility fight
+        (withI18n $ skillVar #combat $ labeled' "useSkill") $ push fight
       pure a
     InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs

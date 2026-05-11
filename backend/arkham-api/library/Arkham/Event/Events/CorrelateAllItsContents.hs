@@ -20,7 +20,7 @@ instance HasAbilities CorrelateAllItsContents where
         $ restricted a 1 OwnsThis
         $ ConstantReaction
           "Cancel Token"
-          (RevealChaosToken #after You FirstChaosTokenRevealedThisSkillTest)
+          (RevealChaosToken #cancel You FirstChaosTokenRevealedThisSkillTest)
           Free
     ]
 

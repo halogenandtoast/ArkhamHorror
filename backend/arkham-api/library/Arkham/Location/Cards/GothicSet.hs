@@ -20,7 +20,7 @@ instance HasAbilities GothicSet where
       a
       [ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) (atLeast 1)
       , restricted a 2 (youExist $ InvestigatorWithHealableHorror (a.ability 2))
-          $ freeReaction (EnemyDefeated #after You ByAny $ enemyAt a)
+          $ freeReaction (IfEnemyDefeated #after You ByAny $ enemyAt a)
       ]
 
 instance RunMessage GothicSet where

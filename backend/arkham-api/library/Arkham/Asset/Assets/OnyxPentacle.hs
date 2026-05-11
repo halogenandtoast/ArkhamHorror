@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Evade
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -40,10 +41,9 @@ instance RunMessage OnyxPentacle where
       chooseOneM iid do
         when attrs.ready do
           forcedWhen isForced
-            $ labeled
-              "Exhaust Onyx Pentacle and place 1 doom on it to target any enemy at your location or a connecting location, and get +1 skill value for this evasion attempt."
+            $ (cardI18n $ labeled' "onyxPentacle.exhaustToTarget")
             $ doStep 1 msg
-        labeled "If you succeed by 2 or more, remove 1 doom from Onyx Pentacle." $ doStep 2 msg
+        (cardI18n $ labeled' "onyxPentacle.succeedBy2") $ doStep 2 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       exhaustThis attrs
@@ -59,8 +59,8 @@ instance RunMessage OnyxPentacle where
             , enemyAtLocationWith iid
             ]
       chooseOneM iid do
-        labeled "Use your {willpower}" $ push $ withSkillType #willpower evade
-        labeled "get +1 {agility}" do
+        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower evade
+        (withI18n $ countVar 1 $ skillVar #agility $ labeled' "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure a
@@ -68,8 +68,8 @@ instance RunMessage OnyxPentacle where
       sid <- getRandom
       evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOneM iid do
-        labeled "Use your {willpower}" $ push $ withSkillType #willpower evade
-        labeled "get +1 {agility}" do
+        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower evade
+        (withI18n $ countVar 1 $ skillVar #agility $ labeled' "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure $ overAttrs (setMetaKey "option2" True) a

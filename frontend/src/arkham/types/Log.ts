@@ -24,11 +24,14 @@ export type LogKey=
   | { tag: string, contents: { tag: string } }
   | { tag: string }
 
+export type CampaignOptionTag = { tag: string }
+
 export type LogContents = {
   recorded: LogKey[];
   recordedSets: Record<string, any[]>; // eslint-disable-line
   recordedCounts: [LogKey, number][]; // eslint-disable-line
   partners: Record<string, Partner>;
+  options: CampaignOptionTag[];
 }
 
 export const partnerStatusDecoder = JsonDecoder.oneOf<PartnerStatus>([
@@ -70,6 +73,10 @@ export const logKeyDecoder = JsonDecoder.oneOf<LogKey>([
   }, 'LogKey'),
 ], 'LogKey');
 
+const campaignOptionTagDecoder = JsonDecoder.object<CampaignOptionTag>({
+  tag: JsonDecoder.string(),
+}, 'CampaignOptionTag');
+
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<LogKey>(logKeyDecoder, 'LogKey[]'),
   recordedSets: JsonDecoder.array<[LogKey, any[]]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.array(someRecordableDecoder.map((res) => res.recordVal), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, any][]').map<Record<string, any>>(res => { // eslint-disable-line
@@ -79,6 +86,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
   }),
   recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number()], '[LogKey, number]'), '[LogKey, number][]'),
   partners: JsonDecoder.record<Partner>(partnerDecoder, 'Partners'),
+  options: JsonDecoder.array<CampaignOptionTag>(campaignOptionTagDecoder, 'CampaignOptionTag[]'),
 }, 'LogContents');
 
 export function baseKey(k: string): string {
@@ -101,7 +109,7 @@ function isNestedContents(x: unknown): x is { tag: string; contents: string } {
 }
 
 export function formatKey(key: LogKey): string {
-  const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1)
+  const format = (str: string) => (str.slice(0, 1).toLowerCase() + str.slice(1)).replace(/'/g, '')
 
   // remove 'Key' from the end of the tag if it exists
   const prefix = format(key.tag.replace(/Key$/, ""))

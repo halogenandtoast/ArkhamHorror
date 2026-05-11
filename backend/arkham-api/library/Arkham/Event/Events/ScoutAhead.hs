@@ -22,7 +22,7 @@ instance RunMessage ScoutAhead where
     DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) | n > 0 -> do
       locations <- getAccessibleLocations iid attrs
       chooseOneM iid do
-        labeled "Done Moving" nothing
+        labeledI "doneMoving" nothing
         targets locations \lid -> do
           moveTo attrs iid lid
           doStep (n - 1) msg'

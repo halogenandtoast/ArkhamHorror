@@ -113,6 +113,9 @@ instance HasField "blue" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) w
 instance HasField "green" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
   getField f = extendModifiers GreenEntry . f
 
+instance HasField "codex" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
+  getField f = extendModifiers CodexEntry . f
+
 instance HasField "bordered" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
   getField f = extendModifiers BorderedEntry . f
 

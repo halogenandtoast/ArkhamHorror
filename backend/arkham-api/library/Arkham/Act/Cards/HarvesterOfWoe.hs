@@ -50,11 +50,11 @@ instance RunMessage HarvesterOfWoe where
     DoStep n (DoStep damage (DoStep horror msg'@(UseThisAbility iid (isSource attrs -> True) 1))) -> do
       when (n > 0 && damage + horror > 0) do
         if damage > 0 && horror > 0
-          then chooseOneM iid do
-            labeled "Cancel 1 damage" do
+          then chooseOneM iid $ scenarioI18n do
+            labeled' "harvesterOfWoe.cancelDamage" do
               cancelInvestigatorDamage iid 1
               doStep (n - 1) (DoStep (damage - 1) (DoStep horror msg'))
-            labeled "Cancel 1 horror" do
+            labeled' "harvesterOfWoe.cancelHorror" do
               cancelInvestigatorHorror iid 1
               doStep (n - 1) (DoStep damage (DoStep (horror - 1) msg'))
           else do

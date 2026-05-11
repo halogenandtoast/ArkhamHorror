@@ -34,8 +34,8 @@ instance RunMessage SinEater3 where
 
       when (canReady || canHaveCharge) do
         chooseOrRunOne iid
-          $ [Label "Ready Asset" [Ready (toTarget aid)] | canReady]
-          <> [Label "Add Charge" [AddUses (attrs.ability 1) aid Charge 1] | canHaveCharge]
+          $ [Label "$label.cards.sinEater3.readyAsset" [Ready (toTarget aid)] | canReady]
+          <> [Label "$label.cards.sinEater3.addCharge" [AddUses (attrs.ability 1) aid Charge 1] | canHaveCharge]
 
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

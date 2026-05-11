@@ -21,7 +21,7 @@ instance HasAbilities ServantOfManyMouths where
     extend1 a
       $ restricted a 1 (exists $ LocationWithDiscoverableCluesBy You)
       $ SilentForcedAbility
-      $ EnemyDefeated #after You ByAny (be a)
+      $ IfEnemyDefeated #after You ByAny (be a)
 
 instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = runQueueT $ case msg of

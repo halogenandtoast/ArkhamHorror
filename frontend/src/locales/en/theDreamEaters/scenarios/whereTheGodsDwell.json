@@ -1,5 +1,14 @@
 {
   "heading": "Scenario IV-A",
+  "theEyeOfChaos": {
+    "label": {
+      "choose": "Choose:",
+      "nyarlathotepAttackOnce": "Nyarlathotep immediately attacks you and is shuffled into the encounter deck.",
+      "nyarlathotepAttackThrice": "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand.",
+      "shuffled": "Nyarlathotep immediately attacks you and is shuffled into the encounter deck.",
+      "returned": "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of the current act.",
@@ -41,5 +50,17 @@
   "remembered": {
     "maneuveredThePriestCloser": "Maneuvered the high priest closer.",
     "stunnedThePriest": "Stunned the priest."
+  },
+  "label": {
+    "wakeUp": "Wake up",
+    "remainOnSurface": "Remain on the surface of the Dreamlands",
+    "ventureIntoUnderworld": "Venture into the Underworld to find your companions"
+  },
+  "theShapeOfChaos": {
+    "label": {
+      "choose": "Choose:",
+      "shuffled": "Nyarlathotep immediately attacks you and is shuffled into the encounter deck.",
+      "returned": "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+    }
   }
 }

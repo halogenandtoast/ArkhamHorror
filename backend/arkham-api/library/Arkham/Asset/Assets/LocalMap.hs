@@ -37,8 +37,8 @@ instance RunMessage LocalMap where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) | attrs.ready -> do
       whenJustM getSkillTestTargetedLocation \loc -> do
         whenM (getCanMoveTo iid (attrs.ability 1) loc) do
-          chooseOneM iid do
-            labeled "Exhaust Local Map and move to the investigated location" do
+          chooseOneM iid $ cardI18n $ scope "localMap" do
+            labeled' "exhaustAndMove" do
               exhaustThis attrs
               moveTo (attrs.ability 1) iid loc
             withI18n skip_

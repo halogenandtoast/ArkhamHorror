@@ -9,6 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
+import Arkham.I18n (cardNameVar, withI18n)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -111,9 +112,9 @@ instance RunMessage ReturnToUndimensionedAndUnseen where
       eachInvestigator \iid -> do
         mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
         for_ mcard $ \card -> do
-          chooseOneM iid do
-            labeled "Play Powder of Ibn-Ghazi" $ putCardIntoPlay iid card
-            labeled "Do no play Powder of Ibn-Ghazi" nothing
+          chooseOneM iid $ withI18n $ cardNameVar card do
+            labeled' "playName" $ putCardIntoPlay iid card
+            labeled' "doNotPlayName" nothing
         unlessStandalone do
           searchCollectionForRandom iid attrs
             $ BasicWeaknessCard

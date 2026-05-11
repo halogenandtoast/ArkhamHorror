@@ -58,13 +58,13 @@ const tabooList = computed(() => {
         <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
       </div>
       <div class="deck-actions" @click.stop>
-        <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB">
+        <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')">
           <font-awesome-icon icon="external-link" />
         </a>
-        <a v-if="deck.url && sync" class="action-btn" href="#" title="Sync deck" @click.prevent="sync">
+        <a v-if="deck.url && sync" class="action-btn" href="#" :title="$t('deck.syncDeck')" @click.prevent="sync">
           <font-awesome-icon icon="refresh" />
         </a>
-        <a v-if="markDelete" class="action-btn action-btn--delete" href="#" title="Delete deck" @click.prevent="markDelete">
+        <a v-if="markDelete" class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="markDelete">
           <font-awesome-icon icon="trash" />
         </a>
       </div>

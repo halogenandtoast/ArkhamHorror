@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -24,14 +25,13 @@ instance RunMessage CeremonialSickle where
       sid <- getRandom
       chooseOneM iid do
         when attrs.ready do
-          labeled
-            "Exhaust Ceremonial Sickle and place 1 doom on it to get +1 skill value and deal +1 damage for this attack."
+          (cardI18n $ labeled' "ceremonialSickle.exhaustForBoost")
             $ doStep 1 msg
-        labeled "If this attack defeats an enemy, remove 1 doom from Ceremonial Sickle" $ doStep 2 msg
+        (cardI18n $ labeled' "ceremonialSickle.onDefeatEnemy") $ doStep 2 msg
       fight <- mkChooseFight sid iid (attrs.ability 1)
       chooseOneM iid do
-        labeled "Use your {willpower}" $ push $ withSkillType #willpower fight
-        labeled "get +1 {combat}" do
+        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower fight
+        (withI18n $ countVar 1 $ skillVar #combat $ labeled' "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
           push fight
       pure $ overAttrs (unsetMetaKey "option2") a

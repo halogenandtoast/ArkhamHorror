@@ -41,5 +41,5 @@ instance RunMessage ShieldOfFaith2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs
-      pure a
+      pure $ ShieldOfFaith2 $ attrs & setMeta False
     _ -> ShieldOfFaith2 <$> liftRunMessage msg attrs

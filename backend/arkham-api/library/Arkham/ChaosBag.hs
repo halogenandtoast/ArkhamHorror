@@ -26,7 +26,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Tracing
-import Arkham.Window (Window (..), mkAfter, mkWhen)
+import Arkham.Window (Window (..), mkAfter, mkCancel, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 import Data.Map.Strict qualified as Map
@@ -686,8 +686,8 @@ instance RunMessage ChaosBag where
                     [ FocusChaosTokens [token]
                     , chooseOne
                         player
-                        [ Label "Remove to Token Pool" [UnfocusChaosTokens, removeWindowMessage]
-                        , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
+                        [ Label "$label.chaosTokenRemoveToPool" [UnfocusChaosTokens, removeWindowMessage]
+                        , Label "$label.chaosTokenReturnToBag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
                         ]
                     ]
 
@@ -846,19 +846,23 @@ instance RunMessage ChaosBag where
               _ -> False
 
           checkWindowMsgs <- case miid of
-            Just iid ->
-              (\x y -> [x, y])
-                <$> checkWindows
-                  [ mkWhen (Window.RevealChaosToken iid token)
-                  | token <- tokens'
-                  , not token.cancelled
-                  ]
-                <*> checkWindows
-                  [ mkAfter (Window.RevealChaosToken iid token)
-                  | not sourceIsSkillTest
-                  , token <- tokens'
-                  , not token.cancelled
-                  ]
+            Just iid -> do
+              cancelMsgs <-
+                traverse
+                  (\token -> checkWindows [mkCancel (Window.RevealChaosToken iid token)])
+                  [token | token <- tokens', not token.cancelled]
+              whenMsgs <-
+                traverse
+                  (\token -> checkWindows [mkWhen (Window.RevealChaosToken iid token)])
+                  [token | token <- tokens', not token.cancelled]
+              afterMsgs <-
+                if sourceIsSkillTest
+                  then pure []
+                  else
+                    traverse
+                      (\token -> checkWindows [mkAfter (Window.RevealChaosToken iid token)])
+                      [token | token <- tokens', not token.cancelled]
+              pure $ cancelMsgs <> whenMsgs <> afterMsgs
             Nothing -> pure []
           for_ miid \iid -> do
             investigator <- getAttrs @Investigator iid
@@ -914,7 +918,8 @@ instance RunMessage ChaosBag where
       push $ RequestChaosTokens s (Just iid) (Reveal 1) SetAside
       pure c
     FinalizeRequestedChaosTokens source miid -> do
-      for_ (Map.lookup source chaosBagPendingRequests) $ push . RequestedChaosTokens source miid
+      for_ (Map.lookup source chaosBagPendingRequests) \tokens ->
+        unless (null tokens) $ push (RequestedChaosTokens source miid tokens)
       -- why do we just clear the tokens and not the source? Because when
       -- dealing with a skill test we might want to draw more tokens later, but
       -- not include them in the tokens to reveal

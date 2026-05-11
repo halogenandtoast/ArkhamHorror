@@ -20,7 +20,7 @@ instance HasModifiersFor LoganHastingsBountyHunter where
 instance HasAbilities LoganHastingsBountyHunter where
   getAbilities (LoganHastingsBountyHunter a) =
     [ controlled a 1 (youExist can.gain.resources)
-        $ triggered (EnemyDefeated #after You ByAny AnyEnemy) (exhaust a)
+        $ triggered (IfEnemyDefeated #after You ByAny AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage LoganHastingsBountyHunter where

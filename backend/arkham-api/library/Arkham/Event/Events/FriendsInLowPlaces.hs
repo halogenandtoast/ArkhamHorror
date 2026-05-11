@@ -10,6 +10,7 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
@@ -45,8 +46,8 @@ instance RunMessage FriendsInLowPlaces where
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
       chooseOneM iid do
-        labeled "Shuffle Cards Back In" $ shuffleDeck iid
-        labeled "Place on the top of your deck, in any order" do
+        labeledI "shuffleCardsBackIn" $ shuffleDeck iid
+        labeledI "placeOnTopOfDeckInAnyOrder" do
           push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
       pure e
     SearchFound iid (isTarget attrs -> True) x cards -> do
@@ -56,7 +57,7 @@ instance RunMessage FriendsInLowPlaces where
       if attrs `hasCustomization` Versatile && notNull hasBothTraits && n > 0
         then do
           chooseOneM iid do
-            labeled "Do not add a card to your hand for free (Versatile)" $ doStep 0 msg
+            cardI18n $ scope "friendsInLowPlaces" $ labeled' "versatileSkip" $ doStep 0 msg
             for_ (eachWithRest hasBothTraits) \(card, cards') -> do
               targeting card do
                 when (attrs `hasCustomization` Bolstering) $ phaseModifier attrs card (AddSkillIcons [#wild])
@@ -66,8 +67,8 @@ instance RunMessage FriendsInLowPlaces where
         else doStep 0 msg
       if attrs `hasCustomization` Clever
         then chooseOneM iid do
-          labeled "Shuffle Cards Back In" $ shuffleDeck iid
-          labeled "Place on the top of your deck, in any order" do
+          labeledI "shuffleCardsBackIn" $ shuffleDeck iid
+          labeledI "placeOnTopOfDeckInAnyOrder" do
             push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
         else shuffleDeck iid
       pushWhen (attrs `hasCustomization` Swift) $ Do msg
@@ -76,7 +77,7 @@ instance RunMessage FriendsInLowPlaces where
       n <- getSpendableResources iid
       when (n > 0) do
         chooseOneM iid do
-          labeled "Do not spend 1 resource to add a card to your hand" nothing
+          cardI18n $ scope "friendsInLowPlaces" $ labeled' "doNotSpend" nothing
           for_ (eachWithRest cards) \(card, cards') -> do
             targeting card do
               push $ SpendResources iid 1
@@ -93,7 +94,7 @@ instance RunMessage FriendsInLowPlaces where
         playable <- filterM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid)) cards
         when (notNull playable) do
           chooseOneM iid do
-            labeled "Do no play cards (Swift)" nothing
+            cardI18n $ scope "friendsInLowPlaces" $ labeled' "swiftSkip" nothing
             targets playable (playCardPayingCost iid)
       pure e
     _ -> FriendsInLowPlaces . (`with` meta) <$> liftRunMessage msg attrs

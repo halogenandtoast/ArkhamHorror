@@ -63,6 +63,28 @@ import Data.List qualified as List
 import Data.List.Extra (nubOrd)
 import Data.Set qualified as Set
 
+hasSkillTestCost :: Cost -> Bool
+hasSkillTestCost = \case
+  SkillTestCost {} -> True
+  Costs xs -> any hasSkillTestCost xs
+  OrCost xs -> any hasSkillTestCost xs
+  OptionalCost x -> hasSkillTestCost x
+  CostWhenEnemy _ x -> hasSkillTestCost x
+  CostWhenTreachery _ x -> hasSkillTestCost x
+  CostWhenTreacheryElse _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostOnlyWhen _ x -> hasSkillTestCost x
+  CostIfEnemy _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostIfCustomization _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  CostIfRemembered _ a b -> hasSkillTestCost a || hasSkillTestCost b
+  UpTo _ x -> hasSkillTestCost x
+  AtLeastOne _ x -> hasSkillTestCost x
+  AsIfAtLocationCost _ x -> hasSkillTestCost x
+  NonBlankedCost x -> hasSkillTestCost x
+  LabeledCost _ x -> hasSkillTestCost x
+  XCost x -> hasSkillTestCost x
+  OneOfDistanceCost _ x -> hasSkillTestCost x
+  _ -> False
+
 getCanAffordCost
   :: (HasCallStack, HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
@@ -176,31 +198,41 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         pure $ x >= n
       AddCurseTokenCost n -> do
         x <- getRemainingCurseTokens
-        -- Are you Parallel Rex?
-        canParallelRex <-
-          iid
-            <=~> ( Matcher.InvestigatorIs "90078"
-                     <> Matcher.InvestigatorAt Matcher.Anywhere
-                     <> Matcher.InvestigatorWithAnyClues
-                 )
-        z <-
-          if canParallelRex
-            then fieldMap InvestigatorClues (* 2) iid
-            else pure 0
-        pure $ x + z >= n
+        if x >= n
+          then pure True
+          else
+            -- Parallel Rex's reaction only triggers when 2+ curse tokens would be added
+            if n < 2
+              then pure False
+              else do
+                canParallelRex <-
+                  iid
+                    <=~> ( Matcher.InvestigatorIs "90078"
+                             <> Matcher.InvestigatorAt Matcher.Anywhere
+                             <> Matcher.InvestigatorWithAnyClues
+                         )
+                if canParallelRex
+                  then do
+                    z <- fieldMap InvestigatorClues (* 2) iid
+                    pure $ x + z >= n
+                  else pure False
       AddCurseTokensCost n _ -> do
         x <- getRemainingCurseTokens
-        canParallelRex <-
-          iid
-            <=~> ( Matcher.InvestigatorIs "90078"
-                     <> Matcher.InvestigatorAt Matcher.Anywhere
-                     <> Matcher.InvestigatorWithAnyClues
-                 )
-        z <-
-          if canParallelRex
-            then fieldMap InvestigatorClues (* 2) iid
-            else pure 0
-        pure $ x + z >= n
+        if x >= n
+          then pure True
+          else do
+            canParallelRex <-
+              iid
+                <=~> ( Matcher.InvestigatorIs "90078"
+                         <> Matcher.InvestigatorAt Matcher.Anywhere
+                         <> Matcher.InvestigatorWithAnyClues
+                     )
+            if canParallelRex
+              then do
+                z <- fieldMap InvestigatorClues (* 2) iid
+                -- Smallest Rex-payable amount is max n 2; if that fits, the cost is affordable.
+                pure $ x + z >= max n 2
+              else pure False
       SkillTestCost {} -> pure True
       AsIfAtLocationCost lid c -> do
         withModifiers' iid (toModifiers source [AsIfAt lid])
@@ -400,29 +432,34 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         pure $ (clues + z) >= n
       GroupClueCost n locationMatcher -> do
         cost <- getPlayerCountValue n
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- getSpendableClueCount iids
         pure $ totalSpendableClues >= cost
       SameLocationGroupClueCost n locationMatcher -> do
         totalClues <- getPlayerCountValue n
-        select locationMatcher >>= anyM \lid -> do
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        select lm >>= anyM \lid -> do
           total <- getSpendableClueCount =<< select (Matcher.investigatorAt lid)
           pure $ total >= totalClues
       GroupResourceCost n locationMatcher -> do
         cost <- getPlayerCountValue n
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- sum <$> traverse getSpendableResources iids
         pure $ totalSpendableClues >= cost
       GroupDiscardCost n extendedCardMatcher locationMatcher -> do
         cost <- getPlayerCountValue n
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
         cards <-
           selectCount
-            $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt locationMatcher)
+            $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt lm)
             <> extendedCardMatcher
             <> Matcher.basic Matcher.DiscardableCard
         pure $ cards >= cost
       GroupClueCostRange (cost, _) locationMatcher -> do
-        iids <- select $ Matcher.InvestigatorAt locationMatcher
+        let lm = Matcher.replaceYouMatcher iid locationMatcher
+        iids <- select $ Matcher.InvestigatorAt lm
         totalSpendableClues <- getSpendableClueCount iids
         pure $ totalSpendableClues >= cost
       IncreaseCostOfThis cardId n -> do
@@ -480,6 +517,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DirectHorrorCost _ inner _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       DirectDamageAndHorrorCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       InvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
+      EachInvestigatorDamageCost _ inner _ _ -> selectAny (inner <> Matcher.InvestigatorWithoutModifier CannotBeDamaged) -- TODO: Make better
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better
       EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher

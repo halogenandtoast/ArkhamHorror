@@ -3,6 +3,7 @@ module Arkham.Location.Cards.DeckOfTheTheodosia (deckOfTheTheodosia) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -41,11 +42,11 @@ instance RunMessage DeckOfTheTheodosia where
   runMessage msg l@(DeckOfTheTheodosia attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       actions <- field InvestigatorRemainingActions iid
-      chooseOneM iid do
-        labeled "Give it +2 shroud for this investigation" do
+      chooseOneM iid $ scenarioI18n $ scope "deckOfTheTheodosia" do
+        labeled' "addShroud" do
           withSkillTest \sid ->
             skillTestModifier sid (attrs.ability 2) attrs (ShroudModifier 2)
         when (actions > 0) do
-          labeled "Spend 1 additional action" $ loseActions iid (attrs.ability 2) 1
+          labeled' "spendAdditionalAction" $ loseActions iid (attrs.ability 2) 1
       pure l
     _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageCards 1 msg attrs

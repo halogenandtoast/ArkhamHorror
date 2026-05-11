@@ -223,10 +223,9 @@ instance RunMessage TheUnspeakableOath where
         (x : xs) -> do
           monster <- sample (x :| xs)
           chooseOneM iid do
-            labeled
-              "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
+            labeled' "placeMonsterUnderActDeck"
               $ placeUnderneath ActDeckTarget [monster]
-            labeled "This test automatically fails" failSkillTest
+            labeled' "thisTestAutomaticallyFails" failSkillTest
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

@@ -63,6 +63,19 @@ function sourceCardCode(source: Source) {
     return `${source.contents.replace('c', '')}`
   }
 
+  if (source.tag === 'AgendaSource') {
+    const agenda = props.game.agendas[source.contents]
+    if (!agenda) return null
+    const id = agenda.id
+    if (agenda.flipped) {
+      if (["c03276a", "c03279a"].includes(id)) {
+        return `${id.replace(/^c/, '')}b`
+      }
+      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
+    }
+    return `${id.replace(/^c/, '')}`
+  }
+
   return null
 }
 
@@ -88,24 +101,24 @@ const normalizeSkill = (skill: string) => {
 <template>
   <div class="modifier" :data-image-id="modifierSource">
     <template v-if="modifier.type.tag === 'CannotCommitCards'">
-      <span class="text">Cannot Commit Cards</span>
+      <span class="text">{{ $t('modifier.cannotCommitCards') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'Difficulty'">
       <span><template v-if="modifier.type.contents >= 0">+</template>{{modifier.type.contents}}</span>
-      Difficulty
+      {{ $t('modifier.difficulty') }}
     </template>
     <template v-else-if="modifier.type.tag === 'CancelEffects'">
-      <span class="text">Cancel Effects</span>
+      <span class="text">{{ $t('modifier.cancelEffects') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'CannotPerformSkillTest'">
-      <span class="text">Cannot Perform Skill Test</span>
+      <span class="text">{{ $t('modifier.cannotPerformSkillTest') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'DiscoveredClues'">
       <span>+{{modifier.type.contents}}</span>
       <img :src="imgsrc(`clue.png`)" />
     </template>
     <template v-else-if="modifier.type.tag === 'SkillTestResultValueModifier'">
-      <span class="text">Result</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
+      <span class="text">{{ $t('modifier.result') }}</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'DamageDealt'">
       <span>+{{modifier.type.contents}}</span>
@@ -134,28 +147,28 @@ const normalizeSkill = (skill: string) => {
     </template>
     <template v-else-if="modifier.type.tag === 'AnySkillValue'">
       <span>+ {{modifier.type.contents}}</span>
-      <span class="text">Skill Value</span>
+      <span class="text">{{ $t('modifier.skillValue') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'DoubleSuccess'">
-      <span class="text">Double Success</span>
+      <span class="text">{{ $t('modifier.doubleSuccess') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'DoubleDifficulty'">
-      <span class="text">Double Difficulty</span>
+      <span class="text">{{ $t('modifier.doubleDifficulty') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
-      <span class="text">May Ignore Location Effects</span>
+      <span class="text">{{ $t('modifier.mayIgnoreLocationEffects') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
-      <span class="text">Skill Icons Subtract</span>
+      <span class="text">{{ $t('modifier.skillIconsSubtract') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
-      <span class="text">Skill test automatically succeeds</span>
+      <span class="text">{{ $t('modifier.skillTestAutomaticallySucceeds') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
-      <span class="text">Reveal another chaos token</span>
+      <span class="text">{{ $t('modifier.revealAnotherChaosToken') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
-      <span class="text">Cancel matching chaos tokens and reveal another</span>
+      <span class="text">{{ $t('modifier.cancelMatchingChaosTokens') }}</span>
     </template>
     <template v-else-if="modifier.type.tag === 'HandSize'">
       <span class="text">{{modifier.type.contents > 0 ? "+" : "-"}}{{modifier.type.contents}} {{ t('handSize') }}</span>

@@ -115,6 +115,25 @@ function onDropDiscard(event: DragEvent) {
   }
 }
 
+function onDropDeck(event: DragEvent) {
+  event.preventDefault()
+  if (!debug.active) return
+  if (!event.dataTransfer) return
+  const data = event.dataTransfer.getData('text/plain')
+  if (!data) return
+  const json = JSON.parse(data)
+  if (json.tag !== 'CardTarget') return
+  const target = { tag: 'CardIdTarget', contents: json.contents }
+  const deckSig = { tag: 'InvestigatorDeck', contents: id.value }
+  if (event.shiftKey) {
+    debug.send(props.game.id, { tag: 'PutOnTopOfDeck', contents: [id.value, deckSig, target] })
+  } else if (event.altKey) {
+    debug.send(props.game.id, { tag: 'PutOnBottomOfDeck', contents: [id.value, deckSig, target] })
+  } else {
+    debug.send(props.game.id, { tag: 'ShuffleIntoDeck', contents: [deckSig, target] })
+  }
+}
+
 const dragover = (e: DragEvent) => {
   e.preventDefault()
   if (e.dataTransfer) {
@@ -172,7 +191,7 @@ watch(choices, async (newChoices) => {
   >
     <Card v-if="topOfDiscard" :class="{'discard--can-use': discardCardsAction === true}" :game="game" :card="topOfDiscard" :playerId="playerId" />
     <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
-    <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">Shuffle Back In</button>
+    <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">{{ $t('draw.shuffleBackIn') }}</button>
   </div>
   <CardRow
     v-if="showCards.ref.length > 0"
@@ -185,7 +204,12 @@ watch(choices, async (newChoices) => {
     @close="hideCards"
   />
   <div class="deck-container">
-    <div class="top-of-deck">
+    <div
+      class="top-of-deck"
+      @drop="onDropDeck($event)"
+      @dragover.prevent="dragover($event)"
+      @dragenter.prevent
+    >
       <Treachery
         v-if="topOfDeckTreachery"
         :treachery="topOfDeckTreachery"
@@ -204,11 +228,11 @@ watch(choices, async (newChoices) => {
         @click="emit('choose', drawCardsAction)"
       />
       <span class="deck-size">{{investigator.deckSize}}</span>
-      <button v-if="playTopOfDeckAction !== -1" @click="emit('choose', playTopOfDeckAction)">Play</button>
+      <button v-if="playTopOfDeckAction !== -1" @click="emit('choose', playTopOfDeckAction)">{{ $t('label.play') }}</button>
     </div>
     <template v-if="debug.active">
-      <button v-if="canSelectDraw" @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
-      <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {tag: 'InvestigatorDeck', contents: investigatorId}})">Shuffle</button>
+      <button v-if="canSelectDraw" @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">{{ $t('draw.selectDraw') }}</button>
+      <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {tag: 'InvestigatorDeck', contents: investigatorId}})">{{ $t('draw.shuffle') }}</button>
     </template>
   </div>
 </template>

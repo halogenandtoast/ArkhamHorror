@@ -178,9 +178,9 @@ instance RunMessage IceAndDeathPart2 where
 
       unless (null partners) do
         chooseOneM iid do
-          questionLabeled "Choose a partner for this scenario"
+          questionLabeledI "choosePartnerForScenario"
           when (length needsToBeTaken < remainingChoices) do
-            labeled "Do not take a partner" nothing
+            labeledI "doNotTakeAPartner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
@@ -292,7 +292,7 @@ instance RunMessage IceAndDeathPart2 where
       case r of
         NoResolution -> do
           storyWithChooseOneM (i18nWithTitle "noResolution") do
-            labeled "Proceed to _Resolution 1_" $ push R1
+            labeled' "proceedToResolution1" $ push R1
         Resolution 1 -> do
           baseVictory <- allGainXp' attrs
           story

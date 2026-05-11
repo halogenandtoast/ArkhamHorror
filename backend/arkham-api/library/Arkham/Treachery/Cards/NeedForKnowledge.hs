@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.NeedForKnowledge (needForKnowledge) where
 
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Message.Lifted.Choose
@@ -27,10 +28,10 @@ instance RunMessage NeedForKnowledge where
       doStep n msg
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> withI18n do
-      clues <- iid.clues
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid do
         countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-        when (clues > 0) do
+        when canPlaceClues do
           countVar 1 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'
       pure t

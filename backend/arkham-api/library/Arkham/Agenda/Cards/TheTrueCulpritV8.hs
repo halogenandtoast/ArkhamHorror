@@ -32,7 +32,7 @@ instance HasAbilities TheTrueCulpritV8 where
              <> [ skipForAll
                     $ groupLimit PerTestOrAbility
                     $ mkAbility attrs 2
-                    $ freeReaction (EnemyDefeated #after Anyone ByAny $ EnemyWithTrait Staff)
+                    $ freeReaction (IfEnemyDefeated #after Anyone ByAny $ EnemyWithTrait Staff)
                 , restricted
                     attrs
                     3

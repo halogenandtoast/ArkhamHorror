@@ -151,11 +151,11 @@ instance RunMessage MurderAtTheExcelsiorHotel where
         when (clues > 0) do
           let n = if isEasyStandard attrs then 1 else 2
           withSkillTest \sid ->
-            chooseOneM iid do
-              labeled ("Place one of your clues on your location to treat this as a -" <> tshow n) do
+            chooseOneM iid $ countVar n do
+              labeled' "placeClueToTreatAsNegative" do
                 placeCluesOnLocation iid Tablet 1
                 skillTestModifier sid Tablet token (ChangeChaosTokenModifier (NegativeModifier n))
-              labeled "Skip" nothing
+              labeledI "skip" nothing
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

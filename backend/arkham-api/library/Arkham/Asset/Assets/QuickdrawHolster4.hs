@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Window (defaultWindows)
@@ -21,8 +22,7 @@ instance HasModifiersFor QuickdrawHolster4 where
 
 instance HasAbilities QuickdrawHolster4 where
   getAbilities (QuickdrawHolster4 x) =
-    [ withTooltip
-        "{fast}: Choose a _Firearm_ asset taking up only 1 hand slot in your play area. Attach it to Quickdraw Holster, or switch it with the attached asset. The attached asset takes up no hand slots. (Limit 1 attached asset.)"
+    [ (cardI18n $ withI18nTooltip "quickdrawHolster4.fastChooseA")
         $ controlled
           x
           1
@@ -33,8 +33,7 @@ instance HasAbilities QuickdrawHolster4 where
               <> not_ (AssetAttachedToAsset $ be x)
           )
           (FastAbility Free)
-    , withTooltip
-        "{fast} Exhaust Quickdraw Holster: Perform a fight action on the attached asset without paying its {action} cost."
+    , (cardI18n $ withI18nTooltip "quickdrawHolster4.fastExhaustQuickdraw")
         $ controlled
           x
           2

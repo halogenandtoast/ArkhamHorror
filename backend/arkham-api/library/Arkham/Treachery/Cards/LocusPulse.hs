@@ -17,6 +17,7 @@ instance HasAbilities LocusPulse where
   getAbilities (LocusPulse a) =
     [ restricted a 1 (thisExists a $ TreacheryAttachedToLocation $ not_ locationWithKeyLocus)
         $ forced AnyWindow
+    | toResultDefault True a.meta
     ]
 
 instance RunMessage LocusPulse where
@@ -31,5 +32,5 @@ instance RunMessage LocusPulse where
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       toDiscard (attrs.ability 1) attrs
-      pure t
+      pure $ LocusPulse $ attrs & setMeta False
     _ -> LocusPulse <$> liftRunMessage msg attrs

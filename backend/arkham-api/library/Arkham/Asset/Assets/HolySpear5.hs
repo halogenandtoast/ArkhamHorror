@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.HolySpear5 (holySpear5) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Modifier
 
 newtype HolySpear5 = HolySpear5 AssetAttrs
@@ -14,11 +15,13 @@ holySpear5 = asset HolySpear5 Cards.holySpear5
 
 instance HasAbilities HolySpear5 where
   getAbilities (HolySpear5 attrs) =
-    [ withTooltip
-        "{action}: _Fight_. You get +2 {willpower} and deal +1 damage for this attack. When you initiate this ability, you may release a {bless} token sealed on Holy Spear."
+    [ cardI18n
+        $ scope "holySpear5"
+        $ withI18nTooltip "fightWithReleaseBless"
         $ controlled_ attrs 1 fightAction_
-    , withTooltip
-        "{action} Search the chaos bag for 2 {bless} tokens and seal them on Holy Spear: _Fight_. You get +4{combat} and deal +2 damage for this attack."
+    , cardI18n
+        $ scope "holySpear5"
+        $ withI18nTooltip "fightWithSealBless"
         $ controlled_ attrs 2
         $ fightAction
         $ SealMultiCost 2 #bless
@@ -31,8 +34,8 @@ instance RunMessage HolySpear5 where
       for_ mBlessToken $ \blessToken -> do
         chooseOne
           iid
-          [ Label "Release a {bless} token" [UnsealChaosToken blessToken]
-          , Label "Do not release a {bless} token" []
+          [ Label "$cards.label.holySpear5.releaseBless" [UnsealChaosToken blessToken]
+          , Label "$cards.label.holySpear5.doNotReleaseBless" []
           ]
       sid <- getRandom
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]

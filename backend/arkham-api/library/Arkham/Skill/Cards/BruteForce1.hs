@@ -27,6 +27,6 @@ instance RunMessage BruteForce1 where
         Action.Fight <- MaybeT getSkillTestAction
         AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestAbilitySource
         iid <- MaybeT getSkillTestInvestigator
-        lift $ withSkillTest \sid -> skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
+        lift $ withSkillTest \sid -> priority $ skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
       pure s
     _ -> BruteForce1 <$> liftRunMessage msg attrs

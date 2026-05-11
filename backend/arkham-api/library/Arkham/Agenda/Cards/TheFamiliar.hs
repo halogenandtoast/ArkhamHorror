@@ -29,7 +29,7 @@ instance HasAbilities TheFamiliar where
   getAbilities (TheFamiliar a) =
     [ mkAbility a 1
         $ freeReaction
-        $ EnemyDefeated #after You ByAny
+        $ IfEnemyDefeated #after You ByAny
         $ mapOneOf enemyIs [Enemies.nahab, Enemies.brownJenkin]
     ]
 

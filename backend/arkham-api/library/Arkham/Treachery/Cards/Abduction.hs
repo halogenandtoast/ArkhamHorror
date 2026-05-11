@@ -5,6 +5,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
+
 newtype Abduction = Abduction TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -21,9 +22,9 @@ instance RunMessage Abduction where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset
       chooseOrRunOneM iid do
-        labeled "Lose all resources" $ loseAllResources iid (toSource attrs)
+        labeledI "loseAllResources" $ loseAllResources iid (toSource attrs)
         unless (null allies) do
-          labeled "Discard an Ally asset you control" do
+          labeledI "discardAllyAsset" do
             chooseTargetM iid allies (toDiscardBy iid attrs)
       pure t
     _ -> Abduction <$> liftRunMessage msg attrs

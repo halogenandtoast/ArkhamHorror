@@ -55,7 +55,7 @@ instance RunMessage MistsOfRlyehEffect where
           Just (SucceededBy _ _) -> do
             unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
             chooseOrRunOneM iid do
-              labeled "Do not move to a connecting location" nothing
+              labeledI "doNotMoveToConnecting" nothing
               targets unblockedConnectedLocationIds $ moveTo attrs iid
           _ -> pure ()
         disable attrs

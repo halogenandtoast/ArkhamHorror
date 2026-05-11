@@ -23,6 +23,8 @@ module Application (
   db,
 ) where
 
+import Api.Arkham.Helpers (roomHeartbeat)
+import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
@@ -79,6 +81,7 @@ import Text.Regex.Posix ((=~))
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Game.Bug
@@ -128,7 +131,15 @@ makeFoundation appSettings = do
       _ <- forkIO $ pubSubForever conn ctrl (pure ())
       pure $ RedisBroker conn ctrl
 
-  provider <- initializeGlobalTracerProvider
+  -- OpenTelemetry is disabled in production: we build a tracer provider with
+  -- no span processors so all spans are silently dropped and no OTLP exporter
+  -- is started. Outside production we still initialize the real global
+  -- tracer provider so local/dev traces work.
+  isProduction <- (== Just "production") <$> lookupEnv "NODE_ENV"
+  provider <-
+    if isProduction
+      then createTracerProvider [] emptyTracerProviderOptions
+      else initializeGlobalTracerProvider
   let appTracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
 
   -- We need a log function to create a connection pool. We need a connection
@@ -153,8 +164,15 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   -- runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
-  -- Return the foundation
-  pure $ mkFoundation pool
+  let foundation = mkFoundation pool
+
+  -- Per-pod heartbeat for the cross-server room registry: refreshes the
+  -- 'arkham:rooms:seen' timestamps for any game this pod is still
+  -- serving, so admin counts age out automatically when a pod crashes.
+  -- No-op when no Redis broker is configured.
+  _ <- forkIO (roomHeartbeat foundation)
+
+  pure foundation
 
 {- | Convert our foundation to a WAI Application by calling @toWaiAppPlain@ and
  applying some additional middlewares.
@@ -261,6 +279,14 @@ appMain = do
       [configSettingsYmlValue]
       -- allow environment variables to override
       useEnv
+
+  -- Opt-in performance metrics collector. Set ARKHAM_METRICS=1 (or any non-empty
+  -- value besides "0"/"false") to enable global span timing; query the
+  -- /api/v1/admin/metrics endpoint to read or reset the table.
+  metricsEnv <- lookupEnv "ARKHAM_METRICS"
+  case metricsEnv of
+    Just v | v /= "" && v /= "0" && v /= "false" -> void Metrics.enableMetrics
+    _ -> pure ()
 
   -- Generate the foundation from the settings
   foundation <- makeFoundation settings

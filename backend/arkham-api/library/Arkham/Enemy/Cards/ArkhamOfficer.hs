@@ -5,10 +5,12 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Token
 
 newtype ArkhamOfficer = ArkhamOfficer EnemyAttrs
@@ -42,11 +44,11 @@ instance RunMessage ArkhamOfficer where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       doom <- fieldMap EnemyTokens (countTokens #doom) (toId attrs)
 
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n $ scope "arkhamOfficer" do
         unless attrs.exhausted do
-          labeled "Automatically evade Arkham Officer" $ automaticallyEvadeEnemy iid attrs
+          labeled' "automaticallyEvade" $ automaticallyEvadeEnemy iid attrs
         when (doom > 0) do
-          labeled "Flip one of its doom to its clue side and take control of it." do
+          labeled' "flipDoomToClue" do
             flipDoomToClues attrs 1
             push $ Msg.MovedClues (attrs.ability 2) (toSource attrs) (toTarget iid) 1
       pure e

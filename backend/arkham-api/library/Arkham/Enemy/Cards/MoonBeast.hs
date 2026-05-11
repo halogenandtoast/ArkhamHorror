@@ -21,7 +21,7 @@ instance HasAbilities MoonBeast where
     extend
       a
       [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere $ be a
-      , mkAbility a 2 $ forced $ EnemyDefeated #after You ByAny $ be a
+      , mkAbility a 2 $ forced $ IfEnemyDefeated #after You ByAny $ be a
       ]
 
 instance RunMessage MoonBeast where

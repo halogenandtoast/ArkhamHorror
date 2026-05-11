@@ -5,6 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 
@@ -25,15 +26,14 @@ instance RunMessage PredatorOrPrey where
           unengagedEnemies <-
             mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation (UnengagedEnemy <> not_ (at_ $ locationWithInvestigator iid))
           investigators <- select Anyone
-          chooseOneM iid do
+          chooseOneM iid $ cardI18n $ scope "predatorOrPrey" do
             when (notNull unengagedEnemies) do
-              labeled "Each unengaged enemy moves once toward the nearest investigator." do
+              labeled' "enemiesMove" do
                 chooseOneAtATimeM iid do
                   for_ unengagedEnemies \(enemy, loc) ->
                     targeting enemy do
                       moveTowardsMatching attrs enemy $ NearestLocationToLocation loc $ LocationWithInvestigator Anyone
-            labeled
-              "Each investigator disengages from each enemy engaged with them and moves once away from the nearest enemy."
+            labeled' "investigatorsMove"
               $ handleOneAtATime iid attrs investigators
 
       pure e

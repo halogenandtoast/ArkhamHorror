@@ -19,7 +19,7 @@ import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, skillTestModifier)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows)
+import Arkham.Helpers.Window (checkAfter, checkCancel, checkWhen, checkWindows, windows)
 import Arkham.Id
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
@@ -238,7 +238,7 @@ instance RunMessage SkillTest where
                 ]
               <> ( guard (RevealChaosTokensBeforeCommittingCards `notElem` modifiers'')
                      *> ( lockCommits
-                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "Done Committing" [CheckAllAdditionalCommitCosts]))
+                            <> [ DoStep 3 (CommitToSkillTest s.id (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts]))
                                ]
                         )
                  )
@@ -246,6 +246,10 @@ instance RunMessage SkillTest where
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator
+      -- We are extending ST.4: the After window for ResolveChaosSymbolEffectsStep
+      -- should fire once, after all tokens (including the new draw) are
+      -- resolved. Drop any prematurely-queued one; the next
+      -- RevealSkillTestChaosTokens will queue a fresh one.
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
@@ -256,6 +260,10 @@ instance RunMessage SkillTest where
         Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
           False
         Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
+          False
+        CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _] ->
+          False
+        Do (CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _]) ->
           False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
@@ -276,7 +284,7 @@ instance RunMessage SkillTest where
           then
             CommitToSkillTest
               s.id
-              (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
+              (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
           else RevealSkillTestChaosTokens iid
       for_ chaosTokens $ \chaosToken -> do
         let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken
@@ -319,9 +327,12 @@ instance RunMessage SkillTest where
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
+      cancelRevealWindow <-
+        checkCancel $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       afterRevealWindow <-
         checkAfter $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       pushAll $ UnfocusChaosTokens
+        : cancelRevealWindow
         : afterRevealMsg
         : afterRevealWindow
         : afterRevealMsg
@@ -398,17 +409,49 @@ instance RunMessage SkillTest where
           | face <- faces
           ]
 
+      -- If we are auto-failing during ResolveChaosSymbolEffectsStep (e.g. the
+      -- auto-fail token), the After window for that step is queued behind us.
+      -- Fire it once before the test ends so reactions like Cryptic Grimoire
+      -- (Text of the Elder Herald, taboo) can still trigger while the skill
+      -- test is active. Pending After-step windows from earlier reveals are
+      -- consumed here to avoid prompting the same reaction again later.
+      preEndMsgs <-
+        if skillTestStep == ResolveChaosSymbolEffectsStep
+          then do
+            let isAfterResolveSymbols = \case
+                  CheckWindows ws ->
+                    any
+                      ( \w ->
+                          windowTiming w == Timing.After
+                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                      )
+                      ws
+                  Do (CheckWindows ws) ->
+                    any
+                      ( \w ->
+                          windowTiming w == Timing.After
+                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                      )
+                      ws
+                  _ -> False
+            withQueue_ $ filter (not . isAfterResolveSymbols)
+            afterMsg <- checkWindows [mkAfter $ Window.SkillTestStep ResolveChaosSymbolEffectsStep]
+            pure [afterMsg]
+          else pure []
+
       let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
       let
         handleChoice resolver player =
           let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType difficulty
-           in SkillTestResults resultsData
-                : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
-                  <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
-                     , chooseOne player [SkillTestApplyResultsButton]
-                     , SkillTestEnds skillTestId resolver skillTestSource
-                     , Do (SkillTestEnds skillTestId resolver skillTestSource)
-                     ]
+           in preEndMsgs
+                <> ( SkillTestResults resultsData
+                      : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
+                        <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
+                           , chooseOne player [SkillTestApplyResultsButton]
+                           , SkillTestEnds skillTestId resolver skillTestSource
+                           , Do (SkillTestEnds skillTestId resolver skillTestSource)
+                           ]
+                   )
 
       if needsChoice
         then do
@@ -916,3 +959,4 @@ instance RunMessage SkillTest where
     SetSkillTestResolveFailureInvestigator iid -> do
       pure $ s & resolveFailureInvestigatorL .~ iid
     _ -> pure s
+

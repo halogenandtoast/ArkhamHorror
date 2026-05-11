@@ -14,7 +14,7 @@ eureka = skill Eureka Cards.eureka
 instance RunMessage Eureka where
   runMessage msg s@(Eureka attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      additionalSkillTestOption "Eureka" do
+      skillTestCardOption attrs do
         search iid attrs iid [fromTopOfDeck 3] #any (DrawFound iid 1)
       pure s
     _ -> Eureka <$> liftRunMessage msg attrs

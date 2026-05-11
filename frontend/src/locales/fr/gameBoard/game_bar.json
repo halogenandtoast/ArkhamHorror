@@ -12,6 +12,7 @@
     "shortcutDraw": "Piocher du deck / deck rencontre",
     "shortcutTakeResources": "Prendre des Resources",
     "shortcutEndTurn": "Fin du tour",
+    "shortcutRestartScenario": "Recommencer le Scénario",
 
     "viewSettings": "Paramètres",
     "viewSettingTitle": "Paramètres de {investigator}",

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -18,12 +19,10 @@ thermos = asset Thermos Cards.thermos
 
 instance HasAbilities Thermos where
   getAbilities (Thermos a) =
-    [ withTooltip
-        "Heal 1 damage from an investigator at your location (2 damage instead if he or she has 2 or more physical trauma)."
+    [ (cardI18n $ withI18nTooltip "thermos.heal")
         $ controlled a 1 (exists $ HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
-    , withTooltip
-        "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
+    , (cardI18n $ withI18nTooltip "thermos.heal2")
         $ controlled a 2 (exists $ HealableInvestigator (toSource a) #horror $ colocatedWithMatch You)
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
     ]

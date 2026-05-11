@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.TerribleSecret (terribleSecret) where
 
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -21,7 +22,7 @@ instance RunMessage TerribleSecret where
       if null cardsUnderneath
         then shuffleIntoDeck iid attrs
         else focusCards cardsUnderneath do
-          chooseUpToNM iid (length cardsUnderneath) "Keep Remaining Cards" do
+          cardI18n $ scope "terribleSecret" $ chooseUpToNM' iid (length cardsUnderneath) "keepRemainingCards" do
             for_ cardsUnderneath \pc -> do
               for_ (preview _PlayerCard pc) \c -> targeting c (addToDiscard iid [c])
           unfocusCards

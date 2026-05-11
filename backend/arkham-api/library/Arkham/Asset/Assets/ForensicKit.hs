@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -28,8 +29,8 @@ instance RunMessage ForensicKit where
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOneM iid do
-        labeled "Use {agility}" $ push $ withSkillType #agility investigate'
-        labeled "Use {intellect}" $ push investigate'
+        (withI18n $ skillVar #agility $ labeled' "useSkill") $ push $ withSkillType #agility investigate'
+        (withI18n $ skillVar #intellect $ labeled' "useSkill") $ push investigate'
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       whenAny (ExhaustedEnemy <> at_ (locationWithInvestigator iid)) do

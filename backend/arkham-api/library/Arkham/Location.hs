@@ -1199,4 +1199,35 @@ allLocations =
     , SomeLocationCard clockTowerIncessantlyTicking
     , SomeLocationCard moonlitGardenPoisonedBeauty
     , SomeLocationCard throneOfBloodRedAsBloodBlackAsNight
+    , --- Core 2026
+      --- Spreading Flames
+      SomeLocationCard yourFriendsRoom
+      --- Miskatonic University
+    , SomeLocationCard miskatonicQuad_MiskatonicUniversity
+    , SomeLocationCard dormitories_MiskatonicUniversity
+    , SomeLocationCard scienceHall
+    , SomeLocationCard warrenObservatory_MiskatonicUniversity
+    , SomeLocationCard orneLibrary_MiskatonicUniversity
+      --- Arkham
+    , SomeLocationCard downtownFirstBankOfArkham_Arkham
+    , SomeLocationCard downtownArkhamSanatorium
+    , SomeLocationCard uptownStMarysHospital
+    , SomeLocationCard uptownYeOldeMagickShoppe
+    , SomeLocationCard northside_Arkham
+    , SomeLocationCard easttown_Arkham
+    , SomeLocationCard merchantDistrict_Arkham
+    , SomeLocationCard waterfrontDistrict
+    , SomeLocationCard southside_Arkham
+    , SomeLocationCard frenchHill_Arkham
+    , SomeLocationCard miskatonicUniversityInFlames
+    , SomeLocationCard miskatonicUniversityQuietCampus
+      --- Queen of Flames
+    , SomeLocationCard sewerCulvert
+    , SomeLocationCard sewerTunnelsInfestedPipes
+    , SomeLocationCard sewerTunnelsOvergrownTunnels
+    , SomeLocationCard sewerTunnelsFloodedCrypt
+    , SomeLocationCard sewerTunnelsSmugglersCache
+    , SomeLocationCard sewerTunnelsToxicWastePit
+    , SomeLocationCard undergroundCistern
+    , SomeLocationCard sluiceControl
     ]

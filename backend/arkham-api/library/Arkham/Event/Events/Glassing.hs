@@ -5,6 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -38,10 +39,10 @@ instance RunMessage Glassing where
         investigateLocationWithSkillChoice sid iid (attrs.ability 1) [#intellect, #agility] lid
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      priority $ chooseOneM iid do
-        labeled "Discard Glassing to discover 1 additional clue" do
+      priority $ chooseOneM iid $ cardI18n $ scope "glassing" do
+        labeled' "discard" do
           toDiscardBy iid attrs attrs
           withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-        labeled "Do not discard" nothing
+        labeled' "doNotDiscard" nothing
       pure e
     _ -> Glassing <$> liftRunMessage msg attrs

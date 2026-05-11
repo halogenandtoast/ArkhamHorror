@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
+import Arkham.Cost (Cost)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
@@ -72,6 +73,7 @@ data UI msg
   = Label {label :: Text, messages :: [msg]}
   | InvalidLabel {label :: Text}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}
+  | CostLabel {cost :: Cost, messages :: [msg]}
   | CardLabel {cardCode :: CardCode, flippable :: Bool, messages :: [msg]}
   | ChaosTokenLabel {face :: ChaosTokenFace, messages :: [msg]}
   | KeyLabel {key :: ArkhamKey, messages :: [msg]}
@@ -112,6 +114,7 @@ uiAnd ui msg = case ui of
   Label l msgs -> Label l (msgs <> [msg])
   InvalidLabel l -> InvalidLabel l
   TooltipLabel l t msgs -> TooltipLabel l t (msgs <> [msg])
+  CostLabel c msgs -> CostLabel c (msgs <> [msg])
   CardLabel c f msgs -> CardLabel c f (msgs <> [msg])
   ChaosTokenLabel face msgs -> ChaosTokenLabel face (msgs <> [msg])
   KeyLabel k msgs -> KeyLabel k (msgs <> [msg])
@@ -199,6 +202,9 @@ data Question msg
   | ChooseUpgradeDeck
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
+  | -- | Wraps any Question with a header that the frontend renders as
+    -- "Pay <cost>", using its own Cost rendering.
+    PayCostQuestion {cost :: Cost, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies
       {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}

@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.DeckOfTheTheodosia (deckOfTheTheodosia) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -21,14 +22,11 @@ instance RunMessage DeckOfTheTheodosia where
       mStandingStones <- getSetAsideCardMaybe Locations.standingStones
 
       chooseOneM iid do
-        for_ mCoastalWaters
-          $ labeled "Put the set-aside Coastal Waters location into play."
-          . placeLocation_
-        for_ mHedgeMaze
-          $ labeled "Put the set-aside Hedge Maze location into play."
-          . placeLocation_
-        for_ mStandingStones
-          $ labeled "Put the set-aside Standing Stones location into play."
-          . placeLocation_
+        for_ mCoastalWaters \loc ->
+          withI18n $ keyVar "name" "Coastal Waters" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mHedgeMaze \loc ->
+          withI18n $ keyVar "name" "Hedge Maze" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mStandingStones \loc ->
+          withI18n $ keyVar "name" "Standing Stones" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
       pure s
     _ -> DeckOfTheTheodosia <$> liftRunMessage msg attrs

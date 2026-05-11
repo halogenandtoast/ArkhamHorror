@@ -39,7 +39,7 @@ instance RunMessage DrWilliamTMaleson2 where
       case (drawnCard meta, drewCards.cards) of
         (Just e1, [c2@(EncounterCard e2)]) -> focusCards [EncounterCard e1, c2] do
           chooseOneM iid do
-            questionLabeled "Choose card to resolve"
+            questionLabeled "$label.cards.drWilliamTMaleson2.chooseCardToResolve"
             targeting e1 do
               unfocusCards
               push $ AddToEncounterDiscard e2

@@ -29,9 +29,9 @@ const formatOption = function(option: string): string {
 <template>
   <form @submit.prevent="submit">
     <select v-model="choice">
-      <option value="Choose One" disabled>Choose One</option>
+      <option value="Choose One" disabled>{{ t('ChooseOne') }}</option>
       <option v-for="(option, idx) in options" :value="idx" :key="idx">{{formatOption(option)}}</option>
     </select>
-    <button type="submit">Choose</button>
+    <button type="submit">{{ t('Choose') }}</button>
   </form>
 </template>

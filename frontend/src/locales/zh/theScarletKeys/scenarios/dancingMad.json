@@ -1,0 +1,82 @@
+{
+  "heading": "档案#28-I",
+  "tokens": {
+    "easyStandard": {
+      "skull": " -X. X is the number of enemies in the shadows (max 3).",
+      "cultist": "-4. If you fail, put a decoy into play at your location, flip it over, and shuffle each concealed mini-card at your location facedown.",
+      "tablet": "-3. If you fail, set each non-weakness card committed to this test aside, out of play, as a hollow.",
+      "elderThing": "-1. If there is a concealed mini-card at your location, either take 1 damage or treat this token's modifier as -3."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of enemies in the shadows (max 5).",
+      "cultist": "-6. If you fail, put a decoy into play at your location, flip it over, and shuffle each concealed mini-card at your location facedown.",
+      "tablet": "-3. Set each non-weakness card committed to this test aside, out of play, as a hollow.",
+      "elderThing": "-1. If there is a concealed mini-card at your location, either take 2 damage or treat this token's modifier as -5."
+    }
+  },
+  "tooltips": {
+    "falseColorsV2": {
+      "resign": "\"I thought we had a deal!\" You get out of the city while you still can."
+    }
+  },
+  "label": {
+    "elderThing": "Treat this token's modifier as -{count}.",
+    "silenceSpeaks": {
+      "concealed": "Search the encounter deck and discard pile for an enemy with the concealed keyword and draw it (resolving its concealed keyword). Shuffle the encounter deck.",
+      "hollowed": "Reveal the top card of each investigator's deck. Each investigator draws each weakness they revealed in this way. Set each other revealed card aside, out of play, as a hollow."
+    }
+  },
+  "intro": {
+    "title": "File #28–I: Dancing Mad",
+    "intro1Part1": "<p class='file'>_引言1_: 找寻绯红结社在哈瓦那的踪迹是你这趟古巴之旅中最简单的部分。根据情报，阿瓦雷兹先生通常把夜晚都花在月下咖啡厅，一间同时受到当地人及旅客欢迎的酒吧，在这里美国人可以暂时逃离国家禁酒令的箝制。这间酒吧几乎彻夜营业，这里提供的各式美酒即使最老道的酒客都无法保持清醒，因此这间酒吧成为哈瓦那最热门的景点之一。</p><p>你在尖峰时刻抵达酒吧，希望能混入人群中。你猜测阿瓦雷兹先生已经知道你的到来。炫目的灯光与拥挤到不可能穿越的人群迎接你的到来，夜总会中传出爵士乐团的演奏，许多人甚至还没进入店内就已经开始跳舞狂欢。一名穿着条纹西装的接待员招呼你，他草草的看你一眼后就让你进入了，没有搜身、没有暗号，也没有在美国私酒馆常见的那些刁难。</p><p>走进店内后你迳直走向吧台，试着引起酒保的注意。你随便点了一杯饮料作为搭话的借口，但酒保听到你想找德西德里奥·阿瓦雷兹先生时脸色大变。</p><p>他的眼睛怀疑的瞇了起来，他朝着房间黑暗角落的一道走廊示意，走廊前被绳子挡住，旁边还有两名穿着西装的人守卫着。他们在你朝着应该是VIP区的地方走时跟在你后方。在一个昏暗、烟雾弥漫的包间中坐着“血红西装”本人，也许是得名于他黑西装上的红色配件，也可能是暗示他从事的工作内容。他边缓缓着吸着唇边的香烟边打量着你。有两个人坐在他对面，一位是穿着红色西装背心的年长古巴绅士，正抽着巨大的雪茄；另一位身着红色礼服、外表危险的女子正小口啜饮着马丁尼。他们三人眼中都散发着杀意。</p><p>“这个白痴是谁？”阿瓦雷兹先生质问其中一名守卫。</p><p>守卫结巴着回答：“他说想见您，德西。”</p><p>“这样啊，那去帮他倒杯喝的来吧，不要只会站在那。”守卫快速的点头回应后就离开了房间，留下你与三名结社成员。“请坐。“你礼貌地拒绝了香烟并在桌边坐下。“所以，你在找我？”</p><p>你点头并告诉阿瓦雷兹先生他是你调查中的关键人物，你得知他经常会出现在这间酒吧，你只是想询问他几个简单的问题。听到这里，那名女子毫不犹豫的凭空抽出一把长刀对着你，但阿瓦雷兹示意她停手，那名女子随即将刀收回隐藏在礼服下的腰带。</p>",
+    "policeOrDetective": "<div class='red'><p>_如果有警员或侦探属性的调查员_:他对你露出没有敌意的笑容说：“请你原谅我这位朋友，她比较……急躁一点，尤其是见到警察时。我相信你会理解的。”你解释尽管表面看起来不像，但你不是针对不法情事而来的，至少今天不是。“我想你明显不是为此而来没错。我猜我知道你为何而来。”</p></div>",
+    "intro1Part2": "<p>“首先，你可以叫我德西，大家都这样叫我，我不太喜欢正式的称呼。”他挥挥手，彷佛想扫清紧张的气氛。“第二，我不只是月下咖啡厅的‘常客’，几个月前管理层有些……变动，我现在是老板了，你的情报有点过时了。嗯？”他轻笑着用烟灰缸将烟头熄灭，然后马上拿出打火机点起另一根。“所以，我们何不来谈谈你在调查的东西？”</p><p>你告诉了他，特别强调你只想知道密钥的所在地点，而不会干涉他的任何活动。</p><p>他的表情突然变的锐利，如同一座棱角分明的石雕。“没错，‘密钥’，这就是你想要的吗？好吧，也许我们可以互相帮助……”</p><p class='basic'>检查剧本日志上经过多少时间。</p>",
+    "fewerThanTwentyTime": "如果经过小于20 _时间_ , proceed to _引言2_.",
+    "twentyOrMoreTime": "如果经过20或以上 _时德西的两位同伴在他对你全盘托出时惊讶的擡头看着他。“我在哈瓦那的手下出了一些问题，一开始是一些新人突然消失无踪，后来连一些老伙计都不见了。就像这样，”他弹了一下手指，“一开始我以为是敌对组织想扩展势力，一些不知道我是谁的笨蛋，那种会把这个城市搞的乌烟瘴气的蠢货。”他熄掉香烟，盯着烟灰若有所思，彷佛灰烬中隐藏了什么预兆。“最奇怪的是，我不记得他们的名字了，没人记得。听起来很怪不是吗？而且我从不会忘记人的名字，从来没有。”他冷若冰霜的看着你说：“现在我开始怀疑是其他问题导致这一切，那种你们这种人专门处理的问题。”</p><p>你心想着他们不也同样经常面对这种问题吗。</p><p>“别把我跟其他人混为一谈，”他喝斥你。“我有其他的计划。现在，你有两个选择：要不是帮我解决这个小问题；不然就是我跟我的伙伴把你五花大绑。你想选哪个？“</p><p>你短暂的思考后告诉德西你会帮他，但条件是他必须告诉你他已知的密钥地点，还要放弃任何他持有的密钥的所有权。另外两个结社成员试着跟德西用眼神交流，但却徒劳无功，他已经下了决定。</p><p>他向你伸出手：“成交，但我要参与。我们会一起行动，没人可以乱搞我的人后还能全身而退。明天晚上回来见我，同一时间、同一地点。”你点头同意后便离开了。你下榻在哈瓦那旧城的广场饭店，为接下来的调查抓紧时间休息。</p><p class='basic right'>In your Campaign Log, record *与德西达成交易。*<br />进入_Setup (版本 I)_.<p>",
+    "intro2": "<p class='file'>_Intro 2_: Desi sighs and opens up to you, much to the chagrin of his two companions, who look on with surprise. “Something’s been after my crew in Havana. Started with some new blood who went off-grid all of a sudden. Then a couple longtimers. Just gone,” he says with a snap of his fingers. “At first, I thought it was just some uppity rivals looking to expand their territory. Fools who don’t know who I really am. The kinda scum who’d run this city into the ground.” He ashes his cigarette, staring into the ashes like there is some greater meaning inside to sift through. “Weird part is, I don’t remember their names. Nobody does. Sounds weird, right? I never forget a name. Never.” His gaze locks with yours, cold as stone. “Now I’m starting to suspect something worse. The kinda thing your people deal with.”</p><p>You wonder aloud if this is the kind of thing his people are also supposed to be dealing with.</p><p>“Don’t lump me in with the rest of them,” he chides. “I’ve got other fish on my menu. Now—you got two choices. You either help me out with my little problem, or me and my buddies here throw you to the curb. Which is it gonna be?”</p><p>After a moment of thought, you tell Desi that you’ll help if he gives you the location of any known Keys and relinquishes any he might have in his possession. The other two Coterie agents lock eyes with Desi in vain, but he has already made up his mind.</p><p>He extends his hand. “Deal. But I want in. We’ll do this together. Nobody messes with my crew and gets away with it. Come back here tomorrow night—same time, same place.” You nod and depart, booking a room at the Plaza Hotel in Old Havana and getting some much-needed rest before tomorrow’s investigation.</p><p class='basic right'>In your Campaign Log, record *the cell made a deal with Desi.*<br />Proceed to _Setup (v. I)_.<p>",
+    "intro3": "<p class='file'>_引言3_: 德西起身踱步，明显正在组织他的话语。“我的手下们发生了一些问题。”他年长的同伴看起来很冷漠、波澜不惊，但那名女性脸上挂着跟德西一样的担忧神情。“一开始只有少数人失踪，虽然他们有可能是被当地帮派干掉的，那些会把这个城市搞的乌烟瘴气的蠢货。但现在……”他摇头，额头上布满忧心的皱纹。“我不记得他们的名字了，没人记得。而且失踪人数每天都在增加，碰！”他弹了一下手指，“就像这样，通通消失了，没有关于他们的记忆，只留下他们曾经存在的些微痕迹，他们就这样凭空消失了。”他瞇着眼看向你：“听起来耳熟吗？”</p><p>你点头，这个现象令你感到不安的熟悉。你告诉德西你会帮他查清楚发生了什么，但条件是他必须告诉你他已知的密钥地点，还要放弃任何他持有的密钥的所有权。那名女性咬着嘴唇看向德西，不确定他是否会同意。</p><p>年长的男性依然保持沉默，用冰冷朦胧的双眼看着这一切。</p><p>德西点着头与你握手：“成交，但我要参与。我们会一起行动，没人可以乱搞我的人后还能全身而退。明天晚上回来见我，同一时间、同一地点。”你点头同意后便离开了。你下榻在哈瓦那旧城的广场饭店，为接下来的调查抓紧时间休息。</p><p class='basic right'>进入_引言4_.</p>",
+    "intro4": "<p class='file'>_引言4_: 隔天晚上你回到月下咖啡厅，你本来已经准备好一路穿过人群挤进德西的VIP室，但当你抵达时却发现酒吧没有营业。你心想也许是由于德西希望不受打扰的制定调查计划。你试着推门，你想的没错，门没有锁，你走进店内。</p><p>酒吧内很昏暗，你一路走向后方的包间。在见识过这个地方平时的样子，充满音乐跟狂欢的客人，你感到很大的反差。你的脚步声回荡在吧台与舞池之间，一张椅子发出了摩擦声。</p><p>太安静了。</p><p>你还没来的及思考自己是否置身危险之中，在这个念头闪过的瞬间，一阵枪林弹雨突然在你身边爆发，是埋伏！你反射性趴到地上，保护你的头跟耳朵。枪声震耳欲聋，酒吧正面的玻璃窗在攻击下碎裂成一阵玻璃雨洒落在舞池中。子弹撕裂了所有东西，吧台、隔间、椅凳，每样家具都被打成碎片。你只有几秒的时间展开行动——</p><p class='basic right'>In your Campaign Log, record *遭受伏击！*<br />进入_Setup (版本 II)_.</p>"
+  },
+  "setup": {
+    "version1": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Dancing Mad*, *Agents of the Outside*, *Cleanup Crew*, *Crimson Conspiracy*, *Secret War*, *Shadow of a Doubt*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dancing-mad.png' /><img src='{setImgPath}/agents-of-the-outside.png' /><img src='{setImgPath}/cleanup-crew.png' /><img src='{setImgPath}/crimson-conspiracy.png' /><img src='{setImgPath}/secret-war.png' /><img src='{setImgPath}/shadow-of-a-doubt.png' /></section>",
+      "actDeck": "只使用(版本 I)的场景1和2与场景3形成场景牌堆，从游戏中移除(版本 II)的场景1和2。",
+      "placeLocations": "将月下咖啡厅地点放置入场，(*沦为回忆的堡垒*) 面朝上。",
+      "beginPlay": "每位调查员从月下咖啡厅 (*沦为回忆的堡垒*)开始游戏。",
+      "remainingLocations": "将剩余的六个地点放置入场。",
+      "desiderio": "找出两张德西德里奥·德尔加多·阿瓦雷兹敌人。其中一张的背面是剧情支援的版本，另一张的背面则是一般的遭遇卡牌牌背。",
+      "encounterVersion": "将背面是一般遭遇卡牌的版本放在一旁，置于场外。",
+      "assetVersion": "将另一个版本翻至其剧情支援面。",
+      "takeControlOfDesiderio": "选择一位调查员控制德西德里奥·德尔加多·阿瓦雷兹剧情支援。",
+      "setSetsOutOfPlay": "将 *清道夫* 和 *绯红阴谋* 遭遇组的所有卡牌放在一旁，置于场外。. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/cleanup-crew.png' /><img src='{setImgPath}/crimson-conspiracy.png' /></section>",
+      "miniCards": "拿取每张诱饵小卡和以下的小卡：德西德里奥·德尔加多·阿瓦雷兹、结社探员(A、B和C)、结社刺客(A和B)、结社执行者(A和B)。将它们放在一旁，置于场外。"
+    },
+    "version2": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Dancing Mad*, *Agents of the Outside*, *Cleanup Crew*, *Crimson Conspiracy*, *Secret War*, *Shadow of a Doubt*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dancing-mad.png' /><img src='{setImgPath}/agents-of-the-outside.png' /><img src='{setImgPath}/cleanup-crew.png' /><img src='{setImgPath}/crimson-conspiracy.png' /><img src='{setImgPath}/secret-war.png' /><img src='{setImgPath}/shadow-of-a-doubt.png' /></section>",
+      "actDeck": "只使用 (版本 II) 的场景1和2与场景3形成场景牌堆，从游戏中移除 (版本 I) 的场景1和2。",
+      "placeLocations": "将月下咖啡厅地点放置入场，(*结社会所*) 面朝上。",
+      "beginPlay": "每位调查员从月下咖啡厅 (*结社会所*)开始游戏。",
+      "remainingLocations": "Set each other location aside, out of play.",
+      "desiderio": "找出两张德西德里奥·德尔加多·阿瓦雷兹敌人。其中一张的背面是剧情支援的版本，另一张的背面则是一般的遭遇卡牌牌背。 将两张放在一旁，置于场外。",
+      "setOutOfPlay": "将全部四张 _异域存在_ 敌人放在一旁，置于场外(两张超凡拟态和两张范式抹除者)。",
+      "miniCards": "拿取每张诱饵小卡和以下的小卡：德西德里奥·德尔加多·阿瓦雷兹、结社探员(A、B和C)、结社刺客(A和B)、结社执行者(A和B)。将它们放在一旁，置于场外。",
+      "theShadows": "将以下的敌人生成到阴影中：",
+      "spawnDesiderio": "找出放在一旁，牌背是遭遇卡牌的德西德里奥·德尔加多·阿瓦雷兹敌人。调查员队长抽取该敌人，结算他的隐蔽关键字。",
+      "spawnCoterie": "一次一位，按照玩家顺序，每位调查员从遭遇牌顶弃牌，直到弃掉一张不同的 _结社_ 敌人。每位调查员抽取弃掉的该敌人，结算其隐蔽关键字，将遭遇弃牌堆洗入遭遇牌库。"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: 天空中的云翻卷着，滂沱的大雨打在你身上。每个街角都有眼睛在监视你，披着熟悉外型的仿冒者无处不见。不管有没有交易，你都不能待在这里了，你在此起彼落的枪声与碎裂的空间中逃离了城市。你终于逃出街道，在哈瓦那码头征用了一艘船，马上启程离开。</p><p>你终于冷静下来分析你看到的东西，你担心这次失败会导致不利的结果。你没有找到新的密钥甚至线索。但至少你活下来了，而且还记得这一切，这一定有意义。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未发现哈瓦那的真相*。</li><li>In your Campaign Log, record *未得知德西德里奥·德尔加多·阿瓦雷兹最后的下落*.</li><li>德西德里奥·德尔加多·阿瓦雷兹是镜像之刃承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 德西召集紧急会议的同时，你在脑中统整今夜发生的事。德西挫折的对你呢喃：“我得想办法处理，你懂的……每个人都可能是……这让情况变复杂了，我不确定该相信谁。”他看起来很正常，你一定做了对的选择。但你的脑海中浮现出在街道上朝你逼近的他，还有枪声跟天空中的扭曲现象。你禁不住地一直扫视德西的眼睛，找寻他并不是德西的征兆，任何征兆。但你找不到，又或许是仿冒者已经变形成他够久了，久到足以学会他的行为举止？“对了，”他打断你的思绪，“我想我该履行承诺了。‘黑鸟钻石’”。</p><p>你困惑的眨眨眼。他重复说道：“‘黑鸟钻石’，这是我在尤柏城一个藏身地的暗号。每次我给新的人权限时就会更换暗号，这种情况很……少见。就连其他结社成员都无法进入。”他们都以为那里只是个店面。我想他们并不知道我大多数夜晚真正在做的事。“他似乎是感觉到了你想问的问题，带着微笑说：“打扫城市，就这样。”他边说边将烟蒂弹进水漥里，没意识到这个行为有点讽刺。”反正，在第七大道上有一间旧雪茄工厂，你不会错过的。至少有一样你在找寻的东西存放在里面。等一两个礼拜，等他们接收到新的暗号，然后你就可以带走它。”德西装上一个新弹夹转身朝他的手下们走去。“现在，容我告退，我要去揪出一些仿冒者。”你决定尽快离开，不想知道他打算用什么方式处理这件事。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *德西欠下人情*.</li><li>In your Campaign Log, record *得知暗号*.</li><li>在剧本日志中“经过的时间”下，找出当前时间加6的空格，在该空格上标记“Θ”。 (*当你到达该格时，进行剧本手册中Θ的近况报告部分。*) 如果剩余的时间少于6，则改为将“Θ”标记在“经过的时间”的最终格子中。</li><li>_你整理卡牌时，切勿查看德西德里奥·德尔加多·阿瓦雷兹的另外一面。_</li><li>Mark 2 _时间_ in your Campaign Log. 你可以_出发_。</li>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 即使危险看起来消退了，但随着时间流逝，记忆的空缺越来越多，你也越来越感到不安。你是跟谁一起来的……？你跟谁见过面……？你的记忆一片模糊，你还能想起那些消失的人的下场。不，不只是人，还有追逐你的扭曲云朵、起伏的墙壁、蠕动的街道、光里的眼睛、音乐中的耳朵……</p><p>你大口的吸着气，就像是黑暗本身让你窒息一般。听起来不可能，但一定是这样，牠们夺走了一切，墙壁、天空、整座城市。你的思绪飞快运转，你在大雨的街道上飞奔，就像无法想像的恐惧正在追逐你。你挤上港口里第一艘离开哈瓦那的船。直到你确定天空不会吞噬你后才敢呼吸。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未发现哈瓦那的真相*.</li><li>In your Campaign Log, record *未得知德西德里奥·德尔加多·阿瓦雷兹最后的下落。*.</li><li>德西德里奥·德尔加多·阿瓦雷兹是镜像之刃承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    }
+  }
+}

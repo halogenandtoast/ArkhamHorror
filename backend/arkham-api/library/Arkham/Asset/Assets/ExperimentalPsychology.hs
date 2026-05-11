@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Builder
+import Arkham.Helpers.Window (healedInvestigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -28,11 +29,7 @@ instance HasAbilities ExperimentalPsychology where
         actionAbility
     , controlled_ a 2
         $ triggered
-          ( oneOf
-              [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceOwnedBy You)
-              , InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You)
-              ]
-          )
+          (InvestigatorHealed #after #horror (affectsOthers Anyone) (SourceOwnedBy You))
           (exhaust a)
     ]
 
@@ -49,7 +46,7 @@ instance RunMessage ExperimentalPsychology where
         targets investigators $ healHorrorOn (attrs.ability 1) 1
         targets assets $ healHorrorOn (attrs.ability 1) 1
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseCardAbility _ (isSource attrs -> True) 2 (healedInvestigator -> iid) _ -> do
       effectWithSource (attrs.ability 2) iid do
         apply $ AnySkillValue 2
         during $ #nextSkillTest iid

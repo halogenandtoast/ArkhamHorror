@@ -27,6 +27,6 @@ instance RunMessage GrimMemoir where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       mmsg <- Msg.drawCardsIfCan iid (attrs.ability 1) 1
-      for_ mmsg \draw -> chooseOne iid $ [Label "Draw 1 card" [draw], Label "Do not draw card" []]
+      for_ mmsg \draw -> chooseOne iid $ [Label "$label.cards.grimMemoir.draw1Card" [draw], Label "$label.cards.grimMemoir.doNotDrawCard" []]
       pure a
     _ -> GrimMemoir <$> liftRunMessage msg attrs

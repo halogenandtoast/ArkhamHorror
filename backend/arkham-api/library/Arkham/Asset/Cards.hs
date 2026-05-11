@@ -26,6 +26,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Prelude
 
+
 allPlayerAssetCards :: Map CardCode CardDef
 allPlayerAssetCards =
   mapFromList
@@ -1047,6 +1048,8 @@ allPlayerAssetCards =
       , zebulonWhateley
       , zoeysCross
       , zoeysCrossAdvanced
+      , drHenryArmitage_SpreadingFlames
+      , collector
       ]
 
 -- with encounter backs

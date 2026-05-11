@@ -25,7 +25,7 @@ instance HasAbilities VengeanceAwaits where
   getAbilities (VengeanceAwaits a) | onSide A a = do
     [forcedAbility a 1 $ AgendaAdvances #when $ AgendaWithId (toId a)]
   getAbilities (VengeanceAwaits a) =
-    [ mkAbility a 2 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ enemyIs Enemies.umordhoth
+    [ mkAbility a 2 $ Objective $ forced $ IfEnemyDefeated #after Anyone ByAny $ enemyIs Enemies.umordhoth
     ]
 
 instance RunMessage VengeanceAwaits where

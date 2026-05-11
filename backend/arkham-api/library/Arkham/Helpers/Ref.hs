@@ -1,6 +1,7 @@
 module Arkham.Helpers.Ref where
 
 import Arkham.Act.Types (Field (..))
+import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -26,6 +27,7 @@ targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
 targetToMaybeCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Maybe Card)
 targetToMaybeCard = \case
   ActTarget aid -> fieldMay ActCard aid
+  AgendaTarget aid -> fieldMay AgendaCard aid
   AssetTarget aid -> fieldMay AssetCard aid
   EventTarget aid -> fieldMay EventCard aid
   SkillTarget aid -> fieldMay SkillCard aid

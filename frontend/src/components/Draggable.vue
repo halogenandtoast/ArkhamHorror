@@ -174,6 +174,7 @@ onMounted(() => {
     el.style.top = `${initialTopPosition}px`
     el.style.position = 'absolute'
     el.style.transform = 'none'
+    moveUp()
   }
 })
 
@@ -242,6 +243,22 @@ function moveUp() {
 
   @media (max-width: 768px) {
     max-width: 100%;
+  }
+
+  &:has(> .content > .settings),
+  &:has(> .content > .shortcuts-modal) {
+    width: min(640px, 92vw);
+    max-width: 92vw;
+    background: var(--background);
+    border-color: var(--box-border);
+
+    > .content {
+      margin: 0;
+      border-radius: 0 0 16px 16px;
+      background: var(--background);
+      overflow: hidden;
+      height: auto;
+    }
   }
 
   &:not(.minimized) {

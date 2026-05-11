@@ -57,8 +57,8 @@ instance RunMessage CarsonSinclair where
     ResolveChaosToken t ElderSign iid | not (attrs `is` iid) -> do
       whenM (iid <=~> colocatedWith attrs.id) do
         chooseOneM attrs.id do
-          labeled "Resolve your Elder Sign ability" $ push $ ResolveChaosToken t ElderSign attrs.id
-          labeled "Do not resolve your Elder Sign ability" nothing
+          labeledI "useElderSign" $ push $ ResolveChaosToken t ElderSign attrs.id
+          labeledI "doNotResolveElderSign" nothing
       pure i
     EndRound -> CarsonSinclair <$> liftRunMessage msg (attrs & deleteMetaKey "used")
     Blanked EndRound -> CarsonSinclair <$> liftRunMessage msg (attrs & deleteMetaKey "used")

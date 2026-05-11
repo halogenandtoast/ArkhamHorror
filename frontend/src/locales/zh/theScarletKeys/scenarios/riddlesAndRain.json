@@ -1,0 +1,83 @@
+{
+  "heading": "Prologue",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you have 2 or more clues).",
+      "tablet": "-1. If there is a concealed mini-card at your location, reveal another chaos token.",
+      "elderThing": "-3. If you fail, you must either spend 1 clue or place 1 doom on an enemy in the shadows."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you have 2 or more clues).",
+      "tablet": "-2. If there is a concealed mini-card at your location, reveal another chaos token.",
+      "elderThing": "-4. If you fail, you must either spend 1 clue or place 1 doom on an enemy in the shadows."
+    }
+  },
+  "label": {
+    "theConnection": {
+      "coterieAgent": "Search the encounter deck and discard pile for a Coterie Agent enemy and draw it. Shuffle the encounter deck.",
+      "damageAndHorror": "Each investigator takes 1 damage and 1 horror."
+    },
+    "towerOfLondon": {
+      "attack": "Each enemy in the shadows attacks you."
+    }
+  },
+  "tooltips": {
+    "rainyLondonStreets": {
+      "resign": "\"We should wait for Inspector Flint...\""
+    }
+  },
+  "intro": {
+    "label": {
+      "onlyOne": "进入_引言2_",
+      "goAlone": "独自前往",
+      "goWithBackup": "一同前往",
+      "takeHisOffer": "接受他的安排",
+      "goToLondonOnYourOwnTerms": "自行前往伦敦"
+    },
+    "title": "File #5–A (Prologue): Riddles and Rain",
+    "intro1": "<p class='file'>_引言1_: 黑暗令人窒息。就像一个活物正逐渐将空气收紧，想将你困于无形的茧内。你希望这只是焦虑引起的过度想像。但这次会面让你的所有神经都高度警戒。你差点拒绝了这个神秘的邀请，但最近的事件让你别无选择。失踪事件已经持续了好几个月，而你在阿卡姆的线索已经全部断绝。</p><p>这一切是从1924年的冬天开始的，有几辆车在南区离奇消失，两辆斯图贝克、一辆凯迪拉克跟一辆劳斯莱斯，全是最顶级的车款，现场只剩下一个漏气的轮胎。警方认为是走私贩们的手笔，但这些车太高级了，会引来不必要的注意。它们也许被运往波士顿或纽约销赃了，你正这样觉得时……更多消失事件持续发生。.</p><p>接着消失的是在商业区沃德戏院外的路灯。然后两只宠物——一只狗跟一只猫，在不同的地点几乎同时从主人面前跑走，你从贴在大学街上的传单上得知这件事。出于一时的奇想，你访谈了两位饲主，看起来不像恶作剧，你也看不出宠物们有什么逃离他们的理由。这一切感觉有奇特的关联。</p><p>接着人们也开始失踪。东城区的一个小孩、米斯卡塔尼克大学的一名学生、阿卡姆消防局的队长。而就在警方由于找不到线索与嫌疑犯只好结束调查后，奇怪的事发生了。一个接一个，随着时间过去，消失的人事物也在人们的记忆中消失了。那些车辆的主人宣称他们从来没买过这些车，宠物、活人，所有关于他们的记忆都被从每个人的记忆中抹除了。</p><p>每个人，除了你以外，只有你一人还记得。</p><p>也许这是自然现象，人们一向善变又健忘。但事情不可能这么简单，这一切都太……奇怪了，也太巧合了。</p><p>就在此时，你收到了一封信。</p>",
+    "letter": "<p class='file typewriter'>你好，</p><p class='typewriter'>我希望这封信安全送达你手中。你不认识我，但我认识你。我不能在信中说太多，它可能会被拦截。简单来说我知道你正在调查的事，我也知道你认为自己是唯一一个，但事实上你不是。类似的事件不只在阿卡姆发生，你现在面临的事件也正在全世界各个主要城市发生。我是其中一员，跟你一样，找寻真相的人、未遗忘的人。</p><p class='typewriter'>我有另一件与此相关的事必须告诉你。我需要你的帮助，如同你需要我的一样。信中附上的是河景戏院的票。如果你想知道更多，请到那里跟我见面，让我们深入交谈。请独自前来。</p><p class='typewriter'>真挚的，</p><p class='accountant'>李·弗林特</p>",
+    "intro1Part2": "<p class='file'>信封中附上一张私人表演的票，地点是阿卡姆商业区新开幕的电影院。你已经失去所有线索，也没有更好的选择，你决定接受这个神秘的邀约。</p><ul><li>如果游戏中只有一名调查员, proceed to _引言2_.</li><li>If there is more than one investigator in the game, 调查员队长必须决定以下一项：<ul><li>*独自前往*。 跳到_引言3_.</li><li>*一同前往*。 跳到_引言4_.</li></ul></li></ul>",
+    "intro2": "<p class='file'>_引言2_: 就在你开始怀疑自己被耍了时，一个身影从走道靠近。那个身影一看到你就坐进你前方的座位。他戴着一副角框眼镜，丝质背心外穿着高领外套。他的短棕发被梳到一边，留着英俊整齐的胡子。你松了口气，并没有其他身影从黑暗中现身。</p><p>你询问他是否是李·弗林特，他微微的点了点头。他没有转身，声音伴随着寂静的电影画面传来。他说道：“没错。李·弗林特警探，国际刑警协会。我确定你有很多疑问，但恐怕我们没有太多时间。我们都是独自行事，你必须处处怀疑、谨慎，在任何情况下都不该相信任何人，包括我。”</p><p class='basic right'>跳到_引言5_.</p>",
+    "intro3": "<p class='file'>_引言3_: 就在你开始怀疑自己被耍了时，一个身影从走道靠近。那个身影一看到你就坐进你前方的座位。他戴着一副角框眼镜，丝质背心外穿着高领外套。他的短棕发被梳到一边，留着英俊整齐的胡子。你松了口气，并没有其他身影从黑暗中现身。</p><p>“你自己来了，很好。”他没有转身，声音伴随着寂静的电影画面传来。“在这种时候信任得来不易，很高兴我们之间能有一些信任。”你询问他是否是李·弗林特，他微微的点了点头。他说道：“没错。李·弗林特警探，国际刑警协会。我确定你有很多疑问，但恐怕我们没有太多时间。”</p><p class='basic right'>跳到_引言5_.</p>",
+    "intro4": "<p class='file'>_引言4_: 就在你开始怀疑自己被耍了时，一个身影从走道靠近。那个身影一看到你们就坐进你们前方的座位。他戴着一副角框眼镜，丝质背心外穿着高领外套。他的短棕发被梳到一边，留着英俊整齐的胡子。你们松了口气，并没有其他身影从黑暗中现身。</p><p>“我记得我要求你独自前来。”他没有转身，声音伴随着寂静的电影画面传来。他的语气透露他对于你的选择不太满意，但片刻后他缓和了下来。“我理解，你们不信任我，在任何情况下你们的确都不该相信任何人，包括我。”你询问他是否是李·弗林特，他微微的点了点头。他说道：“没错。李·弗林特警探，国际刑警协会。我确定你们有很多疑问，但恐怕我们没有太多时间。”</p><p class='basic right'>进入_引言5_.</p>",
+    "intro5": "<p class='file'>_引言5_: 弗林特从座椅中的空隙递给你一份厚重的资料夹。里面是与你调查内容相似的资料。车辆的照片、工厂里的机器，还有各种公共设施，都消失并被遗忘了。而就如弗林特说的，里面还有世界上其他城市的资料。伦敦、上海、布鲁日、里约热内卢、开罗，还有更多其他城市。你翻阅了一阵子后弗林特开口说道：“还不只这些，翻到最后一页。”</p><p>你照做，在末页看到两张被钉在一起的照片。第一张是伦敦某条街道，但被某种力量模糊了。一道光打在街角，它周围的景物看起来被扭曲了，就像是有一个小漩涡正在将周围的东西吸进去。另一张照片是在街角的另一端，有个男人隐没在阴影中，他穿着合身的灰色西装，戴着一顶遮住脸的宽边帽。唯一一个可辨识的东西是他的红色手套。有颜色的照片非常少见，你同时也在怀疑是不是曝光时间过长导致了模糊的效果。“这是几天前我的搭档拍摄的，就在他消失之前。无论到底发生什么事，一定都跟那个红手套的男人有关。”</p><p>你切入重点，直接询问弗林特警探希望你做什么。“一起行动、分享情报，共同发掘真相。”你同意了，如果他说的是真的，全世界都在发生类似的事件，那单凭你是无法查出真相的。”所以我必须邀请你跟我一起前往伦敦。红手套的男人在那里被目击，而且他不是单独行动。我敢打赌他知道我的搭档在哪里。我已经安排好了，档案夹里有张船票，两天后在波士顿出发。”</p><p class='basic'>调查员必须决定以下一项：</p><ul><li>*接受他的安排*。 进入_引言6_.</li><li>*自行前往伦敦*。 跳到_引言7_.</li></ul>",
+    "intro6": "<p class='file'>_引言6_: 你收下档案并向弗林特警探承诺你会回报调查到的任何事。你迅速的收拾东西，搭上下一班往波士顿的火车。弗林特给你的资讯量超越了你在阿卡姆调查一整个月的结果，如果跟ICPC合作能解开这个谜团，那暂时相信他也没什么不好。你提早了抵达伦敦，并立即展开调查。</p><ul><li>信任源于天真。从混乱袋中移除1个 {'{'}elderThing{'}'} 标记,并加入1个 {'{'}tablet{'}'} 标记。 (这个标记可以在以后透过隐密行动移除。但是，如果你坚持自己的信念，你可能会变得更加强大。)</li><li>阅读下一栏的“追踪时间”规则。立即在剧本日志中标记1 _时间_ 。然后,进入 _冒险设置_.</li></ul>",
+    "intro7": "<p class='file'>_引言7_: 你收下档案，但没有遵照弗林特的指示。毕竟你才刚认识他，不确定他是否值得信任。如果情况像他说的这么险恶，那光是跟他见面就已经够危险的了。你没有从波士顿出发，而是找了艘前往普利茅斯的渡轮，然后搭公车前往伦敦。这趟旅程花了比较长的时间，但至少你确信自己没有被跟踪，不管是被弗林特，还是红手套男人的同伙。</p><ul><li>欺骗滋养了不确定性。从混乱袋中移除1个 {'{'}tablet{'}'} 标记，并加入1个 {'{'}elderThing{'}'} 标记。 (这个标记可以在以后透过隐密行动移除。但是，如果你坚持自己的信念,你可能会变得更加强大。)</li><li>阅读下一栏的“追踪时间”规则。立即在剧本日志中标记2 _时间_ 。 然后,进入 _冒险设置_.</li></ul>"
+  },
+  "trackingTime": {
+    "title": "File #5–A (Prologue): Riddles and Rain",
+    "body": "<h3>追踪时间</h3><p class='file'>在此剧本中，追踪时间的流逝是至关重要的。随着时间的推移，这些超常般的事件将会变得越来越危险，而在你理解之外的密谋将会持续进展。此外，有些机会只会在某些时段窗口对你开放。当你被指示要在剧本日志标记一或更多 _时间_ 时, 依照经过时间的数量，在“经过的时间”标题下方填涂该数量的方框。</p><p>如果你填涂的方框有符号(使用希腊字母表示)，进入剧本手册的近况报告部分，找到对应该字母的近况报告，并将下方的文字朗读出来。</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Riddles and Rain*, *Crimson Conspiracy*, *Dark Veiling*, *Outsiders*, *Shadow of a Doubt*, *Strange Happenings*, *Chilling Cold*, *Locked Doors*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/riddles-and-rain.png' /><img src='{setImgPath}/crimson-conspiracy.png' /><img src='{setImgPath}/dark-veiling.png' /><img src='{setImgPath}/outsiders.png' /><img src='{setImgPath}/shadow-of-a-doubt.png' /><img src='{setImgPath}/strange-happenings.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/midnight-masks.png' /></section> When gathering *The Midnight Masks* encounter set, only gather the five treachery cards (2x False 线索 and 3x Hunting Shadow). Do not gather the locations, acts, agendas, and scenario reference cards from that set.",
+    "setSetsOutOfPlay": "Set the *Crimson Conspiracy* and *Outsiders* encounter sets aside, out of play.",
+    "placeLocations": "将大雨的伦敦街道地点放置入场。",
+    "beginPlay": "每位调查员从大雨的伦敦街道开始游戏。",
+    "remainingLocations": "Set each other location aside, out of play.",
+    "setOutOfPlay": "将戴红手套的男子和渡鸦之眼密钥放在一旁，置于场外。",
+    "miniCards": "拿取每张诱饵小卡和以下的小卡：戴红手套的男子和结社探员(A、B和C)。将它们放在一旁，置于场外。"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: 夜色渐深，受监视与被追捕的感觉也逐渐加深。你想起了那些弗林特警探给你的照片，想起了世界各地消失并被遗忘的人，你决定还是小心为上。你回到特拉法加广场上会面的地方，保持着低调。也许你没什么资讯可以交给弗林特警探，但总比另一种下场要好。</p><ul><li>跳到_结局4_.</li><ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 你搜寻了每个可能的躲藏处跟每条黑暗的长廊，但红手套确实已经离开了，就像消失在空气中一样。虽然有瞬间你怀疑他是不是像其他人一样被抹除了，但你不这样认为。没有痕迹，也没有黏液般的物质。他纯粹就是消失了。</p><p>你放弃搜寻他，转向检视在你们打斗中掉到地上的东西。那是一颗小小的红宝石珠，跟眼珠差不多大小。你查看了红手套翻找的墓穴，那颗珠子的大小与这具年代久远的遗骸的眼眶大小相符。珠子一定是与他一同被埋葬的，代表红手套在找的就是这个……但原因是什么呢？</p><p>仔细调查后，你还是找不到这名死者的姓名与身分，只发现一段刻在棺盖上的短诗：</p><p class='center'>我们因绯红结契。<br />我们因绯红为一。<br />手足智识皆深埋绯红之中。<br />安息吧，直至你再度献身。</p><p>你还没来的及思考其中的含意，上方就传来密门打开的声响，伴随着踏在楼梯上的沉重脚步声。你拿起武器准备战斗，但接着你惊讶地看见来人是弗林特警探。他被一名穿着黑色西装，头戴宽边帽的女性用枪指着，她有檀木般深色的皮肤，冷酷的眼睛下方有很深的眼袋，以及修短的卷发。另外还有两名身着西装的人伴随她进入墓穴，他们像雕像一般伫立，一言不发。她迅速展示了一枚你认不得的银色徽章，并示意你不要轻举妄动。她开口问：“那名戴着红手套的人去哪里了？你是谁？”</p><p>“现在我可以把手放下了吗？”弗林特警探问。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>Choose an investigator to be the bearer of 渡鸦之眼 and update the Campaign Log accordingly. From now on, whenever a character becomes the bearer of a Key, keep that Key handy for the rest of the campaign, as it will begin play attached to that character. (*In future scenarios, 渡鸦之眼 begins play attached to the investigator it is bound to.*)</li><li>In your Campaign Log, record *you haven’t seen the last of the Red-Gloved Man*.</li><li>在剧本日志中标记1 _时间_。</li><li>进入_幕间故事：基石_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 你缓慢的靠近以表示自己没有恶意。但不管你站在哪个角度，光线都无法照到红手套的脸。“我猜你——想知道——我来这里的原因。”他开口说，每个字的发音都充满了摩擦声、不自然的声调，重音落在错误的字词，字句间有很长的停顿。你点头，他指着一个在房间另一端的墓穴说：“好奇心是——无尽诅咒的——开始。”</p><p>你迟疑的靠近墓穴中的石棺，这会不会是个陷阱？石棺上没有这名死者的姓名与身分，你只发现一段刻在棺盖上的短诗：</p><p>我们因绯红结契。<br />我们因绯红为一。<br />手足智识皆深埋绯红之中。<br />安息吧，直至你再度献身。</p><p>你询问红手套这代表的意思。“他——需要再次——效力。“他沙哑的说。你打开棺盖，里面躺着一句古老的尸体，看起来有几百年的历史了。红宝石眼睛正反射着微弱的烛光，直直盯着你。“这是——礼物。“红手套的声音从背后传来。你把头撇开，试着在不看这恶心画面的状况下将红宝石从眼眶中拔出来。你转身想询问这个物品是什么，却发现他已经消失了，就像那些消失的人们一样。但没有痕迹，没有黏液物质，也没有离开的足迹。他就这样消失了。</p><p>你还没来的及思考其中的含意，上方就传来密门打开的声响，伴随着踏在楼梯上的沉重脚步声。你拿起武器准备战斗，但接着你惊讶的看见来人是弗林特警探。他被一名穿着黑色西装，头戴宽边帽的女性用枪指着，她有檀木般深色的皮肤，冷酷的眼睛下方有很深的眼袋，以及修短的卷发。另外还有两名身着西装的人伴随她进入墓穴，他们像雕像一般伫立，一言不发。她迅速展示了一枚你认不得的银色徽章，并示意你不要轻举妄动。她开口问：“那名戴着红手套的人去哪里了？你到底是谁？”</p><p>“现在我可以把手放下了吗？”弗林特警探问。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>Choose an investigator to be the bearer of 渡鸦之眼 and update the Campaign Log accordingly. From now on, whenever a character becomes the bearer of a Key, keep that Key handy for the rest of the campaign, as it will begin play attached to that character. (*In future scenarios, 渡鸦之眼 begins play attached to the investigator it is bound to.*)</li><li>In your Campaign Log, *record 未得知戴红手套的男子最后的下落*.</li><li>在剧本日志中标记1 _时间_。</li><li>进入_幕间故事：基石_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 你搜寻了每个可能的躲藏处跟每条黑暗的长廊，但红手套确实已经离开了，就像消失在空气中一样。虽然有瞬间你怀疑他是不是像其他人一样被抹除了，但你不这样认为。没有痕迹，也没有黏液般的物质。他纯粹就是消失了。</p><p>你放弃搜寻他，转向检视红手套翻找的墓穴，里面是具年代久远的遗骸，看来已经下葬数百年了。虽然没有东西可以比对，但你很确定红手套偷走的那颗红宝石珠原先一定是镶在死者的眼眶中。因为一边的眼眶已经腐烂并被蛛网覆盖，而另一边则很诡异的非常干净而光滑。不管那个珠子是什么，它一定就红手套在找的东西但……原因是什么呢？</p><p>仔细调查后，你还是找不到这名死者的姓名与身分，只发现一段刻在棺盖上的短诗：</p><p>我们因绯红结契。<br />我们因绯红为一。<br />手足智识皆深埋绯红之中。<br />安息吧，直至你再度献身。</p><p>你还没来的及思考其中的含意，上方就传来密门打开的声响，伴随着踏在楼梯上的沉重脚步声。你拿起武器准备战斗，但接着你惊讶地看见来人是弗林特警探。他被一名穿着黑色西装，头戴宽边帽的女性用枪指着，她有檀木般深色的皮肤，冷酷的眼睛下方有很深的眼袋，以及修短的卷发。另外还有两名身着西装的人伴随她进入墓穴，他们像雕像一般伫立，一言不发。她迅速展示了一枚你认不得的银色徽章，并示意你不要轻举妄动。她开口问：“那名戴着红手套的人去哪里了？你到底是谁？”</p><p>“现在我可以把手放下了吗？”弗林特警探问。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>戴红手套的男子 is the bearer of 渡鸦之眼. Update the Campaign Log accordingly. From now on, whenever a character becomes the bearer of a Key, keep that Key handy for the rest of the campaign, as it will begin play attached to that character. (*In future scenarios, if 戴红手套的男子 enters play, 渡鸦之眼 begins play attached to him.*)</li><li>In your Campaign Log, record *you haven’t seen the last of the Red-Gloved Man*.</li><li>在剧本日志中标记1 _时间_。</li><li>进入_幕间故事：基石_</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_结局4_: Y你神经紧绷地等待着弗林特警探出现。他一定出事了，但你还记得他的存在——这是好事。你焦虑地踱着步，努力记住他的脸、他的声音，跟引导你到此的一系列事件。嗒嗒嗒，也许你应该去找他，如果他遇上麻烦怎么办？嗒嗒嗒，也许他已经消失了，你是唯一记得他的人。红手套到底是何方神圣？嗒嗒嗒，你等了又等。</p><p>你差点没注意到对面的椅子被拉开，直到弗林特入座你才反应过来。他看起来没受伤，你松了一口气，但他看来有段时间没有睡觉了。他的额头上出现了焦虑的皱纹，双眼布满血丝，而且恐惧充斥其中。你感同身受。</p><p>你开玩笑说他迟到了，试着打破沉重的气氛。弗林特警探轻笑着点头：“我道歉。另一位ICPC的调查员失踪了”他解释道，焦虑与疲惫让他的声音充满苦涩。“请告诉我一些好消息。”</p><p>你叹了口气开始回报。在过程中弗林特漫不经心的把玩着自己的手指。他说：“这证明了红手套不是单独行动。”</p><p>“真是轻描淡写。”就在这时，有一个冷漠平淡的声音打断了你们，是一个坐在店里另一端的女人。她穿着黑色西装及长裤，头戴宽边帽。她一手拿着一枚无法辨识的银色徽章，另一手拿着手枪指着你们。她有檀木般深色的皮肤，冷酷的眼睛下方有很深的眼袋，以及修短的卷发。另外还有两名身着西装的人在她两侧，他们像雕像一般伫立，一言不发，他们的手也握着藏在西装外套中的手枪。你突然发现原本繁忙的茶馆只剩下你们两个，其他人都被请出去了。弗林特快速举高双手，你也马上照做。</p><p>那位女性开口问道：“那名戴着红手套的人在哪里？你们到底是谁？”</p><p>你跟弗林特交换了一个忧心的眼神，你们到底把自己牵扯进什么了？</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>戴红手套的男子 is the bearer of 渡鸦之眼. Update the Campaign Log accordingly. From now on, whenever a character becomes the bearer of a Key, keep that Key handy for the rest of the campaign, as it will begin play attached to that character. (*In future scenarios, if 戴红手套的男子 enters play, 渡鸦之眼 begins play attached to him.*)</li><li>In your Campaign Log, record *you haven’t seen the last of the Red-Gloved Man*.</li><li>在剧本日志中标记2 _时间_。</li><li>进入_幕间故事：基石_</li></ul>"
+    }
+  }
+}

@@ -53,5 +53,15 @@
   "theSpiderQueen4": "<p><b>The Spider Queen 4:</b> The creature is close to completing its design. Its legs move about swiftly, spinning thread after thread of cosmic silk with unearthly determination. It scarcely even recognizes your presence. Perhaps if you can sever its legs, or tear apart the webbing on which it stands…</p>",
   "xp": {
     "resolution1": "Prevented the Dreamlands and reality from merging."
+  },
+  "theGreatWebPrisonOfCocoons": {
+    "label": {
+      "placeDoom": "Place 1 doom on this location"
+    }
+  },
+  "theGreatWebCosmicWeb": {
+    "label": {
+      "placeDoom": "Place 1 doom on this location"
+    }
   }
 }

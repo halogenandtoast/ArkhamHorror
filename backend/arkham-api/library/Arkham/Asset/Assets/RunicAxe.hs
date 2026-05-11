@@ -14,6 +14,7 @@ import Arkham.Helpers.Location (getAccessibleLocations, getLocationOf, withLocat
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
 import Arkham.Message.Lifted.Choose
@@ -143,8 +144,9 @@ instance RunMessage RunicAxe where
           else do
             choices <- availableInscriptions iid attrs meta
             chooseOne iid
-              $ Label "Do not spend charges" []
-              : [ Label (tshow i)
+              $ Label "$cards.label.runicAxe.doNotSpendCharges" []
+              : [ Label
+                    (cardI18n $ ikey' $ "label.runicAxe.inscription." <> tshow i)
                     $ [SpendUses (attrs.ability 1) (toTarget attrs) Charge 1, DoStep (fromEnum i) msg]
                     <> imbueAgain
                 | i <- choices
@@ -153,8 +155,10 @@ instance RunMessage RunicAxe where
     Do msg'@(ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) _) -> do
       choices <- availableInscriptions iid attrs meta
       chooseOne iid
-        $ Label "Do not use additional imbue from Scriptweaver " []
-        : [ Label (tshow i) [DoStep (fromEnum i) msg']
+        $ Label "$cards.label.runicAxe.doNotUseAdditionalImbue" []
+        : [ Label
+              (cardI18n $ ikey' $ "label.runicAxe.inscription." <> tshow i)
+              [DoStep (fromEnum i) msg']
           | i <- choices
           ]
       pure a
@@ -221,9 +225,9 @@ instance RunMessage RunicAxe where
         canHealHorror <- canHaveHorrorHealed (attrs.ability 1) iid
         when (isJust mCanDraw || canHealDamage || canHealHorror) do
           chooseOne iid
-            $ [Label "Draw 1 card" [drawing] | drawing <- maybeToList mCanDraw]
-            <> [Label "Heal 1 damage" [HealDamage (toTarget iid) (attrs.ability 1) 1] | canHealDamage]
-            <> [Label "Heal 1 horror" [HealHorror (toTarget iid) (attrs.ability 1) 1] | canHealHorror]
+            $ [Label "$label.cards.runicAxe.draw1Card" [drawing] | drawing <- maybeToList mCanDraw]
+            <> [Label "$label.cards.runicAxe.heal1Damage" [HealDamage (toTarget iid) (attrs.ability 1) 1] | canHealDamage]
+            <> [Label "$label.cards.runicAxe.heal1Horror" [HealHorror (toTarget iid) (attrs.ability 1) 1] | canHealHorror]
           push $ DoStep (n - 1) msg'
       pure a
     ResolvedAbility ab | ab.source == toSource attrs -> do

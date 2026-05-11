@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.ChaosToken
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 
 newtype Metadata = Metadata {revealedChaosTokens :: [ChaosToken]}
@@ -33,10 +34,12 @@ instance RunMessage HenryWan where
       let source = attrs.ability 1
       chooseOneM iid do
         if any invalidToken tokens
-          then labeled "Do nothing" $ handleTarget iid source attrs
+          then labeledI "doNothing" do
+            resetChaosTokens (attrs.ability 1)
+            unfocusChaosTokens
           else do
-            labeled "Stop" $ handleTarget iid source attrs
-            labeled "Draw Another" $ requestChaosTokens iid source 1
+            labeledI "stop" $ handleTarget iid source attrs
+            labeledI "drawAnotherToken" $ requestChaosTokens iid source 1
       pure $ HenryWan (attrs `with` Metadata (tokens <> revealedChaosTokens meta))
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) _ -> do
       resetChaosTokens (attrs.ability 1)
@@ -47,8 +50,8 @@ instance RunMessage HenryWan where
       drawOk <- can.draw.cards iid
       resourceOk <- can.gain.resources iid
       when (drawOk || resourceOk) do
-        chooseOrRunOneM iid do
-          when drawOk $ labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
-          when resourceOk $ labeled "Gain 1 resources" $ gainResources iid (attrs.ability 1) 1
+        chooseOrRunOneM iid $ withI18n $ countVar 1 do
+          when drawOk $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+          when resourceOk $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
       pure a
     _ -> HenryWan . (`with` meta) <$> liftRunMessage msg attrs

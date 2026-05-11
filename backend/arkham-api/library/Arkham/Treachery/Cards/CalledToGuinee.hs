@@ -2,7 +2,6 @@ module Arkham.Treachery.Cards.CalledToGuinee (calledToGuinee) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -18,7 +17,7 @@ instance HasModifiersFor CalledToGuinee where
 
 instance HasAbilities CalledToGuinee where
   getAbilities (CalledToGuinee a) =
-    [restricted a 1 (InThreatAreaOf You) $ actionAbilityWithCost (HandDiscardCost 3 #any)]
+    [restricted a 1 OnSameLocation $ actionAbilityWithCost (HandDiscardCost 3 #any)]
 
 instance RunMessage CalledToGuinee where
   runMessage msg t@(CalledToGuinee attrs) = runQueueT $ case msg of

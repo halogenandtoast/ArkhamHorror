@@ -52,8 +52,8 @@ instance RunMessage ArchiveOfConduitsGatewayToTindalos4 where
           chooseTargetM iid enemies \enemy -> do
             moveTo (attrs.ability 2) iid' location
             chooseOneM iid do
-              labeled "Do not remove Leyline" nothing
-              labeled "Remove Leyline" do
+              labeledI "doNotRemoveLeyline" nothing
+              labeledI "removeLeyline" do
                 removeTokens (attrs.ability 2) (toTarget enemy) Token.Leyline 1
                 nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy
       pure a

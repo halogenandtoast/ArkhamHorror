@@ -22,7 +22,7 @@ instance HasAbilities WishEater where
   getAbilities (WishEater attrs) =
     [ restricted attrs 1 ControlsThis
         $ triggered
-          (RevealChaosToken #when You $ oneOf [#skull, #cultist, #tablet, #elderthing])
+          (RevealChaosToken #cancel You $ oneOf [#skull, #cultist, #tablet, #elderthing])
           (assetUseCost attrs Charge 1)
     , controlled
         attrs

@@ -22,7 +22,7 @@ instance HasModifiersFor DarkFuture where
 
 instance HasAbilities DarkFuture where
   getAbilities (DarkFuture a) =
-    [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #after You]
+    [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage DarkFuture where
   runMessage msg t@(DarkFuture attrs) = runQueueT $ case msg of

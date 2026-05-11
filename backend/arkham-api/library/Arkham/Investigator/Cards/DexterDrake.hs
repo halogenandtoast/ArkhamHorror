@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (Discarded, DuringTurn)
@@ -72,7 +73,7 @@ instance RunMessage DexterDrake where
       assets <- select $ AssetWithPlacement (InPlayArea iid) <> AssetCanLeavePlayByNormalMeans
       when (notNull assets) do
         chooseOneM iid do
-          labeled "Do no return an asset" nothing
+          cardI18n (scope "dexterDrake" $ labeled' "skip") nothing
           targets assets \asset -> do
             push $ ReturnToHand iid (toTarget asset)
             drawCardsIfCan iid attrs 1

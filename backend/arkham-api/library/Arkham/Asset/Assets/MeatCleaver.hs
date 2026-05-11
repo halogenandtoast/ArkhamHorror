@@ -49,7 +49,7 @@ instance RunMessage MeatCleaverEffect where
       for_ attrs.target.investigator \iid -> do
         whenM (canHaveHorrorHealed attrs.source iid) do
           chooseOneM iid do
-            labeled "Do not heal" nothing
+            labeledI "doNotHeal" nothing
             horrorLabeled iid $ healHorror iid attrs.source 1
       disableReturn e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do

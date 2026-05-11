@@ -6,6 +6,7 @@
     "pullUpdate": "从{deckSource}获取更新后的牌组",
     "OR": "或者",
     "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
+    "orUploadJson": "或上传JSON",
     "Upgrade": "升级",
     "continueWithoutUpgrading": "跳过升级，直接继续",
     "waitingOtherPlayer": "正在等待其他玩家升级牌组。",

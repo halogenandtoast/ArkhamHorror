@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Window (cardPlayed)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
@@ -31,9 +32,9 @@ instance RunMessage HallowedMirror3 where
   runMessage msg a@(HallowedMirror3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       chooseOneM iid do
-        labeled "Change each \"2\" to a \"3\"" do
+        cardI18n $ labeled' "hallowedMirror3.changeEach" do
           eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
-        labeled "Shuffle it into your deck instead of discarding it" do
+        cardI18n $ labeled' "hallowedMirror3.shuffleItInto" do
           cardResolutionModifier card (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

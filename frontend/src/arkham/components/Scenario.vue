@@ -522,7 +522,7 @@ const hollowed = computed(() => [...new Set(Object.values(props.game.investigato
 const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
-const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
+const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnderScenarioReference.value.length))
 const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
@@ -1094,7 +1094,7 @@ async function addChaosToken(face: any){
             <div v-if="discards.length > 0" class="buttons">
               <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
               <template v-if="debug.active">
-                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">Shuffle Back In</button>
+                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
               </template>
             </div>
           </div>

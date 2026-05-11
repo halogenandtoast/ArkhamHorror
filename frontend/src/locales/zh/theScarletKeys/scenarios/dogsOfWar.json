@@ -1,0 +1,153 @@
+{
+  "heading": "档案#38-N",
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 (-3 instead if you are at a location with a Key Locus).",
+      "cultist": "–3. If you fail, either take 1 damage and 1 horror, or place 1 doom on the nearest Key Locus or _Locus Site_ location.",
+      "tablet": "–2. If this is an attack against an enemy with patrol, after this attack, it disengages and resolves its patrol keyword.",
+      "elderThing": "-2. For each point you fail by, lose 1 resource (max 3)."
+    },
+    "hardExpert": {
+      "skull": "–2 (-4 instead if you are at a location with a Key Locus).",
+      "cultist": "–5. If you fail, either take 1 damage and 1 horror, or place 1 doom on the nearest Key Locus or _Locus Site_ location.",
+      "tablet": "–2. If this is an attack against an enemy with patrol, after this attack, it attacks you, disengages, and resolves its patrol keyword.",
+      "elderThing": "-3. For each point you fail by, lose 1 resource."
+    }
+  },
+  "tooltips": {
+    "catacombsOfKomElShoqafa": {
+      "investigate": "{'{'}action{'}'}: Investigate. If you succeed, instead of discovering clues, draw 3 cards. You may reduce the difficulty of this test by 2. If you do, draw 1 fewer card if you succeed. (Group limit once per round.)"
+    },
+    "theBourse": {
+      "investigate": "{'{'}action{'}'}: Investigate. If you succeed, instead of discovering clues, gain 4 resources. You may reduce the difficulty of this test by 2. If you do, gain 2 fewer resources if you succeed. (Group limit once per round.)"
+    },
+    "theClaretKnight": {
+      "to": "{'{'}fast{'}'} Exhaust 酒红骑士: Move up to 3 resources from your resource pool to 酒红骑士.",
+      "from": "{'{'}fast{'}'} Exhaust 酒红骑士: Move up to 3 resources from 酒红骑士 to your resource pool, or to an asset you control as charges, ammo, supplies, or secrets."
+    }
+  },
+  "label": {
+    "theClaretKnight": {
+      "resources": "Move up to 3 resources"
+    },
+    "zanEtElSettat": {
+      "increaseFight": "Increase that enemy's fight by 2 for this attack."
+    },
+    "catacombsOfKomElShoqafa": {
+      "reduceDifficulty": "Reduce difficulty by 2 and draw 1 fewer card",
+      "doNotReduce": "Do not reduce",
+      "pay": "Pay 1{'{'}perPlayer{'}'} clues",
+      "doNotPay": "Do not pay"
+    },
+    "theBourse": {
+      "reduceDifficulty": "Reduce difficulty by 2 and gain 2 fewer resources",
+      "doNotReduce": "Do not reduce",
+      "pay": "Pay 1{'{'}perPlayer{'}'} clues",
+      "doNotPay": "Do not pay"
+    }
+  },
+  "intro": {
+    "title": "File #38–N: Dogs of War",
+    "label": {
+      "weAccept": "*“好吧，我接受。”*",
+      "refuse": "拒绝。"
+    },
+    "fewerThanTwentyTime": "如果经过小于20 _时间_ , proceed to _Intro 2._",
+    "twentyOrMoreTime": "If 20 or more time has passed, skip to Intro 3.",
+    "intro1": "<p class='file'>_引言1_: 当你在亚历山卓下车的瞬间，你的寒毛都竖了起来。乌云笼罩着城市，来自地中海的波涛不祥地打在海岸线上。但即将来临的风暴不是你感到不安的原因，而是那些跟踪你的人。</p><p>一开始只有寥寥数人，你猜是当地政府的人员，至少他们的伪装看起来是这样。也许是基石派来确保你忠实执行任务的人；又或许是来监视潜在威胁的结社爪牙。你走在街道上，向着你晚上入住的温莎饭店前进，但每次你转头时都看到更多的人在聚集。你开始思考计划，以防万一。也许你可以出奇不意的直面他们，质问他们到底想要什么。但突然一群人挡住你的去路，中断你的思绪。</p><p>“欢迎来到亚历山卓，探员。没错，我们知道你是谁。”其中一人开口说，出乎你意料的是，他举起手向你示意自己没带武器。在这个距离下你清楚看到他们身上的红色配件，领带、袖扣之类的，泄漏了他们的身份。“别紧张，我们没有恶意，我们之中有人想跟你谈谈，你也许可以帮我们解决这里的一些问题。”</p><p>你无法置信他们提出这么直接的要求，你讥讽的说自己可不打算踏入野兽的陷阱。他回答：“我了解你的顾虑，但我保证你会愿意考虑这个交易。如果你是来找野兽的，那我们的目标是一样，信不信由你。这个邀请是来自于一位更有智慧也更不具威胁性的成员，我向你保证。来吧，我们有很多事要讨论。”</p><p>你考虑了一下，不管是不是陷阱，你都不能错过一个跟结社高层会面的机会。情报是你最有力的武器，而不管结果如何，这场会面将会让你得知更多情报。你同意跟他们走，但以防万一，你一路上都对护送你的人保持警戒。</p><p>出乎你意料之外，你们搭着马车来到市中心的证券交易所。你跟着护送你的人穿越穿着华贵的忙碌人群，登上楼梯，走过上锁的大门来到建筑物顶层。你突然意识到这里不是单纯的交易所，而是结社的据点。门的另一边是间巨大的房间，装饰着许多文物跟中世纪欧洲的艺术品，包含一座穿着绯红色全套盔甲的骑士雕像。</p><p class='basic'>检查剧本日志上经过多少_时间_。</p>",
+    "intro2Part1": "<p class='file'>_引言2_: 这里的主人在你走进房间时欢迎你，他是一名看起来像是英裔或法裔的长者，他穿着一袭红色的古典正装，披着棕色的外套。“啊，客人来了。”他示意请你入座。他的口音明显来自欧洲，可能是英国或法国。虽然他满头白发、身形单薄，忧虑在他脸上刻下许多皱纹，但他身上散发着充满活力且威严的气息。他靠在一根锃亮的银色拐杖上，但看起来似乎并不需要靠它走路。如果要你猜的话，你觉得他并没有外表看起来这么年迈。</p>",
+    "miskatonicOrScholar": "<div class='red'><p>_如果有米斯卡塔尼克或学者属性的调查员,阅读_: 你看向房间后方巨大的画作，画作中的骑士一身绯红色。你判断这幅画的来源应该是英国或法国，时间大约是12世纪后期的金雀花王朝，很有趣……</p></div>",
+    "intro2Part2": "<p>“我相信你一定有很多疑问，但请先容我自我介绍，在我漫长的一生中有过许多称呼，但你可以和其他人一样，简单的称呼我为酒红骑士。我知道你为何而来，你正在寻找这个，对吗？”他打开旁边的一个柜子，当门打开时，一道光照亮了房间。柜中是一个透明的小瓶，里面装着蓝宝石色泽的液体，毫无疑问，这就是你在追寻的密钥。你的思绪飞快的运转起来，考虑着各种可能的方案，但在场有太多骑士的手下，你最后还是决定拿出你最礼貌的姿态……至少暂时这样。</p><p>“我们已经守护这个圣物：法罗斯之光很长一段时间了。保护它不落入作恶的人手中，我们用它来引导人类。只有我们有能力让它免于恶人与狂人的掌握。现在的问题是：有其他人觊觎法罗斯之光，一个远不能称为正派的人。”</p><p>是野兽，你大声说出推测。骑士确认了你的说法：“没错。而在你开口问前——没错，牠是我们荣誉结社的一员。”你说出你的疑问，为什么两名结社成员会互相冲突，而不是合作？“这个嘛，近年来入会的标准有点低。”骑士轻笑着开玩笑说。“事实上是，我对野兽没有好感，我无法认同牠的作风，牠吸引了太多不必要的注意。”他如海洋般深蓝色的双眼定睛注视你，彷佛想取得更多信任。</p><p>你提醒他时间不多，他到底想要什么？他回应：“当然。就像我说的，我们代代守护这个圣物，如果让它落到不对的人手中就太可惜了，不是吗？但野兽步步逼近，在牠看来，朋友、敌人，甚至毫不相关的人都只是牠前进路上的小小牺牲品。牠在逼近我们，逼近法罗斯之光。身为它的守护者，我必须尽我所能保护它的安全，所以我将你找来，提出一个交易。”他向其中一名手下点点头，手下将柜门关起并锁上。空气泛起一阵波动，柜门关上的同时，一股压力降临到整座建物上，你的耳朵在压力变化下感到一阵疼痛。</p><p>“这是一个力量之地，我们在城市中建造了数个这样的地方来防止不速之客。如果你不是被护送进来，就会被烧成灰烬。但这样的护所还是可能被摧毁，然后野兽就能像恶狼一般扑到我们身上。我们没办法同时身处数地，我们需要你的帮助守卫护所，才能维持法罗斯之光的防护圈。作为回报，我会告诉你关于我们组织的事。而同时你可以保护这座美丽的城市，它已经遭受过太多苦难了。你说呢？我可以仰赖你做出正确的选择吗？”</p><p class='basic'>调查员必须决定以下一项：</p><ul><li>*“好吧，我接受。”* 跳到_引言4_.</li><li>拒绝。 跳到_引言5_</li></ul>",
+    "intro3": "<p class='file'>_引言3_: 这里的主人在你走进房间时欢迎你，他是一名看起来像是英裔或法裔的长者，他穿着一袭红色的古典正装，披着棕色的外套。“阿，客人来了。”他示意请你入座。他的口音明显来自欧洲，可能是英国或法国。虽然他满头白发、身形单薄，忧虑在他脸上刻下许多皱纹，但他身上散发着充满活力且威严的气息。他靠在一根锃亮的银色拐杖上，但看起来似乎并不需要靠它走路。如果要你猜的话，你觉得他并没有外表看起来这么年迈。</p><p>“我相信你一定有很多疑问，但请先容我自我介绍，在我漫长的一生中有过许多称呼，但你可以和其他人一样，简单的称呼我为酒红骑士。我知道你为何而来，你正在寻找我们守护了无数世纪的东西。但就算我有意交给你——虽然不可能。你还是来晚了。”他指向旁边一个几乎被撕成碎片的柜子，柜门吊在绞炼上，里面空空如也。</p><p>“我们已经守护法罗斯之光很长一段时间了。保护它不落入作恶的人手中，我们用它来引导人类。但它现在被夺走了，在我们取回它之前，战争都无法结束。”</p><p>是野兽，你大声说出推测。骑士确认了你的说法：“没错。而在你开口问前——没错，牠是我们荣誉结社的一员。”你说出你的疑问，为什么两名结社成员会互相冲突，而不是合作？“我当时宁愿拔光我的胡子也要阻止牠加入，请原谅我的双关语。”骑士苦笑着说。“事实上是，我对野兽没有好感，我无法认同牠的作风，牠吸引了太多不必要的注意。”他如海洋般深蓝色的双眼定睛注视你，彷佛想取得更多信任。</p><p>你提醒他时间不多，他到底想要什么？他回应：“当然。我想我们都同意不能让这个圣物落入这种怪物手中。它保管在这会比较安全，在层层防护下，在这个它安置数个世代的地方。身为它的守护者，我必须尽我所能将它取回，所以我将你找来，提出一个交易。”他示意其中一名手下，手下拿出一张地图，上面用红圈标记了几座建筑。</p><p>“这些是护所，我们在城市中建立的力量之地，用来防止不速之客进入的堡垒。它们曾经与这个地方连结，但现在野兽扭转了它们的力量。法罗斯之光就藏在城市里某处，被原本效力于我们的魔法保护着。如果我们能破坏这些护所，就能进入野兽的巢穴取回圣物并将它保管在这里，它原本归属的地方。作为回报，我会告诉你关于我们组织的事。而同时你可以保护这座美丽的城市，它已经遭受过太多苦难了。你说呢？我可以仰赖你做出正确的选择吗？”</p><p class='basic'>调查员必须决定以下一项：</p><ul><li>*“好吧，我接受。”* 跳到_引言6_.</li><li>拒绝。 跳到_引言7_.</li></ul>",
+    "intro4": "<p class='file'>_引言4_: 你同意帮忙守护法罗斯之光。</p><ul><li>In your Campaign Log, record *与酒红骑士达成交易。*.</li><li>Remove 1 {'{'}elderThing{'}'} token from the chaos bag. Add 1 {'{'}tablet{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>进入_冒险设置(版本 I)_.</li></ul>",
+    "intro5": "<p class='file'>_引言5_: “可惜。”骑士叹了口气，语气瞬间改变。“很好，我们会独自面对这个威胁，但我恐怕必须要求你立即离开这座城市。”你不同意，但骑士的手下开始向你逼近。骑士起身，你没想过一名老人身上能散发出这种压迫感，他带着天神般的威严命令道：“你在我的城市中不再受到欢迎，我们不会放任自己同时面对两名对手。立刻离开，不然就准备承担后果。”</p><p>在目标唾手可得的状况下打退堂鼓令你感到痛苦。但如果骑士所言不虚，你必须破坏数个护所才能夺得你的目标，而你不但四面楚歌也寡不敌众。你决定最好先离开结社的要塞，重整态势后再继续寻找密钥。</p><p>但是命运通常都有意想不到的安排。你一离开交易所，就有一名穿条纹西装，带着红色土耳其帽的男子走上前。奇怪的是，他快速向你展示一个看起来像基石的徽章，示意你到旁边的巷子谈话。你确认自己没有被监视后跟着他走进巷子，他用英语向你问好：“霍萨姆·西里，供你差遣。调查官泰勒说过你会来。你拿到的那个卷宗是我搜集的情报。”你看着他的外表，他与酒红骑士那群人不同，他是本地人，有深色的皮肤跟深棕色的眼睛，下巴的线条方正，留着小胡子。但是你的视线还是不自主的飘向他的红色帽子。他翻了个白眼轻笑道：“别担心，我跟他们不是一伙的，你很难找得到其他颜色的这种帽子。”你松了口气。“看你被送出来的样子，我想你没有接受他们的条件对吧？”</p><p>你告诉西里探员在交易所中发生的事。“你的选择是对的。打从任何人有记忆起，那些结社走狗在亚历山卓一直都根深蒂固。他们认为这座城市是他们的，但并不是，这里应该是属于人民的，属于我们的。”他的激奋溢于言表，不只是针对结社，同时也是对于那些想要控制自己家乡的外来者们的怨恨。“这些远道而来的侵略者们表现的一副他们的统治、他们的侵占，是一种礼物。”</p><p>西里探员将手放上你的肩膀。“我们可以互相帮助。你的目标是取得骑士的密钥对吧？这将削弱结社对这座城市的控制，也是我所乐见的结果。”你点头同意，这场冲突对你来说虽然不像西里探员一样出自于私人恩怨，但你依然会全力以赴。</p><ul><li>Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}elderThing{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>In your Campaign Log, record *协助西里探员。*.</li><li>进入_冒险设置(版本 II)_.</li></ul>",
+    "intro6": "<p class='file'>_引言6_: 你同意帮忙夺回法罗斯之光。</p><ul><li>In your Campaign Log, record *与酒红骑士达成交易。*.</li><li>Remove 1 {'{'}elderThing{'}'} token from the chaos bag. Add 1 {'{'}tablet{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>进入_冒险设置(版本 III)_.</li></ul>",
+    "intro7": "<p class='file'>Intro 7: “愚蠢的决定。”骑士叹了口气，语气瞬间改变。“很好，我们会独自面对这个威胁，但我恐怕必须要求你立即离开这座城市。”你不同意，但骑士的手下开始向你逼近。骑士起身，你没想过一名老人身上能散发出这种压迫感，他带着天神般的威严命令道：“你在我的城市中不再受到欢迎，我们不会放任自己同时面对两名对手。立刻离开，不然就准备承担后果。”</p><p>既然拒绝了他的提议，你也没有什么立场跟他讨价还价。但你还是取得了一些关于密钥所在的情报。你决定最好先离开结社的堡垒，然后抢在骑士跟他的手下之前打倒野兽。</p><p>但是命运通常都有意想不到的安排。你一离开交易所，就有一名穿条纹西装，带着红色土耳其帽的男子走上前。奇怪的是，他快速向你展示一个看起来像基石的徽章，示意你到旁边的巷子谈话。你确认自己没有被监视后跟着他走进巷子，他用英语向你问好：霍萨姆·西里，供你差遣。调查官泰勒说过你会来。你拿到的那个卷宗是我搜集的情报。”你看着他的外表，他与酒红骑士那群人不同，他是本地人，有深色的皮肤跟深棕色的眼睛，下巴的线条方正，留着小胡子。但是你的视线还是不自主的飘向他的红色帽子。他翻了个白眼轻笑道：“别担心，我跟他们不是一伙的，你很难找得到其他颜色的这种帽子。”你松了口气。“看你被送出来的样子，我想你没有接受他们的条件对吧？”</p><p>你告诉西里探员在交易所中发生的事。“你的选择是对的。打从任何人有记忆起，那些结社走狗在亚历山卓一直都根深蒂固。他们认为这座城市是他们的，但并不是，这里应该是属于人民的，属于我们的。”他的激奋溢于言表，不只是针对结社，同时也是对于那些想要控制自己家乡的外来者们的怨恨。“这些远道而来的侵略者们表现的一副他们的统治、他们的侵占，是一种礼物。如果他们取回密钥，他们将重新巩固对这座城市的控制。”</p><p>西里探员将手放上你的肩膀。“我们可以互相帮助。你的目标是取得野兽的密钥对吧？我们不能让他们任何一方得到密钥，这点非常重要。跟我来吧，我有些能帮助你的东西。”你点头同意，这场冲突对你来说虽然不像西里探员一样出自于私人恩怨，但你依然会全力以赴。</p><ul><li>Remove 1 {'{'}tablet{'}'} token from the chaos bag. Add 1 {'{'}elderThing{'}'} token (if there are already 4, each investigator earns 1 experience instead).</li><li>In your Campaign Log, record *协助西里探员。*.</li><li>进入_冒险设置(版本 III)_.</li></ul>"
+  },
+  "version1": {
+    "setup": {
+      "title": "冒险设置(版本 I)",
+      "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, and *Dark Cult*. These sets are indicated by the following icons: <section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/dark-cult.png'></section>",
+      "placeLocations": "将下列地点放置入场：温莎皇宫饭店、维多利亚大学、奎贝堡、滨海大道和萨内特塞塔特。",
+      "startAt": "每位调查员从奎贝堡开始游戏。",
+      "agendaDeck": "只使用密谋1a“风雨欲来(版本 I)”形成密谋牌堆。从游戏中移除其他每张密谋。",
+      "actDeck": "只使用场景1a“狡兔三窟(版本 I)”形成场景牌堆。从游戏中移除其他每张场景。",
+      "keyLocus": "将每张密钥护所剧情支援放置入场，在四个 _护所地_ 地点上各放一张，(*最后防线*) 面朝上。",
+      "doom": "在这些地点上各放置1个毁灭标记。",
+      "otherLocations": "将交易所 (*于护所守护之下*) 和卡默埃尔法墓穴 (*血腥汇聚点*) 地点放置入场。从游戏中移除交易所和卡默埃尔法墓穴的其他版本。",
+      "theClaretKnight": "将酒红骑士放置入场到交易所，剧情支援面朝上。将法罗斯之光密钥附属到酒红骑士身上。现在酒红骑士和法罗斯之光密钥被所有调查员控制。",
+      "theBeast": "调查员队长将猩红斗篷下的野兽生成到卡默埃尔法墓穴上， (*赤色的毁灭*) 面朝上。"
+    }
+  },
+  "version2": {
+    "setup": {
+      "title": "冒险设置(版本 II)",
+      "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Cleanup Crew*, *Scarlet Sorcery*, *Spatial Anomaly*, and *Spreading Corruption*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/cleanup-crew.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'></section>",
+      "placeLocations": "将下列地点放置入场：温莎皇宫饭店、维多利亚大学、奎贝堡、滨海大道和萨内特塞塔特。",
+      "startAt": "每位调查员从奎贝堡开始游戏。",
+      "agendaDeck": "只使用密谋1a“风雨欲来(版本 II)”形成密谋牌堆。从游戏中移除其他每张密谋。",
+      "actDeck": "只使用场景1a“狡兔三窟(版本 II)”形成场景牌堆。从游戏中移除其他每张场景。",
+      "keyLocus": "将每张密钥护所剧情支援放置入场，在四个 _护所地_ 地点上各放一张，(*防卫屏障*) 面朝上。",
+      "otherLocations": "将交易所 (*结社据点*) 和卡默埃尔法墓穴 (*远古墓穴*) 地点放置入场。从游戏中移除交易所和卡默埃尔法墓穴的其他版本。",
+      "theClaretKnight": "将酒红骑士生成到交易所，敌人面朝上。将法罗斯之光密钥附属到酒红骑士身上，在他的控制之下。",
+      "theBeast": "将酒红骑士生成到交易所，敌人面朝上。将法罗斯之光密钥附属到酒红骑士身上，在他的控制之下。",
+      "miniCards": "拿取每张诱饵小卡和以下的小卡：结社刺客(A和B)和结社执行者(A和B)。将它们放在一旁，置于场",
+      "coterieAssassin": "调查员队长查找拿取的遭遇卡牌中，找出一张结社刺客(A)并将其抽取，结算其隐蔽关键字，结算时每有一位其他的调查员，多拿1张诱饵小卡。"
+    }
+  },
+  "version3": {
+    "setup": {
+      "title": "冒险设置(版本 III)",
+      "gatherSets": "Gather all cards from the following encounter sets: *Dogs of War*, *Cleanup Crew*, *Scarlet Sorcery*, *Spatial Anomaly*, *Spreading Corruption*, and *Dark Cult*. These sets are indicated by the following icons: <section class='encounter-sets'><img src='{setImgPath}/dogs-of-war.png'><img src='{setImgPath}/cleanup-crew.png'><img src='{setImgPath}/scarlet-sorcery.png'><img src='{setImgPath}/spatial-anomaly.png'><img src='{setImgPath}/spreading-corruption.png'><img src='{setImgPath}/dark-cult.png'></section>",
+      "placeLocations": "将下列地点放置入场：温莎皇宫饭店、维多利亚大学、奎贝堡、滨海大道和萨内特塞塔特。",
+      "startAt": "每位调查员从奎贝堡开始游戏。",
+      "agendaDeck": "只使用密谋1a“风雨欲来(版本 III)”形成密谋牌堆。从游戏中移除其他每张密谋。",
+      "actDeck": "只使用场景1a“狡兔三窟(版本 III)”形成场景牌堆。从游戏中移除其他每张场景。",
+      "keyLocus": "将每张密钥护所剧情支援放置入场，在四个 _护所地_ 地点上各放一张，(*防卫屏障*) 面朝上。",
+      "otherLocations": "将交易所 (*商业中心*) 和卡默埃尔法墓穴 (*野兽巢穴*) 地点放置入场。从游戏中移除交易所和卡默埃尔法墓穴的其他版本。",
+      "theBeast": "将猩红斗篷下的野兽生成到卡默埃尔法墓穴上，(*披羊皮的狼*) 面朝上。 将法罗斯之光密钥附属到猩红斗篷下的野兽身上，在其控制之下。",
+      "theClaretKnight": "从游戏中移除双面的酒红骑士敌人/支援。",
+      "miniCards": "拿取每张诱饵小卡和以下的小卡：结社刺客(A和B)和结社执行者(A和B)。将它们放在一旁，置于场外。"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "version1": "_If no resolution was reached (each investigator was defeated) and the version you played was (版本 I)_: 跳到_结局3_.",
+      "version2": "_If no resolution was reached (each investigator resigned or was defeated) and the version you played was (版本 II)_: 跳到_结局4_.",
+      "version3": "_If no resolution was reached (each investigator resigned or was defeated) and the version you played was (版本 III)_: 跳到_结局7_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 酒红骑士清清喉咙，恢复原本从容冷静的样子。如果不是亲眼见到，你会以为他从来没担心过任何事。但你清楚记得他在以为一切都结束时，脸上紧绷而恐惧的表情与你如出一辙。骑士宣告：“再一次的，邪恶力量想要将我们逐出应许之地，但我们也再一次赢得了胜利。”在他身上已经看不到恐惧的痕迹了，他恢复了你们第一次见面的那种沉稳。确认密钥仍安全的存放在保险箱后，他转向你，跟你握手并示意你在桌子前坐下。“请坐，你完成了你的承诺，现在轮到我了。我承诺会给你答案，你的问题将得到解答。”</p><ul><li>跳到_结局8_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 你藏身在西里探员城外的安全屋中几天，稍晚之后你与他会面，你的战利品安全的在你掌握中。他比你上次见到时整洁多了，还带着之前没有的笑容。他心情愉悦地总结你躲藏起来后发生的事：“骑士跟他的走狗看起来离开亚历山卓了。”他带着开心的笑容宣布。“看来在失去密钥后，他们同时失去了宣称要用来‘引导人类’、‘正当统治’的筹码。另一个生物似乎也逃离了。但是……”他的视线看向散发光芒的透明小瓶。“我认为你还会再见到他们。事实上我猜他们其中一方，或是双方都在追踪你，请小心。”</p><p>你问霍桑姆既然他在亚历山卓的目标完成了，接下来有什么打算。他回答：“我有一个新任务，调查官泰勒昨天送了一份卷宗给我。自从加入基石以来我还是第一次离开我心爱的城市。”他惆怅地叹了口气。他起身握了握你的手：“也许我们会再见面的，很荣幸能跟你合作。”</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知酒红骑士最后的下落*。</li><li>选择一位调查员成为法罗斯之光承受者，并将此记录在剧本日志中。</li><li>Mark 2 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 你做着最坏的打算，撤退到交易所打算建立最后一道防线，但已经太迟了。整个房间变成大屠杀的现场，鲜血从墙上滴落，飞溅在这场混乱中。你永远无法忘记那些被啃蚀掉一半的残骸。</p><p>你没有其他线索，同时害怕自己会落得同样下场，你决定放弃并逃离城市。但你注意到年长骑士的尸体并不在其中，也许他成功逃走了。如果是这样的话，你觉得这也许不会是你最后一次见到他们两个……</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>每位未被击败的调查员受到1点精神创伤。</li><li>在剧本日志中，记录下：<ul><li>*未能成功抵御野兽*。</li><li>*未得知猩红斗篷下的野兽最后的下落。</li></ul></li><li>猩红斗篷下的野兽是法罗斯之光承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_结局4_: 你藏身在西里探员城外的安全屋中几天，稍晚之后你与他会面。他的眼袋很深，胡须杂乱，他用疲惫的双眼看着你走进来。他惨淡的总结你躲藏起来后发生的事：“骑士跟他的走狗还盘踞在城市里。他跟那个可恨的野兽爆发了全面战争，而可想而知，我的人民正在受苦受难。”他愤怒地捶上桌子。”这就是这些浑蛋一贯的做法，不计代价只为维持他们的权力，无辜的人成为牺牲品。坦白说，我甚至无法判断他们两个哪一边比较糟。”</p><p>你为自己无法帮上忙感到抱歉，但他挥挥手说：“别这样，你尽力了。你接下来有什么打算？”你错过在亚历山卓的机会了，所以你告诉西里探员你将会搭下一班火车离开，去其他地方搜寻密钥，你问他是否要跟你同行。他边摸着胡须边思考着：“我接到一项新任务，但是……我对这场冲突将对我心爱的城市造成的伤害感到害怕，所以我可能会留下，不管有没有命令。”他起身握了握你的手，你暗自担心这也许是最后一次。“希望我们有机会再见面。但现在……我有事必须做。”</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知酒红骑士最后的下落*。</li><li>酒红骑士是法罗斯之光承受者，并将此记录在剧本日志中。</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_结局5_: 一群红衣保镳护送你回到你的委托人在交易所的安全据点。跟上次比起来，这里明显被整理过了。新的保险箱放在显眼的巨幅红衣骑士画作旁。你依照协议交出密钥，它被放进保险箱并封锁起来。门关上的同时，空气泛起一阵波动，一股压力降临到整座建物上，你的耳朵在压力变化下感到一阵疼痛。这无疑是那些“护所”造成的效果。</p><p>骑士骄傲的看着他的手下拿回圣物。他宣告：“再一次的，邪恶力量想要将我们逐出应许之地，但我们也再次赢得了胜利。”即使他可能曾经感到动摇或担忧，现在也已经都消失了，取而代之的是面对过无数这种对手的沉着冷静。确认密钥仍安全的存放在保险箱后，他转向你，跟你握手并示意你在桌子前坐下。“请坐，你完成了你的承诺，现在轮到我了。我承诺会给你答案，你的问题将得到解答。”</p><ul><li>跳到_结局8_.</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>_结局6_: 你藏身在西里探员城外的安全屋中几天，稍晚之后你与他会面，你的战利品安全的在你掌握中。他比你上次见到时整洁多了，还带着之前没有的笑容。他心情愉悦地总结你躲藏起来后发生的事：“野兽跟牠的追随者们躲藏起来，而其他结社成员也消失了。”他带着开心的笑容宣布。“看来在失去密钥后，他们同时失去了宣称要用来‘引导人类’、‘正当统治’的筹码。但是……”他的视线看向散发光芒的透明小瓶。“我认为你还会再见到他们。事实上我猜他们其中一方，或是双方都在追踪你，请小心。”</p><p>你问霍桑姆既然他在亚历山卓的目标完成了，接下来有什么打算。他回答：“我有一个新任务，调查官泰勒昨天送了一份卷宗给我。自从加入基石以来我还是第一次离开我心爱的城市。”他惆怅的叹了口气。他起身握了握你的手：“也许我们会再见面的，很荣幸能跟你合作。”</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *未得知猩红斗篷下的野兽最后的下落*。</li><li>选择一位调查员成为法罗斯之光承受者，并将此记录在剧本日志中。</li><li>Mark 2 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution7": {
+      "title": "Resolution 7",
+      "body": "<p>_结局7_: 可怕的生物跟红衣使徒爆发了全面战争，亚历山卓已经太过危险，无法继续进行调查。你不愿放下如此严重的事态离开，但你别无选择。多么讽刺，宣称以守护人类为目标的结社，却为亚历山卓的人民带来这么多苦难。看来结社成员之间的行事作风大相迳庭，也许有说服其中某些人倒向你这边的机会。但就现在而言，你在亚历山卓已经失去契机了。你抱着沉重的心情离开了城市，希望下次行动能更顺利。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>In your Campaign Log, record *战争肆虐*.</li><li>Mark 1 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    },
+    "resolution8": {
+      "title": "Resolution 8",
+      "body": "<p>_结局8_: 你询问骑士绯红结社到底是什么样的组织，目前为止你见过的成员从残暴到理性并存，结社又隐藏着什么秘密？“我没有说谎，我们只为保护人类而存在。”他指向安全保管在保险箱内的法罗斯之光说：“这些物品，它们过于强大，不是任何人都能掌握；但同时又过于重要，不能放任不管。我相信你已经看过许多异界生物对我们的世界造成什么样的影响。我们称呼牠们为异域存在，而这些遗物是唯一可以击退这些存在的方法。结社保管它们，只为了用来与异域存在战斗。这就是为什么我不能让它落在野兽手中的原因。阿利琪是我们对异域存在的主要研究者，如果你想了解更多可以去找她。我记得上次有人提到她的行踪是在加德满都。但如果你想跟她对话，必须先找到翻译者，她非常神秘且难以理解。”接着他看着身后身穿绯红色铠甲的骑士塑像说：“至于红色……保管异界遗物很危险，同时容易让人起疑。所以我们会将其与衣物或配件绑定，以便更容易融入社会。而这个过程，出自不明原因，会将目标染上红色。当然还有其他好处，你可以想像成一种……秘密的身份证明。”他擡起眉毛打量着你：“在过去，当一个人像你一样证明了自己的能力且可被信任，我们会邀请他加入，成为我们的一员，也许有一天你也会背负起绯红的称号。现在，我相信我已经履行了承诺，再次感谢你的协助。我的人会负责处理你这趟旅程的支出。”你们的谈话就这样友善但突然的结束了。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>在剧本日志中，记录下：<ul><li>*协助骑士。*</li><li>*未得知猩红斗篷下的野兽最后的下落。*</li></ul></li><li>酒红骑士是法罗斯之光承受者，并将此记录在剧本日志中。 </li><li>Mark 3 _时间_ in your Campaign Log. 你可以_出发_。</li></ul>"
+    }
+  }
+}

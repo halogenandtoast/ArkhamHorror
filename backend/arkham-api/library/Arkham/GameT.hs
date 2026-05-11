@@ -5,6 +5,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Message
+import Arkham.Metrics (withMetric)
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random
@@ -45,8 +46,13 @@ instance Tracing GameT where
   type SpanType GameT = Trace.Span
   type SpanArgs GameT = Trace.SpanArguments
   defaultSpanArgs = Trace.defaultSpanArguments
-  addAttribute = Trace.addAttribute
-  doTrace name args action = inSpan' name args action
+  -- `addAttribute` is intentionally a no-op: we have no OTel exporter wired
+  -- up and the Text values fed to it (often `tshow` of a deep ADT) are
+  -- non-trivial to compute. With no consumer the work is pure overhead.
+  -- Since the argument is unused here, GHC's laziness keeps the thunk
+  -- unforced.
+  addAttribute _ _ _ = pure ()
+  doTrace name args action = withMetric name (inSpan' name args action)
 
 clearCache :: GameT ()
 clearCache = do

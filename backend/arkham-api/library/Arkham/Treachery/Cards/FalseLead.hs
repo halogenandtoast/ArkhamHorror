@@ -1,8 +1,6 @@
 module Arkham.Treachery.Cards.FalseLead (falseLead) where
 
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
@@ -20,7 +18,7 @@ instance RunMessage FalseLead where
     Revelation iid (isSource attrs -> True) -> do
       playerClueCount <- field InvestigatorClues iid
       if playerClueCount == 0
-        then withI18n $ chooseOneM iid $ labeled' "gainSurge" $ gainSurge attrs
+        then gainSurge attrs
         else do
           sid <- getRandom
           revelationSkillTest sid iid attrs #intellect (Fixed 4)

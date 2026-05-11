@@ -19,9 +19,9 @@ instance RunMessage BloodCurse3 where
       assets <- select $ assetAtLocationWith iid <> AssetWithHealth
       investigators <- select $ colocatedWith iid
       unless (null enemies && null assets && null investigators) do
-        additionalSkillTestOption "Blood Curse" do
+        skillTestCardOption attrs do
           chooseOneM iid do
-            targets enemies \eid -> nonAttackEnemyDamage (Just iid) attrs 1 eid
+            targets enemies $ nonAttackEnemyDamage (Just iid) attrs 1
             targets assets \aid -> dealAssetDamage aid attrs 1
             targets investigators \iid' -> assignDamage iid' attrs 1
       pure s

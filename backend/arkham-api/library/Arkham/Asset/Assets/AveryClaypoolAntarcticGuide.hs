@@ -23,7 +23,7 @@ instance HasAbilities AveryClaypoolAntarcticGuide where
   getAbilities (AveryClaypoolAntarcticGuide a) =
     [ restricted a 1 ControlsThis
         $ triggered
-          (RevealChaosToken #when (affectsOthers $ colocatedWithMatch You) #frost)
+          (RevealChaosToken #cancel (affectsOthers $ colocatedWithMatch You) #frost)
           (exhaust a <> assetUseCost a Supply 1)
     ]
 

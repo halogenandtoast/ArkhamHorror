@@ -10,13 +10,15 @@ import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story (resolveStoryWithPlacement)
 import Arkham.Placement
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -39,7 +41,18 @@ instance HasChaosTokenValue HemlockHouse where
 instance RunMessage HemlockHouse where
   runMessage msg s@(HemlockHouse attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      day <- getCampaignDay
+      time <- getCampaignTime
+      -- Intro routing per scenario reference:
+      --   Day 1 → Intro 1
+      --   Day 2 → Intro 2
+      --   Day 3 → Intro 3
+      --   Night 1/Night 2 → Intro 4
+      case (day, time) of
+        (Day1, Day) -> story $ i18nWithTitle "intro1"
+        (Day2, Day) -> story $ i18nWithTitle "intro2"
+        (Day3, Day) -> story $ i18nWithTitle "intro3"
+        _ -> story $ i18nWithTitle "intro4"
       pure s
     Setup -> runScenarioSetup HemlockHouse attrs do
       setUsesGrid
@@ -115,6 +128,11 @@ instance RunMessage HemlockHouse where
 
       setAside [Acts.againstTheHouse]
 
+      -- "Set all five Fire! treacheries and all copies of the Out of the Walls
+      -- and Pulled In treacheries aside, out of play."
+      -- TODO: when Out of the Walls / Pulled In / Fire! treachery defs exist,
+      -- gather and setAside them here.
+
       lead <- getLead
       thePredatoryHouse <- genCard Stories.thePredatoryHouse
       resolveStoryWithPlacement lead thePredatoryHouse Global
@@ -123,8 +141,9 @@ instance RunMessage HemlockHouse where
       lead <- getLead
       -- InvestigatorAt (LocationWithId lid) returns empty for enemy-locations because
       -- they are in enemyLocationsL, not locationsL.
-      investigators <- filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
-        =<< select UneliminatedInvestigator
+      investigators <-
+        filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
+          =<< select UneliminatedInvestigator
       enemies <- select $ EnemyAt (LocationWithId lid)
       storyAssets <- select $ AssetAt (LocationWithId lid) <> StoryAsset
       push $ AddToVictory Nothing (LocationTarget lid)
@@ -191,5 +210,24 @@ instance RunMessage HemlockHouse where
         push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
       when (null attackPairs)
         $ drawEncounterCard lead attrs
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      let
+        resolution2 = do
+          resolution "resolution2"
+          -- Per scenario: route into the appropriate next campaign step based
+          -- on Day/Time. The TheFeastOfHemlockVale campaign module owns the
+          -- detailed prelude branching; we just signal end-of-scenario.
+          allGainXp attrs
+          endOfScenario
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
+        Resolution 1 -> do
+          resolution "resolution1"
+          push R2
+        Resolution 2 -> resolution2
+        _ -> error "invalid resolution"
       pure s
     _ -> HemlockHouse <$> liftRunMessage msg attrs

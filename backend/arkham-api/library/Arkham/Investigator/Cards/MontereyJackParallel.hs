@@ -53,7 +53,7 @@ instance RunMessage MontereyJackParallel where
       chooseNM iid (1 + additionalTargets) $ targets cards $ handleTarget iid (attrs.ability 1)
       pure i
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      chooseOneM iid $ labeled "No Card Founds" nothing
+      chooseOneM iid $ labeledI "noCardsFound" nothing
       pure i
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       withLocationOf iid $ field LocationShroud >=> traverse_ \x -> do

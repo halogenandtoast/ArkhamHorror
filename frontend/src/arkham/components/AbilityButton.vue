@@ -102,15 +102,16 @@ const isAction = (action: Action) => {
   return false
 }
 
-function totalActionCost(cost: Cost) {
+function totalActionCost(cost: Cost): number {
   if (cost.tag === "Costs") {
-    return cost.contents.reduce((acc, v) => v.tag === "ActionCost" ? acc + v.contents : acc, 0)
+    const contents = (cost as { contents: Cost[] }).contents
+    return contents.reduce<number>((acc, v) => v.tag === "ActionCost" ? acc + Number((v as { contents: number }).contents) : acc, 0)
   } else if (cost.tag === "ActionCost") {
     const setActions = modifiers.value.find((m) => m[1][0].type.tag === "ActionCostSetToModifier")
     if (setActions) {
       return setActions[1][0].type.contents
     }
-    return cost.contents
+    return Number((cost as { contents: number }).contents)
   }
 
   return 0

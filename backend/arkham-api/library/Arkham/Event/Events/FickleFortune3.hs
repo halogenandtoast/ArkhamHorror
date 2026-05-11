@@ -2,6 +2,7 @@ module Arkham.Event.Events.FickleFortune3 (fickleFortune3) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -17,12 +18,11 @@ instance RunMessage FickleFortune3 where
     Revelation iid (isSource attrs -> True) -> do
       hasDoom <-
         selectAny $ AgendaWithDoom (atLeast 1) <> NotAgenda (AgendaWithModifier CannotRemoveDoomOnThis)
-      chooseOneM iid do
-        labeled "Place 1 doom on the current agenda. Each investigator heals 3 damage and 3 horror."
+      chooseOneM iid $ cardI18n $ scope "fickleFortune" do
+        labeled' "place"
           $ doStep 1 msg
         when hasDoom do
-          labeled
-            "Remove 1 doom from the current agenda. Each investigator takes 1 direct damage and 1 direct horror. Remove Fickle Fortune from the game."
+          labeled' "remove"
             $ doStep 2 msg
       pure e
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do

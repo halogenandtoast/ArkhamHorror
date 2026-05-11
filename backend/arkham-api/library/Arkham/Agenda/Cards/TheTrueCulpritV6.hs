@@ -27,7 +27,7 @@ instance HasAbilities TheTrueCulpritV6 where
          , mkAbility attrs 2
              $ Objective
              $ forced
-             $ EnemyDefeated #after Anyone ByAny
+             $ IfEnemyDefeated #after Anyone ByAny
              $ enemyIs Cards.hotelManager
          ]
 

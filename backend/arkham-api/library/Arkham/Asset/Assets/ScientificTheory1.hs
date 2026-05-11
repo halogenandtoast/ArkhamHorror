@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype ScientificTheory1 = ScientificTheory1 AssetAttrs
@@ -17,10 +18,14 @@ scientificTheory1 =
 
 instance HasAbilities ScientificTheory1 where
   getAbilities (ScientificTheory1 x) =
-    [ withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+    [ cardI18n
+        $ scope "scientificTheory1"
+        $ withI18nTooltip "spendForIntellect"
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
-    , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+    , cardI18n
+        $ scope "scientificTheory1"
+        $ withI18nTooltip "spendForCombat"
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]

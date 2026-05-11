@@ -40,9 +40,8 @@ instance RunMessage EarthlySerenity4 where
         player <- getPlayer iid
         chooseOne
           iid
-          [ Label "Do not spend a charge to heal" []
-          , Label
-              "Spend a charge to heal"
+          [ Label "$label.cards.earthlySerenity4.doNotSpendAChargeToHeal" []
+          , Label "$label.cards.earthlySerenity4.spendAChargeToHeal"
               [ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
               , Msg.chooseOne player choices
               , DoStep (n - 1) msg'

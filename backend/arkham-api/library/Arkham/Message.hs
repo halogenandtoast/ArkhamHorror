@@ -435,6 +435,7 @@ data SkillTestOptionKind
   = OriginalOptionKind -- the original option
   | AdditionalOptionKind -- an additional option added by an effect
   | BlockingOptionKind -- an option that blocks the original option (e.g. Mariner's Compass should happen before original)
+  | PreOriginalOptionKind -- an option that can only be chosen if th OriginalOptionKind is still available
   deriving stock (Show, Ord, Eq, Generic, Data)
 
 data SkillTestOption = SkillTestOption
@@ -450,6 +451,9 @@ setOptionCriteria c sto = sto { criteria = Just c }
 optionWhenExists :: Exists a => a -> SkillTestOption -> SkillTestOption
 optionWhenExists a = setOptionCriteria (exists a)
 
+preOriginalOption :: SkillTestOption -> SkillTestOption
+preOriginalOption sto = sto {Arkham.Message.kind = PreOriginalOptionKind}
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
@@ -461,6 +465,7 @@ data Message
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetAsIfAtIgnored InvestigatorId Bool
+  | SetGameRunWindows Bool
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
   | MoveWithSkillTest Message
@@ -605,6 +610,7 @@ data Message
   | BeginTurn InvestigatorId
   | Blanked Message
   | HandleOption CampaignOption
+  | RemoveOption CampaignOption
   | CampaignStep CampaignStep
   | ScenarioCampaignStep CampaignStep
   | CancelEachNext (Maybe CardId) Source [MessageType]
@@ -787,7 +793,7 @@ data Message
       CardMatcher
       IncludeDiscard
       ScenarioEncounterDeckKey
-  | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
+  | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher FindEncounterCardStrategy
   | FinishedWithMulligan InvestigatorId
   | FocusCards [Card]
   | FocusChaosTokens [ChaosToken]
@@ -1091,7 +1097,7 @@ data Message
   | ResolveSearch Target
   | PreSearchFound InvestigatorId (Maybe Target) DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card]) -- Deprecated
+  | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
@@ -1242,6 +1248,7 @@ data Message
   | PlaceGrid GridLocation
   | LoadTarotDeck
   | PerformTarotReading
+  | SetPerformTarotReadings Bool
   | PerformReading TarotReading
   | DrawAndChooseTarot InvestigatorId TarotCardFacing Int
   | PlaceTarot InvestigatorId TarotCard
@@ -1577,6 +1584,11 @@ mconcat
               pure $ case ea of
                 Left target -> ShuffleBackIntoEncounterDeck GameSource target
                 Right (source, target) -> ShuffleBackIntoEncounterDeck source target
+            "FindEncounterCard" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              pure $ case contents of
+                Right (a, b, c, d, s) -> FindEncounterCard a b c d s
+                Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
             _ -> defaultParseMessage (Object o)
       |]
   ]
@@ -1588,6 +1600,7 @@ defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
 uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs
+  CostLabel _ msgs -> Run msgs
   InvalidLabel {} -> error "InvalidLabel in uiToRun"
   Info {} -> error "Info in uiToRun"
   TooltipLabel _ _ msgs -> Run msgs

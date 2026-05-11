@@ -12,6 +12,7 @@
     "shortcutDraw": "抽取玩家卡/遭遇卡",
     "shortcutTakeResources": "获得资源",
     "shortcutEndTurn": "结束回合",
+    "shortcutRestartScenario": "重启冒险",
     "viewSettings": "查看设置",
     "viewSettingTitle": "{investigator}的设置",
     "viewSettingSkipTriggers": "跳过技能检定期间不影响结果的触发器",

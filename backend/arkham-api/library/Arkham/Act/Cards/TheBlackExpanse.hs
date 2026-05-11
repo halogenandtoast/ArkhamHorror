@@ -14,7 +14,7 @@ theBlackExpanse = act (3, A) TheBlackExpanse Cards.theBlackExpanse Nothing
 
 instance HasAbilities TheBlackExpanse where
   getAbilities (TheBlackExpanse x) =
-    [mkAbility x 1 $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
+    [mkAbility x 1 $ forced $ IfEnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
 
 instance RunMessage TheBlackExpanse where
   runMessage msg a@(TheBlackExpanse attrs) = runQueueT $ case msg of

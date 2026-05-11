@@ -8,9 +8,10 @@ import Arkham.Helpers.SkillTest (
   getSkillTestInvestigator,
   getSkillTestTargetedEnemy,
   isSkillTestSource,
+  withSkillTest,
  )
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Card.CardCode
 import Arkham.Message.Lifted.Choose
 
 newtype Machete = Machete AssetAttrs
@@ -22,7 +23,7 @@ machete = asset Machete Cards.machete
 
 instance HasModifiersFor Machete where
   getModifiersFor (Machete a) = for_ a.controller \iid -> do
-    when (toCardCode a /= "12020") do
+    unless a.cardCode.isChapterTwo do
       maybeModified_ a iid do
         liftGuardM $ isSkillTestSource (a.ability 1)
         eid <- MaybeT getSkillTestTargetedEnemy
@@ -40,14 +41,15 @@ instance RunMessage Machete where
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) enemy -> do
-      when (toCardCode attrs == "12020" && attrs.ready) do
-        whenM (matches enemy (onlyEnemyEngagedWith iid)) do
-          chooseOneM iid do
-            labeled "Do not exhaust Machete" $ pure ()
-            labeled "Exhaust Machete" do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      when (attrs.cardCode.isChapterTwo && attrs.ready) do
+        skillTestCardOptionEdit attrs preOriginalOption do
+          chooseOneM iid $ withI18n $ cardNameVar attrs do
+            labeled' "doNotExhaustName" nothing
+            labeled' "exhaustName" do
               exhaustThis attrs
-              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              withSkillTest \sid ->
+                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> Machete <$> liftRunMessage msg attrs
 

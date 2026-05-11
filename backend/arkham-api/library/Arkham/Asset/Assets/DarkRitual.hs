@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -25,7 +26,7 @@ instance RunMessage DarkRitual where
       push
         $ chooseOrRunOne
           player
-        $ [Label "Spend 1 resource" [SpendResources iid 1] | canSpendResources]
-        <> [Label "Discard Dark Ritual" [toDiscardBy iid (attrs.ability 1) attrs]]
+        $ [Label (withI18n $ countVar 1 $ ikey' "label.spendResources") [SpendResources iid 1] | canSpendResources]
+        <> [Label (withI18n $ cardNameVar attrs $ ikey' "label.discardName") [toDiscardBy iid (attrs.ability 1) attrs]]
       pure a
     _ -> DarkRitual <$> runMessage msg attrs

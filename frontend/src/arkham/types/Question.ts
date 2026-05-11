@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
+import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
 import { Token, tokenDecoder } from '@/arkham/types/Token';
@@ -17,8 +18,9 @@ export type Question =
   | ChooseUpgradeDeck 
   | ChoosePaymentAmounts 
   | ChooseAmounts 
-  | QuestionLabel 
-  | Read 
+  | QuestionLabel
+  | PayCostQuestion
+  | Read
   | PickSupplies 
   | DropDown 
   | PickScenarioSettings 
@@ -44,6 +46,7 @@ export enum QuestionType {
   CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
+  PAY_COST_QUESTION = 'PayCostQuestion',
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
   PICK_DESTINY = 'PickDestiny',
@@ -92,6 +95,12 @@ export type QuestionLabel = {
   tag: QuestionType.QUESTION_LABEL
   card: string | null
   label: string
+  question: Question
+}
+
+export type PayCostQuestion = {
+  tag: QuestionType.PAY_COST_QUESTION
+  cost: Cost
   question: Question
 }
 
@@ -335,6 +344,15 @@ export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDeco
   'QuestionLabel',
 );
 
+export const payCostQuestionDecoder: JsonDecoder.Decoder<PayCostQuestion> = JsonDecoder.object<PayCostQuestion>(
+  {
+    tag: JsonDecoder.literal(QuestionType.PAY_COST_QUESTION),
+    cost: costDecoder,
+    question: JsonDecoder.lazy(() => questionDecoder)
+  },
+  'PayCostQuestion',
+);
+
 
 export type ReadChoices
   = { tag: "BasicReadChoices", contents: Message[] }
@@ -502,6 +520,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     choosePaymentAmountsDecoder,
     chooseExchangeAmountsDecoder,
     questionLabelDecoder,
+    payCostQuestionDecoder,
     readDecoder,
     pickSuppliesDecoder,
     pickDestinyDecoder,

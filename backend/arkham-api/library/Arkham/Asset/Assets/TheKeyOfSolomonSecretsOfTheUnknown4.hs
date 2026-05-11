@@ -9,6 +9,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Asset
 import Arkham.Helpers.Investigator
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype TheKeyOfSolomonSecretsOfTheUnknown4 = TheKeyOfSolomonSecretsOfTheUnknown4 AssetAttrs
@@ -20,8 +21,7 @@ theKeyOfSolomonSecretsOfTheUnknown4 = asset TheKeyOfSolomonSecretsOfTheUnknown4 
 
 instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
   getAbilities (TheKeyOfSolomonSecretsOfTheUnknown4 a) =
-    [ withTooltip
-        "If there are more {bless} than {curse} tokens in the chaos bag, remove 1 {bless} token from the chaos bag and exhaust The Key of Solomon: Heal up to 2 damage and/or horror from an investigator or _Ally_ asset at your location."
+    [ (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAre")
         $ controlledAbility
           a
           1
@@ -38,8 +38,7 @@ instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
                 ]
           )
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #bless)
-    , withTooltip
-        " If there are more {curse} than {bless} tokens in the chaos bag, remove 1 {curse} token from the chaos bag and exhaust The Key of Solomon: Gain 2 resources."
+    , (cardI18n $ withI18nTooltip "theKeyOfSolomonSecretsOfTheUnknown4.ifThereAre2")
         $ controlledAbility a 2 (HasMoreCurseThanBlessTokens <> can.gain.resources You)
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #curse)
     ]
@@ -70,13 +69,13 @@ instance RunMessage TheKeyOfSolomonSecretsOfTheUnknown4 where
 
       chooseOne
         iid
-        $ [ Label "Heal damage" [HealDamage (AssetTarget aid) (attrs.ability 1) 1, DoStep (n - 1) msg']
+        $ [ Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healDamage" [HealDamage (AssetTarget aid) (attrs.ability 1) 1, DoStep (n - 1) msg']
           | canHealDamage
           ]
-        <> [ Label "Heal horror" [HealHorror (AssetTarget aid) (attrs.ability 1) 1, DoStep (n - 1) msg']
+        <> [ Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healHorror" [HealHorror (AssetTarget aid) (attrs.ability 1) 1, DoStep (n - 1) msg']
            | canHealHorror
            ]
-        <> [Label "Done Healing" []]
+        <> [Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.doneHealing" []]
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget _) -> do
       doStep 2 msg
@@ -87,13 +86,13 @@ instance RunMessage TheKeyOfSolomonSecretsOfTheUnknown4 where
 
       chooseOne
         iid
-        $ [ Label "Heal damage" [HealDamage (InvestigatorTarget iid') (attrs.ability 1) 1, DoStep (n - 1) msg']
+        $ [ Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healDamage" [HealDamage (InvestigatorTarget iid') (attrs.ability 1) 1, DoStep (n - 1) msg']
           | canHealDamage
           ]
-        <> [ Label "Heal horror" [HealHorror (InvestigatorTarget iid') (attrs.ability 1) 1, DoStep (n - 1) msg']
+        <> [ Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.healHorror" [HealHorror (InvestigatorTarget iid') (attrs.ability 1) 1, DoStep (n - 1) msg']
            | canHealHorror
            ]
-        <> [Label "Done Healing" []]
+        <> [Label "$label.cards.theKeyOfSolomonSecretsOfTheUnknown4.doneHealing" []]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       gainResourcesIfCan iid (attrs.ability 2) 2

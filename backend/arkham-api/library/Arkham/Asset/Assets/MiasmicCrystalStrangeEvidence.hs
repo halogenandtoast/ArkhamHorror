@@ -30,6 +30,7 @@ instance RunMessage MiasmicCrystalStrangeEvidence where
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawnBy -> (iid', card)) _ -> do
       cancelCardEffects (attrs.ability 1) card
       quietCancelCardDraw card
+      removeCardFromDeckForCampaign iid' card
       putCardOnBottomOfDeck iid' TekeliliDeck card
       drawCards iid' (attrs.ability 1) 1
       pure a

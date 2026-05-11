@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Modifiers hiding (costModifier)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -19,9 +20,12 @@ woodenSledge :: AssetCard WoodenSledge
 woodenSledge = asset WoodenSledge Cards.woodenSledge
 
 instance HasModifiersFor WoodenSledge where
-  getModifiersFor (WoodenSledge a) =
-    modifySelectWhen a a.controlled (InvestigatorAt a.location)
-      $ map (AsIfInHandFor ForPlay . toCardId) a.cardsUnderneath
+  getModifiersFor (WoodenSledge a) = when a.controlled
+    $ modifySelectMap a (InvestigatorAt a.location) \iid ->
+      flip mapMaybe a.cardsUnderneath \c -> do
+        let nonOwner = maybe False (/= iid) c.owner
+        guard (not (nonOwner && isSignature c))
+        pure $ AsIfInHandFor ForPlay c.id
 
 instance HasAbilities WoodenSledge where
   getAbilities (WoodenSledge a) =
@@ -45,7 +49,7 @@ instance RunMessage WoodenSledge where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards do
-        chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
+        cardI18n $ scope "woodenSledge" $ chooseUpToNM' iid 3 "donePlacingCards" do
           targets cards (placeUnderneath attrs . only)
       pure a
     _ -> WoodenSledge <$> liftRunMessage msg attrs

@@ -30,7 +30,7 @@ instance RunMessage HardKnocks4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Combat" $ skillTestModifier sid source iid (SkillModifier #combat 1)
-          labeled "Choose Agility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
+          labeledI "chooseCombat" $ skillTestModifier sid source iid (SkillModifier #combat 1)
+          labeledI "chooseAgility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
       pure a
     _ -> HardKnocks4 <$> liftRunMessage msg attrs

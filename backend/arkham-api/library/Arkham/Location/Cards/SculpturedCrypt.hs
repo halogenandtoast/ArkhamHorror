@@ -7,6 +7,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -39,11 +40,11 @@ instance RunMessage SculpturedCrypt where
         n <- getSpendableClueCount investigators
         x <- perPlayer 1
         when (n >= x) do
-          chooseOneM iid do
-            labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" do
+          chooseOneM iid $ withI18n $ countVar x do
+            labeled' "spendCluesToTakeControl" do
               spendCluesAsAGroup investigators x
               placeSeal iid k
-            labeled "Do not spend clues" nothing
+            labeled' "doNotSpendClues" nothing
       
       pure l
     _ -> SculpturedCrypt <$> liftRunMessage msg attrs

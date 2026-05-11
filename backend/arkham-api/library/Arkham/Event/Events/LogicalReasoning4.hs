@@ -3,6 +3,7 @@ module Arkham.Event.Events.LogicalReasoning4 (logicalReasoning4) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -28,10 +29,10 @@ instance RunMessage LogicalReasoning4 where
 
       chooseOrRunOneM iid do
         unless (null canHealHorror) do
-          labeled "Heal 2 Horror"
+          withI18n (countVar 2 $ labeledI18n "healHorror")
             $ chooseOrRunOneM iid
             $ targets canHealHorror \iid' -> healHorror iid' attrs 2
         unless (null terrors) do
-          labeled "Discard a Terror" $ chooseTargetM iid terrors (toDiscardBy iid attrs)
+          cardI18n (scope "logicalReasoning" $ labeled' "discardTerror") $ chooseTargetM iid terrors (toDiscardBy iid attrs)
       pure e
     _ -> LogicalReasoning4 <$> liftRunMessage msg attrs

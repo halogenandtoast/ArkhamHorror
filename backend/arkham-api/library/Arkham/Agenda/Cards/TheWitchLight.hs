@@ -28,7 +28,7 @@ instance HasAbilities TheWitchLight where
   getAbilities (TheWitchLight a) =
     [ mkAbility a 1
         $ freeReaction
-        $ EnemyDefeated #after You ByAny
+        $ IfEnemyDefeated #after You ByAny
         $ oneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
     ]
 

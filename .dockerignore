@@ -5,8 +5,14 @@
 **/.git
 **/*.hi
 **/*.o
+**/*.dyn_hi
+**/*.dyn_o
 **/.DS_Store
 **/*.swp
 **/*.dump-hi
 **/*.hie
+**/dist-newstyle
 **/public/img
+backend/foo
+backend/tags
+backend/hls.log

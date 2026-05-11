@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import type { Modifier } from '@/arkham/types/Modifier';
 import { TokenType } from '@/arkham/types/Token';
-import type { Card, CardContents } from '@/arkham/types/Card';
+import { cardFacedown, type Card, type CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
@@ -38,6 +38,10 @@ const image = computed(() => {
   }
 
   const { cardCode, isFlipped, mutated } = cardContents.value
+  if (cardFacedown(props.card) && !props.revealed) {
+    const back = props.card.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
+    return imgsrc(`${back}.jpg`);
+  }
   if (cardCode === "c05178b" && !isFlipped) {
     return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/b$/, 'a')}.avif`)
   }

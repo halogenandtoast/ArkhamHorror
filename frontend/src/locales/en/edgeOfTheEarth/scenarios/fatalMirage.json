@@ -1,7 +1,18 @@
 {
   "heading": "Scenario ???",
+  "label": {
+    "keepPlaying": "Keep playing",
+    "moveToPrisonOfMemories": "Move to the Prison of Memories",
+    "shuffleTekeliliIntoYourDeck": "Shuffle the top card of the Tekeli-li deck into your deck without looking at it."
+  },
   "tooltips": {
     "mirage": "Mirage"
+  },
+  "label": {
+    "averyClaypoolAntarcticGuideResolute": {
+      "revealANewChaosToken": "Reveal a new chaos token",
+      "spend1Supply": "Spend 1 Supply"
+    }
   },
   "intro1": {
     "title": "Scenario ???: Fatal Mirage",
@@ -51,6 +62,17 @@
       "cultist": "–2. If you do not succeed by at least 2, place 1 of your clues on your location.",
       "tablet": "–4. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it. (If you fail by 2 or more, do both instead.)",
       "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+    }
+  },
+  "deckOfTheTheodosia": {
+    "label": {
+      "addShroud": "Give it +2 shroud for this investigation",
+      "spendAdditionalAction": "Spend 1 additional action"
+    }
+  },
+  "drKenslersOffice": {
+    "label": {
+      "removeSecret": "Remove 1 secret from an asset you control"
     }
   }
 }

@@ -28,7 +28,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Message.Lifted.Move (placeAllAt, moveTowardsMatching)
+import Arkham.Message.Lifted.Move (moveTowardsMatching, placeAllAt)
 import Arkham.Modifier (ModifierType (AdditionalStartingUses))
 import Arkham.Placement
 import Arkham.Projection
@@ -131,9 +131,9 @@ instance RunMessage CityOfTheElderThings where
             else do
               lead <- getLead
               chooseOneM lead do
-                labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
-                labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
-                labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
+                labeled' "v1" $ doStep 1 PreScenarioSetup
+                labeled' "v2" $ doStep 2 PreScenarioSetup
+                labeled' "v3" $ doStep 3 PreScenarioSetup
           if attrs.hasOption IncludePartners
             then do
               eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -240,8 +240,8 @@ instance RunMessage CityOfTheElderThings where
       partners <- getRemainingPartners
       unless (null partners) do
         chooseOneM iid do
-          questionLabeled "Choose a partner for this scenario"
-          labeled "Do not take a partner" nothing
+          questionLabeledI "choosePartnerForScenario"
+          labeledI "doNotTakeAPartner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
@@ -392,14 +392,14 @@ instance RunMessage CityOfTheElderThings where
               chooseOrRunOneM iid do
                 for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
         ElderThing -> do
-          xs <- select $ enemyEngagedWith iid
-          if null xs
-            then do
-              ys <- select $ NearestEnemyTo iid AnyEnemy
-              chooseTargetM iid ys \y -> moveTowardsMatching ElderThing y (locationWithInvestigator iid)
-            else chooseTargetM iid xs \x -> initiateEnemyAttack x ElderThing iid
-          pure ()
+          xs <- selectOrElse (enemyAtLocationWith iid) (NearestEnemyTo iid AnyEnemy)
+          chooseTargetM iid xs \x -> do
+            moveTowardsMatching ElderThing x (locationWithInvestigator iid)
+            forTarget x msg
         _ -> pure ()
+      pure s
+    ForTarget (EnemyTarget eid) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == ElderThing -> do
+      whenMatch eid (enemyEngagedWith iid) $ initiateEnemyAttack eid ElderThing iid
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       ks <- field InvestigatorKeys iid

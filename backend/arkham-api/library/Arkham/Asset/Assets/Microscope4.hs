@@ -24,7 +24,7 @@ instance HasAbilities Microscope4 where
     [ controlled_ x 1
         $ freeReaction
         $ oneOf
-          [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
+          [ IfEnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
           , EnemyEvadedSuccessfully #after (InvestigatorAt YourLocation) AnySource AnyEnemy
           ]
     , controlled_ x 2 $ ActionAbility #investigate #intellect (ActionCost 2)

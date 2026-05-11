@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.FinnEdwards (finnEdwards, FinnEdwards (..)) whe
 import Arkham.Action.Additional
 import Arkham.Discover
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Types (Field (..))
@@ -43,8 +44,8 @@ instance RunMessage FinnEdwards where
           discovery <- discoverAtYourLocation attrs 1
           pushWhen (hasClues && canDiscover)
             $ chooseOne player
-            $ [ Label "Discover 1 clue at your location" [Msg.DiscoverClues iid discovery]
-              , Label "Do not discover a clue" []
+            $ [ Label (withI18n $ countVar 1 $ ikey' "label.discoverAtYourLocation") [Msg.DiscoverClues iid discovery]
+              , Label "$label.doNotDiscoverClue" []
               ]
       pure i
     _ -> FinnEdwards <$> runMessage msg attrs

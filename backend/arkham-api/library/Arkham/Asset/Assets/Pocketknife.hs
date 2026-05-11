@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Pocketknife (pocketknife) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 
 newtype Pocketknife = Pocketknife AssetAttrs
@@ -29,9 +30,9 @@ instance RunMessage Pocketknife where
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         chooseOneM iid do
-          labeled "Exhaust Pocketknife: Gain 1 resource" do
+          (cardI18n $ labeled' "pocketknife.exhaustPocketknifeGain1Resource") do
             exhaustThis attrs
             gainResources iid (attrs.ability 1) 1
-          labeled "Do not exhaust" (pure ())
+          labeledI "doNotExhaust" (pure ())
       pure a
     _ -> Pocketknife <$> liftRunMessage msg attrs

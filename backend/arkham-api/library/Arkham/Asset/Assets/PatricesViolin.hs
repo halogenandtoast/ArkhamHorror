@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -32,11 +33,11 @@ instance RunMessage PatricesViolin where
       canGainResources <- can.gain.resources iid'
       canDrawCards <- can.draw.cards iid'
 
-      chooseOneM iid' do
+      chooseOneM iid' $ withI18n $ countVar 1 do
         when canGainResources do
-          labeled "Gain resource" $ gainResources iid' source 1
+          labeled' "gainResources" $ gainResources iid' source 1
         when canDrawCards do
-          labeled "Draw card" $ drawCards iid' source 1
+          labeled' "drawCards" $ drawCards iid' source 1
 
       pure a
     _ -> PatricesViolin <$> liftRunMessage msg attrs

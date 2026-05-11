@@ -43,6 +43,7 @@ const emits = defineEmits<{
 
 const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
+const jammed = computed(() => props.asset.rifleStatus === 'Jammed')
 const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.asset.id)
 
@@ -265,6 +266,9 @@ function startDrag(event: DragEvent) {
         </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
           <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
+          <span v-if="jammed" class="status-icon" v-tooltip="'Jammed'">
+            <font-awesome-icon :icon="['fas', 'wrench']" />
+          </span>
           <img
             :data-id="id"
             :data-image-id="dataImage"
@@ -359,7 +363,7 @@ function startDrag(event: DragEvent) {
       />
       <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">
-        <button @click="debugging = true">Debug</button>
+        <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
       <template v-if="isTheBeyond">
         <div v-if="(asset.assets?.length ?? 0) > 0 || (asset.enemies?.length ?? 0) > 0" class="spirit-manifest-row">
@@ -542,6 +546,27 @@ img.card.ability-target {
     drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))
     drop-shadow(0 0 5px rgba(130, 200, 255, 0.7));
   pointer-events: none;
+}
+
+.status-icon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 3;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: rgba(40, 40, 40, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(220, 220, 220, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.7);
+  font-size: 0.95em;
+  color: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
 }
 
 .in-vehicle {

@@ -18,6 +18,8 @@ newtype TheBindingRite = TheBindingRite ActAttrs
 theBindingRite :: ActCard TheBindingRite
 theBindingRite = act (4, A) TheBindingRite Cards.theBindingRite Nothing
 
+-- Due to how the Spectral Watcher works, we have to explicitly use the
+-- EnemyDefeated timing window here, rather than IfEnemyDefeated
 instance HasAbilities TheBindingRite where
   getAbilities = actAbilities \x ->
     [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)

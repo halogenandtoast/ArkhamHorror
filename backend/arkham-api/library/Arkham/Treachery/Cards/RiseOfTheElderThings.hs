@@ -5,7 +5,6 @@ import Arkham.Helpers.Message hiding (gainSurge)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (ElderThing))
@@ -23,11 +22,9 @@ instance RunMessage RiseOfTheElderThings where
   runMessage msg t@(RiseOfTheElderThings attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       elderThings <- filterCards (#enemy <> CardWithTrait ElderThing) <$> scenarioField ScenarioDiscard
-      when (null elderThings) $ gainSurge attrs
-      unless (null elderThings) do
-        focusCards elderThings do
-          chooseTargetM iid elderThings \elderThing -> do
-            pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
+      case elderThings of
+        (elderThing : _) -> pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
+        [] -> gainSurge attrs
       doStep 2 msg
       pure t
     DoStep 2 (Revelation iid (isSource attrs -> True)) -> do

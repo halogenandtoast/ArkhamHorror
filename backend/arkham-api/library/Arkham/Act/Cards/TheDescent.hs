@@ -21,7 +21,7 @@ theDescent = act (2, A) TheDescent Cards.theDescent Nothing
 
 instance HasAbilities TheDescent where
   getAbilities (TheDescent x) =
-    [mkAbility x 1 $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
+    [mkAbility x 1 $ forced $ IfEnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
 
 instance RunMessage TheDescent where
   runMessage msg a@(TheDescent attrs) = runQueueT $ case msg of

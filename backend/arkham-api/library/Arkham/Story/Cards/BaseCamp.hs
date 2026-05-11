@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.BaseCamp (baseCamp) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -21,15 +22,12 @@ instance RunMessage BaseCamp where
       mRiverviewTheatre <- getSetAsideCardMaybe Locations.riverviewTheatre
 
       chooseOneM iid do
-        for_ mCoastalWaters
-          $ labeled "Put the set-aside Coastal Waters location into play."
-          . placeLocation_
-        for_ mDesertedStation
-          $ labeled "Put the set-aside Deserted Station location into play."
-          . placeLocation_
-        for_ mRiverviewTheatre
-          $ labeled "Put the set-aside Riverview Theatre location into play."
-          . placeLocation_
+        for_ mCoastalWaters \loc ->
+          withI18n $ keyVar "name" "Coastal Waters" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mDesertedStation \loc ->
+          withI18n $ keyVar "name" "Deserted Station" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mRiverviewTheatre \loc ->
+          withI18n $ keyVar "name" "Riverview Theatre" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
 
       pure s
     _ -> BaseCamp <$> liftRunMessage msg attrs

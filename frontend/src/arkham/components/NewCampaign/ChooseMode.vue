@@ -1,10 +1,13 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import type { Scenario, Campaign } from '@/arkham/data'
 import { imgsrc } from '@/arkham/helpers'
 
 type GameMode = 'Campaign' | 'SideStory'
 
-defineProps<{
+const CHAPTER_2_CAMPAIGN_IDS = new Set(['12'])
+
+const props = defineProps<{
   campaigns: Campaign[]
   sideStories: Scenario[]
   campaign: Campaign | null | undefined
@@ -16,6 +19,13 @@ const selectedCampaign = defineModel<string | null>('selectedCampaign', { requir
 const selectedScenario = defineModel<string | null>('selectedScenario', { required: true })
 
 const emits = defineEmits(['go'])
+
+const chapter1Campaigns = computed(() =>
+  props.campaigns.filter((c) => !CHAPTER_2_CAMPAIGN_IDS.has(c.id))
+)
+const chapter2Campaigns = computed(() =>
+  props.campaigns.filter((c) => CHAPTER_2_CAMPAIGN_IDS.has(c.id))
+)
 </script>
 
 <template>
@@ -51,25 +61,59 @@ const emits = defineEmits(['go'])
   </template>
 
   <template v-else>
-    <div class="campaigns">
-      <template v-for="c in campaigns" :key="c.id">
-        <div class="campaign">
-          <div
-            class="vt-box"
-            :style="selectedCampaign == c.id ? { 'view-transition-name': 'selected-game-box' } : {}"
-            :class="{ beta: c.beta, alpha: c.alpha }"
-          >
-            <input
-              type="image"
-              class="campaign-box"
-              :class="{ 'selected-campaign': selectedCampaign == c.id }"
-              :src="imgsrc(`boxes/${c.id}.jpg`)"
-              @click.prevent="selectedCampaign = c.id; emits('go')"
-            />
+    <section v-if="chapter1Campaigns.length" class="chapter">
+      <header class="chapter-header">
+        <span class="chapter-line" />
+        <h3 class="chapter-title">{{ $t('create.chapter1Heading') }}</h3>
+        <span class="chapter-line" />
+      </header>
+      <div class="campaigns">
+        <template v-for="c in chapter1Campaigns" :key="c.id">
+          <div class="campaign">
+            <div
+              class="vt-box"
+              :style="selectedCampaign == c.id ? { 'view-transition-name': 'selected-game-box' } : {}"
+              :class="{ beta: c.beta, alpha: c.alpha }"
+            >
+              <input
+                type="image"
+                class="campaign-box"
+                :class="{ 'selected-campaign': selectedCampaign == c.id }"
+                :src="imgsrc(`boxes/${c.id}.jpg`)"
+                @click.prevent="selectedCampaign = c.id; emits('go')"
+              />
+            </div>
           </div>
-        </div>
-      </template>
-    </div>
+        </template>
+      </div>
+    </section>
+
+    <section v-if="chapter2Campaigns.length" class="chapter">
+      <header class="chapter-header">
+        <span class="chapter-line" />
+        <h3 class="chapter-title">{{ $t('create.chapter2Heading') }}</h3>
+        <span class="chapter-line" />
+      </header>
+      <div class="campaigns">
+        <template v-for="c in chapter2Campaigns" :key="c.id">
+          <div class="campaign">
+            <div
+              class="vt-box"
+              :style="selectedCampaign == c.id ? { 'view-transition-name': 'selected-game-box' } : {}"
+              :class="{ beta: c.beta, alpha: c.alpha }"
+            >
+              <input
+                type="image"
+                class="campaign-box"
+                :class="{ 'selected-campaign': selectedCampaign == c.id }"
+                :src="imgsrc(`boxes/${c.id}.jpg`)"
+                @click.prevent="selectedCampaign = c.id; emits('go')"
+              />
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
   </template>
 </template>
 
@@ -243,5 +287,44 @@ input[type='radio']:checked + label {
 
 .mode-toggle {
   margin-bottom: 6px;
+}
+
+.chapter {
+  margin-top: 18px;
+}
+
+.chapter:first-of-type {
+  margin-top: 12px;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.chapter-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.chapter-title {
+  margin: 0;
+  padding: 0 4px;
+  font-family: Teutonic, serif;
+  font-size: 1.4em;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(206, 206, 206, 0.92);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
 }
 </style>

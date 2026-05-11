@@ -9,6 +9,7 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Field (Field (..))
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Projection
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -38,9 +39,9 @@ instance RunMessage Flamethrower5 where
       damage <- damageValueFor 4 iid DamageForEnemy
       engaged <- select $ enemyEngagedWith iid
       let toMsg eid' = EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
-      chooseOneM iid do
-        labeled "Do standard damage" $ push $ EnemyDamage eid $ attack attrs 1
-        labeled "Assign up to 4 damage among enemies engaged with you" do
+      chooseOneM iid $ cardI18n $ scope "flamethrower5" do
+        labeled' "standardDamage" $ push $ EnemyDamage eid $ attack attrs 1
+        labeled' "assignAmongEngaged" do
           replicateM_ damage $ chooseTargetM iid engaged $ push . toMsg
           for_ engaged $ checkDefeated attrs
       pure a

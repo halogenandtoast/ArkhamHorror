@@ -18,11 +18,11 @@ instance RunMessage SmuggledGoods where
     PlayThisEvent iid (is attrs -> True) -> do
       hasIllicitCardInDiscard <- selectAny $ inDiscardOf iid <> basic #illicit
       chooseOrRunOneM iid do
-        labeled "Search deck" do
+        labeledI "searchDeck" do
           search iid attrs iid [fromTopOfDeck 9] (basic #illicit) (DrawFound iid 1)
           shuffleIntoDeck iid attrs
         when hasIllicitCardInDiscard do
-          labeled "Search discard" do
+          labeledI "searchDiscard" do
             search iid attrs iid [(FromDiscard, PutBack)] (basic #illicit) (DrawFound iid 1)
       pure e
     _ -> SmuggledGoods <$> liftRunMessage msg attrs

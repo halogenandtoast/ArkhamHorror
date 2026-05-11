@@ -224,23 +224,21 @@ instance RunMessage ShatteredAeons where
       setChaosTokens standaloneChaosTokens
       lead <- getLead
       chooseOneM lead do
-        labeled "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag." do
+        labeled' "standaloneIchtacaSetAgainst" do
           record IchtacaIsSetAgainstYou
           addChaosToken Tablet
           addChaosToken Tablet
           addChaosToken Tablet
-        labeled "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag." do
+        labeled' "standaloneAlejandroSetAgainst" do
           record AlejandroIsSetAgainstYou
           addChaosToken Cultist
           addChaosToken Cultist
           addChaosToken Cultist
-        labeled
-          "Ichtaca is set against you. Alejandro is set against you. Add 2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
-          do
-            record IchtacaIsSetAgainstYou
-            record AlejandroIsSetAgainstYou
-            addChaosToken ElderThing
-            addChaosToken ElderThing
+        labeled' "standaloneBothSetAgainst" do
+          record IchtacaIsSetAgainstYou
+          record AlejandroIsSetAgainstYou
+          addChaosToken ElderThing
+          addChaosToken ElderThing
       pure . ShatteredAeons $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup ShatteredAeons attrs $ setupShatteredAeons attrs
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | n < 1 -> do

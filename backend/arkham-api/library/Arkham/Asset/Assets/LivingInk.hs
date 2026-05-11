@@ -56,10 +56,9 @@ instance RunMessage LivingInk where
         then do
           chooseOne
             iid
-            [ Label
-                "Do not charge from Living Ink and ignore its ability for the remainder of the round (Subtle Depiction)"
+            [ Label "$label.cards.livingInk.doNotChargeFromLivingInkAndIgnoreItsAbilityForTheRemainderOf"
                 []
-            , Label "Remove 1 charge" [RemoveTokens (toSource attrs) (toTarget attrs) Charge 1]
+            , Label "$label.cards.livingInk.remove1Charge" [RemoveTokens (toSource attrs) (toTarget attrs) Charge 1]
             ]
           pure . LivingInk $ setMeta False attrs
         else

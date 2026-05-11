@@ -1,6 +1,8 @@
 module Arkham.Treachery.Cards.FailedExperiment (failedExperiment, FailedExperiment (..)) where
 
 import Arkham.Calculation
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -31,12 +33,12 @@ instance RunMessage FailedExperiment where
       doStep n msg
       pure t
     DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
-      clues <- field InvestigatorClues iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       mLocation <- field InvestigatorLocation iid
-      if clues > 0 && isJust mLocation
-        then chooseOneM iid do
-          labeled "Take 1 horror" $ assignHorror iid attrs 1
-          labeled "Place 1 of your clues on your location"
+      if canPlaceClues && isJust mLocation
+        then chooseOneM iid $ withI18n do
+          countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+          countVar 1 $ labeled' "placeCluesOnYourLocation"
             $ push
             $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
         else assignHorror iid attrs 1

@@ -47,11 +47,11 @@ instance RunMessage AriadnesTwine3 where
       assets <- select $ assetControlledBy iid <> AssetWithUses Secret
       chooseOrRunOne
         iid
-        $ [ Label "Move 1 secret from an asset you control to your resource pool, as a resource" [DoStep 1 msg]
+        $ [ Label "$cards.label.ariadnesTwine3.moveSecretToResource" [DoStep 1 msg]
           | notNull assets
           , canGainResources
           ]
-        <> [ Label "Move 1 resource from your resource pool to an asset you control, as a secret" [DoStep 2 msg]
+        <> [ Label "$cards.label.ariadnesTwine3.moveResourceToSecret" [DoStep 2 msg]
            | hasResources
            ]
 

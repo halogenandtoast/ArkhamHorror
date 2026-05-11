@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
+import Arkham.I18n
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (toTitle)
@@ -36,14 +37,14 @@ instance RunMessage Bewitching3 where
       let tricks = filterCards (CardWithTrait Trait.Trick) cards
       additionalTargets <- getAdditionalSearchTargets iid
       if null tricks
-        then focusCards cards $ chooseOneM iid $ labeled "No cards found" nothing
+        then focusCards cards $ chooseOneM iid $ labeledI "noCardsFound" nothing
         else doStep (3 + additionalTargets) msg
       pure a
     DoStep n msg'@(SearchFound iid (isTarget attrs -> True) _ cards) | n > 0 -> do
       let underTitles = map toTitle attrs.cardsUnderneath
       let tricks = cards & filterCards (CardWithTrait Trait.Trick) & filter ((`notElem` underTitles) . toTitle)
       unless (null tricks) do
-        chooseUpToNM iid 1 "Choose no more Trick cards" do
+        cardI18n $ scope "bewitching3" $ chooseUpToNM' iid 1 "chooseNoMoreTrickCards" do
           targets tricks \card -> do
             push $ RemoveCardFromSearch iid card.id
             push $ PlaceUnderneath (toTarget attrs) [card]
@@ -52,11 +53,10 @@ instance RunMessage Bewitching3 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       canSearch <- can.search.deck iid
       chooseOrRunOneM iid do
-        labeled "Draw 1 attached card" do
+        (cardI18n $ labeled' "bewitching3.draw1AttachedCard") do
           focusCards attrs.cardsUnderneath $ chooseTargetM iid attrs.cardsUnderneath $ drawCard iid
         when canSearch do
-          labeled
-            "Search the top 9 cards of your deck for a copy of an attached card, draw it, and shuffle your deck"
+          (cardI18n $ labeled' "bewitching3.searchTopOfDeck")
             do
               let cardMatcher = mapOneOf (CardWithTitle . toTitle) attrs.cardsUnderneath
               search iid attrs iid [fromTopOfDeck 9] (basic cardMatcher) (DrawFound iid 1)

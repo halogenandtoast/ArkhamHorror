@@ -19,7 +19,7 @@ instance HasAbilities Bulwark2 where
     [ restricted a 1 ControlsThis
         $ ConstantReaction
           "Trigger sealed keyword again"
-          (EnemyDefeated #after You ByAny AnyEnemy)
+          (IfEnemyDefeated #after You ByAny AnyEnemy)
           (SealCost $ oneOf [#eldersign, #"+1"])
     , restricted a 2 ControlsThis
         $ triggered

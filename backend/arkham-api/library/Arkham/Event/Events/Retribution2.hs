@@ -33,7 +33,7 @@ instance RunMessage Retribution2 where
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
       if n > 0 && not (null enemies)
         then chooseOneM iid do
-          labeled "Done" $ finalizeEvent attrs.id
+          labeledI "done" $ finalizeEvent attrs.id
           targets enemies \eid -> do
             nonAttackEnemyDamage (Just iid) attrs 1 eid
             doStep (n - 1) msg'

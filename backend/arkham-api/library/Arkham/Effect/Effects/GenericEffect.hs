@@ -79,6 +79,23 @@ instance HasModifiersFor GenericEffect where
         modifiers' <- resolveModifiers modifiers
         when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
       Just (EffectNextSkillTestWindow {}) -> pure ()
+      Just (FirstEffectWindow ws) -> case firstEffectWindowGate ws of
+        FirstWindowSuppress -> pure ()
+        FirstWindowSkillTest sid -> do
+          msid <- getSkillTestId
+          modifiers' <- resolveModifiers modifiers
+          when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+        FirstWindowTurn iid -> do
+          isTurn <- iid <=~> TurnInvestigator
+          modifiers' <- resolveModifiers modifiers
+          when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+        FirstWindowPhase p -> do
+          p' <- getPhase
+          modifiers' <- resolveModifiers modifiers
+          when (p == p') $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+        FirstWindowEmit -> do
+          modifiers' <- resolveModifiers modifiers
+          tell $ MonoidalMap $ singletonMap attrs.target modifiers'
       _ -> do
         modifiers' <- resolveModifiers modifiers
         tell $ MonoidalMap $ singletonMap attrs.target modifiers'

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Cost
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -26,7 +27,7 @@ instance RunMessage ProtectiveIncantation1 where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label "Discard Protective Incantation" [toDiscardBy iid (toAbilitySource attrs 1) attrs]
-        : [Label "Spend 1 resource" [SpendResources iid 1] | hasResources]
+        $ Label (withI18n $ cardNameVar attrs $ ikey' "label.discardName") [toDiscardBy iid (toAbilitySource attrs 1) attrs]
+        : [Label (withI18n $ countVar 1 $ ikey' "label.spendResources") [SpendResources iid 1] | hasResources]
       pure a
     _ -> ProtectiveIncantation1 <$> runMessage msg attrs

@@ -71,16 +71,16 @@ instance RunMessage SixthSense4Effect where
             batchId <- getRandom
             currentTarget <- fromMaybe (toTarget lid) <$> getSkillTestTarget
             chooseOneM iid do
-              labeled "Do not choose other location" nothing
+              labeledI "doNotChooseOtherLocation" nothing
               for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
                 targeting location do
                   batching batchId do
                     push $ PayAdditionalCost iid batchId cost
                     push $ SetSkillTestTarget (BothTarget (toTarget location) currentTarget)
                     chooseOneM iid do
-                      labeled "Use new location's shroud" do
+                      labeledI "useNewLocationShroud" do
                         skillTestModifier sid attrs.source sid (SetDifficulty shroud)
-                      labeled "Use original locations shroud" do
+                      labeledI "useOriginalLocationsShroud" do
                         skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
             disable attrs
         _ -> error "Invalid target"

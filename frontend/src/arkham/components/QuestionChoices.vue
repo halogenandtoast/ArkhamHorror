@@ -4,6 +4,7 @@ import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
+import { formatCost } from '@/arkham/cost';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
 
@@ -53,6 +54,9 @@ const label = function(body: string) {
           Choose <i class="iconElderThing"></i>
         </button>
         <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
+      </div>
+      <div v-else-if="choice.tag === MessageType.COST_LABEL" class="message-label">
+        <button @click="choose(index)" v-html="label(formatCost(choice.cost, t))"></button>
       </div>
       <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
         <button v-html="label(choice.label)" disabled></button>
@@ -218,6 +222,15 @@ i.iconSkillAgility:before {
   flex-direction: column;
   &:has(.question-label) {
     padding: 10px;
+  }
+}
+
+:deep(.message-label) {
+  .agility-icon, .combat-icon, .intellect-icon, .willpower-icon {
+    display: contents;
+    &::before {
+      display: contents;
+    }
   }
 }
 </style>

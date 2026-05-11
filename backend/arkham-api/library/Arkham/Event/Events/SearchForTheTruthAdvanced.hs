@@ -4,6 +4,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 
@@ -25,18 +26,18 @@ instance RunMessage SearchForTheTruthAdvanced where
       mLocation <- field InvestigatorLocation iid
       canDrawCards <- can.draw.cards iid
       when (isJust mLocation || canDrawCards) do
-        chooseOrRunOneM iid do
+        chooseOrRunOneM iid $ cardI18n $ scope "searchForTheTruthAdvanced" do
           when canDrawCards do
-            labeled "Draw 1 Card" do
+            withI18n (countVar 1 $ labeledI "drawCards") do
               drawCardsIfCan iid attrs 1
               doStep (x - 1) msg'
-          labeled "Place that clue on your location and return any card from your discard pile to your hand" do
+          labeled' "placeClueAndReturnCard" do
             push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
             chooseOneM iid do
               for_ discardPile \card ->
                 targeting card $ addToHand iid [toCard card]
             doStep (x - 1) msg'
-          labeled "Do nothing (finishes this card)" nothing
+          labeled' "doNothingFinish" nothing
 
       pure e
     _ -> SearchForTheTruthAdvanced <$> liftRunMessage msg attrs

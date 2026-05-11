@@ -24,7 +24,7 @@ instance HasAbilities JennysTwin45sAdvanced where
     [ restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
     , restricted a 2 ControlsThis
         $ triggered
-          (EnemyDefeated #after You (BySource $ SourceIs $ a.ability 1) EnemyWithHealth)
+          (IfEnemyDefeated #after You (BySource $ SourceIs $ a.ability 1) EnemyWithHealth)
           (exhaust a)
     ]
 

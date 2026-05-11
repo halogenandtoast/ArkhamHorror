@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.StandingStones (standingStones) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -20,12 +21,10 @@ instance RunMessage StandingStones where
       mDyersClassroom <- getSetAsideCardMaybe Locations.dyersClassroom
 
       chooseOneM iid do
-        for_ mTheBlackStone
-          $ labeled "Put the set-aside The Black Stone location into play."
-          . placeLocation_
-        for_ mDyersClassroom
-          $ labeled "Put the set-aside Dyer's Classroom location into play."
-          . placeLocation_
+        for_ mTheBlackStone \loc ->
+          withI18n $ keyVar "name" "The Black Stone" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+        for_ mDyersClassroom \loc ->
+          withI18n $ keyVar "name" "Dyer's Classroom" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
 
       pure s
     _ -> StandingStones <$> liftRunMessage msg attrs

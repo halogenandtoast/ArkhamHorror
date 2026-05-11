@@ -75,6 +75,9 @@ checkAfter = checkWindows . pure . mkAfter
 checkWhen :: HasGame m => WindowType -> m Message
 checkWhen = checkWindows . pure . mkWhen
 
+checkCancel :: HasGame m => WindowType -> m Message
+checkCancel = checkWindows . pure . mkCancel
+
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   -- TODO: We don't want to check eliminated investigators except for the InvestigatorEliminated window
@@ -258,6 +261,11 @@ healedAmount = sum . mapMaybe toHealedAmount
     (windowType -> Healed _ _ _ n) -> Just n
     _ -> Nothing
 
+healedInvestigator :: [Window] -> InvestigatorId
+healedInvestigator [] = error "invalid call"
+healedInvestigator ((windowType -> Window.Healed _ (InvestigatorTarget iid) _ _) : _) = iid
+healedInvestigator (_ : xs) = healedInvestigator xs
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case
@@ -268,6 +276,7 @@ defeatedEnemy :: HasCallStack => [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
+    (windowType -> Window.IfEnemyDefeated _ _ eid) -> Just eid
     (windowType -> Window.EnemyWouldBeDefeated eid) -> Just eid
     _ -> Nothing
 
@@ -512,6 +521,7 @@ getPassedBy = \case
 getDefeatedDetails :: [Window] -> (Maybe InvestigatorId, DefeatedBy, EnemyId)
 getDefeatedDetails = \case
   ((windowType -> Window.EnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
+  ((windowType -> Window.IfEnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
   (_ : rest) -> getDefeatedDetails rest
   [] -> error "missing"
 
@@ -543,6 +553,7 @@ getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
+  ((windowType -> Window.IfEnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid
   ((windowType -> Window.EnemyEnters eid _) : _) -> eid
   ((windowType -> Window.EnemyWouldSpawnAt eid _) : _) -> eid

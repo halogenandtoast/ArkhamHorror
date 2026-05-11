@@ -4,8 +4,8 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
@@ -54,16 +54,19 @@ instance HasChaosTokenValue HorrorInHighGear where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
+chaosTokens :: [ChaosTokenFace]
+chaosTokens =
+  [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+  , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+  , AutoFail , ElderSign
+  ]
+{- FOURMOLU_ENABLE -}
+
 instance RunMessage HorrorInHighGear where
   runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      {- FOURMOLU_DISABLE -}
-      setChaosTokens
-        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
-        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
-        , AutoFail , ElderSign
-        ]
-      {- FOURMOLU_ENABLE -}
+      setChaosTokens chaosTokens
       pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
@@ -121,11 +124,11 @@ instance RunMessage HorrorInHighGear where
 
       lead <- getLead
       getPlayerCount >>= \case
-        2 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-        3 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        2 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        3 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
         4 -> do
-          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
         _ -> pure ()
     ForInvestigator iid (DoStep 1 Setup) -> do
       vehicles <- selectWithFilterM (AssetWithTrait Vehicle) \vehicle -> do
@@ -133,7 +136,7 @@ instance RunMessage HorrorInHighGear where
         pure $ passengers < 2
 
       chooseOrRunOneM iid do
-        questionLabeled "Which vehicle will you start in?"
+        questionLabeled' "whichVehicle"
         targets vehicles $ push . PlaceInvestigator iid . InVehicle
       pure s
     DoStep 2 Setup -> do
@@ -145,7 +148,7 @@ instance RunMessage HorrorInHighGear where
             name <- field AssetName vehicle
             lead <- getLead
             chooseOrRunOneM lead do
-              questionLabeled $ "Who will drive " <> toTitle name <> "?"
+              withI18n $ keyVar "name" (toTitle name) $ questionLabeled' "whoWillDrive"
               targets passengers $ push . SetDriver vehicle
 
       pure s
@@ -154,43 +157,49 @@ instance RunMessage HorrorInHighGear where
         locations <- getRear
         lead <- getLead
         chooseOrRunOneM lead do
-          questionLabeled "Where will the enemy spawn?"
+          questionLabeled' "whereWillEnemySpawn"
           targets locations $ createEnemyAt_ card
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
-        Cultist | n > 0 -> do
-          field InvestigatorPlacement iid >>= \case
-            InVehicle aid -> do
-              loc <- fieldJust AssetLocation aid
-              passengers <-
-                selectWithField InvestigatorClues $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
-              case passengers of
-                [] -> pure ()
-                [(x, c)] -> placeClues x loc (min c n)
-                xs ->
-                  if sum (map snd xs) <= n
-                    then for_ xs \(x, c) -> placeClues x loc c
-                    else chooseNM iid n do
-                      for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
-            _ -> pure ()
-        Tablet | n > 0 -> do
-          field InvestigatorPlacement iid >>= \case
-            InVehicle aid -> do
-              passengers <-
-                selectWithField InvestigatorResources
-                  $ InVehicleMatching (AssetWithId aid)
-                  <> InvestigatorWithAnyResources
-              case passengers of
-                [] -> pure ()
-                [(x, r)] -> loseResources x Tablet (min n r)
-                xs ->
-                  if sum (map snd xs) <= n
-                    then for_ xs \(x, c) -> loseResources x Tablet c
-                    else chooseNM iid n do
-                      for_ xs \(x, _c) -> resourceLabeled x $ loseResources x Tablet 1
-            _ -> pure ()
+        Cultist | n > 0 -> doStep n msg
+        Tablet | n > 0 -> doStep n msg
         ElderThing | isEasyStandard attrs -> push HuntersMove
+        _ -> pure ()
+      pure s
+    DoStep n msg'@(FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == Cultist && n > 0 -> do
+      field InvestigatorPlacement iid >>= \case
+        InVehicle aid -> do
+          loc <- fieldJust AssetLocation aid
+          passengers <-
+            selectWithField InvestigatorClues $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
+          case passengers of
+            [] -> pure ()
+            [(x, c)] -> placeClues x loc (min c n)
+            xs ->
+              if sum (map snd xs) <= n
+                then for_ xs \(x, c) -> placeClues x loc c
+                else do
+                  chooseOneM iid $ for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
+                  doStep (n - 1) msg'
+        _ -> pure ()
+      pure s
+    DoStep n msg'@(FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == Tablet && n > 0 -> do
+      field InvestigatorPlacement iid >>= \case
+        InVehicle aid -> do
+          passengers <-
+            selectWithField InvestigatorResources
+              $ InVehicleMatching (AssetWithId aid)
+              <> InvestigatorWithAnyResources
+          case passengers of
+            [] -> pure ()
+            [(x, r)] -> loseResources x Tablet (min n r)
+            xs ->
+              if sum (map snd xs) <= n
+                then for_ xs \(x, c) -> loseResources x Tablet c
+                else do
+                  chooseOneM iid $ for_ xs \(x, _c) -> resourceLabeled x $ loseResources x Tablet 1
+                  doStep (n - 1) msg'
         _ -> pure ()
       pure s
     ResolveChaosToken _ ElderThing _iid -> do

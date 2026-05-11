@@ -8,7 +8,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Distance
-import Arkham.Enemy.Types (Enemy)
+import Arkham.Enemy.Types (Enemy, Field (EnemyLocation))
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getDistance)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card (getModifiedCardCost)
@@ -86,6 +86,7 @@ calculate = go
       getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> field fld eid
         _ -> pure 0
+    LocationMatcherFieldCalculation mtchr fld -> getSum <$> selectAgg Sum fld mtchr
     LocationFieldCalculation lid fld -> field fld lid
     LocationGameValueFieldCalculation lid fld -> maybe (pure 0) getGameValue =<< fieldMay fld lid
     LocationMaybeFieldCalculation lid fld -> fromMaybe 0 . join <$> fieldMay fld lid
@@ -97,6 +98,8 @@ calculate = go
     -- fromJustNote ("missing maybe field " <> show fld <> "<" <> show lid <> ">") <$> field fld lid
     InvestigatorLocationFieldCalculation iid fld -> do
       maybe (pure 0) (field fld) =<< field InvestigatorLocation iid
+    EnemyLocationFieldCalculation eid fld -> do
+      maybe (pure 0) (field fld) =<< field EnemyLocation eid
     InvestigatorLocationMaybeFieldCalculation iid fld -> do
       maybe (pure 0) (fieldMap fld (fromMaybe 0)) =<< field InvestigatorLocation iid
     CardCostCalculation iid' cId -> getCard cId >>= (fmap (fromMaybe 0) . getModifiedCardCost iid')

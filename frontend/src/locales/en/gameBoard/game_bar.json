@@ -12,10 +12,15 @@
     "shortcutDraw": "Draw from deck / encounter deck",
     "shortcutTakeResources": "Take Resources",
     "shortcutEndTurn": "End Turn",
+    "shortcutRestartScenario": "Restart Scenario",
 
     "viewSettings": "View Settings",
     "viewSettingTitle": "Settings for {investigator}",
+    "playerSettings": "Player Settings",
     "viewSettingSkipTriggers": "Skip triggers during skill tests that don't affect the outcome",
+    "viewSettingSkipTriggersTitle": "Skip Triggers",
+    "viewSettingShowOtherPlayersHands": "See the cards in other players' hands at all times.",
+    "viewSettingShowOtherPlayersHandsTitle": "Show Other Players' Hands",
 
     "viewChaosBag": "View Chaos Bag",
     "chaosBag": "Chaos Bag",

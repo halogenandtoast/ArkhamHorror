@@ -30,7 +30,7 @@ instance RunMessage DigDeep4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Willpower" $ skillTestModifier sid source iid (SkillModifier #willpower 1)
-          labeled "Choose Agility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
+          labeledI "chooseWillpower" $ skillTestModifier sid source iid (SkillModifier #willpower 1)
+          labeledI "chooseAgility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
       pure a
     _ -> DigDeep4 <$> liftRunMessage msg attrs

@@ -25,7 +25,7 @@ import Arkham.Asset.Uses
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.GameT
-import Arkham.Name
+import Arkham.I18n
 import Control.Monad.Trans.Class
 
 newtype SmallRadio = SmallRadio AssetAttrs
@@ -93,8 +93,7 @@ instance HasAbilities SmallRadio where
       <> whenPartner
         professorWilliamDyerProfessorOfGeology
         Resolute
-        ( getAbilities (cbCardBuilder professorWilliamDyerProfessorOfGeologyResolute a.cardId (a.id, a.owner))
-        )
+        (getAbilities (cbCardBuilder professorWilliamDyerProfessorOfGeologyResolute a.cardId (a.id, a.owner)))
       <> whenPartner
         roaldEllsworthIntrepidExplorer
         Safe
@@ -119,7 +118,7 @@ instance HasAbilities SmallRadio where
     whenPartner p s =
       map
         ( \ab ->
-            withTooltip (toTitle p.name)
+            cardI18n (nameVar p.name $ withI18nTooltip "smallRadio.partner")
               $ ab
                 { abilityCriteria = ab.criteria <> PartnerHasStatus p.cardCode s
                 , abilitySource = proxy (CardCodeSource p.cardCode) a

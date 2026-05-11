@@ -130,8 +130,27 @@
     "robertFriendly": "Robert Friendly"
   },
   "label": {
+    "addElinaHarper": "Add Elina Harper to your deck",
+    "doNotAddElinaHarper": "Do not add Elina Harper to your deck",
     "noAir": "You did not find air, Take 5 direct damage",
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
+  },
+  "syzygy": {
+    "label": {
+      "loseResources": "Each investigator loses 3 resources.",
+      "takeHorror": "Each investigator takes 2 horror.",
+      "placeDoomCanAdvance": "Place 1 doom on the current agenda (this effect can cause the current agenda to advance)."
+    }
+  },
+  "fogOverInnsmouth": {
+    "label": {
+      "putIntoPlay": "Put Fog over Innsmouth into play next to the agenda deck."
+    }
+  },
+  "furtiveLocals": {
+    "label": {
+      "putIntoPlay": "Put Furtive Locals into play next to the agenda deck."
+    }
   },
   "key": {
     "memoriesRecovered": "Memories recovered",

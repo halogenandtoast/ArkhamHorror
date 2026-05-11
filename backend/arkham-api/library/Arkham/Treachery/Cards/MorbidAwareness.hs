@@ -1,10 +1,10 @@
 module Arkham.Treachery.Cards.MorbidAwareness (morbidAwareness, MorbidAwareness (..)) where
 
 import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (canPlaceCluesOnYourLocation)
+import Arkham.I18n
 import Arkham.Message
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -24,16 +24,16 @@ instance RunMessage MorbidAwareness where
         $ SubtractCalculation (Fixed 6) (DistanceFromCalculation iid "Room 212")
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      hasClues <- fieldMap InvestigatorClues (> 0) iid
+      canPlaceClues <- canPlaceCluesOnYourLocation iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
         $ [ Label
-            "Place 1 of your clues on your location"
+            (withI18n $ numberVar "count" 1 $ "$" <> ikey "label.placeCluesOnYourLocation")
             [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
-          | hasClues
+          | canPlaceClues
           ]
-        <> [Label "Take 2 horror" [assignHorror iid (toSource attrs) 2]]
+        <> [Label (withI18n $ numberVar "count" 2 $ "$" <> ikey "label.takeHorror") [assignHorror iid (toSource attrs) 2]]
 
       pure t
     _ -> MorbidAwareness <$> runMessage msg attrs

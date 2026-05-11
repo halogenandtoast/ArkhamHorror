@@ -73,9 +73,9 @@ instance RunMessage Beguile where
               <> AbilityOnEnemy (at_ (locationWithEnemy eid))
 
           chooseOrRunOne iid
-            $ [Label "Move attached enemy to a revealed connecting location" [DoStep 1 msg] | locations]
-            <> [Label "Perform a basic investigate action at it's location" [DoStep 2 msg] | investigate']
-            <> [Label "Perform a basic evade action at it's location" [DoStep 3 msg] | evade]
+            $ [Label "$cards.label.beguile.moveAttachedEnemy" [DoStep 1 msg] | locations]
+            <> [Label "$cards.label.beguile.basicInvestigate" [DoStep 2 msg] | investigate']
+            <> [Label "$cards.label.beguile.basicEvade" [DoStep 3 msg] | evade]
         _ -> error "Beguile: EnemyTarget not found"
       pure e
     DoStep n (UseAbility iid ab ws) | isSource attrs ab.source && ab.index == 1 -> do

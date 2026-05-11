@@ -23,7 +23,7 @@ instance HasAbilities StrongArmed1 where
         $ controlled_ x 1
         $ ConstantReaction
           "Take 1 damage (Strong-Armed)"
-          (RevealChaosToken #after Anyone AnyChaosToken)
+          (RevealChaosToken #cancel Anyone AnyChaosToken)
           (InvestigatorDamageCost (toSource x) (InvestigatorWithId x.controller) DamageAny 1)
     ]
 

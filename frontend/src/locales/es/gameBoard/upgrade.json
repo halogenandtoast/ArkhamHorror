@@ -8,6 +8,7 @@
     "pullUpdate": "Extraer Mazo Mejorado de {deckSource}",
     "OR": "O",
     "deckUrlPlaceholder": "URL de mazo de ArkhamDB o arkham.build",
+    "orUploadJson": "o subir JSON",
     "Upgrade": "Mejorar",
     "continueWithoutUpgrading": "Continuar sin mejorar",
     "waitingOtherPlayer": "Esperando a que otros jugadores mejoren el mazo.",

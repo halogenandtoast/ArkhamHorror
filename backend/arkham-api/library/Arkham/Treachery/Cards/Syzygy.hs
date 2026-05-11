@@ -1,5 +1,7 @@
 module Arkham.Treachery.Cards.Syzygy (syzygy, Syzygy (..)) where
 
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (campaignI18n)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -15,14 +17,12 @@ syzygy = treachery Syzygy Cards.syzygy
 instance RunMessage Syzygy where
   runMessage msg t@(Syzygy attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      chooseOneM iid do
+      chooseOneM iid $ campaignI18n $ scope "syzygy" do
         whenAny InvestigatorWithAnyResources do
-          labeled "Each investigator loses 3 resources." do
+          labeled' "loseResources" do
             eachInvestigator \iid' -> push $ LoseResources iid' (toSource attrs) 3
-        labeled "Each investigator takes 2 horror." do
+        labeled' "takeHorror" do
           eachInvestigator \iid' -> assignHorror iid' attrs 2
-        labeled
-          "Place 1 doom on the current agenda (this effect can cause the current agenda to advance)."
-          $ placeDoomOnAgendaAndCheckAdvance 1
+        labeled' "placeDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
     _ -> Syzygy <$> liftRunMessage msg attrs

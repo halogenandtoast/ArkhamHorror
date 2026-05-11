@@ -328,21 +328,21 @@ instance RunMessage TheMidwinterGala where
       push $ SetScenarioMeta $ toJSON $ Meta {ally, rival, score}
       do_ msg
       pure s
-    Do (ScenarioResolution r) -> scope "resolutions" do
+    Do msg'@(ScenarioResolution r) -> scope "resolutions" do
       case r of
         NoResolution -> do
           resolution "noResolution" >> do_ R7
         Resolution 1 -> do
           let Meta {ally} = toResult attrs.meta
-          storyBuild do
-            h "resolution1.title"
+          resolutionFlavor do
+            setTitle "resolution1.title"
             p "resolution1.body"
             ul do
               li "chooseGuest"
               li "jewelOfSarnath"
               for_ [minBound ..] \faction -> li.validate (ally == faction) (unpack $ factionLabel faction)
-          eachInvestigator (`forTarget` msg)
-          do_ $ case ally of
+          eachInvestigator (`forTarget` msg')
+          do_ case ally of
             TheFoundation -> R2
             MiskatonicUniversity -> R3
             TheSyndicate -> R4

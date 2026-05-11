@@ -63,7 +63,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{game.name}}</router-link>
           <router-link v-else-if="game.hasOpenSeats" class="title" :to="`/games/${game.id}/claim-seat`">{{game.name}}</router-link>
           <router-link v-else class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
-          <div v-if="game.multiplayerVariant === 'Solo'" class="solo">Solo</div>
+          <div v-if="game.multiplayerVariant === 'Solo'" class="solo">{{ $t('gameRow.solo') }}</div>
         </div>
         <div v-if="campaign && scenario" class="scenario-details">
           <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />

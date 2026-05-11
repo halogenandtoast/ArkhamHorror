@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (DiscoverClues)
 import Arkham.Matcher
+import Arkham.Placement
 
 newtype EmissaryFromYuggoth = EmissaryFromYuggoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -14,7 +15,10 @@ emissaryFromYuggoth = enemy EmissaryFromYuggoth Cards.emissaryFromYuggoth (3, St
 
 instance HasAbilities EmissaryFromYuggoth where
   getAbilities (EmissaryFromYuggoth a) =
-    extend1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You LocationWithConcealedCard (atLeast 1)
+    extend1 a
+      $ restricted a 1 (thisExists a (EnemyWithPlacement InTheShadows))
+      $ forced
+      $ DiscoverClues #after You LocationWithConcealedCard (atLeast 1)
 
 instance RunMessage EmissaryFromYuggoth where
   runMessage msg e@(EmissaryFromYuggoth attrs) = runQueueT $ case msg of

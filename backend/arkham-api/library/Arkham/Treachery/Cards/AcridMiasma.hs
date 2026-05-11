@@ -34,7 +34,7 @@ instance RunMessage AcridMiasma where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       moveHunters <- selectMap HunterMove HunterEnemy
       chooseOrRunOne iid
-        $ Label "Take 1 damage and 1 horror" [Msg.assignDamageAndHorror iid attrs 1 1]
-        : [Label "Resolve the hunter keyword on each enemy in play" moveHunters | notNull moveHunters]
+        $ Label "$label.takeOneDamageAndOneHorror" [Msg.assignDamageAndHorror iid attrs 1 1]
+        : [Label "$cards.label.acridMiasma.hunter" moveHunters | notNull moveHunters]
       pure t
     _ -> AcridMiasma <$> liftRunMessage msg attrs

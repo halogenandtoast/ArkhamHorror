@@ -38,7 +38,7 @@ instance RunMessage GearedUp where
           <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
       when (notNull cards) do
         chooseOneM iid do
-          labeled "Done Playing Items" nothing
+          labeledI "donePlayingItems" nothing
           targets cards \card -> do
             reduceCostOf (attrs.ability 1) card 1
             playCardPayingCost iid card
@@ -50,7 +50,7 @@ instance RunMessage GearedUp where
           <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
       when (notNull cards) do
         chooseOneM iid do
-          labeled "Done Playing Items" nothing
+          labeledI "donePlayingItems" nothing
           targets cards \card -> do
             reduceCostOf (attrs.ability 1) card 1
             playCardPayingCost iid card

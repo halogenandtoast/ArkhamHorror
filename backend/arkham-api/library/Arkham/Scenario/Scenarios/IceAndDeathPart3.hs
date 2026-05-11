@@ -94,8 +94,8 @@ instance RunMessage IceAndDeathPart3 where
 
       unless (null partners) do
         chooseOneM iid do
-          questionLabeled "Choose a partner for this scenario"
-          labeled "Do not take a partner" nothing
+          questionLabeledI "choosePartnerForScenario"
+          labeledI "doNotTakeAPartner" nothing
           for_ partners \partner -> do
             cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s

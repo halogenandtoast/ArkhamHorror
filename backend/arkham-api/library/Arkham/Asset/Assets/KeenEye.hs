@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.KeenEye (keenEye, KeenEye (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Modifier
 
 newtype KeenEye = KeenEye AssetAttrs
@@ -14,11 +15,9 @@ keenEye = asset KeenEye Cards.keenEye
 
 instance HasAbilities KeenEye where
   getAbilities (KeenEye a) =
-    [ withTooltip
-        "{fast} Spend 2 resources: You get +1 {intellect} until the end of the phase"
+    [ (cardI18n $ withI18nTooltip "keenEye.fastSpend2Resources2")
         $ restrictedAbility a 1 ControlsThis (FastAbility $ ResourceCost 2)
-    , withTooltip
-        "{fast} Spend 2 resources: You get +1 {combat} until the end of the phase"
+    , (cardI18n $ withI18nTooltip "keenEye.fastSpend2Resources")
         $ restrictedAbility a 2 ControlsThis (FastAbility $ ResourceCost 2)
     ]
 

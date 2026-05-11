@@ -24,7 +24,9 @@ instance HasAbilities AccursedCapeShroudOfChaos where
     [ mkAbility a 1
         $ forced
         $ oneOf
-          [AssetDefeated #when ByAny (be a), EnemyDefeated #when Anyone ByAny (EnemyWithAttachedAsset (be a))]
+          [ AssetDefeated #when ByAny (be a)
+          , EnemyDefeated #when Anyone ByAny (EnemyWithAttachedAsset (be a))
+          ]
     ]
 
 instance RunMessage AccursedCapeShroudOfChaos where

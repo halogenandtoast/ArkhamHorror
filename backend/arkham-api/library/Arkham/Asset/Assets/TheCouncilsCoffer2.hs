@@ -31,8 +31,8 @@ instance RunMessage TheCouncilsCoffer2 where
       pushAll
         $ [ chooseOne
               player
-              [ Label "Search Deck" [search iid attrs iid [(FromDeck, ShuffleBackIn)] #any (PlayFoundNoCost iid 1)]
-              , Label "Search Discard" [search iid attrs iid [(FromDiscard, PutBack)] #any (PlayFoundNoCost iid 1)]
+              [ Label "$label.searchDeck" [search iid attrs iid [(FromDeck, ShuffleBackIn)] #any (PlayFoundNoCost iid 1)]
+              , Label "$label.searchDiscard" [search iid attrs iid [(FromDiscard, PutBack)] #any (PlayFoundNoCost iid 1)]
               ]
           | (iid, player) <- investigators
           ]

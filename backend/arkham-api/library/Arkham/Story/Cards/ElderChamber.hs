@@ -1,6 +1,7 @@
 module Arkham.Story.Cards.ElderChamber (elderChamber) where
 
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
@@ -19,8 +20,7 @@ instance RunMessage ElderChamber where
       mClutteredDormitory <- getSetAsideCardMaybe Locations.clutteredDormitory
 
       chooseOneM iid do
-        for_ mClutteredDormitory
-          $ labeled "Put the set-aside Cluttered Dormitory location into play."
-          . placeLocation_
+        for_ mClutteredDormitory \loc ->
+          withI18n $ keyVar "name" "Cluttered Dormitory" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
       pure s
     _ -> ElderChamber <$> liftRunMessage msg attrs

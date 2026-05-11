@@ -68,11 +68,10 @@ instance RunMessage EdgeOfTheEarth where
       story $ i18nWithTitle "madnessUnderTheIce"
       story $ i18nWithTitle "prologue"
       storyWithChooseOneM (i18nWithTitle "prologue1") do
-        labeled
-          "“I believe you…but if what you say is true, should we not investigate these findings further?” Proceed to _Prologue 2._"
+        labeled' "prologue1Believe"
           $ doStep 2
           $ CampaignStep PrologueStep
-        labeled "“I’m sorry, but this seems too wild to be true.” Skip to _Prologue 3._"
+        labeled' "prologue1Wild"
           $ doStep 3
           $ CampaignStep PrologueStep
       pure c
@@ -90,7 +89,7 @@ instance RunMessage EdgeOfTheEarth where
       pure c
     DoStep 4 (CampaignStep PrologueStep) -> do
       storyWithChooseOneM (i18nWithTitle "prologue4") do
-        labeled "Read _Partner_ intros" do
+        labeled' "readPartnerIntros" do
           storyWithCard Assets.drAmyKenslerProfessorOfBiology $ i18n "amyKensler"
           storyWithCard Assets.roaldEllsworthIntrepidExplorer $ i18n "roaldEllsworth"
           storyWithCard Assets.jamesCookieFredericksDubiousChoice $ i18n "jamesFredericks"
@@ -100,7 +99,7 @@ instance RunMessage EdgeOfTheEarth where
           storyWithCard Assets.eliyahAshevakDogHandler $ i18n "eliyahAshevak"
           storyWithCards [Assets.professorWilliamDyerProfessorOfGeology, Assets.danforthBrilliantStudent]
             $ i18n "williamDyer"
-        labeled "Skip _Partner_ intros" nothing
+        labeled' "skipPartnerIntros" nothing
       nextCampaignStep
       pure c
     CampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
@@ -111,12 +110,12 @@ instance RunMessage EdgeOfTheEarth where
           story $ i18nWithTitle "theDisappearance1"
           doStep 2 msg
         else do
-          storyWithChooseOneM (i18nWithTitle "theDisappearance1") do
-            labeled "They’re on their own." do
+          storyWithChooseOneM (i18nWithTitle "theDisappearance1") $ unscoped do
+            labeled' "theyreOnTheirOwn" do
               for_ mia \partner -> do
                 push $ SetPartnerStatus partner.cardCode Eliminated
               doStep 2 msg
-            labeled "Go after the missing team members." do
+            labeled' "goAfterMissingTeamMembers" do
               for_ mia \partner -> do
                 push $ SetPartnerStatus partner.cardCode Mia
               doStep 3 msg
@@ -130,9 +129,9 @@ instance RunMessage EdgeOfTheEarth where
       push $ NextCampaignStep (continue IceAndDeathPart2)
       pure c
     CampaignStep (CheckpointStep 2) -> scope "checkpoint2" do
-      storyWithChooseOneM (i18nWithTitle "theAttack1") do
-        labeled "Run for your lives!" $ doStep 2 msg
-        labeled "Stand and fight!" $ doStep 3 msg
+      storyWithChooseOneM (i18nWithTitle "theAttack1") $ unscoped do
+        labeled' "runForYourLives" $ doStep 2 msg
+        labeled' "standAndFight" $ doStep 3 msg
       pure c
     DoStep 2 (CampaignStep (CheckpointStep 2)) -> scope "checkpoint2" do
       story $ i18nWithTitle "theAttack2"
@@ -163,10 +162,10 @@ instance RunMessage EdgeOfTheEarth where
         else push $ NextCampaignStep $ continue ToTheForbiddenPeaks
       pure c
     CampaignStep (InterludeStepPart 1 _ 3) -> scope "interlude1" do
-      storyWithChooseOneM (i18nWithTitle "restfulNight3") do
-        labeled "Open the door and venture into the mirage." do
+      storyWithChooseOneM (i18nWithTitle "restfulNight3") $ unscoped do
+        labeled' "openTheDoorAndVenture" do
           push $ NextCampaignStep $ continue FatalMirage
-        labeled "Ignore the door and allow it to vanish" do
+        labeled' "ignoreTheDoor" do
           push $ NextCampaignStep $ continue ToTheForbiddenPeaks
       pure c
     DoStep n msg'@(CampaignStep (InterludeStep 1 _)) | n > 0 -> scope "interlude1" do
@@ -180,11 +179,11 @@ instance RunMessage EdgeOfTheEarth where
         lead <- getLead
         remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude1" (toJSON $ filter (/= choice) choices)
-        chooseOneM lead do
-          questionLabeled $ "You can still check " <> tshow n <> " team members"
+        chooseOneM lead $ unscoped do
+          countVar n $ questionLabeled' "youCanStillCheckTeamMembers"
           let dyer = Assets.professorWilliamDyerProfessorOfGeology.cardCode
           when (dyer `elem` choices) do
-            labeled "William Dyer" do
+            labeled' "williamDyer" do
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
               blueStory
@@ -199,12 +198,11 @@ instance RunMessage EdgeOfTheEarth where
                   if null iids
                     then doStep n msg'
                     else do
-                      chooseOneM lead $ for_ iids \iid -> do
-                        questionLabeled
-                          "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
+                      chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                        questionLabeled' "removeTekeliliWeaknesses"
                         portraitLabeled iid do
                           cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                          chooseUpToNM iid 5 "Do not remove anymore" do
+                          chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                             for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                       doStep (n - 1) msg'
@@ -215,7 +213,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let danforth = Assets.danforthBrilliantStudent.cardCode
           when (danforth `elem` choices) do
-            labeled "Danforth" do
+            labeled' "danforth" do
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
               blueStory
@@ -227,9 +225,8 @@ instance RunMessage EdgeOfTheEarth where
               if alive
                 then do
                   iids <- getInvestigators
-                  chooseOneM lead $ for_ iids \iid -> do
-                    questionLabeled
-                      "Any one investigator may begin _Scenario II: To the Forbidden Peaks_ with two additional cards drawn in their opening hand."
+                  chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                    questionLabeled' "beginScenarioIIWithExtraCards"
                     portraitLabeled iid do
                       scenarioSetupModifier "08596" CampaignSource iid (StartingHand 2)
                 else do
@@ -239,7 +236,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let kensler = Assets.drAmyKenslerProfessorOfBiology.cardCode
           when (kensler `elem` choices) do
-            labeled "Dr. Amy Kensler" do
+            labeled' "drAmyKensler" do
               choiceMade kensler
               let alive = kensler `elem` remainingPartners
               blueStory
@@ -257,7 +254,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let sinha = Assets.drMalaSinhaDaringPhysician.cardCode
           when (sinha `elem` choices) do
-            labeled "Dr. Mala Sinha" do
+            labeled' "drMalaSinha" do
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
               blueStory
@@ -273,8 +270,8 @@ instance RunMessage EdgeOfTheEarth where
                   if null injured && null damagedPartners
                     then doStep n msg'
                     else do
-                      chooseOneM lead do
-                        labeled "Do not perform healing" nothing
+                      chooseOneM lead $ unscoped do
+                        labeled' "doNotPerformHealing" nothing
                         for_ injured \iid ->
                           portraitLabeled iid $ push $ HealTrauma iid 1 0
                         for_ damagedPartners \partner -> do
@@ -287,7 +284,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let cookie = Assets.jamesCookieFredericksDubiousChoice.cardCode
           when (cookie `elem` choices) do
-            labeled "James \"Cookie\" Fredericks" do
+            labeled' "jamesCookieFredericks" do
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
               blueStory
@@ -299,8 +296,8 @@ instance RunMessage EdgeOfTheEarth where
               if alive
                 then do
                   iids <- getInvestigators
-                  chooseOneM lead $ for_ iids \iid -> do
-                    questionLabeled "Any one investigator earns 1 bonus experience."
+                  chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                    questionLabeled' "earnsBonusExperience"
                     portraitLabeled iid do
                       interludeXp iid $ toBonus "cookiesAdvice" 1
                 else do
@@ -313,7 +310,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let claypool = Assets.averyClaypoolAntarcticGuide.cardCode
           when (claypool `elem` choices) do
-            labeled "Avery Claypool" do
+            labeled' "averyClaypool" do
               choiceMade claypool
               let alive = claypool `elem` remainingPartners
               blueStory
@@ -336,7 +333,7 @@ instance RunMessage EdgeOfTheEarth where
                   doStep (n - 1) msg'
 
           when (ellsworth `elem` choices) do
-            labeled "Roald Ellsworth" do
+            labeled' "roaldEllsworth" do
               choiceMade ellsworth
               blueStory
                 $ compose
@@ -353,7 +350,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let takada = Assets.takadaHirokoAeroplaneMechanic.cardCode
           when (takada `elem` choices) do
-            labeled "Takada Hiroko" do
+            labeled' "takadaHiroko" do
               choiceMade takada
               let alive = takada `elem` remainingPartners
               blueStory
@@ -365,9 +362,8 @@ instance RunMessage EdgeOfTheEarth where
               if alive
                 then do
                   iids <- getInvestigators
-                  chooseOneM lead $ for_ iids \iid -> do
-                    questionLabeled
-                      "Any one investigator may begin _Scenario II: To the Forbidden Peaks_ with 3 additional resources in their resource pool."
+                  chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                    questionLabeled' "beginScenarioIIWithExtraResources"
                     portraitLabeled iid do
                       scenarioSetupModifier "08596" CampaignSource iid (StartingResources 3)
                 else do
@@ -377,7 +373,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let ashevak = Assets.eliyahAshevakDogHandler.cardCode
           when (ashevak `elem` choices) do
-            labeled "Eliyah Ashevak" do
+            labeled' "eliyahAshevak" do
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
               blueStory
@@ -393,8 +389,8 @@ instance RunMessage EdgeOfTheEarth where
                   if null injured && null damagedPartners
                     then doStep n msg'
                     else do
-                      chooseOneM lead do
-                        labeled "Do not perform healing" nothing
+                      chooseOneM lead $ unscoped do
+                        labeled' "doNotPerformHealing" nothing
                         for_ injured \iid ->
                           portraitLabeled iid $ push $ HealTrauma iid 0 1
                         for_ damagedPartners \partner -> do
@@ -423,11 +419,11 @@ instance RunMessage EdgeOfTheEarth where
         lead <- getLead
         remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude2" (toJSON $ filter (/= choice) choices)
-        chooseOneM lead do
-          questionLabeled $ "You can still check " <> tshow n <> " team members"
+        chooseOneM lead $ unscoped do
+          countVar n $ questionLabeled' "youCanStillCheckTeamMembers"
           let dyer = Assets.professorWilliamDyerProfessorOfGeology.cardCode
           when (dyer `elem` choices) do
-            labeled "William Dyer" do
+            labeled' "williamDyer" do
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
               owned <- isJust <$> getOwner Events.dyersSketches
@@ -443,12 +439,11 @@ instance RunMessage EdgeOfTheEarth where
                     if null iids
                       then doStep n msg'
                       else do
-                        chooseOneM lead $ for_ iids \iid -> do
-                          questionLabeled
-                            "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
+                        chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                          questionLabeled' "removeTekeliliWeaknesses"
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            chooseUpToNM iid 5 "Do not remove anymore" do
+                            chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                               for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'
@@ -460,7 +455,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let danforth = Assets.danforthBrilliantStudent.cardCode
           when (danforth `elem` choices) do
-            labeled "Danforth" do
+            labeled' "danforth" do
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.collectedWorksOfPoe
@@ -473,9 +468,8 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled
-                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with two additional cards drawn in their opening hand."
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "beginScenarioIIIWithExtraCards"
                       portraitLabeled iid do
                         scenarioSetupModifier "08621" CampaignSource iid (StartingHand 2)
                     doStep (n - 1) msg'
@@ -487,7 +481,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let kensler = Assets.drAmyKenslerProfessorOfBiology.cardCode
           when (kensler `elem` choices) do
-            labeled "Dr. Amy Kensler" do
+            labeled' "drAmyKensler" do
               choiceMade kensler
               let alive = kensler `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.kenslersLog
@@ -512,7 +506,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let sinha = Assets.drMalaSinhaDaringPhysician.cardCode
           when (sinha `elem` choices) do
-            labeled "Dr. Mala Sinha" do
+            labeled' "drMalaSinha" do
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.sinhasMedicalKit
@@ -529,8 +523,8 @@ instance RunMessage EdgeOfTheEarth where
                     if null injured && null damagedPartners
                       then doStep n msg'
                       else do
-                        chooseOneM lead do
-                          labeled "Do not perform healing" nothing
+                        chooseOneM lead $ unscoped do
+                          labeled' "doNotPerformHealing" nothing
                           for_ injured \iid ->
                             portraitLabeled iid $ push $ HealTrauma iid 1 0
                           for_ damagedPartners \partner -> do
@@ -544,7 +538,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let cookie = Assets.jamesCookieFredericksDubiousChoice.cardCode
           when (cookie `elem` choices) do
-            labeled "James \"Cookie\" Fredericks" do
+            labeled' "jamesCookieFredericks" do
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.cookiesCustom32
@@ -557,8 +551,8 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled "Any one investigator earns 1 bonus experience."
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
                         interludeXp iid $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
@@ -573,7 +567,7 @@ instance RunMessage EdgeOfTheEarth where
           let claypool = Assets.averyClaypoolAntarcticGuide.cardCode
           let claypoolAlive = claypool `elem` remainingPartners
           when (claypool `elem` choices) do
-            labeled "Avery Claypool" do
+            labeled' "averyClaypool" do
               choiceMade claypool
               owned <- isJust <$> getOwner Assets.claypoolsFurs
               blueStory
@@ -596,7 +590,7 @@ instance RunMessage EdgeOfTheEarth where
                 | otherwise -> doStep n msg'
 
           when (ellsworth `elem` choices) do
-            labeled "Roald Ellsworth" do
+            labeled' "roaldEllsworth" do
               choiceMade ellsworth
               let alive = ellsworth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.ellsworthsBoots
@@ -619,7 +613,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let takada = Assets.takadaHirokoAeroplaneMechanic.cardCode
           when (takada `elem` choices) do
-            labeled "Takada Hiroko" do
+            labeled' "takadaHiroko" do
               choiceMade takada
               let alive = takada `elem` remainingPartners
               owned <- isJust <$> getOwner Events.takadasCache
@@ -632,9 +626,8 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled
-                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool."
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "beginScenarioIIIWithExtraResources"
                       portraitLabeled iid do
                         scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
                 | not owned -> do
@@ -645,7 +638,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let ashevak = Assets.eliyahAshevakDogHandler.cardCode
           when (ashevak `elem` choices) do
-            labeled "Eliyah Ashevak" do
+            labeled' "eliyahAshevak" do
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.anyuFaithfulCompanion
@@ -662,8 +655,8 @@ instance RunMessage EdgeOfTheEarth where
                     if null injured && null damagedPartners
                       then doStep n msg'
                       else do
-                        chooseOneM lead do
-                          labeled "Do not perform healing" nothing
+                        chooseOneM lead $ unscoped do
+                          labeled' "doNotPerformHealing" nothing
                           for_ injured \iid -> portraitLabeled iid $ push $ HealTrauma iid 0 1
                           for_ damagedPartners \partner -> do
                             cardLabeled partner $ push $ HealHorror (CardCodeTarget partner.cardCode) CampaignSource 1
@@ -692,17 +685,17 @@ instance RunMessage EdgeOfTheEarth where
         | otherwise -> push $ NextCampaignStep $ continue CityOfTheElderThings
       pure c
     CampaignStep (InterludeStepPart 2 _ 3) -> scope "interlude2" do
-      storyWithChooseOneM (i18nWithTitle "endlessNight3") do
-        labeled "Open the door and venture once more into the mirage." do
+      storyWithChooseOneM (i18nWithTitle "endlessNight3") $ unscoped do
+        labeled' "openTheDoorAndVentureOnceMore" do
           push $ NextCampaignStep $ continue FatalMirage
-        labeled "Ignore the door and allow it to vanish" do
+        labeled' "ignoreTheDoor" do
           push $ NextCampaignStep $ continue CityOfTheElderThings
       pure c
     CampaignStep (InterludeStepPart 2 _ 4) -> scope "interlude2" do
-      storyWithChooseOneM (i18nWithTitle "endlessNight4") do
-        labeled "Open the door and venture into the mirage." do
+      storyWithChooseOneM (i18nWithTitle "endlessNight4") $ unscoped do
+        labeled' "openTheDoorAndVenture" do
           push $ NextCampaignStep $ continue FatalMirage
-        labeled "Ignore the door and allow it to vanish" do
+        labeled' "ignoreTheDoor" do
           push $ NextCampaignStep $ continue CityOfTheElderThings
       pure c
     CampaignStep (InterludeStep 3 _) -> scope "interlude3" do
@@ -722,11 +715,11 @@ instance RunMessage EdgeOfTheEarth where
         lead <- getLead
         remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude3" (toJSON $ filter (/= choice) choices)
-        chooseOneM lead do
-          questionLabeled $ "You can still check " <> tshow n <> " team members"
+        chooseOneM lead $ unscoped do
+          countVar n $ questionLabeled' "youCanStillCheckTeamMembers"
           let dyer = Assets.professorWilliamDyerProfessorOfGeology.cardCode
           when (dyer `elem` choices) do
-            labeled "William Dyer" do
+            labeled' "williamDyer" do
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
               owned <- isJust <$> getOwner Events.dyersSketches
@@ -742,12 +735,11 @@ instance RunMessage EdgeOfTheEarth where
                     if null iids
                       then doStep n msg'
                       else do
-                        chooseOneM lead $ for_ iids \iid -> do
-                          questionLabeled
-                            "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
+                        chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                          questionLabeled' "removeTekeliliWeaknesses"
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            chooseUpToNM iid 5 "Do not remove anymore" do
+                            chooseUpToNM' iid 5 "doNotRemoveAnymore" do
                               for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'
@@ -759,7 +751,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let danforth = Assets.danforthBrilliantStudent.cardCode
           when (danforth `elem` choices) do
-            labeled "Danforth" do
+            labeled' "danforth" do
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.collectedWorksOfPoe
@@ -772,11 +764,11 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled
-                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with two additional cards drawn in their opening hand."
-                      portraitLabeled iid do
-                        scenarioSetupModifier "08621" CampaignSource iid (StartingHand 2)
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "beginScenarioIVWithExtraCards"
+                      portraitLabeled iid
+                        $ push
+                        $ SetGlobal CampaignTarget "heartOfMadnessExtraCards" (toJSON [iid])
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -786,7 +778,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let kensler = Assets.drAmyKenslerProfessorOfBiology.cardCode
           when (kensler `elem` choices) do
-            labeled "Dr. Amy Kensler" do
+            labeled' "drAmyKensler" do
               choiceMade kensler
               let alive = kensler `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.kenslersLog
@@ -811,7 +803,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let sinha = Assets.drMalaSinhaDaringPhysician.cardCode
           when (sinha `elem` choices) do
-            labeled "Dr. Mala Sinha" do
+            labeled' "drMalaSinha" do
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.sinhasMedicalKit
@@ -828,8 +820,8 @@ instance RunMessage EdgeOfTheEarth where
                     if null injured && null damagedPartners
                       then doStep n msg'
                       else do
-                        chooseOneM lead do
-                          labeled "Do not perform healing" nothing
+                        chooseOneM lead $ unscoped do
+                          labeled' "doNotPerformHealing" nothing
                           for_ injured \iid ->
                             portraitLabeled iid $ push $ HealTrauma iid 1 0
                           for_ damagedPartners \partner -> do
@@ -843,7 +835,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let cookie = Assets.jamesCookieFredericksDubiousChoice.cardCode
           when (cookie `elem` choices) do
-            labeled "James \"Cookie\" Fredericks" do
+            labeled' "jamesCookieFredericks" do
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.cookiesCustom32
@@ -856,8 +848,8 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled "Any one investigator earns 1 bonus experience."
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
                         interludeXp iid $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
@@ -871,7 +863,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let claypool = Assets.averyClaypoolAntarcticGuide.cardCode
           when (claypool `elem` choices) do
-            labeled "Avery Claypool" do
+            labeled' "averyClaypool" do
               choiceMade claypool
               let alive = claypool `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.claypoolsFurs
@@ -895,7 +887,7 @@ instance RunMessage EdgeOfTheEarth where
                 | otherwise -> doStep n msg'
 
           when (ellsworth `elem` choices) do
-            labeled "Roald Ellsworth" do
+            labeled' "roaldEllsworth" do
               choiceMade ellsworth
               let alive = ellsworth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.ellsworthsBoots
@@ -917,7 +909,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let takada = Assets.takadaHirokoAeroplaneMechanic.cardCode
           when (takada `elem` choices) do
-            labeled "Takada Hiroko" do
+            labeled' "takadaHiroko" do
               choiceMade takada
               let alive = takada `elem` remainingPartners
               owned <- isJust <$> getOwner Events.takadasCache
@@ -930,9 +922,8 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ for_ iids \iid -> do
-                      questionLabeled
-                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool."
+                    chooseOneM lead $ unscoped $ for_ iids \iid -> do
+                      questionLabeled' "beginScenarioIIIWithExtraResources"
                       portraitLabeled iid do
                         scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
                     doStep (n - 1) msg'
@@ -944,7 +935,7 @@ instance RunMessage EdgeOfTheEarth where
 
           let ashevak = Assets.eliyahAshevakDogHandler.cardCode
           when (ashevak `elem` choices) do
-            labeled "Eliyah Ashevak" do
+            labeled' "eliyahAshevak" do
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.anyuFaithfulCompanion
@@ -961,8 +952,8 @@ instance RunMessage EdgeOfTheEarth where
                     if null injured && null damagedPartners
                       then doStep n msg'
                       else do
-                        chooseOneM lead do
-                          labeled "Do not perform healing" nothing
+                        chooseOneM lead $ unscoped do
+                          labeled' "doNotPerformHealing" nothing
                           for_ injured \iid -> portraitLabeled iid $ push $ HealTrauma iid 0 1
                           for_ damagedPartners \partner -> do
                             cardLabeled partner $ push $ HealHorror (CardCodeTarget partner.cardCode) CampaignSource 1
@@ -984,17 +975,17 @@ instance RunMessage EdgeOfTheEarth where
       push $ CampaignStep $ InterludeStepPart 3 Nothing $ if shouldFinalNight3 then 3 else 4
       pure c
     CampaignStep (InterludeStepPart 3 _ 3) -> scope "interlude3" do
-      storyWithChooseOneM (i18nWithTitle "finalNight3") do
-        labeled "Open the door and venture once more into the mirage." do
+      storyWithChooseOneM (i18nWithTitle "finalNight3") $ unscoped do
+        labeled' "openTheDoorAndVentureOnceMore" do
           push $ NextCampaignStep $ continue FatalMirage
-        labeled "Ignore the door and allow it to vanish" do
+        labeled' "ignoreTheDoor" do
           push $ NextCampaignStep $ continue TheHeartOfMadnessPart1
       pure c
     CampaignStep (InterludeStepPart 3 _ 4) -> scope "interlude3" do
-      storyWithChooseOneM (i18nWithTitle "finalNight4") do
-        labeled "Open the door and venture into the mirage." do
+      storyWithChooseOneM (i18nWithTitle "finalNight4") $ unscoped do
+        labeled' "openTheDoorAndVenture" do
           push $ NextCampaignStep $ continue FatalMirage
-        labeled "Ignore the door and allow it to vanish" do
+        labeled' "ignoreTheDoor" do
           push $ NextCampaignStep $ continue TheHeartOfMadnessPart1
       pure c
     CampaignStep (CheckpointStep 3) -> scope "checkpoint3" do
@@ -1043,52 +1034,47 @@ instance RunMessage EdgeOfTheEarth where
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status
     When (AssetDefeated _ aid) -> do
       cCode <- field AssetCardCode aid
-      pushWhen (cCode `elem` map (.cardCode) expeditionTeam) $ SetPartnerStatus cCode Eliminated
+      for_ (toPartnerCodeMay cCode) \partnerCode ->
+        push $ SetPartnerStatus partnerCode Eliminated
       pure c
     RemoveFromPlay (AssetSource aid) -> do
       mCode <- fieldMay AssetCardCode aid
-      case mCode of
+      case mCode >>= toPartnerCodeMay of
         Nothing -> pure c
-        Just cCode ->
-          if cCode `elem` map (.cardCode) expeditionTeam
-            then do
-              damage <- field AssetDamage aid
-              horror <- field AssetHorror aid
-              pure
-                $ EdgeOfTheEarth
-                $ attrs
-                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
-            else pure c
+        Just partnerCode -> do
+          damage <- field AssetDamage aid
+          horror <- field AssetHorror aid
+          pure
+            $ EdgeOfTheEarth
+            $ attrs
+            & (logL . partnersL . ix partnerCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
     RemoveFromGame (AssetTarget aid) -> do
       mCode <- fieldMay AssetCardCode aid
-      case mCode of
+      case mCode >>= toPartnerCodeMay of
         Nothing -> pure c
-        Just cCode ->
-          if cCode `elem` map (.cardCode) expeditionTeam
-            then do
-              damage <- field AssetDamage aid
-              horror <- field AssetHorror aid
-              pure
-                $ EdgeOfTheEarth
-                $ attrs
-                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
-            else pure c
+        Just partnerCode -> do
+          damage <- field AssetDamage aid
+          horror <- field AssetHorror aid
+          pure
+            $ EdgeOfTheEarth
+            $ attrs
+            & (logL . partnersL . ix partnerCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
     HealDamage (CardCodeTarget cCode) CampaignSource n -> do
-      if cCode `elem` map (.cardCode) expeditionTeam
-        then do
+      case toPartnerCodeMay cCode of
+        Just partnerCode ->
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & (logL . partnersL . ix cCode %~ (damageL %~ max 0 . subtract n))
-        else pure c
+            & (logL . partnersL . ix partnerCode %~ (damageL %~ max 0 . subtract n))
+        Nothing -> pure c
     HealHorror (CardCodeTarget cCode) CampaignSource n -> do
-      if cCode `elem` map (.cardCode) expeditionTeam
-        then do
+      case toPartnerCodeMay cCode of
+        Just partnerCode ->
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & (logL . partnersL . ix cCode %~ (horrorL %~ max 0 . subtract n))
-        else pure c
+            & (logL . partnersL . ix partnerCode %~ (horrorL %~ max 0 . subtract n))
+        Nothing -> pure c
     CampaignStep TheHeartOfMadnessPart1 -> scope "theHeartOfMadness.part1" do
       story $ i18nWithTitle "intro"
       kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
@@ -1127,19 +1113,29 @@ instance RunMessage EdgeOfTheEarth where
       unless miasmicCrystalRecovered do
         when (count (== #frost) (campaignChaosBag attrs) < 8) $ addChaosToken #frost
 
-      storyWithChooseOneM (i18nWithTitle "proceed") do
-        labeled
-          "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
-          $ pushAll
-            [ ResetInvestigators
-            , ResetGame
-            , ForTarget GameTarget ResetGame
-            , ForInvestigators [] ResetGame
-            , StartScenario "08648a" Nothing
-            ]
-        labeled
-          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
+      let extraCardsIids :: [InvestigatorId] =
+            toResult
+              $ Map.findWithDefault
+                (toJSON ([] :: [InvestigatorId]))
+                "heartOfMadnessExtraCards"
+                (campaignStore attrs)
+
+      storyWithChooseOneM (i18nWithTitle "proceed") $ unscoped do
+        labeled' "stayAndStudyTheGreatDoor"
           do
+            for_ extraCardsIids \iid ->
+              scenarioSetupModifier "08648a" CampaignSource iid (StartingHand 2)
+            pushAll
+              [ ResetInvestigators
+              , ResetGame
+              , ForTarget GameTarget ResetGame
+              , ForInvestigators [] ResetGame
+              , StartScenario "08648a" Nothing
+              ]
+        labeled' "passThroughTheGate"
+          do
+            for_ extraCardsIids \iid ->
+              scenarioSetupModifier "08648b" CampaignSource iid (StartingHand 2)
             push $ NextCampaignStep $ continue TheHeartOfMadnessPart2
 
       pure c

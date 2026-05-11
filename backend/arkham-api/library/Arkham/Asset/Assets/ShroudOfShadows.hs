@@ -10,6 +10,7 @@ import Arkham.Effect.Import
 import Arkham.Evade
 import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded, RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -75,9 +76,9 @@ instance RunMessage ShroudOfShadowsEffect where
                 when (stillInPlay || notNull locations) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
-                      labeled "Place 1 Charge on Shroud of Shadows" do
+                      cardI18n $ scope "shroudOfShadows" $ labeled' "placeCharge" do
                         push $ AddUses attrs.source assetId Charge 1
-                    labeled "Move to a connecting location" do
+                    labeledI "moveToConnecting" do
                       chooseTargetM iid locations $ moveTo attrs.source iid
                 disable attrs
           case attrs.source of

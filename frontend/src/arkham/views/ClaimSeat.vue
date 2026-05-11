@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { fetchJoinGame } from '@/arkham/api'
 import type { Game } from '@/arkham/types/Game'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
@@ -9,6 +10,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 const game = ref<Game | null>(null)
 const loadError = ref(false)
@@ -20,8 +22,8 @@ fetchJoinGame(props.gameId)
 
 <template>
   <div v-if="loadError" class="error-container">
-    <p>Unable to load game details.</p>
-    <router-link :to="`/games/${gameId}`">Go to game →</router-link>
+    <p>{{ t('claimSeat.unableToLoad') }}</p>
+    <router-link :to="`/games/${gameId}`">{{ t('claimSeat.goToGame') }}</router-link>
   </div>
   <MultiplayerLobby
     v-else-if="game"
@@ -29,7 +31,7 @@ fetchJoinGame(props.gameId)
     :game="game"
     :player-id="null"
   />
-  <div v-else class="loading">Loading…</div>
+  <div v-else class="loading">{{ t('claimSeat.loading') }}</div>
 </template>
 
 <style scoped>

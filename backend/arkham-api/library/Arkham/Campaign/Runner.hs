@@ -7,6 +7,7 @@ import Arkham.Helpers.Message as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Ability
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -22,6 +23,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
+import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -144,6 +146,7 @@ defaultCampaignRunner msg a = case msg of
       else pure a
   RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
+  RemoveOption option -> pure $ updateAttrs a (logL . optionsL %~ deleteSet option)
   InitDeck iid _ deck -> do
     playerCount <- getPlayerCount
     investigatorClass <- field InvestigatorClass iid
@@ -156,7 +159,7 @@ defaultCampaignRunner msg a = case msg of
             Nothing -> do
               pid <- getPlayer iid
               let cards = nub $ map toCardCode $ filterCards (card_ $ #asset <> #spell) (unDeck deck)
-              pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+              pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" Nothing $ ChooseOne $ flip map cards \c ->
                 CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
             Just _ -> pure Nothing
         else pure Nothing
@@ -186,8 +189,8 @@ defaultCampaignRunner msg a = case msg of
                   Just
                     $ chooseOne
                       pid
-                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
-                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      [ Label (withI18n $ countVar 1 $ ikey' "label.healPhysicalTrauma") [HealTrauma iid 1 0]
+                      , Label (withI18n $ countVar 1 $ ikey' "label.healMentalTrauma") [HealTrauma iid 0 1]
                       ]
               | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
               | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
@@ -218,7 +221,7 @@ defaultCampaignRunner msg a = case msg of
             Nothing -> do
               pid <- getPlayer iid
               let cards = nub $ map toCardCode $ filterCards (card_ #spell) (unDeck deck)
-              pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+              pure $ Just $ Ask pid $ QuestionLabel "$cards.label.eldritchBrand5.chooseCard" Nothing $ ChooseOne $ flip map cards \c ->
                 CardLabel c False [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
             Just _ -> pure Nothing
         else pure Nothing
@@ -257,8 +260,8 @@ defaultCampaignRunner msg a = case msg of
                   Just
                     $ chooseOne
                       pid
-                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
-                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      [ Label (withI18n $ countVar 1 $ ikey' "label.healPhysicalTrauma") [HealTrauma iid 1 0]
+                      , Label (withI18n $ countVar 1 $ ikey' "label.healMentalTrauma") [HealTrauma iid 0 1]
                       ]
               | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
               | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
@@ -429,6 +432,33 @@ defaultCampaignRunner msg a = case msg of
   UseAbility _ ab _ | ab.source == CampaignSource -> do
     push $ Do msg
     pure a
+  Do (UseAbility iid ability windows) | ability.limitType == Just PerCampaign -> do
+    let
+      sameAbility u =
+        abilityCardCode (usedAbility u) == abilityCardCode ability
+          && abilityIndex (usedAbility u) == abilityIndex ability
+    case find sameAbility (campaignUsedAbilities (toAttrs a)) of
+      Nothing -> do
+        let
+          used =
+            UsedAbility
+              { usedAbility = ability
+              , usedAbilityInitiator = iid
+              , usedAbilityWindows = windows
+              , usedTimes = 1
+              , usedDepth = 0
+              , usedAbilityTraits = mempty
+              , usedThisWindow = False
+              , usedAbilityTarget = Nothing
+              }
+        pure $ updateAttrs a (usedAbilitiesL %~ (used :))
+      Just _ -> do
+        let
+          updateUsed u
+            | sameAbility u =
+                u {usedTimes = usedTimes u + 1, usedAbilityWindows = usedAbilityWindows u <> windows}
+            | otherwise = u
+        pure $ updateAttrs a (usedAbilitiesL %~ map updateUsed)
   RotateTarot (toTarotArcana -> arcana) -> do
     let
       rotate = \case

@@ -33,7 +33,7 @@ instance RunMessage RecallTheFuture2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       tokens <- sort . nub . map (.face) <$> select (IncludeSealed $ IncludeTokenPool AnyChaosToken)
       chooseOneM iid do
-        for_ tokens \t -> labeled (tshow t) $ handleTarget iid attrs t
+        for_ tokens \t -> chaosTokenLabeled t $ handleTarget iid attrs t
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (ChaosTokenFaceTarget t) -> do
       pure . RecallTheFuture2 $ attrs `with` Metadata (Just t)

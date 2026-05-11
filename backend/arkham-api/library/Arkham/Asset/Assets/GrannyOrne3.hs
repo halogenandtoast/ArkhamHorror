@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (getSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -31,10 +32,10 @@ instance RunMessage GrannyOrne3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       getSkillTest >>= traverse_ \st -> do
         chooseOneM iid do
-          labeled "Get +1 skill value" do
+          (cardI18n $ labeled' "grannyOrne3.get1SkillValue") do
             skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue 1)
             push RerunSkillTest
-          labeled "Get -1 skill value" do
+          (cardI18n $ labeled' "grannyOrne3.get1SkillValue") do
             skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue (-1))
             push RerunSkillTest
       pure a

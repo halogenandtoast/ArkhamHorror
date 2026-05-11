@@ -237,10 +237,10 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 1) -> do
         lead <- getActivePlayer
         push
-          $ Msg.questionLabel "Which scenario would you like to start with" lead
+          $ Msg.questionLabel (ikey' "theDreamEaters.question.whichScenarioToStart") lead
           $ ChooseOne
-            [ Label "Beyond the Gates of Sleep" [CampaignStep (PrologueStepPart 11)]
-            , Label "Waking Nightmare" [CampaignStep (PrologueStepPart 12)]
+            [ Label "$theDreamEaters.label.beyondTheGatesOfSleep" [CampaignStep (PrologueStepPart 11)]
+            , Label "$theDreamEaters.label.wakingNightmare" [CampaignStep (PrologueStepPart 12)]
             ]
         pure c
       CampaignStep (PrologueStepPart 2) -> do
@@ -271,7 +271,7 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           $ ChoosingDecks
-          : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+          : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck) players
             <> [DoneChoosingDecks, NextCampaignStep (continue BeyondTheGatesOfSleep)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -289,7 +289,7 @@ instance RunMessage TheDreamEaters where
         players <- allPlayers
         pushAll
           $ ChoosingDecks
-          : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+          : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck) players
             <> [DoneChoosingDecks, NextCampaignStep (continue WakingNightmare)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -373,13 +373,13 @@ instance RunMessage TheDreamEaters where
           players <- allPlayers
           pushAll
             $ ChoosingDecks
-            : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+            : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartA") pid ChooseDeck) players
               <> [DoneChoosingDecks]
         when (s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs) do
           players <- allPlayers
           pushAll
             $ ChoosingDecks
-            : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+            : map (\pid -> Msg.questionLabel (ikey' "theDreamEaters.question.chooseDeckForPartB") pid ChooseDeck) players
               <> [DoneChoosingDecks]
         lift $ defaultCampaignRunner msg c
       CampaignStep (InterludeStep 1 _) -> do
@@ -397,16 +397,16 @@ instance RunMessage TheDreamEaters where
         storyWithChooseOne
           theBlackCat2
           [ Label
-              "Tell your companions of your quest, your plight, and your peril. The black cat will return to you once this message is delivered. This may put an undue burden on your companions. "
+              "$theDreamEaters.label.theBlackCat2NewsOfYourPlight"
               [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatDeliveredNewsOfYourPlight)]
           , Label
-              "Tell your companions about your new friends and about the Dreamlands."
+              "$theDreamEaters.label.theBlackCat2KnowledgeOfDreamlands"
               [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSharedKnowledgeOfTheDreamlands)]
           , Label
-              "Tell your companions that they are in danger, and that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult."
+              "$theDreamEaters.label.theBlackCat2WarnTheOthers"
               [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatWarnedTheOthers)]
           , Label
-              "You don’t trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door."
+              "$theDreamEaters.label.theBlackCat2DontTrust"
               [InTheDreamQuest (Record $ toCampaignLogKey OkayFineHaveItYourWayThen)]
           ]
         inTheWebOfDreams $ push $ CampaignStep (InterludeStepPart 1 Nothing 3)
@@ -417,10 +417,10 @@ instance RunMessage TheDreamEaters where
           next =
             case campaignMode meta of
               FullMode ->
-                Msg.questionLabel "Proceed to which scenario" lead
+                Msg.questionLabel (ikey' "theDreamEaters.question.proceedToWhichScenario") lead
                   $ ChooseOne
-                    [ Label "The Search for Kadath" [NextCampaignStep (continue TheSearchForKadath)]
-                    , Label "A Thousand Shapes of Horror" [NextCampaignStep (continue AThousandShapesOfHorror)]
+                    [ Label "$theDreamEaters.label.theSearchForKadath" [NextCampaignStep (continue TheSearchForKadath)]
+                    , Label "$theDreamEaters.label.aThousandShapesOfHorror" [NextCampaignStep (continue AThousandShapesOfHorror)]
                     ]
               _ -> NextCampaignStep (continue AThousandShapesOfHorror)
 
@@ -483,18 +483,18 @@ instance RunMessage TheDreamEaters where
               $ if hasAHunch
                 then
                   [ Label
-                      "The black cat wanders off before you can reply, its pitch-black fur melding into the darkness of the Underworld."
+                      "$theDreamEaters.label.blackCatWandersOff"
                       []
                   ]
                 else
                   [ Label
-                      "Tell your companions that you are in trouble. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions."
+                      "$theDreamEaters.label.youDidNotAskForItRequestAid"
                       [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatRequestedAidFromTheOthers)]
                   , Label
-                      "Tell your companions about the Underworld. The black cat will then go elsewhere."
+                      "$theDreamEaters.label.youDidNotAskForItKnowledgeOfUnderworld"
                       [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatSharedKnowledgeOfTheUnderworld)]
                   , Label
-                      "Tell your companions that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
+                      "$theDreamEaters.label.youDidNotAskForItWarnTheOthers"
                       [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatWarnedTheOthers)]
                   ]
 
@@ -569,10 +569,10 @@ instance RunMessage TheDreamEaters where
       CampaignStep (InterludeStepPart 2 _ 4) -> do
         lead <- getLeadPlayer
         push
-          $ Msg.questionLabel "Proceed to which scenario" lead
+          $ Msg.questionLabel (ikey' "theDreamEaters.question.proceedToWhichScenario") lead
           $ ChooseOne
-            [ Label "Dark Side of the Moon" [NextCampaignStep (continue DarkSideOfTheMoon)]
-            , Label "Point of No Return" [NextCampaignStep (continue PointOfNoReturn)]
+            [ Label "$theDreamEaters.label.darkSideOfTheMoon" [NextCampaignStep (continue DarkSideOfTheMoon)]
+            , Label "$theDreamEaters.label.pointOfNoReturn" [NextCampaignStep (continue PointOfNoReturn)]
             ]
         pure c
       CampaignStep (InterludeStep 3 _) -> do
@@ -610,15 +610,15 @@ instance RunMessage TheDreamEaters where
               $ if hasAHunch
                 then
                   [ Label
-                      "The black cat bounds off into the void of space before you get the chance to ask it anything else."
+                      "$theDreamEaters.label.blackCatBoundsOff"
                       []
                   ]
                 else
                   [ Label
-                      "Tell your companions about the threats that you face. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions. "
+                      "$theDreamEaters.label.theGreatOnes1SpokeOfNyarlathotep"
                       [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSpokeOfNyarlathotep)]
                   , Label
-                      "Tell your companions that you will be okay. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
+                      "$theDreamEaters.label.theGreatOnes1SpokeOfAtlachNacha"
                       [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSpokeOfAtlachNacha)]
                   ]
             inTheWebOfDreams $ push $ CampaignStep $ InterludeStepPart 3 Nothing 2
@@ -688,10 +688,10 @@ instance RunMessage TheDreamEaters where
       CampaignStep (InterludeStepPart 3 _ 3) -> do
         lead <- getLeadPlayer
         push
-          $ Msg.questionLabel "Proceed to which scenario" lead
+          $ Msg.questionLabel (ikey' "theDreamEaters.question.proceedToWhichScenario") lead
           $ ChooseOne
-            [ Label "Where the Gods Dwell" [NextCampaignStep (continue WhereTheGodsDwell)]
-            , Label "Weaver of the Cosmos" [NextCampaignStep (continue WeaverOfTheCosmos)]
+            [ Label "$theDreamEaters.label.whereTheGodsDwell" [NextCampaignStep (continue WhereTheGodsDwell)]
+            , Label "$theDreamEaters.label.weaverOfTheCosmos" [NextCampaignStep (continue WeaverOfTheCosmos)]
             ]
         pure c
       CampaignStep EpilogueStep -> do

@@ -28,7 +28,7 @@ instance HasAbilities BindersJarInterdimensionalPrison1 where
   getAbilities (BindersJarInterdimensionalPrison1 (With a _)) =
     [ controlled a 1 criteria1
         $ freeReaction
-        $ EnemyDefeated #after Anyone ByAny
+        $ IfEnemyDefeated #after Anyone ByAny
         $ NonEliteEnemy
         <> EnemyAt YourLocation
     , restricted a 2 ControlsThis

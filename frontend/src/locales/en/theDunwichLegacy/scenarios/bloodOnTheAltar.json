@@ -1,5 +1,8 @@
 {
   "heading": "Scenario IV",
+  "label": {
+    "chooseHiredGunLocation": "Choose where to place Hired Gun"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-1 for each location in play with no encounter card underneath it (max -4).",

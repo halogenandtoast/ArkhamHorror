@@ -73,13 +73,13 @@ instance RunMessage PendantOfTheQueen where
 
       chooseOrRunOneM iid do
         when (canMove && moveChoice) do
-          labeled "Move to this location" $ moveTo (attrs.ability 1) iid lid
+          labeledI "moveToThisLocation" $ moveTo (attrs.ability 1) iid lid
 
         when discoverChoice do
-          labeled "Discover a clue at this location" $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
+          labeledI "discoverClueAtThisLocation" $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
 
         when (notNull enemies || notNull concealed) do
-          labeled "Evade an enemy at this location" do
+          labeledI "evadeEnemyAtThisLocation" do
             chooseAutomaticallyEvadeAt iid (attrs.ability 1) (LocationWithId lid) AnyEnemy
       pure a
     _ -> PendantOfTheQueen <$> liftRunMessage msg attrs

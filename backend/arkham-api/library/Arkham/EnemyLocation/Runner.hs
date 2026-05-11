@@ -8,16 +8,10 @@ import Arkham.Classes as X
 import Arkham.EnemyLocation.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X
-import Arkham.Helpers.Effect as X
-import Arkham.Helpers.Message as X hiding (
-  EnemyDamage,
-  EnemyDefeated,
-  InvestigatorDefeated,
-  PaidCost,
- )
+import Arkham.Helpers.Message as X (push, pushAll, pushM, runQueueT)
 import Arkham.Helpers.Query as X
-import Arkham.Helpers.SkillTest as X
 import Arkham.Id as X
+import Arkham.Location.Base as X (LocationAttrs (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
@@ -35,6 +29,7 @@ import Arkham.Fight
 import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame)
 import Arkham.History
@@ -68,7 +63,10 @@ isEnemyTarget a target =
   isTarget (EnemyId $ coerce $ unLocationId a.id) target || isTarget a target
 
 instance HasModifiersFor EnemyLocationAttrs where
-  getModifiersFor _ = pure ()
+  getModifiersFor a = do
+    -- All enemy-locations: cannot make attacks of opportunity, cannot be moved
+    -- by card effects (rules: "Enemy-locations cannot be moved by card effects").
+    modifySelf a [CannotMakeAttacksOfOpportunity]
 
 instance HasAbilities EnemyLocationAttrs where
   getAbilities a =
@@ -114,7 +112,7 @@ instance RunMessage EnemyLocationAttrs where
       let difficulty = case choose.difficulty of
             DefaultChooseFightDifficulty -> fromMaybe (Fixed 0) a.fight
             CalculatedChooseFightDifficulty ccfd -> ccfd
-      push $ fight sid iid source target skillType difficulty
+      fight sid iid source target skillType difficulty
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
       sid <- getRandom
@@ -127,7 +125,7 @@ instance RunMessage EnemyLocationAttrs where
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == asEnemyId a -> do
       let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) mTarget
       let difficulty = fromMaybe (Fixed 0) a.evade
-      push $ evade sid iid source target skillType difficulty
+      evade sid iid source target skillType difficulty
       pure a
     UseCardAbility iid (isSource a -> True) AbilityInvestigate _ _ -> do
       let triggerSource = a.ability AbilityInvestigate
@@ -139,8 +137,7 @@ instance RunMessage EnemyLocationAttrs where
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
         let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
-        push
-          $ investigate investigation.skillTest iid investigation.source target investigation.skillType
+        investigate investigation.skillTest iid investigation.source target investigation.skillType
           $ maybe (Fixed 0) GameValueCalculation a.shroud
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
@@ -303,4 +300,4 @@ getInvestigateAllowed _iid attrs = do
         CannotInvestigateLocation lid -> lid == attrs.id
         CannotInvestigate -> True
         _ -> False
-  pure $ not cannotInvestigate
+  pure $ not cannotInvestigate && isJust (locationShroud (enemyLocationBase attrs))

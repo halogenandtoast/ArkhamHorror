@@ -56,10 +56,10 @@ instance RunMessage RitaYoung where
       connectingLocations <- getAccessibleLocations iid attrs
       chooseOrRunOneM iid do
         when canDamage do
-          labeled "Damage enemy" do
+          labeledI "damageEnemy" do
             push $ EnemyDamage enemyId $ nonAttack (Just iid) (attrs.ability 1) 1
         when (notNull connectingLocations) do
-          labeled "Move to a connecting location" do
+          labeledI "moveToConnecting" do
             chooseOneM iid $ targets connectingLocations $ moveTo attrs iid
       pure i
     _ -> RitaYoung <$> liftRunMessage msg attrs

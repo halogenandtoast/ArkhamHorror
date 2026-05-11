@@ -14,7 +14,7 @@ instance RunMessage IcyDepths where
   runMessage msg a@(IcyDepths attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
-        sufferMentalTrauma iid 1
+        sufferPhysicalTrauma iid 1
         investigatorDefeated attrs iid
       pure a
     _ -> IcyDepths <$> liftRunMessage msg attrs

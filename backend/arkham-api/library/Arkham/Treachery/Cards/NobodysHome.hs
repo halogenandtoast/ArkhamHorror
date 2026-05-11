@@ -24,15 +24,17 @@ instance HasModifiersFor NobodysHome where
 
 instance HasAbilities NobodysHome where
   getAbilities (NobodysHome a) = case a.attached.location of
-    Just lid -> [restricted a 1 (exists $ be lid <> LocationWithoutClues) $ forced AnyWindow]
+    Just lid -> [mkAbility a 1 $ forced $ LastClueRemovedFromLocation #after (be lid)]
     _ -> []
 
 instance RunMessage NobodysHome where
   runMessage msg t@(NobodysHome attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       withLocationOf iid \lid -> do
-        whenM (fieldNone LocationClues lid) $ gainSurge attrs
+        noClues <- fieldNone LocationClues lid
+        when noClues $ gainSurge attrs
         attachTreachery attrs lid
+        when noClues $ toDiscard attrs attrs
       pure t
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       toDiscard (attrs.ability 1) attrs

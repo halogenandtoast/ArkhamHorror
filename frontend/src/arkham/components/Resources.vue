@@ -225,7 +225,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
         class="aux-arc"
         role="button"
         tabindex="0"
-        aria-label="Assign all horror"
+        :aria-label="$t('resourcesAria.assignAllHorror')"
         @keydown.enter.prevent="choose(sanityAuxAction)"
         @keydown.space.prevent="choose(sanityAuxAction)"
       >

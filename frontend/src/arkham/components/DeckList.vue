@@ -193,7 +193,7 @@ watch(deckRef, (el) => {
               </button>
             </div>
             <div class="deck-actions">
-              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" title="View on ArkhamDB">
+              <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')">
                 <font-awesome-icon icon="external-link" />
               </a>
             </div>
@@ -205,7 +205,7 @@ watch(deckRef, (el) => {
       </div>
       <table class="card-table" v-if="view == View.List">
         <thead>
-          <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
+          <tr><th>{{ $t('cardsList.name') }}</th><th>{{ $t('cardsList.class') }}</th><th>{{ $t('cardsList.cost') }}</th><th>{{ $t('cardsList.type') }}</th><th>{{ $t('cardsList.icons') }}</th><th>{{ $t('cardsList.traits') }}</th><th>{{ $t('cardsList.set') }}</th></tr>
         </thead>
         <tbody>
           <tr v-for="(card, idx) in allCards" :key="idx">

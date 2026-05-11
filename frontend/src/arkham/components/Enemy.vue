@@ -19,6 +19,7 @@ import Token from '@/arkham/components/Token.vue'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
+import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
 
 const props = withDefaults(defineProps<{
@@ -160,6 +161,84 @@ const important = computed(() => {
   return modifiers.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
 })
 
+function sourceIsSelf(source: Source): boolean {
+  if (source.tag === 'ProxySource') return sourceIsSelf(source.source)
+  if (source.tag === 'AbilitySource') {
+    const [inner] = (source.contents as unknown) as [Source, number]
+    return sourceIsSelf(inner)
+  }
+  if (source.tag === 'EnemySource') return source.contents === id.value
+  return false
+}
+
+function cannotBeDamagedSourceCardCode(source: Source): string | null {
+  if (source.tag === 'ProxySource') return cannotBeDamagedSourceCardCode(source.source)
+  if (source.tag === 'AbilitySource') {
+    const [inner] = (source.contents as unknown) as [Source, number]
+    return cannotBeDamagedSourceCardCode(inner)
+  }
+  if (source.tag === 'AssetSource') {
+    const asset = props.game.assets[source.contents as string]
+    if (!asset) return null
+    const mutated = asset.mutated ? `_${asset.mutated}` : ''
+    return `${asset.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'TreacherySource') {
+    const treachery = props.game.treacheries[source.contents as string]
+    return treachery ? treachery.cardCode.replace('c', '') : null
+  }
+  if (source.tag === 'EnemySource') {
+    const enemy = props.game.enemies[source.contents as string]
+    if (!enemy) return null
+    return `${enemy.cardCode.replace('c', '')}${enemy.flipped ? 'b' : ''}`
+  }
+  if (source.tag === 'EventSource') {
+    const event = props.game.events[source.contents as string]
+    if (!event) return null
+    const mutated = event.mutated ? `_${event.mutated}` : ''
+    return `${event.cardCode.replace('c', '')}${mutated}`
+  }
+  if (source.tag === 'LocationSource') {
+    const location = props.game.locations[source.contents as string]
+    if (!location) return null
+    const suffix = location.revealed ? '' : 'b'
+    return `${location.cardCode.replace('c', '')}${suffix}`
+  }
+  if (source.tag === 'AgendaSource') {
+    const agenda = props.game.agendas[source.contents as string]
+    if (!agenda) return (source.contents as string).replace(/^c/, '')
+    if (agenda.flipped) {
+      if (["c03276a", "c03279a"].includes(agenda.id)) {
+        return `${agenda.id.replace(/^c/, '')}b`
+      }
+      return `${agenda.id.replace(/^c/, '').replace(/a$/, '')}b`
+    }
+    return agenda.id.replace(/^c/, '')
+  }
+  if (source.tag === 'ActSource') return (source.contents as string).replace(/^c/, '')
+  if (source.tag === 'InvestigatorSource') return (source.contents as string).replace('c', '')
+  return null
+}
+
+const cannotBeDamagedModifier = computed(() => {
+  const modifiers = props.enemy.modifiers ?? []
+  return modifiers.find(
+    (m) =>
+      (m.type.tag === "CannotBeDamaged"
+        || (m.type.tag === "OtherModifier" && m.type.contents === "CannotBeDamaged"))
+      && !sourceIsSelf(m.source)
+  ) ?? null
+})
+
+const isCannotBeDamaged = computed(() => cannotBeDamagedModifier.value !== null)
+
+const cannotBeDamagedCardCode = computed<string | null>(() => {
+  const m = cannotBeDamagedModifier.value
+  if (!m) return null
+  if (m.card) return m.card.contents.cardCode.replace(/^c/, '')
+  return cannotBeDamagedSourceCardCode(m.source)
+})
+
 const health = computed(() => {
   return props.enemy.health?.tag == "Fixed" ? props.enemy.health.contents : null
 })
@@ -256,6 +335,9 @@ function onDrop(event: DragEvent) {
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
+            </span>
+            <span v-if="isCannotBeDamaged" class="cannot-be-damaged-badge" :data-image-id="cannotBeDamagedCardCode">
+              <font-awesome-icon icon="shield-heart" />
             </span>
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
@@ -387,7 +469,7 @@ function onDrop(event: DragEvent) {
       />
 
       <template v-if="debug.active">
-        <button @click="debugging = true">Debug</button>
+        <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
     </div>
 
@@ -588,5 +670,31 @@ function onDrop(event: DragEvent) {
   align-items: center;
   justify-content: center;
   z-index: 6;
+}
+
+.cannot-be-damaged-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  color: #e05252;
+  font-size: 22px;
+  line-height: 1;
+  filter:
+    drop-shadow(0 0 1px #000)
+    drop-shadow(0 0 2px #000)
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+  cursor: default;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  :deep(svg) {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
 }
 </style>

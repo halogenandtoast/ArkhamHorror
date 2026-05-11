@@ -5,6 +5,7 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
 import Arkham.Helpers.Investigator (drawOpeningHand)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (discardL, handL)
@@ -37,14 +38,14 @@ instance RunMessage SefinaRousseau where
       pure i
     ElderSignEffect (is attrs -> True) -> do
       chooseOrRunOneM attrs.id do
-        labeled "Do not use elder sign ability" nothing
+        labeledI "doNotUseElderSign" nothing
         targets attrs.cardsUnderneath (addToHand attrs.id . only)
       pure i
     DrawStartingHand (is attrs -> True) -> do
       (discard', hand, deck) <- drawOpeningHand attrs 13
       let events = filterCards (#event <> not_ (cardIs Events.thePaintedWorld)) hand
       when (notNull events) do
-        chooseUpToNM attrs.id 5 "Done Choosing Events" $ targets events (placeUnderneath attrs.id . only)
+        cardI18n $ scope "sefinaRousseau" $ chooseUpToNM' attrs.id 5 "doneChoosingEvents" $ targets events (placeUnderneath attrs.id . only)
       push $ CheckHandSize attrs.id
       shuffleDiscardBackIn attrs.id
       pure . SefinaRousseau $ attrs & discardL .~ discard' & handL .~ hand & deckL .~ Deck deck

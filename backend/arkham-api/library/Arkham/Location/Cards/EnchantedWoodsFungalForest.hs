@@ -34,6 +34,6 @@ instance RunMessage EnchantedWoodsFungalForest where
       player <- getPlayer iid
       when (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens) $ do
         pushAll [assignDamage iid (toAbilitySource attrs 1) 1, LoseActions iid (toAbilitySource attrs 1) 1]
-      push $ chooseOne player [Label "Continue" [ResetChaosTokens (toAbilitySource attrs 1)]]
+      push $ chooseOne player [Label "$label.continue" [ResetChaosTokens (toAbilitySource attrs 1)]]
       pure l
     _ -> EnchantedWoodsFungalForest <$> runMessage msg attrs

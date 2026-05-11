@@ -2,6 +2,7 @@
     "discards": "Défausse",
     "endTurn": "Fin du tour",
     "skipTriggers": "Ignorer déclencheurs",
+    "skipAllTriggers": "Ignorer les déclencheurs de tous les investigateurs",
     "devouredCards": "Dévoré ({count})",
     "underneathCards": "En dessous ({count})"
 

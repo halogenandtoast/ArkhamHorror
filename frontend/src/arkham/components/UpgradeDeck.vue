@@ -234,11 +234,33 @@ function pasteDeck(evt: ClipboardEvent) {
   }
 }
 
+function loadDeckFromFile(e: Event) {
+  const files = (e.target as HTMLInputElement).files || (e as DragEvent).dataTransfer?.files || [];
+  const file = files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onloadend = (e1: ProgressEvent<FileReader>) => {
+    if (!e1?.target?.result) return
+    try {
+      const data = JSON.parse(e1.target.result.toString()) as ArkhamDbDecklist
+      model.value = data
+      deckList.value = data
+      deckUrl.value = data.url ?? null
+      deck.value = data.url ?? null
+      deckInvestigator.value = data.investigator_code
+    } catch {
+      // ignore invalid json
+    }
+  }
+  reader.readAsText(file)
+  ;(e.target as HTMLInputElement).value = ''
+}
+
 async function upgrade() {
   if(error.value) return
-  if (deckUrl.value && originalInvestigatorId.value) {
+  if ((deckUrl.value || deckList.value) && originalInvestigatorId.value) {
    fetching.value = true
-   upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value, deckList.value).then(() => {
+   upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value ?? undefined, deckList.value).then(() => {
       if(!solo) {
         waiting.value = true
       }
@@ -287,29 +309,68 @@ const tabooList = function (investigator: Investigator) {
 </script>
 
 <template>
-  <div id="upgrade-deck" class="column">
-    <div class="column">
-      <h2 class="title">{{ $t('upgrade.title', {xp: xp}) }}</h2>
-      <div v-if="!waiting" class="upgrade-deck">
-        <template v-if="question && investigator && question.tag !== 'ChooseUpgradeDeck'">
-          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
-          <div v-if="question && playerId == investigator.playerId" class="question">
-            <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
-            <Question :game="game" :playerId="playerId" @choose="choose" />
+  <div id="upgrade-deck">
+    <h2 class="title">{{ $t('upgrade.title', {xp: xp}) }}</h2>
+
+    <div v-if="!waiting" class="panel">
+      <template v-if="question && investigator && question.tag !== 'ChooseUpgradeDeck'">
+        <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+        <div v-if="question && playerId == investigator.playerId" class="content question-pane">
+          <h3 v-if="questionLabel" class="question-label">{{ questionLabel }}</h3>
+          <Question :game="game" :playerId="playerId" @choose="choose" />
+        </div>
+        <div v-else class="content">
+          <div v-if="tabooList(investigator)" class="taboo-list">
+            Taboo List: {{tabooList(investigator)}}
           </div>
-          <div v-else>
-            <div v-if="tabooList(investigator)" class="taboo-list">
-              Taboo List: {{tabooList(investigator)}}
+        </div>
+      </template>
+      <template v-else>
+        <template v-if="investigatorId && killedInvestigators.includes(investigatorId)">
+          <img class="portrait killed" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <div class="content">
+            <p class="killed-prompt">{{ $t('upgrade.killed') }}</p>
+            <p v-if="error" class="error">{{ error }}</p>
+            <div class="input-row">
+              <input
+                type="url"
+                v-model="deck"
+                @change="loadDeck"
+                @paste.prevent="pasteDeck($event)"
+                v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
+              />
+              <button class="primary" :class="{disable: error != null || deckInvestigator == null}" :disabled="error != null" @click.prevent="upgrade">{{ $t('upgrade.newInvestigator') }}</button>
             </div>
+            <label class="file-upload">
+              <span class="file-upload-text">{{ $t('upgrade.orUploadJson') }}</span>
+              <input type="file" accept=".json,application/json" @change="loadDeckFromFile" />
+            </label>
           </div>
         </template>
         <template v-else>
-          <template v-if="investigatorId && killedInvestigators.includes(investigatorId)">
-            <img v-if="investigatorId && killedInvestigators.includes(investigatorId)" class="portrait killed" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
-            <div class="fields">
-              <p class="killed-prompt"> {{ $t('upgrade.killed') }}</p>
-              <p v-if="error" class="error">{{ error }}</p>
-              <div class="single-field">
+          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <div class="content">
+            <p v-if="error" class="error">{{ error }}</p>
+            <template v-if="fetching">
+              <p class="info">{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
+            </template>
+            <template v-else-if="question">
+              <template v-if="investigatorId == originalInvestigatorId && deckSource">
+                <p class="info">{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
+                <div class="step-buttons">
+                  <button class="step secondary" @click.prevent="viewDeck">
+                    <span class="step-number">1</span>
+                    <span class="step-label">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</span>
+                  </button>
+                  <span class="step-arrow" aria-hidden="true">→</span>
+                  <button class="step primary" @click.prevent="syncUpgrade">
+                    <span class="step-number">2</span>
+                    <span class="step-label">{{ $t('upgrade.pullUpdate', {deckSource: deckSource}) }}</span>
+                  </button>
+                </div>
+                <span class="separator">{{ $t('upgrade.OR') }}</span>
+              </template>
+              <div class="input-row">
                 <input
                   type="url"
                   v-model="deck"
@@ -317,52 +378,23 @@ const tabooList = function (investigator: Investigator) {
                   @paste.prevent="pasteDeck($event)"
                   v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
                 />
-                <button :class="{disable: error != null || deckInvestigator == null}" :disabled="error != null" @click.prevent="upgrade">{{ $t('upgrade.newInvestigator') }}</button>
+                <button class="primary" @click.prevent="upgrade">{{ originalInvestigatorId && killedInvestigators.includes(originalInvestigatorId) ? $t('upgrade.newInvestigator') : $t('upgrade.Upgrade') }}</button>
               </div>
-            </div>
-          </template>
-          <template v-else>
-            <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
-            <div class="fields">
-              <p v-if="error" class="error">{{ error }}</p>
-              <div class="arkhamdb-integration column">
-                <template v-if="fetching">
-                  <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
-                </template>
-                <template v-else-if="question">
-                  <template v-if="investigatorId == originalInvestigatorId && deckSource">
-                    <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
-                    <div class="buttons">
-                      <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>
-                      <button @click.prevent="syncUpgrade">{{ $t('upgrade.pullUpdate', {deckSource: deckSource}) }}</button>
-                    </div>
-                    <span class="separator">{{ $t('upgrade.OR') }}</span>
-                  </template>
-                  <div class="single-field">
-                    <input
-                      type="url"
-                      v-model="deck"
-                      @change="loadDeck"
-                      @paste.prevent="pasteDeck($event)"
-                      v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
-                    />
-                    <button @click.prevent="upgrade">{{ originalInvestigatorId && killedInvestigators.includes(originalInvestigatorId) ? $t('upgrade.newInvestigator') : $t('upgrade.Upgrade') }}</button>
-                  </div>
-                  <div v-if="investigatorId == originalInvestigatorId" class="buttons">
-                    <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
-                  </div>
-                </template>
-                <div v-else>
-                  <p>Waiting on other players...</p>
-                </div>
+              <label class="file-upload">
+                <span class="file-upload-text">{{ $t('upgrade.orUploadJson') }}</span>
+                <input type="file" accept=".json,application/json" @change="loadDeckFromFile" />
+              </label>
+              <div v-if="investigatorId == originalInvestigatorId" class="footer">
+                <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
               </div>
-            </div>
-          </template>
+            </template>
+            <p v-else class="info">{{ $t('upgrade.waitingOtherPlayer') }}</p>
+          </div>
         </template>
-      </div>
-      <div v-else class="upgrade-deck">
-        {{ $t('upgrade.waitingOtherPlayer') }}
-      </div>
+      </template>
+    </div>
+    <div v-else class="panel waiting">
+      {{ $t('upgrade.waitingOtherPlayer') }}
     </div>
 
     <div v-for="(breakdown, idx) in breakdowns" :key="idx" class="breakdowns">
@@ -385,93 +417,92 @@ const tabooList = function (investigator: Investigator) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 70vw;
+  width: 100%;
   color: var(--title);
-  font-size: 1.2em;
-  padding: 20px;
-  > :deep(.column) {
-    width: 100%;
-  }
-}
-
-.upgrade-deck {
-  border-radius: 5px;
-  background: var(--box-background);
-  border: 1px solid var(--box-border);
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 70vw;
-  :deep(button){
-    font-size: small;
-    hyphens: auto;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-  }
-  @media (max-width: 800px) and (orientation: portrait) {
-      flex-direction: column;
-      align-items: center;
-  }
-}
-
-.breakdowns {
-  min-width: 100%;
+  font-size: 1em;
+  padding: 32px 24px 48px;
+  gap: 24px;
 }
 
 h2 {
   color: var(--title);
 }
 
-p {
+.title {
+  width: min(1100px, 92vw);
+  text-align: left;
+}
+
+.panel {
+  border-radius: 12px;
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  width: min(1100px, 92vw);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.panel.waiting {
+  justify-content: center;
+  text-align: center;
+  padding: 32px 24px;
+  font-style: italic;
+  color: #ccc;
+}
+
+@media (max-width: 800px) and (orientation: portrait) {
+  .panel {
+    flex-direction: column;
+    align-items: center;
+    padding: 18px;
+    gap: 18px;
+  }
+}
+
+.portrait {
+  width: 180px;
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+.killed {
+  filter: grayscale(1) brightness(0.5) sepia(1) hue-rotate(-90deg) saturate(10);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.content p {
   margin: 0;
   padding: 0;
   text-align: center;
 }
 
-input {
-    outline: 0;
-    border: 1px solid var(--background);
-    padding: 15px;
-    color: #F2F2F2;
-    background: var(--background-dark);
-    width: 100%;
-    margin-bottom: 10px;
+.info {
+  color: #d8d8d8;
+  font-size: 0.95em;
+  line-height: 1.55;
+  text-align: left;
 }
 
-.buttons {
-  display: flex;
-  gap: 5px;
+.question-label {
+  margin: 0 0 4px;
+  font-size: 1.05em;
+  font-weight: 600;
+  color: var(--title);
 }
 
-button {
-  text-transform: uppercase;
-  flex: 1;
-  padding: 10px;
-  border: 0;
-  background-color: var(--button-1);
-  &:hover {
-    background-color: var(--button-1-highlight);
-  }
-}
-
-.fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-
-.portrait {
-  width: 150px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-}
-
-.question {
-  flex: 1;
+.question-pane {
   :deep(button) {
     margin-left: 0px;
   }
@@ -486,69 +517,297 @@ button {
   }
 }
 
-.single-field {
-  display: grid;
-  grid-template-rows: 2em; grid-template-columns: 1fr auto;
-  padding-bottom: 10px;
+input[type=url] {
+  outline: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #f2f2f2;
+  background: var(--background-dark);
+  width: 100%;
+  font-size: 0.95em;
+  margin: 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  &::placeholder {
+    color: #777;
+  }
+
+  &:focus {
+    border-color: rgba(110, 134, 64, 0.7);
+    box-shadow: 0 0 0 3px rgba(110, 134, 64, 0.18);
+  }
+}
+
+.input-row {
+  display: flex;
+  align-items: stretch;
+
   input {
-    border: 0;
-    height: 100%;
+    flex: 1;
+    min-width: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0;
+
+    &:focus {
+      box-shadow: none;
+    }
   }
 
   button {
-    height: 100%;
-    min-width: fit-content;
-    width: fit-content;
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0 16px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 
-.skip {
-  background-color: darkgoldenrod;
+@media (max-width: 600px) {
+  .input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .input-row input {
+    border-radius: 6px;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .input-row button {
+    width: 100%;
+    border-radius: 6px;
+  }
 }
 
-p.secondary {
-  font-size: 0.7em;
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.step-buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  flex: 1;
+  text-align: left;
+}
+
+.step-number {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.step.primary .step-number {
+  background: rgba(0, 0, 0, 0.25);
+  border-right-color: rgba(255, 255, 255, 0.18);
+}
+
+.step-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.step-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 1.05em;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+button {
+  text-transform: uppercase;
+  font-size: 0.78em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  padding: 0 18px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background-color: var(--button-1);
+  color: #f4f4f4;
+  cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease, box-shadow 160ms ease;
+  flex: 1;
+
+  &:hover:not(.disable):not(:disabled) {
+    background-color: var(--button-1-highlight);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active:not(.disable):not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #ddd;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+button.skip {
+  background-color: darkgoldenrod;
+
+  &:hover:not(:disabled) {
+    background-color: #c8810a;
+  }
+}
+
+.disable {
+  opacity: 0.4;
+  cursor: not-allowed;
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 .separator {
   display: flex;
   align-items: center;
   text-align: center;
+  font-size: 0.72em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 2px 0;
 }
 
 .separator::before,
 .separator::after {
   content: '';
   flex: 1;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .separator:not(:empty)::before {
-  margin-right: .25em;
+  margin-right: 0.85em;
 }
 
 .separator:not(:empty)::after {
-  margin-left: .25em;
+  margin-left: 0.85em;
 }
 
-.killed {
-  filter: grayscale(1) brightness(0.5) sepia(1) hue-rotate(-90deg) saturate(10);
-}
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+  color: #888;
+  font-size: 0.72em;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
 
-.disable {
-  color: #666;
-  background-color: #333;
   &:hover {
-    cursor: not-allowed;
-    color: #666;
-    background-color: #333;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.04);
+    color: #aaa;
   }
 }
 
+.file-upload-text {
+  flex-shrink: 0;
+}
+
+.file-upload input[type=file] {
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: #888;
+  font-size: 1em;
+  width: auto;
+
+  &::file-selector-button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    color: #ccc;
+    padding: 4px 10px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background 150ms ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 .killed-prompt {
-  padding: 10px;
-  margin-block: 10px;
-  background-color: #660000;
-  border-radius: 10px;
+  padding: 12px 16px;
+  background-color: rgba(160, 0, 0, 0.18);
+  border: 1px solid rgba(220, 60, 60, 0.25);
+  border-radius: 8px;
+  color: #f0c0c0;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.error {
+  padding: 10px 14px;
+  background: rgba(160, 0, 0, 0.2);
+  border: 1px solid rgba(220, 60, 60, 0.3);
+  border-radius: 6px;
+  color: #f0c0c0;
+  font-size: 0.88em;
+}
+
+.taboo-list {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+.breakdowns {
+  width: min(1100px, 92vw);
 }
 </style>

@@ -18,7 +18,7 @@ instance HasAbilities DecoratedSkull where
     [ controlled_ a 1
         $ freeReaction
         $ oneOf
-          [ EnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)
+          [ IfEnemyDefeated #after Anyone ByAny (EnemyAt YourLocation)
           , InvestigatorDefeated #after ByAny (colocatedWithMatch You)
           , AssetDefeated #after ByAny (AllyAsset <> AssetAt YourLocation)
           ]

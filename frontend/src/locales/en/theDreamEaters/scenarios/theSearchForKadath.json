@@ -1,5 +1,10 @@
 {
   "heading": "Scenario II-A",
+  "waresOfBaharna": {
+    "label": {
+      "chooseInvestigator": "Choose investigator to decide on returning discard"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of Signs of the Gods the investigators have uncovered.",
@@ -12,6 +17,26 @@
       "cultist": "Reveal another token. If this token is revealed during an investigation and this skill test fails, increase that location's shroud by 2 for the remainder of the round.",
       "tablet": "-3. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
       "elderThing": "+1. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
+    }
+  },
+  "label": {
+    "leaveEmptyHanded": "Leave empty-handed",
+    "forceIntoTemple": "Force your way into the temple.",
+    "placeNightgaunt": "Place Tenebrous Nightgaunt in city location",
+    "virgilGray": {
+      "heal1HorrorFromVirgilGray": "Heal 1 horror from Virgil Gray"
+    }
+  },
+  "dreamlandsEclipse": {
+    "label": {
+      "shroudPlus2": "Your location gets +2 shroud for this investigation"
+    }
+  },
+  "theDoomThatCameBefore": {
+    "label": {
+      "visitOriab": "Visit the isle of Oriab to the south. Resolve Oriab Setup in the Campaign Guide.",
+      "visitForbiddenLands": "Visit the Forbidden Lands to the north. Resolve Forbidden Lands Setup in the Campaign Guide.",
+      "visitTimelessRealm": "Visit the kingdom of the Timeless Realm to the east. Resolve Timeless Realm Setup in the Campaign Guide."
     }
   }
 }

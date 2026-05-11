@@ -8,6 +8,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype FalconPointGatehouse = FalconPointGatehouse LocationAttrs
@@ -24,9 +25,11 @@ instance HasAbilities FalconPointGatehouse where
   getAbilities (FalconPointGatehouse a) =
     extendRevealed
       a
-      [ withTooltip "You head back into the woods, leaving the lighthouse and its mysteries behind."
-          $ restricted a 1 Here
-          $ ActionAbility #resign Nothing (ActionCost 1)
+      [ scenarioI18n
+          ( withI18nTooltip "falconPointGatehouse.resign"
+              $ restricted a 1 Here
+              $ ActionAbility #resign Nothing (ActionCost 1)
+          )
       ]
 
 instance RunMessage FalconPointGatehouse where

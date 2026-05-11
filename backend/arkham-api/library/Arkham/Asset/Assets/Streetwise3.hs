@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,10 +17,10 @@ streetwise3 = asset Streetwise3 Cards.streetwise3
 
 instance HasAbilities Streetwise3 where
   getAbilities (Streetwise3 a) =
-    [ withTooltip "{fast} Spend 2 resources: You get +3 {intellect} for this skill test."
+    [ (cardI18n $ withI18nTooltip "streetwise3.fastSpend2Resources2")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #intellect)
         $ controlledAbility a 1 DuringAnySkillTest (FastAbility $ ResourceCost 2)
-    , withTooltip "{fast} Spend 2 resources: You get +3 {agility} for this skill test."
+    , (cardI18n $ withI18nTooltip "streetwise3.fastSpend2Resources")
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #agility)
         $ controlledAbility a 2 DuringAnySkillTest (FastAbility $ ResourceCost 2)
     ]

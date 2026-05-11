@@ -733,26 +733,28 @@ chooseOptionMatching _reason f = do
     [(iid, question)] -> go iid question
     other -> error $ "There must be only one question to use this function\n" <> show other
  where
+  notFound msgs =
+    liftIO $ expectationFailure $ "could not find a matching message in: " <> show msgs
   go iid question = case question of
     QuestionLabel _ _ q -> go iid q
     ChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
-      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+      Nothing -> notFound msgs
     PlayerWindowChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
-      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+      Nothing -> notFound msgs
     ChooseOneAtATime msgs -> case find f msgs of
       Just msg -> do
         pushIfAny (deleteFirst msg msgs) (Ask iid $ ChooseOneAtATime $ deleteFirst msg msgs)
         push (uiToRun msg)
         runMessages
-      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+      Nothing -> notFound msgs
     ChooseN n msgs -> case find f msgs of
       Just msg -> do
         pushWhen (n > 1) (Ask iid $ ChooseN (n - 1) $ deleteFirst msg msgs)
         push (uiToRun msg)
         runMessages
-      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+      Nothing -> notFound msgs
     _ -> error $ "unsupported questions type: " <> show question
 
 debug :: (Investigator -> TestAppT ()) -> Investigator -> TestAppT ()
@@ -914,6 +916,10 @@ newGame scenario' investigator = do
         , gamePerformTarotReadings = False
         , gameCurrentBatchId = Nothing
         , gameScenarioSteps = 0
+        , gameUndoActionStep = Nothing
+        , gameUndoTurnStep = Nothing
+        , gameUndoPhaseStep = Nothing
+        , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
         }
 

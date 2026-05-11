@@ -25,12 +25,12 @@ async function join() {
   <div class="container">
     <div>
       <header>
-        <h2>Join Game</h2>
+        <h2>{{ $t('joinGame') }}</h2>
       </header>
 
       <GameDetails v-if="game" :game="game">
         <form id="join-game" @submit.prevent="join">
-          <button type="submit">Join</button>
+          <button type="submit">{{ $t('join') }}</button>
         </form>
       </GameDetails>
     </div>

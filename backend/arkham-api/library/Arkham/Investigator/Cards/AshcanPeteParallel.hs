@@ -57,7 +57,7 @@ instance RunMessage AshcanPeteParallel where
 
       when (notNull targets) do
         chooseOne attrs.id
-          $ Label "Do not return any cards" []
+          $ Label "$cards.label.ashcanPeteParallel.skip" []
           : [ targetLabel
               target
               [ReturnToHand attrs.id target]

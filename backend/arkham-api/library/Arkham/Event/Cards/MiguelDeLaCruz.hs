@@ -7,19 +7,21 @@ import Arkham.ForMovement
 
 decoyTrap :: CardDef
 decoyTrap =
-  (event "60562" "Decoy Trap" 2 Survivor)
-    { cdCardTraits = setFromList [Trap, Trick]
-    , cdSkills = [#agility, #combat, #wild]
-    , cdLimits = [LimitPerTraitPerLocation Trap 1]
-    }
+  fast
+    $ (event "60562" "Decoy Trap" 2 Survivor)
+      { cdCardTraits = setFromList [Trap, Trick]
+      , cdSkills = [#agility, #combat, #wild]
+      , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      }
 
 glassing :: CardDef
 glassing =
-  (event "60563" "Glassing" 2 Survivor)
-    { cdCardTraits = setFromList [Insight, Trap]
-    , cdSkills = [#agility, #intellect, #wild]
-    , cdLimits = [LimitPerTraitPerLocation Trap 1]
-    }
+  fast
+    $ (event "60563" "Glassing" 2 Survivor)
+      { cdCardTraits = setFromList [Insight, Trap]
+      , cdSkills = [#agility, #intellect, #wild]
+      , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      }
 
 guerrillaTactics :: CardDef
 guerrillaTactics =
@@ -45,11 +47,12 @@ hiddenShelter =
 
 lieInWait :: CardDef
 lieInWait =
-  (event "60566" "Lie in Wait" 2 Survivor)
-    { cdCardTraits = setFromList [Tactic, Trap]
-    , cdSkills = [#combat, #wild, #willpower]
-    , cdLimits = [LimitPerTraitPerLocation Trap 1]
-    }
+  fast
+    $ (event "60566" "Lie in Wait" 2 Survivor)
+      { cdCardTraits = setFromList [Tactic, Trap]
+      , cdSkills = [#combat, #wild, #willpower]
+      , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      }
 
 stalkPrey :: CardDef
 stalkPrey =
@@ -64,7 +67,7 @@ fieldDressing1 =
     { cdCardTraits = setFromList [Spirit]
     , cdSkills = [#willpower]
     , cdFastWindow =
-        Just $ EnemyDefeated #after You ByAny (oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster])
+        Just $ IfEnemyDefeated #after You ByAny (oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster])
     , cdLevel = Just 1
     }
 

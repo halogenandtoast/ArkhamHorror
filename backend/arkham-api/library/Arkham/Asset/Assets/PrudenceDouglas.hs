@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -43,7 +44,7 @@ instance RunMessage PrudenceDouglas where
       let encounterCards = onlyEncounterCards cards
           discardable = filter (notElem Elite . toTraits) encounterCards
       focusCards encounterCards do
-        chooseUpToNM iid 2 "Done discarding" do
+        cardI18n $ scope "prudenceDouglas" $ chooseUpToNM' iid 2 "doneDiscarding" do
           targets discardable $ \c -> push $ AddToEncounterDiscard c
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do

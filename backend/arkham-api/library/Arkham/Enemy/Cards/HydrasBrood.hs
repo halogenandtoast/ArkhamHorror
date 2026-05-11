@@ -3,9 +3,11 @@ module Arkham.Enemy.Cards.HydrasBrood (hydrasBrood) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 
 newtype HydrasBrood = HydrasBrood EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -37,8 +39,8 @@ instance RunMessage HydrasBrood where
         Just hydra -> placeDoom (attrs.ability 1) hydra 1
         Nothing -> do
           hydra <- selectJust $ enemyIs Cards.hydraAwakenedAndEnraged
-          chooseOneM iid do
-            labeled "Place 1 doom on Hydra" $ placeDoom (attrs.ability 1) hydra 1
-            labeled "Hydra attacks you" $ initiateEnemyAttack hydra (attrs.ability 1) iid
+          chooseOneM iid $ scenarioI18n $ scope "hydrasBrood" do
+            labeled' "placeDoomOnHydra" $ placeDoom (attrs.ability 1) hydra 1
+            labeled' "hydraAttacksYou" $ initiateEnemyAttack hydra (attrs.ability 1) iid
       pure e
     _ -> HydrasBrood <$> liftRunMessage msg attrs

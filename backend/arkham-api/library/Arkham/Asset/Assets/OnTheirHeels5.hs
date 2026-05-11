@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
@@ -45,7 +46,9 @@ instance RunMessage OnTheirHeels5 where
         mconcealed <- getConcealed (ForExpose $ toSource iid) iid
         chooseOrRunOneM iid do
           whenM (canDiscoverCluesAtYourLocation NotInvestigate iid) do
-            labeled "Discover a clue at your location"
+            withI18n
+              $ countVar 1
+              $ labeledI "discoverAtYourLocation"
               $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
           targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
           for_ mconcealed \card -> targeting card $ doFlip iid attrs card

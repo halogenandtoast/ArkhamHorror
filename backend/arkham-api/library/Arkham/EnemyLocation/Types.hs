@@ -206,6 +206,7 @@ instance IsCard EnemyLocationAttrs where
         , ecIsFlipped = Just True
         , ecAddedPeril = False
         , ecOwner = Nothing
+        , ecFacedown = Nothing
         }
   toCardOwner = const Nothing
 

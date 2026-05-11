@@ -160,6 +160,9 @@ damageValueFor baseValue iid damageFor = do
     else foldrM applyModifier baseValue' modifiers
  where
   applyModifier (DamageDealt m) n = pure $ max 0 (n + m)
+  applyModifier (DamageDealtCalculation c) n = do
+    m <- calculate c
+    pure $ max 0 (n + m)
   applyModifier (CriteriaModifier c (DamageDealt m)) n = do
     passes <- passesCriteria iid Nothing GameSource GameSource [] c
     pure $ max 0 (n + if passes then m else 0)
@@ -562,6 +565,12 @@ getCanPlaceCluesOnLocationCount iid = do
   canRex <- canTriggerParallelRex iid
   m <- if canRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
   (+ m) <$> field InvestigatorClues iid
+
+canPlaceCluesOnYourLocation :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+canPlaceCluesOnYourLocation iid = canPlaceCluesOnYourLocationN iid 1
+
+canPlaceCluesOnYourLocationN :: (HasGame m, Tracing m) => InvestigatorId -> Int -> m Bool
+canPlaceCluesOnYourLocationN iid n = (>= n) <$> getCanPlaceCluesOnLocationCount iid
 
 canHaveHorrorHealed :: (HasGame m, Tracing m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId

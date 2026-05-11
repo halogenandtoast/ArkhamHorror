@@ -30,7 +30,7 @@ instance RunMessage EverVigilant4 where
 
       when (notNull hasPlayable) do
         chooseOneM iid do
-          labeled "Do not play asset" nothing
+          labeledI "doNotPlayAsset" nothing
           targets hasPlayable $ handleTarget iid attrs
         doStep (n - 1) msg'
       pure e

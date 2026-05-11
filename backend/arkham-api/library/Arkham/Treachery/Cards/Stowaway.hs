@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.Stowaway (stowaway, Stowaway (..)) where
 
 import Arkham.Asset.Types (Field (..))
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -24,8 +25,8 @@ instance RunMessage Stowaway where
       if null inVehicle
         then gainSurge attrs
         else for_ inVehicle \(iid, placement) -> chooseOneM iid do
-          labeled "Take 1 damage and 1 horror" $ assignDamageAndHorror iid attrs 1 1
-          labeled "Leave the vehicle. You cannot enter that vehicle for the remainder of the round" do
+          withI18n $ numberVar "damage" 1 $ numberVar "horror" 1 $ labeledI "takeDamageAndHorror" $ assignDamageAndHorror iid attrs 1 1
+          labeledI "leaveVehicleNoReentry" do
             case placement of
               InVehicle asset -> do
                 mloc <- field AssetLocation asset

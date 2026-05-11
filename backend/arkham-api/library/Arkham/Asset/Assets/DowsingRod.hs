@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose
@@ -35,10 +36,9 @@ instance RunMessage DowsingRod where
       accessibleLocations <- getAccessibleLocations iid attrs
       chooseOneM iid do
         when (attrs.ready && notNull accessibleLocations) $ forcedWhen isForced do
-          labeled "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location."
+          (cardI18n $ labeled' "dowsingRod.exhaustForBoost")
             $ doStep 2 msg
-        labeled
-          "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod."
+        (cardI18n $ labeled' "dowsingRod.onLastClue")
           $ doStep 3 msg
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a
@@ -47,8 +47,8 @@ instance RunMessage DowsingRod where
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do
-        labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate'
-        labeled "get +1 {intellect}" do
+        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower investigate'
+        (withI18n $ countVar 1 $ skillVar #intellect $ labeled' "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate'
       pure a

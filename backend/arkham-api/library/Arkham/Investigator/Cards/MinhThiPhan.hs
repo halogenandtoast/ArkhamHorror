@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.MinhThiPhan (minhThiPhan) where
 
 import Arkham.Ability
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -43,7 +44,7 @@ instance RunMessage MinhThiPhan where
       withSkillTest \sid -> do
         skills <- selectWithField Field.SkillCard AnySkill
         chooseOrRunOneM iid do
-          labeled "Do not choose a skill to return to your hand" nothing
+          cardI18n $ scope "minhThiPhan" $ labeled' "doNotReturnSkill" nothing
           for_ skills \(s, c) ->
             targeting c $ skillTestModifier sid (toSource ElderSign) s ReturnToHandAfterTest
       pure i

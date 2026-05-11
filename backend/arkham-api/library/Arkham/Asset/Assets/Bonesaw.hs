@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -38,10 +39,10 @@ instance RunMessage Bonesaw where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid ->
         chooseOneM iid do
-          labeled "Take 1 damage to do +1 damage" do
+          (cardI18n $ labeled' "bonesaw.take1DamageToDo1Damage") do
             assignDamage iid (attrs.ability 1) 1
             skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-          labeled "Do not take damage" nothing
+          (cardI18n $ labeled' "bonesaw.doNotTakeDamage") nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       investigators <- select $ HealableInvestigator (attrs.ability 2) #damage $ colocatedWith iid

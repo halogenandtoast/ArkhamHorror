@@ -25,7 +25,7 @@ spec = describe "Rex Murphy" $ do
       self `loadDeckCards` cards
       sid <- getRandom
       runSkillTest sid self #intellect 2
-      clickLabel "Automatically fail to draw 3"
+      clickLabel "$label.automaticallyFailToDraw count=i:3.0"
       assertFailedSkillTest
       click "apply results"
       self.hand `shouldMatchListM` map PlayerCard cards
@@ -36,7 +36,7 @@ spec = describe "Rex Murphy" $ do
       self `loadDeckCards` cards
       sid <- getRandom
       runSkillTest sid self #intellect 6 -- two higher
-      clickLabel "Resolve normally"
+      clickLabel "$label.resolveNormally count=i:3.0"
       assertPassedSkillTest
       click "apply results"
       self.hand `shouldReturn` []

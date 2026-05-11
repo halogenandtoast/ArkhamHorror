@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.LostInVenice (lostInVenice, LostInVenice (..)) where
 
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -25,7 +26,7 @@ instance RunMessage LostInVenice where
             Nothing -> assignDamage iid attrs 2
             Just acrossLocationId -> do
               chooseOneM iid do
-                labeled "Take 2 horror" $ assignHorror iid attrs 2
-                labeled "Move to the location across from you" $ moveTo attrs iid acrossLocationId
+                withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+                scenarioI18n $ scope "lostInVenice" $ labeled' "moveAcross" $ moveTo attrs iid acrossLocationId
       pure t
     _ -> LostInVenice <$> liftRunMessage msg attrs

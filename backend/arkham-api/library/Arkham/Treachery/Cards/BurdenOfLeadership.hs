@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.BurdenOfLeadership (burdenOfLeadership) where
 
 import Arkham.Classes.HasQueue
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -25,9 +26,10 @@ instance RunMessage BurdenOfLeadership where
           chooseOneAtATimeM iid do
             targets allies \ally -> do
               chooseOneM iid do
-                whenMatch ally AssetReady $ labeled "Exhaust" $ exhaustWith attrs ally
+                whenMatch ally AssetReady $ labeledI "exhaust" $ exhaustWith attrs ally
                 whenMatch ally (oneOf [AssetWithHealth, AssetWithSanity]) do
-                  labeled "Deal 1 direct damage and 1 direct horror"
+                  withI18n $ numberVar "damage" 1 $ numberVar "horror" 1
+                    $ labeled' "dealDirectDamageAndHorror"
                     $ dealAssetDirectDamageAndHorror ally attrs 1 1
       pure t
     _ -> BurdenOfLeadership <$> liftRunMessage msg attrs

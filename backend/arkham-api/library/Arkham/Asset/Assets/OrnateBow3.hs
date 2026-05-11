@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -22,7 +23,9 @@ instance HasAbilities OrnateBow3 where
         $ ActionAbility #fight #agility
         $ ActionCost 1
         <> assetUseCost a Ammo 1
-    , withTooltip "You nock another arrow"
+    , cardI18n
+        $ scope "ornateBow3"
+        $ withI18nTooltip "nockArrow"
         $ controlledAbility
           a
           2

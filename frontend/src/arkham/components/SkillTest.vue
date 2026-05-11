@@ -21,9 +21,13 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
+import { useMenu } from '@/composeable/menu';
+import { useSettingsFocus } from '@/composeable/settingsFocus';
 
 const debug = useDebug()
 const { t } = useI18n()
+const { menuItems } = useMenu()
+const { focusSetting } = useSettingsFocus()
 const props = defineProps<{
   game: Game
   skillTest: SkillTest
@@ -87,6 +91,20 @@ const modifiers = computed(() =>
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
+
+const currentInvestigator = computed(() =>
+  Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+)
+
+const skipTriggersEnabled = computed(() =>
+  Boolean(currentInvestigator.value?.settings?.globalSettings?.ignoreUnrelatedSkillTestTriggers)
+)
+
+const openSettings = () => {
+  focusSetting('skipTriggers')
+  const entry = menuItems.value?.find((e) => e.id === 'viewSettings')
+  if (entry) entry.action()
+}
 const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
@@ -199,6 +217,19 @@ function sourceCardCode(source: Source) {
 
   if (source.tag === 'InvestigatorSource') {
     return `${source.contents.replace('c', '')}`
+  }
+
+  if (source.tag === 'AgendaSource') {
+    const agenda = props.game.agendas[source.contents]
+    if (!agenda) return null
+    const id = agenda.id
+    if (agenda.flipped) {
+      if (["c03276a", "c03279a"].includes(id)) {
+        return `${id.replace(/^c/, '')}b`
+      }
+      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
+    }
+    return `${id.replace(/^c/, '')}`
   }
 
   return null
@@ -341,6 +372,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <div v-tooltip="$t('skillTest.applySkillTestResultsStep')" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
         <div v-tooltip="$t('skillTest.skillTestEndsStep')" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
       </div>
+      <div v-if="skipTriggersEnabled" class="skip-triggers-notice">
+        <span class="skip-triggers-notice__text">{{ $t('skillTest.skipTriggersActiveNotice') }}</span>
+        <button type="button" class="skip-triggers-notice__button" @click="openSettings">{{ $t('skillTest.skipTriggersAdjust') }}</button>
+      </div>
       <div class="skill-test-contents">
         <div v-if="swarmEnemy" class="target-card swarming">
           <div class="swarm">
@@ -412,8 +447,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
       </div>
       <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
-        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
-        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
+        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">{{ $t('skillTestActions.passSkillTest') }}</button>
+        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">{{ $t('skillTestActions.failSkillTest') }}</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">
@@ -439,20 +474,20 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'Difficulty'">
             <span><template v-if="modifier.type.contents >= 0">+</template>{{modifier.type.contents}}</span>
-            Difficulty
+            {{ $t('modifier.difficulty') }}
           </template>
           <template v-if="modifier.type.tag === 'CancelEffects'">
-            <span class="text">Cancel Effects</span>
+            <span class="text">{{ $t('modifier.cancelEffects') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'CannotPerformSkillTest'">
-            <span class="text">Cannot Perform Skill Test</span>
+            <span class="text">{{ $t('modifier.cannotPerformSkillTest') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />
           </template>
           <template v-if="modifier.type.tag === 'SkillTestResultValueModifier'">
-            <span class="text">Result</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
+            <span class="text">{{ $t('modifier.result') }}</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
           </template>
           <template v-if="modifier.type.tag === 'DamageDealt'">
             <span>+{{modifier.type.contents}}</span>
@@ -481,31 +516,31 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'AnySkillValue'">
             <span> {{modifier.type.contents}}</span>
-            <span class="text">{{ $t('skillValue') }}</span>
+            <span class="text">{{ $t('modifier.skillValue') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleSuccess'">
-            <span class="text">Double Success</span>
+            <span class="text">{{ $t('modifier.doubleSuccess') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'DoubleDifficulty'">
-            <span class="text">Double Difficulty</span>
+            <span class="text">{{ $t('modifier.doubleDifficulty') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosToken'">
-            <span class="text">Cancel Matching Chaos Tokens</span>
+            <span class="text">{{ $t('modifier.cancelMatchingChaosTokensShort') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
-            <span class="text">May Ignore Location Effects</span>
+            <span class="text">{{ $t('modifier.mayIgnoreLocationEffects') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
-            <span class="text">Skill Icons Subtract</span>
+            <span class="text">{{ $t('modifier.skillIconsSubtract') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
-            <span class="text">Skill test automatically succeeds</span>
+            <span class="text">{{ $t('modifier.skillTestAutomaticallySucceeds') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
-            <span class="text">Reveal another chaos token</span>
+            <span class="text">{{ $t('modifier.revealAnotherChaosToken') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
-            <span class="text">Cancel matching chaos tokens and reveal another</span>
+            <span class="text">{{ $t('modifier.cancelMatchingChaosTokens') }}</span>
           </template>
         </div>
       </div>
@@ -520,10 +555,10 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 
       <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
         <span v-if="skillTestResults.skillTestResultsSuccess">
-          Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('succeededBy', { amount: (testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
         <span v-else-if="testResult !== null">
-          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          {{ $t('failedBy', { amount: testResult - (skillTestResults.skillTestResultsResultModifiers || 0) }) }}
         </span>
       </div>
 
@@ -532,13 +567,13 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         v-if="skipTriggersAction !== -1"
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
-      >{{ $t('skipTriggers') }}</button>
+      >{{ $t('investigator.skipTriggers') }}</button>
       <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"
         v-if="applyResultsAction !== -1"
         @click="choose(applyResultsAction)"
-      >{{ $t('Apply Results') }}</button>
+      >{{ $t('label.applyResults') }}</button>
     </div>
   </Draggable>
 </template>
@@ -1045,6 +1080,65 @@ i.iconSkillAgility {
   background: #222;
   color: #888;
   padding: 5px;
+}
+
+.skip-triggers-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(45, 25, 55, 0.75);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  color: #e8dff0;
+  font-size: 0.85em;
+  text-align: left;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+.skip-triggers-notice__text {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.skip-triggers-notice__button {
+  flex-shrink: 0;
+  width: auto;
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  color: #f4ecf8;
+  font-family: Teutonic, serif;
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.skip-triggers-notice__button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+.skip-triggers-notice__button:active {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 600px) {
+  .skip-triggers-notice {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    text-align: center;
+  }
+  .skip-triggers-notice__button {
+    align-self: center;
+  }
 }
 
 </style>

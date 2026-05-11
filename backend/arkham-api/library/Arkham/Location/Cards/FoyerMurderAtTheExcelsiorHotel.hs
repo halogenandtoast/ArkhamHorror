@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 import Arkham.Trait (Trait (Guest))
 import Arkham.Window (getBatchId)
 
@@ -20,7 +21,7 @@ instance HasAbilities FoyerMurderAtTheExcelsiorHotel where
   getAbilities (FoyerMurderAtTheExcelsiorHotel attrs) =
     withRevealedAbilities
       attrs
-      [ withTooltip " You flee the scene of the crime." $ locationResignAction attrs
+      [ scenarioI18n $ withI18nTooltip "foyer.resign" $ locationResignAction attrs
       , skillTestAbility
           $ restricted attrs 1 (exists $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
           $ forced (Leaves #when You $ be attrs)

@@ -45,7 +45,7 @@ theHeartOfMadnessPart1 difficulty =
 
 instance HasModifiersFor TheHeartOfMadnessPart1 where
   getModifiersFor (TheHeartOfMadnessPart1 _a) = withSkillTestInvestigator \iid -> do
-    whenM (sealAtLocationOf iid) do
+    whenM (orM [sealAtLocationOf iid, selectAny (locationWithInvestigator iid <> LocationWithTitle "Mist-Pylon")]) do
       modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart1 where
@@ -73,8 +73,8 @@ instance RunMessage TheHeartOfMadnessPart1 where
       partners <- getRemainingPartners
       unless (null partners) do
         chooseOneM iid do
-          questionLabeled "Choose a partner for this scenario"
-          labeled "Do not take a partner" nothing
+          questionLabeledI "choosePartnerForScenario"
+          labeledI "doNotTakeAPartner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do

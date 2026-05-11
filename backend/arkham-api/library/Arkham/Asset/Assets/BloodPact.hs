@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -16,13 +17,11 @@ bloodPact = asset BloodPact Cards.bloodPact
 
 instance HasAbilities BloodPact where
   getAbilities (BloodPact x) =
-    [ withTooltip
-        "{fast} Add 1 doom to Blood Pact: You get +2 {willpower} for this skill test. (Limit once per test.)"
+    [ (cardI18n $ withI18nTooltip "bloodPact.fastAdd1Doom2")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #willpower)
         $ controlled x 1 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 1) (toTarget x) 1)
-    , withTooltip
-        "{fast} Add 1 doom to Blood Pact: You get +2 {combat} for this skill test. (Limit once per test.)"
+    , (cardI18n $ withI18nTooltip "bloodPact.fastAdd1Doom")
         $ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest $ SkillTestWants #combat)
         $ controlled x 2 DuringYourSkillTest (FastAbility $ DoomCost (x.ability 2) (toTarget x) 1)

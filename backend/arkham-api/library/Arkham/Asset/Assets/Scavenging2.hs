@@ -30,8 +30,8 @@ instance RunMessage Scavenging2 where
         chooseOneM iid $ targets cards \card -> do
           unfocusCards
           chooseOrRunOneM iid do
-            labeled "Add to hand" $ drawCardFrom iid iid card
+            labeledI "addToHandSimple" $ drawCardFrom iid iid card
             whenM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid) card) do
-              labeled "Play" $ playCardPayingCost iid card
+              labeledI "play" $ playCardPayingCost iid card
       pure a
     _ -> Scavenging2 <$> liftRunMessage msg attrs

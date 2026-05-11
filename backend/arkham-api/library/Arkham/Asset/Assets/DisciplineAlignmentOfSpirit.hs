@@ -28,13 +28,11 @@ instance RunMessage DisciplineAlignmentOfSpirit where
       canHealDamage <- canHaveDamageHealed (attrs.ability 1) iid
       canHealHorror <- canHaveHorrorHealed (attrs.ability 1) iid
       chooseOne iid
-        $ [ Label
-              "Take 1 direct damage to heal 3 horror"
+        $ [ Label "$label.cards.disciplineAlignmentOfSpirit.take1DirectDamageToHeal3Horror"
               $ Msg.directDamage iid (attrs.ability 1) 1
               : [HealHorror (toTarget iid) (attrs.ability 1) 3 | canHealHorror]
           ]
-        <> [ Label
-              "Take 1 direct horror to heal 3 damage"
+        <> [ Label "$label.cards.disciplineAlignmentOfSpirit.take1DirectHorrorToHeal3Damage"
               $ Msg.directHorror iid (attrs.ability 1) 1
               : [HealDamage (toTarget iid) (attrs.ability 1) 3 | canHealDamage]
            ]

@@ -31,6 +31,73 @@ deploy:
 	kamal deploy
 .PHONY: deploy
 
+V2_IMAGE       ?= halogenandtoast/arkham-horror
+V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
+V2_NAMESPACE   ?= arkham
+V2_DEPLOYMENT  ?= arkham-web
+V2_PLATFORM    ?= linux/amd64
+V2_BUILDER     ?= arkham-multiarch
+
+## Ensure a docker-container buildx builder exists (required for multi-platform builds)
+v2-buildx-setup:
+	@docker buildx inspect $(V2_BUILDER) >/dev/null 2>&1 || \
+	  docker buildx create --name $(V2_BUILDER) --driver docker-container >/dev/null
+.PHONY: v2-buildx-setup
+
+## Build, push, and roll out to the DigitalOcean k8s (terraform/) cluster
+v2-deploy: v2-buildx-setup
+	@command -v kubectl >/dev/null || { echo "kubectl not found"; exit 1; }
+	@test -f $(V2_KUBECONFIG) || { echo "kubeconfig missing at $(V2_KUBECONFIG) — run 'terraform output -raw kubeconfig_raw > terraform/kubeconfig'"; exit 1; }
+	@set -e; \
+	  TAG=$$(git rev-parse --short HEAD); \
+	  DIRTY=$$(git status --porcelain | head -1); \
+	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
+	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) \
+	    --tag $(V2_IMAGE):$$TAG \
+	    --tag $(V2_IMAGE):latest \
+	    --push . ; \
+	  echo ">> rolling $(V2_DEPLOYMENT) (image stays :latest, restart forces pull)"; \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout restart deployment/$(V2_DEPLOYMENT); \
+	  KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) \
+	    rollout status deployment/$(V2_DEPLOYMENT) --timeout=10m
+.PHONY: v2-deploy
+
+## Same as v2-deploy, but build+push both linux/amd64 and linux/arm64
+v2-deploy-multiarch: V2_PLATFORM = linux/amd64,linux/arm64
+v2-deploy-multiarch: v2-deploy
+.PHONY: v2-deploy-multiarch
+
+## Build+push linux/amd64 and linux/arm64 images to Docker Hub (no rollout)
+v2-push-multiarch: v2-buildx-setup
+	@set -e; \
+	  TAG=$$(git rev-parse --short HEAD); \
+	  DIRTY=$$(git status --porcelain | head -1); \
+	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
+	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
+	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 \
+	    --tag $(V2_IMAGE):$$TAG \
+	    --tag $(V2_IMAGE):latest \
+	    --push .
+.PHONY: v2-push-multiarch
+
+## Tail logs from the DigitalOcean k8s deployment
+v2-logs:
+	KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) logs \
+	  -l app=$(V2_DEPLOYMENT) --tail=200 -f
+.PHONY: v2-logs
+
+## Report Postgres backends stuck idle-in-transaction blocking others
+db-unstick:
+	@./scripts/db-unstick.sh
+.PHONY: db-unstick
+
+## Same, but actually terminate the stuck holders (frees their locks)
+db-unstick-kill:
+	@./scripts/db-unstick.sh --kill
+.PHONY: db-unstick-kill
+
 ## Sync local images to s3 bucket
 sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"

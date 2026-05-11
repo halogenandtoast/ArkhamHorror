@@ -23,15 +23,15 @@ instance RunMessage SurvivalInstinct2 where
       locations <- getAccessibleLocations iid attrs
 
       unless (null enemies && null locations) do
-        additionalSkillTestOption "Survival Instinct (2)" do
+        skillTestCardOption attrs do
           unless (null enemies) do
             chooseOneM iid do
-              labeled "Evade each other enemy" do
+              labeledI "evadeOtherEnemies" do
                 for_ enemies (push . EnemyEvaded iid)
-              labeled "Skip" nothing
+              labeledI "skip" nothing
 
           unless (null locations) $ chooseOrRunOneM iid do
-            labeled "Do not move to a connecting location" nothing
+            labeledI "doNotMoveToConnecting" nothing
             targets locations (moveTo attrs iid)
       pure s
     _ -> SurvivalInstinct2 <$> liftRunMessage msg attrs

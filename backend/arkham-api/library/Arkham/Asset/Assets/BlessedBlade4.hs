@@ -7,8 +7,8 @@ import Arkham.Exhaust (mkExhaustion)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Cost
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Modifier
-import Arkham.Plural
 
 newtype BlessedBlade4 = BlessedBlade4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -41,10 +41,10 @@ instance RunMessage BlessedBlade4 where
         lift
           $ chooseOne
             st.investigator
-            [ Label ("Exhaust Blessed Blade (4) to add " <> pluralize blessTokens "{bless} token")
+            [ Label (cardI18n $ countVar blessTokens $ ikey' "label.blessedBlade.exhaust")
                 $ Exhaust (mkExhaustion attrs attrs)
                 : replicate blessTokens (AddChaosToken #bless)
-            , Label "Do not exhaust" []
+            , Label "$label.doNotExhaust" []
             ]
       pure a
     _ -> BlessedBlade4 <$> liftRunMessage msg attrs

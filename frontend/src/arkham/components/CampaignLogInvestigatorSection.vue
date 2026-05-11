@@ -24,7 +24,7 @@ const { t } = useI18n()
     </ul>
 
     <template v-if="recordedSetsEntries.length > 0">
-      <div class="subhead">Recorded Sets</div>
+      <div class="subhead">{{ $t('campaignLogView.recordedSets') }}</div>
       <CampaignLogRecordedSets
         :entries="recordedSetsEntries"
         :counts="[]"
@@ -33,7 +33,7 @@ const { t } = useI18n()
     </template>
 
     <template v-if="recordedCounts.length > 0">
-      <div class="subhead">Recorded Counts</div>
+      <div class="subhead">{{ $t('campaignLogView.recordedCounts') }}</div>
       <CampaignLogRecordedSets
         :entries="[]"
         :counts="recordedCounts"

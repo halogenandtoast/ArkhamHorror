@@ -38,7 +38,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
           enemies <- select $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
           canDealDamage <- withoutModifier iid CannotDealDamage
           chooseOrRunOneM iid do
-            labeled "Do not damage any enemies" nothing
+            labeledI "doNotDamageAnyEnemies" nothing
             when canDealDamage do
               targets enemies \eid' -> do
                 spendUses (attrs.ability 1) attrs Ammo 1

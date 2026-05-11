@@ -8,21 +8,26 @@ import { useWebSocket } from '@vueuse/core'
 import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
+  ArrowPathIcon,
   ArrowsRightLeftIcon,
+  ArrowUturnLeftIcon,
   BackwardIcon,
   BeakerIcon,
   BoltIcon,
   BugAntIcon,
+  ClockIcon,
   DocumentArrowDownIcon,
   DocumentTextIcon,
   EyeIcon,
   ExclamationTriangleIcon,
+  FlagIcon,
+  RectangleStackIcon,
 } from '@heroicons/vue/20/solid'
 import { LottieAnimation } from 'lottie-web-vue'
 import * as JsonDecoder from 'ts.data.json'
 import processingJSON from '@/assets/processing.json'
 import api from '@/api'
-import { fetchGame, undoChoice, undoScenarioChoice } from '@/arkham/api'
+import { fetchGame, undoChoice, undoScenarioChoice, undoAction, undoTurn, undoPhase, undoRound } from '@/arkham/api'
 import * as Api from '@/arkham/api'
 import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user'
@@ -111,11 +116,16 @@ const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
 const socketError = ref(false)
 const error = ref<string | null>(null)
 const solo = ref(false)
+const showOtherPlayersHands = ref(localStorage.getItem("showOtherPlayersHands") === "true")
+watch(showOtherPlayersHands, (v) => {
+  localStorage.setItem("showOtherPlayersHands", v ? "true" : "false")
+})
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
+const skipAllPending = ref<Set<string>>(new Set())
 const { t } = useI18n();
 
 const format = (str: string) => {
@@ -139,6 +149,21 @@ const choices = computed(() => {
 })
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
+
+function skipTriggerEntries(g: Arkham.Game): { playerId: string, choiceIdx: number }[] {
+  const result: { playerId: string, choiceIdx: number }[] = []
+  for (const pid of Object.keys(g.question)) {
+    const cs = ArkhamGame.choices(g, pid)
+    const idx = cs.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
+    if (idx !== -1) result.push({ playerId: pid, choiceIdx: idx })
+  }
+  return result
+}
+
+const skipAllAvailable = computed(() => {
+  if (!solo.value || !game.value) return false
+  return skipTriggerEntries(game.value).length > 1
+})
 const websocketUrl = computed(() => {
   const spectatePrefix = props.spectate ? "/spectate" : ""
   return `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`.
@@ -231,10 +256,40 @@ function scheduleApplyUpdate(payload:string){
           playerId.value = Object.keys(game.value.question)[0]
       }
     }
+    continueSkipAll()
   }).finally(()=>{
     decoding=false
     if (pendingUpdate){ const p = pendingUpdate; pendingUpdate = null; scheduleApplyUpdate(p) }
   })
+}
+
+function continueSkipAll() {
+  if (skipAllPending.value.size === 0) return
+  if (!game.value) return
+  const next = skipTriggerEntries(game.value).find((e) => skipAllPending.value.has(e.playerId))
+  if (!next) {
+    skipAllPending.value = new Set()
+    return
+  }
+  sendSkipFor(next.playerId, next.choiceIdx)
+}
+
+function sendSkipFor(targetPlayerId: string, choiceIdx: number) {
+  if (!game.value || props.spectate) return
+  oldQuestion.value = game.value.question
+  const questionVersion = game.value.scenarioSteps
+  game.value.question = {}
+  processing.value = true
+  send(JSON.stringify({tag: 'Answer', contents: { choice: choiceIdx, playerId: targetPlayerId, questionVersion }}))
+}
+
+function skipAllTriggers() {
+  if (!game.value || props.spectate) return
+  const entries = skipTriggerEntries(game.value)
+  if (entries.length === 0) return
+  skipAllPending.value = new Set(entries.map((e) => e.playerId))
+  const first = entries[0]
+  sendSkipFor(first.playerId, first.choiceIdx)
 }
 
 const { send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected, onMessage })
@@ -319,7 +374,6 @@ const handleResult = (result: ServerResult) => {
         .decodePromise(result as any)
         .then((r) => {
           // if it isn't for us, immediately unlock and continue draining
-          console.log(solo.value, r.player, playerId.value)
           if (!(solo.value === true || r.player === playerId.value)) {
             uiLock.value = false
             return
@@ -367,6 +421,36 @@ const canUndoScenario = computed(() => {
   if(!game.value) return false
   return game.value.scenarioSteps > 1
 })
+
+const canUndoBoundary = (boundary: number | null): boolean => {
+  if (!game.value) return false
+  if (boundary === null) return false
+  return game.value.scenarioSteps > boundary
+}
+
+const canUndoAction = computed(() => canUndoBoundary(game.value?.undoActionStep ?? null))
+const canUndoTurn = computed(() => canUndoBoundary(game.value?.undoTurnStep ?? null))
+const canUndoPhase = computed(() => canUndoBoundary(game.value?.undoPhaseStep ?? null))
+const canUndoRound = computed(() => canUndoBoundary(game.value?.undoRoundStep ?? null))
+
+// Chord state for U + <key> shortcuts (T/R/P/S/A)
+const undoChordArmed = ref(false)
+let undoChordTimer: number | null = null
+const UNDO_CHORD_TIMEOUT_MS = 1500
+
+const armUndoChord = () => {
+  undoChordArmed.value = true
+  if (undoChordTimer) clearTimeout(undoChordTimer)
+  undoChordTimer = window.setTimeout(() => {
+    undoChordArmed.value = false
+    undoChordTimer = null
+  }, UNDO_CHORD_TIMEOUT_MS)
+}
+
+const clearUndoChord = () => {
+  undoChordArmed.value = false
+  if (undoChordTimer) { clearTimeout(undoChordTimer); undoChordTimer = null }
+}
 
 // --- Konami Code support ---
 const KONAMI_SEQ = [
@@ -430,14 +514,31 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
   if (feedKonami(event.key)) return
 
+  // Chord: when U is armed, the next key chooses the undo level
+  if (undoChordArmed.value) {
+    const k = event.key.toLowerCase()
+    if (k === 'a' && canUndoAction.value) { clearUndoChord(); undoActionStart(); return }
+    if (k === 't' && canUndoTurn.value)   { clearUndoChord(); undoTurnStart();   return }
+    if (k === 'p' && canUndoPhase.value)  { clearUndoChord(); undoPhaseStart();  return }
+    if (k === 'r' && canUndoRound.value)  { clearUndoChord(); undoRoundStart();  return }
+    if (k === 's' && canUndoScenario.value) {
+      clearUndoChord()
+      undoScenarioDialog.value?.showModal()
+      return
+    }
+    // Pressing U again while armed = single undo (re-pressing the prefix)
+    if (k === 'u') { clearUndoChord(); undo(); return }
+    // Any other key cancels the chord and falls through
+    clearUndoChord()
+  }
+
   if (event.key === 'u') {
     undo()
     return
   }
 
   if (event.key === 'U') {
-    if(!canUndoScenario.value) return
-    undoScenarioDialog.value?.showModal()
+    armUndoChord()
     return
   }
 
@@ -567,6 +668,31 @@ async function undoScenario() {
   undoScenarioChoice(props.gameId)
 }
 
+async function undoBoundary(call: (gameId: string) => Promise<void>) {
+  if (undoLock.value) return
+  processing.value = true
+  const oldQuestion = game.value?.question
+  if (game.value) game.value.question = {}
+  resultQueue.value = []
+  gameCard.value = null
+  tarotCards.value = []
+  uiLock.value = false
+  undoLock.value = true
+  try {
+    await call(props.gameId)
+  } catch (e) {
+    processing.value = false
+    if (game.value && oldQuestion) game.value.question = oldQuestion
+    console.log(e)
+  }
+  undoLock.value = false
+}
+
+const undoActionStart = () => undoBoundary(undoAction)
+const undoTurnStart = () => undoBoundary(undoTurn)
+const undoPhaseStart = () => undoBoundary(undoPhase)
+const undoRoundStart = () => undoBoundary(undoRound)
+
 const filingBug = ref(false)
 const submittingBug = ref(false)
 const bugTitle = ref("")
@@ -645,7 +771,7 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
     const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion } }))
+    send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts, questionVersion, playerId: playerId.value } }))
   }
 }
 
@@ -655,7 +781,7 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
     const questionVersion = game.value.scenarioSteps
     game.value.question = {}
     processing.value = true
-    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion } }))
+    send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts, questionVersion, playerId: playerId.value } }))
   }
 }
 
@@ -685,7 +811,7 @@ function debugExport (exportType: ExportType) {
   })
   .catch((e) => {
     console.log(e)
-    alert('Unable to download export')
+    alert(t('game.unableToDownloadExport'))
   })
 }
 
@@ -697,6 +823,9 @@ provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
+provide('skipAllTriggers', skipAllTriggers)
+provide('skipAllAvailable', skipAllAvailable)
+provide('showOtherPlayersHands', showOtherPlayersHands)
 
 const onMove = (event: MouseEvent) => {
   mouseX = event.clientX;
@@ -763,35 +892,97 @@ onUnmounted(() => {
     </div>
     <CardOverlay />
     <Draggable v-if="showShortcuts">
-      <template #handle>
-        <header>
-          <h2>{{ $t('gameBar.shortcutsTitle') }}</h2>
-        </header>
-      </template>
-      <dl class="shortcuts">
-        <dt> </dt>
-        <dd>{{ $t('gameBar.shortcutSkipTriggers') }}</dd>
-        <dt>u</dt>
-        <dd>{{ $t('gameBar.shortcutUndo') }}</dd>
-        <dt>U</dt>
-        <dd>{{ $t('gameBar.shortcutRestartScenario') }}</dd>
-        <dt>D</dt>
-        <dd>{{ $t('gameBar.shortcutToggleDebug') }}</dd>
-        <dt>?</dt>
-        <dd>{{ $t('gameBar.shortcutShowOrHideShortcuts') }}</dd>
-        <dt>d</dt>
-        <dd>{{ $t('gameBar.shortcutDraw') }}</dd>
-        <dt>r</dt>
-        <dd>{{ $t('gameBar.shortcutTakeResources') }}</dd>
-        <dt>e</dt>
-        <dd>{{ $t('gameBar.shortcutEndTurn') }}</dd>
-        <template v-for="item in menuItems" :key="item.id">
-          <template v-if="item.shortcut">
-            <dt>{{item.shortcut}}</dt>
-            <dd>{{item.content}}</dd>
-          </template>
-        </template>
-      </dl>
+      <div class="shortcuts-modal">
+        <div class="shortcuts-header">
+          <h2 class="shortcuts-title">{{ $t('gameBar.shortcutsTitle') }}</h2>
+        </div>
+
+        <div class="shortcuts-body">
+          <section class="shortcuts-section">
+            <h3 class="section-title">{{ $t('game.shortcutSection.game') }}</h3>
+            <div class="shortcut-list">
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutSkipTriggers') }}</div>
+                <div class="shortcut-keys"><kbd> </kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutEndTurn') }}</div>
+                <div class="shortcut-keys"><kbd>e</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutDraw') }}</div>
+                <div class="shortcut-keys"><kbd>d</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutTakeResources') }}</div>
+                <div class="shortcut-keys"><kbd>r</kbd></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="shortcuts-section">
+            <h3 class="section-title">{{ $t('game.shortcutSection.undo') }}</h3>
+            <div class="shortcut-list">
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutUndo') }}</div>
+                <div class="shortcut-keys"><kbd>u</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('game.shortcutUndoActionStart') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>A</kbd>
+                </div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('game.shortcutUndoTurnStart') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>T</kbd>
+                </div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('game.shortcutUndoPhaseStart') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>P</kbd>
+                </div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('game.shortcutUndoRoundStart') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>R</kbd>
+                </div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutRestartScenario') }}</div>
+                <div class="shortcut-keys">
+                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>S</kbd>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="shortcuts-section">
+            <h3 class="section-title">{{ $t('game.shortcutSection.view') }}</h3>
+            <div class="shortcut-list">
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutShowOrHideShortcuts') }}</div>
+                <div class="shortcut-keys"><kbd>?</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <div class="shortcut-name">{{ $t('gameBar.shortcutToggleDebug') }}</div>
+                <div class="shortcut-keys"><kbd>D</kbd></div>
+              </div>
+              <template v-for="item in menuItems" :key="item.id">
+                <div v-if="item.shortcut" class="shortcut-row">
+                  <div class="shortcut-name">{{ item.content }}</div>
+                  <div class="shortcut-keys"><kbd>{{ item.shortcut }}</kbd></div>
+                </div>
+              </template>
+            </div>
+          </section>
+        </div>
+
+        <button class="shortcuts-footer" @click="showShortcuts = false">{{ $t('close') }}</button>
+      </div>
     </Draggable>
     <Draggable v-if="filingBug">
       <template #handle>
@@ -871,9 +1062,47 @@ onUnmounted(() => {
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} <span class='shortcut'>u</span></button>
             </MenuItem>
-            <MenuItem v-if="canUndoScenario" v-slot="{ active }">
-              <button :class="{ active }" @click="undoScenarioDialog && undoScenarioDialog.showModal()"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
-            </MenuItem>
+            <div v-if="canUndoAction || canUndoTurn || canUndoPhase || canUndoRound || canUndoScenario" class="undo-jump-group" :class="{ armed: undoChordArmed }">
+              <div class="undo-jump-header">
+                <span>{{ $t('game.undoTo') }}</span>
+                <span class="chord-prefix"><kbd>U</kbd> + <span class="chord-hint">…</span></span>
+              </div>
+              <MenuItem v-if="canUndoAction" v-slot="{ active }">
+                <button class="undo-jump scope-action" :class="{ active }" @click="undoActionStart">
+                  <ArrowUturnLeftIcon aria-hidden="true" />
+                  <span class="undo-jump-label">{{ $t('game.startOfAction') }}</span>
+                  <kbd class="chord-key">A</kbd>
+                </button>
+              </MenuItem>
+              <MenuItem v-if="canUndoTurn" v-slot="{ active }">
+                <button class="undo-jump scope-turn" :class="{ active }" @click="undoTurnStart">
+                  <ClockIcon aria-hidden="true" />
+                  <span class="undo-jump-label">{{ $t('game.startOfTurn') }}</span>
+                  <kbd class="chord-key">T</kbd>
+                </button>
+              </MenuItem>
+              <MenuItem v-if="canUndoPhase" v-slot="{ active }">
+                <button class="undo-jump scope-phase" :class="{ active }" @click="undoPhaseStart">
+                  <RectangleStackIcon aria-hidden="true" />
+                  <span class="undo-jump-label">{{ $t('game.startOfPhase') }}</span>
+                  <kbd class="chord-key">P</kbd>
+                </button>
+              </MenuItem>
+              <MenuItem v-if="canUndoRound" v-slot="{ active }">
+                <button class="undo-jump scope-round" :class="{ active }" @click="undoRoundStart">
+                  <ArrowPathIcon aria-hidden="true" />
+                  <span class="undo-jump-label">{{ $t('game.startOfRound') }}</span>
+                  <kbd class="chord-key">R</kbd>
+                </button>
+              </MenuItem>
+              <MenuItem v-if="canUndoScenario" v-slot="{ active }">
+                <button class="undo-jump scope-scenario" :class="{ active }" @click="undoScenarioDialog && undoScenarioDialog.showModal()">
+                  <FlagIcon aria-hidden="true" />
+                  <span class="undo-jump-label">{{ $t('gameBar.restartScenario') }}</span>
+                  <kbd class="chord-key">S</kbd>
+                </button>
+              </MenuItem>
+            </div>
           </template>
         </Menu>
       </div>
@@ -898,7 +1127,7 @@ onUnmounted(() => {
     />
     <template v-else>
       <Draggable v-if="showSettings">
-      <Settings :game="game" :playerId="playerId" :closeSettings="() => showSettings = false" />
+      <Settings :game="game" :playerId="playerId" :solo="solo" v-model:showOtherPlayersHands="showOtherPlayersHands" :closeSettings="() => showSettings = false" />
       </Draggable>
       <CampaignLog v-if="showLog && game !== null" :game="game" :cards="cards" :playerId="playerId" />
       <div v-else class="game-main">
@@ -911,13 +1140,13 @@ onUnmounted(() => {
                 <img v-if="gameCard.card.tag === 'PlayerCard'" :src="imgsrc('player_back.jpg')" class="card back" />
                 <img v-else :src="imgsrc('back.png')" class="card back" />
               </div>
-              <button @click="continueUI">OK</button>
+              <button @click="continueUI">{{ $t('ok') }}</button>
             </div>
           </div>
         </div>
         <div v-if="playabilityInfo && debug.active" class="debug-modal-overlay" @click.self="playabilityInfo = null">
           <div class="debug-playability-modal">
-            <h3>Playability Checks</h3>
+            <h3>{{ $t('game.playabilityChecks') }}</h3>
             <div class="debug-playability-content">
               <img
                 class="debug-card-image"
@@ -935,7 +1164,7 @@ onUnmounted(() => {
                 </li>
               </ul>
             </div>
-            <button @click="playabilityInfo = null">Close</button>
+            <button @click="playabilityInfo = null">{{ $t('close') }}</button>
           </div>
         </div>
         <div v-if="tarotCards.length > 0" class="revelation">
@@ -953,7 +1182,7 @@ onUnmounted(() => {
                   <img :src="imgsrc('tarot/back.jpg')" class="card back" />
                 </div>
               </div>
-              <button @click="continueUI">OK</button>
+              <button @click="continueUI">{{ $t('ok') }}</button>
             </div>
           </div>
         </div>
@@ -999,10 +1228,10 @@ onUnmounted(() => {
       </div>
     </template>
     <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
-      <p>Are you sure you wish to undo to the beginning of the scenario?</p>
+      <p>{{ $t('game.areYouSureUndoScenario') }}</p>
       <div class="buttons">
-        <button @click="undoScenario()">Yes</button>
-        <button @click="undoScenarioDialog?.close()">No</button>
+        <button @click="undoScenario()">{{ $t('Yes') }}</button>
+        <button @click="undoScenarioDialog?.close()">{{ $t('No') }}</button>
       </div>
     </dialog>
   </div>
@@ -1010,6 +1239,127 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .action { border: 5px solid var(--select); border-radius: 15px; }
+
+.undo-jump-group {
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+
+  &.armed {
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(127, 184, 212, 0.6),
+      0 0 12px rgba(127, 184, 212, 0.35);
+  }
+}
+
+.game-bar div .undo-jump-header {
+  display: flex;
+}
+
+.undo-jump-header {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 8px 10px 6px 10px;
+  user-select: none;
+  pointer-events: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.chord-prefix {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  letter-spacing: normal;
+  text-transform: none;
+
+  kbd {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background-color: var(--box-background);
+    border: 1px solid var(--title);
+    color: white;
+    line-height: 1;
+  }
+
+  .chord-hint {
+    opacity: 0.6;
+  }
+}
+
+.undo-jump-group.armed .chord-prefix kbd {
+  background-color: var(--box-border);
+}
+
+.chord-key {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  margin-left: auto;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background-color: var(--box-background);
+  border: 1px solid var(--title);
+  color: white;
+  line-height: 1;
+}
+
+.undo-jump:hover .chord-key,
+.undo-jump.active .chord-key,
+.undo-jump-group.armed .chord-key {
+  background-color: var(--box-border);
+}
+
+.undo-jump {
+  position: relative;
+  width: 100%;
+  padding: 5px 10px 5px 18px !important;
+  background: rgba(0, 0, 0, 0.4);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--undo-scope);
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  svg {
+    color: var(--undo-scope);
+  }
+
+  &.scope-action   { --undo-scope: #7fb8d4; }
+  &.scope-turn     { --undo-scope: #6cc28d; }
+  &.scope-phase    { --undo-scope: #e0b256; }
+  &.scope-round    { --undo-scope: #c97aa8; }
+  &.scope-scenario { --undo-scope: #d96a6a; }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  &:hover::before, &.active::before {
+    opacity: 1;
+    transform: scaleX(1.5);
+  }
+}
 
 #game {
   width: 100vw;
@@ -1571,26 +1921,139 @@ header {
   color: var(--title);
 }
 
-dl.shortcuts {
-  display: grid;
-  grid-gap: 4px 16px;
-  grid-template-columns: max-content;
-  padding: 10px;
-  font-size: 1.2em;
-  color: white;
-  dt {
-    font-weight: bold;
-    background-color: var(--box-background);
-    border: 1px solid var(--title);
-    color: white;
-    padding: 5px;
-    text-align: center;
-    aspect-ratio: 1/1;
+.shortcuts-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 75vh;
+  background: var(--background);
+  color: var(--text);
+}
+
+.shortcuts-header {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: var(--background-dark);
+  border-bottom: 1px solid var(--box-border);
+}
+
+.shortcuts-title {
+  margin: 0;
+  font-family: Teutonic, serif;
+  font-size: 20px;
+  color: var(--text);
+  text-transform: none;
+}
+
+.shortcuts-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shortcuts-section {
+  display: flex;
+  flex-direction: column;
+
+  .section-title {
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    font-family: Teutonic, serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--title);
+    border-bottom: 1px solid var(--box-border);
   }
-  dd {
-    margin: 0;
-    grid-column-start: 2;
-    align-self: center;
+}
+
+.shortcut-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 6px;
+}
+
+.shortcut-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+}
+
+.shortcut-row:hover {
+  background: var(--background-mid);
+}
+
+.shortcut-name {
+  font-size: 14px;
+  color: var(--text);
+  min-width: 0;
+}
+
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  kbd {
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+    background: var(--background-dark);
+    border: 1px solid var(--box-border);
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .chord-arrow {
+    opacity: 0.5;
+    font-size: 12px;
+  }
+}
+
+.shortcuts-footer {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  border-top: 1px solid var(--box-border);
+  background: var(--button-2);
+  color: var(--text);
+  font-family: Teutonic, serif;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+}
+
+.shortcuts-footer:hover {
+  background: var(--button-2-highlight);
+}
+
+@media (max-width: 700px) {
+  .shortcuts-header,
+  .shortcuts-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .shortcuts-body {
+    padding: 14px 16px;
   }
 }
 

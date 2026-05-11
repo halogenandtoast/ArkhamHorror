@@ -170,32 +170,47 @@ instance RunMessage WithoutATrace where
         push $ Msg.CreateConcealedCard card
         push $ Msg.PlaceConcealedCard lead (toId card) (InPosition pos)
     ScenarioSpecific "exposed[CityOfRemnantsL]" v -> do
-      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let locationsInShadows = meta.locationsInShadows
-      for_ locationsInShadows.left \loc -> do
-        scenarioSpecific "exposed[CityOfRemnants]" (iid, LeftPosition, loc)
-        do_ msg
-        forTarget_ loc msg
-      pure s
+      case locationsInShadows.left of
+        Just loc -> do
+          scenarioSpecific "exposed[CityOfRemnants]" (iid, LeftPosition, loc)
+          do_ msg
+          forTarget_ loc msg
+          pure s
+        Nothing -> do
+          removeFromGame c
+          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+          pure $ WithoutATrace $ attrs & metaL .~ toJSON (meta {concealedCards})
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
-      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let locationsInShadows = meta.locationsInShadows
-      for_ locationsInShadows.middle \loc -> do
-        scenarioSpecific "exposed[CityOfRemnants]" (iid, MiddlePosition, loc)
-        do_ msg
-        forTarget_ loc msg
-      pure s
+      case locationsInShadows.middle of
+        Just loc -> do
+          scenarioSpecific "exposed[CityOfRemnants]" (iid, MiddlePosition, loc)
+          do_ msg
+          forTarget_ loc msg
+          pure s
+        Nothing -> do
+          removeFromGame c
+          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+          pure $ WithoutATrace $ attrs & metaL .~ toJSON (meta {concealedCards})
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
-      let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
+      let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
       let locationsInShadows = meta.locationsInShadows
-      for_ locationsInShadows.right \loc -> do
-        scenarioSpecific "exposed[CityOfRemnants]" (iid, RightPosition, loc)
-        do_ msg
-        forTarget_ loc msg
-      pure s
+      case locationsInShadows.right of
+        Just loc -> do
+          scenarioSpecific "exposed[CityOfRemnants]" (iid, RightPosition, loc)
+          do_ msg
+          forTarget_ loc msg
+          pure s
+        Nothing -> do
+          removeFromGame c
+          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+          pure $ WithoutATrace $ attrs & metaL .~ toJSON (meta {concealedCards})
     ForTarget (LocationTarget loc) (ScenarioSpecific x v) | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
       let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v
       withLocationOf iid \current -> do

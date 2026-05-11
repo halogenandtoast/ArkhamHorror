@@ -31,8 +31,8 @@ instance RunMessage OldCompass where
       when attrs.ready do
         withSkillTest \stid -> do
           sid <- getRandom
-          chooseOneM iid do
-            labeled "Exhaust Old Compass" do
+          chooseOneM iid $ cardI18n $ scope "oldCompass" do
+            labeled' "exhaustToRepeat" do
               exhaustThis attrs
               push $ RepeatSkillTest sid stid
             withI18n skip_

@@ -48,6 +48,7 @@ const cardAction = computed(() => {
 })
 
 const solo = inject<Ref<boolean>>('solo')
+const showOtherPlayersHands = inject<Ref<boolean>>('showOtherPlayersHands')
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== 'AbilityLabel') {
@@ -228,7 +229,7 @@ function oilPaintEffect(canvas, radius, intensity) {
 </script>
 
 <template>
-  <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId) || revealed">
+  <div class="card-container" :data-index="id" v-if="solo || showOtherPlayersHands || (investigatorId == ownerId) || revealed">
     <AbilityButton
       v-if="isMobile"
       v-for="ability in abilities"

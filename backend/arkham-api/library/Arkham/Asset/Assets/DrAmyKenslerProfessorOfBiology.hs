@@ -47,8 +47,8 @@ instance RunMessage DrAmyKenslerProfessorOfBiology where
       focusCards cards do
         chooseOneM iid do
           when canAffectOtherPlayers do
-            labeled "Discard Card" do
+            labeledI "discardCard" do
               for_ cards (discardCard iid (attrs.ability 1))
-          labeled "Leave card" nothing
+          labeledI "leaveCard" nothing
       pure a
     _ -> DrAmyKenslerProfessorOfBiology <$> liftRunMessage msg attrs

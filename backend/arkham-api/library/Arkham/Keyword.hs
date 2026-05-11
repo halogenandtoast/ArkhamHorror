@@ -24,6 +24,7 @@ data Sealing
 data Keyword
   = Alert
   | Aloof
+  | Doomed
   | Elusive
   | Fast
   | Hidden

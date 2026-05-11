@@ -1,0 +1,93 @@
+{
+  "heading": "档案#11-B",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for every 1 {'{'}perPlayer{'}'} civilians slain.",
+      "cultist": "-4. If you fail, choose a non-_Elite_ enemy at your location. That enemy readies and attacks you.",
+      "tablet": "-1. You may take 1 damage. If you do not, a civilian at your location is slain.",
+      "elderThing": "-3. If you fail, choose and discard 1 card from your hand."
+    },
+    "hardExpert": {
+      "skull": "-2 for every 1 {'{'}perPlayer{'}'} civilians slain.",
+      "cultist": "-6. Choose a non-_Elite_ enemy at your location. That enemy readies and attacks you.",
+      "tablet": "-2. Take 1 damage. A civilian at your location is slain.",
+      "elderThing": "-4. If you fail, discard 1 card from your hand at random."
+    }
+  },
+  "label": {
+    "gnashingTeeth": {
+      "heal": "Heal 2 damage from each Elite enemy in play.",
+      "slain": "1 civilian at your location is slain."
+    },
+    "tablet": {
+      "doNotTakeDamage": "Do not take damage (a civilian at your location, if any, will be slain)"
+    },
+    "cornered": {
+      "slain": "1 civilian at your location is slain."
+    }
+  },
+  "tooltips": {
+    "marrakeshRailwayStation": {
+      "resign": "You flee the city. (注意: If there are no investigators in play, all remaining civilians in play will be slain.)"
+    },
+    "marrakeshRailwayStationAbandoned": {
+      "resign": "You run for your life. (注意: If there are no investigators in play, all remaining civilians in play will be slain.)"
+    }
+  },
+  "intro": {
+    "title": "File #11–B: Dead Heat",
+    "lessThan15": "如果经过了小于15 _时间_ , proceed to Intro 2.",
+    "between15And24": "如果经过了15到24 _时间_ , skip to Intro 3.",
+    "moreThan24": "如果经过了大于25 _时间_ , skip to Intro 4.",
+    "intro1": "<p class='file'>_引言1_: 你被火车减速的尖锐摩擦声惊醒。尽管早晨才刚刚来临，炙热的太阳已经用热浪为马拉喀什蒙上了一片闪烁的面纱。整座城市看起来像摩洛哥沙漠中的海市蜃楼般摇曳着。</p><p class='basic'>检查剧本日志上经过多少时间。",
+    "intro2": "<p class='file'>_引言2_: 你与联络人在离火车站不远的一家咖啡厅顶楼见面。男人藏着微笑的灰色胡子平衡了他稚气的长相。“你一定是基石派来的。我叫拉提夫。请坐，你一定饿了。”他边向你伸出手边介绍。</p><p>桌上摆满了装满蛋跟橄榄的碗，还有各式各样的乳酪跟扁面包，一旁放着一壶热薄荷茶。当你用餐时，拉提夫将一叠报纸放到桌上。“我不想影响你的食欲，但邪恶的阴谋正在这个城市中进行。”他边说边指向三个不同的标题:</p><p class='typewriter center'>神秘盗墓行动<br />橄榄园无故枯萎<br />麦地那数十人失踪</p><p>一阵炎热刺人的微风拂过，吹乱了报纸。拉提夫低语着：“我想你已经读过卷宗了。那名自称永生花的女性在这里，我认为她是始作俑者。”这位中年男子扫视一下四周后，拿出了一张脆弱的照片，上面是一个20多岁的美丽女性，穿着黑色洋装跟黑色手套，耳边戴着一朵艳丽的花朵。</p><P>“就在昨晚，我派了一个线人去搜集关于她的情报。但他还没回来，恐怕要做最坏的打算。”拉提夫低头说到。“但我相信这就是你来到这的原因！调查官总是会派遣像你一样……”他打量了你一下，思索着适当的用词。“一样特别的人来。”</p><p>你跟拉提夫保证，虽然你是新加入基石的人，但你绝对有能力处理这个事件。</p><p>“我衷心的期望。”拉提夫喝了一口热薄荷茶。“这里正发生奇怪的事，我弟弟说他看见我们过世的祖父身着寿衣在街上游荡，我说他一定是在作梦，但我听到许多类似的故事。夜晚的街道已经不再安全了，有某种巫术正在流窜，一种不自然的力量。如果基石没有删改档案就好了！”</p><p>你整个早上都在阅览报纸跟听取拉提夫搜集的情资。一系列“盗墓案”中的第一件发生在拉金·法尔希的陵墓，一位16世纪的哲学家与数学家。拉提夫说：“有传言说他是绯红结社的创始成员之一。”你的思绪飞快的试着将所有情报拼凑起来：永生花是否在寻找另一个密钥呢？</p><p>“无论眼下正在发生什么，我们都必须立刻行动。”拉提夫说到。</p><p class='basic right'>进入_冒险设置_.</p>",
+    "intro3": "<p class='file'>_引言3_: 你在火车站外招不到计程车，只好步行到一间空荡咖啡厅的顶楼与你的联络人会面。等待着你的是一名男性，他灰色的胡子平衡了他稚气的长相，但在他脸上看不见笑容。他严肃的说：“你来迟了，我发了电报给基石请求援助。如你所见，这里情况非常不乐观。”</p><p>你向他道歉并表示你已经尽快赶来了。他忧虑的搓揉着眼角：“我很抱歉，我很高兴你来了，但恐怕情况已经失控了，我们已经没有力量跟时间阻止了。”他示意要你入座。“我叫拉提夫，你会想坐下再听的。”</p><p>桌子上放满了当地传统的佳肴，但就剩余的情况来看，大部分都被焦虑的拉提夫吃掉了。他给了你几份报纸头条，内容关于被亵渎的墓穴、枯死的作物跟失踪的人口。当他将这些悲剧事件之间的关联解释给你听时，你闻到风中飘来一股恶臭。你向外看向城市，墨汁般黑色的藤蔓爬满了建筑物的外墙，远远看去就像尸体上浮肿的血管。</p><p>“我的朋友？”拉提夫的声音将你从出神状态拉回现实。你向他道歉并问到那些藤蔓。这位中年男子叹了口气说：“这是另一个谜团，昨晚在巴西亚宫外有阵很大的骚动。尖叫声跟咆啸声此起彼落，我派了人去查看，但他一去不回了。很快那些黑色的花就出现了，长满了整座城市，散发着腐败的恶臭，还长出尖锐的荆棘，我不敢碰触它们。”</p><p>“在这个事件爆发前，我弟弟说他看见我们的祖父穿着寿衣在街上游荡，我本想忽略，但有越来越多的相似报告传来。他们现在在街上沉默而缓慢的游荡，眼神空洞但饥饿无比。”拉提夫语带苦涩，仰头饮尽最后一点薄荷茶。</p><p>“我相信幕后黑手是自称永生花的那名女性，你应该看过她的卷宗了，基石把所有最重要的地方抹除了可真是帮了大忙！”拉提夫拿出了一张脆弱的照片，上面是一个20多岁的漂亮女性，穿着黑色洋装跟黑色手套，耳边戴着一朵艳丽的花朵。</p><p>“我的另一个线人说他在巴西亚宫花园看到了‘永生花’，她就是这一团混乱的中心。我说我们直接冲进皇宫阻止她的计划吧，但做好面对任何状况的准备。”</p><p>你闻到一股熟悉的臭味，你从屋顶向下望，看见一小段黑色的蔓须已经爬上这栋建筑了，在藤蔓的源头有一颗黑色的花苞正在生长。你不确定是光线的关系还是真的有什么超自然的力量，但你发誓花苞周围有绿色的，如鬼火般的闪光正在移动，即使现在一点风都没有。</p><p class='basic right'>进入_冒险设置_.</p>",
+    "intro4": "<p class='file'>_引言4_: 你踏出车厢的同时就闻到一股腐臭的烟味。空荡荡的月台上只有寥寥几人，黑色干枯的藤蔓爬满周遭的建筑物，妖艳的红花却盛放在藤蔓末端。诡异的寂静笼罩着一切。</p><p> 在你前往与联络人会面的路上，你经过几名步履蹒跚、姿势诡异的行人。有些人朝你靠近，你则试着保持距离，他们的皮肤不自然的泛黄且干裂，恼人的苍蝇在他们头上盘旋。你终于找到了那间咖啡厅的大门，你应该要在顶楼跟一名叫做“拉提夫”的人会面。</p><p>代表死亡的花朵盛放在墙上跟门口。透过匆促用木板封死的门窗，你看到一双双充满恐惧的眼睛，马拉喀什已毁于一旦。你在巴西亚宫的遗址找到了那些黑色藤蔓的中心，在花园中你发现了施行仪式的痕迹，但罪魁祸首已不知去向。</p><p class='basic right'>跳到_结局5_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Dead Heat*, *Scarlet Sorcery*, *Spreading Corruption*, *Ghouls*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dead-heat.png' /><img src='{setImgPath}/scarlet-sorcery.png' /><img src='{setImgPath}/spreading-corruption.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "将全部5个 _马拉喀什_ 地点放置入场，只使用其非_废弃_ 版本。将每个地点的 _废弃_ 版本放在一旁。",
+    "beginPlay": "每位调查员从马拉喀什火车站开始游戏。",
+    "civilians": "在场上的每个地点上放置资源，数量等同于调查员人数外加一，作为市民 (*见以下“市民”*)。然后，检查剧本日志：",
+    "tenOrFewerTime": "如果经过了小于等于 10 _时间_ ，不作任何改变。",
+    "elevenToSeventeenTime": "如果经过了 11–17 _时间_ ，尽可能平均选择在场上所有地点之中的1 {'{'}perPlayer{'}'} 个市民。这些市民被杀害。",
+    "eighteentoTwentyFourTime": "如果经过了 18–24 _时间_ 尽可能平均选择在场上所有地点之中的2 {'{'}perPlayer{'}'} 个市民。这些市民被杀害。",
+    "setOutOfPlay": "将下列卡牌放在一旁，置于场外：双面的永生花敌人、拉金·法尔希敌人、凯利德敌人、两张远古守卫敌人、终末之花密钥、双面的“拯救市民/尘埃落定”剧情卡牌。",
+    "decks": "检查剧本日志并按照以下构筑场景和/或密谋牌堆。",
+    "fewerThanFifteenTime": " 如果经过小于15 _时间_ ，不作任何改变。",
+    "fifteenToTwentyFourTime": "如果经过了 15–24 _时间_ ，将场景1移除游戏。游戏从场景2a开始。将等同于玩家数量的毁灭标记放到密谋1。将永生花 (*散播腐化*) 生成在巴西亚宫花园，将终末之花附属到她身上。将放在一旁的拯救市民剧情卡牌放置入场。将凯利德敌人洗入遭遇牌库。"
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Helped the survivors of the city rebuild"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: 你惊恐的看着整座城市被污秽的藤蔓占据，市民被永生花的仆从们吞噬。你看着这末日的场景，心里希望自己能做的更多。<p>",
+      "slay": "剩余在场的每个市民被杀害。如果仍然为场景1，抽取放在一旁的拯救市民剧情卡牌，并结算其尘埃落定面。",
+      "checkEnemies": "检查在场上的敌人。",
+      "razin": "If 拉金·法尔希 is in play, skip to _结局1_.",
+      "noRazin": "如果以上为非, skip to _结局2_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_结局1_: 你意识到自己危急的处境，开始朝城外逃跑。你敲遍家家户户的门，绝望的想用金钱或任何代价换取庇护，但所有人都回绝了你。终于有位满脸皱纹的老人可怜你，让你进屋，你整夜都在恐惧与不安之中颤抖。隔天早上，你看见整座城市都被黑色的藤蔓笼罩，沦为永生花找回真爱的牺牲品。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>永生花是终末之花承受者。将此记录在剧本日志中。</li><li>In your Campaign Log, record *爱侣重逢*.</li><li>在剧本日志中标记1 _时间_。 你可以_出发_。</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_结局2_: 你意识到自己危急的处境，开始朝城外逃跑。你敲遍家家户户的门，绝望的想用金钱或任何代价换取庇护，但所有人都回绝了你。终于有位满脸皱纹的老人可怜你，让你进屋，你整夜都在恐惧与不安之中颤抖。隔天早上，你看见整座城市都被黑色的藤蔓笼罩，毁于一旦。你还是不清楚永生花造成如此大规模的毁灭是为了什么。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>永生花是终末之花承受者。将此记录在剧本日志中。</li><li>In your Campaign Log, record *未得知永生花最后的下落。*.</li><li>在剧本日志中标记1 _时间_。 你可以_出发_。</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_结局3_: 你俯视着这名自称永生花的女子，叫出了她真正的名字：“艾琳……科契温？”她捧着自己发红的脸颊，你看见她的瞳孔在她想起自己的身分时放大。她看向在你手中萎缩的终末之花，意识到自己犯的过错，她发出害怕的哭喊：“我做了可怕的梦，我梦到自己变成恐怖而伟大的女王，君临一个满是无声仆从的王国。”艾琳的改变让你感受到强烈的对比，这个先前看起来冷酷无情的女人现在居然躺在你面前啜泣。</p><p>很明显艾琳是身不由己的，你安抚她并将她与其他幸存者带到安全的地方。你告诉她你会好好保管终末之花，防止“永生花”找到下个宿主。“千万不行，”她重复着你的话，“千万不行。”当你启程离开时，花朵不断收缩着，像是在渴求新的宿主。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>选择一位调查员成为终末之花承受者，并将此记录在剧本日志中。</li><Li>In your Campaign Log, record *永生花离开结社*.</li><li>在剧本日志中标记2 _时间_。 你可以_出发_。</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_结局4_: 当你取走终末之花时，永生花在你面前剧烈地痉挛。这位美丽的年轻女子边吐出黑色的液体边像受惊的动物般对你张牙舞爪，然后迅速跑进一条小巷中。你试着追踪她，但很快就在逃离的市民跟枯萎的藤蔓中失去了她的踪迹。</p><ul><li>每位调查员取得的经验值等于胜利区中所有卡牌的胜利X总和。</li><li>选择一位调查员成为终末之花承受者，并将此记录在剧本日志中。</li><li>In your Campaign Log, record *未得知永生花最后的下落。*.</li><li>在剧本日志中标记1 _时间_。 你可以_出发_。</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_结局5_: 你在死者名单上找到许多名为“拉提夫”的人，你放弃找寻你的联络人，开始搜集资讯跟查询卷宗。你毫不怀疑这一切都跟结社有关，永生花造成了数千人死亡，这场浩劫的规模之大是你之前难以想像的。无论她的目的为何，可以确定的是她的力量足以造成末日级的灾难。</p><p马拉喀什的人们悲伤的统计着幸存者人数，同时你尽可能地协助重建工作。数日后那些藤蔓终于开始枯萎并化为灰烬，复生的亡者们也重归平静，再度下葬。尽管承受了巨大的打击，这座城市仍有希望回复往日荣景。带着沉重的心情，你准备再次上路。</p><ul><li>In your Campaign Log, record *未得知永生花最后的下落*.</li><li>每位调查员承受1点精神创伤，因为其调查了马拉喀什的残骸。</li><li>每位调查员取得3点奖励经验值，因为其帮助生还者重建城市。</li><li>永生花是终末之花承受者。将此记录在剧本日志中。</li><li>在剧本日志中标记1 _时间_。 你可以_出发_。</li></ul>"
+    }
+  }
+}

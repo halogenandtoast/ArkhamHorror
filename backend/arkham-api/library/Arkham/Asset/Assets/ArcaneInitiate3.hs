@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Strategy
 
@@ -25,8 +26,8 @@ instance RunMessage ArcaneInitiate3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [ Label "Place 1 doom" [Msg.placeDoom (attrs.ability 1) attrs 1]
-        , Label "Place 2 horror" [Msg.placeHorror (attrs.ability 1) attrs 2]
+        [ Label (withI18n $ countVar 1 $ ikey' "label.placeDoom") [Msg.placeDoom (attrs.ability 1) attrs 1]
+        , Label (withI18n $ countVar 2 $ ikey' "label.placeHorror") [Msg.placeHorror (attrs.ability 1) attrs 2]
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

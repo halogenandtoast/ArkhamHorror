@@ -20,7 +20,7 @@ enteringTheUnderworldV2 = act (1, A) EnteringTheUnderworldV2 Cards.enteringTheUn
 
 instance HasAbilities EnteringTheUnderworldV2 where
   getAbilities (EnteringTheUnderworldV2 x) =
-    [mkAbility x 1 $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
+    [mkAbility x 1 $ forced $ IfEnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
 
 instance RunMessage EnteringTheUnderworldV2 where
   runMessage msg a@(EnteringTheUnderworldV2 attrs) = runQueueT $ case msg of

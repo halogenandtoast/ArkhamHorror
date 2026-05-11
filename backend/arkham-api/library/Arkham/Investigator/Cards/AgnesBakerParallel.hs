@@ -57,17 +57,17 @@ instance RunMessage AgnesBakerParallel where
     ElderSignEffect (is attrs -> True) -> do
       whenM (canHaveDamageHealed attrs attrs.id) do
         chooseOneM attrs.id do
-          labeled "Heal 1 damage" $ healDamage attrs (ChaosTokenEffectSource #eldersign) 1
-          labeled "Do not heal" nothing
+          labeledI "healOneDamage" $ healDamage attrs (ChaosTokenEffectSource #eldersign) 1
+          labeledI "doNotHeal" nothing
       pure i
     PayCost _ iid _ (InvestigatorDamageCost (isSource attrs -> True) _ _ _) -> do
       let go [] = error "No ForCard cost found"
           go (c : rest) = case c.target of
             ForCard _ card -> do
               chooseOneM iid do
-                labeled "Shuffle event back in instead of discard?" do
+                cardI18n (scope "agnesBakerParallel" $ labeled' "shuffle") do
                   cardResolutionModifier card attrs card (SetAfterPlay ShuffleThisBackIntoDeck)
-                labeled "Resolve normally" nothing
+                labeledI "resolveNormally" nothing
             _ -> go rest
       go =<< getActiveCosts
       pure i

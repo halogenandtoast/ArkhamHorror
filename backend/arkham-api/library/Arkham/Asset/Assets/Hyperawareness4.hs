@@ -30,7 +30,7 @@ instance RunMessage Hyperawareness4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          labeled "Choose Intellect" $ skillTestModifier sid source iid (SkillModifier #intellect 1)
-          labeled "Choose Agility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
+          labeledI "chooseIntellect" $ skillTestModifier sid source iid (SkillModifier #intellect 1)
+          labeledI "chooseAgility" $ skillTestModifier sid source iid (SkillModifier #agility 1)
       pure a
     _ -> Hyperawareness4 <$> liftRunMessage msg attrs

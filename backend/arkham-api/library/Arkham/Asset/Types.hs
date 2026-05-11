@@ -347,6 +347,9 @@ instance HasField "customizations" AssetAttrs Customizations where
 instance HasField "cardId" AssetAttrs CardId where
   getField = assetCardId
 
+instance HasField "cardCode" AssetAttrs CardCode where
+  getField = assetCardCode
+
 instance HasField "id" AssetAttrs AssetId where
   getField = assetId
 

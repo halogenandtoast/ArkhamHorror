@@ -6,6 +6,7 @@ import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Helpers.Window (damagedEnemy)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (NonAttackDamageEffect)
@@ -79,7 +80,7 @@ instance RunMessage NathanielChoEffect where
         then disable attrs
         else focusCards (map toCard events) do
           chooseOneM iid do
-            questionLabeled "{elderSign}: return an event from your discard pile to your hand."
+            cardI18n $ scope "nathanielCho" $ questionLabeled' "elderSign"
             targets events (returnToHand iid)
           disable attrs
       pure e

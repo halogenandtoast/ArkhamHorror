@@ -50,7 +50,6 @@ instance RunMessage DexterDrake2 where
       assets <-
         select
           $ AssetNonStory
-          <> not_ (AssetWithTitle assetName.title)
           <> assetControlledBy iid
           <> AssetCanLeavePlayByNormalMeans
       cards <-

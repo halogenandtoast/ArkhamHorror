@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,12 +21,10 @@ livreDeibon = asset LivreDeibon Cards.livreDeibon
 
 instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
-    [ withTooltip
-        "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
+    [ (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivre2")
         $ controlledAbility a 1 CanManipulateDeck
         $ FastAbility (exhaust a)
-    , withTooltip
-        "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."
+    , (cardI18n $ withI18nTooltip "livreDeibon.fastExhaustLivre")
         $ controlledAbility
           a
           2

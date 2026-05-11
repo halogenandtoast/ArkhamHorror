@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 
@@ -31,9 +32,9 @@ instance RunMessage PolishedCane where
         eid <- MaybeT getSkillTestTargetedEnemy
         liftGuardM $ eid <=~> (NonEliteEnemy <> EnemyCanBeEvadedBy (attrs.ability 1))
         lift $ chooseOneM iid do
-          labeled "Exhaust Polished Cane to automatically evade this enemy" do
+          (cardI18n $ labeled' "polishedCane.exhaust") do
             exhaustThis attrs
             automaticallyEvadeEnemy iid eid
-          labeled "Do not evade" nothing
+          (cardI18n $ labeled' "polishedCane.doNotEvade") nothing
       pure a
     _ -> PolishedCane <$> liftRunMessage msg attrs

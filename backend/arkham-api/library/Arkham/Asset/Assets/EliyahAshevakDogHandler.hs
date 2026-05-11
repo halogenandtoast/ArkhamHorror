@@ -4,7 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.ForMovement
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
@@ -28,9 +30,15 @@ instance RunMessage EliyahAshevakDogHandler where
       chooseEvadeEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
+      skillTestCardOptionEdit
+        attrs
+        (optionWhenExists $ accessibleFromMatch ForMovement $ locationWithInvestigator iid)
+        (doStep 1 msg)
+      pure a
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       connected <- getAccessibleLocations iid attrs
       chooseOrRunOneM iid do
-        labeled "Do not move to a connecting location" nothing
+        labeledI "doNotMoveToConnecting" nothing
         targets connected $ moveTo attrs iid
       pure a
     _ -> EliyahAshevakDogHandler <$> liftRunMessage msg attrs

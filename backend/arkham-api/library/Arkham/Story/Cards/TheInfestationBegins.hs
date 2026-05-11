@@ -95,7 +95,7 @@ instance RunMessage TheInfestationBegins where
           leadChooseOneM $ targets adjacentLocations $ placeTokensOn attrs #damage 1
         _ -> error "Invalid infestation token"
 
-      leadChooseOneM $ labeled "Continue" nothing
+      leadChooseOneM $ labeledI "continue" nothing
 
       if count ((== Cultist) . infestationTokenFace) (infestationSetAside bag) == 2
         then do

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (PlayCard)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Data.Aeson
@@ -77,8 +78,8 @@ instance RunMessage Decoy where
             NonEliteEnemy
       if enemyCount == 2 && length enemies > 1
         then chooseOneM iid do
-          labeled "Evade 1 enemy" handleOne
-          labeled "Evade 2 enemies" do
+          withI18n $ countVar 1 $ labeled' "evadeEnemies" handleOne
+          withI18n $ countVar 2 $ labeled' "evadeEnemies" do
             chooseAutomaticallyEvadeNAt
               iid
               attrs

@@ -43,6 +43,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const solo = inject<Ref<boolean>>('solo')
+const showOtherPlayersHands = inject<Ref<boolean>>('showOtherPlayersHands')
 
 const investigatorId = computed(() => props.investigator.id)
 const ENCOUNTER_BACK = imgsrc("encounter_back.jpg")
@@ -545,7 +546,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           />
           <span class="deck-size">{{hunchDeck.length}}</span>
         </div>
-        <button v-if="debug" @click="showHunchDeck">View Deck</button>
+        <button v-if="debug" @click="showHunchDeck">{{ $t('player.viewDeck') }}</button>
       </div>
 
       <div class="investigator-and-deck">
@@ -586,7 +587,7 @@ function toggleHandAreaMarginBottom(event: Event) {
 
           <template v-for="enemy in inHandEnemies" :key="enemy.id">
             <EnemyView
-              v-if="solo || (playerId == investigator.playerId)"
+              v-if="solo || showOtherPlayersHands || (playerId == investigator.playerId)"
               :enemy="enemy"
               :game="game"
               :data-index="enemy.cardId"
@@ -600,7 +601,7 @@ function toggleHandAreaMarginBottom(event: Event) {
 
           <template v-for="treachery in inHandTreacheries" :key="treachery.id">
             <Treachery
-              v-if="solo || (playerId == investigator.playerId)"
+              v-if="solo || showOtherPlayersHands || (playerId == investigator.playerId)"
               :treachery="treachery"
               :game="game"
               :data-index="treachery.cardId"
@@ -636,7 +637,7 @@ function toggleHandAreaMarginBottom(event: Event) {
         />
         <template v-for="enemy in inHandEnemies" :key="enemy.id">
           <EnemyView
-            v-if="solo || (playerId == investigator.playerId)"
+            v-if="solo || showOtherPlayersHands || (playerId == investigator.playerId)"
             :enemy="enemy"
             :game="game"
             :data-index="enemy.cardId"
@@ -649,7 +650,7 @@ function toggleHandAreaMarginBottom(event: Event) {
         </template>
         <template v-for="treachery in inHandTreacheries" :key="treachery.id">
           <Treachery
-            v-if="solo || (playerId == investigator.playerId)"
+            v-if="solo || showOtherPlayersHands || (playerId == investigator.playerId)"
             :treachery="treachery"
             :game="game"
             :data-index="treachery.cardId"

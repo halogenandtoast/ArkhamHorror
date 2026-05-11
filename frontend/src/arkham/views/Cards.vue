@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { fetchCards } from '@/arkham/api';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
@@ -9,6 +10,8 @@ import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
+
+const { t } = useI18n()
 
 enum View {
   Image = "IMAGE",
@@ -466,11 +469,11 @@ const showSidebar = ref(false)
         <button
           :class="['chapter-tab', { active: activeChapter === 1 }]"
           @click="activeChapter = 1"
-        >Chapter 1</button>
+        >{{ t('cardsView.chapter1') }}</button>
         <button
           :class="['chapter-tab', { active: activeChapter === 2 }]"
           @click="activeChapter = 2"
-        >Chapter 2</button>
+        >{{ t('cardsView.chapter2') }}</button>
       </div>
       <nav class="cycles">
         <ol>
@@ -497,21 +500,21 @@ const showSidebar = ref(false)
     </div>
     <div class="results">
       <header>
-        <button class="sidebar-toggle" @click="showSidebar = !showSidebar" title="Browse sets">
+        <button class="sidebar-toggle" @click="showSidebar = !showSidebar" :title="$t('cardsView.browseSets')">
           <font-awesome-icon class="toggle-arrow" icon="chevron-right" />
           <font-awesome-icon icon="book" />
         </button>
         <form @submit.prevent="setFilter">
-          <input v-model="query" placeholder="Search cards..." />
+          <input v-model="query" :placeholder="$t('cardsView.searchCards')" />
           <button type="submit"><font-awesome-icon icon="search" /></button>
         </form>
         <div class="view-controls">
-          <button @click.prevent="view = View.List" :class="{ active: view == View.List }" title="List view"><font-awesome-icon icon="list" /></button>
-          <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" title="Image view"><font-awesome-icon icon="image" /></button>
+          <button @click.prevent="view = View.List" :class="{ active: view == View.List }" :title="$t('cardsView.listView')"><font-awesome-icon icon="list" /></button>
+          <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
         <label class="encounter-toggle">
           <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
-          <span>Include Encounter</span>
+          <span>{{ $t('cardsView.includeEncounter') }}</span>
         </label>
       </header>
       <CardImageView v-if="view == View.Image" :cards="cards" />

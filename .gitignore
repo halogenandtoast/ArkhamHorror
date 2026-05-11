@@ -84,3 +84,6 @@ secrets.*
 kubeconfig*
 
 .pi/
+.claude/
+CLAUDE.md
+.mcp.json

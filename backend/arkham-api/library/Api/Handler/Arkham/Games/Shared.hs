@@ -24,7 +24,9 @@ import Arkham.Name
 import Arkham.Queue
 import Conduit
 import Control.Concurrent.MVar
+import Control.Concurrent.STM.TBQueue (readTBQueue)
 import Control.Lens (view)
+import Data.IntMap.Strict qualified as IntMap
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
@@ -46,19 +48,34 @@ import Network.WebSockets (ConnectionException)
 import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
+import UnliftIO.Timeout (timeout)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException do
-  writeChannel :: TChan BSL.ByteString <- lift $ (.channel) <$> getRoom gameId
+  room <- lift $ getRoom gameId
   broker <- lift $ getsYesod appMessageBroker
-  roomsVar <- getsYesod appGameRooms
-  liftIO
-    $ modifyMVar_ roomsVar
-    $ pure
-    . Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId
+  let broadcast = broadcastToRoom room
 
-  bracket (atomically $ dupTChan writeChannel) closeConnection \readChannel -> do
+  let cleanup subId = do
+        unsubscribeFromRoom room subId
+        lift $ decrRoomMember gameId
+        -- If this was the last subscriber, drop the room from the map so
+        -- it doesn't accumulate orphaned entries.
+        isEmpty <- liftIO $ atomically do
+          IntMap.null <$> readTVar (roomSubscribers room)
+        when isEmpty do
+          roomsVar <- lift $ getsYesod appGameRooms
+          liftIO $ modifyMVar_ roomsVar $ pure . Map.delete gameId
+          lift $ removeChannel (gameChannel gameId)
+
+  let acquire = do
+        s <- subscribeToRoom room
+        lift $ incrRoomMember gameId
+        pure s
+
+  bracket acquire (\(subId, _) -> cleanup subId) \(_subId, sub) -> do
+    let Subscriber {subQueue, subOverflow} = sub
     mtid <- case broker of
       RedisBroker redisConn _ -> do
         tid <- liftIO
@@ -66,39 +83,42 @@ gameStream gameId = catchingConnectionException do
           $ runRedis redisConn
           $ pubSub (subscribe [gameChannel gameId])
           $ \msg -> do
-            atomically $ writeTChan readChannel (BSL.fromStrict $ msgMessage msg)
+            broadcast (BSL.fromStrict $ msgMessage msg)
             pure mempty
         pure $ Just tid
       WebSocketBroker -> pure Nothing
 
     let stopSub = maybe (pure ()) (liftIO . cancel) mtid
 
+    let sender =
+          forever
+            ( do
+                msg <- atomically do
+                  overflowed <- readTVar subOverflow
+                  if overflowed
+                    then throwSTM SlowSubscriber
+                    else readTBQueue subQueue
+                sendTextData msg
+            )
+            `catch` (\(_ :: SlowSubscriber) -> pure ())
+
     finally
       ( race_
-          (forever $ atomically (readTChan readChannel) >>= sendTextData)
-          (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
+          sender
+          (runConduit $ sourceWS .| mapM_C (handleData room broadcast))
       )
       stopSub
  where
-  handleData writeChannel dataPacket = lift do
+  handleData room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
       Right answer ->
-        updateGame answer gameId writeChannel `catch` \(e :: SomeException) -> do
-          atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
+        updateGame answer gameId (Just room) `catch` \(e :: SomeException) -> do
+          liftIO $ broadcast $ encode $ GameError $ tshow e
 
-  closeConnection _ = do
-    roomsVar <- getsYesod appGameRooms
-    remove <- liftIO $ modifyMVar roomsVar \rooms -> pure do
-      case Map.lookup gameId rooms of
-        Nothing -> (rooms, False)
-        Just room -> do
-          let room' = room {socketClients = max 0 (room.clients - 1)}
-          if room'.clients == 0
-            then (Map.delete gameId rooms, True)
-            else (Map.insert gameId room' rooms, False)
-
-    when remove $ lift $ removeChannel (gameChannel gameId)
+data SlowSubscriber = SlowSubscriber
+  deriving stock Show
+  deriving anyclass Exception
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -157,11 +177,48 @@ instance ToJSON GameDetailsEntry where
     FailedGameDetails t -> object ["error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
-updateGame :: Answer -> ArkhamGameId -> TChan BSL.ByteString -> Handler ()
-updateGame response gameId writeChannel = do
+-- | A broadcast callback. Used to fan out log lines and game-state updates
+-- to every WebSocket subscriber on a room. May be a no-op if there are no
+-- subscribers (e.g. a direct REST PUT with no client listening), in which
+-- case messages are silently dropped instead of buffered indefinitely.
+type Broadcast = BSL.ByteString -> IO ()
+
+-- | Hard cap on a single runMessages invocation. If a game's message
+-- processing exceeds this we kill the action and roll back the surrounding
+-- DB transaction so the worker (and the FOR UPDATE lock on the game row)
+-- can be released. Empirically a normal action completes in well under 1s;
+-- 30s gives plenty of headroom for slow-but-legitimate scenario setup
+-- while still preventing one poison game from monopolising a worker.
+runMessagesTimeoutMicros :: Int
+runMessagesTimeoutMicros = 30 * 1000000
+
+-- | Thrown by updateGame when 'runMessages' exceeds 'runMessagesTimeoutMicros'.
+-- The Yesod handler turns this into a 500; the important effect is that the
+-- exception propagates out of runDB, rolls back the transaction, and frees
+-- the worker. Search Honeycomb / logs for this to find poison games.
+data RunMessagesTimeout = RunMessagesTimeout ArkhamGameId Int
+  deriving stock Show
+  deriving anyclass Exception
+
+updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
+updateGame response gameId mRoom = do
+  let broadcast :: Broadcast
+      broadcast = case mRoom of
+        Nothing -> \_ -> pure ()
+        Just room -> broadcastToRoom room
   tracer <- getTracer
-  oldLog <- runDB $ getGameLog gameId Nothing
-  (ArkhamGame {..}, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  -- NOTE: not wrapping the whole handler in withSpan_ -- it would rewrap
+  -- Yesod's HCContent control-flow exceptions (notFound, notAuthenticated,
+  -- sendStatusJSON, etc.) and break 404/401 responses (see Undo.hs note).
+  -- The runMessages span below is wrapped where it's safe.
+  (ArkhamGame {..}, oldLogEntries, updatedLog) <- runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+    -- Read the prior log from the per-room cache when it's in sync with
+    -- the just-locked game's step; otherwise fall back to the DB. Avoids
+    -- the 217-row-avg getGameLog read on every action in the common case.
+    oldLogEntries <- liftIO (lookupCachedLog mRoom arkhamGameStep) >>= \case
+      Just entries -> pure entries
+      Nothing -> gameLogToLogEntries <$> getGameLog gameId Nothing
+
     mLastStep <- getBy $ UniqueStep gameId arkhamGameStep
     let
       gameJson@Game {..} = arkhamGameCurrentData
@@ -174,7 +231,7 @@ updateGame response gameId writeChannel = do
 
     logRef <- newIORef []
     handleAnswer gameJson playerId response >>= \case
-      Unhandled _ -> pure (g, [])
+      Unhandled _ -> pure (g, oldLogEntries, [])
       Handled answerMessages -> do
         let
           messages =
@@ -185,14 +242,25 @@ updateGame response gameId writeChannel = do
         queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
         genRef <- newIORef $ mkStdGen gameSeed
 
-        runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
-          runMessages (gameIdToText gameId) Nothing
+        -- Circuit breaker: cap runMessages at runMessagesTimeoutMicros so a
+        -- pathological game state (infinite loop / message-handler explosion)
+        -- can't hold a worker hostage and pin a FOR UPDATE lock on the game
+        -- row indefinitely. On timeout, throw RunMessagesTimeout -- this
+        -- aborts the surrounding DB transaction (rollback releases the lock)
+        -- and lets the worker return to the pool.
+        mResult <- liftIO $ timeout runMessagesTimeoutMicros do
+          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) tracer) do
+            runMessages (gameIdToText gameId) Nothing
+        case mResult of
+          Just () -> pure ()
+          Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros
 
         ge <- readIORef gameRef
         let diffDown = diff ge arkhamGameCurrentData
 
         updatedQueue <- readIORef $ queueToRef queueRef
-        updatedLog <- readIORef logRef
+        -- handleMessageLog conses for O(1) inserts; reverse here to restore order.
+        updatedLog <- reverse <$> readIORef logRef
 
         now <- liftIO getCurrentTime
         deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
@@ -217,15 +285,39 @@ updateGame response gameId writeChannel = do
             [ ArkhamStepChoice =. Choice diffDown updatedQueue
             , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
             ]
-        pure (g', updatedLog)
+        pure (g', oldLogEntries, updatedLog)
+
+  -- Update the per-room cache after the DB transaction has committed,
+  -- so the cache is never ahead of durably-stored state.
+  let publishLog = oldLogEntries <> updatedLog
+  liftIO $ writeCachedLog mRoom arkhamGameStep publishLog
 
   publishToRoom gameId
     $ GameUpdate
     $ PublicGame
       gameId
       arkhamGameName
-      (gameLogToLogEntries $ oldLog <> GameLog updatedLog)
+      publishLog
       arkhamGameCurrentData
+
+-- | Read the cached log entries IF the cache is consistent with the locked
+-- game's current step. Returns Nothing on a mismatch (so the caller refetches
+-- from the DB and refreshes the cache).
+lookupCachedLog :: Maybe Room -> Int -> IO (Maybe [Text])
+lookupCachedLog Nothing _ = pure Nothing
+lookupCachedLog (Just room) currentStep = atomically do
+  cachedVal <- readTVar (roomLogCache room)
+  pure $ case cachedVal of
+    Just c | c.cacheStep == currentStep -> Just c.cacheEntries
+    _ -> Nothing
+
+-- | Write the cache after a successful update. The step recorded is the new
+-- post-update step; the next action will read the game at that step and find
+-- a consistent cache.
+writeCachedLog :: Maybe Room -> Int -> [Text] -> IO ()
+writeCachedLog Nothing _ _ = pure ()
+writeCachedLog (Just room) newStep entries =
+  atomically $ writeTVar (roomLogCache room) $ Just $ RoomLogCache newStep entries
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
@@ -234,11 +326,14 @@ newtype RawGameJsonPut = RawGameJsonPut
   deriving anyclass FromJSON
 
 handleMessageLog
-  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> ClientMessage -> m ()
-handleMessageLog logRef writeChannel msg = liftIO $ do
+  :: MonadIO m => IORef [Text] -> Broadcast -> ClientMessage -> m ()
+handleMessageLog logRef broadcast msg = liftIO $ do
+  -- Cons in O(1); the caller reverses once when reading the IORef.
+  -- The previous (logs <> [txt]) was O(n) per call -> O(n^2) per action,
+  -- which mattered during scenario setup with hundreds of log lines.
   for_ (toClientText msg) $ \txt ->
-    atomicModifyIORef' logRef (\logs -> (logs <> [txt], ()))
-  atomically $ writeTChan writeChannel (encode $ toGameMessage msg)
+    atomicModifyIORef' logRef (\logs -> (txt : logs, ()))
+  broadcast (encode $ toGameMessage msg)
  where
   toGameMessage = \case
     ClientText txt -> GameMessage txt
@@ -272,9 +367,11 @@ publishToRoom gameId a = do
         $ publish (gameChannel gameId)
         $ toStrictByteString
         $ encode a
-    WebSocketBroker -> do
-      writeChannel <- (.channel) <$> getRoom gameId
-      atomically $ writeTChan writeChannel $ encode a
+    WebSocketBroker ->
+      -- Don't create a Room here. If nobody is subscribed, drop the
+      -- update on the floor; the next subscriber will read the latest
+      -- state from the database when they connect.
+      lookupRoom gameId >>= traverse_ (`broadcastToRoom` encode a)
 
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =

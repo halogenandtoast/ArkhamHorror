@@ -25,11 +25,11 @@ spec = describe "Patrice's Violin" do
       self.discard `shouldReturn` onlyPlayerCards [flashlight]
       withRewind $ do
         chooseOptionMatching "gain 1 resource" \case
-          Label "Draw card" _ -> True
+          Label "$label.drawCards count=i:1.0" _ -> True
           _ -> False
         self.hand `shouldReturn` [toCard knife]
 
       chooseOptionMatching "draw 1 card" \case
-        Label "Gain resource" _ -> True
+        Label "$label.gainResources count=i:1.0" _ -> True
         _ -> False
       self.resources `shouldReturn` 1

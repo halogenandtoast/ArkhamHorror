@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.CalvinWright (calvinWright) where
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 
@@ -35,11 +36,11 @@ instance RunMessage CalvinWright where
       canHealHorror <- canHaveHorrorHealed attrs iid
       canHealDamage <- canHaveDamageHealed attrs iid
       chooseOne iid
-        $ [Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
-        <> [Label "Heal 1 Horror" [HealHorror (toTarget attrs) (toSource attrs) 1] | canHealHorror]
-        <> [ Label "Take 1 Direct Damage" [Msg.directDamage iid attrs 1]
-           , Label "Take 1 Direct Horror" [Msg.directHorror iid attrs 1]
-           , Label "Do not use elder sign ability" []
+        $ [Label (withI18n $ countVar 1 $ ikey' "label.healDamage") [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
+        <> [Label (withI18n $ countVar 1 $ ikey' "label.healHorror") [HealHorror (toTarget attrs) (toSource attrs) 1] | canHealHorror]
+        <> [ Label (withI18n $ countVar 1 $ ikey' "label.takeDirectDamage") [Msg.directDamage iid attrs 1]
+           , Label (withI18n $ countVar 1 $ ikey' "label.takeDirectHorror") [Msg.directHorror iid attrs 1]
+           , Label "$label.doNotUseElderSign" []
            ]
       pure i
     _ -> CalvinWright <$> liftRunMessage msg attrs

@@ -26,11 +26,11 @@ instance RunMessage SurvivalInstinct where
         skillTestCardOption attrs do
           when (notNull enemies && canDisengage) do
             chooseOneM iid do
-              labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
-              labeled "Skip" nothing
+              labeledI "disengageOtherEnemies" $ for_ enemies (disengageEnemy iid)
+              labeledI "skip" nothing
 
           chooseOrRunOneM iid do
-            labeled "Do not move to a connecting location" nothing
+            labeledI "doNotMoveToConnecting" nothing
             targets locations (moveTo attrs iid)
       pure s
     _ -> SurvivalInstinct <$> liftRunMessage msg attrs

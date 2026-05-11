@@ -34,7 +34,7 @@ instance RunMessage FangOfTyrthrha4 where
       yourLocation <- field InvestigatorLocation iid
       when (Just enemyLocation /= yourLocation) do
         chooseOneM iid do
-          labeled "Move to enemy location" $ moveTo attrs iid enemyLocation
-          labeled "Don't move" nothing
+          labeledI "moveToEnemyLocation" $ moveTo attrs iid enemyLocation
+          labeledI "doNotMove" nothing
       pure e
     _ -> FangOfTyrthrha4 <$> liftRunMessage msg attrs

@@ -22,7 +22,7 @@ instance HasAbilities Contingency3 where
         $ controlled_ x 1
         $ ConstantReaction
           "Cancel a revealed chaos token (Contingency)"
-          (RevealChaosTokensDuringSkillTest #after Anyone (WhileTargetingEnemy AnyEnemy) #any)
+          (RevealChaosTokensDuringSkillTest #cancel Anyone (WhileTargetingEnemy AnyEnemy) #any)
           (ResourceCost 3)
     ]
 

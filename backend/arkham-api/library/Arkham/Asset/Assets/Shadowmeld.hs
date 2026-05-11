@@ -41,7 +41,7 @@ instance RunMessage Shadowmeld where
         locations <- getAccessibleLocations iid attrs
         unless (null locations) do
           chooseOrRunOneM iid do
-            labeled "Do not move to a connecting location" nothing
+            labeledI "doNotMoveToConnecting" nothing
             targets locations \lid -> do
               removeTokens (attrs.ability 1) attrs Charge 1
               moveTo attrs iid lid

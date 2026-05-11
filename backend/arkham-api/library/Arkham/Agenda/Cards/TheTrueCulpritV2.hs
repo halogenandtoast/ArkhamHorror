@@ -10,6 +10,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
 
 newtype TheTrueCulpritV2 = TheTrueCulpritV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -30,7 +31,7 @@ instance HasAbilities TheTrueCulpritV2 where
          , mkAbility attrs 2
              $ Objective
              $ forced
-             $ EnemyDefeated #after Anyone ByAny
+             $ IfEnemyDefeated #after Anyone ByAny
              $ enemyIs Cards.otherworldlyMeddler
          ]
 
@@ -53,13 +54,13 @@ instance RunMessage TheTrueCulpritV2 where
       isReady <- otherworldlyMeddler <=~> ReadyEnemy
 
       when (clues >= 2) do
-        chooseOneM iid do
+        chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
           when isReady do
-            labeled "remove 2 clues from Sinister Solution to either exhaust Otherworldly Meddler" do
+            labeled' "removeCluesToExhaust" do
               removeClues sinisterSolution sinisterSolution 2
               exhaustWith attrs otherworldlyMeddler
 
-          labeled "remove 2 clues to deal it 2 damage" do
+          labeled' "removeCluesToDealDamage" do
             removeClues sinisterSolution sinisterSolution 2
             nonAttackEnemyDamage (Just iid) sinisterSolution 2 otherworldlyMeddler
           withI18n skip_

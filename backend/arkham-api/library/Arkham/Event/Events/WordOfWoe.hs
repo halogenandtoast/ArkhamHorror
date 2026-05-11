@@ -42,8 +42,8 @@ instance RunMessage WordOfWoe where
       for_ wordOfWeal \card -> do
         chooseOne
           iid
-          [ Label "Shuffle Word of Weal into your deck" [ShuffleCardsIntoDeck (toDeck iid) [card]]
-          , Label "Do not shuffle it back in" []
+          [ Label "$cards.label.wordOfWoe.shuffle" [ShuffleCardsIntoDeck (toDeck iid) [card]]
+          , Label "$label.doNotShuffleBackIn" []
           ]
 
       pure e

@@ -61,11 +61,16 @@ instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
         [targetLabel iid' [HandleTargetChoice iid (attrs.ability 2) (toTarget iid')] | iid' <- iids]
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) _ -> do
-      chooseOne iid [Label "Use Leyline" [DoStep 2 msg], Label "Do not Leyline" [DoStep 1 msg]]
+      chooseOne
+        iid
+        [ Label "$label.removeLeyline" [DoStep 2 msg]
+        , Label "$label.doNotRemoveLeyline" [DoStep 1 msg]
+        ]
       pure a
     DoStep n (HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid')) -> do
       let source = attrs.ability 2
-      drawCardsIfCan iid' (attrs.ability 2) n
+      when (n == 2) $ removeTokens source (toTarget iid') Token.Leyline 1
+      drawCardsIfCan iid' source n
       canHealHorror <- canHaveHorrorHealed source iid'
       canHealDamage <- canHaveDamageHealed source iid'
       when (canHealHorror || canHealDamage) $ do

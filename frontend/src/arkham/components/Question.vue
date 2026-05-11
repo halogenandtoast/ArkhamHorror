@@ -4,6 +4,7 @@ import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composeable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
+import { formatCost } from '@/arkham/cost';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
@@ -36,12 +37,11 @@ const emit = defineEmits(['choose'])
 const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
-
 function zoneToLabel(s: string) {
   switch(s) {
-    case "FromDeck": return "From Deck"
-    case "FromHand": return "From Hand"
-    case "FromDiscard": return "From Discard"
+    case "FromDeck": return t("fromDeck")
+    case "FromHand": return t("fromHand")
+    case "FromDiscard": return t("fromDiscard")
     default: return s
   }
 }
@@ -80,31 +80,21 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
+  const encounterCards = Object.entries({
+    ...(props.game.scenario?.foundCards ?? {}),
+    ...props.game.foundCards,
+  })
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
 })
 
 const focusedCards = computed(() => {
-  const {focusedCards, foundCards} = props.game
-
-  if (focusedCards.length == 0) {
-    if (Object.values(foundCards).some((v) => v.length > 0)) {
-      return Object.values(foundCards).flat()
-    }
-  }
-
-  const searchedCardIds = searchedCards.value.map(([, cards]) => {
-    return cards.map((card) => toCardContents(card).id)
-  }).flat()
-
-  if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
+  if (searchedCards.value.length > 0) {
     return []
   }
 
-
-  return focusedCards
+  return props.game.focusedCards
 })
 
 
@@ -127,6 +117,10 @@ const paymentAmountsLabel = computed(() => {
     return label(question.value.label)
   }
 
+  if (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return label(t('label.cost.pay', { cost: formatCost(question.value.cost, t) }))
+  }
+
   return null
 })
 
@@ -136,7 +130,7 @@ const amountsLabel = computed(() => {
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return question.value.question.label
+    return label(question.value.question.label)
   }
 
   return null
@@ -145,6 +139,10 @@ const amountsLabel = computed(() => {
 const paymentAmountsChoices = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
     return question.value.paymentAmountChoices
+  }
+
+  if (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return question.value.question.paymentAmountChoices
   }
 
   return []
@@ -210,8 +208,13 @@ watch(
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
-  if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    const target = question.value.paymentAmountTargetValue
+  const paymentAmountsQ = question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
+    ? question.value
+    : (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
+        ? question.value.question
+        : null)
+  if (paymentAmountsQ) {
+    const target = paymentAmountsQ.paymentAmountTargetValue
     if (target) {
       switch(target.tag) {
         case 'MaxAmountTarget':
@@ -493,7 +496,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div v-if="cardLabels.length > 0" class="cardLabels">
       <div v-if="cardLabels.length > 10" class="filter">
-        <input v-model="cardFilter" @keydown.stop placeholder="Filter" />
+        <input v-model="cardFilter" @keydown.stop :placeholder="$t('questionFilter.filter')" />
       </div>
       <template v-for="{choice, index} in filteredCards" :key="index">
         <CardImage v-if="choice.flippable" :card="flippableCard(choice.cardCode)" />
@@ -561,6 +564,15 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       <DropDown @choose="choose" :options="question.question.options" />
     </div>
 
+    <div class="question-label dropdown" v-if="question && question.tag === 'PayCostQuestion' && question.question.tag === 'DropDown'">
+      <div class="question-image" v-if="questionImage">
+        <img :src="questionImage" class="card" />
+      </div>
+
+      <legend>{{ t('label.cost.pay', { cost: formatCost(question.cost, t) }) }}</legend>
+      <DropDown @choose="choose" :options="question.question.options" />
+    </div>
+
     <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
       <div class="question-image" v-if="questionImage">
         <img :src="questionImage" class="card" />
@@ -611,7 +623,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                 <legend v-html="paymentAmountsLabel"></legend>
                 <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
                   <div v-if="amountChoice.maxBound !== 0">
-                    {{amountChoice.title}}
+                    {{ amountChoice.title }}
                     <input
                       type="number"
                       :min="amountChoice.minBound"
@@ -621,14 +633,14 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                     />
                   </div>
                 </template>
-                <button :disabled="unmetAmountRequirements">Submit</button>
+                <button :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
               </form>
             </div>
           </div>
           <div v-if="amountsLabel" class="modal amount-modal">
             <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
               <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-                <h2>{{zoneToLabel(group)}}</h2>
+                <h2>{{ zoneToLabel(group) }}</h2>
                 <div class="group-cards">
                   <Card
                     v-for="card in cards"
@@ -649,7 +661,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                     <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
                   </div>
                 </template>
-                <button :disabled="unmetAmountRequirements">Submit</button>
+                <button :disabled="unmetAmountRequirements">{{ t('submit') }}</button>
               </form>
             </div>
           </div>

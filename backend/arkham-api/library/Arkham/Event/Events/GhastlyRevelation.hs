@@ -57,10 +57,10 @@ instance RunMessage GhastlyRevelation where
 
       push
         $ chooseOrRunOne player
-        $ [ Label "Give any number of your clues to another investigator" [chooseOrRunOne player choices1]
+        $ [ Label "$cards.label.ghastlyRevelation.giveClues" [chooseOrRunOne player choices1]
           | notNull otherInvestigators
           ]
-        <> [Label "Place any number of your clues on any location" [chooseOrRunOne player choices2]]
+        <> [Label "$cards.label.ghastlyRevelation.placeClues" [chooseOrRunOne player choices2]]
       pure e
     ResolveAmounts iid (getChoiceAmount "Clues" -> n) (ProxyTarget (isTarget attrs -> True) target) ->
       do

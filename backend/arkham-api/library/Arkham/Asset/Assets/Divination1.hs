@@ -27,8 +27,8 @@ instance RunMessage Divination1 where
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
         iid
-        [ Label "Use {willpower} instead of {intellect}" [toMessage $ withSkillType #willpower investigate']
-        , Label "Use {intellect}" [toMessage investigate']
+        [ Label "$label.cards.divination1.useWillpowerInsteadOfIntellect" [toMessage $ withSkillType #willpower investigate']
+        , Label "$label.cards.divination1.useIntellect" [toMessage investigate']
         ]
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) n -> do

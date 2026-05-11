@@ -7,6 +7,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ALightInTheFog.Helpers
 
 newtype PumpRoom = PumpRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,13 +28,13 @@ instance RunMessage PumpRoom where
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       floodedLocations <- select FloodedLocation
-      chooseOneM iid do
-        questionLabeled "Choose location to decrease flood level"
+      chooseOneM iid $ scenarioI18n $ scope "pumpRoom" do
+        questionLabeled' "decreaseFlood"
         targets floodedLocations \lid -> do
           decreaseThisFloodLevel lid
           floodable <- select $ CanHaveFloodLevelIncreased <> not_ (be lid)
-          chooseOneM iid do
-            questionLabeled "Choose location to increase flood level"
+          chooseOneM iid $ scenarioI18n $ scope "pumpRoom" do
+            questionLabeled' "increaseFlood"
             when (n >= 2) $ withI18n skip_
             targets (deleteFirst lid floodable) increaseThisFloodLevel
       pure l

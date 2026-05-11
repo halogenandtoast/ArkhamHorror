@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -30,17 +31,17 @@ instance RunMessage ToolBelt where
       inPlay <- select $ assetInPlayAreaOf iid <> #tool
       underneath <- selectWithField AssetCard $ AssetAttachedToAsset (be attrs)
       chooseOneM iid do
-        labeled "Attach a Tool asset in your play area to Tool Belt" do
+        (cardI18n $ labeled' "toolBelt.attachAToolAssetInYourPlayAreaToToolBelt") do
           when (notNull inPlay) do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
         when (notNull inPlay && notNull underneath) do
-          labeled "Switch a Tool asset in your play area with an attached asset" do
+          (cardI18n $ labeled' "toolBelt.switchATool") do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
             focusCards (map snd underneath) do
               chooseOneM iid do
                 for_ underneath \(x, _) -> targeting x $ place x (InPlayArea iid)
         when (notNull underneath) do
-          labeled "Detach an attached asset." do
+          (cardI18n $ labeled' "toolBelt.detachAnAttachedAsset") do
             focusCards (map snd underneath) do
               chooseOneM iid do
                 for_ underneath \(x, _) -> targeting x $ place x (InPlayArea iid)

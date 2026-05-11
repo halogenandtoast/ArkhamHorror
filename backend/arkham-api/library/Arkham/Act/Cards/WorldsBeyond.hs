@@ -34,7 +34,7 @@ instance RunMessage WorldsBeyond where
       let (nonMatched, remaining) = break (`cardMatch` CardWithType LocationType) explorationDeck
       case remaining of
         [] -> focusCards nonMatched do
-          leadChooseOneM $ labeled "No locations found" $ shuffleDeck ExplorationDeck
+          leadChooseOneM $ labeledI "noLocationsFound" $ shuffleDeck ExplorationDeck
         (x : _) -> do
           focusCards (nonMatched <> [x]) do
             leadChooseOneM do

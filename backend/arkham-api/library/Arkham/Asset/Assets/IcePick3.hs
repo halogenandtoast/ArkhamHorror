@@ -3,11 +3,13 @@ module Arkham.Asset.Assets.IcePick3 (icePick3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestTargetedLocation, withSkillTest)
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.SkillTest.Base (skillTestSubscribers)
 
 newtype IcePick3 = IcePick3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,20 +30,25 @@ instance RunMessage IcePick3 where
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       push $ AddSubscriber (toTarget attrs)
       pure a
-    PassedSkillTest iid (Just action) _ (isTarget attrs -> True) _ _ | Just iid == attrs.controller -> do
-      withSkillTest \sid -> do
+    PassedSkillTest iid (Just action) _ (Initiator _) _ _ | Just iid == attrs.controller -> do
+      mTest <- getSkillTest
+      let usedHere = maybe False ((toTarget attrs `elem`) . skillTestSubscribers) mTest
+      when usedHere $ withSkillTest \sid -> do
         when (action == #fight) do
           chooseOneM iid do
-            labeled "Discard Ice Pick (3) to do +1 damage" do
+            (cardI18n $ labeled' "icePick3.discardIcePick3ToDo1Damage") do
               toDiscardBy iid (attrs.ability 1) attrs
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-            labeled "Do not Discard" nothing
+            labeledI "doNotDiscardCard" nothing
         when (action == #investigate) do
           withLocationOf iid \loc -> do
+            mTargetLoc <- getSkillTestTargetedLocation
             chooseOneM iid do
-              labeled "Discard Ice Pick (3) to discover 1 additional clue at your location" do
+              (cardI18n $ labeled' "icePick3.discardIcePick3") do
                 toDiscardBy iid (attrs.ability 1) attrs
-                skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
-              labeled "Do not Discard" nothing
+                if mTargetLoc == Just loc
+                  then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+                  else skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt loc 1)
+              labeledI "doNotDiscardCard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

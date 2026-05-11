@@ -70,6 +70,23 @@ isCardCode a b = toCardCode a == toCardCode b
 exactCardCode :: HasCardCode a => a -> CardCodeExact
 exactCardCode = CardCodeExact . toCardCode
 
+-- | Card-code prefixes belonging to Chapter 2.
+--
+-- Includes the Core 2026 cycle (@12xxx@) and the upper half (@60X5y@–@60X9y@,
+-- for X in 1..5) of each standalone investigator deck cycle, which is shared
+-- with the original Chapter 1 standalone decks but reserved for the Chapter 2
+-- packs (Tommy Muldoon (2), Carolyn Fern (2), Andre Patel, Marie Lambeau (2),
+-- Miguel De La Cruz).
+chapterTwoPrefixes :: [Text]
+chapterTwoPrefixes =
+  "12" : [T.pack ['6', '0', cycleD, tensD] | cycleD <- "12345", tensD <- "56789"]
+
+isChapterTwo :: CardCode -> Bool
+isChapterTwo (CardCode code) = any (`T.isPrefixOf` code) chapterTwoPrefixes
+
+instance HasField "isChapterTwo" CardCode Bool where
+  getField = isChapterTwo
+
 class HasCardCode a where
   toCardCode :: a -> CardCode
 

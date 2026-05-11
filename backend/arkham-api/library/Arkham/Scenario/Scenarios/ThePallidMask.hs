@@ -258,7 +258,7 @@ instance RunMessage ThePallidMask where
                 $ BasicWeaknessCard
                 <> mapOneOf CardWithTrait [Madness, Pact]
             else chooseSome1M lead "Done having investigators read Act II" do
-              questionLabeled "Choose who will read Act II of The King in Yellow"
+              questionLabeled' "chooseWhoReadsActII"
               targets investigators \iid -> do
                 gainXp lead attrs "resolutions.xp.bonus" 2
                 recordSetInsert ReadActII [unInvestigatorId iid]

@@ -3,6 +3,7 @@
 
 module Arkham.Campaign.Types where
 
+import Arkham.Ability.Used
 import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
@@ -65,6 +66,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignStore :: Field Campaign (Map Text Value)
   CampaignInvalidCards :: Field Campaign [CardCode]
   CampaignDestiny :: Field Campaign (Map Scope TarotCard)
+  CampaignUsedAbilities :: Field Campaign [UsedAbility]
 
 data XpBreakdownStep = XpBreakdownStep
   { xbsStep :: CampaignStep
@@ -89,6 +91,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignMeta :: Value
   , campaignStore :: Map Text Value
   , campaignDestiny :: Map Scope TarotCard
+  , campaignUsedAbilities :: [UsedAbility]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -192,6 +195,9 @@ destinyL = lens campaignDestiny $ \m x -> m {campaignDestiny = x}
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
+usedAbilitiesL :: Lens' CampaignAttrs [UsedAbility]
+usedAbilitiesL = lens campaignUsedAbilities $ \m x -> m {campaignUsedAbilities = x}
+
 xpBreakdownL :: Lens' CampaignAttrs [XpBreakdownStep]
 xpBreakdownL = lens campaignXpBreakdown $ \m x -> m {campaignXpBreakdown = x}
 
@@ -268,6 +274,7 @@ campaign f campaignId' name difficulty =
       , campaignStore = mempty
       , campaignXpBreakdown = mempty
       , campaignDestiny = mempty
+      , campaignUsedAbilities = mempty
       }
 
 instance Entity Campaign where
@@ -357,5 +364,6 @@ instance FromJSON CampaignAttrs where
     campaignMeta <- o .: "meta"
     campaignStore <- o .:? "store" .!= mempty
     campaignDestiny <- o .:? "destiny" .!= mempty
+    campaignUsedAbilities <- o .:? "usedAbilities" .!= mempty
 
     pure CampaignAttrs {..}

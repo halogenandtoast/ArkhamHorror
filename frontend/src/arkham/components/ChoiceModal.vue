@@ -32,7 +32,10 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
+  const encounterCards = Object.entries({
+    ...(props.game.scenario?.foundCards ?? {}),
+    ...props.game.foundCards,
+  })
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
@@ -41,14 +44,6 @@ const searchedCards = computed(() => {
 const focusedCards = computed(() => {
   if (searchedCards.value.length > 0) {
     return []
-  }
-
-  const { focusedCards, foundCards } = props.game
-
-  if (focusedCards.length === 0) {
-    if (Object.values(props.game.foundCards).some((v) => v.length > 0)) {
-      return Object.values(props.game.foundCards).flat()
-    }
   }
 
   return props.game.focusedCards
@@ -74,7 +69,7 @@ const requiresModal = computed(() => {
     return false
   }
 
-  return ((props.game.focusedChaosTokens.length > 0 || tokenChoices.value !== null) && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || ['Read', 'QuestionLabel', 'DropDown', 'ChooseExchangeAmounts'].includes(question.value?.tag)
+  return ((props.game.focusedChaosTokens.length > 0 || tokenChoices.value !== null) && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || ['Read', 'QuestionLabel', 'DropDown', 'ChooseExchangeAmounts', 'PayCostQuestion'].includes(question.value?.tag)
 })
 
 const question = computed(() => props.game.question[props.playerId])
@@ -167,5 +162,10 @@ const title = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.choice-modal-wrapper .body {
+  text-align: center;
+  margin: 0;
 }
 </style>

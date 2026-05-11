@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.DrawingThin (drawingThin, DrawingThin (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -29,8 +30,8 @@ instance RunMessage DrawingThin where
         [ IncreaseSkillTestDifficulty 2
         , chooseOne
             player
-            [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
-            , Label "Draw 1 card" [drawing]
+            [ Label (withI18n $ countVar 2 $ ikey' "label.takeResources") [TakeResources iid 2 (toAbilitySource attrs 1) False]
+            , Label (withI18n $ countVar 1 $ ikey' "label.drawCards") [drawing]
             ]
         ]
       pure a

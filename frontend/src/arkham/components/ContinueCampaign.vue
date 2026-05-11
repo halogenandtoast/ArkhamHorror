@@ -252,7 +252,7 @@ const expeditionLeader = computed(() => {
   <LogIcons />
   <div class="continue-campaign scroll-container">
     <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
-      <h2>Select a side scenario to add</h2>
+      <h2>{{ $t('sideStory.selectSideScenario') }}</h2>
       <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option">
         <div class="scenario-icon">
           <img :src="imgsrc(`sets/${sideStory.id}.png`)" />

@@ -3,6 +3,7 @@ module Arkham.Skill.Cards.Prescient (prescient, prescientEffect) where
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
@@ -20,10 +21,10 @@ prescient = skill Prescient Cards.prescient
 instance RunMessage Prescient where
   runMessage msg (Prescient attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == attrs.id -> do
-      chooseOneM iid do
-        labeled "Even" $ createCardEffect Cards.prescient (Just $ EffectInt 1) attrs iid
-        labeled "Odd" $ createCardEffect Cards.prescient (Just $ EffectInt 2) attrs iid
-        labeled "Symbol" $ createCardEffect Cards.prescient (Just $ EffectInt 3) attrs iid
+      chooseOneM iid $ cardI18n $ scope "prescient" do
+        labeled' "even" $ createCardEffect Cards.prescient (Just $ EffectInt 1) attrs iid
+        labeled' "odd" $ createCardEffect Cards.prescient (Just $ EffectInt 2) attrs iid
+        labeled' "symbol" $ createCardEffect Cards.prescient (Just $ EffectInt 3) attrs iid
       Prescient <$> liftRunMessage msg attrs
     _ -> Prescient <$> liftRunMessage msg attrs
 
@@ -60,7 +61,7 @@ instance RunMessage PrescientEffect where
       when (returnSpell && notNull spells) do
         focusCards spells do
           chooseOneM iid do
-            labeled "Do not return spell card" nothing
+            labeledI "doNotReturnCardToHand" nothing
             targets spells $ addToHand iid . only
       pure e
     _ -> PrescientEffect <$> liftRunMessage msg attrs

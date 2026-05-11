@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher hiding (PlayCard)
 
 newtype Geas2 = Geas2 AssetAttrs
@@ -39,7 +40,7 @@ checkPromise attrs iid promise = do
   if isTurn && toResult @Promise attrs.meta == promise
     then do
       n <- min 10 <$> getRemainingCurseTokens
-      send "You have broken the geas!"
+      send (withI18n $ ikey' "cards.label.geas2.broken")
       toDiscardBy iid attrs attrs
       replicateM_ n $ addChaosToken #curse
       pure $ setMeta @Promise 0 attrs
@@ -50,9 +51,9 @@ instance RunMessage Geas2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [ Label "I shall not DRAW any cards during each of my turns" [DoStep DrawPromise msg]
-        , Label "I shall not PLAY any cards during each of my turns" [DoStep PlayPromise msg]
-        , Label "I shall not COMMIT any cards during each of my turns" [DoStep CommitPromise msg]
+        [ Label "$cards.label.geas2.drawPromise" [DoStep DrawPromise msg]
+        , Label "$cards.label.geas2.playPromise" [DoStep PlayPromise msg]
+        , Label "$cards.label.geas2.commitPromise" [DoStep CommitPromise msg]
         ]
       pure a
     DoStep n (UseThisAbility _iid (isSource attrs -> True) 1) -> do

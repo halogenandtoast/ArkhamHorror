@@ -1,7 +1,9 @@
 module Arkham.Treachery.Cards.FogOverInnsmouth (fogOverInnsmouth, FogOverInnsmouth (..)) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (campaignI18n)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -31,8 +33,8 @@ instance RunMessage FogOverInnsmouth where
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
-        labeled "Put Fog over Innsmouth into play next to the agenda deck."
+        withI18n $ countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        campaignI18n $ scope "fogOverInnsmouth" $ labeled' "putIntoPlay"
           $ placeTreachery attrs NextToAgenda
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

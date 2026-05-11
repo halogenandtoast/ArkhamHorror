@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator (searchBondedFor)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -40,7 +41,7 @@ instance RunMessage RodOfCarnamagosScepterOfTheMadSeer2 where
         when (curses > 0) do
           rots <- searchBondedFor iid (CardWithTrait Rot)
           focusCards rots do
-            chooseUpToNM iid curses "Done attaching Rots" do
+            cardI18n $ scope "rodOfCarnamagosScepterOfTheMadSeer2" $ chooseUpToNM' iid curses "doneAttachingRots" do
               targets rots \rot -> do
                 obtainCard rot
                 push $ CreateEventAt iid rot (AttachedToEnemy eid)

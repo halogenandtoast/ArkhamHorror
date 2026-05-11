@@ -28,7 +28,7 @@ instance HasAbilities LaComtesseSubverterOfPlans where
   getAbilities (LaComtesseSubverterOfPlans a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemyDefeated #after You ByAny (be a)
+      [ mkAbility a 1 $ forced $ IfEnemyDefeated #after You ByAny (be a)
       , playerLimit PerPhase $ restricted a 2 (InYourHand <> DuringPhase #upkeep) $ forced $ DiscardedFromHand #after You #any #any
       ]
 

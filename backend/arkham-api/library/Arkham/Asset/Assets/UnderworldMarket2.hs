@@ -8,6 +8,7 @@ import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers hiding (drawCard)
 import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.I18n
 import Arkham.Investigator.Deck qualified as DeckKey
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -50,11 +51,11 @@ instance RunMessage UnderworldMarket2 where
         focusCards xs do
           spendableResources <- getSpendableResources iid
           chooseOneM iid do
-            labeled "Place the rest on the bottom, in any order" do
+            (cardI18n $ labeled' "underworldMarket2.placeTheRestOnTheBottomInAnyOrder") do
               chooseOneAtATimeM iid $ targets xs $ handleTarget iid (attrs.ability 2)
               unfocusCards
             when (spendableResources > 0) do
-              labeled "Spend 1 resource to draw 1 of them" do
+              (cardI18n $ labeled' "underworldMarket2.spend1ResourceToDraw1OfThem") do
                 push $ SpendResources iid 1
                 chooseOneM iid do
                   for_ (eachWithRest xs) \(card, cs) -> do

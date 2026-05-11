@@ -84,6 +84,12 @@ investigateActionWithAlternate stype cost = ActionAbility #investigate (Just $ O
 investigateActionWithAlternate_ :: AbilitySkills -> AbilityType
 investigateActionWithAlternate_ stype = ActionAbility #investigate (Just $ OrAbilitySkills [#intellect, stype]) (ActionCost 1)
 
+resignAction :: Cost -> AbilityType
+resignAction cost = ActionAbility #resign Nothing (ActionCost 1 <> cost)
+
+resignAction_ :: AbilityType
+resignAction_ = resignAction mempty
+
 actionAbility :: AbilityType
 actionAbility = ActionAbility mempty Nothing (ActionCost 1)
 

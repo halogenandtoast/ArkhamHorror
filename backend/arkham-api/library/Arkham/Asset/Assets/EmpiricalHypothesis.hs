@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -25,25 +26,24 @@ instance HasAbilities EmpiricalHypothesis where
   getAbilities (EmpiricalHypothesis a) =
     [ restricted a 1 ControlsThis $ forced $ RoundBegins #when
     , (if tabooed TabooList23 a then limited (PlayerLimit PerRound 2) else id)
-        $ withTooltip "{fast} Spend 1 evidence: Draw 1 card."
+        $ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend1EvidenceDraw1Card")
         $ restricted a 2 (CanDrawCards <> exists matcher)
         $ FastAbility
         $ assetUseCost a Evidence 1
     ]
-      <> [ withTooltip "{fast} Spend 2 evidence: Reduce the cost of the next card you play by 3."
+      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend2Evidence")
             $ restricted a 3 (exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 2
          | a `hasCustomization` ResearchGrant
          ]
-      <> [ withTooltip "{fast} Spend 3 evidence: Discover 1 clue at your location."
+      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.fastSpend3Evidence")
             $ restricted a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 3
          | a `hasCustomization` IrrefutableProof
          ]
-      <> [ withTooltip
-            "You may resolve its forced effect, choosing a criteria you have not chosen this round. Then, ready it."
+      <> [ (cardI18n $ withI18nTooltip "empiricalHypothesis.alternativeHypothesis")
             $ playerLimit PerWindow
             $ restricted a 5 (ControlsThis <> alternativeHypothesisCriteria)
             $ freeReaction
@@ -153,8 +153,7 @@ instance HasModifiersFor EmpiricalHypothesisEffect where
 instance HasAbilities EmpiricalHypothesisEffect where
   getAbilities (EmpiricalHypothesisEffect attrs) | isJust attrs.meta = case attrs.source of
     AssetSource aid ->
-      [ withTooltip
-          ("When " <> trigger <> ", you may exhaust Empirical Hypothesis to add 1 evidence to it.")
+      [ (cardI18n $ keyVar "trigger" trigger $ withI18nTooltip "empiricalHypothesis.dynamicTrigger")
           $ restrictedAbility (proxied (AssetWithId aid) attrs) 1 criteria
           $ triggered reactionWindow (exhaust aid)
       ]

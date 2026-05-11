@@ -39,7 +39,7 @@ instance RunMessage MollyMaxwell where
       focusCards (rest <> maybeToList mcard) do
         chooseOneM iid do
           case mcard of
-            Nothing -> labeled "No cards found" $ shuffleCardsIntoDeck iid rest
+            Nothing -> labeledI "noCardsFound" $ shuffleCardsIntoDeck iid rest
             Just c -> targeting c do
               drawCard iid c
               shuffleCardsIntoDeck iid rest

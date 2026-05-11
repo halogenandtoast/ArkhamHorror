@@ -41,4 +41,20 @@ withEnemyLocationCardCode cCode f = case lookup cCode allEnemyLocations of
 -- | All registered enemy-location cards across all scenarios.
 -- New enemy-location cards are registered here as they are implemented.
 allEnemyLocations :: Map CardCode SomeEnemyLocationCard
-allEnemyLocations = mapFrom someEnemyLocationCardCode [SomeEnemyLocationCard foyerHemlockHouse]
+allEnemyLocations =
+  mapFrom
+    someEnemyLocationCardCode
+    [ SomeEnemyLocationCard livingBedroomHemlockHouse32
+    , SomeEnemyLocationCard livingBedroomHemlockHouse33
+    , SomeEnemyLocationCard livingBedroomHemlockHouse34
+    , SomeEnemyLocationCard livingBedroomHemlockHouse35
+    , SomeEnemyLocationCard livingWashroomHemlockHouse36
+    , SomeEnemyLocationCard livingWashroomHemlockHouse37
+    , SomeEnemyLocationCard livingWashroomHemlockHouse38
+    , SomeEnemyLocationCard livingLibraryHemlockHouse39
+    , SomeEnemyLocationCard livingLibraryHemlockHouse40
+    , SomeEnemyLocationCard livingParlorHemlockHouse
+    , SomeEnemyLocationCard livingDiningRoomHemlockHouse
+    , SomeEnemyLocationCard foyerHemlockHouse
+    , SomeEnemyLocationCard shapelessCellar
+    ]

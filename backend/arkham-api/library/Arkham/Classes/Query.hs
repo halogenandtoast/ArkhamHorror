@@ -402,6 +402,14 @@ selectOrDefault
   :: (HasCallStack, Query a, Tracing m, HasGame m) => QueryElement a -> a -> m (QueryElement a)
 selectOrDefault def matcher = selectMaybe def id matcher
 
+selectOrElse
+  :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> a -> m [QueryElement a]
+selectOrElse q1 q2 = do
+  results <- select q1
+  if null results
+    then select q2
+    else pure results
+
 selectMaybeT :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> MaybeT m (QueryElement a)
 selectMaybeT = MaybeT . selectOne
 

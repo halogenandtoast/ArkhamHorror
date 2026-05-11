@@ -381,4 +381,16 @@ allAgendas =
     , -- Film Fatale
       SomeAgendaCard showbusinessAsUsual
     , SomeAgendaCard collidingRealities
+      -- Core2026
+      -- Spreading Flames
+    , SomeAgendaCard pastCurfew
+    , SomeAgendaCard litUp
+    , SomeAgendaCard wildFlames
+      -- Smoke And Mirrors
+    , SomeAgendaCard arkhamAlive
+    , SomeAgendaCard emergentEvils
+      -- Queen of Ash
+    , SomeAgendaCard aGathering
+    , SomeAgendaCard aRitual
+    , SomeAgendaCard brethrenOfAsh
     ]

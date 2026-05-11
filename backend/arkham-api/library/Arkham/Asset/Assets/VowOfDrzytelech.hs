@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 
@@ -27,10 +28,10 @@ instance RunMessage VowOfDrzytelech where
   runMessage msg t@(VowOfDrzytelech attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        labeled "Put Vow of Drzytelech into play in your threat area" do
+        (cardI18n $ labeled' "vowOfDrzytelech.putIntoPlay") do
           place attrs (InThreatArea iid)
         whenM (lift $ can.shuffle.deck iid) do
-          labeled "Take 1 horror and shuffle it into your deck" do
+          (cardI18n $ labeled' "vowOfDrzytelech.take1HorrorAndShuffleItIntoYourDeck") do
             assignHorror iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

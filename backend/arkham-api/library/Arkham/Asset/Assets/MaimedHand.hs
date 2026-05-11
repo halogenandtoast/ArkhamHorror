@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 
@@ -27,10 +28,10 @@ instance RunMessage MaimedHand where
   runMessage msg t@(MaimedHand attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        labeled "Put Maimed Hand into play in your threat area" do
+        (cardI18n $ labeled' "maimedHand.putMaimedHandIntoPlayInYourThreatArea") do
           place attrs (InThreatArea iid)
         whenM (lift $ can.shuffle.deck iid) do
-          labeled "Take 1 damage and shuffle it into your deck" do
+          (cardI18n $ labeled' "maimedHand.take1DamageAndShuffleItIntoYourDeck") do
             assignDamage iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

@@ -6,6 +6,7 @@ where
 
 import Arkham.Ability
 import Arkham.Helpers.ChaosBag
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -38,14 +39,13 @@ instance RunMessage KohakuNarukami where
       bOut <- getRemainingBlessTokens
       cOut <- getRemainingCurseTokens
 
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ cardI18n $ scope "kohakuNarukami" do
         when (bOut > 0 && length bIn <= length cIn) do
-          labeled "Add 1 {bless} token" $ push (AddChaosToken #bless)
+          labeled' "addBless" $ push (AddChaosToken #bless)
         when (cOut > 0 && length cIn <= length bIn) do
-          labeled "Add 1 {curse} token" $ addCurseTokens (Just iid) 1
+          labeled' "addCurse" $ addCurseTokens (Just iid) 1
         when (length bIn >= 2 && length cIn >= 2) do
-          labeled
-            "Remove 2 {bless} tokens and 2 {curse} tokens from the chaos bag to take an additional action this turn"
+          labeled' "removeAction"
             $ pushAll [ReturnChaosTokensToPool (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
       pure i
     ElderSignEffect iid | iid == attrs.id -> do

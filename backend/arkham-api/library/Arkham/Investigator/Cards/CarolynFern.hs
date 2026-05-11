@@ -59,7 +59,7 @@ instance RunMessage CarolynFern where
       investigators <- selectTargets $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
       assetsWithHorror <- selectTargets $ HealableAsset (toSource attrs) #horror (assetAtLocationWith iid)
       chooseOrRunOne iid
-        $ Label "Do not heal anything" []
+        $ Label "$cards.label.carolynFern.doNotHeal" []
         : targetLabels
           (assetsWithHorror <> investigators)
           (\target -> only $ HealHorror target (ElderSignEffectSource iid) 1)

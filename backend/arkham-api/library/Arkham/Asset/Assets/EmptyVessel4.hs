@@ -18,7 +18,7 @@ emptyVessel4 = asset EmptyVessel4 Cards.emptyVessel4
 instance HasAbilities EmptyVessel4 where
   getAbilities (EmptyVessel4 attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
+        $ freeReaction (Matcher.IfEnemyDefeated #after You ByAny AnyEnemy)
     , restrictedAbility
         attrs
         2

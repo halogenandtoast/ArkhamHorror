@@ -1,5 +1,6 @@
 module Arkham.Skill.Cards.QuickWitted1 (quickWitted1) where
 
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
@@ -27,10 +28,10 @@ instance RunMessage QuickWitted1 where
             $ inDiscardOf attrs.owner
             <> basic (cardIs Cards.quickWitted1 <> not_ (CardWithId attrs.cardId))
         unless (null others) do
-          chooseOneM attrs.owner do
-            labeled "Shuffle each other Quick-Witted in your discard pile into your deck"
+          chooseOneM attrs.owner $ cardI18n $ scope "quickWitted1" do
+            labeled' "shuffleOthers"
               $ shuffleCardsIntoDeck attrs.owner others
-            labeled "Do not shuffle any" nothing
+            labeled' "doNotShuffleAny" nothing
         pure s
      in
       runQueueT $ case msg of

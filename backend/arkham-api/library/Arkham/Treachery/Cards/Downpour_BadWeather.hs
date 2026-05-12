@@ -25,7 +25,7 @@ instance RunMessage Downpour_BadWeather where
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
       doStep n msg
       pure t
-    DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) -> do
+    DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       actions <- field InvestigatorRemainingActions iid
       canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid $ withI18n do

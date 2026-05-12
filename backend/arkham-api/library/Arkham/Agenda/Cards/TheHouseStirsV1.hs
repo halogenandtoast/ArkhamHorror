@@ -3,9 +3,12 @@ module Arkham.Agenda.Cards.TheHouseStirsV1 (theHouseStirsV1) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Scenarios.HemlockHouse.Helpers (locationSealCount)
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Token (Token (..))
 
 newtype TheHouseStirsV1 = TheHouseStirsV1 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -20,6 +23,13 @@ instance HasAbilities TheHouseStirsV1 where
       mkAbility a 1
         $ forced
         $ PhaseEnds #when #mythos
+    , -- "[fast] place 1 [per_investigator] of your clues on your location:
+      -- Ready it and flip it over." (Half of the OR; the seal variant is idx 3.)
+      restricted a 2 (exists $ YourLocation)
+        $ FastAbility (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
+    , -- "[fast] remove a seal from your location: Ready it and flip it over."
+      restricted a 3 (exists $ YourLocation <> LocationWithToken Resource)
+        $ FastAbility Free
     ]
 
 instance RunMessage TheHouseStirsV1 where
@@ -28,6 +38,15 @@ instance RunMessage TheHouseStirsV1 where
       lead <- getLead
       thePredatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
       sendMessage' thePredatoryHouse $ requestChaosTokens lead (attrs.ability 1) 1
+      pure a
+    UseCardAbility _iid (isSource attrs -> True) 2 _ _ -> do
+      advanceAgendaDeck attrs
+      pure a
+    UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
+      getMaybeLocation iid >>= traverse_ \lid -> do
+        seals <- locationSealCount lid
+        when (seals > 0) $ removeTokens (attrs.ability 3) lid Resource 1
+      advanceAgendaDeck attrs
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       advanceAgendaDeck attrs

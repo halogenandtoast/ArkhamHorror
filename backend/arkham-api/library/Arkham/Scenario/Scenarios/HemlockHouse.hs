@@ -50,8 +50,23 @@ instance HasChaosTokenValue HemlockHouse where
     ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+-- | Chaos bag composition for standalone play (PDF page 16).
+-- Day 1/Night 1 baseline; Day 2/3 add extras at runtime.
+standaloneChaosBag :: [ChaosTokenFace]
+standaloneChaosBag =
+  [ #"+1", #"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-5"
+  , Cultist, Cultist, Tablet, Tablet, ElderThing, Skull
+  ]
+
 instance RunMessage HemlockHouse where
   runMessage msg s@(HemlockHouse attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      -- "Shuffle each Time Marker and draw 1 at random." + "Flip a coin..."
+      -- Without campaign meta we default to Day 1 / Day; the per-day extras
+      -- below cover Day 2 and Day 3 if/when day selection is exposed to the
+      -- player.
+      setChaosTokens standaloneChaosBag
+      pure s
     PreScenarioSetup -> scope "intro" do
       day <- getCampaignDay
       time <- getCampaignTime

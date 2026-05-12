@@ -36,6 +36,7 @@ instance RunMessage AgainstTheHouse where
       when (remaining == 0) $ advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
       advanceActDeck attrs
       pure a
     _ -> AgainstTheHouse <$> liftRunMessage msg attrs

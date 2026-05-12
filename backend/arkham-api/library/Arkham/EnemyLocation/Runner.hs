@@ -31,7 +31,7 @@ import Arkham.DamageEffect (DamageAssignment (..))
 import Arkham.DefeatedBy
 import Arkham.Direction
 import Arkham.ForMovement (ForMovement (..))
-import Arkham.Helpers.GameValue (getGameValue)
+import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Helpers.Window (checkWindows, frame)
@@ -211,7 +211,7 @@ instance RunMessage EnemyLocationAttrs where
         push $ CheckDefeated source (toTarget a)
       pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
     CheckDefeated source (isTarget a -> True) | not a.defeated -> do
-      mHealth <- traverse (getGameValue . unGameCalculation) a.health
+      mHealth <- traverse calculate a.health
       for_ mHealth \health -> do
         when (enemyLocationDamage a >= health) do
           (whenMsg, afterMsg) <- Defeat.wouldBeDefeatedWindows (asEnemyId a)
@@ -258,12 +258,6 @@ instance RunMessage EnemyLocationAttrs where
     applyDamageMod (DamageTaken n) acc = acc + n
     applyDamageMod NoDamageDealt _ = 0
     applyDamageMod _ acc = acc
-
-    unGameCalculation :: GameCalculation -> GameValue
-    unGameCalculation (GameValueCalculation gv) = gv
-    unGameCalculation (Fixed n) = Static n
-    unGameCalculation (SumCalculation _) = Static 0 -- simplified
-    unGameCalculation _ = Static 0
 
 -- | Determine if an investigator is allowed to investigate this enemy-location.
 getInvestigateAllowed :: HasGame m => InvestigatorId -> EnemyLocationAttrs -> m Bool

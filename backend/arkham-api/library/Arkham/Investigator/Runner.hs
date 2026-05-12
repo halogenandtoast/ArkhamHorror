@@ -3526,6 +3526,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 , cardDrawState = UnresolvedCardDraw
                 , cardDrawAndThen = Nothing
                 , cardDrawAlreadyDrawn = []
+                , cardDrawAction = False
                 }
         if null investigatorDeck
           then do

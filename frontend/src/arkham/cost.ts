@@ -116,6 +116,14 @@ export function formatCost(cost: Cost, t: Translate): string {
       const contents = get<unknown[]>(cost, 'contents')
       return typeof contents?.[0] === 'string' ? (contents[0] as string) : ''
     }
+    case 'SkillTestCost': {
+      const contents = get<unknown[]>(cost, 'contents') ?? []
+      const skillType = contents[1] as string | undefined
+      const gameValue = contents[2] as { tag: string; contents?: unknown } | undefined
+      const skill = skillType?.replace(/^Skill/, '').toLowerCase() ?? ''
+      const count = gameValue?.tag === 'Fixed' ? Number(gameValue.contents) : 0
+      return t('label.test', { skill: `{${skill}}`, count })
+    }
     default:
       // Unknown variant — show tag name as a last resort. Better than blank.
       return tag

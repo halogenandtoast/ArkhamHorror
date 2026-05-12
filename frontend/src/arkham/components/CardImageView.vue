@@ -16,10 +16,11 @@ defineProps<{ cards: Arkham.CardDef[] }>()
 
 <style scoped>
 .cards {
+  --min-col-width: 200px;
   flex: 1;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--min-col-width), 100%), 1fr));
   gap: 12px;
   padding: 16px;
   align-content: start;

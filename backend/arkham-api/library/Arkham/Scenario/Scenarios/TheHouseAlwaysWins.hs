@@ -103,7 +103,7 @@ instance RunMessage TheHouseAlwaysWins where
           labeled' "skull.doNotSpend" nothing
       pure s
     PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
-      gainResourcesIfCan iid Cultist 3
+      tokenSkillTestOption Cultist $ takeResources iid Cultist 3
       pure s
     FailedSkillTestWithToken iid Cultist | isHardExpert attrs -> do
       spendResources iid 3

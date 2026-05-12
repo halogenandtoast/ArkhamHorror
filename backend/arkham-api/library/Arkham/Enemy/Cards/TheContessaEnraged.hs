@@ -22,7 +22,7 @@ instance HasModifiersFor TheContessaEnraged where
 
 instance RunMessage TheContessaEnraged where
   runMessage msg (TheContessaEnraged attrs) = runQueueT $ case msg of
-    EnemyDamaged eid damageAssignment | eid == attrs.id -> do
+    Damaged (EnemyTarget eid) damageAssignment | eid == attrs.id -> do
       mcloak <- selectOne $ assetIs Assets.accursedCapeShroudOfChaos <> AssetAttachedTo (targetIs attrs)
       TheContessaEnraged <$> case mcloak of
         Nothing -> liftRunMessage msg attrs
@@ -33,7 +33,7 @@ instance RunMessage TheContessaEnraged where
             pure attrs
           n -> do
             result <-
-              liftRunMessage (EnemyDamaged eid damageAssignment {damageAssignmentAmount = n - 1}) attrs
+              liftRunMessage (Damaged (EnemyTarget eid) damageAssignment {damageAssignmentAmount = n - 1}) attrs
             dealAssetDamage cloak (damageAssignmentSource damageAssignment) 1
             pure result
     _ -> TheContessaEnraged <$> liftRunMessage msg attrs

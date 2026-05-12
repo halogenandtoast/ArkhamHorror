@@ -2,7 +2,7 @@ module Arkham.Event.Events.IfItBleeds (ifItBleeds) where
 
 import Arkham.Enemy.Types (Field (EnemyCard, EnemySanityDamage))
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing

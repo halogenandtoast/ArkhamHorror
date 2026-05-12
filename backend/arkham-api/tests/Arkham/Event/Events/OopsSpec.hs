@@ -11,7 +11,7 @@ import Arkham.Location.Types (revealCluesL)
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 spec :: Spec
 spec = describe "Oops!" $ do

@@ -94,7 +94,6 @@ import Arkham.Helpers.Location hiding (getConnectedMatcher)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
-  EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,
   InvestigatorResigned,
@@ -166,7 +165,6 @@ import Arkham.Matcher hiding (
   DuringTurn,
   EncounterCardSource,
   EnemyAttacks,
-  EnemyDefeated,
   EventCard,
   FastPlayerWindow,
   InvestigatorDefeated,

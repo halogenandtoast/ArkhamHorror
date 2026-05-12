@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.Fanatic (fanatic) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 

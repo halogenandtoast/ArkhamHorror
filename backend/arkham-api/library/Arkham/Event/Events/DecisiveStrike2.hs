@@ -18,7 +18,7 @@ instance RunMessage DecisiveStrike2 where
       skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
       chooseFightEnemy sid iid attrs
       pure e
-    EnemyDefeated _ _ (isSource attrs -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isSource attrs -> True) _ -> do
       gainResources attrs.controller attrs 5
       pure e
     _ -> DecisiveStrike2 <$> liftRunMessage msg attrs

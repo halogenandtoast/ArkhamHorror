@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.FranticPursuit (FranticPursuit (..), franticPursuit) 
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers

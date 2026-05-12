@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.DreadCurseOfAzathoth3 (dreadCurseOfAzathoth3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype DreadCurseOfAzathoth3 = DreadCurseOfAzathoth3 AssetAttrs
@@ -27,7 +27,7 @@ instance RunMessage DreadCurseOfAzathoth3 where
         removeAllDoom source attrs
       chooseFightEnemyWith #willpower sid iid source
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       when (attrs.doom > 0) $ removeDoom (attrs.ability 1) attrs 1
       pure a
     _ -> DreadCurseOfAzathoth3 <$> liftRunMessage msg attrs

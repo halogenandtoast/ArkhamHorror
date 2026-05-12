@@ -43,7 +43,7 @@ instance RunMessage CeremonialSickle4 where
       pure a
     DoStep 2 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       when (getMetaKey "option2" attrs) do
         when attrs.exhausted $ ready attrs
         pushWhen (attrs.doom > 0) $ RemoveAllDoom (attrs.ability 1) (toTarget attrs)

@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheBloodlessMan (theBloodlessMan) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDamage, EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Location

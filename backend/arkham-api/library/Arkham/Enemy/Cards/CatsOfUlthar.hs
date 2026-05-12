@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Matcher

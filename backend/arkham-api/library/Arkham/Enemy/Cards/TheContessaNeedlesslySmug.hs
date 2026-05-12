@@ -50,7 +50,7 @@ instance RunMessage TheContessaNeedlesslySmug where
           lead <- getLead
           chooseOneM lead $ abilityLabeled_ lead (mkAbility attrs 2 $ forced AnyWindow)
       pure e
-    EnemyDamaged eid damageAssignment | eid == attrs.id -> do
+    Damaged (EnemyTarget eid) damageAssignment | eid == attrs.id -> do
       mcloak <- selectOne $ assetIs Assets.accursedCapeShroudOfChaos <> AssetAttachedTo (targetIs attrs)
       TheContessaNeedlesslySmug <$> case mcloak of
         Nothing -> liftRunMessage msg attrs
@@ -61,7 +61,7 @@ instance RunMessage TheContessaNeedlesslySmug where
             pure attrs
           n -> do
             result <-
-              liftRunMessage (EnemyDamaged eid damageAssignment {damageAssignmentAmount = n - 1}) attrs
+              liftRunMessage (Damaged (EnemyTarget eid) damageAssignment {damageAssignmentAmount = n - 1}) attrs
             dealAssetDamage cloak (damageAssignmentSource damageAssignment) 1
             pure result
     Flip _ _ (isTarget attrs -> True) -> do

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.I18n
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Elite))
 
@@ -39,7 +39,7 @@ instance RunMessage TimewornBrand5 where
       skillTestModifiers sid source iid [AddSkillValue #willpower, DamageDealt 3]
       chooseFightEnemy sid iid source
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) traits | Elite `elem` traits -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 2 -> True) traits | Elite `elem` traits -> do
       for_ attrs.controller \iid -> drawCardsIfCan iid (attrs.ability 2) 3
       pure a
     _ -> TimewornBrand5 <$> liftRunMessage msg attrs

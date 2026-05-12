@@ -10,7 +10,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
@@ -39,7 +39,7 @@ instance RunMessage DetectivesColt1911s where
       skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
       chooseFightEnemy sid iid source
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         insights <- filterCards (card_ $ #insight <> #event) <$> field InvestigatorDiscard iid
         unless (null insights) do

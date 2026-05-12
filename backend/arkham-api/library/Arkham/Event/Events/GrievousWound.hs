@@ -34,7 +34,7 @@ instance RunMessage GrievousWound where
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.attachedTo \case
-        EnemyTarget eid -> push $ EnemyDamage eid $ nonAttack (Just iid) (attrs.ability 1) 1
+        EnemyTarget eid -> push $ DealDamage (EnemyTarget eid) $ nonAttack (Just iid) (attrs.ability 1) 1
         _ -> pure ()
       pure e
     _ -> GrievousWound <$> liftRunMessage msg attrs

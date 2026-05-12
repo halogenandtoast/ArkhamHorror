@@ -15,6 +15,7 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Behavior.Heal qualified as Heal
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
@@ -389,19 +390,15 @@ instance RunMessage AssetAttrs where
     ApplyHealing source -> do
       let health = findWithDefault 0 source assetAssignedHealthHeal
       let sanity = findWithDefault 0 source assetAssignedSanityHeal
-      when (health > 0 || sanity > 0) do
-        pushM
-          $ checkWindows
-          $ [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source health) | health > 0]
-          <> [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
+      when (health > 0) $ Heal.pushHealedAfter DamageType (toTarget a) source health
+      when (sanity > 0) $ Heal.pushHealedAfter HorrorType (toTarget a) source sanity
       pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
     HealDamage (isTarget a -> True) source amount -> do
       mods <- getModifiers a
       let n = sum [x | HealingTaken x <- mods]
       let amount' = amount + n
-      afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push $ AssignedHealing (toTarget a)
-      push afterWindow
+      Heal.pushHealedAfter DamageType (toTarget a) source n
       runMessage (RemoveTokens source (toTarget a) Token.Damage amount') a
     HealDamageDelayed (isTarget a -> True) source amount -> do
       mods <- getModifiers a
@@ -414,8 +411,7 @@ instance RunMessage AssetAttrs where
       let n = sum [x | HealingTaken x <- mods]
       let amount' = amount + n
       push $ AssignedHealing (toTarget a)
-      afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source n)]
-      push afterWindow
+      Heal.pushHealedAfter HorrorType (toTarget a) source n
       runMessage (RemoveTokens source (toTarget a) Token.Horror amount') a
     HealHorrorDelayed (isTarget a -> True) source amount -> do
       mods <- getModifiers a
@@ -610,19 +606,16 @@ instance RunMessage AssetAttrs where
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
     HealAllDamage (isTarget a -> True) source | assetDamage a > 0 -> do
-      afterWindow <- checkWindows [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a)]
-      push afterWindow
+      Heal.pushHealedAfter DamageType (toTarget a) source (assetDamage a)
       pure $ a & tokensL %~ removeAllTokens Token.Damage
     HealAllHorror (isTarget a -> True) source | assetHorror a > 0 -> do
-      afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a)]
-      push afterWindow
+      Heal.pushHealedAfter HorrorType (toTarget a) source (assetHorror a)
       pure $ a & tokensL %~ removeAllTokens Token.Horror
     HealAllDamageAndHorror (isTarget a -> True) source | assetDamage a > 0 || assetHorror a > 0 -> do
-      afterWindow <-
-        checkWindows
-          $ [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a) | assetDamage a > 0]
-          <> [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a) | assetHorror a > 0]
-      push afterWindow
+      when (assetDamage a > 0)
+        $ Heal.pushHealedAfter DamageType (toTarget a) source (assetDamage a)
+      when (assetHorror a > 0)
+        $ Heal.pushHealedAfter HorrorType (toTarget a) source (assetHorror a)
       pure
         $ a
         & (tokensL %~ removeAllTokens Token.Horror . removeAllTokens Token.Damage)

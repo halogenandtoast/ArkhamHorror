@@ -45,7 +45,7 @@ meatCleaver3Effect = cardEffect MeatCleaver3Effect Cards.meatCleaver3
 
 instance RunMessage MeatCleaver3Effect where
   runMessage msg e@(MeatCleaver3Effect attrs) = runQueueT $ case msg of
-    EnemyDefeated _ _ source _ | attrs.source == source -> do
+    Defeated (EnemyTarget _) _ source _ | attrs.source == source -> do
       for_ attrs.target.investigator \iid -> do
         whenM (canHaveHorrorHealed attrs.source iid) do
           chooseOneM iid do

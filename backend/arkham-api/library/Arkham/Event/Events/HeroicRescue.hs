@@ -26,7 +26,7 @@ instance RunMessage HeroicRescue where
         $ details
           { attackTarget = SingleAttackTarget (toTarget iid)
           , attackAfter =
-              attackAfter details <> [EnemyDamage enemy $ nonAttack (Just iid) attrs 1 | canDealDamage]
+              attackAfter details <> [DealDamage (EnemyTarget enemy) $ nonAttack (Just iid) attrs 1 | canDealDamage]
           }
 
       pure e

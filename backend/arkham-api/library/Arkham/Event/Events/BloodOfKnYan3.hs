@@ -28,7 +28,7 @@ instance RunMessage BloodOfKnYan3 where
       chooseOneM iid $ for_ [#willpower, #combat] \sType -> do
         skillLabeled sType $ chooseFightEnemyEdit sid iid attrs (withSkillType sType)
       pure e
-    EnemyDefeated eid _ (isSource attrs -> True) _ -> do
+    Defeated (EnemyTarget eid) _ (isSource attrs -> True) _ -> do
       whenMatch eid NonEliteEnemy do
         addToVictory attrs.controller eid
         addToVictory attrs.controller attrs

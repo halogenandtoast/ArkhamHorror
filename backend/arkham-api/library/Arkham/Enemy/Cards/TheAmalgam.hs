@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheAmalgam (theAmalgam) where
 import Arkham.Ability
 import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
 import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.I18n

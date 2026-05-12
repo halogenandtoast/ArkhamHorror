@@ -2,7 +2,7 @@ module Arkham.Act.Cards.TheDisappearance (theDisappearance) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Import.Lifted
+import Arkham.Act.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Act.Sequence
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Investigator.Types (Field (..))

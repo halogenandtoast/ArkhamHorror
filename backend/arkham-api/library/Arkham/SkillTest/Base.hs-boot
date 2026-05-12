@@ -6,6 +6,8 @@ data SkillTest
 
 instance Eq SkillTest
 instance Show SkillTest
+instance Ord SkillTest
+instance Data SkillTest
 instance ToJSON SkillTest
 instance FromJSON SkillTest
 
@@ -13,6 +15,8 @@ data SkillTestBaseValue
 
 instance Eq SkillTestBaseValue
 instance Show SkillTestBaseValue
+instance Ord SkillTestBaseValue
+instance Data SkillTestBaseValue
 instance ToJSON SkillTestBaseValue
 instance FromJSON SkillTestBaseValue
 
@@ -29,5 +33,7 @@ data SkillTestResultsData
 
 instance Eq SkillTestResultsData
 instance Show SkillTestResultsData
+instance Ord SkillTestResultsData
+instance Data SkillTestResultsData
 instance ToJSON SkillTestResultsData
 instance FromJSON SkillTestResultsData

@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyTokens))
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token qualified as Token
@@ -49,7 +49,7 @@ instance RunMessage Tonys38LongColt where
       enabled <- skillTestModifier sid source iid (DamageDealt 1)
       pushAll [enabled, chooseFight]
       pure a
-    EnemyDefeated eid _ (isAbilitySource attrs 2 -> True) _ -> do
+    Defeated (EnemyTarget eid) _ (isAbilitySource attrs 2 -> True) _ -> do
       hadBounty <- eid <=~> EnemyWithBounty
       bountyContracts <- selectJust $ assetIs Cards.bountyContracts
       pushWhen hadBounty $ AddUses (attrs.ability 2) bountyContracts Bounty 1

@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.BoxingGloves3 (boxingGloves3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyDefeated)
+import Arkham.Asset.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude

@@ -3,7 +3,6 @@
 module Arkham.Scenario.Runner (runScenarioAttrs, module X) where
 
 import Arkham.Helpers.Message as X hiding (
-  EnemyDamage,
   InvestigatorDamage,
   addToHand,
   chooseN,
@@ -1754,7 +1753,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
-  Do (X.EnemyDefeated eid _ _ _) -> do
+  Do (X.Defeated (EnemyTarget eid) _ _ _) -> do
     eattrs <- getAttrs @Enemy eid
     printedHealth <- calculatePrinted (enemyHealth eattrs)
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid

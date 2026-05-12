@@ -59,7 +59,7 @@ instance RunMessage ForbiddenPeaks where
             (assetIs x.cardCode)
             (push . AssetDefeated (toSource attrs))
 
-          pushWhen isCookie $ Msg.EnemyDamage terror (nonAttack Nothing (toSource attrs) 2)
+          pushWhen isCookie $ Msg.DealDamage (EnemyTarget terror) (nonAttack Nothing (toSource attrs) 2)
 
       advanceAgendaDeck attrs
       pure a

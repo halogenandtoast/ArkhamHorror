@@ -38,7 +38,7 @@ instance RunMessage RadiantSmite1 where
       for_ blessedTokens $ \blessedToken -> do
         pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (Just iid) (toTarget attrs)]
       pure e
-    Msg.EnemyDefeated _ _ (isSource attrs -> True) _ -> do
+    Msg.Defeated (EnemyTarget _) _ (isSource attrs -> True) _ -> do
       for_ attrs.sealed unsealChaosToken
       pure e
     _ -> RadiantSmite1 <$> liftRunMessage msg attrs

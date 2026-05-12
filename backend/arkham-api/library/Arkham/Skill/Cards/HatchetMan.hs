@@ -36,5 +36,5 @@ instance HasModifiersFor HatchetManEffect where
 instance RunMessage HatchetManEffect where
   runMessage msg e@(HatchetManEffect attrs) = runQueueT $ case msg of
     EndTurn _ -> disableReturn e
-    EnemyDamaged eid _ | isTarget eid attrs.target -> disableReturn e
+    Damaged (EnemyTarget eid) _ | isTarget eid attrs.target -> disableReturn e
     _ -> HatchetManEffect <$> liftRunMessage msg attrs

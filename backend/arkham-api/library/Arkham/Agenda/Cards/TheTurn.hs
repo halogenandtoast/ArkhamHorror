@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheTurn (theTurn) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Story

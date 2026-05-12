@@ -832,11 +832,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let
       defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
-      defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-        (True, True) -> DefeatedByDamageAndHorror source
-        (True, False) -> DefeatedByHorror source
-        (False, True) -> DefeatedByDamage source
-        (False, False) -> DefeatedByOther source
+      defeatedBy
+        | defeatedByHorror && defeatedByDamage = DefeatedByDamageAndHorror source
+        | defeatedByHorror = DefeatedByHorror source
+        | defeatedByDamage = DefeatedByDamage source
+        | otherwise = DefeatedByOther source
       physicalTrauma = if investigatorHealthDamage a >= modifiedHealth then 1 else 0
       mentalTrauma = if investigatorSanityDamage a >= modifiedSanity then 1 else 0
     windowMsg <- checkWindows [mkAfter $ Window.InvestigatorDefeated defeatedBy iid]
@@ -1373,7 +1373,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             AbilitySource _ 100 -> toSource iid
             UseAbilitySource _ _ 100 -> toSource iid
             _ -> source
-      push $ EnemyDamage eid $ attack source' damage
+      push $ DealDamage (EnemyTarget eid) $ attack source' damage
     pure a
   ChooseEvadeEnemy choose | choose.investigator == investigatorId -> do
     modifiers <- getModifiers a
@@ -2700,11 +2700,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             investigatorHealthDamage a
               + investigatorAssignedHealthDamage
               >= modifiedHealth
-          defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-            (True, True) -> DefeatedByDamageAndHorror source
-            (True, False) -> DefeatedByHorror source
-            (False, True) -> DefeatedByDamage source
-            (False, False) -> DefeatedByOther source
+          defeatedBy
+            | defeatedByHorror && defeatedByDamage = DefeatedByDamageAndHorror source
+            | defeatedByHorror = DefeatedByHorror source
+            | defeatedByDamage = DefeatedByDamage source
+            | otherwise = DefeatedByOther source
         windowMsg <- checkWindows [mkWhen $ Window.InvestigatorWouldBeDefeated defeatedBy (toId a)]
         pushAll
           [ windowMsg
@@ -3013,11 +3013,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     let
       defeatedByHorror = investigatorSanityDamage a >= modifiedSanity
       defeatedByDamage = investigatorHealthDamage a >= modifiedHealth
-      defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-        (True, True) -> DefeatedByDamageAndHorror source
-        (True, False) -> DefeatedByHorror source
-        (False, True) -> DefeatedByDamage source
-        (False, False) -> DefeatedByOther source
+      defeatedBy
+        | defeatedByHorror && defeatedByDamage = DefeatedByDamageAndHorror source
+        | defeatedByHorror = DefeatedByHorror source
+        | defeatedByDamage = DefeatedByDamage source
+        | otherwise = DefeatedByOther source
     windowMsg <- checkWindows [mkWhen $ Window.InvestigatorDefeated defeatedBy iid]
     pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a

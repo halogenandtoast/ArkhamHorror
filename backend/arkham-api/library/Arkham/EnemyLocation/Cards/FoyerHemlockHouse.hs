@@ -3,7 +3,7 @@ module Arkham.EnemyLocation.Cards.FoyerHemlockHouse where
 import Arkham.Ability
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
-import Arkham.Location.Helpers (resignAction)
+import Arkham.Location.Helpers qualified as Helpers
 import Arkham.Matcher
 
 newtype FoyerHemlockHouse = FoyerHemlockHouse EnemyLocationAttrs
@@ -25,7 +25,7 @@ instance HasAbilities FoyerHemlockHouse where
              $ forced
              $ FlipLocation #after Anyone (LocationWithId a.id)
          , -- "[action]: Resign. You flee the house."
-           resignAction a
+           Helpers.resignAction a
          ]
 
 instance RunMessage FoyerHemlockHouse where

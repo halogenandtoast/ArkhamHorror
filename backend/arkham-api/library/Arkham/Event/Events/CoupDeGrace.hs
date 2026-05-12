@@ -2,7 +2,7 @@ module Arkham.Event.Events.CoupDeGrace (coupDeGrace) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Matcher hiding (EnemyDefeated, NonAttackDamageEffect)
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype CoupDeGrace = CoupDeGrace EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,7 +17,7 @@ instance RunMessage CoupDeGrace where
       chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
       pushWhenM (iid <=~> TurnInvestigator) $ ChooseEndTurn iid
       pure e
-    EnemyDefeated _ _ (isSource attrs -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isSource attrs -> True) _ -> do
       drawCardsIfCan attrs.controller attrs 1
       pure e
     _ -> CoupDeGrace <$> liftRunMessage msg attrs

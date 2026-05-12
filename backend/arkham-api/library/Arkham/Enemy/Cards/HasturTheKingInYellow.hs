@@ -42,9 +42,9 @@ instance RunMessage HasturTheKingInYellow where
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       exhaustThis attrs
       pure e
-    Msg.EnemyDamage eid assignment
+    Msg.DealDamage (EnemyTarget eid) assignment
       | eid == toId attrs
       , damageAssignmentDamageEffect assignment == StoryCardDamageEffect -> do
           HasturTheKingInYellow <$> liftRunMessage msg attrs
-    Msg.EnemyDamage eid _ | eid == toId attrs -> pure e
+    Msg.DealDamage (EnemyTarget eid) _ | eid == toId attrs -> pure e
     _ -> HasturTheKingInYellow <$> liftRunMessage msg attrs

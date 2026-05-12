@@ -1743,6 +1743,13 @@ library
       Arkham.Asset.Uses
       Arkham.Attack
       Arkham.Attack.Types
+      Arkham.Behavior
+      Arkham.Behavior.Damage
+      Arkham.Behavior.Defeat
+      Arkham.Behavior.Evade
+      Arkham.Behavior.Fight
+      Arkham.Behavior.Heal
+      Arkham.Behavior.Investigate
       Arkham.Calculation
       Arkham.Calculation.IsCalculation
       Arkham.Campaign
@@ -4341,6 +4348,19 @@ library
       Arkham.Matcher.Value
       Arkham.Matcher.Window
       Arkham.Message
+      Arkham.Message.ChaosBag
+      Arkham.Message.Clue
+      Arkham.Message.Damage
+      Arkham.Message.Defeat
+      Arkham.Message.Doom
+      Arkham.Message.EnemyAttack
+      Arkham.Message.Engage
+      Arkham.Message.Evade
+      Arkham.Message.Exhaust
+      Arkham.Message.Fight
+      Arkham.Message.Horror
+      Arkham.Message.Hunt
+      Arkham.Message.Investigator
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Action
       Arkham.Message.Lifted.Choose
@@ -4353,7 +4373,12 @@ library
       Arkham.Message.Lifted.SkillTest
       Arkham.Message.Lifted.Story
       Arkham.Message.Lifted.Upgrade
+      Arkham.Message.Seal
+      Arkham.Message.Search
+      Arkham.Message.SkillTest
+      Arkham.Message.Spawn
       Arkham.Message.Story
+      Arkham.Message.Token
       Arkham.Message.Type
       Arkham.Metrics
       Arkham.Modifier
@@ -4765,6 +4790,7 @@ library
       Arkham.Skill.Types
       Arkham.SkillTest
       Arkham.SkillTest.Base
+      Arkham.SkillTest.Option
       Arkham.SkillTest.Runner
       Arkham.SkillTest.Step
       Arkham.SkillTest.Type

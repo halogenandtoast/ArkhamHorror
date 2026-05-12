@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.LostResearcher (lostResearcher) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyLocation))
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher

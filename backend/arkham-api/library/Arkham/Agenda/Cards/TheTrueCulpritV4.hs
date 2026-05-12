@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheTrueCulpritV4 (theTrueCulpritV4) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Cards

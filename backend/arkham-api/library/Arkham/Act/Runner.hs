@@ -17,9 +17,6 @@ import Arkham.Helpers.Act as X
 import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (
   Discarded,
-  EnemyDamage,
-  EnemyDamaged,
-  EnemyDefeated,
   EnemyEvaded,
   InvestigatorEliminated,
   PaidCost,

@@ -41,7 +41,7 @@ instance RunMessage EncephalonSignal where
                   $ [ targetLabel investigator [assignDamage investigator (toSource attrs) 2]
                     | investigator <- investigators
                     ]
-                  <> [targetLabel humanoid [EnemyDamage humanoid $ nonAttack (Just iid) (toSource attrs) 2] | humanoid <- humanoids]
+                  <> [targetLabel humanoid [DealDamage (EnemyTarget humanoid) $ nonAttack (Just iid) (toSource attrs) 2] | humanoid <- humanoids]
               ]
           ]
       pure t

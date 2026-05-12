@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.AncestralToken (ancestralToken) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (getDefeatedEnemyHealth)
 import Arkham.Helpers.Window

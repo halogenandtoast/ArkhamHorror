@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (Offering)
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -35,7 +35,7 @@ instance RunMessage TheHungeringBlade1 where
 
       pushAll [enabled, chooseFight]
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       push $ PlaceTokens (attrs.ability 1) (toTarget attrs) Offering 1
       pure a
     _ -> TheHungeringBlade1 <$> runMessage msg attrs

@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Treachery.Import.Lifted
 
 newtype Punishment = Punishment TreacheryAttrs
   deriving anyclass IsTreachery

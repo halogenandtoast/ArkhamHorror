@@ -85,7 +85,7 @@ instance RunMessage FluteOfTheOuterGods4 where
 
       chooseOne iid
         $ [targetLabel location [EnemyMove eid location] | location <- locations]
-        <> [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) eid damage]
+        <> [ targetLabel enemy [DealDamage (EnemyTarget enemy) $ nonAttack (Just iid) eid damage]
            | damage > 0
            , enemy <- damageableEnemies
            ]

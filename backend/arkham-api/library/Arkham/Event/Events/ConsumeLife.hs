@@ -2,7 +2,7 @@ module Arkham.Event.Events.ConsumeLife (consumeLife) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype ConsumeLife = ConsumeLife EventAttrs
@@ -19,7 +19,7 @@ instance RunMessage ConsumeLife where
       skillTestModifier sid attrs iid (DamageDealt 1)
       chooseFightEnemyWith #willpower sid iid attrs
       pure e
-    EnemyDefeated _ _ (isSource attrs -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isSource attrs -> True) _ -> do
       let iid = attrs.controller
       assets <-
         selectTargets $ HealableAsset (toSource attrs) #damage (AllyAsset <> assetAtLocationWith iid)

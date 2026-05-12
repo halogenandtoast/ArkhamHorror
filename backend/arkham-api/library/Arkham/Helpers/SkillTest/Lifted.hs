@@ -9,7 +9,14 @@ import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Id
 import Arkham.Investigate (mkInvestigateLocation)
 import Arkham.Investigate.Types qualified as I
-import Arkham.Message (Message (..), pattern BeginSkillTest)
+import Arkham.Message (
+  Message (..),
+  pattern BeginSkillTest,
+  pattern NextChaosBagStep,
+  pattern RunBag,
+  pattern RunSkillTest,
+  pattern SkillTestEnds,
+ )
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.SkillTest.Base (

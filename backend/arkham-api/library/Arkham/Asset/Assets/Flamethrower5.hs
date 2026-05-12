@@ -38,9 +38,9 @@ instance RunMessage Flamethrower5 where
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       damage <- damageValueFor 4 iid DamageForEnemy
       engaged <- select $ enemyEngagedWith iid
-      let toMsg eid' = EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
+      let toMsg eid' = DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 1
       chooseOneM iid $ cardI18n $ scope "flamethrower5" do
-        labeled' "standardDamage" $ push $ EnemyDamage eid $ attack attrs 1
+        labeled' "standardDamage" $ push $ DealDamage (EnemyTarget eid) $ attack attrs 1
         labeled' "assignAmongEngaged" do
           replicateM_ damage $ chooseTargetM iid engaged $ push . toMsg
           for_ engaged $ checkDefeated attrs

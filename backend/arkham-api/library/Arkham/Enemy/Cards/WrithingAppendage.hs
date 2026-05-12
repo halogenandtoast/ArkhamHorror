@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyDefeated)
+import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
@@ -49,6 +49,6 @@ instance RunMessage WrithingAppendage where
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua
       for_ mCnidathquaId $ \cnidathquaId ->
-        push $ Msg.EnemyDamage cnidathquaId $ nonAttack Nothing iid 1
+        push $ Msg.DealDamage (EnemyTarget cnidathquaId) $ nonAttack Nothing iid 1
       pure e
     _ -> WrithingAppendage <$> runMessage msg attrs

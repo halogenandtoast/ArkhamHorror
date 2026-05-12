@@ -48,7 +48,7 @@ instance RunMessage EnchantedBladeGuardian3 where
             damageDealt <- skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)
             pushAll [msg', damageDealt]
           pure . EnchantedBladeGuardian3 $ attrs `with` Metadata (Just sid)
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ | isJust (empowered meta) -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ | isJust (empowered meta) -> do
       for_ attrs.controller \iid -> do
         let drawing = drawCards iid (toAbilitySource attrs 1) 1
         pushAll [drawing, HealHorror (toTarget iid) (attrs.ability 1) 1]

@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.VengeanceAwaits (vengeanceAwaits) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation

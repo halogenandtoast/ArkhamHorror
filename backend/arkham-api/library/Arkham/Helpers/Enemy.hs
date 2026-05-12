@@ -27,7 +27,7 @@ import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Window hiding (attackSource)
 import Arkham.Id
 import Arkham.Keyword hiding (Surge)
-import Arkham.Matcher hiding (canEnterLocation)
+import Arkham.Matcher hiding (DealtDamage, canEnterLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Queue
@@ -433,7 +433,7 @@ insteadOfDamage (asId -> eid) body = do
       CheckWindows ws -> case filter notAfterDamage ws of
         [] -> pure []
         ws' -> pure [CheckWindows ws']
-      EnemyDamaged eid' dmg | eid == eid' -> evalQueueT (body dmg)
+      Damaged (EnemyTarget eid') dmg | eid == eid' -> evalQueueT (body dmg)
       other -> pure [other]
 
 patrol :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> m ()

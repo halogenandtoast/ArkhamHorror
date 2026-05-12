@@ -72,7 +72,7 @@ pylonRunner skind msg pylon = runQueueT $ case msg of
     for_ alternateSuccess $ \target' ->
       push $ Successful (Action.Fight, toTarget pylon) iid source target' n
     pure pylon
-  Msg.EnemyDamage eid damageAssignment | coerce eid == (toAttrs pylon).id -> do
+  Msg.DealDamage (EnemyTarget eid) damageAssignment | coerce eid == (toAttrs pylon).id -> do
     mods <- getModifiers pylon
     unless (CannotBeDamaged `elem` mods) do
       let
@@ -82,10 +82,10 @@ pylonRunner skind msg pylon = runQueueT $ case msg of
       checkWhen $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
       checkAfter $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
       checkWhen $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
-      push $ EnemyDamaged eid damageAssignment
+      push $ Damaged (EnemyTarget eid) damageAssignment
       checkAfter $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
     pure pylon
-  EnemyDamaged eid damageAssignment | coerce eid == (toAttrs pylon).id -> do
+  Damaged (EnemyTarget eid) damageAssignment | coerce eid == (toAttrs pylon).id -> do
     mods <- getModifiers pylon
     if CannotBeDamaged `elem` mods
       then pure pylon

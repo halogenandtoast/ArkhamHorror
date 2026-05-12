@@ -37,10 +37,10 @@ instance RunMessage VengefulSpecter where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       replaceMessageMatching
         \case
-          EnemyDamaged eid _ -> eid == toId attrs
+          Damaged (EnemyTarget eid) _ -> eid == toId attrs
           _ -> False
         \case
-          EnemyDamaged eid dmg -> [EnemyDamaged eid (dmg {damageAssignmentAmount = 1})]
+          Damaged (EnemyTarget eid) dmg -> [Damaged (EnemyTarget eid) (dmg {damageAssignmentAmount = 1})]
           _ -> error "invalid match"
       pure e
     _ -> VengefulSpecter <$> runMessage msg attrs

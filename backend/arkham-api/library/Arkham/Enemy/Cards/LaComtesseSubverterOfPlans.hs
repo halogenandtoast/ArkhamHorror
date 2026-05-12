@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.LaComtesseSubverterOfPlans (laComtesseSubverterOfPlans
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement

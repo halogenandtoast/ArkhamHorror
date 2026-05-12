@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.SgtEarlMonroeDirtyCop (sgtEarlMonroeDirtyCop) where
 import Arkham.Ability
 import Arkham.Campaigns.BrethrenOfAsh.Helpers
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDamage)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyDamage))
 
 newtype SgtEarlMonroeDirtyCop = SgtEarlMonroeDirtyCop EnemyAttrs

@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.BrethrenOfAsh (brethrenOfAsh) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated, InvestigatorDefeated)
+import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 

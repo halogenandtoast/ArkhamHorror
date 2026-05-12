@@ -35,8 +35,8 @@ instance RunMessage StormOfSpirits3 where
       for_ eids \eid' -> do
         push
           $ if eid == eid'
-            then EnemyDamage eid' $ delayDamage $ attack attrs 3
-            else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 3
+            then DealDamage (EnemyTarget eid') $ delayDamage $ attack attrs 3
+            else DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 3
       for_ eids $ checkDefeated attrs
       chooseExposeConcealed iid attrs
       pure e

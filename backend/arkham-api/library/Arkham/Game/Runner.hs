@@ -53,7 +53,6 @@ import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
-  EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,
   InvestigatorResigned,
@@ -91,7 +90,6 @@ import Arkham.Matcher hiding (
   DuringTurn,
   EncounterCardSource,
   EnemyAttacks,
-  EnemyDefeated,
   EventCard,
   FastPlayerWindow,
   InvestigatorDefeated,
@@ -775,7 +773,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Arkham.Helpers.Message.EnemyDefeated eid _ source _ -> do
+  Arkham.Helpers.Message.Defeated (EnemyTarget eid) _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
     miid <- getSourceController source
@@ -1011,7 +1009,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
-      Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
+      Arkham.Helpers.Message.Defeated (EnemyTarget eid') _ _ _ -> eid == eid'
       _ -> False
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
@@ -2852,7 +2850,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
         pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Msg.EnemyDamage eid assignment@(damageAssignmentAmount -> n) | n > 0 -> do
+  Msg.DealDamage (EnemyTarget eid) assignment@(damageAssignmentAmount -> n) | n > 0 -> do
     let source = damageAssignmentSource assignment
     miid <- getSourceController source
     lead <- getLead

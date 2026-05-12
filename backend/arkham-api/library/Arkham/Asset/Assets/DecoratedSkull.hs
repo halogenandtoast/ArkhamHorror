@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.DecoratedSkull (decoratedSkull) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (AssetDefeated, EnemyDefeated, InvestigatorDefeated)
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated, InvestigatorDefeated)
 import Arkham.Asset.Uses
 import Arkham.Matcher
 

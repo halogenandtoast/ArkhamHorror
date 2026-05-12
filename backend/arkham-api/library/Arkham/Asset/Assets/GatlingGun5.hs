@@ -59,6 +59,6 @@ instance RunMessage GatlingGun5 where
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
       let enemies = getMetaKeyDefault "gatlingGun5_damaged" [] attrs
-      push $ EnemyDamage eid $ delayDamage $ isDirect $ attack (attrs.ability 1) 1
+      push $ DealDamage (EnemyTarget eid) $ delayDamage $ isDirect $ attack (attrs.ability 1) 1
       pure $ GatlingGun5 $ attrs & setMetaKey "gatlingGun5_damaged" (eid : enemies)
     _ -> GatlingGun5 <$> liftRunMessage msg attrs

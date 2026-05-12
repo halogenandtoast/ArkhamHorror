@@ -28,7 +28,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDoomOfEztli.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window

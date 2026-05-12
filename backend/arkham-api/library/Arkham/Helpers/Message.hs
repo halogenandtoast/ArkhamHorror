@@ -586,12 +586,12 @@ gainResourcesIfCan a source n = do
   pure $ guard canGainResources $> takeResources (asId a) source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
-assignEnemyDamage = flip EnemyDamage
+assignEnemyDamage da eid = DealDamage (EnemyTarget eid) da
 
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a)
   => Maybe InvestigatorId -> a -> Int -> enemy -> Message
-nonAttackEnemyDamage miid source damage enemy = EnemyDamage (asId enemy) (nonAttack miid source damage)
+nonAttackEnemyDamage miid source damage enemy = DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
 
 placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target n

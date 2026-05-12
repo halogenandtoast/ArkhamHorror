@@ -35,10 +35,10 @@ instance RunMessage OtherworldlyMeddler where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       replaceMessageMatching
         \case
-          EnemyDamaged eid _ -> eid == toId attrs
+          Damaged (EnemyTarget eid) _ -> eid == toId attrs
           _ -> False
         \case
-          EnemyDamaged eid dmg -> [EnemyDamaged eid (dmg {damageAssignmentAmount = max 0 (damageAssignmentAmount dmg - 1)})]
+          Damaged (EnemyTarget eid) dmg -> [Damaged (EnemyTarget eid) (dmg {damageAssignmentAmount = max 0 (damageAssignmentAmount dmg - 1)})]
           _ -> error "invalid match"
       push $ RemoveDoom (toAbilitySource attrs 1) (toTarget attrs) 1
       pure e

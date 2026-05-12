@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Use (toStartingUses)
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Token
@@ -28,7 +28,7 @@ instance RunMessage WickedAthame where
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat (x * 2))
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         selectOneToHandle iid (attrs.ability 1)
           $ assetControlledBy iid

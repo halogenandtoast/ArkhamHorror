@@ -11,7 +11,6 @@ import Arkham.Event.Types as X
 import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Event as X
 import Arkham.Helpers.Message as X hiding (
-  EnemyDefeated,
   InvestigatorEliminated,
   PlayCard,
   RevealLocation,

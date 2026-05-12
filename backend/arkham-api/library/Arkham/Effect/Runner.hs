@@ -141,7 +141,7 @@ instance RunMessage EffectAttrs where
                 _ -> False
           when (any isMovement ws) $ push (DisableEffect effectId)
       pure a
-    EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
+    Defeated (EnemyTarget eid) _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
       a <$ push (DisableEffect effectId)
     WhenCanMove iid _ -> do
       -- We've killed the entire batch at this point so we can resume

@@ -40,7 +40,7 @@ instance RunMessage Mk1Grenades4 where
           chooseOneAtATimeM iid do
             targets eids \eid' ->
               push
-                $ EnemyDamage eid'
+                $ DealDamage (EnemyTarget eid')
                 $ delayDamage
                 $ if eid == eid' then attack source 2 else isDirect (attack source 2)
             targets iids \iid' -> assignDamage iid' source 2

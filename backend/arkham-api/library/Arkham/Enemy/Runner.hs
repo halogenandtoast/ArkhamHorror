@@ -4,16 +4,20 @@
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
 import Arkham.Ability as X
+import Arkham.Behavior.Evade qualified as Evade
+import Arkham.Behavior.Fight qualified as Fight
+import Arkham.Behavior.Heal qualified as Heal
 import Arkham.Calculation as X
 import Arkham.Enemy.Helpers as X
-import Arkham.Enemy.Types as X
+-- Hide the GADT Field constructors that previously clashed with the Message
+-- constructors (now generic 'Damaged'/'DealDamage'/'Defeated'). Files that need
+-- the Field projections (about a dozen) import 'Arkham.Enemy.Types' directly.
+import Arkham.Enemy.Types as X hiding (EnemyDamage, EnemyDefeated)
 import Arkham.GameValue as X
 import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Enemy as X
 import Arkham.Helpers.Message as X hiding (
   EnemyAttacks,
-  EnemyDamage,
-  EnemyDefeated,
   EnemyEvaded,
   InvestigatorDefeated,
   PaidCost,
@@ -987,13 +991,6 @@ instance RunMessage EnemyAttrs where
       let iid = choose.investigator
       let source = choose.source
       let sid = choose.skillTest
-      let target = maybe (toTarget eid) (ProxyTarget (toTarget eid)) choose.target
-      let skillType = choose.skillType
-      let
-        difficulty =
-          case choose.difficulty of
-            DefaultChooseFightDifficulty -> EnemyMaybeFieldCalculation eid EnemyFight
-            CalculatedChooseFightDifficulty c -> c
 
       whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
       afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
@@ -1003,7 +1000,7 @@ instance RunMessage EnemyAttrs where
       pushAll
         [ whenWindow
         , attempt
-        , fight sid iid source target skillType difficulty
+        , Fight.mkAttackMessage eid (EnemyMaybeFieldCalculation eid EnemyFight) choose
         , afterWindow
         ]
 
@@ -1150,13 +1147,14 @@ instance RunMessage EnemyAttrs where
       case mEnemyEvade' of
         Just _ ->
           push
-            $ evade
+            $ Evade.mkEvadeMessage
+              eid
+              (EnemyMaybeFieldCalculation eid EnemyEvade)
               sid
               iid
               source
-              (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
+              mTarget
               skillType
-              (EnemyMaybeFieldCalculation eid EnemyEvade)
         Nothing -> error "No evade value"
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
@@ -1387,16 +1385,13 @@ instance RunMessage EnemyAttrs where
         pushAll $ afterAttacksWindow : attackAfter updatedDetails
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
-      afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n
       result <- liftRunMessage (RemoveTokens source (toTarget a) #damage n) a
-      push afterWindow
+      Heal.pushHealedAfter DamageType (toTarget a) source n
       pure result
     HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
-      afterWindow <-
-        checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source (enemyDamage a)]
-      push afterWindow
+      Heal.pushHealedAfter DamageType (toTarget a) source (enemyDamage a)
       pure $ a & tokensL %~ removeAllTokens Token.Damage & defeatedL .~ False
-    Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
+    Msg.DealDamage (EnemyTarget eid) damageAssignment | eid == enemyId -> do
       let
         source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
@@ -1407,10 +1402,10 @@ instance RunMessage EnemyAttrs where
         Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
         Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
         Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
-        push $ EnemyDamaged eid damageAssignment
+        push $ Damaged (EnemyTarget eid) damageAssignment
         Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
       pure a
-    EnemyDamaged eid damageAssignment'' | eid == enemyId -> do
+    Damaged (EnemyTarget eid) damageAssignment'' | eid == enemyId -> do
       let source = damageAssignment''.source
       let
         damageAssignment =
@@ -1464,7 +1459,7 @@ instance RunMessage EnemyAttrs where
                   defeatMsgs =
                     if ExhaustIfDefeated `elem` modifiers'
                       then [Exhaust (mkExhaustion a a) | not enemyExhausted]
-                      else [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+                      else [Arkham.Message.Defeated (EnemyTarget eid) (toCardId a) source (setToList $ toTraits a)]
 
                 pushAll $ [whenMsg, afterMsg] <> defeatMsgs
           pure a
@@ -1515,7 +1510,7 @@ instance RunMessage EnemyAttrs where
                     if ExhaustIfDefeated `elem` modifiers'
                       then [Exhaust (mkExhaustion a a) | not enemyExhausted]
                       else
-                        [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+                        [Arkham.Message.Defeated (EnemyTarget eid) (toCardId a) source (setToList $ toTraits a)]
                           <> ( guard (notNull excessDamageTargets && excess > 0)
                                  *> [ ExcessDamage
                                         eid
@@ -1527,8 +1522,8 @@ instance RunMessage EnemyAttrs where
                                                     controller
                                                     [ targetLabel
                                                         other
-                                                        [ Msg.EnemyDamage
-                                                            other
+                                                        [ Msg.DealDamage
+                                                            (EnemyTarget other)
                                                             ( da
                                                                 { damageAssignmentAmount = excess
                                                                 , damageAssignmentDelayed = False
@@ -1574,9 +1569,9 @@ instance RunMessage EnemyAttrs where
         )
           <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
       when validDefeat do
-        push $ Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
+        push $ Arkham.Message.Defeated (EnemyTarget eid) (toCardId a) source (setToList $ toTraits a)
       pure a
-    Arkham.Message.EnemyDefeated eid _ source _ | eid == toId a -> do
+    Arkham.Message.Defeated (EnemyTarget eid) _ source _ | eid == toId a -> do
       mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
       let
         defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
@@ -1600,7 +1595,7 @@ instance RunMessage EnemyAttrs where
         $ a
         & (keysL .~ mempty)
         & (lastKnownLocationL %~ (mloc <|>))
-    Do (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
+    Do (Arkham.Message.Defeated (EnemyTarget eid) _ source _) | eid == toId a -> do
       mModifiedHealth <- fieldMayJoin EnemyHealth (toId a)
       let
         defeatedByDamage = maybe False (enemyDamage a >=) mModifiedHealth
@@ -1635,7 +1630,7 @@ instance RunMessage EnemyAttrs where
           when (n <= 1) $ push $ CheckDefeated source (toTarget eid')
         _ -> pure ()
       pure a
-    After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
+    After (Arkham.Message.Defeated (EnemyTarget eid) _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
     EnemySpawnFromOutOfPlay _ miid lid eid | eid == a.id -> do
       pushAll

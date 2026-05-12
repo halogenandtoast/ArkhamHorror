@@ -3,6 +3,11 @@
 module Arkham.EnemyLocation.Runner (module Arkham.EnemyLocation.Runner, module X) where
 
 import Arkham.Ability as X
+import Arkham.Behavior.Damage qualified as Damage
+import Arkham.Behavior.Defeat qualified as Defeat
+import Arkham.Behavior.Evade qualified as Evade
+import Arkham.Behavior.Fight qualified as Fight
+import Arkham.Behavior.Investigate qualified as Investigate
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.EnemyLocation.Types as X
@@ -25,15 +30,12 @@ import Arkham.Constants
 import Arkham.DamageEffect (DamageAssignment (..))
 import Arkham.DefeatedBy
 import Arkham.Direction
-import Arkham.Fight
 import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Helpers.Source (getSourceController)
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame)
+import Arkham.Helpers.Window (checkWindows, frame)
 import Arkham.History
-import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Base (directionsL, labelL, positionL, tokensL)
 import Arkham.Location.Grid
@@ -99,46 +101,28 @@ instance RunMessage EnemyLocationAttrs where
       push $ Do msg
       pure a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
-      sid <- getRandom
-      push $ FightEnemy (asEnemyId a) $ mkChooseFightPure sid iid (a.ability AbilityAttack)
+      Fight.pushAttackAbility (asEnemyId a) iid (a.ability AbilityAttack)
       pure a
     -- Fight system routes AttackEnemy via coerced EnemyId.
     AttackEnemy eid choose | eid == asEnemyId a -> do
-      let iid = choose.investigator
-      let source = choose.source
-      let sid = choose.skillTest
-      let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) choose.target
-      let skillType = choose.skillType
-      let difficulty = case choose.difficulty of
-            DefaultChooseFightDifficulty -> fromMaybe (Fixed 0) a.fight
-            CalculatedChooseFightDifficulty ccfd -> ccfd
-      fight sid iid source target skillType difficulty
+      Fight.resolveAttack (asEnemyId a) a.fight choose
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
-      sid <- getRandom
-      push $ EvadeEnemy sid iid (asEnemyId a) (a.ability AbilityEvade) Nothing #agility False
+      Evade.pushEvadeAbility (asEnemyId a) iid (a.ability AbilityEvade)
       pure a
     UseCardAbility iid (isSource a -> True) AbilityMove _ _ -> do
       push $ MoveAction iid a.id Free False
       pure a
     -- Evade system routes TryEvadeEnemy via coerced EnemyId.
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == asEnemyId a -> do
-      let target = maybe (toTarget (asEnemyId a)) (ProxyTarget (toTarget (asEnemyId a))) mTarget
-      let difficulty = fromMaybe (Fixed 0) a.evade
-      evade sid iid source target skillType difficulty
+      Evade.resolveTryEvade (asEnemyId a) a.evade sid iid source mTarget skillType
       pure a
     UseCardAbility iid (isSource a -> True) AbilityInvestigate _ _ -> do
-      let triggerSource = a.ability AbilityInvestigate
-      sid <- getRandom
-      pushM $ mkInvestigateLocation sid iid triggerSource a.id
+      Investigate.pushInvestigateAbility a.id iid (a.ability AbilityInvestigate)
       pure a
     Investigate investigation | investigation.location == a.id && not investigation.isAction -> do
-      let iid = investigation.investigator
-      allowed <- getInvestigateAllowed iid a
-      when allowed $ do
-        let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
-        investigate investigation.skillTest iid investigation.source target investigation.skillType
-          $ maybe (Fixed 0) GameValueCalculation a.shroud
+      allowed <- getInvestigateAllowed investigation.investigator a
+      when allowed $ Investigate.resolveInvestigateAtShroud a a.shroud investigation
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = a.clues
@@ -158,21 +142,10 @@ instance RunMessage EnemyLocationAttrs where
           }
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isEnemyTarget a target -> do
-      let eid = asEnemyId a
-      whenMsg <- checkWhen $ Window.SuccessfulAttackEnemy iid source eid n
-      afterMsg <- checkAfter $ Window.SuccessfulAttackEnemy iid source eid n
-      pushAll
-        [ whenMsg
-        , InvestigatorDamageEnemy iid eid source
-        , Successful (Action.Fight, toTarget eid) iid source (toTarget eid) n
-        , afterMsg
-        ]
+      Fight.pushSuccessfulAttack iid source (asEnemyId a) n
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isEnemyTarget a target -> do
-      let eid = asEnemyId a
-      whenMsg <- checkWhen $ Window.SuccessfulEvadeEnemy iid source eid n
-      afterMsg <- checkAfter $ Window.SuccessfulEvadeEnemy iid source eid n
-      pushAll [whenMsg, EnemyEvaded iid eid, afterMsg]
+      Evade.pushSuccessfulEvade iid source (asEnemyId a) n
       pure a
     EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
     ReadyExhausted | not a.defeated -> do
@@ -226,21 +199,22 @@ instance RunMessage EnemyLocationAttrs where
     InitiateEnemyAttack details | details.enemy == asEnemyId a -> do
       unless a.exhausted $ push $ EnemyAttack details
       pure a
-    EnemyDamage eid da | eid == asEnemyId a && not a.defeated -> do
+    DealDamage (EnemyTarget eid) da | eid == asEnemyId a && not a.defeated -> do
       let amount = da.amount
       let source = da.source
+      let damageEffect = da.effect
       modifiers' <- getModifiers (LocationTarget a.id)
       let modifiedAmount = foldr applyDamageMod amount modifiers'
       when (modifiedAmount > 0) do
-        push $ Msg.EnemyDamaged eid da {damageAssignmentAmount = modifiedAmount}
+        Damage.fireDamageWindows source (toTarget (asEnemyId a)) damageEffect modifiedAmount do
+          push $ Msg.Damaged (EnemyTarget eid) da {damageAssignmentAmount = modifiedAmount}
         push $ CheckDefeated source (toTarget a)
       pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
     CheckDefeated source (isTarget a -> True) | not a.defeated -> do
       mHealth <- traverse (getGameValue . unGameCalculation) a.health
       for_ mHealth \health -> do
         when (enemyLocationDamage a >= health) do
-          whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyWouldBeDefeated (asEnemyId a)]
-          afterMsg <- checkWindows [Window.mkAfter $ Window.EnemyWouldBeDefeated (asEnemyId a)]
+          (whenMsg, afterMsg) <- Defeat.wouldBeDefeatedWindows (asEnemyId a)
           pushAll
             [ whenMsg
             , afterMsg
@@ -250,8 +224,7 @@ instance RunMessage EnemyLocationAttrs where
     Msg.EnemyLocationDefeated lid _ source _ | lid == a.id -> do
       miid <- getSourceController source
       let defeatedBy = DefeatedByOther source
-      whenMsg <- checkWindows [Window.mkWhen $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
-      afterMsg <- checkWindows [Window.mkAfter $ Window.EnemyDefeated miid defeatedBy (asEnemyId a)]
+      (whenMsg, afterMsg) <- Defeat.defeatedWindows miid defeatedBy (asEnemyId a)
       pushAll
         [ whenMsg
         , Do (Msg.EnemyLocationDefeated lid (toCardId a) source (setToList $ toTraits (toCardDef a)))

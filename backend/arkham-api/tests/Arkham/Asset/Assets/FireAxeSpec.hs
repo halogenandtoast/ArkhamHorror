@@ -7,7 +7,7 @@ import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 spec :: Spec
 spec = describe "Fire Axe" $ do

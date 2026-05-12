@@ -44,7 +44,7 @@ instance RunMessage DagonAwakenedAndEnragedIntoTheMaelstrom where
       brood <- select $ enemyIs Cards.dagonsBrood
       for_ ws \case
         Window.EnemyEvaded iid _ -> for_ brood $ push . Msg.EnemyEvaded iid
-        Window.DealtDamage source damageEffect _ n -> for_ brood \target -> push $ EnemyDamage target $ DamageAssignment source n damageEffect False False
+        Window.DealtDamage source damageEffect _ n -> for_ brood \target -> push $ DealDamage (EnemyTarget target) $ DamageAssignment source n damageEffect False False
         _ -> pure ()
 
       pure e

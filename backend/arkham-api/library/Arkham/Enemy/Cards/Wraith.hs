@@ -6,7 +6,7 @@ import Arkham.Card
 import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Creation
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyLocation))
 import Arkham.Matcher
 import Arkham.Placement

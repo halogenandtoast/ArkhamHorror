@@ -6,7 +6,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Token
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 spec :: Spec
 spec = do

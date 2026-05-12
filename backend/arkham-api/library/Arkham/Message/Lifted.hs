@@ -85,7 +85,7 @@ import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
-import Arkham.Matcher hiding (PerformAction)
+import Arkham.Matcher hiding (DealtDamage, PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
@@ -2893,17 +2893,17 @@ nonAttackEnemyDamage
 nonAttackEnemyDamage miid source damage enemy = do
   isLocation <- selectAny $ LocationWithId $ coerce @_ @LocationId (asId enemy)
   if isLocation
-    then push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+    then push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
     else whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-      push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+      push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
 
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 attackEnemyDamage source damage enemy = do
   whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.EnemyDamage enemy (attack source damage)
+    push $ Msg.DealDamage (EnemyTarget enemy) (attack source damage)
 
 storyEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-storyEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (storyDamage source damage)
+storyEnemyDamage source damage enemy = push $ Msg.DealDamage (EnemyTarget enemy) (storyDamage source damage)
 
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
@@ -3199,7 +3199,7 @@ cancelEnemyDamage
   -> t m ()
 cancelEnemyDamage enemy =
   don'tMatching \case
-    EnemyDamaged eid _ -> eid == asId enemy
+    Damaged (EnemyTarget eid) _ -> eid == asId enemy
     _ -> False
 
 shouldMoveWithSkillTest :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()

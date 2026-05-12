@@ -3,6 +3,7 @@
 module Arkham.Location.Runner (module Arkham.Location.Runner, module X) where
 
 import Arkham.Ability as X hiding (PaidCost)
+import Arkham.Behavior.Investigate qualified as Investigate
 import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
@@ -13,8 +14,6 @@ import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Location as X
 import Arkham.Helpers.Message as X hiding (
   DiscoverClues,
-  EnemyDamage,
-  EnemyDefeated,
   EnemyEvaded,
   MoveAction,
   RevealLocation,
@@ -45,7 +44,6 @@ import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, window
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
 import Arkham.I18n
-import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
@@ -161,13 +159,9 @@ instance RunMessage LocationAttrs where
       let flipCount = min n $ locationDoom a
       pure $ a & tokensL %~ flipDoom n & withoutCluesL &&~ (flipCount == 0)
     Investigate investigation | investigation.location == locationId && not investigation.isAction -> do
-      let iid = investigation.investigator
-      allowed <- getInvestigateAllowed iid a
-      when allowed $ do
-        let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
-        push
-          $ investigate investigation.skillTest iid investigation.source target investigation.skillType
-          $ LocationMaybeFieldCalculation a.id LocationShroud
+      allowed <- getInvestigateAllowed investigation.investigator a
+      when allowed
+        $ Investigate.resolveInvestigate a (LocationMaybeFieldCalculation a.id LocationShroud) investigation
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       push
@@ -574,8 +568,7 @@ instance RunMessage LocationAttrs where
           ProxySource _ s -> s
           IndexedSource _ s -> s
           _ -> a.ability AbilityInvestigate
-      sid <- getRandom
-      pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
+      Investigate.pushInvestigateAbility (toId a) iid triggerSource
       pure a
     UseCardAbility iid source AbilityMove _ _ | isSource a source -> do
       -- free because already paid for by ability

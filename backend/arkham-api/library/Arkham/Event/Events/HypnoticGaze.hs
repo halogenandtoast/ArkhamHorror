@@ -3,7 +3,7 @@ module Arkham.Event.Events.HypnoticGaze (hypnoticGaze) where
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.DamageEffect
-import Arkham.Enemy.Types hiding (EnemyDamage)
+import Arkham.Enemy.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
@@ -43,7 +43,7 @@ instance RunMessage HypnoticGaze where
       pushWhen (shouldDamageEnemy && healthDamage' > 0) do
         If
           (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
-          [EnemyDamage enemyId $ nonAttack (Just iid) attrs healthDamage']
+          [DealDamage (EnemyTarget enemyId) $ nonAttack (Just iid) attrs healthDamage']
       push $ ResetChaosTokens (toSource attrs)
       pure e
     _ -> HypnoticGaze . (`with` meta) <$> liftRunMessage msg attrs

@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.Microscope (microscope, Microscope (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
+import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Asset.Uses
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)

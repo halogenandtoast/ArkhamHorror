@@ -88,21 +88,29 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.spendToken')
     case 'SealChaosTokenCost':
       return t('label.cost.sealToken')
-    case 'XCost':
-    case 'OneOfDistanceCost': {
+    case 'XCost': {
       const inner = get<Cost>(cost, 'contents')
+      return inner ? t('label.cost.x', { inner: formatCost(inner, t) }) : t('label.cost.x', { inner: '' })
+    }
+    case 'OneOfDistanceCost': {
+      const contents = get<unknown[]>(cost, 'contents')
+      const inner = Array.isArray(contents) ? (contents[1] as Cost | undefined) : undefined
       return inner ? t('label.cost.x', { inner: formatCost(inner, t) }) : t('label.cost.x', { inner: '' })
     }
     case 'OptionalCost': {
       const inner = get<Cost>(cost, 'contents')
       return inner ? t('label.cost.optional', { inner: formatCost(inner, t) }) : ''
     }
-    case 'NonBlankedCost':
+    case 'NonBlankedCost': {
+      const inner = get<Cost>(cost, 'contents')
+      return inner ? formatCost(inner, t) : ''
+    }
     case 'CostWhenEnemy':
     case 'CostWhenTreachery':
     case 'CostOnlyWhen':
     case 'AsIfAtLocationCost': {
-      const inner = get<Cost>(cost, 'contents')
+      const contents = get<unknown[]>(cost, 'contents')
+      const inner = Array.isArray(contents) ? (contents[1] as Cost | undefined) : undefined
       return inner ? formatCost(inner, t) : ''
     }
     case 'CostWhenTreacheryElse':
@@ -335,6 +343,6 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.flipScarletKey')
     default:
       // Unknown variant — show tag name as a last resort. Better than blank.
-      return tag
+      return typeof tag === 'string' ? tag : ''
   }
 }

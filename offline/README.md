@@ -140,7 +140,7 @@ On first run, `initdb` is executed automatically and `setup.sql` is imported. La
 
 #### Windows
 
-Double-click `start.bat`. It handles WSL detection, Ubuntu installation, user creation, permission setup, and service startup automatically.
+**Just double-click `start.bat`.** It automatically handles WSL detection, installation, user creation, permission setup, and service startup.
 
 High-level first-start flow for Windows users:
 
@@ -155,6 +155,60 @@ High-level first-start flow for Windows users:
 9. Open the browser automatically at `http://localhost:3000`.
 10. Keep the cmd window open to keep the WSL foreground session alive.
 11. Closing the window or pressing Ctrl+C automatically stops services, backs up `pgdata`, and clears logs.
+
+```text
+Windows first-run flow
+══════════════════════
+
+  Double-click start.bat
+       │
+       ▼
+  Is WSL installed?──No──→ Install WSL + Ubuntu automatically
+       │                  → Reboot Windows
+       │Yes               → Double-click start.bat again
+       ▼
+  Probe Ubuntu distros one by one
+  (wsl -d <name> -- echo ok)
+  Ubuntu -> Ubuntu-24.04 -> Ubuntu-22.04 -> ...
+       │
+       ├── All fail -> Install Ubuntu
+       └── Found a working distro ↓
+       │
+       ▼
+  Create arkham user (0002)
+       │
+       ▼
+  Convert path with wslpath (0003)
+       │
+       ▼
+  Run bash start.sh with wsl -u arkham
+       │
+       ▼
+  pgdata lives in the OS user data dir
+  (~/.local/share/ArkhamHorror/)
+  First start migrates data/pgdata automatically
+  or does a fresh initdb on ext4 (no NTFS permission issue)
+  Error codes 1xxx~3xxx
+       │
+       ▼
+  Start PostgreSQL (2xxx) -> arkham-api (3xxx) -> Nginx
+       │
+       ▼
+  Startup failed?──Yes──→ Restart Ubuntu and retry once
+       │                 → Still fails -> exit (0005)
+       ▼
+  Open browser automatically
+  http://localhost:3000
+       │
+       ▼
+  Keep the cmd window open
+  (to keep the WSL session alive)
+       │
+       ▼
+  Close window / Ctrl+C
+  -> auto stop + pgdata backup + log cleanup
+```
+
 
 How it works:
 

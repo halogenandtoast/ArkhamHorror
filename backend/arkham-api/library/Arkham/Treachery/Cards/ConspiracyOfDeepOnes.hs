@@ -32,8 +32,9 @@ instance RunMessage ConspiracyOfDeepOnes where
       chooseOneM iid $ scenarioI18n $ scope "conspiracyOfDeepOnes" do
         labeled' "placeDoomCanAdvance"
           $ placeDoomOnAgendaAndCheckAdvance 1
-        labeled' "ancientOneAttacks" do
-          chooseTargetM iid nearest \enemy -> initiateEnemyAttack enemy attrs iid
+        when (notNull nearest) do
+          labeled' "ancientOneAttacks" do
+            chooseTargetM iid nearest \enemy -> initiateEnemyAttack enemy attrs iid
 
       pure t
     _ -> ConspiracyOfDeepOnes <$> liftRunMessage msg attrs

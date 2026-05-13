@@ -67,7 +67,7 @@ thinkOnYourFeet2 =
   (event "51006" "Think on Your Feet" 0 Rogue)
     { cdSkills = [#intellect, #agility, #agility]
     , cdCardTraits = singleton Trick
-    , cdFastWindow = Just (EnemyEnters #when YourLocation AnyEnemy)
+    , cdFastWindow = Just (EnemyEntersYourLocation #when AnyEnemy)
     , cdCriteria = Just $ exists AccessibleLocation <> exists (You <> can.move)
     , cdLevel = Just 2
     }

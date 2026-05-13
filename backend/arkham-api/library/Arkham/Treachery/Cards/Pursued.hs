@@ -14,7 +14,7 @@ pursued = treachery Pursued Cards.pursued
 
 instance HasAbilities Pursued where
   getAbilities (Pursued a) =
-    [ restricted a 1 InYourThreatArea $ forced $ EnemyEnters #after YourLocation AnyEnemy
+    [ restricted a 1 InYourThreatArea $ forced $ EnemyEntersYourLocation #after AnyEnemy
     , restricted a 2 OnSameLocation doubleActionAbility
     ]
 

@@ -17,7 +17,7 @@ alteredBeast = treachery AlteredBeast Cards.alteredBeast
 instance HasAbilities AlteredBeast where
   getAbilities (AlteredBeast x) = case x.attached.enemy of
     Just eid ->
-      [ mkAbility x 1 $ forced $ EnemyEnters #when YourLocation (EnemyWithId eid)
+      [ mkAbility x 1 $ forced $ EnemyEntersYourLocation #when (EnemyWithId eid)
       , mkAbility x 2 $ forced $ Enters #when You (locationWithEnemy eid)
       ]
     _ -> []

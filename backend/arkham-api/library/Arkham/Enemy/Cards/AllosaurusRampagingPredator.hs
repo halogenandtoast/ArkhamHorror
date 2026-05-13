@@ -23,7 +23,7 @@ instance HasModifiersFor AllosaurusRampagingPredator where
     modifySelf a [HealthModifier n]
 
 instance HasAbilities AllosaurusRampagingPredator where
-  getAbilities (AllosaurusRampagingPredator a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEnters #after YourLocation (be a)
+  getAbilities (AllosaurusRampagingPredator a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEntersYourLocation #after (be a)
 
 instance RunMessage AllosaurusRampagingPredator where
   runMessage msg e@(AllosaurusRampagingPredator attrs) = runQueueT $ case msg of

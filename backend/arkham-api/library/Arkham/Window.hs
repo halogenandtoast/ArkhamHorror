@@ -218,6 +218,11 @@ data WindowType
   | EnemyDisengaged InvestigatorId EnemyId
   | EnemyWouldEngage InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
+  | -- | Fires when an enemy enters a location where the given investigator
+    -- was already present (i.e. NOT a simultaneous entry such as an engaged
+    -- enemy following the investigator). Use this in matchers whose flavour
+    -- is "an enemy entered MY location" — Pursued, Cash Cart, etc.
+    EnemyEntersYourLocation InvestigatorId EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId

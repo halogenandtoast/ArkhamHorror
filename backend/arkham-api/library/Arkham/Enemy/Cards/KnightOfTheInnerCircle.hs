@@ -28,7 +28,7 @@ instance HasAbilities KnightOfTheInnerCircle where
       , skillTestAbility
           $ mkAbility attrs 2
           $ forced
-          $ EnemyEnters #after YourLocation (be attrs)
+          $ EnemyEntersYourLocation #after (be attrs)
       ]
 
 instance RunMessage KnightOfTheInnerCircle where

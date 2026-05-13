@@ -309,6 +309,7 @@
     "takadaHiroko": "Takada Hiroko",
     "eliyahAshevak": "Eliyah Ashevak",
     "doNotPerformHealing": "Do not perform healing",
+    "doNotBeginWithExtraResources": "Do not begin with extra resources",
     "doNotRemoveAnymore": "Do not remove anymore",
     "removeTekeliliWeaknesses": "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*).",
     "earnsBonusExperience": "Any one investigator earns 1 bonus experience.",

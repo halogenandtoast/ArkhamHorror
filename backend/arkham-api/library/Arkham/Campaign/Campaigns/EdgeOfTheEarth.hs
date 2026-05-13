@@ -299,7 +299,7 @@ instance RunMessage EdgeOfTheEarth where
                   chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                     questionLabeled' "earnsBonusExperience"
                     portraitLabeled iid do
-                      interludeXp iid $ toBonus "cookiesAdvice" 1
+                      interludeXp iid $ scope "interlude1" $ toBonus "cookiesAdvice" 1
                 else do
                   iids <- getInvestigators
                   addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.cookiesCustom32
@@ -554,7 +554,7 @@ instance RunMessage EdgeOfTheEarth where
                     chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                       questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
-                        interludeXp iid $ toBonus "cookiesAdvice" 1
+                        interludeXp iid $ scope "interlude2" $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -854,7 +854,7 @@ instance RunMessage EdgeOfTheEarth where
                     chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                       questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
-                        interludeXp iid $ toBonus "cookiesAdvice" 1
+                        interludeXp iid $ scope "interlude3" $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators

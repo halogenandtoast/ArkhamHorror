@@ -447,8 +447,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
       </div>
       <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
-        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">{{ $t('skillTestActions.passSkillTest') }}</button>
-        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">{{ $t('skillTestActions.failSkillTest') }}</button>
+        <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'PassSkillTest_'}})">{{ $t('skillTestActions.passSkillTest') }}</button>
+        <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'FailSkillTest_'}})">{{ $t('skillTestActions.failSkillTest') }}</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">

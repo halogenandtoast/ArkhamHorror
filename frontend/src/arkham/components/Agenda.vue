@@ -130,7 +130,7 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
       />
       <div class="pool" v-if="!agenda.flipped">
         <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">-</button>
+          <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})">-</button>
         </template>
 
         <PoolItem
@@ -141,8 +141,8 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 
         <template v-if="debug.active">
           <button
-            @click.exact="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})"
-            @click.shift="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 5]})"
+            @click.exact="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})"
+            @click.shift="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 5]}})"
           >+</button>
         </template>
       </div>

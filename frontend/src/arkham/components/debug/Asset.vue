@@ -114,7 +114,7 @@ const hasPool = computed(() => {
         <select v-model="placeTokenType">
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">{{ $t('debug.common.place') }}</button>
+        <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]}})">{{ $t('debug.common.place') }}</button>
       </div>
       <div v-if="showSlots" class="buttons">
         <div class="slots">{{slots}}</div>
@@ -126,7 +126,7 @@ const hasPool = computed(() => {
       </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>
-        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.common.removeAllTokens') }}</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'AssetTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
         <button v-if="asset.owner !== investigatorId" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">{{ $t('debug.asset.takeControl') }}</button>
         <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.ready') }}</button>
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">{{ $t('debug.asset.exhaust') }}</button>

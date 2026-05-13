@@ -370,7 +370,7 @@ function onDrop(event: DragEvent) {
       }
 
       if (json.tag === "EnemyTarget") {
-        debug.send(props.game.id, {tag: 'EnemyEngageInvestigator', contents: [json.contents, id.value]})
+        debug.send(props.game.id, {tag: 'EngageMessage', contents: {tag: 'EnemyEngageInvestigator_', contents: [json.contents, id.value]}})
       }
     }
   }

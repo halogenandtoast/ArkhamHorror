@@ -351,7 +351,7 @@ function onDrop(event: DragEvent) {
       const json = JSON.parse(data)
       if (json.tag === "EnemyTarget") {
         if (enemies.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
+        debug.send(props.game.id, {tag: 'HuntMessage', contents: {tag: 'EnemyMove_', contents: [json.contents, id.value]}})
       }
 
       if (json.tag === "AssetTarget") {

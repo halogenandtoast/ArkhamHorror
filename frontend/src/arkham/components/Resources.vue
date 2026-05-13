@@ -160,7 +160,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [iid, {tag: 'GameSource' }, -1]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDiscardAllClues', contents: [{tag: 'GameSource' }, iid]})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDiscardAllClues_', contents: [{tag: 'GameSource' }, iid]}})"
       >-</button>
     </template>
 
@@ -196,15 +196,15 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         class="plus-button"
-        @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 1, 0]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 5, 0]})"
+        @click.exact="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 1, 0]}})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 5, 0]}})"
       >+</button>
     </template>
 
     <template v-if="debug.active">
       <button
-        @click.exact="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, 1]})"
-        @click.shift="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]})"
+        @click.exact="debug.send(game.id, {tag: 'HorrorMessage', contents: {tag: 'HealHorror_', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, 1]}})"
+        @click.shift="debug.send(game.id, {tag: 'HorrorMessage', contents: {tag: 'HealHorror_', contents: [{tag: 'InvestigatorTarget', contents: iid}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]}})"
       >-</button>
     </template>
 
@@ -265,8 +265,8 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
     <template v-if="debug.active">
       <button
         class="plus-button"
-        @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 0, 1]})"
-        @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [iid, {tag: 'TestSource', contents: []}, 0, 5]})"
+        @click.exact="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 0, 1]}})"
+        @click.shift="debug.send(game.id, {tag: 'InvestigatorMessage', contents: {tag: 'InvestigatorDirectDamage_', contents: [iid, {tag: 'TestSource', contents: []}, 0, 5]}})"
       >+</button>
     </template>
 

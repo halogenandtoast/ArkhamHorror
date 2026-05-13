@@ -858,7 +858,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'FrostToken').length)
 
 async function removeChaosToken(face: any){
-  debug.send(props.game.id, {tag: 'RemoveChaosToken', contents: face})
+  debug.send(props.game.id, {tag: 'ChaosBagMessage', contents: {tag: 'RemoveChaosToken_', contents: face}})
 }
 
 async function addChaosToken(face: any){

@@ -44,12 +44,10 @@
   "dealDamage": "造成{count}点伤害",
   "dealAdditionalDamage": "造成+{count}点伤害",
   "discard": "弃牌",
-<<<<<<< Updated upstream
   "discardAssets": "丢弃你控制的一张支援卡| 丢弃你控制的 {count} 张支援卡",
   "discardThatAsset": "丢弃那张支援卡",
   "discardCards": "丢弃 1 张手牌 | 丢弃 {count} 张手牌",
   "discardCardsWithMatchingIcons": "弃掉至少包含 1 个 {'{'}{skillIcon}{'}'} 图标的卡牌 | 弃掉总计至少包含 {count} 个 {'{'}{skillIcon}{'}'} 图标的卡牌",
-=======
   "discardAssets": "丢弃你控制的1张支援 | 丢弃你控制的{count}张支援",
   "discardAllyAssetFromPlay": "从场上弃掉1张你控制的盟友支援",
   "discardAllyAssetsFromHand": "从你的手牌中弃掉所有盟友支援",
@@ -60,7 +58,6 @@
   "discardThatAsset": "丢弃那张支援",
   "discardCards": "丢弃1张手牌 | 丢弃{count}张手牌",
   "discardCardsWithMatchingIcons": "弃掉至少包含1个{'{'}{skillIcon}{'}'}图标的卡牌 | 弃掉总计至少包含{count}个{'{'}{skillIcon}{'}'}图标的卡牌",
->>>>>>> Stashed changes
   "discardFromHand": "从手牌中弃牌",
   "discardAllCardsFromHand": "弃掉你的所有手牌",
   "discardCardsFromHand": "从你的手牌中选择并弃掉1张牌 | 从你的手牌中选择并弃掉{count}张牌",

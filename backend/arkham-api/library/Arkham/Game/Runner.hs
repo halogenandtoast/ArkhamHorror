@@ -76,7 +76,7 @@ import Arkham.Investigator (
   returnToBody,
  )
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (InvestigatorAttrs (..))
+import Arkham.Investigator.Types (Investigator, InvestigatorAttrs (..))
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
@@ -1083,27 +1083,29 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pushAll [before, after]
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)
   ReassignHorror source target n -> do
-    replaceWindowMany
-      \case
+    let
+      matchesP = \case
         Window.PlacedToken _ t Token.Horror _ -> t == sourceToTarget source
         _ -> False
-      \case
+      rewriteWT = \case
         Window.PlacedToken s t Token.Horror m
           | m > n -> [Window.PlacedToken s t Token.Horror (m - n), Window.PlacedToken s target Token.Horror n]
         Window.PlacedToken s _ Token.Horror _ -> [Window.PlacedToken s target Token.Horror n]
-        _ -> error "ReassignHorror: impossible"
-    pure g
+        other -> [other]
+    replaceWindowMany matchesP rewriteWT
+    pure $ g & entitiesL . investigatorsL %~ map (rewriteUsedAbilityWindows matchesP rewriteWT)
   ReassignDamage source target n -> do
-    replaceWindowMany
-      \case
+    let
+      matchesP = \case
         Window.PlacedToken _ t Token.Damage _ -> t == sourceToTarget source
         _ -> False
-      \case
+      rewriteWT = \case
         Window.PlacedToken s t Token.Damage m
           | m > n -> [Window.PlacedToken s t Token.Damage (m - n), Window.PlacedToken s target Token.Damage n]
         Window.PlacedToken s _ Token.Damage _ -> [Window.PlacedToken s target Token.Damage n]
-        _ -> error "ReassignDamage: impossible"
-    pure g
+        other -> [other]
+    replaceWindowMany matchesP rewriteWT
+    pure $ g & entitiesL . investigatorsL %~ map (rewriteUsedAbilityWindows matchesP rewriteWT)
   CommitCard iid card -> do
     let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
     if alreadyCommitted
@@ -3525,3 +3527,16 @@ handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new
   | gameInAction new = new & actionDiffL %~ (diff new old :)
   | otherwise = new
+
+rewriteUsedAbilityWindows
+  :: (Window.WindowType -> Bool)
+  -> (Window.WindowType -> [Window.WindowType])
+  -> Investigator
+  -> Investigator
+rewriteUsedAbilityWindows matchesP rewriteWT =
+  overAttrs (Investigator.usedAbilitiesL %~ map rewriteUsed)
+ where
+  rewriteUsed u = u {usedAbilityWindows = concatMap rewriteWindow (usedAbilityWindows u)}
+  rewriteWindow w
+    | matchesP (windowType w) = map (`Window.replaceWindowType` w) (rewriteWT (windowType w))
+    | otherwise = [w]

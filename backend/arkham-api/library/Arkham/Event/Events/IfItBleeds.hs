@@ -3,7 +3,7 @@ module Arkham.Event.Events.IfItBleeds (ifItBleeds) where
 import Arkham.Enemy.Types (Field (EnemyCard, EnemySanityDamage))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher hiding (EnemyDefeated, IfEnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -18,6 +18,7 @@ ifItBleeds = event IfItBleeds Cards.ifItBleeds
 getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
 getWindowEnemyIds iid = mapMaybe \case
   Window Timing.After (EnemyDefeated (Just who) _ eid) _ | iid == who -> Just eid
+  Window Timing.After (IfEnemyDefeated mwho _ eid) _ | maybe True (== iid) mwho -> Just eid
   _ -> Nothing
 
 instance RunMessage IfItBleeds where

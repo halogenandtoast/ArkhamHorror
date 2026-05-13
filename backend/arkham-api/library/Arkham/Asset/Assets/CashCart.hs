@@ -23,7 +23,7 @@ instance HasAbilities CashCart where
     [ restricted a 1 OnSameLocation $ FastAbility Free
     , restricted a 2 OnSameLocation
         $ triggered
-          (oneOf [EnemyEnters #when YourLocation AnyEnemy, EnemyWouldEngage #when You AnyEnemy])
+          (oneOf [EnemyEntersYourLocation #when AnyEnemy, EnemyWouldEngage #when You AnyEnemy])
           (DamageCost (a.ability 2) (toTarget a) 1)
     , mkAbility a 3 $ forced $ AssetDefeated #when ByAny (be a)
     ]

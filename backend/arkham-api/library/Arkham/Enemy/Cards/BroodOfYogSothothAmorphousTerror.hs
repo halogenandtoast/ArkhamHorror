@@ -36,7 +36,7 @@ instance HasAbilities BroodOfYogSothothAmorphousTerror where
       a
       [ mkAbility a 1
           $ forced
-          $ EnemyEnters #after YourLocation (be a)
+          $ EnemyEntersYourLocation #after (be a)
       , mkAbility a 2
           $ forced
           $ Enters #after You (locationWithEnemy a)

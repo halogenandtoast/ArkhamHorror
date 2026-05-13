@@ -30,22 +30,20 @@ instance HasModifiersFor TheFirstOath where
     pure $ suspects <> investigators
 
 instance HasAbilities TheFirstOath where
-  getAbilities (TheFirstOath x) =
-    extend
-      x
-      [ restricted x 1 (exists $ TreacheryWithTrait Obstacle <> TreacheryAt YourLocation)
-          $ FastAbility
-          $ OrCost
-          $ map SpendKeyCost [BlueKey, RedKey, WhiteKey, YellowKey]
-      , restricted
-          x
-          2
-          ( EachUndefeatedInvestigator (at_ $ locationIs Locations.grandEntryway)
-              <> Remembered UnlockedTheEntranceToTheCaves
-          )
-          $ Objective
-          $ forced AnyWindow
-      ]
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 (exists $ TreacheryWithTrait Obstacle <> TreacheryAt YourLocation)
+        $ FastAbility
+        $ OrCost
+        $ map SpendKeyCost [BlueKey, RedKey, WhiteKey, YellowKey]
+    , restricted
+        x
+        2
+        ( EachUndefeatedInvestigator (at_ $ locationIs Locations.grandEntryway)
+            <> Remembered UnlockedTheEntranceToTheCaves
+        )
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage TheFirstOath where
   runMessage msg a@(TheFirstOath attrs) = runQueueT $ case msg of

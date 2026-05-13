@@ -5,6 +5,8 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Capability
+import Arkham.Criteria
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
@@ -13,6 +15,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
@@ -103,7 +106,8 @@ instance RunMessage TheHouseAlwaysWins where
           labeled' "skull.doNotSpend" nothing
       pure s
     PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
-      gainResourcesIfCan iid Cultist 3
+      tokenSkillTestOptionWithCriteria (exists $ investigator_ $ can.gain.resources iid) Cultist
+        $ takeResources iid Cultist 3
       pure s
     FailedSkillTestWithToken iid Cultist | isHardExpert attrs -> do
       spendResources iid 3

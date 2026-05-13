@@ -293,16 +293,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pure a
   AdvanceActDeck n _ -> do
     let completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
-    (oldAct, actStack') <- case lookup n scenarioActStack of
+    case lookup n scenarioActStack of
       Just (x : y : ys) -> do
         let fromActId = ActId $ toCardCode x
         push $ ReplaceAct fromActId y
-        pure (x, y : ys)
-      _ -> error "Can not advance act deck"
-    pure
-      $ a
-      & (actStackL . at n ?~ actStack')
-      & (completedActStackL . at n ?~ (oldAct : completedActStack))
+        pure
+          $ a
+          & (actStackL . at n ?~ (y : ys))
+          & (completedActStackL . at n ?~ (x : completedActStack))
+      _ -> pure a
   SetCurrentActDeck n stack -> do
     selectEach (Matcher.ActWithDeckId n) $ toDiscard GameSource
     for_ (headMay stack) $ push . AddAct n

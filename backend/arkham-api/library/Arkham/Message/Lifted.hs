@@ -2260,6 +2260,19 @@ skillTestCardOptionEdit card f body =
 tokenSkillTestOption :: ReverseQueue m => ChaosTokenFace -> QueueT Message m () -> m ()
 tokenSkillTestOption ctf = skillTestResultOptionEdit AdditionalOptionKind id (toDisplay ctf)
 
+tokenSkillTestOptionWithCriteria
+  :: ReverseQueue m => Criterion -> ChaosTokenFace -> QueueT Message m () -> m ()
+tokenSkillTestOptionWithCriteria c ctf =
+  skillTestResultOptionEdit
+    AdditionalOptionKind
+    (\opt -> opt {Arkham.Message.criteria = Just c})
+    (toDisplay ctf)
+
+tokenSkillTestOptionEdit
+  :: ReverseQueue m
+  => (SkillTestOption -> SkillTestOption) -> ChaosTokenFace -> QueueT Message m () -> m ()
+tokenSkillTestOptionEdit f ctf = skillTestResultOptionEdit AdditionalOptionKind f (toDisplay ctf)
+
 additionalSkillTestOptionEdit
   :: ReverseQueue m => (SkillTestOption -> SkillTestOption) -> Text -> QueueT Message m () -> m ()
 additionalSkillTestOptionEdit f = skillTestResultOptionEdit AdditionalOptionKind f

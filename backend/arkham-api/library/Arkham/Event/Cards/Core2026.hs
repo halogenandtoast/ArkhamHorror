@@ -81,7 +81,7 @@ gatherIntel =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight]
     , cdCriteria = Just $ Criteria.youExist can.draw.cards
-    , cdFastWindow = Just $ EnemyEnters #when YourLocation AnyEnemy
+    , cdFastWindow = Just $ EnemyEntersYourLocation #when AnyEnemy
     }
 
 throughTheCracks :: CardDef

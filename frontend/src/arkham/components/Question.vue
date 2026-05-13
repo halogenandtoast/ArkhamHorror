@@ -58,6 +58,7 @@ const questionChoices = computed(() => {
     if (tag === MessageType.INVALID_LABEL) return true
     if (tag === MessageType.SKILL_LABEL) return true
     if (tag === MessageType.SKILL_LABEL_WITH_LABEL) return true
+    if (tag === MessageType.COST_LABEL) return true
 
     return false
   })

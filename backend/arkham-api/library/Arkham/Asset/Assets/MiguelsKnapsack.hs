@@ -5,7 +5,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card.CardType
 import Arkham.ForMovement
-import Arkham.Helpers.Card (passesLimits)
+import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
+import Arkham.Helpers.Card (cardPassesLimitsAtLocation, passesLimits)
+import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (getConnectedLocations, withLocationOf)
 import Arkham.Helpers.Modifiers (modified_)
 import Arkham.Helpers.Window (getPlayedEvent)
@@ -44,18 +46,20 @@ instance RunMessage MiguelsKnapsack where
       withLocationOf iid \lid -> do
         connectingLids <- getConnectedLocations lid
         card <- fetchCard eid
-        playableAtCurrentLocation <- passesLimits iid card
+        playableAtCurrentLocation <-
+          withAlteredGame withoutCanModifiers $ passesLimits iid card
+        validConnectingLids <- filterM (cardPassesLimitsAtLocation card) connectingLids
         let
           playAtConnectingLocation :: ReverseQueue m => m ()
           playAtConnectingLocation = chooseOrRunOneM iid do
-            targets connectingLids \lid' ->
+            targets validConnectingLids \lid' ->
               cardResolutionModifiers card (attrs.ability 1) iid [AsIfAt lid']
-        if not playableAtCurrentLocation && notNull connectingLids
+        if not playableAtCurrentLocation && notNull validConnectingLids
           then playAtConnectingLocation
           else chooseOneM iid do
             (withI18n $ countVar 1 $ labeled' "drawCards") do
               drawCards iid (attrs.ability 1) 1
-            when (notNull connectingLids) do
+            when (notNull validConnectingLids) do
               (cardI18n $ labeled' "miguelsKnapsack.playThatEventAtAConnectingLocation") playAtConnectingLocation
       pure a
     _ -> MiguelsKnapsack <$> liftRunMessage msg attrs

@@ -240,6 +240,7 @@ enteringEnemy :: HasCallStack => [Window] -> EnemyId
 enteringEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEnters eid _) -> Just eid
+    (windowType -> Window.EnemyEntersYourLocation _ eid _) -> Just eid
     _ -> Nothing
 
 entering :: HasCallStack => [Window] -> LocationId
@@ -556,6 +557,7 @@ getEnemy = \case
   ((windowType -> Window.IfEnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid
   ((windowType -> Window.EnemyEnters eid _) : _) -> eid
+  ((windowType -> Window.EnemyEntersYourLocation _ eid _) : _) -> eid
   ((windowType -> Window.EnemyWouldSpawnAt eid _) : _) -> eid
   ((windowType -> Window.EnemyAttacks details) : _) -> details.enemy
   ((windowType -> Window.WouldReady (EnemyTarget eid)) : _) -> eid
@@ -573,6 +575,7 @@ getLocation :: [Window] -> Maybe LocationId
 getLocation = \case
   [] -> Nothing
   ((windowType -> Window.EnemyEnters _ lid) : _) -> Just lid
+  ((windowType -> Window.EnemyEntersYourLocation _ _ lid) : _) -> Just lid
   ((windowType -> Window.EnemyLeaves _ lid) : _) -> Just lid
   (_ : rest) -> getLocation rest
 
@@ -580,6 +583,7 @@ getEnemies :: [Window] -> [EnemyId]
 getEnemies = \case
   [] -> []
   ((windowType -> Window.EnemyEnters eid _) : rest) -> eid : getEnemies rest
+  ((windowType -> Window.EnemyEntersYourLocation _ eid _) : rest) -> eid : getEnemies rest
   ((windowType -> Window.EnemyLeaves eid _) : rest) -> eid : getEnemies rest
   (_ : rest) -> getEnemies rest
 
@@ -2048,6 +2052,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matches enemyId enemyMatcher
             , locationMatches iid source window' lid whereMatcher
             ]
+        _ -> noMatch
+    Matcher.EnemyEntersYourLocation timing enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyEntersYourLocation iid' enemyId _ | iid == iid' ->
+          matches enemyId enemyMatcher
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case

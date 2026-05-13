@@ -535,11 +535,26 @@ instance RunMessage EnemyAttrs where
             pushM $ checkWhen $ Window.EnemySpawns eid lid
             pushM $ checkAfter $ Window.EnemySpawns eid lid
 
+          let entries = eid : swarm
+          -- Investigators already at lid drive `EnemyEntersYourLocation` (the
+          -- "an enemy entered MY location" flavor — Pursued, Cash Cart, etc.).
+          -- An investigator that is *simultaneously* entering lid (e.g. one
+          -- whose engaged enemy follows them via WhenWillEnterLocation) is
+          -- not yet at lid here — their placement update is queued behind
+          -- this message in `Do (WhenWillEnterLocation iid lid)`, so this
+          -- select naturally excludes them. Do not reorder those messages
+          -- without revisiting this exemption.
+          iidsHere <- select $ investigatorAt lid
+
           whenWindows <-
             traverse
-              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
-              (eid : swarm)
-          pushAll (whenWindows <> [After msg])
+              (\eid' -> checkWindows [mkWhen (Window.EnemyEnters eid' lid)])
+              entries
+          yourLocationWhens <-
+            traverse
+              (\(iid', eid') -> checkWindows [mkWhen (Window.EnemyEntersYourLocation iid' eid' lid)])
+              [(iid', eid') | iid' <- iidsHere, eid' <- entries]
+          pushAll (whenWindows <> yourLocationWhens <> [After msg])
           case a.placement of
             InThreatArea {} -> pure a
             _ -> pure $ a & placementL .~ AtLocation lid
@@ -548,10 +563,17 @@ instance RunMessage EnemyAttrs where
         AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)
         _ -> do
           swarm <- select $ SwarmOf eid
-          pushAll
-            =<< traverse
-              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkAfter]))
-              (eid : swarm)
+          let entries = eid : swarm
+          iidsHere <- select $ investigatorAt lid
+          afterWindows <-
+            traverse
+              (\eid' -> checkWindows [mkAfter (Window.EnemyEnters eid' lid)])
+              entries
+          yourLocationAfters <-
+            traverse
+              (\(iid', eid') -> checkWindows [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid)])
+              [(iid', eid') | iid' <- iidsHere, eid' <- entries]
+          pushAll (afterWindows <> yourLocationAfters)
       pure a
     Ready (isTarget a -> True) -> do
       whenM (getCanReady a) do
@@ -1781,15 +1803,22 @@ instance RunMessage EnemyAttrs where
         pushAll [sbefore, safter]
       pure a
     WhenWillEnterLocation iid lid -> do
-      -- An engaged enemy that follows the investigator does not "enter" the
-      -- new location for the purpose of EnemyEnters windows; only disengage
-      -- it if it cannot follow (massive, or destination is unenterable).
+      -- An engaged, non-massive enemy that can enter the destination follows
+      -- the investigator and DOES enter the new location (per the move/engagement
+      -- rules). We push `EnemyEntered` here so location-bound EnemyEnters windows
+      -- (Decoy Trap and other trap-trait cards attached to lid) fire on the
+      -- dragged enemy. The "your location" flavour is exempted automatically:
+      -- this push happens before `Do (WhenWillEnterLocation iid lid)` updates
+      -- the investigator's placement, so the EnemyEntered handler's
+      -- `select $ investigatorAt lid` does not yet include this investigator
+      -- and `Window.EnemyEntersYourLocation` doesn't fire for them.
       case enemyPlacement of
         InThreatArea iid' | iid' == iid -> do
           keywords <- getModifiedKeywords a
           willMove <- canEnterLocation enemyId lid
-          unless (#massive `notElem` keywords && willMove) do
-            push $ DisengageEnemy iid enemyId
+          if #massive `notElem` keywords && willMove
+            then push $ EnemyEntered enemyId lid
+            else push $ DisengageEnemy iid enemyId
         _ -> pure ()
       pure a
     InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do

@@ -140,6 +140,7 @@ data WindowMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyReadies Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
+  | EnemyEntersYourLocation Timing EnemyMatcher
   | EnemyLeaves Timing Where EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
   | ActAdvances Timing ActMatcher

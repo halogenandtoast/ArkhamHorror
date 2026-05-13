@@ -1,14 +1,12 @@
 module Arkham.Investigator.Cards.PrestonFairmont (prestonFairmont) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
@@ -59,25 +57,4 @@ instance RunMessage PrestonFairmont where
         $ Label "$label.resolveNormally" []
         : [Label "$label.automaticallySucceed" [SpendResources iid 2, PassSkillTest] | hasResources]
       pure i
-    Blanked msg'@(SpendResources iid _) | iid == toId attrs -> runMessage msg' i
-    SpendResources iid n | iid == toId attrs -> do
-      mFamilyInheritance <- selectOne $ assetIs Assets.familyInheritance
-      case mFamilyInheritance of
-        Nothing -> PrestonFairmont <$> runMessage msg attrs
-        Just familyInheritance -> do
-          familyInheritanceResources <- field AssetResources familyInheritance
-          if familyInheritanceResources > 0
-            then do
-              if attrs.resources > 0
-                then do
-                  player <- getPlayer iid
-                  push
-                    $ chooseOrRunN player n
-                    $ replicate
-                      familyInheritanceResources
-                      (targetLabel familyInheritance [RemoveResources (toSource attrs) (toTarget familyInheritance) 1])
-                    <> replicate attrs.resources (ResourceLabel iid [Do (SpendResources iid 1)])
-                else push $ RemoveResources (toSource attrs) (toTarget familyInheritance) n
-              pure i
-            else PrestonFairmont <$> runMessage msg attrs
     _ -> PrestonFairmont <$> runMessage msg attrs

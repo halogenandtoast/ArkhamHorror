@@ -2,7 +2,6 @@ module Arkham.Helpers.Cost where
 
 import Arkham.Ability
 import Arkham.Action (Action)
-import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
@@ -638,9 +637,8 @@ getSpendableResources :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getSpendableResources iid = do
   mods <- getModifiers iid
   let extraResources = sum [x | ExtraResources x <- mods]
-  familyInheritanceResources <-
-    selectSum AssetResources $ Matcher.assetIs Assets.familyInheritance <> Matcher.assetControlledBy iid
-  fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
+  pooledResources <- sum <$> traverse (field AssetResources) [aid | AsIfResourcePool aid <- mods]
+  fieldMap InvestigatorResources (+ (pooledResources + extraResources)) iid
 
 getSpendableClueCount :: (HasGame m, Tracing m) => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =

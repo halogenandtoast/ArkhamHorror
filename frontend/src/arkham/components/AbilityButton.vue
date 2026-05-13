@@ -169,6 +169,10 @@ const abilityLabel = computed(() => {
     return t('Engage')
   }
 
+  if (isDelayedAbility.value === true) {
+    return t('Delayed')
+  }
+
   if (labelType.value?.tag === "ForcedAbility") {
     return t('Forced')
   }

@@ -3667,9 +3667,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   Do (InvestigatorSpendClues iid n) | iid == investigatorId -> do
     pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid n | iid == investigatorId -> do
-    beforeWindowMsg <- checkWindows [mkWhen (Window.SpendsResources iid n)]
-    pushAll [beforeWindowMsg, Do msg]
-    pure a
+    let defaultFlow = do
+          beforeWindowMsg <- checkWindows [mkWhen (Window.SpendsResources iid n)]
+          pushAll [beforeWindowMsg, Do msg]
+          pure a
+    mods <- getModifiers a
+    resourcePools <- forToSnd [aid | AsIfResourcePool aid <- mods] (field AssetResources)
+    let totalPoolResources = sum (map snd resourcePools)
+    if totalPoolResources == 0
+      then defaultFlow
+      else do
+        player <- getPlayer iid
+        push
+          $ chooseOrRunN player n
+          $ concatMap
+            (\(aid, k) -> replicate k (targetLabel aid [RemoveResources (toSource a) (toTarget aid) 1]))
+            resourcePools
+          <> replicate a.resources (ResourceLabel iid [Do (SpendResources iid 1)])
+        pure a
   Do (SpendResources iid n) | iid == investigatorId -> do
     Lifted.checkAfter (Window.SpendsResources iid n)
     pure $ a & tokensL %~ subtractTokens Resource n

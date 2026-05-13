@@ -1,0 +1,1584 @@
+{
+  "label": {
+    "acridMiasma": {
+      "hunter": "结算场中每个敌人的猎手关键字"
+    },
+    "aethericCurrentYuggoth": {
+      "exhaust": "横置该敌人并将其移动到任意地点",
+      "skip": "不横置敌人"
+    },
+    "agathaCrane": {
+      "cancel": "取消此标记并从其位置抽取另一个标记，如果你这么做，抽取1张卡牌",
+      "skip": "不取消此标记"
+    },
+    "agnesBakerParallel": {
+      "shuffle": "将该事件洗回牌库而不是置入弃牌堆？"
+    },
+    "alchemicalDistillation": {
+      "doNotEmpower": "不注能",
+      "doNotResolveASecondOption": "不结算第二个选项",
+      "doneMoving": "结束移动",
+      "empowerIncreaseDifficultyBy2": "注能 (提升难度2点)",
+      "resolveASecondOption": "结算第二个选项",
+      "placeChargeOrSecret": "在你控制的支援上放置{count}充能或秘密 | 在你控制的支援上放置{count}充能或秘密",
+      "moveUpTo": "移动最多{count}次"
+    },
+    "alyssaGraham": {
+      "addDoom": "在艾丽莎上增加1个毁灭标记，以将查看的卡牌放到其牌库底",
+      "add1DoomToAlyssaToMoveCardToBottom": "在艾丽莎上增加1个毁灭标记，以将查看的卡牌放到其牌库底",
+      "leaveCardOnTop": "将卡牌留在牌库顶"
+    },
+    "amandaSharpe": {
+      "double": "将阿曼达·夏普底下的卡牌的技能图标数量翻倍",
+      "skip": "不翻倍技能图标"
+    },
+    "anchorChain": {
+      "discardPrompt": "弃掉1张手牌，以防止该敌人在下个补给阶段期间重整？"
+    },
+    "antediluvianHymn": {
+      "doNotAddCurseToken": "不加入1个{'{'}curse{'}'}标记，以将该卡牌放到遭遇牌库底"
+    },
+    "anyuFaithfulCompanion": {
+      "attemptToEvadeWithABaseAgilitySkillOf4": "_躲避_。以基础值为4的{'{'}agility{'}'}尝试躲避",
+      "discardAnyuToChooseUpToThreeInAnyOrder": "弃掉安宇来选择最多三项(以任意顺序)",
+      "gain2SkillValue": "你本轮下次技能检定中得到技能值+2",
+      "doneChoosingOptions": "结束选择选项"
+    },
+    "arcaneInitiate3": {
+      "place1Doom": "放置1个毁灭标记",
+      "place2Horror": "放置2点恐惧"
+    },
+    "archaicGlyphsMarkingsOfIsis3": {
+      "doNotPlayAsset": "不打出支援"
+    },
+    "ariadnesTwine3": {
+      "moveSecretToResource": "将你控制的支援上的1秘密移动到你的资源池，作为资源",
+      "moveResourceToSecret": "将你资源池的1资源移动到你控制的支援上，作为秘密",
+      "moveResourceToSecret2": "将你资源池的1资源移动到你控制的支援上，作为秘密",
+      "moveSecretToResource2": "将你控制的支援上的1秘密移动到你的资源池，作为资源"
+    },
+    "armageddon": {
+      "placeCharge": "在哈米吉多顿上放置1充能",
+      "dealDamageToEnemy": "对你所在地点的一个敌人造成1点伤害",
+      "deal1DamageToAnEnemyAtYourLocation": "对你所在地点的一个敌人造成1点伤害",
+      "place1ChargeOnArmageddon": "在哈米吉多顿上放置1充能"
+    },
+    "armageddon4": {
+      "placeCharge": "在哈米吉多顿上放置1充能",
+      "dealDamageToEnemy": "对你所在地点的一个敌人造成1点伤害",
+      "deal1DamageToAnEnemyAtYourLocation": "对你所在地点的一个敌人造成1点伤害",
+      "place1ChargeOnArmageddon4": "在哈米吉多顿上放置1充能"
+    },
+    "artisticInspiration": {
+      "getPlus1": "获得+1",
+      "getMinus1": "获得-1"
+    },
+    "ashcanPeteParallel": {
+      "skip": "不返回该卡牌"
+    },
+    "atACrossroads": {
+      "act": "所选调查员必须立即进行一次行动，如同是自己回合，然后随机弃掉自己1张手牌。",
+      "draw": "所选调查员在其下个回合期间失去1个行动，然后抽取3张卡牌。"
+    },
+    "augur": {
+      "putIntoPlayFromDiscard": "从弃牌堆放置入场"
+    },
+    "averyClaypoolAntarcticGuideResolute": {
+      "revealANewChaosToken": "揭示1个新的混乱标记",
+      "spend1Supply": "花费1补给"
+    },
+    "backInjury": {
+      "putBackInjuryIntoPlayInYourThreatArea": "将背伤放置入场，放到你的威胁区域",
+      "take1DamageAndShuffleItIntoYourDeck": "受到1点伤害并将背伤混洗入你的牌库"
+    },
+    "baseballBat2": {
+      "returnToHand": "本次攻击后将棒球棒返回你的手牌",
+      "extraDamage": "本次攻击造成额外+1伤害。本次攻击后弃掉球棒"
+    },
+    "beguile": {
+      "move": "将所附属的敌人移动到一个已揭示的连接地点",
+      "investigate": "在其地点执行一次基础调查",
+      "evade": "在其地点执行一次躲避行动"
+    },
+    "beloved": {
+      "removeForAutoSuccess": "将挚爱从游戏中移除，以此将该标记的效果换为如下：\"你自动成功。(不要再揭示另一个标记。本次检定结束后，将该标记返回混乱袋。\"",
+      "remove": "将挚爱从游戏中移除，以此将该标记的效果换为如下：\"你自动成功。(不要再揭示另一个标记。本次检定结束后，将该标记返回混乱袋。\"",
+      "skip": "不移除挚爱"
+    },
+    "berettaM19184": {
+      "dealAnAdditional1Damage": "额外造成+1伤害",
+      "readyBerettaM1918": "重整贝雷塔M1918冲锋枪"
+    },
+    "bewitching3": {
+      "draw1AttachedCard": "抽取1张附属的卡牌",
+      "searchTopOfDeck": "查找你牌库顶9张卡牌，找出一张附属卡牌的同名卡牌，将其抽取并混洗你的牌库",
+      "chooseNoMoreTrickCards": "不选择更多_技巧_卡牌"
+    },
+    "blackMarket": {
+      "missingOwner": "一张留置的卡牌缺少其所有者。请选择正确的所有者"
+    },
+    "blessedBlade": {
+      "exhaustToAddBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记",
+      "exhaustForBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记",
+      "exhaust": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记 | 横置蒙福之刃以在混乱袋中加入{count}个{'{'}bless{'}'}标记"
+    },
+    "blessedBlade4": {
+      "exhaustForBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记 | 横置蒙福之刃以在混乱袋中加入{'{'}count{'}'}个{'{'}bless{'}'}标记"
+    },
+    "bloodRite": {
+      "gainResource": "获得1资源",
+      "spendDealDamage": "花费1资源来对你所在地点的一个敌人造成1点伤害",
+      "continueDiscarded": "在弃掉{count}张卡牌后继续",
+      "spendDamage": "花费1资源来对你所在地点的一个敌人造成1点伤害"
+    },
+    "blur1": {
+      "useAgility": "使用敏捷",
+      "useWillpower": "使用意志"
+    },
+    "blur4": {
+      "useAgility": "使用敏捷",
+      "useWillpower": "使用意志"
+    },
+    "bonesaw": {
+      "doNotTakeDamage": "不受到伤害",
+      "take1DamageToDo1Damage": "受到1点伤害，以使本次攻击造成+1伤害"
+    },
+    "bookOfLivingMythsChronicleOfWonders": {
+      "resolveBlessToken": "结算{'{'}bless{'}'}标记",
+      "resolveCurseToken": "结算{'{'}curse{'}'}标记"
+    },
+    "buriedSecrets": {
+      "takeHorror": "受到2点恐惧以将被埋葬的秘密洗回你的牌库"
+    },
+    "butterflySwords2": {
+      "doNotFightAgain": "不再次进行攻击",
+      "fightAgain": "再次进行攻击"
+    },
+    "butterflySwords5": {
+      "doNotFightAgain": "不再次进行攻击",
+      "exhaustToDo1Damage": "横置蝴蝶对剑，以造成+1伤害",
+      "fightAgain": "再次进行攻击"
+    },
+    "callForBackup": {
+      "rogue": "{'{'}rogue{'}'}卡牌，你可以移动到一个连接地点",
+      "guardian": "{'{'}guardian{'}'}卡牌，对你所在地点的一个敌人造成1点伤害",
+      "seeker": "{'{'}seeker{'}'}卡牌，发现你所在地点的1个线索",
+      "mystic": "{'{'}mystic{'}'}卡牌，治愈任意卡牌的1点恐惧",
+      "survivor": "{'{'}survivor{'}'}卡牌，治愈任意卡牌的1点伤害"
+    },
+    "carolynFern": {
+      "doNotHeal": "不治愈任何恐惧"
+    },
+    "ceremonialSickle": {
+      "exhaustForBoost": "横置仪式镰刀并在上面放置1个毁灭标记，以使本次攻击得到+1技能值并造成+1伤害",
+      "onDefeatEnemy": "如果本次攻击击败了敌人，移除仪式镰刀的1个毁灭标记"
+    },
+    "ceremonialSickle4": {
+      "exhaustForBoost": "横置仪式镰刀并在上面放置1个毁灭标记，以使本次攻击得到+3技能值并造成+1伤害",
+      "onDefeatEnemy": "如果本次攻击击败了敌人，重整仪式镰刀并移除上面所有的毁灭标记"
+    },
+    "chainsaw4": {
+      "deal1DamageToTheAttackedEnemy": "对受到攻击的敌人造成1点伤害",
+      "place1SupplyOnChainsaw": "在电锯上放置1补给"
+    },
+    "chuckFergus2": {
+      "thatEventCosts2FewerResourcesToPlay": "该事件打出的资源费用减少2点",
+      "thatEventGainsFast": "该事件获得快速",
+      "gain2SkillValue": "你在该事件的结算期间执行技能检定时，得到技能值+2"
+    },
+    "chuckFergus5": {
+      "thatEventCosts2FewerResourcesToPlay": "该事件打出的资源费用减少2点",
+      "thatEventGainsFast": "该事件获得快速",
+      "gain2SkillValue": "你在该事件的结算期间执行技能检定时，得到技能值+2"
+    },
+    "cleanSneak": {
+      "damage": "对那个敌人造成2点伤害"
+    },
+    "cookiesCustom32": {
+      "fightWithABaseCombatSkillOf5": "以基础值为5的{'{'}combat{'}'}攻击",
+      "get2CombatForThisAttack": "本次攻击得到+2{'{'}combat{'}'}"
+    },
+    "cosmicFlame": {
+      "spendChargeForDamage": "花费1充能以使本次攻击造成伤害+1"
+    },
+    "cosmicFlame5": {
+      "spendChargeForDamage": "花费1充能以对你所在地点的一个敌人造成1点伤害"
+    },
+    "cosmicRevelation": {
+      "draw": "抽取1张卡牌",
+      "play": "打出1张自己揭示的卡牌"
+    },
+    "crisisOfFaith": {
+      "replaceBlessWithCurse": "将{'{'}bless{'}'}标记替换为{'{'}curse{'}'}标记",
+      "swap": "将{'{'}bless{'}'}标记替换为{'{'}curse{'}'}标记"
+    },
+    "customGrip": {
+      "doNotPlayFirearm": "不打出一张_枪械_支援"
+    },
+    "cyclopeanHammer5": {
+      "doNotMoveEnemy": "不移动敌人",
+      "exhaustForExtraDamage": "横置巨石锤以造成+2伤害并可以将敌人朝着远离你的方向移动最多2个地点",
+      "moveEnemy": "移动敌人",
+      "moveEnemyAway": "将敌人朝着远离你的方向移动"
+    },
+    "daisyWalkerParallel": {
+      "skip": "不使用黛西的能力"
+    },
+    "damningTestimony": {
+      "doNotSpendEvidence": "不花费证据",
+      "investigateTheEnemysLocation": "调查所选敌人的地点",
+      "investigateYourLocation": "调查你所在地点",
+      "spendEvidence": "花费1证据，以自动躲避所选敌人",
+      "spendForClue": "花费1证据，以额外发现所选敌人地点的1个线索"
+    },
+    "darkRitual": {
+      "discardDarkRitual": "弃掉黑暗仪式",
+      "spend1Resource": "花费1资源"
+    },
+    "davidRenfield": {
+      "doNotPlaceDoomOnDavidRenfield": "不在大卫·伦费尔德身上放置毁灭标记",
+      "placeDoomOnDavidRenfield": "在大卫·伦费尔德身上放置1个毁灭标记"
+    },
+    "decoy": {
+      "evadeOne": "躲避1个敌人",
+      "evadeTwo": "躲避2个敌人"
+    },
+    "decoyTrap": {
+      "discardMove": "弃掉诱敌陷阱以移动到其所附属的地点"
+    },
+    "defiance": {
+      "skull": "选择{'{'}skull{'}'}",
+      "cultist": "选择{'{'}cultist{'}'}",
+      "tablet": "选择{'{'}tablet{'}'}",
+      "elderThing": "选择{'{'}elderThing{'}'}"
+    },
+    "delayTheInevitable": {
+      "discard": "弃掉劫数延后"
+    },
+    "detectivesColt1911s": {
+      "doNotMoveAnInsight": "不移动_洞察_事件"
+    },
+    "devilFriendOrFoe2": {
+      "damageConcealedCard": "对隐蔽卡牌造成伤害",
+      "doNotDamageConcealedCard": "不对隐蔽卡牌造成伤害"
+    },
+    "dexterDrake": {
+      "skip": "不返回支援"
+    },
+    "dialOfAncientsSignsOfCataclysm4": {
+      "spend1Charge": "花费1充能",
+      "spend1ChargeOrReleaseThisToken": "花费1充能或释放该标记"
+    },
+    "dianaStanley": {
+      "doNotAdd": "不添加任何卡牌到你的手牌"
+    },
+    "disciplineAlignmentOfSpirit": {
+      "take1DirectDamageToHeal3Horror": "受到1点直接伤害以治愈3点恐惧",
+      "take1DirectHorrorToHeal3Damage": "受到1点直接恐惧以治愈3点伤害"
+    },
+    "divination1": {
+      "useIntellect": "使用{'{'}intellect{'}'}",
+      "useWillpowerInsteadOfIntellect": "使用{'{'}willpower{'}'}代替{'{'}intellect{'}'}"
+    },
+    "divination4": {
+      "useIntellect": "使用{'{'}intellect{'}'}",
+      "useWillpowerInsteadOfIntellect": "使用{'{'}willpower{'}'}代替{'{'}intellect{'}'}"
+    },
+    "doppelganger": {
+      "moveToDoppelganger": "立即移动到二重身附属地点",
+      "evadeEnemy": "躲避敌人"
+    },
+    "dowsingRod": {
+      "exhaustForBoost": "横置寻龙尺并在上面放置1个毁灭标记，以移动到一个连接地点",
+      "onLastClue": "如果本次调查发现了一个地点的最后一个线索，移除寻龙尺的1个毁灭标记"
+    },
+    "dowsingRod4": {
+      "exhaustForBoost": "横置寻龙尺并在上面放置1个毁灭标记，以移动到一个连接地点且本次调查得到+2技能值",
+      "onLastClue": "如果本次调查发现了一个地点的最后一个线索，移除寻龙尺的1个毁灭标记"
+    },
+    "drWilliamTMaleson2": {
+      "chooseCardToResolve": "选择结算的遭遇卡"
+    },
+    "drawingThin": {
+      "draw1Card": "抽取1张卡牌",
+      "take2Resources": "获得2资源"
+    },
+    "dreamersChronicle": {
+      "takeHorror": "受到1点恐惧以发现你所在地点额外1个线索"
+    },
+    "earthlySerenity1": {
+      "doNotSpendAChargeToHeal": "不花费充能进行治愈",
+      "spendAChargeToHeal": "花费1充能进行治愈"
+    },
+    "earthlySerenity4": {
+      "doNotSpendAChargeToHeal": "不花费充能进行治愈",
+      "spendAChargeToHeal": "花费1充能进行治愈"
+    },
+    "elaborateDistraction": {
+      "evadeNonElite": "如果该敌人非_精英_，自动躲避它",
+      "dealDamage": "对该敌人造成1点伤害",
+      "evade": "如果该敌人非_精英_，自动躲避它"
+    },
+    "eldritchBrand5": {
+      "chooseCard": "选择用于烙刻的法术"
+    },
+    "eldritchSophist": {
+      "moveCharge": "移动1充能",
+      "moveSecret": "移动1秘密"
+    },
+    "elleRubashPurifyingPurpose2": {
+      "attachWithoutSwapping": "附属且不交换"
+    },
+    "emergencyCache": {
+      "takeResource": "获得资源",
+      "addSupply": "添加补给"
+    },
+    "encephalonSignal": {
+      "damage": "对你所在地点的1位调查员或_类人_敌人造成2点伤害"
+    },
+    "enchantedBladeGuardian3": {
+      "doNotSpendUse": "不花费充能",
+      "spend1UseToEmpower": "花费1充能来为剑附魔"
+    },
+    "eonChart4": {
+      "move": "移动"
+    },
+    "everVigilant1": {
+      "doNotPlayAsset": "不打出支援"
+    },
+    "extraRations1": {
+      "heal1DamageFromYourself": "治愈你的调查员或你控制的一个_盟友_支援1点伤害"
+    },
+    "eyeOfChaos": {
+      "placeCharge": "在混乱之眼上放置1充能",
+      "discover1CluesAtAConnectingLocation": "发现连接地点的1个线索",
+      "place1ChargeOnEyeOfChaos": "在混乱之眼上放置1充能"
+    },
+    "eyeOfChaos4": {
+      "placeCharge": "在混乱之眼上放置1充能",
+      "discover1CluesAtAConnectingLocation": "发现连接地点的1个线索",
+      "place1ChargeOnEyeOfChaos4": "在混乱之眼上放置1充能"
+    },
+    "eyeOfTheDjinnVesselOfGoodAndEvil2": {
+      "gainedAction": "从迪精之眼获得额外一次行动"
+    },
+    "fakeCredentials": {
+      "discardFakeCredentials": "弃掉假证",
+      "theChosenEnemyAttacksYou": "所选敌人攻击你"
+    },
+    "falseSurrender": {
+      "fightAgainstEnemy": "用该武器对所选敌人进行一次攻击行动",
+      "doNotFight": "不进行攻击行动"
+    },
+    "fangOfTyrthrha": {
+      "moveToEnemy": "移动到敌人所在地点"
+    },
+    "fatherMateo": {
+      "drawAndGain": "抽取1张卡牌并获得1资源"
+    },
+    "fey": {
+      "return": "将鬼灵精怪返回你的手牌"
+    },
+    "fickleFortune": {
+      "place": "在当前密谋上放置1个毁灭标记。每位调查员治愈3点伤害和3点恐惧",
+      "remove": "移除当前密谋上的1个毁灭标记。每位调查员受到1点直接伤害和1点直接恐惧。将命运无常从游戏中移除"
+    },
+    "finnEdwards": {
+      "skip": "不发现1个线索"
+    },
+    "flamethrower5": {
+      "standardDamage": "造成基础伤害",
+      "assignAmongEngaged": "对所有与你交战的敌人分配总计最多4点伤害",
+      "assignUpTo4": "对所有与你交战的敌人分配总计最多4点伤害",
+      "doStandardDamage": "造成基础伤害"
+    },
+    "flare": {
+      "searchAlly": "找出一个_盟友_支援"
+    },
+    "flare1": {
+      "searchForAlly": "找出一个_盟友_支援"
+    },
+    "fleshWard": {
+      "cancel1Damage": "取消1点伤害",
+      "cancel1Horror": "取消1点恐惧"
+    },
+    "flurryOfBlows": {
+      "repeat": "重复此效果(旋风连击)"
+    },
+    "flurryOfBlows5": {
+      "repeatEffect": "重复此效果(旋风连击)"
+    },
+    "forbiddenTome": {
+      "discardForbiddenTome": "弃掉禁忌之书",
+      "doNotDiscardForbiddenTome": "不弃掉禁忌之书"
+    },
+    "fortyFiveThompsonRogue3": {
+      "doNotDamageAnyEnemies": "不对另一个敌人造成伤害"
+    },
+    "friendsInLowPlaces": {
+      "doNotSpend": "_跳过狐朋狗友基础效果_：不将任何符合_特性_的卡加入你的手牌",
+      "swiftSkip": "_跳过快快动手_：不打出刚加入手牌的卡牌",
+      "versatileSkip": "_跳过多才多艺_：不将任何两个_特性_都有的卡加入你的手牌"
+    },
+    "geas2": {
+      "drawPromise": "在我每个回合期间，我不会_抽取_任何卡牌",
+      "playPromise": "在我每个回合期间，我不会_打出_任何卡牌",
+      "commitPromise": "在我每个回合期间，我不会_投入_任何卡牌",
+      "iShallNot": "在我每个回合期间，我不会_投入_任何卡牌",
+      "iShallNotDrawAnyCardsDuringEachOfMyTurns": "在我每个回合期间，我不会_抽取_任何卡牌",
+      "iShallNotPlayAnyCardsDuringEachOfMyTurns": "在我每个回合期间，我不会_打出_任何卡牌",
+      "broken": "你打破了誓愿!"
+    },
+    "geneBeauregard3": {
+      "move1ClueFrom": "将1个线索从一个连接地点移动到你的地点",
+      "move1ClueFrom2": "将1个线索从你的地点移动到一个连接地点",
+      "moveAnEnemy": "将一个非_精英_敌人从一个连接地点移动到你的地点",
+      "moveAnEnemy2": "将一个非_精英_敌人从你的地点移动到一个连接地点"
+    },
+    "ghastlyPossession": {
+      "placeDoom": "在该支援上放置1个毁灭标记，恐灵附身获得{'{'}wild{'}'}{'{'}wild{'}'}",
+      "ifSuccess": "如果本次检定成功，从该支援上移除1个毁灭标记，或将其使用补满一半(向下取整)",
+      "removeDoom": "从该支援上移除1个毁灭标记",
+      "replenish": "将其使用补满一半(向下取整)"
+    },
+    "ghastlyPossession1": {
+      "placeDoomGainIcons": "在该支援上放置1个毁灭标记，恐灵附身获得{'{'}wild{'}'}{'{'}wild{'}'}",
+      "removeDoomOrReplenish": "如果本次检定成功，从该支援上移除1个毁灭标记，或将其使用补满一半(向下取整)",
+      "removeDoomFromAsset": "从该支援上移除1个毁灭标记",
+      "replenishUses": "将其使用补满一半(向下取整)"
+    },
+    "ghastlyRevelation": {
+      "giveClues": "将你任意数量的线索交给另一位调查员",
+      "placeClues": "在任意一个地点上放置你任意数量的线索"
+    },
+    "glassing": {
+      "discard": "弃掉远眺以发现本地点额外1个线索",
+      "doNotDiscard": "不弃掉远眺"
+    },
+    "gloriaGoldberg": {
+      "discard": "弃掉它",
+      "putOnTop": "放在遭遇牌库顶",
+      "placeBeneath": "正面朝下放在歌莉娅·戈德堡底下(她底下最多3张卡牌)",
+      "chooseDrawer": "选择抽取遭遇牌堆的调查员顺序"
+    },
+    "grannyOrne": {
+      "failBy1Less": "检定失败，且检定结果低1点",
+      "failBy1More": "检定失败，且检定结果高1点"
+    },
+    "grannyOrne3": {
+      "get1SkillValue": "得到技能值-1"
+    },
+    "graysAnatomyTheDoctorsBible5": {
+      "damagePlus": "该卡牌本轮下一次将要受到伤害时，受到的伤害+1(最多+3)",
+      "healPlus": "该卡牌本轮下一次将要被治愈时，治愈的伤害/恐惧+1(最多+3)"
+    },
+    "grimMemoir": {
+      "doNotDrawCard": "不抽取卡牌",
+      "draw1Card": "抽取1张卡牌"
+    },
+    "grimResolve": {
+      "doneSwapping": "结束交换",
+      "chooseHandToSwap": "选择要交换的手牌",
+      "chooseUnderneathToSwap": "选择要交换的底牌",
+      "chooseHandCard": "选择要交换的手牌",
+      "chooseUnderCard": "选择要交换的底牌"
+    },
+    "grizzled": {
+      "attachToEnemy": "(复仇女神)将饱经风霜附属到该敌人",
+      "doNotAttachToEnemy": "不将饱经风霜附属到该敌人",
+      "addToVictory": "(神话历练)将饱经风霜和该诡计一起加入胜利区",
+      "doNotAddToVictory": "不将饱经风霜和该诡计一起加入胜利区",
+      "attach": "(复仇女神)将饱经风霜附属到该敌人",
+      "doNotAttach": "不将饱经风霜附属到该敌人",
+      "addVictory": "(神话历练)将饱经风霜和该诡计一起加入胜利区",
+      "skipVictory": "不将饱经风霜和该诡计一起加入胜利区"
+    },
+    "guerrillaTactics": {
+      "fight": "攻击({'{'}combat{'}'})",
+      "evade": "躲避({'{'}agility{'}'})"
+    },
+    "guidedByTheUnseen3": {
+      "doNotCommitAnyCards": "不投入任何卡牌"
+    },
+    "hallowedChalice": {
+      "exhaustForBoost": "横置圣杯并在上面放置1个毁灭标记，以治愈该调查员的2点伤害或2点恐惧",
+      "heal1Damage": "治愈1点伤害",
+      "healFromThatInvestigator": "治愈该调查员的1点伤害或1点恐惧。如果你完全治愈了该调查员的伤害或恐惧，移除圣杯的1个毁灭标记",
+      "heal1Horror": "治愈1点恐惧",
+      "heal2Damage": "治愈2点伤害",
+      "heal2Horror": "治愈2点恐惧"
+    },
+    "hallowedMirror3": {
+      "changeEach": "将上面的所有的\"2\"改为\"3\"",
+      "shuffleItInto": "结算后不弃掉，改为将其洗回你的牌库"
+    },
+    "handCrankFlashlight": {
+      "discardForDamage": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
+    },
+    "handHook": {
+      "discardForDamage": "弃掉1张手牌以造成+1伤害"
+    },
+    "henryWan": {
+      "drawAnother": "揭示另一个混乱标记",
+      "gain1Resources": "获得1资源",
+      "stop": "停下"
+    },
+    "hiredMuscle1": {
+      "discardHiredMuscle": "弃掉雇佣打手",
+      "pay1ResourceToHiredMuscle": "支付1资源给雇佣打手"
+    },
+    "holySpear5": {
+      "releaseBless": "释放一个{'{'}bless{'}'}标记",
+      "doNotReleaseBless": "不释放一个{'{'}bless{'}'}标记",
+      "doNotReleaseABlessToken": "不释放一个{'{'}bless{'}'}标记",
+      "releaseABlessToken": "释放一个{'{'}bless{'}'}标记"
+    },
+    "honedInstinct": {
+      "another": "(习惯成自然)进行2个行动。将敏锐直觉从游戏中移除",
+      "skip": "只进行1个行动"
+    },
+    "hope": {
+      "putIntoPlayFromDiscard": "从你的弃牌堆放置入场"
+    },
+    "huntersArmor": {
+      "doNoExhaust": "不横置猎人护甲",
+      "exhaustHuntersArmorToDraw1Card": "横置猎人护甲以抽取1张卡牌"
+    },
+    "hyperphysicalShotcasterTheoreticalDevice": {
+      "matterweaver": "物质操控",
+      "moveNothingAfter": "不移动(定位变换之后)",
+      "moveNothingBefore": "不移动(定位变换之前)",
+      "railshooter": "轨道射击",
+      "realitycollapser": "现实崩解",
+      "telescanner": "电信扫描",
+      "translocator": "定位变换"
+    },
+    "hypnoticGaze": {
+      "health": "造成伤害值的伤害",
+      "sanity": "造成恐惧值的伤害"
+    },
+    "icePick3": {
+      "discardIcePick3": "弃掉破冰锥来发现你所在地点的额外1个线索",
+      "discardIcePick3ToDo1Damage": "弃掉破冰锥来使得本次攻击造成+1伤害"
+    },
+    "idolOfXanatosWatcherBeyondTime": {
+      "cancel1Damage": "取消1点伤害",
+      "cancel1Horror": "取消1点恐惧"
+    },
+    "imDoneRunnin": {
+      "skip": "不造成伤害",
+      "damage": "造成1点伤害"
+    },
+    "impromptuBarrier": {
+      "evadeAnother": "躲避另一个敌人",
+      "skip": "不躲避另一个敌人"
+    },
+    "inquisitive": {
+      "passByTwoMore": "增加2点",
+      "passByOneMore": "增加1点",
+      "doNotModify": "不修改",
+      "passByOneLess": "减少1点",
+      "passByTwoLess": "减少2点"
+    },
+    "isamaraOrdonezTheTorchSinger": {
+      "ready": "准备"
+    },
+    "jewelOfAureolus3": {
+      "draw1Card": "抽取1张卡牌",
+      "take2Resources": "获得2资源"
+    },
+    "joeDiamond": {
+      "chooseHunchCards": "选择11张_洞察_事件，组成“直觉牌库”",
+      "chooseHunch": "选择11张_洞察_事件，组成“直觉牌库”",
+      "doNotMove": "不移动_洞察_"
+    },
+    "katana": {
+      "exhaustKatanaToDeal2DamageForThisAttack": "横置武士刀以使本次攻击造成+2伤害"
+    },
+    "kateWinthrop": {
+      "doNotMove": "不将线索移动回去"
+    },
+    "kenslersLog": {
+      "get2IntellectForThisInvestigation": "本次调查得到+2{'{'}intellect{'}'}",
+      "investigateWithABaseIntellectSkillOf5": "以基础值为5的{'{'}intellect{'}'}调查"
+    },
+    "knightOfSwords3": {
+      "discardKnightOfSwordsToGet3Instead": "弃掉宝剑骑士，改为得到+3技能值"
+    },
+    "knowledgeIsPower": {
+      "discardToDraw": "弃掉它来抽取1张卡牌",
+      "discard": "弃掉它来抽取1张卡牌"
+    },
+    "kohakuNarukami": {
+      "addBless": "加入1个{'{'}bless{'}'}标记",
+      "addCurse": "加入1个{'{'}curse{'}'}标记",
+      "removeAction": "从混乱袋中移除2个{'{'}bless{'}'}标记和2个{'{'}curse{'}'}标记，以在本回合进行一个额外行动"
+    },
+    "kukri": {
+      "spendActionForDamage": "花费额外1个行动来造成+1伤害",
+      "skipAdditionalKukriDamage": "跳过弯刀的额外伤害",
+      "spend1ActionToDeal1Damage": "花费额外1个行动来造成+1伤害"
+    },
+    "leadingLadyEnchantress": {
+      "removeDoom": "从你所在地点的玩家卡牌上移除1个毁灭标记"
+    },
+    "libraryPass5": {
+      "pay1Resources": "支付1资源",
+      "putOnBottomOfDeck": "将附属的支援放到你的牌库底"
+    },
+    "lieInWait": {
+      "skip": "不弃掉守株待兔",
+      "discard": "弃掉守株待兔以使本次攻击造成伤害+1"
+    },
+    "livingInk": {
+      "doNotCharge": "_暗纹_(*这个翻译可能有错误*)",
+      "remove1Charge": "移除传神佳墨的1充能"
+    },
+    "localMap": {
+      "exhaust": "横置本地地图以移动到调查的地点"
+    },
+    "logicalReasoning": {
+      "discardTerror": "弃掉一张_恐怖_卡牌"
+    },
+    "luckyCharm": {
+      "move1Damage": "移动1点伤害",
+      "move1Horror": "移动1点恐惧"
+    },
+    "lukeRobinson": {
+      "currentLocation": "在当前地点打出",
+      "connectingLocation": "在一个连接地点打出"
+    },
+    "machete": {
+      "doNotExhaustMachete": "不横置大砍刀",
+      "exhaustMachete": "横置大砍刀"
+    },
+    "maimedHand": {
+      "putMaimedHandIntoPlayInYourThreatArea": "将手部疾放置入场，放到你的威胁区域",
+      "take1DamageAndShuffleItIntoYourDeck": "受到1点伤害，将手部残疾混洗入你的牌库"
+    },
+    "mandyThompson": {
+      "additionalCards": "查找额外3张卡牌",
+      "additionalTargets": "该次查找多结算1个目标"
+    },
+    "manipulateDestiny": {
+      "damage": "对你所在地点的一个敌人造成2点伤害",
+      "heal": "治愈你所在地点的一位调查员或一个_盟友_支援2点伤害"
+    },
+    "manipulateDestiny2": {
+      "dealDamageToEnemy": "对你所在地点的一个敌人造成2点伤害",
+      "healDamageFromInvestigatorOrAlly": "治愈你所在地点的一位调查员或一个_盟友_支援2点伤害"
+    },
+    "mapTheArea": {
+      "willpower": "加入你的{'{'}willpower{'}'}",
+      "agility": "加入你的{'{'}agility{'}'}"
+    },
+    "marieLambeau": {
+      "addDoom": "增加1个毁灭标记"
+    },
+    "mauserC96": {
+      "readyMauserC96": "重整毛瑟C96手枪",
+      "take1Resource": "获得1资源"
+    },
+    "mauserC962": {
+      "readyMauserC962": "重整毛瑟C962手枪",
+      "take1Resource": "获得1资源"
+    },
+    "medicalTexts2": {
+      "exhaust": "横置医学教科书",
+      "dealDamage": "对该调查员造成1点伤害",
+      "deal1DamageToThatInvestigator": "对该调查员造成1点伤害",
+      "exhaustMedicalTexts": "横置医学教科书"
+    },
+    "medicoDellaPeste": {
+      "heal1Damage": "治愈1点伤害",
+      "heal1Horror": "治愈1点恐惧"
+    },
+    "memoriesOfAnotherLife": {
+      "remove": "将彼生记忆从游戏中移除",
+      "skip": "跳过该效果"
+    },
+    "memoriesOfAnotherLife5": {
+      "removeFromGame": "将彼生记忆从游戏中移除",
+      "doNotRemove": "跳过该效果"
+    },
+    "michaelMcGlen": {
+      "doNotAdd": "不放置任何子弹"
+    },
+    "miguelsKnapsack": {
+      "playThatEventAtAConnectingLocation": "在连接地点打出该事件"
+    },
+    "minhThiPhan": {
+      "doNotReturnSkill": "不将技能卡牌返回所有者的手牌",
+      "skip": "跳过该效果"
+    },
+    "mk1Grenades4": {
+      "applyToConcealed": "对受攻击敌人所在地点的每个敌人和每位其他调查员造成2点伤害",
+      "applyDamageToConcealed": "对受攻击敌人所在地点的每个敌人和每位其他调查员造成2点伤害",
+      "doNotApplyDamageToConcealed": "造成标准伤害"
+    },
+    "mrRook": {
+      "top": "牌库顶{count}张"
+    },
+    "mysteriesRemain": {
+      "placeClue": "在你的所在地点上放置1个线索(从供应堆拿取。)"
+    },
+    "nathanielCho": {
+      "elderSign": "{'{'}elderSign{'}'}:将你弃牌堆的一张事件卡返回你的手牌"
+    },
+    "nauticalCharts": {
+      "discard1CardFrom": "弃掉1张手牌，以发现你所在地点额外1个线索"
+    },
+    "nauticalProwess": {
+      "gainsWildIcons": "航海技巧获得{'{'}wild{'}'}{'{'}wild{'}'}",
+      "wild": "航海技巧获得{'{'}wild{'}'}{'{'}wild{'}'}"
+    },
+    "nephthysHuntressOfBast4": {
+      "releaseBlessTokens": "释放3个{'{'}bless{'}'}标记",
+      "returnBlessForDamage": "将3个{'{'}bless{'}'}标记返回供应堆，以对你所在地点的一个敌人造成2点伤害",
+      "release3BlessTokens": "释放3个{'{'}bless{'}'}标记",
+      "returnBlessForDamage2": "将3个{'{'}bless{'}'}标记返回供应堆，以对你所在地点的一个敌人造成2点伤害"
+    },
+    "noseToTheGrindstone": {
+      "replenishSupply": "补满检定所在的支援上的1补给"
+    },
+    "occultLexicon3": {
+      "changeEach": "将鲜血仪式上所有的\"2\"改为\"3\"",
+      "shuffleItInto": "结算后不弃掉，改为将其洗回你的牌库"
+    },
+    "occultReliquary": {
+      "choose": "选择密教珍藏的初始槽位类型"
+    },
+    "oldBookOfLore3": {
+      "doNotSpendSecrets": "不花费秘密",
+      "doNotSpendAnySecretsToPlayAnyCards": "不花费秘密"
+    },
+    "oldCompass": {
+      "exhaustOldCompass": "横置旧指南针"
+    },
+    "oldCompass2": {
+      "exhaustOldCompass": "横置旧指南针"
+    },
+    "onTheTrail": {
+      "moveTowards": "朝着该敌人移动2次",
+      "discoverBetween": "在你与选定敌人间最短路径上的任意无人地点发现1个线索"
+    },
+    "onTheirHeels5": {
+      "discoverAClueAtYourLocation": "发现你所在地点的1个线索"
+    },
+    "oneTwoPunch": {
+      "again": "再次攻击该敌人",
+      "skip": "取消再次攻击"
+    },
+    "onyxPentacle": {
+      "exhaustToTarget": "横置缟玛瑙五芒星并在上面放置1个毁灭标记，以将你所在地点或连接地点的任意一个敌人作为对象，且本次躲避尝试得到+1技能值",
+      "succeedBy2": "如果你检定成功且超过难度至少2点，移除缟玛瑙五芒星的1个毁灭标记"
+    },
+    "onyxPentacle4": {
+      "exhaustToTarget": "横置缟玛瑙五芒星并在上面放置1个毁灭标记，以将你所在地点或连接地点的任意一个敌人作为对象，且本次躲避尝试得到+3技能值",
+      "succeedBy2": "如果你检定成功且超过难度至少2点，重整缟玛瑙五芒星并移除上面所有的毁灭标记"
+    },
+    "outOfSight": {
+      "disengageAndMove": "与每个敌人解除交战并移动到一个已揭示的连接地点",
+      "disengage": "与每个敌人解除交战并移动到一个已揭示的连接地点，该地点与其所在地点连接次数不超过2"
+    },
+    "outOfSight3": {
+      "disengageAndMove2": "与每个敌人解除交战并移动到一个已揭示的连接地点，该地点与其所在地点连接次数不超过2"
+    },
+    "patriceHathaway": {
+      "shuffleDiscardKeepOne": "将弃牌堆中的1张卡牌留下并将其余卡牌混洗回你的牌库",
+      "chooseOneCardToLeave": "选择1张牌留在弃牌堆",
+      "shuffle": "将弃牌堆中的1张卡牌留下并将其余卡牌混洗回你的牌库",
+      "leaveInDiscard": "选择1张牌留在弃牌堆"
+    },
+    "patricesViolin": {
+      "drawCard": "抽牌",
+      "gainResource": "获得资源"
+    },
+    "pendantOfTheQueen": {
+      "discoverAClueAtThisLocation": "在该地点发现1个线索",
+      "evadeAnEnemyAtThisLocation": "在该地点躲避一个敌人",
+      "moveToThisLocation": "移动到该地点"
+    },
+    "petesGuitar": {
+      "heal1Horror": "治愈1点恐惧"
+    },
+    "pocketknife": {
+      "exhaustPocketknifeGain1Resource": "横置折叠小刀，获得1资源"
+    },
+    "polishedCane": {
+      "doNotEvade": "不躲避",
+      "exhaust": "横置锃亮的手杖以自动躲避该敌人"
+    },
+    "powerWord": {
+      "go": "去",
+      "cower": "蹲下",
+      "betray": "叛变",
+      "mercy": "开恩",
+      "confess": "坦白",
+      "distract": "引开",
+      "tonguetwisterSkip": "_跳过连续口令_:不使用第二个命令"
+    },
+    "predatorOrPrey": {
+      "enemiesMove": "每个未交战的非_精英_敌人朝最近的调查员移动一次",
+      "investigatorsMove": "每位调查员与自己交战的所有敌人解除交战，并远离最近的敌人移动一次"
+    },
+    "prescient": {
+      "even": "偶数",
+      "odd": "奇数",
+      "symbol": "符号",
+      "doNotReturn": "不返回法术牌"
+    },
+    "priestOfTwoFaiths1": {
+      "discardName": "弃掉{name}",
+      "add1CurseTokenToTheChaosBag": "在混乱袋中加入1个{'{'}curse{'}'}标记",
+      "discardPriestOfTwoFaiths": "弃掉双面神父"
+    },
+    "prismaticSpectaclesLensToTheOtherworld2": {
+      "doNotExaust": "不横置棱相眼镜",
+      "exhaustForClue": "横置棱相眼镜以发现你所在地点的额外1个线索"
+    },
+    "professorWilliamWebbFinderOfHiddenConnections": {
+      "discoverAClueAtAConnectingLocation": "在一个连接地点发现1个线索",
+      "returnItemToYourHand": "返回一张_道具_卡牌"
+    },
+    "professorWilliamWebbFinderOfHiddenConnections2": {
+      "discoverAClueAtAConnectingLocation": "在一个连接地点发现1个线索",
+      "discoverClueAtYourLocation": "在你所在地点发现1个线索"
+    },
+    "protectingTheAnirniq": {
+      "return": "将该_盟友_支援返回其拥有者手中",
+      "draw": "其拥有者抽取3张卡牌"
+    },
+    "protectiveIncantation1": {
+      "discardProtectiveIncantation": "弃掉保护咒语",
+      "spend1Resource": "花费1资源"
+    },
+    "prudenceDouglas": {
+      "doneDiscarding": "结束弃牌"
+    },
+    "psychoanalysis": {
+      "draw": "抽取1张揭示的卡牌并将其余卡牌混洗入自己的牌库",
+      "heal": "治愈2点恐惧并将揭示的卡牌以任意顺序放回其所有者牌库顶"
+    },
+    "purifyingCorruption4": {
+      "removeCorruption": "移除本卡牌的1腐败",
+      "heal1DamageAnd1Horror": "治愈1点伤害和1点恐惧",
+      "remove1CorruptionFromThisCard": "移除本卡牌的1腐败"
+    },
+    "quickWitted": {
+      "shuffle": "将你弃牌堆的每张其他的灵光一现混洗入你的牌库",
+      "skip": "不混洗任何卡牌"
+    },
+    "quickWitted1": {
+      "shuffleOthers": "将你弃牌堆的每张其他的灵光一现混洗入你的牌库",
+      "doNotShuffleAny": "不混洗任何卡牌"
+    },
+    "randallCho": {
+      "heal3Damage": "治愈3点伤害",
+      "searchDeck": "在你的牌库和弃牌堆中查找一个_武器_支援，将其打出(支付其费用)，并混洗你的牌库"
+    },
+    "ravenousMyconidNurturingStrain4": {
+      "heal": "治愈饥饿霉菌上同等数量的伤害和/或恐惧",
+      "moveThatMuch": "从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上"
+    },
+    "rexMurphy": {
+      "fail": "本次技能检定自动失败，以抽取3张卡牌"
+    },
+    "rexMurphyParallel": {
+      "conversion": "使用雷克斯能力的次数"
+    },
+    "rightUnderTheirNoses": {
+      "discover": "在连接地点发现线索",
+      "skip": "不在连接地点发现线索"
+    },
+    "ritaYoung": {
+      "damage": "对该敌人造成1点伤害"
+    },
+    "riteOfEquilibrium": {
+      "add": "在混乱袋中加入X个{'{'}curse{'}'}标记，以加入X个{'{'}bless{'}'}标记",
+      "remove": "从混乱袋中移除X个{'{'}curse{'}'}和X个{'{'}bless{'}'}标记，以治愈你所在地点卡牌上的X点恐惧"
+    },
+    "riteOfEquilibrium5": {
+      "addCurseToAddBless": "在混乱袋中加入X个{'{'}curse{'}'}标记，以加入X个{'{'}bless{'}'}标记",
+      "removeBlessAndCurseToHeal": "从混乱袋中移除X个{'{'}curse{'}'}和X个{'{'}bless{'}'}标记，以治愈你所在地点卡牌上的X点恐惧"
+    },
+    "robertCastaigneStillHasYourBack4": {
+      "discardTheRevealedAssetToDraw1Card": "弃掉揭示的支援以抽取1张卡牌",
+      "playCardPayingCost": "打出该支援(支付其费用)"
+    },
+    "rodOfCarnamagosScepterOfTheMadSeer2": {
+      "doneAttachingRots": "结束附属_腐烂_事件"
+    },
+    "runicAxe": {
+      "doNotSpendCharges": "不花费充能",
+      "doNotUseAdditionalImbueFromScriptweaver": "_跳过刻铭匠_：不使用额外灌注",
+      "draw1Card": "抽取1张卡牌",
+      "heal1Damage": "治愈1点伤害",
+      "heal1Horror": "治愈1点恐惧",
+      "inscription": {
+        "Accuracy": "精准",
+        "Power": "力量",
+        "Glory": "荣耀",
+        "Elders": "长者",
+        "Hunt": "追猎",
+        "Fury": "狂怒"
+      },
+      "doNotUseAdditionalImbue": "_跳过刻铭匠_：不使用额外灌注"
+    },
+    "salvage": {
+      "remove": "将该支援从游戏中移除，并获得等于其费用的资源",
+      "play": "打出该支援(支付其费用)"
+    },
+    "scavenging2": {
+      "addToHand": "加入你的手中",
+      "play": "打出"
+    },
+    "scrollOfSecretsMystic3": {
+      "lookAtBottom": "查看牌库底",
+      "lookAtTop": "查看牌库顶"
+    },
+    "scrollOfSecretsSeeker3": {
+      "add1CardToHand": "将其中1张加入其所有者手牌",
+      "discard1Card": "弃掉其中1张",
+      "doNotAddToHand": "不加入手牌"
+    },
+    "seaChangeHarpoon": {
+      "returnToHand": "将骇变鱼叉返回你的手牌，以将你所有投入的技能都不弃掉，改为返回你的手牌"
+    },
+    "searchForTheTruthAdvanced": {
+      "draw": "抽取1张卡牌",
+      "place": "将你的1个线索放回你的所在地点，然后从你的弃牌堆将任意一张牌返回手中",
+      "skip": "不采取任何行动 (结束此卡牌)"
+    },
+    "secondSight": {
+      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+    },
+    "secondSight5": {
+      "doNotSpendCharge": "不花费充能",
+      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+    },
+    "sefinaRousseau": {
+      "doneChoosingEvents": "结束选择事件"
+    },
+    "sergeantMonroe": {
+      "dealDamage": "造成({count}点伤害)",
+      "dealHorror": "造成({count}点恐惧)"
+    },
+    "sharpshooter3": {
+      "doBoth": "选择两项",
+      "attackUsesAlt": "这次攻击不使用{'{'}combat{'}'}，改为使用{'{'}agility{'}'}。你的{'{'}combat{'}'}修正值改为修正你的{'{'}agility{'}'}",
+      "useEnemyEvadeForAttack": "对于本次攻击期间被攻击敌人，不使用其攻击值，改为使用其躲避值"
+    },
+    "shrineOfTheMoirai3": {
+      "doneChoosingCards": "结束选择卡牌"
+    },
+    "shroudOfShadows": {
+      "placeCharge": "在暗影遁形上放置1充能",
+      "place1ChargeOnShroudOfShadows": "在暗影遁形上放置1充能"
+    },
+    "shroudOfShadows4": {
+      "placeCharge": "在暗影遁形上放置1充能",
+      "place1ChargeOnShroudOfShadows4": "在暗影遁形上放置1充能"
+    },
+    "signOfXelotaphSymbolOfProtection": {
+      "discardSignOfXelotaph": "弃掉谢罗塔法之福",
+      "spend1Charge": "花费1充能"
+    },
+    "silasMarsh": {
+      "doNotCommit": "不投入技能"
+    },
+    "silassNet": {
+      "returnNetWithSkills": "将塞拉斯的渔网返回你的手牌，以将你所有投入的技能都不弃掉，改为返回你的手牌",
+      "automaticallyEvadeAnotherEnemy": "自动躲避另一个与你交战的敌人",
+      "doNotEvadeAnotherEnemy": "不躲避另一个敌人",
+      "returnNet": "将塞拉斯的渔网返回你的手牌，以将你所有投入的技能都不弃掉，改为返回你的手牌"
+    },
+    "sinEater3": {
+      "addCharge": "添加充能",
+      "readyAsset": "重整支援"
+    },
+    "sixthSense": {
+      "doNotChooseOtherLocation": "不选择其他地点",
+      "useNewLocationsShroud": "使用新地点的隐藏值",
+      "useOriginalLocationsShroud": "使用原地点的隐藏值"
+    },
+    "sixthSense4": {
+      "doNotChooseOtherLocation": "不选择其他地点",
+      "useNewLocationsShroud": "使用新地点的隐藏值",
+      "useOriginalLocationsShroud": "使用原地点的隐藏值"
+    },
+    "sledgehammer3": {
+      "exhaustSledgehammer": "横置长柄大锤"
+    },
+    "smuggledGoods": {
+      "deck": "查找牌库顶",
+      "discard": "查找弃牌堆"
+    },
+    "spiritSpeaker": {
+      "moveChargesToResources": "将该支援上的所有充能(作为资源)移动到你的资源池",
+      "moveAllChargesToYourResourcePool": "将该支援上的所有充能(作为资源)移动到你的资源池",
+      "returnToHand": "将该支援返回你的手牌"
+    },
+    "stalkPrey": {
+      "moveToward": "朝其所在地点移动一次"
+    },
+    "steadyHanded1": {
+      "succeedBy1Less": "成功且超过难度的点数少1点",
+      "succeedBy1More": "成功且超过难度的点数多1点"
+    },
+    "stellaClark": {
+      "resolve": "正常结算",
+      "fail": "本次技能检定自动失败，治愈1点伤害和1点恐惧"
+    },
+    "stickToThePlan3": {
+      "chooseNoMoreEvents": "结束找出事件"
+    },
+    "stormRuler": {
+      "exhaust": "横置风暴御主，对你所在地点的一个敌人造成额外{count}点伤害"
+    },
+    "stouthearted": {
+      "done": "结束移动伤害/恐惧"
+    },
+    "strokeOfLuck": {
+      "exile": "放逐鸿运当头，本次检定自动成功",
+      "skip": "不放逐"
+    },
+    "subject5U21": {
+      "doNotReturnDevoured": "不返回被吞噬的卡牌",
+      "doNotRegurgitateAnyMoreCards": "不吐出任何卡牌"
+    },
+    "summonedServitor": {
+      "moveToLocation": "_黑翼如夜_:移动到召来的仆从所在地点"
+    },
+    "surgicalKit3": {
+      "draw1CardAndHeal1Horror": "你抽取1张卡牌并治愈1点恐惧",
+      "thatEffectHeals1AdditionalDamage": "该效果治愈1点额外伤害"
+    },
+    "survivalInstinct": {
+      "disengage": "和每个与其交战的其他敌人解除交战",
+      "evadeOther": "躲避与其交战的每个其他敌人"
+    },
+    "swordCaneDesignedByTheCouncilOfPolls2": {
+      "doNotDealDamage": "不造成伤害"
+    },
+    "talismanOfProtection": {
+      "doneCanceling": "结束取消"
+    },
+    "taskForce": {
+      "ability": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
+      "move": "...移动到一个连接地点",
+      "discover": "...发现其所在地点的1个线索"
+    },
+    "teachingsOfTheOrder": {
+      "defeatANon_elite_EnemyAtYourLocation": "击败一个你所在地点的非_精英_敌人",
+      "removeAFlood": "移除一个非_圣堂_地点的淹没标记",
+      "removeAllCurseTokensFromTheChaosBag": "从混乱袋中移除所有{'{'}curse{'}'}标记"
+    },
+    "terribleSecret": {
+      "keepRemainingCards": "保留剩余卡牌"
+    },
+    "tetsuoMori": {
+      "searchDeck": "查找牌库顶",
+      "searchDiscard": "查找弃牌堆"
+    },
+    "theBeyondBleakNetherworld": {
+      "attachTheTop": "将灵魂牌库顶的牌正面朝上附属到彼端上，作为一个灵魂",
+      "discardThisSpirit": "弃掉此灵魂",
+      "take1DirectDamage": "受到1点直接伤害",
+      "take1DirectHorror": "受到1点直接恐惧"
+    },
+    "theCouncilsCoffer2": {
+      "searchDeck": "查找牌库顶",
+      "searchDiscard": "查找弃牌堆"
+    },
+    "theKeyOfSolomonSecretsOfTheUnknown4": {
+      "doneHealing": "结束治愈",
+      "healDamage": "治愈伤害",
+      "healHorror": "治愈恐惧"
+    },
+    "theRavenQuill": {
+      "search": "查找你的牌库、弃牌堆和手牌，找出一张所指定的支援，将其打出(支付其费用)。然后，将鸦翎羽毛笔附属到该卡牌。",
+      "doNotSearch": "不查找",
+      "deckbuilding": "勾选鸦翎羽毛笔升级卡上的一个方框，或者在下场冒险开始前升级所附属支援的经验值费用降低1点。(注意: 当您通过ArkhamDB升级牌组时，必须手动处理此更新)",
+      "moveSecret": "移动秘密",
+      "moveCharge": "移动充能",
+      "doNotReady": "不重整支援"
+    },
+    "theRedClockBrokenButReliable2": {
+      "place1ChargeHere": "在此放置1充能",
+      "takeAllChargesHereAsResources": "拿取此处所有充能作为资源"
+    },
+    "theRedClockBrokenButReliable5": {
+      "leaveCharges": "保留充能",
+      "takeAllChargesHereAsResources": "拿取此处所有充能作为资源"
+    },
+    "theSilverMoth": {
+      "putTheSilverMothIntoPlayInYourThreatArea": "银蛾放置入场，放到你的威胁区域",
+      "take1HorrorAndShuffleItIntoYourDeck": "受到1点恐惧并将银蛾混洗入你的牌库"
+    },
+    "thievesKit": {
+      "useAgility": "使用{'{'}agility{'}'}",
+      "useIntellect": "使用{'{'}intellect{'}'}"
+    },
+    "thievesKit3": {
+      "useAgility": "使用{'{'}agility{'}'}",
+      "useIntellect": "使用{'{'}intellect{'}'}"
+    },
+    "throwTheBookAtThem": {
+      "afterAttack": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
+    },
+    "tinker": {
+      "hand": "手部",
+      "accessory": "饰品"
+    },
+    "tokenOfFaith3": {
+      "attemptThatSkillTestAgain": "再次尝试该检定",
+      "doNotAttemptAgain": "不再次尝试"
+    },
+    "tommyMuldoon": {
+      "moveFromTommyToAsset": "将托米·马尔登上的总计最多2点伤害和/或恐惧移动到你控制的一个支援上",
+      "moveFromAssetToTommy": "将你控制的一个支援上的总计最多2点伤害和/或恐惧移动到托米·马尔登上",
+      "moveToAsset": "将托米·马尔登上的总计最多2点伤害和/或恐惧移动到你控制的一个支援上",
+      "moveToTommy": "将你控制的一个支援上的总计最多2点伤害和/或恐惧移动到托米·马尔登上",
+      "doNotMove": "不移动任何伤害和/或恐惧",
+      "done": "结束移动伤害/恐惧"
+    },
+    "toolBelt": {
+      "attachAToolAssetInYourPlayAreaToToolBelt": "将你游戏区域的一个_工具_支援附属到工具带",
+      "detachAnAttachedAsset": "将一个已附属的支援解除附属",
+      "switchATool": "将你游戏区域的一个_工具_支援与一个附属的支援交换"
+    },
+    "treasureHunter1": {
+      "discardTreasureHunter": "弃掉寻宝猎人",
+      "pay1ResourceToTreasureHunter": "支付1资源"
+    },
+    "trialByFire": {
+      "all": "将你所有技能的基础值设为5",
+      "one": "将你一项技能的基础值设为7"
+    },
+    "trishScarborough": {
+      "discover": "发现该地点的额外1个线索",
+      "evade": "自动躲避该敌人",
+      "doNotChooseLocation": "不选择其他地点"
+    },
+    "trustyBullwhipAdvanced": {
+      "deal1DamageFor": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
+    },
+    "twentyOneOrBust": {
+      "stop": "以{total}停下"
+    },
+    "underworldMarket2": {
+      "placeTheRestOnTheBottomInAnyOrder": "将其余卡牌以任意顺序放回市场牌库底",
+      "spend1ResourceToDraw1OfThem": "花费1资源以抽取其中1张"
+    },
+    "unrelenting1": {
+      "doneSealingTokens": "结束封印标记"
+    },
+    "virgilGray": {
+      "heal1HorrorFromVirgilGray": "治愈维吉尔·格雷的1点恐惧"
+    },
+    "virgilGrayTrulyInspired": {
+      "heal1HorrorFromVirgilGray": "治愈维吉尔·格雷的1点恐惧"
+    },
+    "vowOfDrzytelech": {
+      "putIntoPlay": "将德兹特里奇之誓放置入场，放到你的威胁区域",
+      "take1HorrorAndShuffleItIntoYourDeck": "受到1点恐惧并将德兹特里奇之誓混洗入你的牌库"
+    },
+    "wendyAdamsParallel": {
+      "sealOne": "封印混乱袋中的1个{'{'}bless{'}'}或{'{'}curse{'}'}标记",
+      "sealAny": "封印本次检定期间揭示的1个{'{'}bless{'}'} 或 {'{'}curse{'}'}标记",
+      "doneSealingTokens": "结束封印标记",
+      "doNotChooseAnyMoreTokens": "不选择更多的标记"
+    },
+    "woodenSledge": {
+      "donePlacingCards": "结束在木制雪撬下附属卡牌"
+    },
+    "wordOfWeal": {
+      "shuffle": "将受难真言洗入你的牌库"
+    },
+    "wordOfWoe": {
+      "shuffle": "将蒙福真言洗入你的牌库"
+    },
+    "wrongPlaceRightTime": {
+      "done": "结束移动伤害/恐惧"
+    },
+    "zeal": {
+      "putIntoPlayFromDiscard": "从你的弃牌堆放置入场"
+    }
+  },
+  "tooltips": {
+    "aethericCurrentYuggoth": {
+      "exhaustEnemyAndMove": "横置该敌人并将其移动到任意地点",
+      "doNotExhaustEnemy": "不横置敌人"
+    },
+    "agencyBackup5": {
+      "fastExhaustAgency": "{'{'}fast{'}'}横置特工支援并对其造成1点伤害：对你所在地点的一个敌人造成1点伤害",
+      "fastExhaustAgency2": "{'{'}fast{'}'}横置特工支援并对其造成1点恐惧：发现你所在地点的1个线索"
+    },
+    "arcaneStudies": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "arcaneStudies2": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "beguile": {
+      "moveAttachedEnemy": "将所附属的敌人移动到一个已揭示的连接地点",
+      "basicInvestigate": "在其地点执行一次基础调查行动",
+      "basicEvade": "在其地点执行一次基础躲避行动"
+    },
+    "bloodPact": {
+      "fastAdd1Doom": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+2{'{'}combat{'}'}(每次检定仅限一次。)",
+      "fastAdd1Doom2": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+2{'{'}willpower{'}'}(每次检定仅限一次。)"
+    },
+    "bloodPact3": {
+      "fastAdd1Doom": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}combat{'}'}(每次检定仅限一次。)",
+      "fastAdd1Doom2": "{'{'}fast{'}'}在鲜血盟约上增加1个毁灭标记：你本次技能检定得到+3{'{'}willpower{'}'}(每次检定仅限一次。)"
+    },
+    "brokenBottle": {
+      "discardForDamage": "弃掉破瓶子以使本次攻击造成伤害+1"
+    },
+    "butterflySwords5": {
+      "doNotExhaust": "不横置",
+      "exhaustForDamage": "横置蝴蝶对剑，以造成+1伤害"
+    },
+    "callForBackup2": {
+      "rogueOption": "{'{'}rogue{'}'}卡牌，你可以移动到一个连接地点",
+      "guardianOption": "{'{'}guardian{'}'}卡牌，对你所在地点的一个敌人造成1点伤害",
+      "seekerOption": "{'{'}seeker{'}'}卡牌，发现你所在地点的1个线索",
+      "mysticOption": "{'{'}mystic{'}'}卡牌，治愈任意卡牌的1点恐惧",
+      "survivorOption": "{'{'}survivor{'}'}卡牌，治愈任意卡牌的1点伤害"
+    },
+    "combatTraining1": {
+      "spendForCombat": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
+      "spendForAgility": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "cosmicFlame": {
+      "spendChargeForDamage": "花费1充能以使本次攻击造成伤害+1"
+    },
+    "cosmicFlame5": {
+      "spendChargeForDamage": "花费1充能以对你所在地点的一个敌人造成1点伤害"
+    },
+    "cosmicRevelation1": {
+      "even": "偶数",
+      "odd": "奇数",
+      "playRevealed": "打出1张自己揭示的手牌"
+    },
+    "cryptographicCipher": {
+      "exhaust": "横置加密编码盘并花费1秘密：_调查_。本次调查你所在地点的隐藏值+1",
+      "exhaust2": "横置加密编码盘并花费1秘密：_调查_。本次调查你所在地点的隐藏值-2"
+    },
+    "decoy": {
+      "twoEnemies": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"一个非精英敌人\"”变为“\"最多2个非精英敌人\"”",
+      "twoConnections": "{'{'}reaction{'}'}在你打出诱敌时，提升其费用2点：“\"你所在地点\"”变为“\"与你所在地点之间连接次数不超过2的地点\"”"
+    },
+    "devilFriendOrFoe2": {
+      "damageConcealed": "对隐藏卡牌造成伤害",
+      "doNotDamageConcealed": "不对隐藏卡牌造成伤害"
+    },
+    "digDeep": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "digDeep2": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "doppelganger1": {
+      "moveToLocationOfDoppelganger": "立即移动到二重身附属地点",
+      "evadeEnemy": "躲避敌人"
+    },
+    "elinaHarpersCarRunning": {
+      "ifYouAre": "如果你是本载具的司机：抽取遭遇牌库顶的卡牌。然后，将本载具移动到一个连接的_道路_地点。(每轮最多一次)",
+      "ifYouAre2": "如果你是本载具的司机：你把车停下。将本载具翻面"
+    },
+    "empiricalHypothesis": {
+      "dynamicTrigger": "在{trigger}时，你可以横置实证假设，在上面增加1证据",
+      "fastSpend1EvidenceDraw1Card": "{'{'}fast{'}'}花费1证据：抽取1张卡牌",
+      "fastSpend2Evidence": "{'{'}fast{'}'}花费2证据：你本阶段打出的下一张卡牌费用减少3点",
+      "fastSpend3Evidence": "{'{'}fast{'}'}花费3证据：发现你所在地点的1个线索",
+      "alternativeHypothesis": "你可以结算其强制效果，选择一个你本轮未选择的标准。然后，将其重整"
+    },
+    "endurance": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "endurance3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "handCrankFlashlight": {
+      "discardForShroud": "弃掉手摇式手电筒，以使你的地点得到隐藏值-1，直到本轮结束"
+    },
+    "hardKnocks": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "hardKnocks2": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "hatchet1": {
+      "takeControlOfHatchet": "控制飞斧"
+    },
+    "higherEducation": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "higherEducation3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+2{'{'}intellect{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+2{'{'}willpower{'}'}"
+    },
+    "holySpear5": {
+      "fightWithReleaseBless": "{'{'}action{'}'}: _攻击_。你本次攻击得到+2{'{'}combat{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记",
+      "fightWithSealBless": "{'{'}action{'}'}查找混乱袋，找出2个{'{'}bless{'}'}标记并将其封印在圣矛上：_攻击_。你本次攻击得到+4{'{'}combat{'}'}并造成+2伤害",
+      "actionSearchThe": "{'{'}action{'}'}查找混乱袋，找出2个{'{'}bless{'}'}标记并将其封印在圣矛上：_攻击_。你本次攻击得到+4{'{'}combat{'}'}并造成+2伤害",
+      "actionYouGet2": "{'{'}action{'}'}: _攻击_. You get +2 {'{'}combat{'}'}并造成+1伤害。在你发动本能力时，你可以释放一个封印在圣矛上的{'{'}bless{'}'}标记"
+    },
+    "hyperawareness": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}"
+    },
+    "hyperawareness2": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}"
+    },
+    "joeyTheRatVigil3": {
+      "spendForItem": "花费1资源：选择你手中的一个_道具_支援并将其打出(支付其费用)",
+      "discardForResources": "弃掉场上的一个_道具_支援：获得2资源",
+      "discardAnAsset": "弃掉场上的一个_道具_支援：获得2资源",
+      "spend": "花费1资源：选择你手中的一个_道具_支援并将其打出(支付其费用)"
+    },
+    "keenEye": {
+      "fastSpend2Resources": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+1{'{'}combat{'}'}，直到本阶段结束",
+      "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+1{'{'}intellect{'}'}，直到本阶段结束"
+    },
+    "keenEye3": {
+      "fastSpend2Resources": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+1{'{'}combat{'}'}，直到本阶段结束",
+      "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+1{'{'}intellect{'}'}，直到本阶段结束"
+    },
+    "levelheaded": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "levelheaded3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "livreDeibon": {
+      "fastExhaustLivre": "{'{'}fast{'}'}横置伊波恩之书：将你牌库顶的卡牌投入到你所在地点一位调查员执行的符合条件的技能检定中",
+      "fastExhaustLivre2": "{'{'}fast{'}'}横置伊波恩之书：用你一张手牌交换你牌库顶的卡牌"
+    },
+    "localMap": {
+      "exhaustAndMove": "横置本地地图以移动到调查的地点"
+    },
+    "longbow3": {
+      "youNockAnotherArrow": "你搭上另一只箭"
+    },
+    "madameLabranche": {
+      "fastIfYou": "{'{'}fast{'}'}如果你没有手牌，横置拉布兰奇夫人：抽取1张卡牌",
+      "fastIfYou2": "{'{'}fast{'}'}如果你没有资源，横置拉布兰奇夫人：获得1资源"
+    },
+    "moxie1": {
+      "spendForWillpower": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}",
+      "spendForAgility": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "oldCompass": {
+      "exhaustToRepeat": "横置旧指南针"
+    },
+    "oldHuntingRifle3": {
+      "clearJam": "你解决了卡膛情况。",
+      "youClearTheJam": "你解决了卡膛情况。"
+    },
+    "onTheTrail1": {
+      "moveTwiceTowardsEnemy": "朝着该敌人移动2次",
+      "discoverClueBetween": "在你与选定敌人间最短路径上的任意无人地点发现1个线索"
+    },
+    "ornateBow3": {
+      "nockArrow": "你搭上另一只箭",
+      "youNockAnotherArrow": "你搭上另一只箭"
+    },
+    "physicalTraining": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "physicalTraining2": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "pitchfork": {
+      "takeControlOfPitchfork": "控制草叉"
+    },
+    "plucky1": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}"
+    },
+    "protectingTheAnirniq2": {
+      "returnAssetToOwner": "将该_盟友_支援返回其拥有者手中",
+      "ownerDraws3": "其拥有者抽取3张卡牌"
+    },
+    "quickdrawHolster4": {
+      "fastChooseA": "{'{'}fast{'}'}：选择一张在你游戏区域，只占据1个手部槽位的_枪械_支援，将其附属到快拔枪套，或与已附属的支援交换。附属的支援不占用手部槽位。(附属的支援仅限1张)",
+      "fastExhaustQuickdraw": "{'{'}fast{'}'}横置快拔枪套：执行一次已附属支援的攻击行动且无需支付其{'{'}action{'}'}费用"
+    },
+    "ravenousMyconidNurturingStrain4": {
+      "searchForUncannyGrowth": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌",
+      "healOrMoveDamageHorror": "治愈饥饿霉菌上同等数量的伤害和/或恐惧，或者从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
+      "healFromMyconid": "治愈饥饿霉菌上同等数量的伤害和/或恐惧",
+      "moveDamageToMyconid": "从你所在地点的调查员或盟友支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
+      "eitherHealThat": "治愈饥饿霉菌上同等数量的伤害和/或恐惧，或者从你所在地点的调查员或_盟友_支援身上，将同等数量的伤害和/或恐惧移动到饥饿霉菌上",
+      "search": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌"
+    },
+    "ravenousMyconidUnidentified": {
+      "searchForUncannyGrowth": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌",
+      "classifyNewSpecies": "将每个生长移动到你的资源池，作为资源。在剧本日志中，记录下“\"你识别了新的物种\"”",
+      "moveEachGrowth": "将每个生长移动到你的资源池，作为资源。在剧本日志中，记录下“\"你识别了新的物种\"”",
+      "search": "查找你的绑定卡牌，找出诡异疯长，并将其加入你的手牌"
+    },
+    "scientificTheory1": {
+      "spendForIntellect": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}",
+      "spendForCombat": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}"
+    },
+    "scrapper": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "scrapper3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}"
+    },
+    "secondSight": {
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
+    },
+    "secondSight5": {
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索",
+      "doNotSpendCharge": "不花费充能"
+    },
+    "sharpRhetoric": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}(如果是调查或谈判，改为+2{'{'}intellect{'}'})",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}(如果是调查或谈判，改为+2{'{'}willpower{'}'})"
+    },
+    "shortcut": {
+      "ability": "{'{'}fast{'}'}横置捷径：_移动_(到一个连接地点)。位于该地点的所有调查员均可以触发此能力"
+    },
+    "silverTongue": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}(如果是躲避或谈判，改为+2{'{'}agility{'}'})",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}(如果是躲避或谈判，改为+2{'{'}intellect{'}'})"
+    },
+    "silverTongue3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}agility{'}'}(如果是躲避或谈判，改为+2{'{'}agility{'}'})",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}intellect{'}'}(如果是躲避或谈判，改为+2{'{'}intellect{'}'})"
+    },
+    "sledgehammer3": {
+      "exhaustForDamage": "横置长柄大锤"
+    },
+    "smallRadio": {
+      "partner": "{name}"
+    },
+    "spectralRazor2": {
+      "engageFirst": "立即与敌人交战",
+      "doNotEngage": "不与敌人交战"
+    },
+    "spiritualIntuition": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}(如果是_法术_或_仪式_卡牌上的检定，改为+2{'{'}combat{'}'})",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}(如果是_法术_或_仪式_卡牌上的检定，改为+2{'{'}willpower{'}'})"
+    },
+    "spiritualIntuition3": {
+      "fastSpend1Resource": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}combat{'}'}(如果是_法术_或_仪式_卡牌上的检定，改为+2{'{'}combat{'}'})",
+      "fastSpend1Resource2": "{'{'}fast{'}'}花费1资源：你本次技能检定得到+1{'{'}willpower{'}'}(如果是_法术_或_仪式_卡牌上的检定，改为+2{'{'}willpower{'}'})"
+    },
+    "stouthearted": {
+      "doneMovingDamageHorror": "结束移动伤害/恐惧"
+    },
+    "streetwise": {
+      "fastSpend2Resources": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+2{'{'}agility{'}'}",
+      "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+2{'{'}intellect{'}'}"
+    },
+    "streetwise3": {
+      "fastSpend2Resources": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+3{'{'}agility{'}'}",
+      "fastSpend2Resources2": "{'{'}fast{'}'}花费2资源：你本次技能检定得到+3{'{'}intellect{'}'}"
+    },
+    "taskForce": {
+      "resolveAbilityNoCost": "...结算其控制的支援上的一个{'{'}action{'}'}能力，不支付其{'{'}action{'}'}费用",
+      "moveToConnecting": "...移动到一个连接地点",
+      "discoverClueAtTheirLocation": "...发现其所在地点的1个线索"
+    },
+    "theKeyOfSolomonSecretsOfTheUnknown4": {
+      "ifThereAre": "如果混乱袋中{'{'}bless{'}'}标记多于{'{'}curse{'}'}标记，从混乱袋中移除1个{'{'}bless{'}'}标记并横置所罗门之钥：治愈你所在地点的一位调查员或一个_盟友_支援最多2点伤害和/或恐惧。",
+      "ifThereAre2": "如果混乱袋中{'{'}curse{'}'}标记多于{'{'}bless{'}'}标记，从混乱袋中移除1个{'{'}curse{'}'}标记并横置所罗门之钥：获得2资源"
+    },
+    "theNecronomiconPetrusDeDaciaTranslation5": {
+      "fastSpend1Secret": "{'{'}fast{'}'}花费1秘密：你本次技能检定的技能值+2",
+      "fastSpend2SecretsDraw2Cards": "{'{'}fast{'}'}花费2秘密：抽取2张卡牌",
+      "fastSpend3Secrets": "{'{'}fast{'}'}花费3秘密：发现任意地点的1个线索",
+      "fastSpend4Secrets": "{'{'}fast{'}'}花费4秘密：对与你交战的一个敌人造成3点伤害"
+    },
+    "theRedClockBrokenButReliable2": {
+      "placeChargeHere": "在此放置1充能",
+      "takeChargesAsResources": "拿取此处所有充能作为资源"
+    },
+    "theRedClockBrokenButReliable5": {
+      "takeChargesAsResources": "拿取此处所有充能作为资源",
+      "leaveCharges": "保留充能"
+    },
+    "thermos": {
+      "heal": "治愈你所在地点上的一位调查员的1点伤害(如果该调查员有至少2点肉体创伤，改为治愈2伤害)",
+      "heal2": "治愈你所在地点上的一位调查员的1点恐惧(如果该调查员有至少2点精神创伤，改为治愈2恐惧)"
+    },
+    "thirdTimesACharm": {
+      "cancel": "将其取消，返回混乱袋并揭示一个新的标记"
+    },
+    "thirdTimesACharm2": {
+      "cancelAndReveal": "将其取消，返回混乱袋并揭示一个新的标记"
+    },
+    "thomasDawsonsCarRunning": {
+      "ifYouAre": "如果你是本载具的司机：抽取遭遇牌库顶的卡牌。然后，将本载具移动到一个连接的_道路_地点。(每轮最多一次)",
+      "ifYouAre2": "如果你是本载具的司机：你把车停下。将本载具翻面。"
+    },
+    "throwTheBookAtThem": {
+      "automaticallyEvade": "自动躲避被攻击的敌人",
+      "resolveAbilityOnTome": "在攻击结束后结算所选支援上的一个{'{'}action{'}'}或{'{'}fast{'}'}能力(忽略其{'{'}action{'}'}费用，如有)"
+    },
+    "timewornBrand5": {
+      "actionExhaustTimeworn": "{'{'}action{'}'}横置古旧锈剑：_攻击_。本次攻击将你的{'{'}willpower{'}'}加入你的技能值。本次攻击造成+3伤害。如果本次攻击击败了_精英_敌人，抽取3张卡牌。(每场游戏最多一次)",
+      "actionIfTimeworn": "{'{'}action{'}'}如果古旧锈剑处于重整状态：_攻击_。你本次攻击得到+2{'{'}combat{'}'}并造成+1伤害。"
+    },
+    "tinker": {
+      "hand": "手部",
+      "accessory": "饰品"
+    },
+    "transmogrify": {
+      "discoverClue": "发现其所在地点的1个线索(原型惊变)",
+      "discover": "发现其所在地点的1个线索(原型惊变)"
+    },
+    "trueMagickReworkingReality5": {
+      "useTrueMagick": "使用真法魔典"
+    },
+    "trustyBullwhipAdvanced": {
+      "dealDamageAndEvade": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
+    },
+    "twentyOneOrBust": {
+      "stopWith": "以{total}停下",
+      "continue": "继续"
+    },
+    "untimelyTransaction1": {
+      "noOnePays": "没有人打出",
+      "playCard": "打出该支援"
+    },
+    "winchesterModel522": {
+      "actionDiscardWinchester": "{'{'}action{'}'}: 弃掉温彻斯特52式步枪: _攻击({'{'}combat{'}'})_。你本次攻击得到+3{'{'}combat{'}'}。如果你检定成功，自动躲避对象敌人。",
+      "actionSpend1Ammo": "{'{'}action{'}'}: 花费1子弹：_攻击({'{'}combat{'}'})_。你本次攻击得到+3{'{'}combat{'}'}并且造成伤害+1。"
+    },
+    "yaotl1": {
+      "fastDiscardThe": "{'{'}fast{'}'}: 弃掉你牌库顶的一张卡牌。(每阶段仅限一次。)",
+      "fastExhaustYaotl": "{'{'}fast{'}'}横置雅沃托：在本次技能检定期间，你每项技能得到加成，加成的点数等于你弃牌堆顶上的一张卡牌的对应技能图标数({'{'}skillWild{'}'}图标不计算在内)."
+    }
+  }
+}

@@ -8,8 +8,8 @@
     "switchingPerspectivesDescription": "独自控制时，你有时需要从特定调查员的界面进行操作。使用玩家标签页中的 <strong>图标</strong> （文本框左上角所示）即可切换到该调查员的界面。",
 
     "campaign": "剧本模式",
-    "standalone": "冒险模式（使用剧本关卡）",
-    "sideStory": "独立冒险",
+    "standalone": "单场冒险模式（使用剧本关卡）",
+    "sideStory": "支线剧情",
 
     "alphaWarning": "此剧本目前正在开发中。它可能尚未完成，您不应该针对它提交bug报告。",
     "betaWarning": "本内容已准备就绪供测试使用，但请做好游戏频繁崩溃的心理准备。",

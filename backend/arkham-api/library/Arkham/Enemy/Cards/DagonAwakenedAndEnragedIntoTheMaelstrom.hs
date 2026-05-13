@@ -10,6 +10,7 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Sanctum))
 import Arkham.Window qualified as Window
 
@@ -40,11 +41,14 @@ instance HasAbilities DagonAwakenedAndEnragedIntoTheMaelstrom where
 
 instance RunMessage DagonAwakenedAndEnragedIntoTheMaelstrom where
   runMessage msg e@(DagonAwakenedAndEnragedIntoTheMaelstrom attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (map Window.windowType -> ws) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (map Window.windowType -> ws) _ -> do
       brood <- select $ enemyIs Cards.dagonsBrood
       for_ ws \case
-        Window.EnemyEvaded iid _ -> for_ brood $ push . Msg.EnemyEvaded iid
-        Window.DealtDamage source damageEffect _ n -> for_ brood \target -> push $ EnemyDamage target $ DamageAssignment source n damageEffect False False
+        Window.EnemyEvaded eiid _ ->
+          chooseOrRunTargetM iid brood $ push . Msg.EnemyEvaded eiid
+        Window.DealtDamage source damageEffect _ n ->
+          chooseOrRunTargetM iid brood \target ->
+            push $ EnemyDamage target $ DamageAssignment source n damageEffect False False
         _ -> pure ()
 
       pure e

@@ -630,6 +630,7 @@ instance RunMessage EdgeOfTheEarth where
                       questionLabeled' "beginScenarioIIIWithExtraResources"
                       portraitLabeled iid do
                         scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
+                    doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
                     addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache

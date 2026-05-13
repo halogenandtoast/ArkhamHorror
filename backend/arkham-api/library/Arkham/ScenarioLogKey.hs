@@ -126,6 +126,8 @@ data ScenarioLogKey
     LittleSylvieCanBeTakenControl
   | -- Hemlock House: secret passage from Library
     LibrarySecretPassageOpened
+  | -- Hemlock House: codex 6 (Gideon) triggered before The Predatory House was placed
+    CancelNextPredation
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.TheHouseStirsV1 (theHouseStirsV1) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
@@ -39,7 +40,10 @@ instance RunMessage TheHouseStirsV1 where
       thePredatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
       sendMessage' thePredatoryHouse $ requestChaosTokens lead (attrs.ability 1) 1
       pure a
-    UseCardAbility _iid (isSource attrs -> True) 2 _ _ -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      getMaybeLocation iid >>= traverse_ \lid -> do
+        n <- perPlayer 1
+        placeTokens (attrs.ability 2) lid Clue n
       advanceAgendaDeck attrs
       pure a
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do

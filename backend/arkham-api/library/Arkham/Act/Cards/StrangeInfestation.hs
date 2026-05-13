@@ -37,7 +37,17 @@ instance HasAbilities StrangeInfestation where
         $ actionAbilityWithCost (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
     , -- "Objective - At the end of the round, if a total of 7 locations are
       -- sealed and/or in the victory display, advance."
-      mkAbility a 2
+      restricted
+        a
+        2
+        ( HasCalculation
+            ( SumCalculation
+                [ CountLocations (LocationWithToken Resource)
+                , VictoryDisplayCountCalculation (basic $ CardWithType EnemyLocationCardType)
+                ]
+            )
+            (atLeast 7)
+        )
         $ Objective
         $ forced (RoundEnds #when)
     ]
@@ -53,10 +63,7 @@ instance RunMessage StrangeInfestation where
           $ PlaceTokens (toSource (attrs.ability 1)) (toTarget lid) Resource 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      sealed <- length <$> select (LocationWithToken Resource)
-      -- TODO: also count locations in the victory display once EnemyLocationDefeated
-      -- adds them via AddToVictory.
-      when (sealed >= 7) $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- Strange Infestation → The Heart of the House. Bring the Shapeless

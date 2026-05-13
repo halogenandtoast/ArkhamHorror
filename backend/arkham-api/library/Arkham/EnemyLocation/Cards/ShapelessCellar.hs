@@ -48,14 +48,20 @@ instance HasAbilities ShapelessCellar where
            -- victory display."
            mkAbility a 2
              $ forced
-             $ RoundEnds #when
+             $ LastClueRemovedFromLocation #after (LocationWithId a.id)
          ]
 
 instance RunMessage ShapelessCellar where
   runMessage msg el@(ShapelessCellar attrs) = runQueueT $ case msg of
+    -- Enemy-locations do not run Location.Runner's PlacedLocation handler,
+    -- so initial clue placement (per locationRevealClues) must happen here.
+    PlacedLocation _ _ lid | lid == attrs.id -> do
+      placeClues attrs attrs 3
+      pure el
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       push $ Do EnemiesAttack
       pure el
-    UseThisAbility _iid (isSource attrs -> True) 2 ->
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      addToVictory_ attrs
       pure el
     _ -> ShapelessCellar <$> liftRunMessage msg attrs

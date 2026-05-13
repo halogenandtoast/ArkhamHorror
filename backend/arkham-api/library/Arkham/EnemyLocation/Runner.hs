@@ -34,10 +34,10 @@ import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source (getSourceController)
-import Arkham.Helpers.Window (checkWindows, frame)
+import Arkham.Helpers.Window (checkAfter, checkWindows, frame)
 import Arkham.History
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Base (directionsL, labelL, positionL, tokensL)
+import Arkham.Location.Base (directionsL, labelL, positionL, tokensL, withoutCluesL)
 import Arkham.Location.Grid
 import Arkham.Matcher (
   InvestigatorMatcher (UneliminatedInvestigator, You),
@@ -235,6 +235,11 @@ instance RunMessage EnemyLocationAttrs where
       push $ ScenarioSpecific "enemyLocationDefeated" (toJSON lid)
       pure a
     PlaceTokens _ (isTarget a -> True) token n -> pure $ a & baseL . tokensL %~ addTokens token n
+    RemoveTokens _ (isTarget a -> True) Clue n -> do
+      let clueCount = max 0 $ a.clues - n
+      when (clueCount == 0 && a.clues > 0) do
+        pushM $ checkAfter $ Window.LastClueRemovedFromLocation a.id
+      pure $ a & baseL . tokensL %~ setTokens Clue clueCount & baseL . withoutCluesL .~ (clueCount == 0)
     RemoveTokens _ (isTarget a -> True) token n -> pure $ a & baseL . tokensL %~ subtractTokens token n
     -- Enemy-locations are fixed in the grid and cannot be moved by card effects.
     EnemyMove eid _ | eid == asEnemyId a -> pure a

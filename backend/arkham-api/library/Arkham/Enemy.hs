@@ -581,11 +581,15 @@ allEnemies =
         SomeEnemyCard subterraneanBeast
       , SomeEnemyCard burrowingHybrid
       , SomeEnemyCard frenziedMiner
+      , --- Hemlock House [fhv]
+        SomeEnemyCard grapplingSpawn
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid
       , --- Horrors in the Rock [fhv]
         SomeEnemyCard crystalParasite
+      , --- Agents of the Colour [fhv]
+        SomeEnemyCard miasmaticShadow
       , --- The Forest [fhv]
         SomeEnemyCard poisonblossom
       , SomeEnemyCard forestWatcher

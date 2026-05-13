@@ -23,13 +23,12 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (incrementRecordCount, record, remember)
-import Arkham.Message.Lifted.Story (resolveStoryWithPlacement)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
-import Arkham.ScenarioLogKey (ScenarioLogKey (LittleSylvieCanBeTakenControl))
+import Arkham.ScenarioLogKey (ScenarioLogKey (CancelNextPredation, LittleSylvieCanBeTakenControl))
 import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
@@ -50,12 +49,27 @@ instance HasChaosTokenValue HemlockHouse where
     ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
     otherFace -> getChaosTokenValue iid otherFace attrs
 
--- | Chaos bag composition for standalone play (PDF page 16).
--- Day 1/Night 1 baseline; Day 2/3 add extras at runtime.
+{- | Chaos bag composition for standalone play (PDF page 16).
+Day 1/Night 1 baseline; Day 2/3 add extras at runtime.
+-}
 standaloneChaosBag :: [ChaosTokenFace]
 standaloneChaosBag =
-  [ #"+1", #"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-3", #"-5"
-  , Cultist, Cultist, Tablet, Tablet, ElderThing, Skull
+  [ #"+1"
+  , #"0"
+  , #"0"
+  , #"-1"
+  , #"-1"
+  , #"-2"
+  , #"-2"
+  , #"-3"
+  , #"-3"
+  , #"-5"
+  , Cultist
+  , Cultist
+  , Tablet
+  , Tablet
+  , ElderThing
+  , Skull
   ]
 
 instance RunMessage HemlockHouse where
@@ -166,17 +180,11 @@ instance RunMessage HemlockHouse where
 
       bedroom <- placeInGrid (Pos 0 3) topBedroom
 
-      -- Track placed locations on floors 2 and 3 so we can locate the
-      -- lowest-floor Bedroom for Sylvie's setup placement on Day 1.
       placedFloors23 <-
         for (zip [Pos x y | x <- [-1 .. 1], y <- [1, 2]] locations) \(pos, def) -> do
           lid <- placeInGrid pos def
           pure (def, lid, pos)
 
-      -- "Set the Shapeless Cellar location and one random copy of the Bedroom
-      -- location aside, out of play." Shapeless Cellar is an enemy-location
-      -- (no Dormant side), so it isn't included in `fromGathered #location`;
-      -- pull it from the gathered encounter set directly.
       setAside [EnemyLocations.shapelessCellar]
 
       void $ fromGathered #location
@@ -201,38 +209,34 @@ instance RunMessage HemlockHouse where
       startAt $ if day == Day3 then bedroom else foyer
 
       setAside [Acts.againstTheHouse]
+      -- The Predatory House story card is double-sided: the "in-play default"
+      -- side is the predation reference, and the alternate side is the setup
+      -- card. While set aside the UI should show the setup card, so we keep
+      -- cardCode "10524" (matchers continue to find it) and flip the display
+      -- flag so the front-end loads the alternate-side image.
+      setAsideWith
+        ( \case
+            EncounterCard ec -> do
+              let flipped = EncounterCard ec {ecIsFlipped = Just True}
+              replaceCard ec.id flipped
+              pure flipped
+            c -> pure c
+        )
+        [Stories.thePredatoryHouse]
+      setAsideEvery $ mapOneOf cardIs [Treacheries.fire, Treacheries.outOfTheWalls, Treacheries.pulledIn]
+      unless (day == Day1 && time == Day) $ setAside [Assets.littleSylvie]
 
-      -- "Set all five Fire! treacheries and all copies of the Out of the Walls
-      -- and Pulled In treacheries aside, out of play."
-      setAside $ replicate 5 Treacheries.fire
-      setAside $ replicate 4 Treacheries.outOfTheWalls
-      setAside $ replicate 2 Treacheries.pulledIn
-
-      -- Pull Little Sylvie out of the encounter deck regardless of day/time —
-      -- she has a player card back and should never sit in the encounter deck.
-      -- On Day 1 (Day) she enters play below; otherwise she stays set aside.
-      setAside [Assets.littleSylvie]
-
-      -- Place residents per day. Per scenario reference: only when it is
-      -- (Day) — at Night, no residents enter play during setup. Unplaced
-      -- residents remain set aside (via the gatherAndSetAside above) so they
-      -- can enter play via codex callbacks.
       when (time == Day) $ case day of
         Day1 -> do
           assetAt_ Assets.gideonMizrahSeasonedSailor parlor
           assetAt_ Assets.williamHemlockAspiringPoet bedroom
-          -- "Put the Little Sylvie story asset into play at a Bedroom location
-          -- on the lowest floor." Find the Bedroom in the floors 2/3 placement
-          -- pool with the smallest y; if none, fall back to the top bedroom.
           let bedroomCodes :: Set CardCode =
                 setFromList
-                  $ map
-                    toCardCode
-                    [ Locations.bedroomHemlockHouse32
-                    , Locations.bedroomHemlockHouse33
-                    , Locations.bedroomHemlockHouse34
-                    , Locations.bedroomHemlockHouse35
-                    ]
+                  [ Locations.bedroomHemlockHouse32.cardCode
+                  , Locations.bedroomHemlockHouse33.cardCode
+                  , Locations.bedroomHemlockHouse34.cardCode
+                  , Locations.bedroomHemlockHouse35.cardCode
+                  ]
               placedBedrooms =
                 [ (lid, y)
                 | (def, lid, Pos _ y) <- placedFloors23
@@ -248,10 +252,6 @@ instance RunMessage HemlockHouse where
         Day3 -> do
           assetAt_ Assets.judithParkTheMuscle parlor
           assetAt_ Assets.theoPetersJackOfAllTrades foyer
-
-      lead <- getLead
-      thePredatoryHouse <- genCard Stories.thePredatoryHouse
-      resolveStoryWithPlacement lead thePredatoryHouse Global
     ScenarioSpecific "enemyLocationDefeated" (maybeResult -> Just lid) -> do
       grid <- getGrid
       lead <- getLead
@@ -329,7 +329,7 @@ instance RunMessage HemlockHouse where
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
-      let entry x = scope x $ flavor $ setTitle "title" >> p "body"
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       day <- getCampaignDay
       case n of
         4 -> do
@@ -372,8 +372,14 @@ instance RunMessage HemlockHouse where
               interludeXpAll (toBonus "bonus" 1)
             else do
               record YouAreHelpingGideon
-              predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
-              sendMessage predatoryHouse $ ScenarioSpecific "cancelNextPredation" Null
+              -- The Predatory House is set aside until Eerie Silence advances,
+              -- so it may not be in play yet when this codex fires. Defer the
+              -- cancel via a scenario log key; ThePredatoryHouse consumes it
+              -- on placement.
+              selectOne (storyIs Stories.thePredatoryHouse) >>= \case
+                Just predatoryHouse ->
+                  sendMessage predatoryHouse $ ScenarioSpecific "cancelNextPredation" Null
+                Nothing -> remember CancelNextPredation
         7 -> do
           entry "judith"
           judith <- selectJust $ assetIs Assets.judithParkTheMuscle

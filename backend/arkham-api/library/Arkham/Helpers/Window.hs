@@ -281,6 +281,13 @@ defeatedEnemy =
     (windowType -> Window.EnemyWouldBeDefeated eid) -> Just eid
     _ -> Nothing
 
+defeatedEnemies :: [Window] -> [EnemyId]
+defeatedEnemies = mapMaybe \case
+  (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
+  (windowType -> Window.IfEnemyDefeated _ _ eid) -> Just eid
+  (windowType -> Window.EnemyWouldBeDefeated eid) -> Just eid
+  _ -> Nothing
+
 attackedEnemy :: HasCallStack => [Window] -> EnemyId
 attackedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
@@ -2055,8 +2062,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.EnemyEntersYourLocation timing enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemyEntersYourLocation iid' enemyId _ | iid == iid' ->
-          matches enemyId enemyMatcher
+        Window.EnemyEntersYourLocation iid' enemyId _
+          | iid == iid' ->
+              matches enemyId enemyMatcher
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case

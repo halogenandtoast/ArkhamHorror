@@ -47,6 +47,13 @@
     "setOutOfPlay": "Set all five _Fire!_ treacheries and all copies of the _Out of the Walls_ and _Pulled In_ treacheries aside, out of play.",
     "shuffleEncounter": "Shuffle the remaining encounter cards to build the encounter deck."
   },
+  "predationTest": {
+    "title": "Predation Test",
+    "cultist": "The house's hunger is sated — for now. Nothing happens.",
+    "tablet": "The walls churn with anticipation. Each investigator at an enemy-location is attacked by it. If no investigator is at an enemy-location, the lead investigator draws an encounter card. Then, return any {'{'}tablet{'}'} tokens set aside in the predation bag to it.",
+    "elderthing": "Something stirs in the bones of the house. The nearest _Dormant_ location to the lead investigator flips to its enemy-location side.",
+    "unknown": "An unknown token was drawn from the predation bag."
+  },
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

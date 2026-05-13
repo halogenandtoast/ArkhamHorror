@@ -103,12 +103,20 @@ const flippableCard = (cardCode: string) => {
   <div class="intro-text">
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
-      <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
+      <section v-if="focusedChaosTokens.length > 0 && readCards.length === 0" class="focused-tokens">
         <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       </section>
-      <div class="entry-body">
+      <div class="entry-body" :class="{ 'with-card-and-tokens': readCards.length > 0 && focusedChaosTokens.length > 0 }">
         <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
-        <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+        <div v-if="readCards.length > 0" class="entry-text-column">
+          <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
+            <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
+          </section>
+          <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+        </div>
+        <template v-else>
+          <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+        </template>
       </div>
       <div class="pick-cards" v-if="pickCards.length > 0">
         <template v-for="card in pickCards" :key="card.index">
@@ -556,6 +564,38 @@ a.button {
   border: 1px solid rgba(0, 0, 0, 0.9);
   padding: 10px;
   border-radius: 10px;
+}
+
+.entry-body.with-card-and-tokens {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 20px;
+
+  .entry-text-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .focused-tokens {
+      align-self: center;
+    }
+
+    p, :deep(p) {
+      flex: 0 0 auto;
+    }
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.entry-text-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 :deep(.card) {

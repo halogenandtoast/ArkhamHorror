@@ -394,11 +394,10 @@ instance RunMessage LocationAttrs where
         else do
           when (tType == Doom && a.doom == 0) do
             pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
-          when (tType == Damage) do
-            pushAll $ windows [Window.PlacedDamage source (toTarget a) n]
-          when (tType == Resource) do
-            pushAll $ windows [Window.PlacedResources source (toTarget a) n]
-          pushM $ checkAfter $ Window.PlacedToken source target tType n
+          case tType of
+            Damage -> pushAll $ windows [Window.PlacedDamage source (toTarget a) n]
+            Resource -> pushAll $ windows [Window.PlacedResources source (toTarget a) n]
+            _ -> pushM $ checkAfter $ Window.PlacedToken source target tType n
           pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a

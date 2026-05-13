@@ -113,6 +113,7 @@ import Arkham.Window (Window, WindowType)
 import Arkham.Xp
 import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Aeson.Types
 import Data.UUID (fromWords64, nil)
@@ -2163,6 +2164,9 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            _ | t `elem` legacyInvestigatorMessageTags -> do
+                let o' = KeyMap.insert (Aeson.fromText "tag") (String (t <> "_")) o
+                InvestigatorMessage <$> parseJSON (Object o')
             _ -> defaultParseMessage (Object o)
       |]
   ]
@@ -2170,6 +2174,55 @@ mconcat
 defaultParseMessage :: Value -> Parser Message
 defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
 {-# NOINLINE defaultParseMessage #-}
+
+-- Legacy save support: these constructors used to live on Message directly
+-- before being extracted into InvestigatorMessage. Saves written prior to the
+-- extraction tag them with the bare name; the new derived JSON uses the
+-- underscore-suffixed wrapped constructors. We rewrite the tag and parse via
+-- the InvestigatorMessage wrapper.
+legacyInvestigatorMessageTags :: [Text]
+legacyInvestigatorMessageTags =
+  [ "InvestigatorAssignDamage"
+  , "InvestigatorCommittedCard"
+  , "InvestigatorCommittedSkill"
+  , "InvestigatorDamage"
+  , "InvestigatorDamageEnemy"
+  , "InvestigatorDamageInvestigator"
+  , "InvestigatorDefeated"
+  , "InvestigatorIsDefeated"
+  , "InvestigatorDirectDamage"
+  , "InvestigatorDiscardAllClues"
+  , "InvestigatorDoAssignDamage"
+  , "InvestigatorDrawEnemy"
+  , "InvestigatorDrewEncounterCard"
+  , "InvestigatorDrewEncounterCardFrom"
+  , "InvestigatorDrewPlayerCardFrom"
+  , "InvestigatorEliminated"
+  , "InvestigatorKilled"
+  , "InvestigatorMulligan"
+  , "InvestigatorsMulligan"
+  , "InvestigatorPlaceAllCluesOnLocation"
+  , "InvestigatorPlaceCluesOnLocation"
+  , "InvestigatorPlayAsset"
+  , "InvestigatorAdjustAssetSlots"
+  , "InvestigatorAdjustSlot"
+  , "InvestigatorPlayedAsset"
+  , "InvestigatorPlayEvent"
+  , "InvestigatorResigned"
+  , "InvestigatorSpendClues"
+  , "InvestigatorWhenDefeated"
+  , "InvestigatorWhenEliminated"
+  , "InvestigatorSpecific"
+  , "HandleKilledOrInsaneInvestigators"
+  , "Resign"
+  , "ResignWith"
+  , "Devour"
+  , "Devoured"
+  , "BeforePlayEvent"
+  , "CreatePendingEvent"
+  , "BeforeCardCost"
+  , "FinishedEvent"
+  ]
 
 uiToRun :: UI Message -> Message
 uiToRun = \case

@@ -2164,9 +2164,24 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
-            _ | t `elem` legacyInvestigatorMessageTags -> do
-                let o' = KeyMap.insert (Aeson.fromText "tag") (String (t <> "_")) o
-                InvestigatorMessage <$> parseJSON (Object o')
+            _ | t `elem` legacyChaosBagMessageTags -> asLegacyWrapped ChaosBagMessage t o
+              | t `elem` legacyClueMessageTags -> asLegacyWrapped ClueMessage t o
+              | t `elem` legacyDamageMessageTags -> asLegacyWrapped DamageMessage t o
+              | t `elem` legacyDefeatMessageTags -> asLegacyWrapped DefeatMessage t o
+              | t `elem` legacyDoomMessageTags -> asLegacyWrapped DoomMessage t o
+              | t `elem` legacyEngageMessageTags -> asLegacyWrapped EngageMessage t o
+              | t `elem` legacyEnemyAttackMessageTags -> asLegacyWrapped EnemyAttackMessage t o
+              | t `elem` legacyEvadeMessageTags -> asLegacyWrapped EvadeMessage t o
+              | t `elem` legacyExhaustMessageTags -> asLegacyWrapped ExhaustMessage t o
+              | t `elem` legacyFightMessageTags -> asLegacyWrapped FightMessage t o
+              | t `elem` legacyHorrorMessageTags -> asLegacyWrapped HorrorMessage t o
+              | t `elem` legacyHuntMessageTags -> asLegacyWrapped HuntMessage t o
+              | t `elem` legacyInvestigatorMessageTags -> asLegacyWrapped InvestigatorMessage t o
+              | t `elem` legacySealMessageTags -> asLegacyWrapped SealMessage t o
+              | t `elem` legacySearchMessageTags -> asLegacyWrapped SearchMessage t o
+              | t `elem` legacySkillTestMessageTags -> asLegacyWrapped SkillTestMessage t o
+              | t `elem` legacySpawnMessageTags -> asLegacyWrapped SpawnMessage t o
+              | t `elem` legacyTokenMessageTags -> asLegacyWrapped TokenMessage t o
             _ -> defaultParseMessage (Object o)
       |]
   ]
@@ -2176,10 +2191,253 @@ defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
 {-# NOINLINE defaultParseMessage #-}
 
 -- Legacy save support: these constructors used to live on Message directly
--- before being extracted into InvestigatorMessage. Saves written prior to the
+-- before being extracted into per-domain sub-types. Saves written prior to the
 -- extraction tag them with the bare name; the new derived JSON uses the
--- underscore-suffixed wrapped constructors. We rewrite the tag and parse via
--- the InvestigatorMessage wrapper.
+-- underscore-suffixed wrapped constructors. 'asLegacyWrapped' rewrites the tag
+-- and parses via the appropriate wrapper.
+asLegacyWrapped :: FromJSON a => (a -> Message) -> Text -> Object -> Parser Message
+asLegacyWrapped wrap t o = do
+  let o' = KeyMap.insert (Aeson.fromText "tag") (String (t <> "_")) o
+  wrap <$> parseJSON (Object o')
+
+legacyChaosBagMessageTags :: [Text]
+legacyChaosBagMessageTags =
+  [ "AfterRevealChaosTokens"
+  , "BeforeRevealChaosTokens"
+  , "ChaosTokenCanceled"
+  , "ChaosTokenIgnored"
+  , "ChaosTokenSelected"
+  , "ChooseChaosTokenGroups"
+  , "DrawChaosToken"
+  , "FinalizeRequestedChaosTokens"
+  , "ForceChaosTokenDraw"
+  , "ForceChaosTokenDrawToken"
+  , "NextChaosBagStep"
+  , "ObtainChaosToken"
+  , "RemoveChaosToken"
+  , "ReplaceCurrentDraw"
+  , "ReplaceEntireDraw"
+  , "RequestChaosTokens"
+  , "RequestedChaosTokens"
+  , "ResetChaosTokens"
+  , "ResetTokenPool"
+  , "ResolveChaosToken"
+  , "ReturnChaosTokens"
+  , "ReturnChaosTokensToPool"
+  , "RevealChaosToken"
+  , "RunBag"
+  , "RunDrawFromBag"
+  , "SetChaosBagChoice"
+  , "SetChaosTokens"
+  , "SetChaosTokensForScenario"
+  , "SilentRevealChaosToken"
+  , "SwapChaosToken"
+  , "TargetResolveChaosToken"
+  ]
+
+legacyClueMessageTags :: [Text]
+legacyClueMessageTags =
+  [ "PlaceCluesUpToClueValue"
+  , "MoveAllCluesTo"
+  , "RemoveAllClues"
+  , "FlipClues"
+  ]
+
+legacyDamageMessageTags :: [Text]
+legacyDamageMessageTags =
+  [ "DealDamage"
+  , "Damaged"
+  , "HealDamage"
+  , "HealAllDamage"
+  , "PlaceAdditionalDamage"
+  ]
+
+legacyDefeatMessageTags :: [Text]
+legacyDefeatMessageTags =
+  [ "AssetDefeated"
+  , "CheckDefeated"
+  , "Defeated"
+  , "DefeatEnemy"
+  , "EnemyLocationDefeated"
+  ]
+
+legacyDoomMessageTags :: [Text]
+legacyDoomMessageTags =
+  [ "RemoveAllDoom"
+  , "RemoveAllDoomFromPlay"
+  , "FlipDoom"
+  ]
+
+legacyEngageMessageTags :: [Text]
+legacyEngageMessageTags =
+  [ "EngageEnemy"
+  , "DisengageEnemy"
+  , "DisengageEnemyFromAll"
+  , "ChooseEngageEnemy"
+  , "CheckEnemyEngagement"
+  , "EnemyCheckEngagement"
+  , "EnemyEngageInvestigator"
+  ]
+
+legacyEnemyAttackMessageTags :: [Text]
+legacyEnemyAttackMessageTags =
+  [ "AfterEnemyAttack"
+  , "ChangeEnemyAttackDetails"
+  , "ChangeEnemyAttackTarget"
+  , "EnemiesAttack"
+  , "EnemyAttack"
+  , "EnemyAttackFromDiscard"
+  , "EnemyAttackIfEngaged"
+  , "EnemyAttacks"
+  , "EnemyWillAttack"
+  , "InitiateEnemyAttack"
+  , "PerformEnemyAttack"
+  ]
+
+legacyEvadeMessageTags :: [Text]
+legacyEvadeMessageTags =
+  [ "ChooseEvadeEnemy"
+  , "TryEvadeTarget"
+  , "EvadeTarget"
+  , "EvadedTarget"
+  , "ChosenEvadeTarget"
+  , "AfterEvadeTarget"
+  ]
+
+legacyExhaustMessageTags :: [Text]
+legacyExhaustMessageTags =
+  [ "Exhaust"
+  , "Ready"
+  , "ReadyAlternative"
+  , "ReadyExhausted"
+  ]
+
+legacyFightMessageTags :: [Text]
+legacyFightMessageTags =
+  [ "FightTarget"
+  , "AttackTarget"
+  , "FailedAttackTarget"
+  , "ChooseFightEnemy"
+  ]
+
+legacyHorrorMessageTags :: [Text]
+legacyHorrorMessageTags =
+  [ "HealAllHorror"
+  , "HealHorror"
+  , "ExcessHealHorror"
+  , "CancelHorror"
+  , "CancelAssetHorror"
+  ]
+
+legacyHuntMessageTags :: [Text]
+legacyHuntMessageTags =
+  [ "EnemyMove"
+  , "HandleElusive"
+  , "HunterMove"
+  , "HuntersMove"
+  , "MoveToward"
+  , "MoveUntil"
+  , "PatrolMove"
+  , "WillMoveEnemy"
+  ]
+
+legacySealMessageTags :: [Text]
+legacySealMessageTags =
+  [ "SealChaosToken"
+  , "SealedChaosToken"
+  , "SetChaosTokenAside"
+  , "UnsealChaosToken"
+  , "RemoveAllChaosTokens"
+  ]
+
+legacySearchMessageTags :: [Text]
+legacySearchMessageTags =
+  [ "CancelSearch"
+  , "ClearFound"
+  , "FinishedSearch"
+  , "FoundCards"
+  , "PreSearchFound"
+  , "ResolveSearch"
+  , "Search"
+  , "SearchCollectionForRandom"
+  , "SearchEnded"
+  , "SearchFound"
+  , "SearchNoneFound"
+  , "UpdateSearchReturnStrategy"
+  ]
+
+legacySkillTestMessageTags :: [Text]
+legacySkillTestMessageTags =
+  [ "AbilityIsSkillTest"
+  , "AfterSkillTestEnds"
+  , "AfterSkillTestOption"
+  , "AfterSkillTestQuiet"
+  , "AfterThisTestResolves"
+  , "BeforeSkillTest"
+  , "BeginSkillTestAfterFast"
+  , "BeginSkillTestWithPreMessages"
+  , "BeginSkillTestWithPreMessages'"
+  , "ChangeSkillTestType"
+  , "CollectSkillTestOptions"
+  , "CommitCard"
+  , "CommitToSkillTest"
+  , "EndSkillTestWindow"
+  , "Failed"
+  , "FailedSkillTest"
+  , "FailSkillTest"
+  , "IncreaseSkillTestDifficulty"
+  , "NextSkillTest"
+  , "PassedSkillTest"
+  , "PassSkillTest"
+  , "PassSkillTestBy"
+  , "RecalculateSkillTestResults"
+  , "RecalculateSkillTestResultsCanChangeAutomatic"
+  , "RepeatSkillTest"
+  , "ReplaceSkillTestSkill"
+  , "RerunSkillTest"
+  , "ReturnSkillTestRevealedChaosTokens"
+  , "RevealSkillTestChaosTokens"
+  , "RevealSkillTestChaosTokensAgain"
+  , "RevelationSkillTest"
+  , "RunSkillTest"
+  , "SetSkillTestResolveFailureInvestigator"
+  , "SetSkillTestTarget"
+  , "SkillTestApplyResults"
+  , "SkillTestApplyResultsAfter"
+  , "SkillTestAsk"
+  , "SkillTestCommitCard"
+  , "SkillTestEnded"
+  , "SkillTestEnds"
+  , "SkillTestResultOption"
+  , "SkillTestResultOptions"
+  , "SkillTestResults"
+  , "SkillTestUncommitCard"
+  , "StartSkillTest"
+  , "Successful"
+  , "TriggerSkillTest"
+  ]
+
+legacySpawnMessageTags :: [Text]
+legacySpawnMessageTags =
+  [ "EnemySpawn"
+  , "EnemySpawned"
+  , "EnemySpawnAtLocationMatching"
+  , "EnemySpawnFromOutOfPlay"
+  , "EnemySpawnEngagedWithPrey"
+  , "EnemySpawnEngagedWith"
+  , "EnemyEntered"
+  ]
+
+legacyTokenMessageTags :: [Text]
+legacyTokenMessageTags =
+  [ "PlaceTokens"
+  , "RemoveTokens"
+  , "ClearTokens"
+  , "MoveTokens"
+  , "MoveTokensNoDefeated"
+  , "RemoveAllTokens"
+  ]
+
 legacyInvestigatorMessageTags :: [Text]
 legacyInvestigatorMessageTags =
   [ "InvestigatorAssignDamage"

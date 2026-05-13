@@ -49,9 +49,9 @@
   },
   "predationTest": {
     "title": "Predation Test",
-    "cultist": "The house's hunger is sated — for now. Nothing happens.",
-    "tablet": "The walls churn with anticipation. Each investigator at an enemy-location is attacked by it. If no investigator is at an enemy-location, the lead investigator draws an encounter card. Then, return any {'{'}tablet{'}'} tokens set aside in the predation bag to it.",
-    "elderthing": "Something stirs in the bones of the house. The nearest _Dormant_ location to the lead investigator flips to its enemy-location side.",
+    "cultist": "Set this token aside.",
+    "tablet": "Each enemy-location attacks each investigator at that location. If no attack was made by this effect, the lead investigator draws the top card of the encounter deck. Return this token and each set-aside token to the predation bag.",
+    "elderthing": "Set this token aside. Find the unsealed, _Dormant_ location nearest to the lead investigator. Flip that location to its enemy-location side.",
     "unknown": "An unknown token was drawn from the predation bag."
   },
   "resolutions": {

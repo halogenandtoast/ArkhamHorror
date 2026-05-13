@@ -1,6 +1,7 @@
 module Arkham.Helpers.FlavorText (module Arkham.Helpers.FlavorText, module X) where
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Classes.HasQueue (push)
 import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
@@ -83,6 +84,9 @@ hr = addEntry FT.hr
 
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
+
+chaosTokenImg :: ChaosTokenFace -> FlavorTextBuilder ()
+chaosTokenImg = addEntry . FT.chaosTokenImg
 
 tarot :: TarotCardArcana -> FlavorTextBuilder ()
 tarot = addEntry . TarotEntry

@@ -68,13 +68,14 @@ instance RunMessage ThePredatoryHouse where
       (tokens, rest) <- splitAt 1 <$> shuffleM (predationTokens bag)
       let token = fromJustNote "invalid predation token" $ headMay tokens
       let bag' = bag {predationTokens = rest, predationCurrentToken = Just token}
-      focusChaosTokens [asChaosToken token] \_unfocus -> do
+      focusChaosTokens [asChaosToken token] \unfocus -> do
         checkWhen $ Window.RevealChaosToken lead $ asChaosToken token
         checkWhen
           $ Window.ScenarioEvent
             ("revealPredationToken:" <> tshow token.face)
             (Just lead)
             (toJSON $ asChaosToken token)
+        push unfocus
         sendMessage attrs $ ResolveChaosToken (asChaosToken token) token.face lead
 
       pure
@@ -105,14 +106,13 @@ instance RunMessage ThePredatoryHouse where
             Tablet -> "tablet"
             ElderThing -> "elderthing"
             _ -> "unknown"
-      -- Order matters: modal first, then effects, then unfocus — so the chaos
-      -- token stays visible through the modal and the resulting effects.
-      send $ "Predation modal push (outcome=" <> outcomeKey <> ")"
       scenarioI18n $ scope "predationTest" $ flavor do
         setTitle "title"
-        img Cards.thePredatoryHouse
-        p outcomeKey
-      send "Predation modal pushed"
+        cols do
+          img Cards.thePredatoryHouse
+          compose do
+            chaosTokenImg resolvedFace
+            p outcomeKey
       bag' <- case resolvedFace of
         Cultist -> pure bag
         Tablet -> do
@@ -125,7 +125,6 @@ instance RunMessage ThePredatoryHouse where
             push $ FlipToEnemyLocation lid card
           pure bag
         _ -> error "Invalid predation token"
-      unfocusChaosTokens
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = predationBag attrs
@@ -139,7 +138,6 @@ instance RunMessage ThePredatoryHouse where
               { predationTokens = bag.tokens <> maybeToList bag.currentToken
               , predationCurrentToken = Nothing
               }
-      unfocusChaosTokens
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ScenarioSpecific "predationCleanup" _) -> do
       -- Resolution 2: "Remove 1 [tablet] token from the predation bag. Return

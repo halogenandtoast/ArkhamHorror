@@ -6,6 +6,7 @@ import Arkham.ChaosBag.Base
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.GameEnv
@@ -978,7 +979,7 @@ instance RunMessage ChaosBag where
     SwapChaosToken originalFace newFace -> do
       let
         replaceToken _needle _new [] = []
-        replaceToken needle new (token : rest) | chaosTokenFace token == needle = token {chaosTokenFace = new} : rest
+        replaceToken needle new (token : rest) | chaosTokenFace token == needle = token {Arkham.ChaosToken.Types.chaosTokenFace = new} : rest
         replaceToken needle new (token : rest) = token : replaceToken needle new rest
 
       -- if we are replacing with a token in the token pool, we need to change its face too

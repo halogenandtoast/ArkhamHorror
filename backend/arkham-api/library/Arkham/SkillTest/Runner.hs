@@ -10,6 +10,7 @@ import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes hiding (matches)
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
@@ -284,7 +285,10 @@ instance RunMessage SkillTest where
           then
             CommitToSkillTest
               s.id
-              (Label "$label.doneCommitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
+              ( Label
+                  "$label.doneCommitting"
+                  [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid]
+              )
           else RevealSkillTestChaosTokens iid
       for_ chaosTokens $ \chaosToken -> do
         let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken
@@ -405,7 +409,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -422,15 +426,19 @@ instance RunMessage SkillTest where
                   CheckWindows ws ->
                     any
                       ( \w ->
-                          windowTiming w == Timing.After
-                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                          windowTiming w
+                            == Timing.After
+                            && windowType w
+                            == Window.SkillTestStep ResolveChaosSymbolEffectsStep
                       )
                       ws
                   Do (CheckWindows ws) ->
                     any
                       ( \w ->
-                          windowTiming w == Timing.After
-                            && windowType w == Window.SkillTestStep ResolveChaosSymbolEffectsStep
+                          windowTiming w
+                            == Timing.After
+                            && windowType w
+                            == Window.SkillTestStep ResolveChaosSymbolEffectsStep
                       )
                       ws
                   _ -> False
@@ -445,12 +453,12 @@ instance RunMessage SkillTest where
           let failed target = FailedSkillTest resolver skillTestAction skillTestSource target skillTestType difficulty
            in preEndMsgs
                 <> ( SkillTestResults resultsData
-                      : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
-                        <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
-                           , chooseOne player [SkillTestApplyResultsButton]
-                           , SkillTestEnds skillTestId resolver skillTestSource
-                           , Do (SkillTestEnds skillTestId resolver skillTestSource)
-                           ]
+                       : [Will (failed target) | target <- skillTestSubscribers <> tokenSubscribers]
+                         <> [ Will (failed (SkillTestInitiatorTarget skillTestTarget))
+                            , chooseOne player [SkillTestApplyResultsButton]
+                            , SkillTestEnds skillTestId resolver skillTestSource
+                            , Do (SkillTestEnds skillTestId resolver skillTestSource)
+                            ]
                    )
 
       if needsChoice
@@ -612,7 +620,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -671,7 +679,7 @@ instance RunMessage SkillTest where
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
         pure
-          [ ChaosTokenTarget (token {chaosTokenFace = face})
+          [ ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face})
           | face <- faces
           ]
 
@@ -769,10 +777,12 @@ instance RunMessage SkillTest where
         modifySkillTestResult r _ = r
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
-        pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
+        pure [ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
-          let passed target = Priority $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
+          let passed target =
+                Priority
+                  $ PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
           pushAll
             $ cycleN
               successTimes
@@ -826,7 +836,7 @@ instance RunMessage SkillTest where
 
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
-        pure [ChaosTokenTarget (token {chaosTokenFace = face}) | face <- faces]
+        pure [ChaosTokenTarget (token {Arkham.ChaosToken.Types.chaosTokenFace = face}) | face <- faces]
       case modifiedSkillTestResult of
         SucceededBy _ n -> do
           let passed target = PassedSkillTest skillTestInvestigator skillTestAction skillTestSource target skillTestType n
@@ -959,4 +969,3 @@ instance RunMessage SkillTest where
     SetSkillTestResolveFailureInvestigator iid -> do
       pure $ s & resolveFailureInvestigatorL .~ iid
     _ -> pure s
-

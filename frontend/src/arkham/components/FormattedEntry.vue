@@ -5,6 +5,7 @@ import { baseUrl, formatContent } from '@/arkham/helpers'
 import { I18n, useI18n } from 'vue-i18n'
 import { imgsrc } from '@/arkham/helpers'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
+import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import CodexEntry from '@/arkham/components/CodexEntry.vue'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
@@ -18,6 +19,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'EntrySplit': return {}
     case 'HeaderEntry': return {}
     case 'TarotEntry': return {"card": true, "no-overlay": true}
+    case 'ChaosTokenEntry': return {"chaos-token": true}
     case 'CardEntry': {
       const mods = entry.imageModifiers.reduce((acc, m) => { return { [imageModifierToStyle(m)]: true, ...acc }}, {})
       return {"card": true, "no-overlay": true, ...mods}
@@ -84,6 +86,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
     case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`cards/${entry.cardCode.replace(/^c/, "")}.avif`)})])
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
+    case 'ChaosTokenEntry': return h('div', [h('img', { class: entryStyles(entry), src: chaosTokenImage(entry.chaosTokenFace)})])
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
@@ -104,6 +107,14 @@ export default defineComponent({
 
 <style scoped>
 .composite { display: contents; }
+
+.chaos-token, :deep(.chaos-token) {
+  display: block;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  object-fit: contain;
+}
 .columns, :deep(.columns) {
   display: flex;
   flex-direction: row;
@@ -129,6 +140,30 @@ export default defineComponent({
     height: calc(100% - 20px);
     content: '';
     border-left: 1px solid black;
+  }
+
+  /* When a column contains a chaos token, drop the divider line and
+     center the token + paragraph as a stacked block. */
+  .composite:has(.chaos-token) {
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+
+    &::after {
+      content: none;
+    }
+
+    > div {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    p, :deep(p) {
+      margin: 0;
+      text-align: center;
+    }
   }
 
   &.simple {

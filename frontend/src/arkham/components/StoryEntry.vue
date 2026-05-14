@@ -205,6 +205,97 @@ const flippableCard = (cardCode: string) => {
     background-size: cover;
     max-height: min-content;
   }
+  &:has(.haunted) {
+    background:
+      radial-gradient(ellipse at 50% 30%, #1a2a1f 0%, #0a0d10 70%, #050608 100%);
+    background-image: v-bind(grunge), radial-gradient(ellipse at 50% 30%, #1a2a1f 0%, #0a0d10 70%, #050608 100%);
+    background-blend-mode: overlay;
+    background-size: cover;
+    box-shadow:
+      inset 0 0 220px rgba(0, 0, 0, 0.95),
+      inset 0 0 60px rgba(58, 81, 68, 0.35),
+      0 0 40px rgba(58, 81, 68, 0.45),
+      0 0 80px rgba(58, 81, 68, 0.25);
+    color: #b8c4b0;
+    border: 1px solid rgba(58, 81, 68, 0.5);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    animation: haunted-flicker 7s ease-in-out infinite;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(135, 156, 90, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(135, 156, 90, 0.08), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.7), transparent 60%);
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      pointer-events: none;
+      border: 1px solid rgba(135, 156, 90, 0.25);
+      box-shadow:
+        inset 0 0 40px rgba(135, 156, 90, 0.15),
+        inset 0 0 4px rgba(135, 156, 90, 0.35);
+      z-index: 0;
+    }
+
+    h1 {
+      color: #c9d2a8;
+      text-shadow:
+        0 0 8px rgba(135, 156, 90, 0.65),
+        0 0 18px rgba(58, 81, 68, 0.55),
+        0 2px 2px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.08em;
+      border-bottom-color: rgba(135, 156, 90, 0.4) !important;
+      animation: haunted-title-pulse 4.5s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+      &::after {
+        border-bottom-color: rgba(135, 156, 90, 0.4) !important;
+      }
+    }
+
+    .entry-body {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+
+@keyframes haunted-flicker {
+  0%, 100% { filter: brightness(1); }
+  3% { filter: brightness(0.78); }
+  6% { filter: brightness(1.05); }
+  9% { filter: brightness(0.85); }
+  12% { filter: brightness(1); }
+  62% { filter: brightness(1); }
+  64% { filter: brightness(0.7); }
+  66% { filter: brightness(1.02); }
+  68% { filter: brightness(1); }
+}
+
+@keyframes haunted-title-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 8px rgba(135, 156, 90, 0.65),
+      0 0 18px rgba(58, 81, 68, 0.55),
+      0 2px 2px rgba(0, 0, 0, 0.9);
+  }
+  50% {
+    text-shadow:
+      0 0 14px rgba(135, 156, 90, 0.95),
+      0 0 28px rgba(58, 81, 68, 0.85),
+      0 0 50px rgba(58, 81, 68, 0.45),
+      0 2px 2px rgba(0, 0, 0, 0.9);
+  }
 }
 
 .hunted, :deep(.hunted) {

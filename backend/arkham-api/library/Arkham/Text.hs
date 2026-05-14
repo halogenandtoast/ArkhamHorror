@@ -34,6 +34,7 @@ data FlavorTextModifier
   | NestedEntry
   | NoUnderline
   | CodexEntry
+  | HauntedEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry

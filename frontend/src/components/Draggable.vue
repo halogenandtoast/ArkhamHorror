@@ -416,6 +416,29 @@ function moveUp() {
     &:has(.bug-form) {
       margin: 0px;
     }
+    &:has(.haunted) {
+      margin: 0;
+      border-radius: 0 0 16px 16px;
+      overflow: hidden;
+    }
+  }
+
+  &:has(.haunted) {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.85);
+    max-width: min(900px, 92vw);
+    width: min(900px, 92vw);
+
+    > header {
+      border-radius: 16px 16px 0 0;
+      background: #0a0d10;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 }
 

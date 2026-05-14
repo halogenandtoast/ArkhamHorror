@@ -47,6 +47,15 @@ resolutionFlavor builder = story do
         , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
         }
 
+hauntedFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
+hauntedFlavor builder = story do
+  case buildFlavor builder of
+    FlavorText {..} ->
+      FlavorText
+        { flavorTitle
+        , flavorBody = [ModifyEntry [HauntedEntry] $ CompositeEntry flavorBody]
+        }
+
 flavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 flavor builder = story $ buildFlavor builder
 

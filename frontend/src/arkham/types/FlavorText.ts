@@ -19,6 +19,7 @@ export type FlavorTextModifier
   | 'CheckpointEntry'
   | 'InterludeEntry'
   | 'CodexEntry'
+  | 'HauntedEntry'
 
 export type ImageModifier = 'RemoveImage' | 'SelectImage'
 
@@ -68,6 +69,7 @@ export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('InvalidEntry'),
   JsonDecoder.literal('ValidEntry'),
   JsonDecoder.literal('CodexEntry'),
+  JsonDecoder.literal('HauntedEntry'),
 ], 'FlavorTextModifier');
 
 export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDecoder.object<ListItemEntry>(

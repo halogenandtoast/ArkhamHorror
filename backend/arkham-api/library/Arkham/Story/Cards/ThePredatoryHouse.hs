@@ -106,7 +106,7 @@ instance RunMessage ThePredatoryHouse where
             Tablet -> "tablet"
             ElderThing -> "elderthing"
             _ -> "unknown"
-      scenarioI18n $ scope "predationTest" $ flavor do
+      scenarioI18n $ scope "predationTest" $ hauntedFlavor do
         setTitle "title"
         cols do
           img Cards.thePredatoryHouse

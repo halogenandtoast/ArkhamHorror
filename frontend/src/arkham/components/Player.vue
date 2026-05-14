@@ -85,6 +85,10 @@ const engagedEnemies = computed(() =>
   )
 )
 
+const hasThreatArea = computed(() =>
+  stories.value.length > 0 || engagedEnemies.value.length > 0 || props.investigator.treacheries.length > 0
+)
+
 const inHandEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => (e.placement.tag === "StillInHand" || e.placement.tag === "HiddenInHand") && e.placement.contents === investigatorId.value)
 )
@@ -413,6 +417,38 @@ function closeHand() {
         @dragenter.prevent
       >
         <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+          <Story
+            v-for="story in stories"
+            :key="story.id"
+            :story="story"
+            :game="game"
+            :data-index="story.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+          <EnemyView
+            v-for="enemy in engagedEnemies"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+          <Treachery
+            v-for="treacheryId in investigator.treacheries"
+            :key="treacheryId"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="game.treacheries[treacheryId].cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+          <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
+
           <template v-if="tarotCards.length > 0">
             <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
               <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
@@ -476,40 +512,9 @@ function closeHand() {
             @showCards="doShowCards"
           />
 
-          <Story
-            v-for="story in stories"
-            :key="story.id"
-            :story="story"
-            :game="game"
-            :data-index="story.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-
-
           <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot.tag}${idx}`">
             <img :src="slotImg(slot)" />
           </div>
-
-          <EnemyView
-            v-for="enemy in engagedEnemies"
-            :key="enemy.id"
-            :enemy="enemy"
-            :game="game"
-            :data-index="enemy.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-
-          <Treachery
-            v-for="treacheryId in investigator.treacheries"
-            :key="treacheryId"
-            :treachery="game.treacheries[treacheryId]"
-            :game="game"
-            :data-index="game.treacheries[treacheryId].cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
 
           <Location
             v-for="(location, key) in locations"
@@ -771,6 +776,14 @@ function closeHand() {
 
   > * {
     flex-shrink: 0;
+  }
+
+  .threat-divider {
+    width: 2px;
+    align-self: stretch;
+    margin: 0 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 1px;
   }
 
   &.in-play--collapsed {

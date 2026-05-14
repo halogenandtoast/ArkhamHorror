@@ -38,20 +38,21 @@ instance HasAbilities Barroom where
 instance RunMessage Barroom where
   runMessage msg l@(Barroom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = UseAbilitySource iid (toSource attrs) 1
       investigators <-
         select
           $ oneOf
-            [ HealableInvestigator (attrs.ability 1) kind (affectsOthers $ at_ $ locationWithInvestigator iid)
+            [ HealableInvestigator source kind (affectsOthers $ at_ $ locationWithInvestigator iid)
             | kind <- [#damage, #horror]
             ]
       assets <-
         select
           $ oneOf
-            [ HealableAsset (attrs.ability 1) kind (at_ $ locationWithInvestigator iid)
+            [ HealableAsset source kind (at_ $ locationWithInvestigator iid)
             | kind <- [#damage, #horror]
             ]
       chooseOneM iid do
-        targets investigators $ chooseHealDamageOrHorrorOn (attrs.ability 1) iid
-        targets assets $ assetChooseHealDamageOrHorror (attrs.ability 1) iid
+        targets investigators $ chooseHealDamageOrHorrorOn source iid
+        targets assets $ assetChooseHealDamageOrHorror source iid
       pure l
     _ -> Barroom <$> liftRunMessage msg attrs

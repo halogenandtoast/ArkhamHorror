@@ -25,14 +25,15 @@ instance HasAbilities WitchHauntedWoodsWitchTree where
 instance RunMessage WitchHauntedWoodsWitchTree where
   runMessage msg l@(WitchHauntedWoodsWitchTree attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = UseAbilitySource iid (toSource attrs) 1
       investigators <-
         select
           $ oneOf
-            [ HealableInvestigator (attrs.ability 1) #horror $ not_ (be iid) <> at_ (not_ (be attrs))
-            , HealableInvestigator (attrs.ability 1) #damage $ not_ (be iid) <> at_ (not_ (be attrs))
+            [ HealableInvestigator source #horror $ not_ (be iid) <> at_ (not_ (be attrs))
+            , HealableInvestigator source #damage $ not_ (be iid) <> at_ (not_ (be attrs))
             ]
       chooseTargetM iid investigators \iid' -> do
-        healDamage iid' (attrs.ability 1) 1
-        healHorror iid' (attrs.ability 1) 1
+        healDamage iid' source 1
+        healHorror iid' source 1
       pure l
     _ -> WitchHauntedWoodsWitchTree <$> liftRunMessage msg attrs

@@ -25,7 +25,8 @@ instance HasAbilities ChoeurGothique_293 where
 instance RunMessage ChoeurGothique_293 where
   runMessage msg l@(ChoeurGothique_293 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
-      when canHeal $ healHorror iid (attrs.ability 1) 2
+      let source = UseAbilitySource iid (toSource attrs) 1
+      canHeal <- canHaveHorrorHealed source iid
+      when canHeal $ healHorror iid source 2
       pure l
     _ -> ChoeurGothique_293 <$> liftRunMessage msg attrs

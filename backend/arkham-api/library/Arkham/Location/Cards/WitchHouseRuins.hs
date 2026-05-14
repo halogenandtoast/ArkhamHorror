@@ -36,6 +36,6 @@ instance RunMessage WitchHouseRuins where
       loseActions iid (attrs.ability 2) 1
       pure l
     Successful (Action.Investigate, _) iid ab _ _ | isAbilitySource attrs 1 ab -> do
-      healHorrorIfCan iid (attrs.ability 1) 2
+      healHorrorIfCan iid (UseAbilitySource iid (toSource attrs) 1) 2
       pure l
     _ -> WitchHouseRuins <$> liftRunMessage msg attrs

@@ -33,10 +33,11 @@ instance HasAbilities UptownStMarysHospital where
 instance RunMessage UptownStMarysHospital where
   runMessage msg l@(UptownStMarysHospital attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ HealableInvestigator (attrs.ability 1) #damage $ investigatorAt attrs
-      allies <- select $ HealableAsset (attrs.ability 1) #damage $ #ally <> assetAt attrs
+      let source = UseAbilitySource iid (toSource attrs) 1
+      investigators <- select $ HealableInvestigator source #damage $ investigatorAt attrs
+      allies <- select $ HealableAsset source #damage $ #ally <> assetAt attrs
       withI18n $ chooseUpToNM' iid 2 "done" do
-        targets investigators $ healDamageOn (attrs.ability 1) 1
-        targets allies $ healDamageOn (attrs.ability 1) 1
+        targets investigators $ healDamageOn source 1
+        targets allies $ healDamageOn source 1
       pure l
     _ -> UptownStMarysHospital <$> liftRunMessage msg attrs

@@ -25,6 +25,6 @@ instance HasAbilities GlimmeringMeadow where
 instance RunMessage GlimmeringMeadow where
   runMessage msg l@(GlimmeringMeadow attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healHorror iid (attrs.ability 1) 1
+      healHorror iid (UseAbilitySource iid (toSource attrs) 1) 1
       pure l
     _ -> GlimmeringMeadow <$> liftRunMessage msg attrs

@@ -40,7 +40,8 @@ instance RunMessage GothicSet where
 
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      whenM (canHaveHorrorHealed (attrs.ability 2) iid) do
-        healHorror iid (attrs.ability 2) 1
+      let source = UseAbilitySource iid (toSource attrs) 2
+      whenM (canHaveHorrorHealed source iid) do
+        healHorror iid source 1
       pure l
     _ -> GothicSet <$> liftRunMessage msg attrs

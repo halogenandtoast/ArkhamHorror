@@ -32,7 +32,7 @@ instance RunMessage StudentUnion where
         placeSetAsideLocation_ Cards.dormitories
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = attrs.ability 2
+      let source = UseAbilitySource iid (toSource attrs) 2
       whenM (canHaveDamageHealed source iid) $ healDamage iid source 1
       whenM (canHaveHorrorHealed source iid) $ healHorror iid source 1
       pure l

@@ -24,8 +24,9 @@ instance HasAbilities DiningRoom where
 instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
-      when canHeal $ healHorror iid (attrs.ability 1) 1
+      let healSource = UseAbilitySource iid (toSource attrs) 1
+      canHeal <- canHaveHorrorHealed healSource iid
+      when canHeal $ healHorror iid healSource 1
       requestChaosTokens iid attrs 1
       pure l
     RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do

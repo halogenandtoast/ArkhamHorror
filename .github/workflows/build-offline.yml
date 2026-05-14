@@ -1,0 +1,170 @@
+# =============================================================================
+# build-offline.yml — Arkham Horror LCG offline build workflow
+#
+# Usage: cp offline/build-offline.yml .github/workflows/build-offline.yml
+#
+# Trigger method: Push a date-format tag (e.g., v20260514.1) or trigger manually
+# Matrix strategy: Parallel builds across multiple platforms; steps are defined only once
+# Three-tier cache:
+#   Tier 1 (Toolchain + Downloads): The key contains a hash of the build script; it remains virtually unchanged and is reused long-term
+#   Layer 2 (Build Artifacts): Key contains a hash of frontend and backend source code; expires upon changes
+#   Layer 3 (Frontend Artifacts): Key contains a hash of package-lock.json
+# Each build step is split into an independent job step for easy progress tracking via collapsible views in the Actions UI
+# =============================================================================
+
+name: Build Offline Distribution
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+
+    strategy:
+      matrix:
+        include:
+          - name: macOS ARM64
+            os: macos-latest
+            artifact: ArkhamHorror-macOS-arm64
+
+          # - name: macOS x86_64
+          #   os: macos-13
+          #   artifact: ArkhamHorror-macOS-x86_64
+
+          - name: Linux x86_64
+            os: ubuntu-latest
+            artifact: ArkhamHorror-Windows-Linux-x86_64
+
+          # - name: Linux ARM64
+          #   os: ubuntu-24.04-arm
+          #   artifact: ArkhamHorror-linux-arm64
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Get version from git tag
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=dev" >> $GITHUB_ENV
+          fi
+
+      # ── 系统依赖（唯一需要按平台区分的步骤）──────────────────────
+      - name: Install system C library dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install pcre gmp
+
+      - name: Install system C library dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq build-essential curl unzip libgmp-dev uuid-dev libpcre3-dev
+
+      - name: Restore toolchain cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            offline/_tmp/
+            offline/_deps/ghcup/
+            offline/_deps/node/
+            offline/_deps/postgres/
+            offline/_deps/nginx/
+          key: arkham-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('offline/scripts/01-check-project-deps.sh') }}
+
+      - name: Restore backend build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            offline/_deps/stack-work/
+            offline/_deps/stack-work-sub/
+          key: arkham-stack-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/stack.yaml', 'backend/stack.yaml.lock') }}
+          restore-keys: |
+            arkham-stack-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Restore frontend build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            offline/_deps/node_modules/
+            offline/_deps/frontend/
+          key: arkham-frontend-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            arkham-frontend-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Make build scripts executable
+        run: chmod +x offline/build_all.sh offline/scripts/*.sh
+
+      - name: '[1/5] Install project dependencies (GHC / Stack / Node / PG / Nginx)'
+        working-directory: offline
+        run: bash scripts/01-check-project-deps.sh
+
+      - name: '[2/5] Verify dependencies'
+        working-directory: offline
+        run: bash scripts/02-verify-deps.sh
+
+      - name: '[3/5] Build frontend (Vite)'
+        working-directory: offline
+        run: bash scripts/03-build-frontend.sh
+
+      - name: '[4/5] Build backend (Haskell / Stack)'
+        working-directory: offline
+        run: bash scripts/04-build-backend.sh
+
+      - name: '[5/5] Package distribution'
+        working-directory: offline
+        run: bash scripts/05-package.sh
+
+      - name: Rename distribution
+        shell: bash
+        run: |
+          src="offline/_dist/${{ matrix.artifact }}.tar.gz"
+          dst="offline/_dist/${{ matrix.artifact }}-${{ env.VERSION }}.tar.gz"
+          mv "$src" "$dst"
+
+      - name: Upload distribution archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: offline/_dist/${{ matrix.artifact }}-${{ env.VERSION }}.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Get version from git tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Download all distribution archive
+        uses: actions/download-artifact@v4
+
+      - name: List file
+        run: ls -lhR
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Arkham Horror LCG offline distributions ${{ env.VERSION }}"
+          generate_release_notes: true
+          files: |
+            ArkhamHorror-macOS-arm64/*.tar.gz
+            ArkhamHorror-Windows-Linux-x86_64/*.tar.gz

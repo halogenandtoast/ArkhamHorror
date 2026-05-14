@@ -49,6 +49,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import HistoryPanel from '@/arkham/components/HistoryPanel.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
@@ -126,6 +127,7 @@ watch(showOtherPlayersHands, (v) => {
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
+const showHistory = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const skipAllPending = ref<Set<string>>(new Set())
@@ -142,6 +144,15 @@ addEntry({
   shortcut: "S",
   nested: 'view',
   action: () => showSettings.value = !showSettings.value
+})
+
+addEntry({
+  id: "viewHistory",
+  icon: ClockIcon,
+  content: t('gameBar.viewHistory'),
+  shortcut: "H",
+  nested: 'view',
+  action: () => showHistory.value = !showHistory.value
 })
 
 // Computed
@@ -1149,6 +1160,12 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        <HistoryPanel
+          v-if="showHistory && game && playerId"
+          :game="game"
+          :playerId="playerId"
+          @close="showHistory = false"
+        />
         <div v-if="playabilityInfo && debug.active" class="debug-modal-overlay" @click.self="playabilityInfo = null">
           <div class="debug-playability-modal">
             <h3>{{ $t('game.playabilityChecks') }}</h3>

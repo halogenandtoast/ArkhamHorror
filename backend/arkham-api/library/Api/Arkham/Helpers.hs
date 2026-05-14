@@ -78,7 +78,10 @@ data ApiResponse
   | GameShowUnder InvestigatorId
   | GamePlayabilityInfo {cardId :: CardId, cardCode :: Text, checks :: [(Text, Maybe Text)]}
   deriving stock Generic
-  deriving anyclass ToJSON
+
+instance Aeson.ToJSON ApiResponse where
+  toJSON = Aeson.genericToJSON Aeson.defaultOptions
+  toEncoding = Aeson.genericToEncoding Aeson.defaultOptions
 
 newtype GameAppT a = GameAppT {unGameAppT :: ReaderT GameApp IO a}
   deriving newtype

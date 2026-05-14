@@ -24,6 +24,7 @@ import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder } from '@/arkham/types/SkillTest';
 import { Card, cardDecoder, } from '@/arkham/types/Card';
 import { TarotCard, tarotCardDecoder, } from '@/arkham/types/TarotCard';
+import { History, historyDecoder } from '@/arkham/types/History';
 
 type GameState = { tag: 'IsPending', contents: string[] } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
 
@@ -110,6 +111,9 @@ export type Game = {
   undoTurnStep: number | null;
   undoPhaseStep: number | null;
   undoRoundStep: number | null;
+  roundHistory: Record<string, History>;
+  phaseHistory: Record<string, History>;
+  turnHistory: Record<string, History>;
 }
 
 export function choices(game: Game, playerId: string): Message[] {
@@ -254,10 +258,13 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     undoActionStep: v2Optional(JsonDecoder.number()),
     undoTurnStep: v2Optional(JsonDecoder.number()),
     undoPhaseStep: v2Optional(JsonDecoder.number()),
-    undoRoundStep: v2Optional(JsonDecoder.number())
+    undoRoundStep: v2Optional(JsonDecoder.number()),
+    roundHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
+    phaseHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
+    turnHistory: v2Optional(JsonDecoder.record<History>(historyDecoder, 'Dict<InvestigatorId, History>')),
   },
   'Game',
-).map(({mode, killedInvestigators, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, ...game}) => ({
+).map(({mode, killedInvestigators, undoActionStep, undoTurnStep, undoPhaseStep, undoRoundStep, roundHistory, phaseHistory, turnHistory, ...game}) => ({
   scenario: mode?.That ?? null,
   campaign: mode?.This ?? null,
   killedInvestigators: killedInvestigators ?? {},
@@ -265,5 +272,8 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
   undoTurnStep: undoTurnStep ?? null,
   undoPhaseStep: undoPhaseStep ?? null,
   undoRoundStep: undoRoundStep ?? null,
+  roundHistory: roundHistory ?? {},
+  phaseHistory: phaseHistory ?? {},
+  turnHistory: turnHistory ?? {},
   ...game
 }))

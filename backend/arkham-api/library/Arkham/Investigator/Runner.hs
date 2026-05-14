@@ -1825,7 +1825,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         ]
         <> [whenAssignedWindowMsg | notNull horrorTargets]
         <> [ CheckWindows
-               $ [mkAfter (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
+               $ map mkAfter placedWindows
+               <> [mkAfter (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
                <> [mkAfter (Window.TakeHorror source (toTarget iid) totalHorror) | totalHorror > 0]
                <> [ mkAfter (Window.DealtDamage source damageEffect target damage)
                   | target <- nub damageTargets
@@ -2711,17 +2712,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           , AssignDamage (InvestigatorTarget $ toId a)
           , InvestigatorWhenDefeated source investigatorId
           ]
-      else do
-        push $ AssignDamage (InvestigatorTarget $ toId a)
-        when (investigatorAssignedHealthDamage > 0 || investigatorAssignedSanityDamage > 0) do
-          pushM
-            $ Helpers.checkWindows
-            $ [ mkAfter $ Window.PlacedToken source (toTarget a) Damage investigatorAssignedHealthDamage
-              | investigatorAssignedHealthDamage > 0
-              ]
-            <> [ mkAfter $ Window.PlacedToken source (toTarget a) Horror investigatorAssignedSanityDamage
-               | investigatorAssignedSanityDamage > 0
-               ]
+      else push $ AssignDamage (InvestigatorTarget $ toId a)
 
     pure a
   AssignDamage target | isTarget a target -> do

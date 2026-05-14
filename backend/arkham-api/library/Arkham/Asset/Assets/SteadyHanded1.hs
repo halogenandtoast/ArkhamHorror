@@ -50,7 +50,7 @@ steadyHanded1Effect = cardEffect SteadyHanded1Effect Cards.steadyHanded1
 instance RunMessage SteadyHanded1Effect where
   runMessage msg e@(SteadyHanded1Effect attrs) = runQueueT $ case msg of
     SkillTestEnded sid | Just sid == attrs.skillTest -> disableReturn e
-    PassedSkillTest _ _ _ _ _ n -> do
+    PassedSkillTest _ _ _ (SkillTestInitiatorTarget _) _ n -> do
       withSkillTest \sid -> do
         when (Just sid == attrs.skillTest && n == 2) do
           case attrs.target of

@@ -49,6 +49,7 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import HistoryPanel from '@/arkham/components/HistoryPanel.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
@@ -112,7 +113,10 @@ const ready = ref(false)
 const resultQueue = ref<any>([])
 const showLog = ref(false);
 const showShortcuts = ref(false)
-const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
+const isMobileViewport = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches
+const showSidebar = ref(
+  isMobileViewport() ? false : JSON.parse(localStorage.getItem("showSidebar") ?? 'true')
+)
 const socketError = ref(false)
 const error = ref<string | null>(null)
 const solo = ref(false)
@@ -123,6 +127,7 @@ watch(showOtherPlayersHands, (v) => {
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
+const showHistory = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const skipAllPending = ref<Set<string>>(new Set())
@@ -139,6 +144,15 @@ addEntry({
   shortcut: "S",
   nested: 'view',
   action: () => showSettings.value = !showSettings.value
+})
+
+addEntry({
+  id: "viewHistory",
+  icon: ClockIcon,
+  content: t('gameBar.viewHistory'),
+  shortcut: "H",
+  nested: 'view',
+  action: () => showHistory.value = !showHistory.value
 })
 
 // Computed
@@ -632,7 +646,9 @@ const handleKeyPress = (event: KeyboardEvent) => {
 // Sidebar
 const toggleSidebar = function () {
   showSidebar.value = !showSidebar.value
-  localStorage.setItem("showSidebar", JSON.stringify(showSidebar.value))
+  if (!isMobileViewport()) {
+    localStorage.setItem("showSidebar", JSON.stringify(showSidebar.value))
+  }
 }
 
 // Undo
@@ -1144,6 +1160,12 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        <HistoryPanel
+          v-if="showHistory && game && playerId"
+          :game="game"
+          :playerId="playerId"
+          @close="showHistory = false"
+        />
         <div v-if="playabilityInfo && debug.active" class="debug-modal-overlay" @click.self="playabilityInfo = null">
           <div class="debug-playability-modal">
             <h3>{{ $t('game.playabilityChecks') }}</h3>
@@ -1225,6 +1247,12 @@ onUnmounted(() => {
         <div class="sidebar" v-if="showSidebar && game.scenario === null">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
         </div>
+        <div
+          v-if="showSidebar"
+          class="sidebar-backdrop"
+          @click="toggleSidebar"
+          aria-hidden="true"
+        ></div>
       </div>
     </template>
     <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
@@ -1411,12 +1439,44 @@ onUnmounted(() => {
   background: #d0d9dc;
 
   @media (max-width: 800px) {
-    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: min(85vw, 360px);
+    max-width: none;
+    z-index: 200;
+    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.45);
+    animation: sidebar-slide-in 0.18s ease-out;
   }
 
   @media (prefers-color-scheme: dark) {
     background: #1C1C1C;
   }
+}
+
+.sidebar-backdrop {
+  display: none;
+
+  @media (max-width: 800px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+    animation: sidebar-fade-in 0.18s ease-out;
+  }
+}
+
+@keyframes sidebar-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes sidebar-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 #invite {

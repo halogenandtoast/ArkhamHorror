@@ -15,6 +15,7 @@
     "shortcutRestartScenario": "Restart Scenario",
 
     "viewSettings": "View Settings",
+    "viewHistory": "View History",
     "viewSettingTitle": "Settings for {investigator}",
     "playerSettings": "Player Settings",
     "viewSettingSkipTriggers": "Skip triggers during skill tests that don't affect the outcome",

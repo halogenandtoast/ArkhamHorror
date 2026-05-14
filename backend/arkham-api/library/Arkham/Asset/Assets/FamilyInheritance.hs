@@ -3,13 +3,17 @@ module Arkham.Asset.Assets.FamilyInheritance (familyInheritance, FamilyInheritan
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Token qualified as Token
 
 newtype FamilyInheritance = FamilyInheritance AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor FamilyInheritance where
+  getModifiersFor (FamilyInheritance a) = controllerGets a [AsIfResourcePool a.id]
 
 familyInheritance :: AssetCard FamilyInheritance
 familyInheritance = asset FamilyInheritance Cards.familyInheritance
@@ -17,8 +21,8 @@ familyInheritance = asset FamilyInheritance Cards.familyInheritance
 instance HasAbilities FamilyInheritance where
   getAbilities (FamilyInheritance a) =
     [ controlled a 1 (ResourcesOnThis (atLeast 1)) actionAbility
-    , restricted a 2 ControlsThis $ forced $ TurnBegins #when You
-    , controlled a 3 ControlsThis $ delayed $ forced $ TurnEnds #when You
+    , controlled_ a 2 $ forced $ TurnBegins #when You
+    , controlled_ a 3 $ delayed $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage FamilyInheritance where
@@ -31,6 +35,4 @@ instance RunMessage FamilyInheritance where
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       pure . FamilyInheritance $ attrs & tokensL %~ removeAllTokens Token.Resource
-    -- EndTurn iid | Just iid == assetController attrs -> do
-    --   FamilyInheritance <$> runMessage msg (attrs & tokensL %~ removeAllTokens Token.Resource)
     _ -> FamilyInheritance <$> runMessage msg attrs

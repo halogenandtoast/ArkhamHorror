@@ -155,6 +155,9 @@
     "ashevakIsCrossedOut": "<p>_If Eliyah Ashevak is crossed out and an investigator did not already earn his *Memorial of the Lost* card from Interlude I:_</p><p>As you sit at the edge of camp and ponder what fate might have in store for you in the coming days, a gentle nudge stirs you from your thoughts. You turn in shock, prepared to see another one of those horrid creatures emerging from the ice—but it’s only Anyu, Eliyah’s loyal companion. The big gray dog looks up at you with pleading eyes. You shake your head and rise, heavy, to your feet. That’s enough mourning for one night. As you venture back to camp, soft footfalls trail through the snow just behind you. You stop and glance at Anyu. Once again, she looks up to meet your gaze. Is she looking for comfort, or guidance? You kneel and run your gloved fingers through her thick fur, speaking soothingly to reassure the both of you. Yes, Eliyah is gone. No, I don’t know if we are safe, either. Do you want to stick with me? Anyu wags her tail. All right, then.</p><p class='basic'>Any one investigator may add the Anyu story asset to their deck. This card can be found in the Memorials of the Lost encounter set. It does not count toward that investigator’s deck size.</p>"
   },
   "interlude3": {
+    "xp": {
+      "cookiesAdvice": "Cookie's Advice"
+    },
     "label": {
       "doNotRemoveAnymore": "Do not remove anymore"
     },
@@ -309,6 +312,7 @@
     "takadaHiroko": "Takada Hiroko",
     "eliyahAshevak": "Eliyah Ashevak",
     "doNotPerformHealing": "Do not perform healing",
+    "doNotBeginWithExtraResources": "Do not begin with extra resources",
     "doNotRemoveAnymore": "Do not remove anymore",
     "removeTekeliliWeaknesses": "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*).",
     "earnsBonusExperience": "Any one investigator earns 1 bonus experience.",

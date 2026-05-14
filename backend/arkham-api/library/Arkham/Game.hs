@@ -632,6 +632,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("undoTurnStep" .= gameUndoTurnStep)
       <> ("undoPhaseStep" .= gameUndoPhaseStep)
       <> ("undoRoundStep" .= gameUndoRoundStep)
+      <> ("roundHistory" .= gameRoundHistory)
+      <> ("phaseHistory" .= gamePhaseHistory)
+      <> ("turnHistory" .= gameTurnHistory)
    where
     emptyAdditionalData =
       object
@@ -758,6 +761,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "undoTurnStep" .= toJSON gameUndoTurnStep
         , "undoPhaseStep" .= toJSON gameUndoPhaseStep
         , "undoRoundStep" .= toJSON gameUndoRoundStep
+        , "roundHistory" .= toJSON gameRoundHistory
+        , "phaseHistory" .= toJSON gamePhaseHistory
+        , "turnHistory" .= toJSON gameTurnHistory
         ]
    where
     emptyAdditionalData =

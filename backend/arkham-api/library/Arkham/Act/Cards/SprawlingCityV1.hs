@@ -19,7 +19,7 @@ sprawlingCityV1 :: ActCard SprawlingCityV1
 sprawlingCityV1 = act (1, A) SprawlingCityV1 Cards.sprawlingCityV1 Nothing
 
 instance HasAbilities SprawlingCityV1 where
-  getAbilities (SprawlingCityV1 a) =
+  getAbilities = actAbilities \a ->
     [ restricted a 1 (not_ $ Remembered TheTeamStudiedTheHistoryOfTheElderThings)
         $ actionAbilityWithCost
         $ SpendTokenKeyCost 2 #elderthing

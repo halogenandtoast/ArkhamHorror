@@ -17,7 +17,7 @@ sprawlingCityV3 :: ActCard SprawlingCityV3
 sprawlingCityV3 = act (1, A) SprawlingCityV3 Cards.sprawlingCityV3 Nothing
 
 instance HasAbilities SprawlingCityV3 where
-  getAbilities (SprawlingCityV3 a) =
+  getAbilities = actAbilities \a ->
     [ restricted a 1 (not_ $ Remembered TheTeamDiscernedTheOriginOfTheShoggoths)
         $ actionAbilityWithCost
         $ SpendTokenKeyCost 2 #tablet

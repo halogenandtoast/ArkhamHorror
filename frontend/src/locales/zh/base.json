@@ -17,7 +17,6 @@
   "email": "电子邮箱",
   "finishedGames": "已结束的游戏",
   "forgotPassword": "忘记密码",
-  "home": "主页",
   "invalidEmailOrPassword": "邮箱或密码错误",
   "language": "语言",
   "logIn": "登录",
@@ -33,34 +32,94 @@
   "username": "用户名",
   "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
   "tooltips": {
-    "takeControlOfKey": "获得 {key} 钥匙的控制权",
-    "name": "{name}"
+    "attacksYou": "{name}攻击你",
+    "takeControlOfKey": "获得{key}钥匙的控制权",
+    "name": "{name}",
+    "giveSeal": "给予封印",
+    "takeSeal": "承受封印"
   },
+  "name": "{name}",
   "shuffleRemainder": "将剩余的遭遇牌混洗，形成遭遇牌库。",
   "readyToBegin": "你现在可以开始游戏了。",
-
   "Yes": "是",
   "No": "否",
-
-
+  "On": "开",
+  "Off": "关",
+  "Back": "返回",
+  "exchange": "交换",
   "Parley": "谈判",
   "Resign": "撤退",
   "Investigate": "调查",
   "Evade": "躲避",
+  "Explore": "探索",
   "Fight": "攻击",
   "Engage": "交战",
   "Forced": "強制",
   "Delayed": "延时效果",
   "Objective": "目标",
   "Haunted": "闹鬼",
-  
-  "Results": "结局",
+  "Results": "结果",
   "Story": "故事",
   "ChooseOne": "选择一项",
   "Choose": "选择",
   "setup": "设置",
   "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续直到剧本结束",
+  "token": {
+    "Aether": "以太",
+    "AlarmLevel": "警觉等级",
+    "Ammo": "弹药",
+    "Antiquity": "古物",
+    "Bounty": "赏金",
+    "Brilliance": "辉光",
+    "Charge": "充能",
+    "Civilian": "平民",
+    "Clue": "线索",
+    "Corruption": "腐化",
+    "Damage": "伤害",
+    "DarknessLevel": "黑暗等级",
+    "Depletion": "枯竭",
+    "Depth": "深度",
+    "Doom": "毁灭",
+    "Durability": "耐久",
+    "Eclipse": "星蚀",
+    "Empowerment": "强化",
+    "Evidence": "证据",
+    "Growth": "生长",
+    "Horror": "恐惧",
+    "Inspiration": "灵感",
+    "Key": "钥匙",
+    "Lead": "队长",
+    "Leyline": "地脉",
+    "Lock": "锁",
+    "LostSoul": "迷失灵魂",
+    "Offering": "祭品",
+    "Overgrowth": "疯长",
+    "Pillar": "支柱",
+    "Portent": "预兆",
+    "Renown": "声望",
+    "Resource": "资源",
+    "Rumor": "传闻",
+    "ScoutingReport": "侦察报告",
+    "Scrap": "废料",
+    "Seal": "封印",
+    "Secret": "秘密",
+    "Shard": "碎片",
+    "Shell": "躯壳",
+    "Study": "研究",
+    "Supply": "补给",
+    "Suspicion": "怀疑",
+    "Switch": "开关",
+    "Target": "目标",
+    "Ticket": "车票",
+    "Time": "时间",
+    "Truth": "真相",
+    "Try": "尝试",
+    "Warning": "警告",
+    "Whistle": "哨子",
+    "Wish": "愿望"
+  },
   "choice": {
+    "actions": "行动",
     "ammo": "弹药",
     "breaches": "裂口",
     "cards": "卡牌",
@@ -74,7 +133,7 @@
     "supply": "补给",
     "supplyPoints": "获得的补给数"
   },
-  "proceedToSetup": "前往 _设置_",
+  "proceedToSetup": "前往_冒险设置_",
   "slot": {
     "accessory": "饰品",
     "ally": "盟友",
@@ -137,24 +196,337 @@
   "and": "{0} 和 {1}",
   "cardsUnderneath": "下方有 1 张卡牌 | 下方有 {count} 张卡牌",
   "drew": "{iname} 抽到了 {name}",
-
   "Done With Mulligan": "结束选牌",
-  "Choose player to take turn": "选择调查阶段开始的调查员",
-  "handSize": "手牌上限",
-  "Skip": "跳过",
-  "skipTriggers": "跳过触发能力",
-  "Apply Results": "应用结果",
+  "skip": "跳过",
   "submit": "确定",
+  "handSize": "手牌上限",
+  "yes": "是",
+  "no": "否",
   "succeededBy": "成功，超过难度 {amount} 点",
   "failedBy": "失败，低于难度 {amount} 点",
-  "skillValue": "技能值",
-  "label": {
-    "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
-    "takeControlOfKey": "控制钥匙"
-  },
-  "cluesPerPlayerAsGroup": "分配线索数量（全队共同花费 {total} 个线索）",
   "chooseLeadInvestigator": "选择调查员队长",
+  "cluesPerPlayerAsGroup": "分配线索数量（全队共同花费 {total} 个线索）",
   "fromDeck": "从牌库中",
   "fromHand": "从手牌中",
-  "fromDiscard": "从弃牌堆中"
+  "fromDiscard": "从弃牌堆中",
+  "ok": "确定",
+  "back": "返回",
+  "join": "加入",
+  "joinGame": "加入游戏",
+  "decks": "牌组",
+  "newDeck": "新牌组",
+  "deckSyncedSuccessfully": "牌组同步成功",
+  "areYouSureDeleteDeck": "你确定要删除这个牌组吗？",
+  "noDecksMatchFilters": "没有符合过滤条件的牌组。",
+  "deck": {
+    "viewOnArkhamDb": "分享卡组",
+    "syncDeck": "同步牌组",
+    "deleteDeck": "删除牌组"
+  },
+  "deckList": {
+    "saveToDeckList": "保存到牌组列表",
+    "saveToDeckListDescription": "保留此牌组以供未来的战役使用"
+  },
+  "lobby": {
+    "scenario": "冒险",
+    "campaign": "战役",
+    "multiplayer": "多人游戏",
+    "waitingForPlayers": "等待玩家加入",
+    "inviteOthers": "邀请其他玩家加入：",
+    "copy": "复制",
+    "copied": "✓ 已复制",
+    "claim": "认领",
+    "claimed": "已认领",
+    "waiting": "等待中",
+    "joined": "已加入",
+    "couldNotClaimSeat": "无法认领此位置。可能已被占用。",
+    "waitingForMorePlayers": "还需等待 {remaining} 名玩家 | 还需等待 {remaining} 名玩家"
+  },
+  "game": {
+    "areYouSureUndoScenario": "你确定要撤销并回到冒险开始时吗？",
+    "playabilityChecks": "可玩性检查",
+    "unableToDownloadExport": "无法下载导出文件",
+    "shortcutSection": {
+      "game": "游戏",
+      "undo": "撤销",
+      "view": "查看"
+    },
+    "undoTo": "撤销至",
+    "startOfAction": "行动开始时",
+    "startOfTurn": "回合开始时",
+    "startOfPhase": "阶段开始时",
+    "startOfRound": "一轮开始时",
+    "shortcutUndoActionStart": "撤销至行动开始时",
+    "shortcutUndoTurnStart": "撤销至回合开始时",
+    "shortcutUndoPhaseStart": "撤销至阶段开始时",
+    "shortcutUndoRoundStart": "撤销至一轮开始时",
+    "gameOver": "游戏结束"
+  },
+  "cardsView": {
+    "browseSets": "浏览扩展包",
+    "searchCards": "搜索卡牌...",
+    "listView": "列表视图",
+    "imageView": "图像视图",
+    "includeEncounter": "包含遭遇卡",
+    "chapter1": "第一章",
+    "chapter2": "第二章"
+  },
+  "cardsList": {
+    "name": "名称",
+    "class": "职阶",
+    "cost": "费用",
+    "type": "卡牌类型",
+    "icons": "技能检定图标",
+    "traits": "特性",
+    "set": "扩展包"
+  },
+  "scenarioSettings": {
+    "title": "单场冒险模式设置",
+    "noSettings": "此剧本目前没有可用的单场冒险模式设置。",
+    "begin": "开始"
+  },
+  "campaignSettings": {
+    "title": "剧本设置"
+  },
+  "sideStory": {
+    "selectSideScenario": "选择要添加的支线剧情 "
+  },
+  "partners": {
+    "expeditionTeam": "探险队",
+    "damage": "伤害",
+    "horror": "恐惧",
+    "theEntity": "实体"
+  },
+  "partnerStatus": {
+    "safe": "安全",
+    "resolute": "坚决",
+    "eliminated": "被击败"
+  },
+  "campaignLog": {
+    "chaosBag": "混乱袋",
+    "remembered": "备忘录",
+    "campaignNotes": "剧本笔记"
+  },
+  "campaignLogView": {
+    "noEntriesYet": "暂无记录。",
+    "recordedSets": "已记录的循环",
+    "recordedCounts": "已记录的计数"
+  },
+  "investigatorRow": {
+    "physical": "肉体",
+    "mental": "精神",
+    "earnedCards": "获得的卡牌",
+    "showModifiers": "显示修正",
+    "expand": "展开",
+    "collapse": "折叠"
+  },
+  "treachery": {
+    "discard": "弃牌"
+  },
+  "modifier": {
+    "cannotCommitCards": "无法投入卡牌",
+    "difficulty": "难度",
+    "cancelEffects": "取消该效果",
+    "cannotPerformSkillTest": "无法进行技能检定",
+    "result": "结果",
+    "skillValue": "技能值",
+    "doubleSuccess": "两次成功效果",
+    "doubleDifficulty": "难度翻倍",
+    "mayIgnoreLocationEffects": "可以忽略地点效果",
+    "skillIconsSubtract": "减去技能图标",
+    "skillTestAutomaticallySucceeds": "技能检定自动成功",
+    "revealAnotherChaosToken": "额外揭示一个混乱标记",
+    "cancelMatchingChaosTokens": "取消当前混乱标记并再揭示一个",
+    "cancelMatchingChaosTokensShort": "取消当前混乱标记"
+  },
+  "modifiersTitle": "修正",
+  "skillTestActions": {
+    "passSkillTest": "技能检定成功",
+    "failSkillTest": "技能检定失败"
+  },
+  "draw": {
+    "shuffleBackIn": "洗回牌库",
+    "selectDraw": "选择抽取",
+    "shuffle": "洗牌"
+  },
+  "encounterDeck": {
+    "draw": "抽取"
+  },
+  "scenarioComponent": {
+    "shuffleBackIn": "洗回牌库"
+  },
+  "scenarioDeck": {
+    "showCards": "显示卡牌"
+  },
+  "chaosBagChoice": {
+    "grouped": "分组"
+  },
+  "player": {
+    "viewDeck": "查看牌组"
+  },
+  "enemy": {
+    "debug": "调试"
+  },
+  "location": {
+    "under": "在({count})下方"
+  },
+  "concealedCard": {
+    "debug": "调试"
+  },
+  "importGame": {
+    "solo": "单人游戏",
+    "multiplayer": "多人游戏",
+    "soloDescription": "你将控制所有调查员。",
+    "multiplayerDescription": "你将获得一个邀请链接，以便其他人可以加入并认领他们的调查员。"
+  },
+  "questionFilter": {
+    "filter": "过滤"
+  },
+  "resourcesAria": {
+    "assignAllHorror": "分配所有恐惧"
+  },
+  "pickSupplies": {
+    "investigatorPortrait": "调查员肖像"
+  },
+  "chooseDeck": {
+    "search": "搜索…",
+    "useThisDeck": "使用此牌组"
+  },
+  "deckToolbar": {
+    "searchDecks": "搜索牌组…",
+    "sortName": "排序: 名称",
+    "sortClass": "排序: 职阶"
+  },
+  "newDeck": {
+    "save": "保存",
+    "saveAndUse": "保存并使用",
+    "useWithoutSaving": "不保存，直接使用",
+    "unimplementedError": "无法创建牌组，以下卡牌尚未实装："
+  },
+  "claimSeat": {
+    "unableToLoad": "无法加载游戏详细信息。",
+    "goToGame": "前往游戏 →",
+    "loading": "加载中…"
+  },
+  "home": {
+    "dismiss": "忽略",
+    "noActiveGames": "没有进行中的游戏。",
+    "loadGame": "加载游戏"
+  },
+  "about": {
+    "supportTitle": "支持",
+    "supportBody": "运行此服务的基础设施费用相当昂贵。该项目依赖于社区的贡献来支付这些费用。如果你能在财务上支持这个项目，请访问我们的 Patreon。",
+    "supportNote": "请注意，没有功能被锁定在付费墙后。此项目对所有人免费，并将在其持续运行期间保持免费。",
+    "copyrightTitle": "版权声明",
+    "copyrightBody": "此应用中提供的关于 <a href=\"https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/\">Arkham Horror: The Card Game™（诡镇奇谈：卡牌版）</a> 的文本和图形信息，版权归 Fantasy Flight Games 2024 所有。此应用是一个粉丝项目，不是由 Fantasy Flight Games 制作、认可、支持或与其有任何附属关系。",
+    "copyrightArtwork": "所有艺术作品和插图的知识产权归其各自的创作者所有。所有 Arkham Horror: The Card Game™ 图像和图形均由 Fantasy Flight Games 享有版权。",
+    "projectTitle": "项目详情",
+    "projectBody": "此应用程序由 <a href=\"https://github.com/halogenandtoast\">halogenandtoast</a> 及贡献者创建，旨在支持 Arkham Horror: The Card Game 社区。此项目的源代码可在 <a href=\"https://github.com/halogenandtoast/ArkhamHorror\">Github</a> 获取。欢迎通过 Github 提议或 Mythos Busters discord 服务器上的专用频道提供反馈和错误报告。"
+  },
+  "settingsForm": {
+    "languageHelp": "这将更改卡牌和应用的语言。如果所选语言中没有可用的卡牌或文本，将默认显示英语。（译者：中文相关bug，请在QQ群里反馈）",
+    "enrollInBeta": "加入测试版",
+    "betaWarning": "测试版功能可能存在严重错误，游戏可能无法恢复，请仅在愿意提供反馈的情况下启用此功能。",
+    "dangerZone": "危险区域",
+    "dangerZoneDescription": "永久删除你的帐户和所有相关数据，包括游戏和牌组。",
+    "cannotBeUndone": "此操作无法撤销。",
+    "deleteAccount": "删除帐户",
+    "deleteConfirm": "你确定吗？你的所有游戏、牌组和帐户数据都将被永久删除，且无法恢复。",
+    "confirmPermanentDelete": "是，永久删除我的帐户"
+  },
+  "campaignLogTooltip": {
+    "rememberedTitle": "备忘录",
+    "campaignNotesTitle": "剧本笔记"
+  },
+  "worldMap": {
+    "toggleFullscreen": "切换全屏"
+  },
+  "admin": {
+    "title": "管理",
+    "toggleSidebar": "切换侧边栏",
+    "dashboard": "控制台",
+    "rooms": "房间",
+    "users": "用户",
+    "games": "游戏",
+    "insights": "观察",
+    "reports": "报告",
+    "status": "状态"
+  },
+  "calendar": {
+    "timePassed": "流逝的时间"
+  },
+  "keysStatus": {
+    "keys": "钥匙",
+    "nameOfArtifact": "超维神器名称",
+    "bearer": "拥有者"
+  },
+  "scarletKeys": {
+    "dossierHeader": "你可以在任何时候阅读此档案",
+    "youAreCurrentlyHere": "你当前在这里。",
+    "travelHere": "旅行至此",
+    "travelTime": "旅行时间",
+    "sideStoryLocation": "这是一个支线剧情地点。",
+    "sideStoryDescription": "如果你想在这个战役中添加一个支线剧情，你可以旅行到这个地点，并花费等同于游玩该支线剧情通常所需经验的额外时间。",
+    "travelWithExpeditedTicket": "使用特快车票旅行（1 次）",
+    "travelWithoutStopping": "旅行至此但不停留",
+    "locationLocked": "该地点当前已锁定。"
+  },
+  "gameRow": {
+    "solo": "单人"
+  },
+  "replay": {
+    "restart": "重新开始",
+    "stepBack": "后退一步",
+    "play": "播放",
+    "stop": "停止",
+    "stepForward": "前进一步"
+  },
+  "core2": {
+    "tooltips": {
+      "sewerCulvert": {
+        "resign": "“我再也受不了了！”你逃出了下水道。"
+      }
+    }
+  },
+  "debug": {
+    "asset": {
+      "title": "调试支援",
+      "takeControl": "获得控制权",
+      "ready": "准备就绪",
+      "exhaust": "消耗",
+      "defeat": "击败",
+      "discard": "弃掉",
+      "showSlots": "显示槽位"
+    },
+    "concealedCard": {
+      "title": "调试隐蔽卡"
+    },
+    "enemy": {
+      "title": "调试敌人",
+      "increaseDamageDealt": "增加造成的伤害",
+      "addHunter": "添加猎手",
+      "increaseHealth": "增加生命值",
+      "exhaust": "消耗",
+      "ready": "重整",
+      "defeat": "击败",
+      "evade": "躲避",
+      "addDamage": "添加伤害"
+    },
+    "location": {
+      "title": "调试地点",
+      "addPassageway": "添加通道",
+      "reveal": "揭示",
+      "removeClues": "移除线索",
+      "placeClue": "放置线索",
+      "reset": "重置"
+    },
+    "common": {
+      "place": "放置",
+      "back": "返回",
+      "placeTokens": "放置标记",
+      "removeAllTokens": "移除所有标记",
+      "modifiers": "修正",
+      "close": "关闭"
+    }
+  }
 }

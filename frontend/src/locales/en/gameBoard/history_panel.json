@@ -1,0 +1,43 @@
+{
+    "title": "History",
+    "round": "Round",
+    "phase": "Phase",
+    "turn": "Turn",
+    "empty": "Nothing recorded for this scope yet.",
+    "section": {
+        "counts": "Counts",
+        "playedCards": "Played cards",
+        "treacheriesDrawn": "Treacheries drawn",
+        "enemiesDrawn": "Enemies drawn",
+        "enemiesDefeated": "Enemies defeated",
+        "enemiesAttackedBy": "Enemies attacked by",
+        "dealtDamageTo": "Dealt damage to",
+        "locationsInvestigated": "Locations investigated",
+        "cluesDiscovered": "Clues discovered",
+        "skillTests": "Skill tests"
+    },
+    "field": {
+        "actionsCompleted": "Actions completed",
+        "actionsSpent": "Actions spent",
+        "moved": "Moved",
+        "cardsDrawn": "Cards drawn",
+        "resourcesGained": "Resources gained",
+        "attacksOfOpportunity": "Attacks of opportunity",
+        "successfulAttacks": "Successful attacks",
+        "successfulEvasions": "Successful evasions",
+        "successfulInvestigations": "Successful investigations",
+        "successfulExplore": "Successful explore"
+    },
+    "skillResult": {
+        "unrun": "Unrun",
+        "succeededBy": "Succeeded by {n}",
+        "failedBy": "Failed by {n}"
+    },
+    "enemy": {
+        "health": "Health: {n}",
+        "defeated": "Defeated"
+    },
+    "clues": {
+        "count": "Clues: {n}"
+    }
+}

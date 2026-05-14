@@ -39,6 +39,7 @@
     "takeSeal": "Take Seal"
   },
   "name": "{name}",
+  "waitingForPlayer": "Waiting for {name}…",
   "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
   "readyToBegin": "You are now ready to begin.",
   "Yes": "Yes",

@@ -28,6 +28,7 @@ import Draw from '@/arkham/components/Draw.vue'
 import { IsMobile } from '@/arkham/isMobile';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Enemy } from '@/arkham/types/Enemy';
+import { XMarkIcon } from '@heroicons/vue/20/solid';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -387,10 +388,15 @@ function toggleHandAreaMarginBottom(event: Event) {
     handAreaMarginBottom.value = handCardExposedHeight_MAX;
     handAreaPointerEvents.value = 'auto'
   }
-  else if(!target.classList.contains('in-hand')){
+  else if(!target.closest('.in-hand')){
     handAreaMarginBottom.value = handCardExposedHeight_MIN;
     handAreaPointerEvents.value = 'none'
   }
+}
+
+function closeHand() {
+  handAreaMarginBottom.value = handCardExposedHeight_MIN;
+  handAreaPointerEvents.value = 'none';
 }
 
 </script>
@@ -618,6 +624,15 @@ function toggleHandAreaMarginBottom(event: Event) {
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ bottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+      <button
+        v-show="handAreaPointerEvents === 'auto'"
+        class="hand-close-button"
+        type="button"
+        aria-label="Close hand"
+        @click.stop="closeHand"
+      >
+        <XMarkIcon aria-hidden="true" />
+      </button>
       <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
         @drop="onDropHand($event)"
         @dragover.prevent="dragover($event)"
@@ -956,6 +971,29 @@ function toggleHandAreaMarginBottom(event: Event) {
     width: calc(var(--card-width) * 4);
     min-width: calc(var(--card-width) * 4);
   }
+}
+
+.hand-close-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 101;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.hand-close-button svg {
+  width: 18px;
+  height: 18px;
 }
 
 .card {

@@ -186,7 +186,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "williamDyer" do
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "williamDyerIsAlive"
                   , hr
@@ -216,7 +216,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "danforth" do
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "danforthIsAlive"
                   , hr
@@ -239,7 +239,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "drAmyKensler" do
               choiceMade kensler
               let alive = kensler `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "kenslerIsAlive"
                   , hr
@@ -257,7 +257,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "drMalaSinha" do
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "sinhaIsAlive"
                   , hr
@@ -287,7 +287,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "jamesCookieFredericks" do
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "cookieIsAlive"
                   , hr
@@ -299,7 +299,7 @@ instance RunMessage EdgeOfTheEarth where
                   chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                     questionLabeled' "earnsBonusExperience"
                     portraitLabeled iid do
-                      interludeXp iid $ toBonus "cookiesAdvice" 1
+                      interludeXp iid $ scope "interlude1" $ toBonus "cookiesAdvice" 1
                 else do
                   iids <- getInvestigators
                   addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.cookiesCustom32
@@ -313,7 +313,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "averyClaypool" do
               choiceMade claypool
               let alive = claypool `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "claypoolIsAlive"
                   , validateEntry (alive && ellsworthAlive) "claypoolIsAliveEllsworth"
@@ -335,7 +335,7 @@ instance RunMessage EdgeOfTheEarth where
           when (ellsworth `elem` choices) do
             labeled' "roaldEllsworth" do
               choiceMade ellsworth
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry ellsworthAlive "ellsworthIsAlive"
                   , hr
@@ -353,7 +353,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "takadaHiroko" do
               choiceMade takada
               let alive = takada `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "takadaIsAlive"
                   , hr
@@ -376,7 +376,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "eliyahAshevak" do
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
-              blueStory
+              scope "interlude1" $ blueStory
                 $ compose
                   [ validateEntry alive "ashevakIsAlive"
                   , hr
@@ -427,7 +427,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
               owned <- isJust <$> getOwner Events.dyersSketches
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "williamDyerIsAlive"
                   , hr
@@ -459,7 +459,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.collectedWorksOfPoe
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "danforthIsAlive"
                   , hr
@@ -486,7 +486,7 @@ instance RunMessage EdgeOfTheEarth where
               let alive = kensler `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.kenslersLog
               sharingResearch <- getHasRecord DrKenslerIsSharingHerResearchWithYou
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry (alive && sharingResearch) "kenslerIsAliveAndSharingResearch"
                   , hr
@@ -510,7 +510,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.sinhasMedicalKit
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "sinhaIsAlive"
                   , hr
@@ -542,7 +542,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.cookiesCustom32
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "cookieIsAlive"
                   , hr
@@ -554,7 +554,7 @@ instance RunMessage EdgeOfTheEarth where
                     chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                       questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
-                        interludeXp iid $ toBonus "cookiesAdvice" 1
+                        interludeXp iid $ scope "interlude2" $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -570,7 +570,7 @@ instance RunMessage EdgeOfTheEarth where
             labeled' "averyClaypool" do
               choiceMade claypool
               owned <- isJust <$> getOwner Assets.claypoolsFurs
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry claypoolAlive "claypoolIsAlive"
                   , hr
@@ -594,7 +594,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade ellsworth
               let alive = ellsworth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.ellsworthsBoots
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "ellsworthIsAlive"
                   , validateEntry (alive && claypoolAlive) "ellsworthIsAliveClaypool"
@@ -617,7 +617,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade takada
               let alive = takada `elem` remainingPartners
               owned <- isJust <$> getOwner Events.takadasCache
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "takadaIsAlive"
                   , hr
@@ -626,10 +626,13 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
+                    chooseOneM lead $ campaignI18n do
                       questionLabeled' "beginScenarioIIIWithExtraResources"
-                      portraitLabeled iid do
-                        scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
+                      for_ iids \iid -> do
+                        portraitLabeled iid do
+                          scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
+                      labeled' "doNotBeginWithExtraResources" nothing
+                    doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
                     addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache
@@ -642,7 +645,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.anyuFaithfulCompanion
-              blueStory
+              scope "interlude2" $ blueStory
                 $ compose
                   [ validateEntry alive "ashevakIsAlive"
                   , hr
@@ -723,7 +726,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade dyer
               let alive = dyer `elem` remainingPartners
               owned <- isJust <$> getOwner Events.dyersSketches
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "williamDyerIsAlive"
                   , hr
@@ -755,7 +758,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade danforth
               let alive = danforth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.collectedWorksOfPoe
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "danforthIsAlive"
                   , hr
@@ -783,7 +786,7 @@ instance RunMessage EdgeOfTheEarth where
               let alive = kensler `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.kenslersLog
               onVerge <- getHasRecord DrKenslerIsOnTheVergeOfUnderstanding
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry (alive && onVerge) "kenslerIsAliveAndOnTheVergeOfUnderstanding"
                   , hr
@@ -807,7 +810,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade sinha
               let alive = sinha `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.sinhasMedicalKit
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "sinhaIsAlive"
                   , hr
@@ -839,7 +842,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade cookie
               let alive = cookie `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.cookiesCustom32
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "cookieIsAlive"
                   , hr
@@ -851,7 +854,7 @@ instance RunMessage EdgeOfTheEarth where
                     chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
                       questionLabeled' "earnsBonusExperience"
                       portraitLabeled iid do
-                        interludeXp iid $ toBonus "cookiesAdvice" 1
+                        interludeXp iid $ scope "interlude3" $ toBonus "cookiesAdvice" 1
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -867,7 +870,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade claypool
               let alive = claypool `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.claypoolsFurs
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "claypoolIsAlive"
                   , hr
@@ -891,7 +894,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade ellsworth
               let alive = ellsworth `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.ellsworthsBoots
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "ellsworthIsAlive"
                   , hr
@@ -913,7 +916,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade takada
               let alive = takada `elem` remainingPartners
               owned <- isJust <$> getOwner Events.takadasCache
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "takadaIsAlive"
                   , hr
@@ -922,10 +925,12 @@ instance RunMessage EdgeOfTheEarth where
               if
                 | alive -> do
                     iids <- getInvestigators
-                    chooseOneM lead $ campaignI18n $ for_ iids \iid -> do
+                    chooseOneM lead $ campaignI18n do
                       questionLabeled' "beginScenarioIIIWithExtraResources"
-                      portraitLabeled iid do
-                        scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
+                      for_ iids \iid -> do
+                        portraitLabeled iid do
+                          scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
+                      labeled' "doNotBeginWithExtraResources" nothing
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -939,7 +944,7 @@ instance RunMessage EdgeOfTheEarth where
               choiceMade ashevak
               let alive = ashevak `elem` remainingPartners
               owned <- isJust <$> getOwner Assets.anyuFaithfulCompanion
-              blueStory
+              scope "interlude3" $ blueStory
                 $ compose
                   [ validateEntry alive "ashevakIsAlive"
                   , hr

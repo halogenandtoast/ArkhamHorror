@@ -291,6 +291,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       ts <-
         select tm >>= filterM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . Token.countTokens tkn)
+          LocationTarget lid -> fieldMap LocationTokens ((> 0) . Token.countTokens tkn) lid
           _ -> pure False
       case ts of
         [] -> error "Empty list for SpendTokenCost"
@@ -1164,8 +1165,9 @@ payCost msg c iid skipAdditionalCosts cost = do
               ]
       pure c
     PlaceClueOnLocationCost x -> do
-      push $ InvestigatorPlaceCluesOnLocation iid source x
-      withPayment $ CluePayment iid x
+      n <- getPlayerCountValue x
+      push $ InvestigatorPlaceCluesOnLocation iid source n
+      withPayment $ CluePayment iid n
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
       let lm = replaceYouMatcher iid locationMatcher
       mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt lm)

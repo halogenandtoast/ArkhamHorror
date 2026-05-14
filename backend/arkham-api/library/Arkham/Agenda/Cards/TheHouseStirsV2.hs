@@ -6,8 +6,9 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Scenarios.HemlockHouse.Helpers (locationSealCount)
+import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token (Token (..))
 
@@ -21,10 +22,14 @@ theHouseStirsV2 = agenda (2, A) TheHouseStirsV2 Cards.theHouseStirsV2 (Static 5)
 instance HasAbilities TheHouseStirsV2 where
   getAbilities (TheHouseStirsV2 a) =
     [ mkAbility a 1 $ forced $ PhaseEnds #when #mythos
-    , restricted a 2 (exists YourLocation)
-        $ FastAbility (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
-    , restricted a 3 (exists $ YourLocation <> LocationWithToken Resource)
-        $ FastAbility Free
+    , mkAbility a 2
+        $ freeTrigger
+        $ OrCost
+          [ PlaceClueOnLocationCost (PerPlayer 1)
+          , scenarioI18n
+              $ LabeledCost (ikey' "cost.removeSeal")
+              $ SpendTokenCost Resource (LocationTargetMatches YourLocation)
+          ]
     ]
 
 instance RunMessage TheHouseStirsV2 where
@@ -35,16 +40,7 @@ instance RunMessage TheHouseStirsV2 where
       sendMessage' thePredatoryHouse $ requestChaosTokens lead (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withLocationOf iid \lid -> do
-        n <- perPlayer 1
-        placeTokens (attrs.ability 2) lid Clue n
-      advanceAgendaDeck attrs
-      pure a
-    UseThisAbility iid (isSource attrs -> True) 3 -> do
-      withLocationOf iid \lid -> do
-        seals <- locationSealCount lid
-        when (seals > 0) $ removeTokens (attrs.ability 3) lid Resource 1
-      advanceAgendaDeck attrs
+      withLocationOf iid flipLocationOver
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       advanceAgendaDeck attrs

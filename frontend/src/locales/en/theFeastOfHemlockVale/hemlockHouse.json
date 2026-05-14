@@ -1,4 +1,21 @@
 {
+  "cost": {
+    "removeSeal": "Remove a seal from your location"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is your current floor number (to a minimum of 1).",
+      "cultist": "-1. If your location is an enemy, exhaust it.",
+      "tablet": "-3. If you fail, heal 1 damage from the nearest enemy-location.",
+      "elderThing": "-4. If you fail, and it is agenda 2a or 3a, after this test resolves, remove this token from the chaos bag and add it to the predation bag."
+    },
+    "hardExpert": {
+      "skull": "-X. X is twice your current floor number (to a minimum of 2).",
+      "cultist": "-2. If you succeed and your location is an enemy, exhaust it.",
+      "tablet": "-4. If you fail, heal 1 damage from the nearest enemy-location.",
+      "elderThing": "-5. If it is agenda 2a or 3a, after this test resolves, remove this token from the chaos bag and add it to the predation bag."
+    }
+  },
   "intro": {
     "title": "Scenario: Hemlock House",
     "body": "<p class='basic unindented'>Check your Campaign Log.</p>",

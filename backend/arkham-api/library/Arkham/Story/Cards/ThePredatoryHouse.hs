@@ -119,7 +119,7 @@ instance RunMessage ThePredatoryHouse where
           push $ ScenarioSpecific "predationTablet" (toJSON lead)
           pure $ bag {predationTokens = predationTokens bag <> predationSetAside bag, predationSetAside = []}
         ElderThing -> do
-          mLid <- selectOne $ NearestLocationTo lead (LocationWithTrait Dormant)
+          mLid <- selectOne $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
           for_ mLid \lid -> do
             card <- field LocationCard lid
             push $ FlipToEnemyLocation lid card

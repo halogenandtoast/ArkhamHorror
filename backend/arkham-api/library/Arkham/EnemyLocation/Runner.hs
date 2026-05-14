@@ -7,6 +7,7 @@ import Arkham.Behavior.Damage qualified as Damage
 import Arkham.Behavior.Defeat qualified as Defeat
 import Arkham.Behavior.Evade qualified as Evade
 import Arkham.Behavior.Fight qualified as Fight
+import Arkham.Behavior.Heal qualified as Heal
 import Arkham.Behavior.Investigate qualified as Investigate
 import Arkham.Calculation as X
 import Arkham.Classes as X
@@ -27,6 +28,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Constants
+import Arkham.Damage (DamageType (..))
 import Arkham.DamageEffect (DamageAssignment (..))
 import Arkham.DefeatedBy
 import Arkham.Direction
@@ -148,6 +150,7 @@ instance RunMessage EnemyLocationAttrs where
       Evade.pushSuccessfulEvade iid source (asEnemyId a) n
       pure a
     EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
+    Exhaust ea | isEnemyTarget a ea.target -> pure $ a & exhaustedL .~ True
     ReadyExhausted | not a.defeated -> do
       when a.exhausted $ push $ Ready (toTarget a)
       pure a
@@ -210,6 +213,11 @@ instance RunMessage EnemyLocationAttrs where
           push $ Msg.Damaged (EnemyTarget eid) da {damageAssignmentAmount = modifiedAmount}
         push $ CheckDefeated source (toTarget a)
       pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
+    HealDamage (EnemyTarget eid) source n | eid == asEnemyId a -> do
+      let healAmount = min n (enemyLocationDamage a)
+      when (healAmount > 0) do
+        Heal.pushHealedAfter DamageType (toTarget a) source healAmount
+      pure $ a & baseL . tokensL %~ subtractTokens Damage healAmount
     CheckDefeated source (isTarget a -> True) | not a.defeated -> do
       mHealth <- traverse calculate a.health
       for_ mHealth \health -> do
@@ -257,6 +265,7 @@ instance RunMessage EnemyLocationAttrs where
                 Below -> Above
            in pure $ a & baseL . directionsL %~ Map.insertWith (<>) reversedDirection [lid2]
     PlaceGrid (GridLocation pos lid) | lid == a.id -> pure $ a & baseL . positionL ?~ pos
+    SendMessage (isTarget a -> True) msg' -> liftRunMessage msg' a
     _ -> pure a
    where
     applyDamageMod (DamageDealt n) acc = acc + n

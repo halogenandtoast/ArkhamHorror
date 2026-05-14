@@ -7,6 +7,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Story
 import Arkham.Placement
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype EerieSilence = EerieSilence AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -18,8 +19,9 @@ eerieSilence = agenda (1, A) EerieSilence Cards.eerieSilence (Static 2)
 instance RunMessage EerieSilence where
   runMessage msg a@(EerieSilence attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleSetAsideIntoEncounterDeck $ mapOneOf cardIs [Treacheries.outOfTheWalls, Treacheries.pulledIn]
+      shuffleEncounterDiscardBackIn
       lead <- getLead
-      -- "Find the set-aside The Predatory House story card and resolve its text."
       predatoryHouses <- getSetAsideCardsMatching (cardIs Stories.thePredatoryHouse)
       for_ (nonEmpty predatoryHouses) \(card :| _) ->
         resolveStoryWithPlacement lead card Global

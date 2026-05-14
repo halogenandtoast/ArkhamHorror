@@ -12,10 +12,12 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.EnemyLocation.Cards qualified as EnemyLocations
 import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
+import Arkham.Helpers.Agenda (whenCurrentAgendaStepIs)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
+import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -43,10 +45,13 @@ hemlockHouse difficulty = scenario HemlockHouse "10523" "Hemlock House" difficul
 
 instance HasChaosTokenValue HemlockHouse where
   getChaosTokenValue iid tokenFace (HemlockHouse attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      mLid <- field InvestigatorLocation iid
+      floor' <- maybe (pure 0) getFloorNumber mLid
+      pure $ toChaosTokenValue attrs Skull (max 1 floor') (max 2 (floor' * 2))
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 2
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 {- | Chaos bag composition for standalone play (PDF page 16).
@@ -257,6 +262,41 @@ instance RunMessage HemlockHouse where
         Day3 -> do
           assetAt_ Assets.judithParkTheMuscle parlor
           assetAt_ Assets.theoPetersJackOfAllTrades foyer
+    ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
+      -- "If your location is an enemy, exhaust it."
+      whenJustM (field InvestigatorLocation iid) \lid ->
+        whenJustM (maybeEnemyLocation lid) \el ->
+          exhaustEnemy attrs (enemyLocationAsEnemyId el)
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _
+      | token.face == Cultist, isHardExpert attrs -> do
+          -- "If you succeed and your location is an enemy, exhaust it."
+          whenJustM (field InvestigatorLocation iid) \lid ->
+            whenJustM (maybeEnemyLocation lid) \el ->
+              exhaustEnemy attrs (enemyLocationAsEnemyId el)
+          pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
+      | token.face == Tablet -> do
+          -- "If you fail, heal 1 damage from the nearest enemy-location."
+          whenJustM (nearestEnemyLocationTo iid) \lid ->
+            whenJustM (maybeEnemyLocation lid) \el ->
+              healDamage (enemyLocationAsEnemyId el) attrs 1
+          pure s
+    AfterSkillTest (FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
+      | token.face == ElderThing -> do
+          whenCurrentAgendaStepIs (`elem` [2, 3]) do
+            -- "remove this token from the chaos bag and add it to the predation bag"
+            removeChaosToken ElderThing
+            predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
+            sendMessage predatoryHouse $ AddChaosToken ElderThing
+          pure s
+    AfterSkillTest (PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
+      | token.face == ElderThing, isHardExpert attrs -> do
+          whenCurrentAgendaStepIs (`elem` [2, 3]) do
+            removeChaosToken ElderThing
+            predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
+            sendMessage predatoryHouse $ AddChaosToken ElderThing
+          pure s
     ScenarioSpecific "enemyLocationDefeated" (maybeResult -> Just lid) -> do
       grid <- getGrid
       lead <- getLead

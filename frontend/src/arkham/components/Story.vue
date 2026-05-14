@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
+import { useDebug } from '@/arkham/debug'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
+import DebugStory from '@/arkham/components/debug/Story.vue'
 import * as Arkham from '@/arkham/types/Story'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { TokenType } from '@/arkham/types/Token';
@@ -42,6 +44,22 @@ const checkmarks = computed(() => {
 
 
 const setAsideInfestationTokens = computed(() => props.story.meta?.infestationSetAside ?? [])
+
+const debug = useDebug()
+const debugging = ref(false)
+
+const hasBag = computed(() => {
+  const meta = props.story.meta
+  if (!meta) return false
+  return (
+    (meta.predationTokens?.length ?? 0) > 0 ||
+    (meta.predationSetAside?.length ?? 0) > 0 ||
+    meta.predationCurrentToken != null ||
+    (meta.infestationTokens?.length ?? 0) > 0 ||
+    (meta.infestationSetAside?.length ?? 0) > 0 ||
+    meta.infestationCurrentToken != null
+  )
+})
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
@@ -124,11 +142,14 @@ const hasPool = computed(() => {
         :game="game"
         @click="$emit('choose', ability.index)"
         />
+      <button v-if="debug.active && hasBag" @click="debugging = true">
+        {{ $t('debug.story.inspectBag') }}
+      </button>
     </div>
     <div v-if="setAsideInfestationTokens.length > 0" class="infestation-tokens">
       <Token v-for="token in setAsideInfestationTokens" :key="token.id" :token="Arkham.infestationAsChaosToken(token)" :playerId="playerId" :game="game" @choose="choose" />
     </div>
-      
+    <DebugStory v-if="debugging" :story="story" @close="debugging = false" />
   </div>
 </template>
 

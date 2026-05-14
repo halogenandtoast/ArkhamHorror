@@ -21,7 +21,7 @@ instance HasAbilities InnsmouthTroublemaker where
     extend1 a
       $ restricted a 1 (youExist $ at_ $ orConnected NotForMovement $ locationWithEnemy a.id)
       $ parleyAction
-      $ PlaceClueOnLocationCost 1
+      $ PlaceClueOnLocationCost (Static 1)
 
 instance RunMessage InnsmouthTroublemaker where
   runMessage msg e@(InnsmouthTroublemaker attrs) = runQueueT $ case msg of

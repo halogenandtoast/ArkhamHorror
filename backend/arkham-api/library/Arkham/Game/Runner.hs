@@ -886,13 +886,35 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   FlipToLocation lid card -> do
     let
       mEnemyLocation = preview (entitiesL . enemyLocationsL . ix lid) g
-      -- Carry over tokens from the enemy-location (damage, clues, etc.)
-      inheritTokens = case mEnemyLocation of
+      inheritEnemyLocationData = case mEnemyLocation of
         Nothing -> id
         Just el ->
-          overAttrs (\a -> a {locationTokens = (toAttrs el).tokens})
-      location = inheritTokens $ lookupLocation (toCardCode card) lid (toCardId card)
-    push (PlacedLocation (toName location) (toCardCode card) lid)
+          let la = enemyLocationBase (toAttrs el)
+          in overAttrs \a ->
+                a
+                  { locationId = locationId la
+                  , locationCardId = locationCardId la
+                  , locationTokens = locationTokens la
+                  , locationLabel = locationLabel la
+                  , locationPosition = locationPosition la
+                  , locationPlacement = locationPlacement la
+                  , locationConnectedMatchers = locationConnectedMatchers la
+                  , locationConnectsTo = locationConnectsTo la
+                  , locationDirections = locationDirections la
+                  , locationRevealedConnectedMatchers = locationRevealedConnectedMatchers la
+                  }
+      location = inheritEnemyLocationData $ lookupLocation (flippedCardCode $ toCardCode card) lid (toCardId card)
+
+    replaceCard card.id (forceFlipCard card)
+
+    -- Surface the flip as a FlipLocation window so card-level forced/reactive
+    -- abilities can hook in via the existing FlipLocation matcher.
+    lead <- getLead
+    pushAll
+      [ PlacedLocation (toName location) (toCardCode location) lid
+      , Msg.CheckWindows [mkWhen (Window.FlipLocation lead lid)]
+      , Msg.CheckWindows [mkAfter (Window.FlipLocation lead lid)]
+      ]
     pure
       $ g
       & (entitiesL . enemyLocationsL %~ deleteMap lid)

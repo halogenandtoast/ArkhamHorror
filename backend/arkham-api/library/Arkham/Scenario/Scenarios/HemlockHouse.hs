@@ -242,10 +242,15 @@ instance RunMessage HemlockHouse where
                 | (def, lid, Pos _ y) <- placedFloors23
                 , toCardCode def `member` bedroomCodes
                 ]
-              lowestBedroom = case sortOn snd placedBedrooms of
-                ((lid, _) : _) -> lid
-                [] -> bedroom
-          assetAt_ Assets.littleSylvie lowestBedroom
+              lowestBedrooms = case sortOn snd placedBedrooms of
+                [] -> [bedroom]
+                sorted@((_, lowestY) : _) -> [lid | (lid, y) <- sorted, y == lowestY]
+          case lowestBedrooms of
+            [x] -> assetAt_ Assets.littleSylvie x
+            xs -> do
+              lead <- getLead
+              chooseOneM lead $ for_ xs \lid ->
+                targeting lid $ createAssetAt_ Assets.littleSylvie (AtLocation lid)
         Day2 -> do
           assetAt_ Assets.judithParkTheMuscle parlor
           assetAt_ Assets.williamHemlockAspiringPoet bedroom

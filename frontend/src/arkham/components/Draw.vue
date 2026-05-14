@@ -1,6 +1,6 @@
-<script lang="ts" setup>   
+<script lang="ts" setup>
 import { useDebug } from '@/arkham/debug'
-import type { Message } from '@/arkham/types/Message'
+import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as Arkham from '@/arkham/types/Investigator'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -8,6 +8,7 @@ import type { Game } from '@/arkham/types/Game'
 import {computed, ComputedRef, ref, reactive, watch} from 'vue'
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
+import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import Card from '@/arkham/components/Card.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
@@ -55,6 +56,35 @@ const playTopOfDeckAction = computed(() => {
     return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
   }
   return -1
+})
+
+function isTopOfDeckAbility(v: Message, cardId: string): v is AbilityLabel {
+  if (v.tag !== 'AbilityLabel') return false
+  const { source } = v.ability
+  if (source.sourceTag === 'ProxySource') {
+    if ("contents" in source.source) {
+      return source.source.contents === cardId
+    }
+    return false
+  }
+  if (source.tag === 'CardIdSource') return source.contents === cardId
+  if (source.tag === 'EventSource') return source.contents === cardId
+  if (source.tag === 'SkillSource') return source.contents === cardId
+  if (source.tag === 'AssetSource') return source.contents === cardId
+  return false
+}
+
+const topOfDeckAbilities = computed<AbilityMessage[]>(() => {
+  if (!topOfDeckRevealed.value) return []
+  const topCard = props.investigator.deck[0]
+  if (!topCard) return []
+  const cardId = topCard.id
+  return choices.value.reduce<AbilityMessage[]>((acc, v, i) => {
+    if (isTopOfDeckAbility(v, cardId)) {
+      return [...acc, { contents: v, displayAsAction: false, index: i }]
+    }
+    return acc
+  }, [])
 })
 
 const viewingDiscard = ref(false)
@@ -229,6 +259,13 @@ watch(choices, async (newChoices) => {
       />
       <span class="deck-size">{{investigator.deckSize}}</span>
       <button v-if="playTopOfDeckAction !== -1" @click="emit('choose', playTopOfDeckAction)">{{ $t('label.play') }}</button>
+      <AbilityButton
+        v-for="ability in topOfDeckAbilities"
+        :key="ability.index"
+        :ability="ability.contents"
+        :game="game"
+        @click="emit('choose', ability.index)"
+      />
     </div>
     <template v-if="debug.active">
       <button v-if="canSelectDraw" @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">{{ $t('draw.selectDraw') }}</button>

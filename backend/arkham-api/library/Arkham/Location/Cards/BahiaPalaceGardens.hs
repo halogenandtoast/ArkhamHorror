@@ -36,11 +36,12 @@ instance RunMessage BahiaPalaceGardens where
       swapLocation attrs =<< fetchCard Cards.bahiaPalaceGardensAbandoned
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      damageOk <- canHaveDamageHealed (attrs.ability 1) iid
-      horrorOk <- canHaveHorrorHealed (attrs.ability 1) iid
+      let source = UseAbilitySource iid (toSource attrs) 1
+      damageOk <- canHaveDamageHealed source iid
+      horrorOk <- canHaveHorrorHealed source iid
       chooseOrRunOneM iid $ withI18n do
-        when damageOk $ countVar 1 $ labeled' "healDamage" $ healDamage iid (attrs.ability 1) 1
-        when horrorOk $ countVar 1 $ labeled' "healHorror" $ healHorror iid (attrs.ability 1) 1
+        when damageOk $ countVar 1 $ labeled' "healDamage" $ healDamage iid source 1
+        when horrorOk $ countVar 1 $ labeled' "healHorror" $ healHorror iid source 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       swapLocation attrs =<< fetchCard Cards.bahiaPalaceGardensAbandoned

@@ -39,6 +39,6 @@ instance RunMessage BoardingHouseDay where
       codex iid (attrs.ability 1) 9
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      chooseHealDamageOrHorror (attrs.ability 1) iid
+      chooseHealDamageOrHorror (UseAbilitySource iid (toSource attrs) 1) iid
       pure l
     _ -> BoardingHouseDay <$> liftRunMessage msg attrs

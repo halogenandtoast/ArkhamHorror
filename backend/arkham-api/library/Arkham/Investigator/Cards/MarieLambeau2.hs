@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.MarieLambeau2 (marieLambeau2) where
 
 import Arkham.Ability
 import Arkham.Draw.Types
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -35,6 +36,9 @@ instance RunMessage MarieLambeau2 where
       drawCardsEdit iid (attrs.ability 1) 2 (withCardDrawRule (AfterDrawDiscard 1))
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
-      healDamageIfCan attrs attrs 1
+      withSkillTest \sid ->
+        onSucceedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
+          tokenSkillTestOption ElderSign do
+            push $ Do $ HealDamage (toTarget iid) (toSource $ ElderSignEffectSource iid) 1
       pure i
     _ -> MarieLambeau2 <$> liftRunMessage msg attrs

@@ -23,7 +23,8 @@ instance HasAbilities DressingRoom where
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      ok <- canHaveHorrorHealed (attrs.ability 1) iid
-      when ok $ healHorror iid (attrs.ability 1) 3
+      let source = UseAbilitySource iid (toSource attrs) 1
+      ok <- canHaveHorrorHealed source iid
+      when ok $ healHorror iid source 3
       pure l
     _ -> DressingRoom <$> liftRunMessage msg attrs

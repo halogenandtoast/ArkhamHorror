@@ -27,7 +27,7 @@ instance HasAbilities KensingtonGardens where
 instance RunMessage KensingtonGardens where
   runMessage msg l@(KensingtonGardens attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healHorror iid attrs 1
+      healHorror iid (UseAbilitySource iid (toSource attrs) 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignHorror iid attrs 1

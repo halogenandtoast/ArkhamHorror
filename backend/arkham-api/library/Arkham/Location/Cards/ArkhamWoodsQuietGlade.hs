@@ -25,6 +25,6 @@ instance HasAbilities ArkhamWoodsQuietGlade where
 instance RunMessage ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseHealDamageOrHorror (attrs.ability 1) iid
+      chooseHealDamageOrHorror (UseAbilitySource iid (toSource attrs) 1) iid
       pure l
     _ -> ArkhamWoodsQuietGlade <$> liftRunMessage msg attrs

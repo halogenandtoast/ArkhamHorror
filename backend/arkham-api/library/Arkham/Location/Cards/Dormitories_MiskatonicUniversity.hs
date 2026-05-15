@@ -25,7 +25,8 @@ instance HasAbilities Dormitories_MiskatonicUniversity where
 instance RunMessage Dormitories_MiskatonicUniversity where
   runMessage msg l@(Dormitories_MiskatonicUniversity attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healDamage iid (attrs.ability 1) 1
-      healHorror iid (attrs.ability 1) 1
+      let source = UseAbilitySource iid (toSource attrs) 1
+      healDamage iid source 1
+      healHorror iid source 1
       pure l
     _ -> Dormitories_MiskatonicUniversity <$> liftRunMessage msg attrs

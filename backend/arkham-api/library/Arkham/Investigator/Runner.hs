@@ -1826,6 +1826,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                ]
         ]
         <> [whenAssignedWindowMsg | notNull horrorTargets]
+        <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
         <> [ CheckWindows
                $ map mkAfter placedWindows
                <> [mkAfter (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
@@ -1840,7 +1841,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   ]
                <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
            ]
-        <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
     pure a
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> do
     healthDamageableAssets <-

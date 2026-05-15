@@ -29,7 +29,8 @@ instance HasModifiersFor OtherworldlySlaughter where
 instance HasAbilities OtherworldlySlaughter where
   getAbilities (OtherworldlySlaughter a) =
     [ mkAbility a 1 $ freeReaction (ScenarioEvent #after (Just You) "exposedAdjacentLocation")
-    , mkAbility a 2
+    , groupLimit PerRound
+        $ mkAbility a 2
         $ FastAbility
         $ OrCost [DirectHorrorCost (a.ability 2) You 1, DirectDamageCost (a.ability 2) You 1]
     ]

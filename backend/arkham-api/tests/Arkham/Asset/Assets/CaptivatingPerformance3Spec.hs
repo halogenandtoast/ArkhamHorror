@@ -29,6 +29,13 @@ spec = describe "Captivating Performance (3)" do
       length (longestUniqueStreak @Action [[#investigate], [#move], [#fight], [#fight]])
         `shouldBe` 3
 
+    it "stops at 2 across an or-actions fight/evade activate (#4553)" . gameTest $ \_ -> liftIO do
+      -- Sword Cane attack chosen as fight records [#activate, #fight], not
+      -- [#activate, #fight, #evade]; followed by a plain [#activate] (e.g.
+      -- Marie's Psychosis), preceded by an earlier [#fight].
+      length (longestUniqueStreak @Action [[#activate], [#activate, #fight], [#fight]])
+        `shouldBe` 2
+
   describe "pickSDR" do
     it "returns one chosen type per action with all types distinct" . gameTest $ \_ -> liftIO do
       let picks = pickSDR @Action [[#fight, #activate], [#fight, #activate], [#play]]

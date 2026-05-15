@@ -951,11 +951,11 @@
       "skip": "Do nothing (finishes this card)"
     },
     "secondSight": {
-      "spend1ChargeToDiscover1AdditionalClue": "Spend 1 charge to discover 1 additional clue"
+      "spendChargeForClue": "Spend 1 charge to discover 1 additional clue"
     },
     "secondSight5": {
       "doNotSpendCharge": "Do not spend charge",
-      "spend1ChargeToDiscover1AdditionalClue": "Spend 1 charge to discover 1 additional clue"
+      "spendChargeForClue": "Spend 1 charge to discover 1 additional clue"
     },
     "sefinaRousseau": {
       "doneChoosingEvents": "Done Choosing Events"

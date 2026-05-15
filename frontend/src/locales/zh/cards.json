@@ -951,11 +951,11 @@
       "skip": "不采取任何行动 (结束此卡牌)"
     },
     "secondSight": {
-      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
     },
     "secondSight5": {
       "doNotSpendCharge": "不花费充能",
-      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
     },
     "sefinaRousseau": {
       "doneChoosingEvents": "结束选择事件"

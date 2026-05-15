@@ -5913,6 +5913,7 @@ test-suite spec
       Arkham.Event.Events.OccultEvidenceSpec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
+      Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec

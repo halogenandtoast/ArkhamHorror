@@ -61,6 +61,7 @@ data CardLimit
   | LimitInPlay Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
+  | MaxPerGamePerInvestigator Int
   | MaxPerRound Int
   | LimitPerRound Int
   | MaxPerTurn Int

@@ -267,6 +267,9 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
     MaxPerGame m -> do
       n <- length <$> getCardUses (toCardCode c)
       pure $ m > n
+    MaxPerGamePerInvestigator m -> do
+      n <- count (== iid) <$> getCardUses (toCardCode c)
+      pure $ m > n
     MaxPerTurn m -> do
       n <- length <$> getCardUses (toCardCode c)
       pure $ m > n

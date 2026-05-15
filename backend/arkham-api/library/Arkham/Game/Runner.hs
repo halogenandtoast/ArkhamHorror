@@ -1430,6 +1430,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerGamePerInvestigator _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
@@ -2878,6 +2879,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerGamePerInvestigator _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTurn _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)

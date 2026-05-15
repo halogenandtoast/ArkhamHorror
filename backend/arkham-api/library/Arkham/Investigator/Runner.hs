@@ -3485,7 +3485,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
               $ windowMsgs
               <> [DeckHasNoCards iid Nothing | null deck']
               <> [before]
-              <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
+              <> [DiscardCard iid (cardDrawSource cardDraw) card.id | card <- discarded]
               <> msgs'
               <> [after]
               <> [UpdateHistory iid $ HistoryItem HistoryCardsDrawn (length allDrawn)]

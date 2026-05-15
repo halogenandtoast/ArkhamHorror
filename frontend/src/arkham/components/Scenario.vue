@@ -1464,7 +1464,7 @@ async function addChaosToken(face: any){
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 10px;
     padding-bottom: 0;
-    height: calc(var(--card-height) + 10px);
+    min-height: calc(var(--card-height) + 10px);
   }
 }
 

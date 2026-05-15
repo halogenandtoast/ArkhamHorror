@@ -8,7 +8,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modified_)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsWhen, modified_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
@@ -29,7 +29,8 @@ instance HasAbilities DaisysToteBagAdvanced where
     ]
 
 instance HasModifiersFor DaisysToteBagAdvanced where
-  getModifiersFor (DaisysToteBagAdvanced a) = controllerGets a [CanBecomeFast $ #asset <> #tome]
+  getModifiersFor (DaisysToteBagAdvanced a) =
+    controllerGetsWhen a a.ready [CanBecomeFast $ #asset <> #tome]
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []

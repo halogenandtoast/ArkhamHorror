@@ -5,9 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator (canDiscoverCluesAtYourLocation)
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
-import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (Outsider))
 
 newtype TheRedGlovedManHeWasAlwaysThere = TheRedGlovedManHeWasAlwaysThere AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,8 +23,8 @@ instance HasAbilities TheRedGlovedManHeWasAlwaysThere where
               #after
               You
               ( oneOf
-                  [ WhileAttackingAnEnemy $ EnemyCanBeDamagedBySource (a.ability 1)
-                  , WhileEvadingAnEnemy $ EnemyCanBeDamagedBySource (a.ability 1)
+                  [ WhileAttackingAnEnemy $ EnemyWithTrait Outsider <> EnemyCanBeDamagedBySource (a.ability 1)
+                  , WhileEvadingAnEnemy $ EnemyWithTrait Outsider <> EnemyCanBeDamagedBySource (a.ability 1)
                   ]
               )
               (SuccessResult $ atLeast 2)
@@ -37,8 +36,8 @@ instance HasAbilities TheRedGlovedManHeWasAlwaysThere where
               #after
               You
               ( oneOf
-                  [ WhileAttackingAnEnemy AnyEnemy
-                  , WhileEvadingAnEnemy AnyEnemy
+                  [ WhileAttackingAnEnemy (EnemyWithTrait Outsider)
+                  , WhileEvadingAnEnemy (EnemyWithTrait Outsider)
                   ]
               )
               (SuccessResult $ atLeast 2)
@@ -51,15 +50,8 @@ instance RunMessage TheRedGlovedManHeWasAlwaysThere where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       menemy <- getSkillTestTargetedEnemy
       discoverOk <- canDiscoverCluesAtYourLocation NotInvestigate iid
-
-      chooseOneM iid $ withI18n do
-        for_ menemy \enemy -> do
-          countVar 1
-            $ labeled' "dealDamage"
-            $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 enemy
-        when discoverOk do
-          countVar 1
-            $ labeled' "discoverAtYourLocation"
-            $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
+      for_ menemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
+      when discoverOk
+        $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure a
     _ -> TheRedGlovedManHeWasAlwaysThere <$> liftRunMessage msg attrs

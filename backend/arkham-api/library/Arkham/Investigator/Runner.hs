@@ -1365,13 +1365,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     cannotDamage <- hasModifier iid CannotDealDamage
     unless cannotDamage $ do
       damage <- damageValueFor 1 iid DamageForEnemy
-      -- if the source was a basic attack, we need to say the investigator did
-      -- the damage to trigger the correct windows
+      -- For a basic attack, attribute the damage to the investigator (for
+      -- damage-dealt windows) while preserving the underlying ability source so
+      -- gating modifiers like CannotBeDamagedByPlayerSourcesExcept
+      -- (SourceIsAbility BasicAbility) still see the basic-ability exception.
       let
         source' =
           case source of
-            AbilitySource _ 100 -> toSource iid
-            UseAbilitySource _ _ 100 -> toSource iid
+            AbilitySource s 100 -> UseAbilitySource iid s 100
+            UseAbilitySource _ s 100 -> UseAbilitySource iid s 100
             _ -> source
       push $ EnemyDamage eid $ attack source' damage
     pure a

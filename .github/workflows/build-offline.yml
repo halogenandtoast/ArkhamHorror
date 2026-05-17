@@ -65,7 +65,7 @@ jobs:
             echo "VERSION=dev" >> $GITHUB_ENV
           fi
 
-      # ── 系统依赖（唯一需要按平台区分的步骤）──────────────────────
+      # ── System dependencies (the only step that varies by platform) ──────
       - name: Install system C library dependencies (macOS)
         if: runner.os == 'macOS'
         run: brew install pcre gmp

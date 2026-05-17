@@ -31,7 +31,7 @@ instance HasModifiersFor TheSecondOath where
     modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
 
 instance HasAbilities TheSecondOath where
-  getAbilities (TheSecondOath x) =
+  getAbilities (TheSecondOath x) | onSide A x =
     extend
       x
       [ restricted x 1 (exists $ TreacheryWithTrait Obstacle <> TreacheryAt YourLocation)
@@ -42,6 +42,7 @@ instance HasAbilities TheSecondOath where
           $ Objective
           $ forced AnyWindow
       ]
+  getAbilities _ = []
 
 instance RunMessage TheSecondOath where
   runMessage msg a@(TheSecondOath attrs) = runQueueT $ case msg of

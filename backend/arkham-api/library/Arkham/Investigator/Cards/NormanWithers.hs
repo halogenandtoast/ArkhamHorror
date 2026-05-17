@@ -40,11 +40,14 @@ instance HasModifiersFor NormanWithers where
   getModifiersFor (NormanWithers a) = do
     let metadata = getMetadata a
     canReveal <- withoutModifier a CannotRevealCards
+    let canPlayTop = canReveal && not (playedFromTopOfDeck metadata)
     modifySelfWhen a canReveal
       $ TopCardOfDeckIsRevealed
-      : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+      : [CanPlayTopOfDeck AnyCard | canPlayTop]
     case unDeck (investigatorDeck a) of
-      x : _ -> modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
+      x : _ -> do
+        modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
+        modifySelfWhen a canPlayTop [AsIfInHandFor NotForPlay x.id]
       _ -> pure ()
 
 instance HasAbilities NormanWithers where

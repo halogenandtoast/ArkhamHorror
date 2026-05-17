@@ -753,10 +753,7 @@
       "doNotSpendAnySecretsToPlayAnyCards": "Do not spend any secrets to play any cards"
     },
     "oldCompass": {
-      "exhaustOldCompass": "Exhaust Old Compass"
-    },
-    "oldCompass2": {
-      "exhaustOldCompass": "Exhaust Old Compass"
+      "exhaustToRepeat": "Exhaust Old Compass to repeat this test"
     },
     "onTheTrail": {
       "moveTowards": "Move twice towards the enemy",
@@ -1165,7 +1162,8 @@
       "deal1DamageFor": "Deal + 1 damage for this attack and Automatically evade the enemy"
     },
     "twentyOneOrBust": {
-      "stop": "Stop with {total}"
+      "stopWith": "Stop with {total}",
+      "continue": "Continue"
     },
     "underworldMarket2": {
       "placeTheRestOnTheBottomInAnyOrder": "Place the rest on the bottom, in any order",
@@ -1563,10 +1561,6 @@
     },
     "trustyBullwhipAdvanced": {
       "dealDamageAndEvade": "Deal +1 damage for this attack and Automatically evade the enemy"
-    },
-    "twentyOneOrBust": {
-      "stopWith": "Stop with {total}",
-      "continue": "Continue"
     },
     "untimelyTransaction1": {
       "noOnePays": "No one pays",

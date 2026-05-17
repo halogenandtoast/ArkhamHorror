@@ -37,6 +37,7 @@ V2_NAMESPACE   ?= arkham
 V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
 V2_BUILDER     ?= arkham-multiarch
+V2_DO_CLUSTER  ?= arkham-horror-doks
 
 ## Ensure a docker-container buildx builder exists (required for multi-platform builds)
 v2-buildx-setup:
@@ -44,10 +45,19 @@ v2-buildx-setup:
 	  docker buildx create --name $(V2_BUILDER) --driver docker-container >/dev/null
 .PHONY: v2-buildx-setup
 
-## Build, push, and roll out to the DigitalOcean k8s (terraform/) cluster
-v2-deploy: v2-buildx-setup
+## Ensure kubeconfig exists and its token is still valid (DO tokens expire ~7 days)
+v2-kubeconfig-ensure:
 	@command -v kubectl >/dev/null || { echo "kubectl not found"; exit 1; }
-	@test -f $(V2_KUBECONFIG) || { echo "kubeconfig missing at $(V2_KUBECONFIG) — run 'terraform output -raw kubeconfig_raw > terraform/kubeconfig'"; exit 1; }
+	@if [ ! -f $(V2_KUBECONFIG) ] || ! KUBECONFIG=$(V2_KUBECONFIG) kubectl get ns $(V2_NAMESPACE) --request-timeout=5s >/dev/null 2>&1; then \
+	  echo ">> kubeconfig missing or stale — refreshing via doctl ($(V2_DO_CLUSTER))"; \
+	  command -v doctl >/dev/null || { echo "doctl not installed — install it, or run 'terraform -chdir=terraform refresh && terraform -chdir=terraform output -raw kubeconfig_raw > $(V2_KUBECONFIG)'"; exit 1; }; \
+	  mkdir -p $$(dirname $(V2_KUBECONFIG)); \
+	  doctl kubernetes cluster kubeconfig show $(V2_DO_CLUSTER) > $(V2_KUBECONFIG); \
+	fi
+.PHONY: v2-kubeconfig-ensure
+
+## Build, push, and roll out to the DigitalOcean k8s (terraform/) cluster
+v2-deploy: v2-buildx-setup v2-kubeconfig-ensure
 	@set -e; \
 	  TAG=$$(git rev-parse --short HEAD); \
 	  DIRTY=$$(git status --porcelain | head -1); \
@@ -83,7 +93,7 @@ v2-push-multiarch: v2-buildx-setup
 .PHONY: v2-push-multiarch
 
 ## Tail logs from the DigitalOcean k8s deployment
-v2-logs:
+v2-logs: v2-kubeconfig-ensure
 	KUBECONFIG=$(V2_KUBECONFIG) kubectl -n $(V2_NAMESPACE) logs \
 	  -l app=$(V2_DEPLOYMENT) --tail=200 -f
 .PHONY: v2-logs

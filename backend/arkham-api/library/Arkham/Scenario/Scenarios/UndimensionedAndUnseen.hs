@@ -25,7 +25,10 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillTest
+import Arkham.Timing qualified as Timing
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -166,11 +169,6 @@ instance RunMessage UndimensionedAndUnseen where
             else setAsideBrood 2
 
       eachInvestigator \iid -> do
-        mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
-        for_ mcard $ \card -> do
-          chooseOneM iid $ withI18n $ cardNameVar card do
-            labeled' "playName" $ putCardIntoPlay iid card
-            labeled' "doNotPlayName" nothing
         unlessStandalone do
           searchCollectionForRandom iid attrs
             $ BasicWeaknessCard
@@ -178,6 +176,13 @@ instance RunMessage UndimensionedAndUnseen where
 
       setAgendaDeck [Agendas.rampagingCreatures, Agendas.bidingItsTime, Agendas.horrorsUnleashed]
       setActDeck [Acts.saracenicScript, Acts.theyMustBeDestroyed]
+    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
+      mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
+      for_ mcard $ \card -> do
+        chooseOneM iid $ withI18n $ cardNameVar card do
+          labeled' "playName" $ putCardIntoPlay iid card
+          labeled' "doNotPlayName" nothing
+      pure s
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s

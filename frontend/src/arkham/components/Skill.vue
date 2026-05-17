@@ -139,14 +139,10 @@ const choose = (index: number) => emits('choose', index)
   align-items: flex-end;
   z-index: 1;
   pointer-events: none;
-  * {
-    transform: scale(0.6);
-  }
-  :deep(.token-container) {
-    transform: scale(1);
+  & :deep(.token-container) {
     width: unset;
   }
-  :deep(img) {
+  & :deep(img) {
     width: 20px;
     height: auto;
   }

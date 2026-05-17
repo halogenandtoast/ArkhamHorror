@@ -858,6 +858,7 @@ data Message
     CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | CheckAllAdditionalCommitCosts
   | CheckAdditionalCommitCosts InvestigatorId [Card]
+  | PayCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
     Investigate Investigate
   | -- | uses the internal method and then checks defeat

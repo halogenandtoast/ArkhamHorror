@@ -220,6 +220,30 @@ const hasAnyOffset = computed(() =>
     || Object.keys(pendingOffsets.value).length > 0
 )
 
+// Padding to extend the scroll area so dragged locations near the edges
+// aren't clipped. Transforms don't expand the parent's layout box, so we
+// translate each location's screen-space offset into padding on the grid.
+const layoutPadding = computed(() => {
+  let left = 0, right = 0, top = 0, bottom = 0
+  const seen = new Set<string>()
+  const consider = (off: { x: number, y: number }) => {
+    const rot = rotateOffset(off, rotationSteps.value)
+    if (rot.x < 0) left = Math.max(left, -rot.x)
+    else if (rot.x > 0) right = Math.max(right, rot.x)
+    if (rot.y < 0) top = Math.max(top, -rot.y)
+    else if (rot.y > 0) bottom = Math.max(bottom, rot.y)
+  }
+  for (const id of Object.keys(pendingOffsets.value)) {
+    seen.add(id)
+    consider(pendingOffsets.value[id])
+  }
+  for (const id of Object.keys(locationOffsets.value)) {
+    if (seen.has(id)) continue
+    consider(locationOffsets.value[id])
+  }
+  return { left, right, top, bottom }
+})
+
 // Returns the CANONICAL offset for a location (server-side coordinate frame).
 function effectiveOffset(locationId: string): { x: number, y: number } {
   if (dragInternal && dragInternal.locationId === locationId && dragInternal.moved) {
@@ -614,13 +638,20 @@ const gridAreas = computed(()=>{
 // transform: scale() is used rather than CSS zoom because it is handled consistently
 // by getBoundingClientRect() in all browsers. The scroll area doesn't follow transform
 // automatically, so we set margins after each render to compensate.
-const locationStyles = computed(() => ({
-  display: 'grid',
-  gap: '20px',
-  'grid-template-areas': gridAreas.value ?? '',
-  transform: `scale(${locationsZoom.value})`,
-  transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
-}))
+const locationStyles = computed(() => {
+  const pad = layoutPadding.value
+  return {
+    display: 'grid',
+    gap: '20px',
+    'grid-template-areas': gridAreas.value ?? '',
+    transform: `scale(${locationsZoom.value})`,
+    transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
+    paddingLeft: `${pad.left}px`,
+    paddingRight: `${pad.right}px`,
+    paddingTop: `${pad.top}px`,
+    paddingBottom: `${pad.bottom}px`,
+  }
+})
 
 async function updateScrollMargins() {
   await nextTick()
@@ -777,6 +808,7 @@ const spentKeys = computed(() => props.scenario.keys)
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.placement === null && a.label !== "cosmos"))
 watch(locations, updateScrollMargins, { flush: 'post' })
+watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {

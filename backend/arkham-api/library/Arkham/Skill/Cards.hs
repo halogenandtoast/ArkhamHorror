@@ -501,6 +501,7 @@ defiance2 =
   (skill "04198" "Defiance" [#wild] Mystic)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 2
+    , cdCommitTrigger = True
     }
 
 takeHeart :: CardDef
@@ -517,6 +518,7 @@ allIn5 =
     { cdCardTraits = singleton Fortune
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 5
+    , cdCommitTrigger = True
     }
 
 steadfast :: CardDef
@@ -556,6 +558,7 @@ daring =
   (skill "06111" "Daring" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
+    , cdCommitTrigger = True
     }
 
 essenceOfTheDream :: CardDef
@@ -595,6 +598,7 @@ threeAces1 =
     { cdKeywords = singleton Keyword.Myriad
     , cdCardTraits = setFromList [Fortune, Practiced]
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 sharpVision1 :: CardDef
@@ -617,6 +621,7 @@ daredevil2 =
   (skill "06240" "Daredevil" [#wild] Rogue)
     { cdCardTraits = setFromList [Fortune, Practiced]
     , cdLevel = Just 2
+    , cdCommitTrigger = True
     }
 
 expeditiousRetreat1 :: CardDef
@@ -672,6 +677,7 @@ promiseOfPower :: CardDef
 promiseOfPower =
   (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    , cdCommitTrigger = True
     }
 
 predestined :: CardDef
@@ -700,6 +706,7 @@ unrelenting1 =
     { cdCardTraits = singleton Practiced
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 signumCrucis2 :: CardDef
@@ -708,6 +715,7 @@ signumCrucis2 =
     { cdCardTraits = setFromList [Practiced, Blessed]
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
     , cdLevel = Just 2
+    , cdCommitTrigger = True
     }
 
 fey1 :: CardDef
@@ -715,6 +723,7 @@ fey1 =
   (skill "07222" "Fey" [#willpower, #wild, #wild] Seeker)
     { cdCardTraits = setFromList [Innate, Cursed]
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 justifyTheMeans3 :: CardDef
@@ -722,6 +731,7 @@ justifyTheMeans3 =
   (skill "07306" "Justify the Means" [] Rogue)
     { cdCardTraits = setFromList [Practiced, Cursed]
     , cdLevel = Just 3
+    , cdCommitTrigger = True
     }
 
 defensiveStance1 :: CardDef
@@ -814,6 +824,7 @@ calculatedRisk =
   (skill "09070" "Calculated Risk" [] Rogue)
     { cdCardTraits = setFromList [Gambit, Fated]
     , cdCommitRestrictions = [OnlyYourTest, OnlyTestDuringYourTurn, MaxOnePerTest]
+    , cdCommitTrigger = True
     }
 
 ghastlyPossession1 :: CardDef
@@ -821,6 +832,7 @@ ghastlyPossession1 =
   (skill "09090" "Ghastly Possession" [#wild] Mystic)
     { cdCardTraits = setFromList [Innate, Spell]
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 grizzled :: CardDef
@@ -893,6 +905,7 @@ accursed :: CardDef
 accursed =
   (skill "10095" "Accursed" [#wild] Mystic)
     { cdCardTraits = setFromList [Innate, Cursed]
+    , cdCommitTrigger = True
     }
 
 mesmericInfluence1 :: CardDef
@@ -921,6 +934,7 @@ persistence1 =
     { cdCardTraits = setFromList [Practiced]
     , cdLevel = Just 1
     , cdOutOfPlayEffects = [InDiscardEffect]
+    , cdCommitTrigger = True
     }
 
 providential2 :: CardDef
@@ -1067,6 +1081,7 @@ doubleDown2 =
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Entrepreneur, Socialite]]
     , cdLevel = Just 2
+    , cdCommitTrigger = True
     }
 
 memoriesOfAnotherLife5 :: CardDef
@@ -1210,6 +1225,7 @@ daredevil :: CardDef
 daredevil =
   (skill "60318" "Daredevil" [#wild] Rogue)
     { cdCardTraits = setFromList [Fortune, Practiced]
+    , cdCommitTrigger = True
     }
 
 manualDexterity2 :: CardDef
@@ -1225,6 +1241,7 @@ copycat3 =
   (skill "60330" "Copycat" [#wild] Rogue)
     { cdCardTraits = singleton Gambit
     , cdLevel = Just 3
+    , cdCommitTrigger = True
     }
 
 prescient :: CardDef
@@ -1232,6 +1249,7 @@ prescient =
   (skill "60419" "Prescient" [#willpower] Mystic)
     { cdCardTraits = setFromList [Practiced, Augury]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdCommitTrigger = True
     }
 
 guts2 :: CardDef
@@ -1284,6 +1302,7 @@ outTheDoor :: CardDef
 outTheDoor =
   (skill "60370" "Out the Door" [#agility, #wild] Rogue)
     { cdCardTraits = singleton Gambit
+    , cdCommitTrigger = True
     }
 
 outTheDoor1 :: CardDef
@@ -1291,6 +1310,7 @@ outTheDoor1 =
   (skill "60373" "Out the Door" [#agility, #wild] Rogue)
     { cdCardTraits = singleton Gambit
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 contingency3 :: CardDef
@@ -1351,6 +1371,7 @@ eldritchWhispers1 =
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1
+    , cdCommitTrigger = True
     }
 
 bloodCurse3 :: CardDef

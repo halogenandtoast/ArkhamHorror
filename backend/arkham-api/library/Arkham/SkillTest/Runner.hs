@@ -495,21 +495,35 @@ instance RunMessage SkillTest where
         if null additionalCosts
           then pure True
           else getCanAffordCost iid (toSource s) [] [mkWhen Window.NonFast] (mconcat additionalCosts)
-      let allCommits = [(i, c) | (i, cs) <- payable, c <- cs]
-      case allCommits of
+      case payable of
         [] -> pure ()
         _ -> do
-          player <- getPlayer skillTestInvestigator
           afterMsgs <- for payable \(iid, cards) ->
             checkWindows [mkAfter $ Window.CommittedCards iid cards]
           whenMsgs <- for payable \(iid, cards) ->
             checkWindows [mkWhen $ Window.CommittedCards iid cards]
           pushAll $ whenMsgs <> afterMsgs
-          push
-            $ Msg.chooseOrRunOneAtATime player
-              [ targetLabel (toCardId c) [CommitCard i c]
-              | (i, c) <- allCommits
-              ]
+          let allCommits = [(i, c) | (i, cs) <- payable, c <- cs]
+          let (triggerCommits, noTriggerCommits) =
+                partition (cdCommitTrigger . toCardDef . snd) allCommits
+          -- Plain icon-only commits do nothing on `Do (CommitCard)`; run them
+          -- silently so the player isn't prompted with a meaningless choice.
+          unless (null noTriggerCommits)
+            $ pushAll [CommitCard i c | (i, c) <- noTriggerCommits]
+          -- Trigger cards may have effects whose ordering matters (e.g. Promise
+          -- of Power adds a curse that Unrelenting should be able to seal).
+          -- chooseOrRunOneAtATimeWithLabel auto-runs a single choice without
+          -- prompting; with 2+ it shows the label so the player understands
+          -- they're picking the order of on-commit effects.
+          case triggerCommits of
+            [] -> pure ()
+            _ -> do
+              player <- getPlayer skillTestInvestigator
+              push
+                $ Msg.chooseOrRunOneAtATimeWithLabel
+                  "$label.chooseCommitOrder"
+                  player
+                  [targetLabel (toCardId c) [CommitCard i c] | (i, c) <- triggerCommits]
           pushAll [PayCommitCosts i cs | (i, cs) <- payable]
       pure s
     PayCommitCosts iid cards -> do

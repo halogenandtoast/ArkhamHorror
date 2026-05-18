@@ -153,6 +153,12 @@ export const deleteGame = (gameId: string): Promise<void> =>
 export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> =>
   api.put(`arkham/games/${gameId}/raw`, { gameMessage })
 
+export const setLocationOffset = (gameId: string, locationId: string, x: number, y: number): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'SetLocationOffset', contents: [locationId, x, y] })
+
+export const resetLocationOffsets = (gameId: string): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'ResetLocationOffsets' })
+
 export interface PlayabilityResponse {
   cardId: string
   cardCode: string

@@ -177,6 +177,7 @@ import Arkham.Matcher hiding (
  )
 import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
+import Arkham.Metrics (messageTag)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.ModifierData
 import Arkham.Name
@@ -201,7 +202,6 @@ import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
-import Arkham.Metrics (messageTag)
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Tracing
@@ -316,6 +316,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameUndoPhaseStep = Nothing
         , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
+        , gameLocationOffsets = mempty
         }
  where
   mode = case scenarioOrCampaignId of

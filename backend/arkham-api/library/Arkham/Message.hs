@@ -463,6 +463,8 @@ data Message
   | CollectSkillTestOptions
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
+  | SetLocationOffset LocationId Double Double
+  | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool
   | SetGameRunWindows Bool
   | SetGameState GameState

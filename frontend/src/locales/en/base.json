@@ -243,6 +243,9 @@
     "couldNotClaimSeat": "Could not claim this seat. It may have already been taken.",
     "waitingForMorePlayers": "Waiting for {remaining} more player | Waiting for {remaining} more players"
   },
+  "waitingOn": {
+    "label": "Waiting on this investigator"
+  },
   "game": {
     "areYouSureUndoScenario": "Are you sure you wish to undo to the beginning of the scenario?",
     "playabilityChecks": "Playability Checks",

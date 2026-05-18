@@ -82,7 +82,7 @@ instance RunMessage NormanWithers where
       pure $ NormanWithers $ a & setMeta (metadata {drawingForcedWeakness = True})
     When (RevealChaosToken _ iid token) | iid == toId a -> do
       faces <- getModifiedChaosTokenFace token
-      when (ElderSign `elem` faces) $ do
+      when (ElderSign `elem` faces && not (null (unDeck (investigatorDeck a)))) $ do
         hand <- field InvestigatorHand iid
         player <- getPlayer iid
         push

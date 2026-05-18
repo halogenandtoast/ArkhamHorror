@@ -17,7 +17,8 @@ memoryVariant = treachery MemoryVariant Cards.memoryVariant
 
 instance HasAbilities MemoryVariant where
   getAbilities (MemoryVariant a) =
-    [ mkAbility a 1 $ forced $ PlayEventDiscarding #after You AnyEvent
+    -- ActiveEvent (not AnyEvent) so we skip events that attached during play (e.g. Breach the Door). See #4574.
+    [ mkAbility a 1 $ forced $ PlayEventDiscarding #after You ActiveEvent
     , skillTestAbility $ mkAbility a 2 actionAbility
     ]
 

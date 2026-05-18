@@ -214,7 +214,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
             c <- field EventCard a.id
             push $ Devoured iid' c
             push $ RemovedFromPlay (toSource a)
-          _ -> when (isNothing eventPlacement.attachedTo) $ pushAll [after] -- Changed to allow Fast Cards to be played
+          _ -> pushAll [after]
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
     result <- liftRunMessage (FinishedEvent a.id) a

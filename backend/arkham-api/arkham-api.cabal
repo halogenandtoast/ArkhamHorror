@@ -3151,6 +3151,10 @@ library
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
       Arkham.Helpers.Window
+      Arkham.Helpers.Window.Card
+      Arkham.Helpers.Window.Clue
+      Arkham.Helpers.Window.Damage
+      Arkham.Helpers.Window.Enemy
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.History.Types

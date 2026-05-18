@@ -349,16 +349,6 @@ isSignature = any isSignatureDeckRestriction . cdDeckRestrictions . toCardDef
 
 instance Named CardDef where
   toName = cdName
-
-subTypeL :: Lens' CardDef (Maybe CardSubType)
-subTypeL = lens cdCardSubType $ \m x -> m {cdCardSubType = x}
-
-keywordsL :: Lens' CardDef (Set Keyword)
-keywordsL = lens cdKeywords $ \m x -> m {cdKeywords = x}
-
-cardTraitsL :: Lens' CardDef (Set Trait)
-cardTraitsL = lens cdCardTraits $ \m x -> m {cdCardTraits = x}
-
 class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
 

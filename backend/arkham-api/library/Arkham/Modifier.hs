@@ -215,7 +215,6 @@ data ModifierType
   | CannotMove
   | CancelMovement MovementId
   | CannotMoveExceptByScenarioCardEffects
-  | CannotMoveMoreThanOnceEachTurn -- DEPRECATED
   | CannotMulligan
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
@@ -319,7 +318,6 @@ data ModifierType
   | MaxHandSize Int
   | HandSizeCardCount Int
   | HealHorrorAsIfOnInvestigator Target Int
-  | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED
   | HealingTaken Int
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)

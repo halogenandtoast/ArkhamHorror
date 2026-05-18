@@ -71,10 +71,6 @@ orActions [a] = SingleAction a
 orActions as = OrActions (map SingleAction as)
 
 -- Top-level branches of an OrActions (for presenting choices)
-orBranches :: Actions -> [[Action]]
-orBranches (OrActions as) = map actionsToList as
-orBranches other = [actionsToList other]
-
 instance ToJSON Actions where
   toJSON (SingleAction a) = object ["tag" .= ("SingleAction" :: Text), "contents" .= a]
   toJSON (AndActions as) = object ["tag" .= ("AndActions" :: Text), "contents" .= as]

@@ -79,18 +79,3 @@ withScripted body = script do
   go InYourHand = True
   go (Criteria xs) = any go xs
   go _ = False
-
-scripted
-  :: Ability
-  -> ( ( ?this :: a
-       , ?msg :: Message
-       , ?you :: InvestigatorId
-       , ?ability :: Source
-       , ?source :: Source
-       , ?windows :: [Window]
-       )
-       => ScriptT a ()
-     )
-  -> ScriptedAbility a
-scripted ab body = ScriptedAbility ab $ AbilityScript body
-

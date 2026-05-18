@@ -172,15 +172,6 @@ moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher = 
       , moveId
       , moveForced = False
       }
-
-moveToLocationMatcher :: Movement -> LocationMatcher
-moveToLocationMatcher = destinationToLocationMatcher . moveDestination
-
-destinationToLocationMatcher :: Destination -> LocationMatcher
-destinationToLocationMatcher = \case
-  ToLocation lid -> LocationWithId lid
-  ToLocationMatching matcher -> matcher
-
 $(deriveToJSON defaultOptions ''MovementMeans)
 
 instance FromJSON MovementMeans where

@@ -343,10 +343,6 @@ enemyExists = EnemyCriteria . EnemyExists
 
 thisEnemy :: EnemyMatcher -> Criterion
 thisEnemy = EnemyCriteria . ThisEnemy
-
-anyInvestigatorExists :: [InvestigatorMatcher] -> Criterion
-anyInvestigatorExists = exists . AnyInvestigator
-
 atYourLocation :: InvestigatorMatcher -> Criterion
 atYourLocation matcher = exists (AtYourLocation <> matcher)
 
@@ -355,11 +351,6 @@ class Exists a where
 
 thisIs :: (Exists matcher, Be a matcher, Semigroup matcher) => a -> matcher -> Criterion
 thisIs a matcher = exists (be a <> matcher)
-
-thisIsNot
-  :: (Exists matcher, Be a matcher, Semigroup matcher, Not matcher) => a -> matcher -> Criterion
-thisIsNot a matcher = thisIs a (not_ matcher)
-
 any_ :: (Exists a, OneOf a) => [a] -> Criterion
 any_ = exists . oneOf
 
@@ -503,10 +494,6 @@ canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
           , exists (LocationWithExposableConcealedCard source <> locationMatcher)
           ]
       else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
-
-canEvadeEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
-canEvadeEnemyAt source locationMatcher = canEvadeEnemyAtMatch source locationMatcher AnyEnemy
-
 canEvadeEnemyAtMatch
   :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
 canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =

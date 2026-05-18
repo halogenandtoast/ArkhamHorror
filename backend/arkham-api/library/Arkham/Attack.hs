@@ -32,16 +32,6 @@ enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
     , attackDespiteExhausted = False
     , attackCancelled = False
     }
-
-attackOfOpportunity
-  :: (Targetable target, Sourceable source)
-  => EnemyId
-  -> source
-  -> target
-  -> EnemyAttackDetails
-attackOfOpportunity enemyId source target = do
-  (enemyAttack enemyId source target) {attackType = AttackOfOpportunity}
-
 viaAlert :: EnemyAttackDetails -> EnemyAttackDetails
 viaAlert a = a {attackType = AlertAttack}
 

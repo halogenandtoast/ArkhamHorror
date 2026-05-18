@@ -59,15 +59,9 @@ import Arkham.Target as X
 import Arkham.Ability
 import Arkham.Calculation
 import Arkham.Card.CardCode
-import Arkham.Matcher.Investigator
-import Arkham.Matcher.Window
 
 elderSignValue :: GameCalculation -> ChaosTokenValue
 elderSignValue = ChaosTokenValue ElderSign . CalculatedModifier
-
-afterYouFailAnySkillTest :: WindowMatcher
-afterYouFailAnySkillTest = SkillTestResult #after You #failed #any
-
 self :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 self = selfAbility
 

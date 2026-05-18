@@ -8,6 +8,3 @@ newtype Label = Label {unLabel :: Text}
 
 mkLabel :: Text -> Label
 mkLabel = Label
-
-class GetLabel env a where
-  getLabel :: MonadReader env m => a -> m Label

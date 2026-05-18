@@ -16,7 +16,6 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Cost.Status
 import Arkham.Deck
-import Arkham.DefeatedBy (DefeatedBy)
 import Arkham.Effect.Types (Field (..))
 import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.Game (abilityMatches)
@@ -266,13 +265,6 @@ healedInvestigator :: [Window] -> InvestigatorId
 healedInvestigator [] = error "invalid call"
 healedInvestigator ((windowType -> Window.Healed _ (InvestigatorTarget iid) _ _) : _) = iid
 healedInvestigator (_ : xs) = healedInvestigator xs
-
-discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
-discoveredLocationAndClues =
-  fromMaybe (error "missing discovery") . asum . map \case
-    (windowType -> Window.DiscoverClues _ lid _ n) -> Just (lid, n)
-    _ -> Nothing
-
 defeatedEnemy :: HasCallStack => [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
@@ -518,14 +510,6 @@ getPassedBy = \case
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ _ n) : _) -> n
   ((windowType -> Window.PassSkillTest _ _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
-
-getDefeatedDetails :: [Window] -> (Maybe InvestigatorId, DefeatedBy, EnemyId)
-getDefeatedDetails = \case
-  ((windowType -> Window.EnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
-  ((windowType -> Window.IfEnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
-  (_ : rest) -> getDefeatedDetails rest
-  [] -> error "missing"
-
 getDoomAmount :: [Window] -> Int
 getDoomAmount = \case
   ((windowType -> Window.PlacedDoom _ _ n) : _) -> n
@@ -598,13 +582,6 @@ damagedEnemyAmount = \case
   ((windowType -> Window.WouldTakeDamage _ (EnemyTarget _) n _) : _) -> n
   ((windowType -> Window.DealtDamage _ _ (EnemyTarget _) n) : _) -> n
   _ -> error "Expected DealtDamage window"
-
-damagedEnemyWithSource :: [Window] -> (EnemyId, Source)
-damagedEnemyWithSource = \case
-  ((windowType -> Window.WouldTakeDamage s (EnemyTarget eid) _ _) : _) -> (eid, s)
-  ((windowType -> Window.DealtDamage s _ (EnemyTarget eid) _) : _) -> (eid, s)
-  _ -> error "Expected DealtDamage window"
-
 damagedAsset :: [Window] -> AssetId
 damagedAsset = \case
   [] -> error "Expected DealtDamageOrHorro to asset window"

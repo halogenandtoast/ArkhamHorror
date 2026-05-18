@@ -144,10 +144,6 @@ addTokens token amount tokens =
 
 removeAllTokens :: Token -> Tokens -> Tokens
 removeAllTokens token tokens = deleteMap token tokens
-
-incrementTokens :: Token -> Tokens -> Tokens
-incrementTokens token = addTokens token 1
-
 decrementTokens :: Token -> Tokens -> Tokens
 decrementTokens token = decrementTokensBy token 1
 

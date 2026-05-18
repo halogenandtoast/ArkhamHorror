@@ -344,12 +344,6 @@ locationResignAction attrs =
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs =
   abilityCriteriaL <>~ OnLocation (LocationWithId $ toId attrs)
-
-locationAbility :: Ability -> Ability
-locationAbility ability = case abilitySource ability of
-  LocationSource lid -> ability & abilityCriteriaL <>~ OnLocation (LocationWithId lid)
-  _ -> ability
-
 data Location = forall a. IsLocation a => Location a
 
 instance HasField "id" Location LocationId where

@@ -584,12 +584,6 @@ eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated 
 check
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
-
-checkAll
-  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m)
-  => a -> [InvestigatorMatcher] -> m Bool
-checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
-
 searchBonded
   :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid

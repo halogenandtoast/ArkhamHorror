@@ -289,13 +289,6 @@ instance IsCard Skill where
   toMutated = toMutated . toAttrs
 
 data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
-
-liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
-liftSomeSkillCard f (SomeSkillCard a) = f a
-
-someSkillCardCode :: SomeSkillCard -> CardCode
-someSkillCardCode = liftSomeSkillCard toCardCode
-
 someSkillCardCodes :: SomeSkillCard -> [(CardCode, SomeSkillCard)]
 someSkillCardCodes (SomeSkillCard CardBuilder {..}) =
   [ ( code

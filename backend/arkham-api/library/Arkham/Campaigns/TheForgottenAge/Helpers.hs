@@ -286,9 +286,6 @@ getVengeancePoints c = do
     then pure Nothing
     else getCardField cdVengeancePoints card
 
-getHasVengeancePoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
-getHasVengeancePoints c = isJust <$> getVengeancePoints c
-
 exploreAction :: Cost -> AbilityType
 exploreAction cost = ActionAbility #explore Nothing (ActionCost 1 <> cost)
 

@@ -42,7 +42,6 @@ import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Question
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
@@ -121,14 +120,6 @@ getSkillTestAbilitySource = runMaybeT do
 
 isSkillTestSource :: (HasGame m, Sourceable source) => source -> m Bool
 isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
-
-getSkillTestBaseSkill :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe Int)
-getSkillTestBaseSkill iid = do
-  mSkillTest <- getSkillTest
-  case mSkillTest of
-    Nothing -> pure Nothing
-    Just sTest -> Just <$> getSkillTestBaseSkillForSkillTest iid sTest
-
 getSkillTestBaseSkillForSkillTest :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getSkillTestBaseSkillForSkillTest iid sTest =
   getBaseValueForSkillTestType iid (skillTestAction sTest) (skillTestType sTest)
@@ -551,19 +542,6 @@ getBaseSkillTestDifficulty :: (HasGame m, Tracing m, HasCallStack) => SkillTest 
 getBaseSkillTestDifficulty s = go (skillTestDifficulty s)
  where
   go (SkillTestDifficulty c) = calculate c
-
-skillTestLabel
-  :: (Sourceable source, Targetable target)
-  => Text
-  -> SkillType
-  -> SkillTestId
-  -> InvestigatorId
-  -> source
-  -> target
-  -> GameCalculation
-  -> UI Message
-skillTestLabel lbl sType sid iid source target n = SkillLabelWithLabel lbl sType [beginSkillTest sid iid source target sType n]
-
 pushAfterSkillTest :: HasQueue Message m => Message -> m ()
 pushAfterSkillTest = pushAfter \case
   SkillTestEnds {} -> True

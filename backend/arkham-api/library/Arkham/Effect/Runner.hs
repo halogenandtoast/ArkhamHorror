@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Effect.Runner (intFromMetadata, module X) where
+module Arkham.Effect.Runner (module X) where
 
 import Arkham.Prelude
 
@@ -22,12 +22,6 @@ import Arkham.Matcher.Scenario
 import Arkham.Modifier
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
-
-intFromMetadata :: EffectMetadata a -> Int
-intFromMetadata = \case
-  EffectInt n -> n
-  _ -> 0
-
 isTakeDamage :: EffectAttrs -> Window -> Bool
 isTakeDamage attrs window = case attrs.target of
   EnemyTarget eid -> go eid

@@ -233,13 +233,6 @@ updateGlobalSetting = \case
 
 perCardSettingsL :: Lens' CardSettings (Map CardCode PerCardSettings)
 perCardSettingsL = lens perCardSettings \m x -> m {perCardSettings = x}
-
-perCardSettingsLens :: PerCardSetting a -> Lens' PerCardSettings a
-perCardSettingsLens = \case
-  CardIgnoreUnrelatedSkillTestTriggers -> cardIgnoreUnrelatedSkillTestTriggersL
-  CardIgnoreDuringSkillTests -> cardIgnoreDuringSkillTestsL
-  CardAttachments -> cardAttachmentsL
-
 cardIgnoreUnrelatedSkillTestTriggersL :: Lens' PerCardSettings Bool
 cardIgnoreUnrelatedSkillTestTriggersL =
   lens cardIgnoreUnrelatedSkillTestTriggers \m x -> m {cardIgnoreUnrelatedSkillTestTriggers = x}
@@ -271,12 +264,3 @@ updateCardSetting cCode = \case
       . non defaultPerCardSettings
       . cardAttachmentsL
       .~ v
-
-toPerCardSettings :: [SetCardSetting] -> PerCardSettings
-toPerCardSettings = foldr go defaultPerCardSettings
- where
-  go :: SetCardSetting -> PerCardSettings -> PerCardSettings
-  go (SetCardSetting k v) x = case k of
-    CardIgnoreUnrelatedSkillTestTriggers -> x & cardIgnoreUnrelatedSkillTestTriggersL .~ v
-    CardIgnoreDuringSkillTests -> x & cardIgnoreDuringSkillTestsL .~ v
-    CardAttachments -> x & cardAttachmentsL .~ v

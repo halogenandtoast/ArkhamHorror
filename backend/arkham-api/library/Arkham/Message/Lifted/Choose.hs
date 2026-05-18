@@ -87,17 +87,6 @@ leadChooseOrRunOneM :: ReverseQueue m => ChooseT m a -> m ()
 leadChooseOrRunOneM choices = do
   lead <- getLead
   chooseOrRunOneM lead choices
-
-playerChooseOneM :: ReverseQueue m => PlayerId -> ChooseT m a -> m ()
-playerChooseOneM pid choices = do
-  ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
-  unless (shouldSkipQuestion choices') do
-    case label of
-      Nothing -> push $ Msg.chooseOne pid choices'
-      Just l -> case labelCardCode of
-        Nothing -> push $ Msg.Ask pid (QuestionLabel l Nothing $ ChooseOne choices')
-        Just cCode -> push $ Msg.Ask pid (QuestionLabel l (Just cCode) $ ChooseOne choices')
-
 isInvalidChoice :: UI Message -> Bool
 isInvalidChoice (InvalidLabel {}) = True
 isInvalidChoice _ = False
@@ -415,13 +404,6 @@ skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m 
 skillLabeled skillType action = unterminated do
   msgs <- lift $ capture action
   tell [SkillLabel skillType msgs]
-
-skillsLabeled :: ReverseQueue m => [SkillType] -> (SkillType -> QueueT Message m ()) -> ChooseT m ()
-skillsLabeled skills action = unterminated do
-  for_ skills \skillType -> do
-    msgs <- lift $ capture (action skillType)
-    tell [SkillLabel skillType msgs]
-
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do
   msgs <- lift $ capture action

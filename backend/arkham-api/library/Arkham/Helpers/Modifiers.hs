@@ -107,12 +107,6 @@ hasAnyModifier a ms = any (`elem` ms) <$> getModifiers (toTarget a)
 
 semaphore :: (HasGame m, Targetable target) => target -> m () -> m ()
 semaphore target body = whenM (withoutModifier target Semaphore) body
-
-whenWithoutModifier :: (HasGame m, Targetable a) => a -> ModifierType -> m () -> m ()
-whenWithoutModifier a m body = do
-  b <- withoutModifier a m
-  when b body
-
 withoutModifier :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
@@ -437,11 +431,6 @@ maybeModifySelf
   -> MaybeT m [ModifierType]
   -> m ()
 maybeModifySelf a = tell . MonoidalMap . singletonMap (toTarget a) <=< modified a . fromMaybe [] <=< runMaybeT
-
-maybeModified
-  :: (Sourceable a, HasGame m, Tracing m) => a -> MaybeT m [ModifierType] -> m [Modifier]
-maybeModified a = modified a . fromMaybe [] <=< runMaybeT
-
 modified_
   :: ( Sourceable a
      , Targetable target

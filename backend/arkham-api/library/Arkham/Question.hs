@@ -143,7 +143,6 @@ uiAnd ui msg = case ui of
   Info flavor -> Info flavor
   ScenarioLabel label scenarioId msgs -> ScenarioLabel label scenarioId (msgs <> [msg])
 
-
 data PileCard = PileCard
   { cardId :: CardId
   , cardOwner :: Maybe InvestigatorId
@@ -246,30 +245,12 @@ evadeLabel
   -> t msg
   -> UI msg
 evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
-
-evadeLabelWith
-  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
-  => SkillType
-  -> enemy
-  -> t msg
-  -> UI msg
-evadeLabelWith sType (asId -> enemy) (toList -> msgs) = EvadeLabelWithSkill enemy sType msgs
-
 fightLabel
   :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
   => enemy
   -> t msg
   -> UI msg
 fightLabel (asId -> enemy) (toList -> msgs) = FightLabel enemy msgs
-
-fightLabelWith
-  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
-  => SkillType
-  -> enemy
-  -> t msg
-  -> UI msg
-fightLabelWith sType (asId -> enemy) (toList -> msgs) = FightLabelWithSkill enemy sType msgs
-
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
   => target

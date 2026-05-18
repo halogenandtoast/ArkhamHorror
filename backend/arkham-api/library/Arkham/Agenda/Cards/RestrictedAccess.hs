@@ -20,7 +20,7 @@ restrictedAccess = agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess a) =
     [ groupLimit PerTestOrAbility
-        $ restricted a 1 (oneOf [thisExists a (AgendaWithSide A), IsReturnTo])
+        $ mkAbility a 1
         $ forced
         $ EnemySpawns #when Anywhere
         $ enemyIs Enemies.huntingHorror

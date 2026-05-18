@@ -53,8 +53,3 @@ getRails :: (Tracing m, HasGame m) => LocationId -> m [GridDirection]
 getRails lid = do
   def <- field LocationCardDef lid
   pure $ maybe [] (toResultDefault []) $ lookup "rails" (cdMeta def)
-
-forEachRail :: (Tracing m, HasGame m) => LocationId -> (GridDirection -> m ()) -> m ()
-forEachRail lid f = do
-  rails <- getRails lid
-  for_ rails f

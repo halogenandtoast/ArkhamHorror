@@ -240,7 +240,6 @@ import Data.Set qualified as Set
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
-import Debug.Trace (trace)
 import OpenTelemetry.Trace.Monad (MonadTracer)
 import Text.Pretty.Simple
 
@@ -381,12 +380,6 @@ withTreacheryMetadata a = do
       _ -> Keyword.Peril `member` card.keywords
   tmModifiers <- getModifiers' (toTarget a)
   pure $ a `with` TreacheryMetadata {..}
-
-withStoryMetadata :: HasGame m => Story -> m (With Story StoryMetadata)
-withStoryMetadata a = do
-  smModifiers <- getModifiers' (toTarget a)
-  pure $ a `with` StoryMetadata {..}
-
 withEnemyMetadata :: (HasGame m, Tracing m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
@@ -823,14 +816,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
             )
           $ deadIids
-
-getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
-getPlayerInvestigator pid = do
-  investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
-  case find ((== pid) . attr investigatorPlayerId) investigators of
-    Nothing -> error "Unknown player"
-    Just i -> pure i
-
 getEffectsMatching :: (HasGame m, Tracing m) => EffectMatcher -> m [Effect]
 getEffectsMatching matcher = do
   effects <- toList . view (entitiesL . effectsL) <$> getGame
@@ -3344,10 +3329,6 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
-
-getEnemyMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m (Maybe Enemy)
-getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
-
 getEnemiesMatching :: (HasCallStack, HasGame m, Tracing m) => EnemyMatcher -> m [Enemy]
 getEnemiesMatching matcher' = do
   case matcher' of
@@ -5017,9 +4998,6 @@ instance Query PreyMatcher where
         Nothing -> error $ "Invalid bearer situation: " <> prettyCallStack callStack
 
 -- Helper function to measure time and trace call stack
-showBS :: (HasCallStack, Monad m) => m ()
-showBS = Debug.Trace.trace (prettyCallStack callStack) () `seq` pure ()
-
 instance Query ExtendedCardMatcher where
   toSomeQuery = ExtendedCardQuery
   select_ matcher = do
@@ -5885,10 +5863,6 @@ putGame g = do
   g' <- readGame
   atomicWriteIORef ref
     $ g {gameCards = if null (gameCards g) then mempty else gameCards g' <> gameCards g}
-
-overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
-overGameReader body = runReader body <$> getGame
-
 overGame :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
 overGame f = do
   g <- readGame
@@ -5899,10 +5873,6 @@ overGameM f = withGameM f >>= putGame
 
 withGameM :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m a
 withGameM f = readGame >>= f
-
-withGameM_ :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m ()
-withGameM_ f = withGameM (void . f)
-
 getEvadedEnemy :: [Window] -> Maybe EnemyId
 getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid

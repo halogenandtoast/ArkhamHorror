@@ -47,10 +47,5 @@ asStartingUses (Uses uType gameValue) = Uses uType <$> calculate gameValue
 asStartingUses (UsesWithLimit uType gameValue limitValue) =
   UsesWithLimit uType <$> calculate gameValue <*> calculate limitValue
 asStartingUses NoUses = pure NoUses
-
-startingUseCountFor
-  :: (HasCallStack, HasGame m, Tracing m) => UseType -> Uses GameCalculation -> m Int
-startingUseCountFor uType = fmap (findWithDefault 0 uType) . toStartingUses
-
 hasUsesFor :: UseType -> Uses GameCalculation -> Bool
 hasUsesFor uType uses = useType uses == Just uType

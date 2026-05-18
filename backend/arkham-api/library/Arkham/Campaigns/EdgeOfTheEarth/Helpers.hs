@@ -56,17 +56,11 @@ getShelterValue a = do
 
 -- ** Supply Helpers ** --
 
-whenRecoveredSupply :: (HasGame m, Tracing m) => Supply -> m () -> m ()
-whenRecoveredSupply supply action = whenM (hasSupply supply) action
-
 hasSupply :: (HasGame m, Tracing m) => Supply -> m Bool
 hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
 recoverSupply supply = recordSetInsert SuppliesRecovered [toJSON supply]
-
-toSupply :: HasCardCode a => a -> Supply
-toSupply (toCardCode -> cardCode) = fromMaybe (error "missingSupply") $ find ((== cardCode) . toCardCode) [GreenSoapstone ..]
 
 -- ** Tekeli-li Helpers ** --
 

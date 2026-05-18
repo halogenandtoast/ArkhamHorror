@@ -111,6 +111,3 @@ fieldNone fld = fieldP fld (== 0)
 
 fieldLength :: (HasGame m, Tracing m, Projection a) => Field a [b] -> EntityId a -> m Int
 fieldLength fld = fieldMap fld length
-
-fieldAny :: (HasGame m, Tracing m, Projection a) => Field a [b] -> (b -> Bool) -> EntityId a -> m Bool
-fieldAny fld f eid = fieldP fld (any f) eid

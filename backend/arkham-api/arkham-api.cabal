@@ -3064,7 +3064,6 @@ library
       Arkham.Helpers.EncounterCard
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
-      Arkham.Helpers.Event
       Arkham.Helpers.FetchCard
       Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
@@ -5794,6 +5793,8 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Agenda.Cards.RestrictedAccessSpec
+      Arkham.Agenda.Cards.ShadowsDeepenSpec
       Arkham.Asset.Assets.Aquinnah1Spec
       Arkham.Asset.Assets.ArcaneInitiateSpec
       Arkham.Asset.Assets.ArcaneStudies2Spec

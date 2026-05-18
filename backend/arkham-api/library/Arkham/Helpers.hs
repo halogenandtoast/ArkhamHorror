@@ -3,7 +3,7 @@ module Arkham.Helpers where
 import Arkham.Prelude hiding (toLower, toUpper, unpack)
 import Data.Char (isLetter, toLower, toUpper)
 import Data.Data
-import Data.Foldable (foldr, foldrM)
+import Data.Foldable (foldr)
 import Data.Foldable qualified as Foldable
 import GHC.Records
 
@@ -24,10 +24,6 @@ replaceNonLetters (x : xs) =
       '.' -> replaceNonLetters xs
       _ -> ' ' : replaceNonLetters xs
     else x : replaceNonLetters xs
-
-foldTokens :: (Foldable t, Monad m) => b -> t a -> (b -> a -> m b) -> m b
-foldTokens s tokens f = foldrM (flip f) s tokens
-
 drawCard :: [a] -> (Maybe a, [a])
 drawCard [] = (Nothing, [])
 drawCard (x : xs) = (Just x, xs)

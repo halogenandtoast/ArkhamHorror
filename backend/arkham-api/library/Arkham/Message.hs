@@ -128,11 +128,6 @@ messageType (Do msg) = messageType msg
 messageType (When msg) = messageType msg
 messageType (After msg) = messageType msg
 messageType _ = Nothing
-
-isBlanked :: Message -> Bool
-isBlanked Blanked {} = True
-isBlanked _ = False
-
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 

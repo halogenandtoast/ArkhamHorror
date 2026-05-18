@@ -131,10 +131,6 @@ enemyClues = countTokens Clue . enemyTokens
 
 enemyDoom :: EnemyAttrs -> Int
 enemyDoom = countTokens Doom . enemyTokens
-
-enemyResources :: EnemyAttrs -> Int
-enemyResources = countTokens Resource . enemyTokens
-
 instance AsId EnemyAttrs where
   type IdOf EnemyAttrs = EnemyId
   asId = enemyId
@@ -144,10 +140,6 @@ instance Be EnemyAttrs EnemyMatcher where
 
 instance HasCardCode EnemyAttrs where
   toCardCode = enemyCardCode
-
-enemyReady :: EnemyAttrs -> Bool
-enemyReady = not . enemyExhausted
-
 $(deriveToJSON (aesonOptions $ Just "enemy") ''EnemyAttrs)
 
 instance FromJSON EnemyAttrs where

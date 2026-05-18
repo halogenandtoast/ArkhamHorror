@@ -28,7 +28,7 @@ instance RunMessage StirThePot where
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       withI18n $ cardNameVar attrs $ originalSkillTestOption (ikey' "name") do
         enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy attrs
-        chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs 2
+        simultaneously $ for_ enemies (nonAttackEnemyDamage (Just iid) attrs 2)
         when (n >= 2) $ doStep 1 msg
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do

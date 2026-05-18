@@ -49,6 +49,21 @@ library
       Arkham.Ability.Used
       Arkham.Act
       Arkham.Act.Acts
+      Arkham.Act.CardDefs.Base
+      Arkham.Act.CardDefs.Core2026
+      Arkham.Act.CardDefs.EdgeOfTheEarth
+      Arkham.Act.CardDefs.Import
+      Arkham.Act.CardDefs.NightOfTheZealot
+      Arkham.Act.CardDefs.ReturnTo
+      Arkham.Act.CardDefs.Standalone
+      Arkham.Act.CardDefs.TheCircleUndone
+      Arkham.Act.CardDefs.TheDreamEaters
+      Arkham.Act.CardDefs.TheDunwichLegacy
+      Arkham.Act.CardDefs.TheFeastOfHemlockVale
+      Arkham.Act.CardDefs.TheForgottenAge
+      Arkham.Act.CardDefs.TheInnsmouthConspiracy
+      Arkham.Act.CardDefs.ThePathToCarcosa
+      Arkham.Act.CardDefs.TheScarletKeys
       Arkham.Act.Cards
       Arkham.Act.Cards.ACircleUnbroken
       Arkham.Act.Cards.ACosmicJourney
@@ -361,6 +376,21 @@ library
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas
+      Arkham.Agenda.CardDefs.Base
+      Arkham.Agenda.CardDefs.Core2026
+      Arkham.Agenda.CardDefs.EdgeOfTheEarth
+      Arkham.Agenda.CardDefs.Import
+      Arkham.Agenda.CardDefs.NightOfTheZealot
+      Arkham.Agenda.CardDefs.ReturnTo
+      Arkham.Agenda.CardDefs.Standalone
+      Arkham.Agenda.CardDefs.TheCircleUndone
+      Arkham.Agenda.CardDefs.TheDreamEaters
+      Arkham.Agenda.CardDefs.TheDunwichLegacy
+      Arkham.Agenda.CardDefs.TheFeastOfHemlockVale
+      Arkham.Agenda.CardDefs.TheForgottenAge
+      Arkham.Agenda.CardDefs.TheInnsmouthConspiracy
+      Arkham.Agenda.CardDefs.ThePathToCarcosa
+      Arkham.Agenda.CardDefs.TheScarletKeys
       Arkham.Agenda.Cards
       Arkham.Agenda.Cards.ABetrayalOfEyes
       Arkham.Agenda.Cards.ACreatureOfTheBayou
@@ -4587,6 +4617,23 @@ library
       Arkham.Search
       Arkham.SideStory
       Arkham.Skill
+      Arkham.Skill.CardDefs.Base
+      Arkham.Skill.CardDefs.Core2026
+      Arkham.Skill.CardDefs.EdgeOfTheEarth
+      Arkham.Skill.CardDefs.Import
+      Arkham.Skill.CardDefs.NightOfTheZealot
+      Arkham.Skill.CardDefs.Promo
+      Arkham.Skill.CardDefs.ReturnTo
+      Arkham.Skill.CardDefs.Standalone
+      Arkham.Skill.CardDefs.TheCircleUndone
+      Arkham.Skill.CardDefs.TheDreamEaters
+      Arkham.Skill.CardDefs.TheDrownedCity
+      Arkham.Skill.CardDefs.TheDunwichLegacy
+      Arkham.Skill.CardDefs.TheFeastOfHemlockVale
+      Arkham.Skill.CardDefs.TheForgottenAge
+      Arkham.Skill.CardDefs.TheInnsmouthConspiracy
+      Arkham.Skill.CardDefs.ThePathToCarcosa
+      Arkham.Skill.CardDefs.TheScarletKeys
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied
       Arkham.Skill.Cards.Accursed

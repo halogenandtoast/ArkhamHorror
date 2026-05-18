@@ -1,0 +1,9 @@
+.state.json
+
+# Snapshots are operator-captured per refactor and committed deliberately
+# alongside a reproducible fixture. Anything dropped in here ad-hoc is
+# considered scratch.
+snapshots/baseline/*
+snapshots/current/*
+!snapshots/baseline/.gitkeep
+!snapshots/current/.gitkeep

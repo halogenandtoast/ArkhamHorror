@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue'
 import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText'
-import { baseUrl, formatContent } from '@/arkham/helpers'
+import { baseUrl, formatContent, imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 import { I18n, useI18n } from 'vue-i18n'
-import { imgsrc } from '@/arkham/helpers'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
 import CodexEntry from '@/arkham/components/CodexEntry.vue'
 
@@ -82,7 +82,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
-    case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`cards/${entry.cardCode.replace(/^c/, "")}.avif`)})])
+    case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: cardImage(entry.cardCode)})])
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")

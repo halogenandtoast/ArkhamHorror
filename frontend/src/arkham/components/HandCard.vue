@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { IsMobile } from '@/arkham/isMobile'
@@ -102,8 +103,7 @@ const cardBack = computed(() => {
 
 const image = computed(() => {
   const { cardCode, mutated } = cardContents.value;
-  const mutatedSuffix = mutated ? `_${mutated}` : ''
-  return imgsrc(`cards/${cardCode.replace('c', '')}${mutatedSuffix}.avif`);
+  return cardImage(cardCode, mutated ? `_${mutated}` : '')
 })
 
 

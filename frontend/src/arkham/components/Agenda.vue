@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { imgsrc, groupBy } from '@/arkham/helpers';
 import { type Game } from '@/arkham/types/Game';
 import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
+import { cardImage as cardCodeImage } from '@/arkham/cardImages'
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
@@ -47,12 +48,14 @@ const { t } = useI18n()
 
 const image = computed(() => {
   if (props.agenda.flipped) {
+    // c03276a and c03279a flip to their own 'b' side; other agendas drop the
+    // trailing 'a' before appending 'b'.
     if (["c03276a", "c03279a"].includes(id.value)) {
-      return imgsrc(`cards/${id.value.replace(/^c/, '')}b.avif`);
+      return cardCodeImage(id.value, 'b')
     }
-    return imgsrc(`cards/${id.value.replace(/^c/, '').replace(/a$/, '')}b.avif`);
+    return cardCodeImage(id.value.replace(/a$/, ''), 'b')
   }
-  return imgsrc(`cards/${id.value.replace(/^c/, '')}.avif`);
+  return cardCodeImage(id.value)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

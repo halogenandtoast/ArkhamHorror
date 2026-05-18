@@ -27,6 +27,7 @@ import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
+import { cardImage as cardCodeImage } from '@/arkham/cardImages';
 import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
 import { keyToId } from '@/arkham/types/Key'
@@ -494,15 +495,12 @@ addEntry({
 // Computed
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario
-  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-    ? 'b'
-    : ''
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.avif`)
+  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert' ? 'b' : ''
+  return cardCodeImage(reference, difficultySuffix)
 })
 
 const additionalReferences = computed(() => {
-  const { additionalReferences } = props.scenario
-  return additionalReferences.map((s) => imgsrc(`cards/${s.replace('c', '')}.avif`))
+  return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
 })
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
@@ -748,15 +746,13 @@ const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnde
 const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
-  const { cardCode } = props.scenario.discard[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(props.scenario.discard[0].cardCode)
 })
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 const topOfSpectralDiscard = computed(() => {
   if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
-  const { cardCode } = spectralDiscard.value[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(spectralDiscard.value[0].cardCode)
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>

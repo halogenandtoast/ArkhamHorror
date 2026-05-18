@@ -6,6 +6,7 @@ import type { Game } from '@/arkham/types/Game';
 import { QuestionType, type Question } from '@/arkham/types/Question';
 import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel } from '@/arkham/types/Message';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, cardImage, investigatorPortrait } from '@/arkham/cardImages';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
@@ -45,26 +46,12 @@ const viewerInvestigatorName = computed(() => {
 })
 
 const { t } = useI18n()
-const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
-}
+const cardLabelImage = (cardCode: string) => cardImage(cardCode)
 const label = function(body: string) {
   return formatContent(handleEmbeddedI18n(body, t))
 }
 
-const portraitLabelImage = (investigatorId: string) => {
-  const player = props.game.investigators[investigatorId]
-
-  if (player.form.tag === 'YithianForm') {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  if (player.form.tag === 'HomunculusForm') {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-}
+const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
 const portraitChoices = computed(() => {
   if (!question.value) return
@@ -136,7 +123,7 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
     traits: [],
     name: "",

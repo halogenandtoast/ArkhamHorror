@@ -7,6 +7,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import type { Game } from '@/arkham/types/Game'
 import {computed, ComputedRef, ref, reactive, watch} from 'vue'
 import { imgsrc, pluralize } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import { useI18n } from 'vue-i18n';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import Card from '@/arkham/components/Card.vue';
@@ -42,7 +43,7 @@ const topOfDeckRevealed = computed(() =>
 const topOfDeck = computed(() => {
   const topCard = props.investigator.deck[0]
   if  (topOfDeckRevealed.value && topCard) {
-    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.avif`)
+    return cardImage(topCard.cardCode)
   }
   return imgsrc("player_back.jpg")
 })

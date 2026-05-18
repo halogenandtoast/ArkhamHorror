@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, cardImage } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
 import type { FlavorText } from '@/arkham/types/FlavorText';
@@ -89,7 +90,7 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
     traits: [],
     name: "",
@@ -107,13 +108,13 @@ const flippableCard = (cardCode: string) => {
         <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       </section>
       <div class="entry-body">
-        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+        <img :src="cardImage(cardCode)" v-for="cardCode in readCards" class="card no-overlay" />
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
       </div>
       <div class="pick-cards" v-if="pickCards.length > 0">
         <template v-for="card in pickCards" :key="card.index">
           <CardImage v-if="card.flippable" :card="flippableCard(card.cardCode)" class="no-overlay pick" @click="choose(card.index)" />
-          <img v-else :src="imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)" class="card no-overlay pick" @click="choose(card.index)" />
+          <img v-else :src="cardImage(card.cardCode)" class="card no-overlay pick" @click="choose(card.index)" />
         </template>
       </div>
     </div>
@@ -386,21 +387,6 @@ a.button {
   flex-shrink: 0;
   height: fit-content;
   border-radius: 15px;
-}
-
-.entry-text {
-  flex: 1;
-  &:deep(.right) {
-    text-align: right;
-  }
-  &:deep(.basic) {
-    font-style: normal;
-    font-family: auto;
-  }
-
-  &:deep(i) {
-    font-style: italic;
-  }
 }
 
 .entry-body {

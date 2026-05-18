@@ -2,89 +2,19 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Modifier } from '@/arkham/types/Modifier';
-import { Source } from '@/arkham/types/Source';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { cardArt, sourceCardCode } from '@/arkham/cardImages';
 
 const { t } = useI18n()
 const props = defineProps<{ modifier: Modifier, game: Game }>()
 
-function sourceCardCode(source: Source) {
-  if (source.tag === 'LocationSource') {
-    const location = props.game.locations[source.contents]
-    if (!location) return null
-    const { cardCode, revealed } = location
-    const suffix = revealed ? '' : 'b'
-
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AssetSource') {
-    const asset = props.game.assets[source.contents]
-    if (!asset) return null
-
-    const mutated = asset.mutated ? `_${asset.mutated}` : ''
-    if (asset.flipped) {
-      if (asset.cardCode === "c90052") return "90052b"
-      return null
-    }
-    return `${asset.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'TreacherySource') {
-    const treachery = props.game.treacheries[source.contents]
-    if (!treachery) return null
-    return `${treachery.cardCode.replace('c', '')}`
-  }
-
-  if (source.tag === 'EnemySource') {
-    const enemy = props.game.enemies[source.contents]
-    if (!enemy) return null
-
-    const { cardCode, flipped } = enemy
-    const suffix = flipped ? 'b' : ''
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AbilitySource') {
-    const [inner,] = source.contents
-    return sourceCardCode(inner)
-  }
-
-  if (source.tag === 'EventSource') {
-    const event = props.game.events[source.contents]
-    if (!event) return null
-
-    const mutated = event.mutated ? `_${event.mutated}` : ''
-    return `${event.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'InvestigatorSource') {
-    return `${source.contents.replace('c', '')}`
-  }
-
-  if (source.tag === 'AgendaSource') {
-    const agenda = props.game.agendas[source.contents]
-    if (!agenda) return null
-    const id = agenda.id
-    if (agenda.flipped) {
-      if (["c03276a", "c03279a"].includes(id)) {
-        return `${id.replace(/^c/, '')}b`
-      }
-      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
-    }
-    return `${id.replace(/^c/, '')}`
-  }
-
-  return null
-}
-
 const modifierSource = computed(() => {
   if(props.modifier.card) {
-    return props.modifier.card.contents.cardCode.replace(/^c/, '')
+    return cardArt(props.modifier.card.contents.cardCode)
   }
 
-  return sourceCardCode(props.modifier.source)
+  return sourceCardCode(props.modifier.source, props.game)
 })
 
 const normalizeSkill = (skill: string) => {

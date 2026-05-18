@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { Token } from '@/arkham/types/Token'
 import { Source } from '@/arkham/types/Source'
 import type { Game } from '@/arkham/types/Game';
-import { imgsrc } from '@/arkham/helpers';
+import { portraitImage } from '@/arkham/cardImages';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { useI18n } from 'vue-i18n';
 import { exchangeTokens } from '@/arkham/api';
@@ -26,16 +26,10 @@ const amount2 = computed(() => props.investigator2Amount + amount.value)
 
 const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
-
-  if (player.form.tag == "YithianForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  if (player.form.tag == "HomunculusForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+  const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+    ? investigatorId
+    : player.cardCode
+  return portraitImage(code)
 }
 
 async function submit() {

@@ -8,7 +8,8 @@ import { formatCost } from '@/arkham/cost';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
-import { AmountChoice, QuestionType } from '@/arkham/types/Question';
+import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/arkham/cardImages';
+import { AmountChoice, QuestionType, amountTargetUnmet } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
@@ -208,139 +209,22 @@ watch(
   setInitialAmounts)
 
 const unmetAmountRequirements = computed(() => {
-  const paymentAmountsQ = question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
-    ? question.value
-    : (question.value?.tag === QuestionType.PAY_COST_QUESTION && question.value.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS
-        ? question.value.question
-        : null)
-  if (paymentAmountsQ) {
-    const target = paymentAmountsQ.paymentAmountTargetValue
-    if (target) {
-      switch(target.tag) {
-        case 'MaxAmountTarget':
-          {
-            const maxBound = target.contents
-            if (maxBound) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total > maxBound
-            }
-            break
-          }
-        case 'MinAmountTarget':
-          {
-            const minBound = target.contents
-            if (minBound) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total < minBound
-            }
-            break
-          }
-        case 'TotalAmountTarget':
-          {
-            const requiredTotal = target.contents
-            if (requiredTotal) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return total !== requiredTotal
-            }
-            break
-          }
-        case 'AmountOneOf':
-          {
-            const totals = target.contents
-            if (totals.length > 0) {
-              const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-              return totals.indexOf(total) === -1
-            }
-            break
-          }
-      }
-    }
-    return false
-  } else if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    switch(question.value.amountTargetValue.tag) {
-      case 'MaxAmountTarget':
-        {
-          const maxBound = question.value.amountTargetValue.contents
-          if (maxBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total > maxBound
-          }
-          break
-        }
-      case 'MinAmountTarget':
-        {
-          const minBound = question.value.amountTargetValue.contents
-          if (minBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total < minBound
-          }
-          break
-        }
-      case 'TotalAmountTarget':
-        {
-          const requiredTotal = question.value.amountTargetValue.contents
-          if (requiredTotal) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total !== requiredTotal
-          }
-          break
-        }
-      case 'AmountOneOf':
-        {
-          const totals = question.value.amountTargetValue.contents
-          if (totals.length > 0) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return totals.indexOf(total) === -1
-          }
-          break
-        }
-    }
+  const q = question.value
+  if (!q) return true
+  const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
 
-    return false
-  } else if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question.tag === QuestionType.CHOOSE_AMOUNTS) {
-    const actual = question.value.question
-    switch(actual.amountTargetValue.tag) {
-      case 'MaxAmountTarget':
-        {
-          const maxBound = actual.amountTargetValue.contents
-          if (maxBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total > maxBound
-          }
-          break
-        }
-      case 'MinAmountTarget':
-        {
-          const minBound = actual.amountTargetValue.contents
-          if (minBound) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total < minBound
-          }
-          break
-        }
-      case 'TotalAmountTarget':
-        {
-          const requiredTotal = actual.amountTargetValue.contents
-          if (requiredTotal) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return total !== requiredTotal
-          }
-          break
-        }
-      case 'AmountOneOf':
-        {
-          const totals = actual.amountTargetValue.contents
-          if (totals.length > 0) {
-            const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-            return totals.indexOf(total) === -1
-          }
-          break
-        }
-    }
-
-    return false
+  if (q.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return amountTargetUnmet(q.paymentAmountTargetValue, total)
   }
-
+  if (q.tag === QuestionType.PAY_COST_QUESTION && q.question.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
+    return amountTargetUnmet(q.question.paymentAmountTargetValue, total)
+  }
+  if (q.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return amountTargetUnmet(q.amountTargetValue, total)
+  }
+  if (q.tag === QuestionType.QUESTION_LABEL && q.question.tag === QuestionType.CHOOSE_AMOUNTS) {
+    return amountTargetUnmet(q.question.amountTargetValue, total)
+  }
   return true
 })
 
@@ -356,9 +240,7 @@ const submitAmounts = async () => {
   }
 }
 
-const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
-}
+const cardLabelImage = (cardCode: string) => cardCodeImage(cardCode)
 
 const questionImage = computed(() => {
   if (!question.value) {
@@ -380,19 +262,7 @@ const cardIdImage = (cardId: string) => {
   return (imgsrc(cardImage(props.game.cards[cardId])))
 }
 
-const portraitLabelImage = (investigatorId: string) => {
-  const player = props.game.investigators[investigatorId]
-
-  if (player.form.tag == "YithianForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  if (player.form.tag == "HomunculusForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-}
+const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
 const portraits = computed<[Message, number]>(() =>
   choices.value.map((x: Message, i: number) => [x, i] as [Message, number]).filter(([choice,]) => choice.tag === "PortraitLabel")
@@ -456,7 +326,7 @@ const flippableCard = (cardCode: string) => {
     doubleSided: true,
     classSymbols: [],
     cardType: 'UnknownType',
-    art: cardCode.replace('c', ''),
+    art: cardArt(cardCode),
     level: 0,
     traits: [],
     name: "",
@@ -474,7 +344,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
   if (q === '') return cardLabels.value
 
   return cardLabels.value.filter(({ choice }) => {
-    const card = store.getDbCard(choice.cardCode.replace(/^c/, ''))
+    const card = store.getDbCard(cardArt(choice.cardCode))
     if (!card) return false
     return card.name.toLowerCase().includes(q)
   })
@@ -525,7 +395,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
       <div v-if="readCards.length > 0" class="story-with-card">
-        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
+        <img :src="cardCodeImage(cardCode)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>
           <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
         </div>

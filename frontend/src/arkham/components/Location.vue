@@ -4,6 +4,7 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
@@ -57,12 +58,7 @@ const emits = defineEmits<{
 
 const choose = (n: number) => emits('choose', n)
 
-const image = computed(() => {
-  const { cardCode, revealed } = props.location
-  const suffix = revealed ? '' : 'b'
-
-  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
-})
+const image = computed(() => cardImage(props.location.cardCode, props.location.revealed ? '' : 'b'))
 
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

@@ -1936,6 +1936,22 @@ library
       Arkham.EncounterCard.Source
       Arkham.EncounterSet
       Arkham.Enemy
+      Arkham.Enemy.CardDefs.Base
+      Arkham.Enemy.CardDefs.Core2026
+      Arkham.Enemy.CardDefs.EdgeOfTheEarth
+      Arkham.Enemy.CardDefs.Import
+      Arkham.Enemy.CardDefs.NightOfTheZealot
+      Arkham.Enemy.CardDefs.Promo
+      Arkham.Enemy.CardDefs.ReturnTo
+      Arkham.Enemy.CardDefs.Standalone
+      Arkham.Enemy.CardDefs.TheCircleUndone
+      Arkham.Enemy.CardDefs.TheDreamEaters
+      Arkham.Enemy.CardDefs.TheDunwichLegacy
+      Arkham.Enemy.CardDefs.TheFeastOfHemlockVale
+      Arkham.Enemy.CardDefs.TheForgottenAge
+      Arkham.Enemy.CardDefs.TheInnsmouthConspiracy
+      Arkham.Enemy.CardDefs.ThePathToCarcosa
+      Arkham.Enemy.CardDefs.TheScarletKeys
       Arkham.Enemy.Cards
       Arkham.Enemy.Cards.AbarranArrigorriagakoaAbarranUnleashed
       Arkham.Enemy.Cards.AbarranArrigorriagakoaTheManWithTheRubyRing
@@ -3226,6 +3242,21 @@ library
       Arkham.Location.Base
       Arkham.Location.Brazier
       Arkham.Location.BreachStatus
+      Arkham.Location.CardDefs.Base
+      Arkham.Location.CardDefs.Core2026
+      Arkham.Location.CardDefs.EdgeOfTheEarth
+      Arkham.Location.CardDefs.Import
+      Arkham.Location.CardDefs.NightOfTheZealot
+      Arkham.Location.CardDefs.ReturnTo
+      Arkham.Location.CardDefs.Standalone
+      Arkham.Location.CardDefs.TheCircleUndone
+      Arkham.Location.CardDefs.TheDreamEaters
+      Arkham.Location.CardDefs.TheDunwichLegacy
+      Arkham.Location.CardDefs.TheFeastOfHemlockVale
+      Arkham.Location.CardDefs.TheForgottenAge
+      Arkham.Location.CardDefs.TheInnsmouthConspiracy
+      Arkham.Location.CardDefs.ThePathToCarcosa
+      Arkham.Location.CardDefs.TheScarletKeys
       Arkham.Location.Cards
       Arkham.Location.Cards.AbandonedCamp
       Arkham.Location.Cards.AbandonedChapel
@@ -4901,6 +4932,23 @@ library
       Arkham.Tracing
       Arkham.Trait
       Arkham.Treachery
+      Arkham.Treachery.CardDefs.Base
+      Arkham.Treachery.CardDefs.Core2026
+      Arkham.Treachery.CardDefs.EdgeOfTheEarth
+      Arkham.Treachery.CardDefs.Import
+      Arkham.Treachery.CardDefs.NightOfTheZealot
+      Arkham.Treachery.CardDefs.Promo
+      Arkham.Treachery.CardDefs.ReturnTo
+      Arkham.Treachery.CardDefs.Standalone
+      Arkham.Treachery.CardDefs.TheCircleUndone
+      Arkham.Treachery.CardDefs.TheDreamEaters
+      Arkham.Treachery.CardDefs.TheDrownedCity
+      Arkham.Treachery.CardDefs.TheDunwichLegacy
+      Arkham.Treachery.CardDefs.TheFeastOfHemlockVale
+      Arkham.Treachery.CardDefs.TheForgottenAge
+      Arkham.Treachery.CardDefs.TheInnsmouthConspiracy
+      Arkham.Treachery.CardDefs.ThePathToCarcosa
+      Arkham.Treachery.CardDefs.TheScarletKeys
       Arkham.Treachery.Cards
       Arkham.Treachery.Cards.ABalefulWelcome
       Arkham.Treachery.Cards.AbandonedAndAlone

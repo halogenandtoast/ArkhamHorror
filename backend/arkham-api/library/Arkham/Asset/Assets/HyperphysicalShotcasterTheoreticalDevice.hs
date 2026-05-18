@@ -273,7 +273,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
         [ SkillLabel sType [toMessage $ Evade.withSkillType sType doEvade]
         | sType <- [#willpower, #agility, #intellect, #combat]
         ]
-      push $ DoStep 2 msg'
+      when (n == 1) $ push $ DoStep 2 msg'
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       canMoveEnemyToUs :: [EnemyId] <-

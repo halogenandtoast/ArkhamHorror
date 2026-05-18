@@ -18,10 +18,10 @@ import { MessageType } from '@/arkham/types/Message'
 import { cardId } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import { useMenu } from '@/composeable/menu';
+import { useMenu } from '@/composable/menu';
 import { useI18n } from 'vue-i18n';
-import useEmitter from '@/composeable/useEmitter';
-import useHighlighter from '@/composeable/useHighlighter';
+import useEmitter from '@/composable/useEmitter';
+import useHighlighter from '@/composable/useHighlighter';
 import Resources from '@/arkham/components/Resources.vue';
 import Draw from '@/arkham/components/Draw.vue';
 import { IsMobile } from '@/arkham/isMobile';

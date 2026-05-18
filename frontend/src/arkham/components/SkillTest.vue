@@ -21,8 +21,8 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
-import { useMenu } from '@/composeable/menu';
-import { useSettingsFocus } from '@/composeable/settingsFocus';
+import { useMenu } from '@/composable/menu';
+import { useSettingsFocus } from '@/composable/settingsFocus';
 
 const debug = useDebug()
 const { t } = useI18n()

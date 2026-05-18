@@ -26,7 +26,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
 import { Card } from '../types/Card';
-import useHighlighter from '@/composeable/useHighlighter';
+import useHighlighter from '@/composable/useHighlighter';
 
 export interface Props {
   game: Game

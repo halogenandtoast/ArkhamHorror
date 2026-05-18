@@ -2,7 +2,7 @@
 import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
-import { useDebouncedRef } from '@/composeable/debouncedRef';
+import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';

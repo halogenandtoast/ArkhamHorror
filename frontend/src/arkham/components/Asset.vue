@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, watch, ref } from 'vue';
-import useHighlighter from '@/composeable/useHighlighter';
+import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';

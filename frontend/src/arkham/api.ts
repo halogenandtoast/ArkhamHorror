@@ -118,12 +118,6 @@ export const fileBug = (gameId: string): Promise<void> =>
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> =>
   api.put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
 
-export const updateGamePaymentAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
-  api.put(`arkham/games/${gameId}`, {tag: 'PaymentAmountsAnswer', contents: { amounts } })
-
-export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
-  api.put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
-
 export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string, deckList?: ArkhamDbDecklist | null): Promise<void> =>
   api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId, deckList });
 

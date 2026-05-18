@@ -1230,7 +1230,7 @@ watchEffect(() => {
 
 .card-overlay {
   position: absolute;
-  z-index: 1000;
+  z-index: 20000;
   display: flex;
   width: max-content;
   height: auto;

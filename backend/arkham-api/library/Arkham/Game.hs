@@ -6292,9 +6292,17 @@ preloadModifiers g = case gameMode g of
         traverse_ getModifiersFor $ gameInDiscardEntities g
         for_ (modeScenario (gameMode g)) getModifiersFor
         for_ (modeCampaign (gameMode g)) getModifiersFor
+    let offsetModifiers =
+          Map.fromList
+            [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing])
+            | (lid, (x, y)) <- mapToList (gameLocationOffsets g)
+            ]
     pure
       $ g
-        { gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) (getMonoidalMap allModifiers)
+        { gameModifiers =
+            Map.filter notNull
+              $ Map.map (filter modifierFilter)
+              $ Map.unionWith (<>) offsetModifiers (getMonoidalMap allModifiers)
         }
  where
   expandForEach x@(modifierType -> ForEach calc ms) = do

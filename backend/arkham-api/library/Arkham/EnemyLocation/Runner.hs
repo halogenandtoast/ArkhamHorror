@@ -187,6 +187,7 @@ instance RunMessage EnemyLocationAttrs where
       let hDmg = if attackDealDamage details then a.healthDamage else 0
       let sDmg = a.sanityDamage
       whenWindow <- checkWindows [Window.mkWhen $ Window.EnemyAttacks details]
+      afterAttacksWindow <- checkWindows [Window.mkAfter $ Window.EnemyAttacks details]
       afterWindow <- checkWindows [Window.mkAfter $ Window.EnemyAttacksEvenIfCancelled details]
       let dmgMsg iid' =
             InvestigatorAssignDamage iid' (EnemyAttackSource eid) (attackDamageStrategy details) hDmg sDmg
@@ -197,6 +198,7 @@ instance RunMessage EnemyLocationAttrs where
       pushAll
         $ [whenWindow]
         <> [dmgMsg iid' | not details.cancelled, iid' <- targets]
+        <> [afterAttacksWindow]
         <> [afterWindow]
       pure a
     InitiateEnemyAttack details | details.enemy == asEnemyId a -> do

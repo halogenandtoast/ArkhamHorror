@@ -7,7 +7,8 @@ import Arkham.EnemyLocation.Cards qualified as EnemyLocations
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Move (moveTowards)
+import Arkham.Message.Lifted.Move (moveToEdit)
+import Arkham.Movement
 import Arkham.Scenarios.HemlockHouse.Helpers (locationIsUnsealed)
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant, Room))
@@ -60,7 +61,8 @@ instance RunMessage TheHeartOfTheHouse where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       cellar <- selectOne $ locationIs EnemyLocations.shapelessCellar
-      for_ cellar $ \cellarLid -> moveTowards (attrs.ability 2) iid cellarLid
+      for_ cellar $ \cellarLid ->
+        moveToEdit (attrs.ability 2) iid cellarLid \m -> m {moveMeans = OneAtATime}
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       advancedWithOther attrs

@@ -20,7 +20,7 @@ livingWalls = agenda (3, A) LivingWalls Cards.livingWalls (Static 8)
 instance HasAbilities LivingWalls where
   getAbilities (LivingWalls a) =
     [ mkAbility a 1 $ forced $ PhaseEnds #when #mythos
-    , restricted a 2 (exists $ YourLocation)
+    , restricted a 2 (exists YourLocation)
         $ FastAbility (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
     , restricted a 3 (exists $ YourLocation <> LocationWithToken Resource)
         $ FastAbility Free
@@ -43,6 +43,8 @@ instance RunMessage LivingWalls where
       advanceAgendaDeck attrs
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      eachInvestigator \iid -> do
+        sufferMentalTrauma iid 1
+        defeat attrs iid
       pure a
     _ -> LivingWalls <$> liftRunMessage msg attrs

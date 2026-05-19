@@ -25,7 +25,7 @@ theHouseStirsV1 = agenda (2, A) TheHouseStirsV1 Cards.theHouseStirsV1 (Static 5)
 instance HasAbilities TheHouseStirsV1 where
   getAbilities (TheHouseStirsV1 a) =
     [ mkAbility a 1 $ forced $ PhaseEnds #when #mythos
-    , mkAbility a 2
+    , restricted a 2 (OnLocation LocationCanBeFlipped)
         $ freeTrigger
         $ OrCost
           [ PlaceClueOnLocationCost (PerPlayer 1)

@@ -545,11 +545,14 @@ replaceDeciding current replacement = case current of
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       Deciding
         $ Choose chooseSource n tokenStrategy (replaceDecidingList steps replacement) tokens' nested
-  Decided inner -> Decided $ case inner of
-    Choose s n st steps gs after -> Choose s n st (replaceDecidingList steps replacement) gs after
-    ChooseMatch s n st steps gs mtchr after -> ChooseMatch s n st (replaceDecidingList steps replacement) gs mtchr after
-    ChooseMatchChoice steps gs choices -> ChooseMatchChoice (replaceDecidingList steps replacement) gs choices
-    _ -> error $ "should be impossible, seen: Deciding " <> show inner
+  -- A 'Decided' chaos-bag choice happens when a previous reactor (e.g. Eyes
+  -- of the Dreamer) committed its structure and the bag was advanced before
+  -- a second reactor (e.g. Jacqueline Fine) fires on the same plural
+  -- WouldRevealChaosTokens window. We replace wholesale: the second reactor
+  -- captured the outgoing structure in its own 'chooseAndThen' (so the
+  -- first reactor's effect is preserved through that nested pipeline) and
+  -- the new top-level structure is what should drive the rest of the test.
+  Decided _ -> replacement
   Undecided _ -> replacement
   _ -> error $ "should be impossible, seen: " <> show current
 
@@ -804,18 +807,17 @@ instance RunMessage ChaosBag where
     ReplaceCurrentDraw source iid step -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
-        -- When we replace we need to remove the original would reveal chaos
-        -- token message as it will still be on the stack even though that
-        -- token draw is gone
+        -- Remove only the singular per-draw "would reveal chaos token" window
+        -- that referred to the draw we are about to replace. Do NOT remove
+        -- the plural "would reveal chaos tokens" window for this test — it is
+        -- still open and other reactors (Jacqueline Fine + Eyes of the
+        -- Dreamer, etc.) must still be able to fire on it.
         removeAllMessagesMatching $ \case
           CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
-          CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _] -> True
-          Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _]) -> True
           _ -> False
 
         iids <- getInvestigators
-        -- if we have not decided we can use const to replace
         let
           choice'' = replaceDeciding choice' (Undecided step)
           (updatedChoice, messages) = decideFirstUndecided source iid iids SetAside toDecided choice''

@@ -92,6 +92,7 @@ import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Base
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -267,7 +268,7 @@ drawCardFrom iid deck (toCard -> card) = do
   case card of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCardFrom iid ec (Just $ toDeck deck)
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
-    VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid deck vc
+    VengeanceCard vc -> Arkham.Message.Lifted.Card.drawCardFrom iid deck vc
 
 drawCard :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m ()
 drawCard iid card = do
@@ -276,7 +277,7 @@ drawCard iid card = do
   case c of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
-    VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
+    VengeanceCard vc -> Arkham.Message.Lifted.Card.drawCard iid vc
 
 discard :: (IsCard card, ReverseQueue m) => card -> m ()
 discard card = push $ DiscardedCard (toCardId card)
@@ -300,3 +301,12 @@ allRandomDiscard source matcher = push $ AllRandomDiscard (toSource source) matc
 
 allDrawEncounterCard :: ReverseQueue m => m ()
 allDrawEncounterCard = push Msg.AllDrawEncounterCard
+
+class Attachable a where
+  toAttach :: Targetable target => a -> target -> Message
+
+instance Attachable AssetAttrs where
+  toAttach attrs target = AttachAsset (asId attrs) (toTarget target)
+
+instance Attachable EventId where
+  toAttach eid target = AttachEvent eid (toTarget target)

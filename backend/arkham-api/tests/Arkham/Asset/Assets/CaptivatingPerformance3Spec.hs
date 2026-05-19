@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.CaptivatingPerformance3Spec (spec) where
 
 import Arkham.Action (Action (..))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Runner (longestUniqueStreak, pickSDR)
+import Arkham.Investigator.Runner.Action (longestUniqueStreak, pickSDR)
 import TestImport.New
 
 spec :: Spec

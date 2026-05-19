@@ -3266,6 +3266,11 @@ library
       Arkham.Investigator.Investigators
       Arkham.Investigator.Projection
       Arkham.Investigator.Runner
+      Arkham.Investigator.Runner.Action
+      Arkham.Investigator.Runner.Card
+      Arkham.Investigator.Runner.Damage
+      Arkham.Investigator.Runner.Movement
+      Arkham.Investigator.Runner.Search
       Arkham.Investigator.Types
       Arkham.Json
       Arkham.Key
@@ -4364,6 +4369,7 @@ library
       Arkham.Message
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Action
+      Arkham.Message.Lifted.Base
       Arkham.Message.Lifted.Card
       Arkham.Message.Lifted.Choose
       Arkham.Message.Lifted.CreateEnemy

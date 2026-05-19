@@ -4,6 +4,7 @@ module Arkham.Message.Lifted.Scenario where
 
 
 import Arkham.Helpers.FetchCard as X
+import Arkham.Message.Lifted.Card
 
 import Arkham.Ability
 import Arkham.Act.Sequence qualified as Act
@@ -92,6 +93,7 @@ import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Base
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -292,3 +294,11 @@ scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
 
 scenarioSpecific_ :: ReverseQueue m => Text -> m ()
 scenarioSpecific_ key = push $ ScenarioSpecific key Null
+
+removeCampaignCardFromDeck
+  :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> a
+  -> m ()
+removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
+  push $ RemoveCampaignCardFromDeck iid def

@@ -1,6 +1,7 @@
-{-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# OPTIONS_GHC -Wno-unused-imports -Wno-orphans #-}
 
-module Arkham.Message.Lifted.Prompt where
+
+module Arkham.Message.Lifted.Base where
 
 
 import Arkham.Helpers.FetchCard as X
@@ -92,7 +93,6 @@ import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
-import Arkham.Message.Lifted.Base
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -122,96 +122,95 @@ import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
 import Data.Typeable
 
-chooseOrRunOne :: (ReverseQueue m, HasCallStack) => InvestigatorId -> [UI Message] -> m ()
-chooseOrRunOne iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunOne player msgs
+capture :: MonadIO m => QueueT msg m a -> m [msg]
+capture = evalQueueT
 
-continue :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
-continue iid = prompt iid "$label.continue"
+guardPlayerDeckIsNotEmpty :: (HasCallStack, ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
+guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
+  Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
+  Deck.InvestigatorDeckByKey iid deckKey -> do
+    mdeck <- Map.lookup deckKey <$> field InvestigatorDecks iid
+    when (maybe False (not . null) mdeck) body
+  _ -> body
 
-continue_ :: ReverseQueue m => InvestigatorId -> m ()
-continue_ iid = continue iid (pure ())
+matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+matchingDon't f = lift $ popMessageMatching_ f
 
-prompt :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
-prompt iid lbl body = do
-  msgs <- capture body
-  Arkham.Message.Lifted.Prompt.chooseOne iid [Label lbl msgs]
+withTimings :: ReverseQueue m => WindowType -> m () -> m ()
+withTimings w body = do
+  let (before, atIf, after) = Msg.timings w
+  checkWindows [before]
+  checkWindows [atIf]
+  body
+  checkWindows [after]
 
-promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
-promptI iid lbl body = do
-  msgs <- capture body
-  Arkham.Message.Lifted.Prompt.chooseOne iid [Label (withI18n $ "$" <> labelKey lbl) msgs]
+withBatchedTimings :: ReverseQueue m => WindowType -> QueueT Message m () -> m ()
+withBatchedTimings w body = do
+  batched \batchId -> do
+    let (before, atIf, after) = Msg.batchedTimings batchId w
+    checkWindows [before]
+    checkWindows [atIf]
+    body
+    checkWindows [after]
 
-prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
-prompt_ iid lbl = Arkham.Message.Lifted.Prompt.chooseOne iid [Label ("$" <> labelKey lbl) []]
+selectEach :: (Query a, HasGame m, Tracing m) => a -> (QueryElement a -> m ()) -> m ()
+selectEach matcher f = select matcher >>= traverse_ f
 
-promptI_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
-promptI_ iid lbl = withI18n $ prompt_ iid lbl
+checkWindows :: ReverseQueue m => [Window] -> m ()
+checkWindows [] = pure ()
+checkWindows ws = Msg.pushM $ Msg.checkWindows ws
 
-choose :: ReverseQueue m => InvestigatorId -> UI Message -> m ()
-choose iid msg = Arkham.Message.Lifted.Prompt.chooseOne iid [msg]
+checkAfter :: ReverseQueue m => WindowType -> m ()
+checkAfter = Msg.pushM . Msg.checkAfter
 
-questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
-questionLabel lbl iid q = do
-  pid <- getPlayer iid
-  push $ Ask pid (QuestionLabel lbl Nothing q)
+checkWhen :: ReverseQueue m => WindowType -> m ()
+checkWhen = Msg.pushM . Msg.checkWhen
 
-questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
-questionLabel' lbl = Arkham.Message.Lifted.Prompt.questionLabel ("$" <> lbl)
+batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
+batched f = do
+  batchId <- getId
+  withBatched batchId f
 
-chooseOne :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [UI Message] -> m ()
-chooseOne iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOne player msgs
+batchedOrCurrent :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
+batchedOrCurrent f =
+  getCurrentBatchId >>= \case
+    Just batchId -> withBatched batchId f
+    Nothing -> batched f
 
-chooseOneFromEach :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [[UI Message]] -> m ()
-chooseOneFromEach iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneFromEach player msgs
+withBatched :: ReverseQueue m => BatchId -> (BatchId -> QueueT Message m ()) -> m ()
+withBatched batchId f = do
+  msgs <- capture (f batchId)
+  push $ Would batchId $ map updateBatch msgs
+ where
+  -- Sets the batch id for any top level window calls
+  updateBatch = \case
+    CheckWindows ws -> CheckWindows $ map (\w -> w {windowBatchId = Just batchId}) ws
+    other -> other
 
-chooseSome :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
-chooseSome iid done msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseSome player done msgs
+payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
+payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost
 
-chooseSome1 :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
-chooseSome1 iid done msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseSome1 player done msgs
+withCost :: ReverseQueue m => InvestigatorId -> Cost -> QueueT Message m () -> m ()
+withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
 
-chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
-chooseUpToN iid n label msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseUpToN player n label msgs
+setupModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
 
-chooseOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
-chooseOneAtATime iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneAtATime player msgs
+shuffleCardsIntoDeck
+  :: ( ReverseQueue m
+     , IsDeck deck
+     , MonoFoldable cards
+     , Element cards ~ card
+     , IsCard card
+     , CanShuffleIn cards
+     )
+  => deck
+  -> cards
+  -> m ()
+shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
+  push $ Msg.shuffleCardsIntoDeck deck cards
 
-chooseOrRunOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
-chooseOrRunOneAtATime iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunOneAtATime player msgs
-
-chooseOneDropDown :: ReverseQueue m => InvestigatorId -> [(Text, Message)] -> m ()
-chooseOneDropDown iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneDropDown player msgs
-
-chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
-chooseN iid n msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseN player n msgs
-
-chooseOrRunN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
-chooseOrRunN iid n msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunN player n msgs
-
-chooseUpgradeDecks :: ReverseQueue m => m ()
-chooseUpgradeDecks = push . Msg.chooseUpgradeDecks =<< allPlayers
-
-chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-chooseAndDiscardAsset iid source = chooseAndDiscardAssetMatching iid source AnyAsset
+chooseAndDiscardAssetMatching
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
+chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher

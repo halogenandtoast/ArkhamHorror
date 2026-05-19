@@ -10,13 +10,10 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
-import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
-import Arkham.CampaignStep hiding (continue)
-import Arkham.CampaignStep qualified as CS
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Capability
 import Arkham.Card
@@ -38,7 +35,6 @@ import Arkham.Effect.Builder
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.Effect.Window
 import Arkham.EffectMetadata (EffectMetadata)
-import Arkham.EncounterSet
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
@@ -48,10 +44,8 @@ import Arkham.Exhaust qualified as Exhaust
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers
 import Arkham.Helpers.Act
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.ChaosToken qualified as Msg
@@ -69,11 +63,9 @@ import Arkham.Helpers.Message.Discard qualified as HandDiscard
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution, getIsStandalone)
-import Arkham.Helpers.Shuffle
+import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
-import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.History
 import Arkham.I18n
@@ -83,12 +75,12 @@ import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Layout
-import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Base as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -109,22 +101,20 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Tracing
 import Arkham.Trait (Trait)
-import Arkham.Window (Window (..), WindowType, defaultWindows)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
-import Data.Map.Strict qualified as Map
 import Data.Typeable
 import Arkham.Message.Lifted.Location as X
 import Arkham.Message.Lifted.Scenario as X
 import Arkham.Message.Lifted.Damage as X
 import Arkham.Message.Lifted.Prompt as X
+import Arkham.Message.Lifted.Prompt qualified
 import Arkham.Message.Lifted.Card as X
 
-capture :: MonadIO m => QueueT msg m a -> m [msg]
-capture = evalQueueT
 
 withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
 withoutRunWindows body = do
@@ -600,13 +590,6 @@ removeChaosToken = push . RemoveChaosToken
 removeAllChaosTokens :: ReverseQueue m => ChaosTokenFace -> m ()
 removeAllChaosTokens = push . RemoveAllChaosTokens
 
-removeCampaignCardFromDeck
-  :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator
-  -> a
-  -> m ()
-removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
-  push $ RemoveCampaignCardFromDeck iid def
 
 placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -791,8 +774,6 @@ forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
 forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
 forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 
-selectEach :: (Query a, HasGame m, Tracing m) => a -> (QueryElement a -> m ()) -> m ()
-selectEach matcher f = select matcher >>= traverse_ f
 
 selectEachDiscardable
   :: (HasCardCode a, HasGame m, Tracing m)
@@ -892,7 +873,7 @@ chooseOneToHandle
   -> m ()
 chooseOneToHandle _ _ [] = pure ()
 chooseOneToHandle iid source targets =
-  Arkham.Message.Lifted.chooseOne iid
+  Arkham.Message.Lifted.Prompt.chooseOne iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -905,7 +886,7 @@ chooseOneToHandleWith
   -> Message
   -> m ()
 chooseOneToHandleWith iid source targets msg =
-  Arkham.Message.Lifted.chooseOne iid
+  Arkham.Message.Lifted.Prompt.chooseOne iid
     $ targetLabels targets \target -> [Msg.handleTargetChoice iid source target, msg]
 
 selectOrRunOneToHandle
@@ -924,7 +905,7 @@ chooseOrRunOneToHandle
   -> [target]
   -> m ()
 chooseOrRunOneToHandle iid source targets =
-  Arkham.Message.Lifted.chooseOrRunOne iid
+  Arkham.Message.Lifted.Prompt.chooseOrRunOne iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -936,7 +917,7 @@ handleOneAtATime
   -> [target]
   -> m ()
 handleOneAtATime iid source targets =
-  Arkham.Message.Lifted.chooseOneAtATime iid
+  Arkham.Message.Lifted.Prompt.chooseOneAtATime iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -957,7 +938,7 @@ handleN
   -> [target]
   -> m ()
 handleN iid source n targets =
-  Arkham.Message.Lifted.chooseN iid n
+  Arkham.Message.Lifted.Prompt.chooseN iid n
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -1306,9 +1287,6 @@ turnModifiers
   -> m ()
 turnModifiers iid source target modifiers = Msg.pushM $ Msg.turnModifiers iid source target modifiers
 
-setupModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
 
 scenarioSetupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1530,7 +1508,7 @@ chooseFightEnemyWithSkillChoice
 chooseFightEnemyWithSkillChoice sid iid source skillTypes = do
   fight <- mkChooseFight sid iid source
   let using = toMessage . (`Fight.withSkillType` fight)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -1580,7 +1558,7 @@ chooseEvadeEnemyWithSkillChoice
 chooseEvadeEnemyWithSkillChoice sid iid source skillTypes = do
   evade <- mkChooseEvade sid iid source
   let using = toMessage . (`Evade.withSkillType` evade)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -1603,7 +1581,7 @@ investigateWithSkillChoice
 investigateWithSkillChoice sid iid source skillTypes = do
   inv <- mkInvestigate sid iid source
   let using = toMessage . (`Investigate.withSkillType` inv)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -1618,7 +1596,7 @@ investigateLocationWithSkillChoice
 investigateLocationWithSkillChoice sid iid source skillTypes lid = do
   inv <- mkInvestigateLocation sid iid source lid
   let using = toMessage . (`Investigate.withSkillType` inv)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -1785,15 +1763,8 @@ focusCards cards body = do
 focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
 focusCard card = focusCards [card]
 
-checkWindows :: ReverseQueue m => [Window] -> m ()
-checkWindows [] = pure ()
-checkWindows ws = Msg.pushM $ Msg.checkWindows ws
 
-checkAfter :: ReverseQueue m => WindowType -> m ()
-checkAfter = Msg.pushM . Msg.checkAfter
 
-checkWhen :: ReverseQueue m => WindowType -> m ()
-checkWhen = Msg.pushM . Msg.checkWhen
 
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
@@ -1907,19 +1878,6 @@ revealingEdit
   -> m ()
 revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ Msg.revealingEdit iid source target zone f
 
-shuffleCardsIntoDeck
-  :: ( ReverseQueue m
-     , IsDeck deck
-     , MonoFoldable cards
-     , Element cards ~ card
-     , IsCard card
-     , CanShuffleIn cards
-     )
-  => deck
-  -> cards
-  -> m ()
-shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
-  push $ Msg.shuffleCardsIntoDeck deck cards
 
 shuffleCardsIntoTopOfDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
@@ -1933,13 +1891,6 @@ shuffleCardsIntoTopOfDeck deck n cards =
     1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
     _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
-guardPlayerDeckIsNotEmpty :: (HasCallStack, ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
-guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
-  Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
-  Deck.InvestigatorDeckByKey iid deckKey -> do
-    mdeck <- Map.lookup deckKey <$> field InvestigatorDecks iid
-    when (maybe False (not . null) mdeck) body
-  _ -> body
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
@@ -2121,8 +2072,6 @@ addToVictoryIfNeeded (asId -> enemy) = doNow \case
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
 fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 
-matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
-matchingDon't f = lift $ popMessageMatching_ f
 
 allMatchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 allMatchingDon't f = lift $ removeAllMessagesMatching f
@@ -2157,32 +2106,10 @@ abilityModifier
   -> m ()
 abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab source target modifier
 
-batchedOrCurrent :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
-batchedOrCurrent f =
-  getCurrentBatchId >>= \case
-    Just batchId -> withBatched batchId f
-    Nothing -> batched f
 
-batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
-batched f = do
-  batchId <- getId
-  withBatched batchId f
 
-withBatched :: ReverseQueue m => BatchId -> (BatchId -> QueueT Message m ()) -> m ()
-withBatched batchId f = do
-  msgs <- capture (f batchId)
-  push $ Would batchId $ map updateBatch msgs
- where
-  -- Sets the batch id for any top level window calls
-  updateBatch = \case
-    CheckWindows ws -> CheckWindows $ map (\w -> w {windowBatchId = Just batchId}) ws
-    other -> other
 
-payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
-payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost
 
-withCost :: ReverseQueue m => InvestigatorId -> Cost -> QueueT Message m () -> m ()
-withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
 
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()
@@ -2568,7 +2495,7 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
   locations <- filterM (getCanDiscoverClues isInvestigate iid) =<< select mtchr
   when (notNull locations) do
     did <- getRandom
-    Arkham.Message.Lifted.chooseOrRunOne
+    Arkham.Message.Lifted.Prompt.chooseOrRunOne
       iid
       [ targetLabel
           location
@@ -2839,14 +2766,6 @@ loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
 
-class Attachable a where
-  toAttach :: Targetable target => a -> target -> Message
-
-instance Attachable AssetAttrs where
-  toAttach attrs target = AttachAsset (asId attrs) (toTarget target)
-
-instance Attachable EventId where
-  toAttach eid target = AttachEvent eid (toTarget target)
 
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
@@ -3213,9 +3132,6 @@ resolveChaosTokens iid source tokens = do
            $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
-chooseAndDiscardAssetMatching
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
-chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher
 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n
@@ -3231,22 +3147,7 @@ requestChaosTokens iid source n = do
 resetChaosTokens :: (ReverseQueue m, Sourceable source) => source -> m ()
 resetChaosTokens source = push $ ResetChaosTokens (toSource source)
 
-withTimings :: ReverseQueue m => WindowType -> m () -> m ()
-withTimings w body = do
-  let (before, atIf, after) = Msg.timings w
-  checkWindows [before]
-  checkWindows [atIf]
-  body
-  checkWindows [after]
 
-withBatchedTimings :: ReverseQueue m => WindowType -> QueueT Message m () -> m ()
-withBatchedTimings w body = do
-  batched \batchId -> do
-    let (before, atIf, after) = Msg.batchedTimings batchId w
-    checkWindows [before]
-    checkWindows [atIf]
-    body
-    checkWindows [after]
 
 don'tRemove
   :: (Sourceable source, MonadTrans t, HasQueue Message m, ReverseQueue (t m))

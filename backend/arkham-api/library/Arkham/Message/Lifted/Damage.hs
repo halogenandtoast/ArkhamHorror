@@ -92,6 +92,7 @@ import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Base
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)

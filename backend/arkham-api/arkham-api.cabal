@@ -4364,13 +4364,18 @@ library
       Arkham.Message
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Action
+      Arkham.Message.Lifted.Card
       Arkham.Message.Lifted.Choose
       Arkham.Message.Lifted.CreateEnemy
+      Arkham.Message.Lifted.Damage
       Arkham.Message.Lifted.Discover
+      Arkham.Message.Lifted.Location
       Arkham.Message.Lifted.Log
       Arkham.Message.Lifted.Move
       Arkham.Message.Lifted.Placement
+      Arkham.Message.Lifted.Prompt
       Arkham.Message.Lifted.Queue
+      Arkham.Message.Lifted.Scenario
       Arkham.Message.Lifted.SkillTest
       Arkham.Message.Lifted.Story
       Arkham.Message.Lifted.Upgrade

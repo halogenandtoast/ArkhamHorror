@@ -4,7 +4,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (getLocationOf, withLocationOf)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -26,6 +26,19 @@ instance RunMessage PredatorOrPrey where
           unengagedEnemies <-
             mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation (UnengagedEnemy <> NonEliteEnemy <> not_ (at_ $ locationWithInvestigator iid))
           investigators <- select Anyone
+          eligibleInvestigators <- flip filterM investigators \i -> do
+            engaged <- selectAny (enemyEngagedWith i)
+            if engaged
+              then pure True
+              else
+                getLocationOf i >>= \case
+                  Nothing -> pure False
+                  Just loc ->
+                    selectAny
+                      $ CanMoveToLocation (InvestigatorWithId i) (toSource attrs)
+                      $ AccessibleFrom ForMovement (LocationWithId loc)
+                      <> LocationFartherFrom loc (NearestLocationTo i $ LocationWithEnemy AnyEnemy)
+                      <> not_ (LocationWithId loc)
           chooseOneM iid $ cardI18n $ scope "predatorOrPrey" do
             when (notNull unengagedEnemies) do
               labeled' "enemiesMove" do
@@ -33,8 +46,9 @@ instance RunMessage PredatorOrPrey where
                   for_ unengagedEnemies \(enemy, loc) ->
                     targeting enemy do
                       moveTowardsMatching attrs enemy $ NearestLocationToLocation loc $ LocationWithInvestigator Anyone
-            labeled' "investigatorsMove"
-              $ handleOneAtATime iid attrs investigators
+            when (notNull eligibleInvestigators) do
+              labeled' "investigatorsMove"
+                $ handleOneAtATime iid attrs eligibleInvestigators
 
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do

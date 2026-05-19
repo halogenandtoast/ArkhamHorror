@@ -7,7 +7,6 @@ import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Message (MessageType (..))
 import Arkham.Token
 
 newtype PurifyingCorruption4 = PurifyingCorruption4 AssetAttrs
@@ -38,10 +37,8 @@ instance HasAbilities PurifyingCorruption4 where
 instance RunMessage PurifyingCorruption4 where
   runMessage msg a@(PurifyingCorruption4 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      pushAll
-        [ CancelEachNext (Just card.id) (toSource attrs) [RevelationMessage, DrawEnemyMessage]
-        , PlaceTokens (attrs.ability 1) (toTarget attrs) Corruption 1
-        ]
+      cancelRevelation attrs card
+      push $ PlaceTokens (attrs.ability 1) (toTarget attrs) Corruption 1
       pure a
     PlaceTokens _ (isTarget attrs -> True) Corruption n -> do
       when (attrs.token Corruption + n >= 3) $ do

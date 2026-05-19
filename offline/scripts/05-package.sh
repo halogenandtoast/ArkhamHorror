@@ -397,9 +397,6 @@ http {
   keepalive_timeout 65;
   client_body_temp_path $DATA_DIR/nginx_temp;
   proxy_temp_path       $DATA_DIR/nginx_temp;
-  fastcgi_temp_path     $DATA_DIR/nginx_temp;
-  scgi_temp_path        $DATA_DIR/nginx_temp;
-  uwsgi_temp_path       $DATA_DIR/nginx_temp;
   map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
   server {
     listen $NGINX_PORT;

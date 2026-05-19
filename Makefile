@@ -154,3 +154,18 @@ install-hooks:
 count:
 	cloc . --include-lang=Haskell,TypeScript,Vue --exclude-dir=node_modules,dist,.stack-work --timeout=0
 .PHONY: count
+
+## Tag HEAD with a date-based vYYYYMMDD.N tag and push it to trigger the offline build workflow
+offline-build:
+	@set -e; \
+	  git fetch --tags --quiet; \
+	  DATE=$$(date -u +%Y%m%d); \
+	  N=1; \
+	  while git rev-parse --verify --quiet "refs/tags/v$$DATE.$$N" >/dev/null; do \
+	    N=$$((N + 1)); \
+	  done; \
+	  TAG="v$$DATE.$$N"; \
+	  echo ">> tagging $$(git rev-parse --short HEAD) as $$TAG"; \
+	  git tag "$$TAG"; \
+	  git push origin "$$TAG"
+.PHONY: offline-build

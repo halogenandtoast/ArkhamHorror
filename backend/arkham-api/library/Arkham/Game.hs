@@ -6096,9 +6096,15 @@ runMessages gameId mLogger = do
                   whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices) _) = guard (notNull choices) $> pid
                   whenBeingQuestioned (pid, _) = Just pid
               let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
-              let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
-                >>= putGame
+              case activePids of
+                -- No one can answer (only stale empty-choice Reads left over from a
+                -- previous storyWithChooseOne). Skip rather than parking on an
+                -- unanswerable question.
+                [] -> runMessages gameId mLogger
+                _ -> do
+                  let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
+                  runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
+                    >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger

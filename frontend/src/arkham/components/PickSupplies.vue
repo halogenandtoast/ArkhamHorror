@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
-import { imgsrc } from '@/arkham/helpers';
+import { investigatorPortrait } from '@/arkham/cardImages';
 import { useI18n } from 'vue-i18n';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
@@ -24,19 +24,7 @@ const chosenSupplies = computed(() => {
  return props.question.chosenSupplies.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 })
 
-const portrait = (investigatorId: string) => {
-  const player = props.game.investigators[investigatorId]
-
-  if (player.form.tag === "YithianForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  if (player.form.tag === "HomunculusForm") {
-    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-}
+const portrait = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
 

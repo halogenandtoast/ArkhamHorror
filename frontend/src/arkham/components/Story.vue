@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
-import { imgsrc } from '@/arkham/helpers'
 import { useDebug } from '@/arkham/debug'
+import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
 import DebugStory from '@/arkham/components/debug/Story.vue'
@@ -26,8 +26,7 @@ const emit = defineEmits<{
 
 const image = computed(() => {
   const { art, flippedArt, flipped } = props.story
-  const storyArt = flipped ? flippedArt : art
-  return imgsrc(`cards/${storyArt.replace(/^c/, '')}.avif`);
+  return cardImage(flipped ? flippedArt : art)
 })
 
 const id = computed(() => props.story.id)

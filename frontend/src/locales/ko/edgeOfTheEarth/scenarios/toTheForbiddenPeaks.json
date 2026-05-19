@@ -4,13 +4,13 @@
       "skull": "-X. X is the level of your location.",
       "cultist": "-1. If you fail, move to the location directly below you.",
       "tablet": "-3. If you fail, lose contol of an _Expedition_ asset and place it at your location.",
-      "elderthing": "-4. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
+      "elderThing": "-4. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
     },
     "hardExpert": {
       "skull": "-X. X is 2 plus the level of your location.",
       "cultist": "-1. Move to the location directly below you.",
       "tablet": "-4. If you fail, lose contol of an _Expedition_ asset and place it at your location.",
-      "elderthing": "-5. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
+      "elderThing": "-5. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
     }
   },
   "intro1": {

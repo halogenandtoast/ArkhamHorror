@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref } from 'vue'
 import { type Game } from '@/arkham/types/Game'
-import { type Card, cardImage } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
+import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
@@ -19,6 +20,8 @@ const props = defineProps<{
   game: Game
   cardsUnder: Card[]
   cardsNextTo: Card[]
+  remainingStack: Card[]
+  completedStack: Card[]
   playerId: string
 }>()
 
@@ -121,6 +124,9 @@ const cardsUnder = computed(() => props.cardsUnder)
 
 const showCardsUnderAct = () => emits('show', cardsUnder, 'Cards Under Act', false)
 
+const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.act.id))
+const totalActs = computed(() => props.completedStack.length + props.remainingStack.length)
+
 async function clicked() {
   if (interactAction.value !== -1) {
     emits('choose', interactAction.value)
@@ -155,15 +161,24 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 
 <template>
   <div class="act-container">
-    <div class="card-container" :class="{ 'act--objective': hasObjective }">
-      <img
-        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isVertical}"
-        class="card"
-        @click="clicked"
-        :src="image"
-        ref="frame"
+    <div class="act-row">
+      <div class="card-container" :class="{ 'act--objective': hasObjective }">
+        <img
+          :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isVertical}"
+          class="card"
+          @click="clicked"
+          :src="image"
+          ref="frame"
+        />
+      </div>
+      <StackIndicator
+        label="Act"
+        :current="act.sequence.number"
+        :total="totalActs"
+        :completedCards="completedStack"
+        :currentImage="image"
+        :remainingCards="futureStack"
       />
-
     </div>
     <AbilitiesMenu
       :frame="frame"
@@ -267,6 +282,13 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
   gap: 5px;
 }
 
+.act-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
 .act-container :deep(.card--sideways) {
   width: auto;
   height: var(--card-width);
@@ -311,4 +333,5 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
     cursor: pointer;
   }
 }
+
 </style>

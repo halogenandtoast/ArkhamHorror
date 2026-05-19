@@ -222,6 +222,23 @@ export type AmountTarget
   | { tag: "MinAmountTarget", contents: number }
   | { tag: 'AmountOneOf', contents: number[] }
 
+// Returns true when `total` violates `target`'s constraint, or false when it
+// satisfies (or the target is absent/zero). Centralises the logic that used
+// to be three identical switch blocks in Question.vue.
+export function amountTargetUnmet(target: AmountTarget | null | undefined, total: number): boolean {
+  if (!target) return false
+  switch (target.tag) {
+    case 'MaxAmountTarget':
+      return target.contents ? total > target.contents : false
+    case 'MinAmountTarget':
+      return target.contents ? total < target.contents : false
+    case 'TotalAmountTarget':
+      return target.contents ? total !== target.contents : false
+    case 'AmountOneOf':
+      return target.contents.length > 0 ? !target.contents.includes(total) : false
+  }
+}
+
 export type ChooseAmounts = {
   tag: QuestionType.CHOOSE_AMOUNTS
   label: string

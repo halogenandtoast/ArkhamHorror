@@ -4,6 +4,7 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
@@ -26,7 +27,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
 import { Card } from '../types/Card';
-import useHighlighter from '@/composeable/useHighlighter';
+import useHighlighter from '@/composable/useHighlighter';
 
 export interface Props {
   game: Game
@@ -59,9 +60,8 @@ const choose = (n: number) => emits('choose', n)
 
 const image = computed(() => {
   const { cardCode, revealed, enemyLocation } = props.location
-  if (enemyLocation) return imgsrc(`cards/${cardCode.replace(/^c/, '')}.avif`)
-  const suffix = revealed ? '' : 'b'
-  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
+  if (enemyLocation) return cardImage(cardCode)
+  return cardImage(cardCode, revealed ? '' : 'b')
 })
 
 const id = computed(() => props.location.id)

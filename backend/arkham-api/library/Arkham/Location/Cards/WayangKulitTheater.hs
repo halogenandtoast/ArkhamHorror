@@ -39,7 +39,7 @@ instance HasAbilities WayangKulitTheater where
 instance RunMessage WayangKulitTheater where
   runMessage msg l@(WayangKulitTheater attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      healDamage iid (attrs.ability 1) 2
+      healDamage iid (UseAbilitySource iid (toSource attrs) 1) 2
       remember SharedADeepPain
       pure l
     _ -> WayangKulitTheater <$> liftRunMessage msg attrs

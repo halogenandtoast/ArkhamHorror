@@ -53,12 +53,6 @@ instance Tracing GameT where
   -- unforced.
   addAttribute _ _ _ = pure ()
   doTrace name args action = withMetric name (inSpan' name args action)
-
-clearCache :: GameT ()
-clearCache = do
-  ref <- asks gameCacheRef
-  liftIO $ atomicWriteIORef ref DMap.empty
-
 instance HasGame GameT where
   getGame = asks gameEnvGame >>= readIORef
   getCache = GameCache \k build -> do

@@ -6,7 +6,6 @@ module Arkham.Helpers.Card (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.ActiveCost.Base
 import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.ChaosBag.Base (chaosBagChaosTokens)
@@ -51,18 +50,6 @@ isWeakness c = case toCard c of
   PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
   EncounterCard _ -> True -- maybe?
   VengeanceCard _ -> False -- should be an error
-
-getCardPayments :: HasGame m => Card -> m (Maybe Payment)
-getCardPayments c = do
-  costs <- getActiveCosts
-  pure $ activeCostPayments <$> find (isCardTarget . activeCostTarget) costs
- where
-  isCardTarget = \case
-    ForAbility {} -> False
-    ForAdditionalCost {} -> False
-    ForCard _ c' -> toCardId c == toCardId c'
-    ForCost c' -> toCardId c == toCardId c'
-
 extendedCardMatch
   :: (HasGame m, Tracing m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =
@@ -266,6 +253,9 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     MaxPerGame m -> do
       n <- length <$> getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerGamePerInvestigator m -> do
+      n <- count (== iid) <$> getCardUses (toCardCode c)
       pure $ m > n
     MaxPerTurn m -> do
       n <- length <$> getCardUses (toCardCode c)

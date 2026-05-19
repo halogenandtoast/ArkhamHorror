@@ -65,7 +65,7 @@ getAssetDamageAmounts aid = fromQueue \queue -> case dropUntilDamage queue of
     _ -> error "mismatch"
   _ -> error "unhandled"
  where
-  dropUntilDamage = dropWhile (notElem DealDamageMessage . messageType)
+  dropUntilDamage = dropWhile (notElem AssetDamageMessage . messageType)
 
 healableAsset :: Sourceable source => source -> AssetMatcher -> AssetMatcher
 healableAsset source inner = oneOf [HealableAsset (toSource source) kind inner | kind <- [#damage, #horror]]

@@ -2,6 +2,7 @@
 import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
 import { toCapitalizedWords } from '@/arkham/helpers'
+import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
@@ -427,7 +428,7 @@ const cardCodeToTitle = (cardCode: string): string => {
   const language = localStorage.getItem('language') || 'en'
 
   if (language !== 'en') {
-    const code = card ? card.art : cardCode.replace(/^c/, '')
+    const code = card ? card.art : cardArt(cardCode)
     const dbCard = store.getDbCard(code)
     if (dbCard) return dbCard.subname ? `${dbCard.name}: ${dbCard.subname}` : dbCard.name
   }

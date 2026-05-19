@@ -69,10 +69,6 @@ getVictoryDisplay = scenarioField ScenarioVictoryDisplay
 
 inVictoryDisplay :: (HasGame m, Tracing m) => CardMatcher -> m Bool
 inVictoryDisplay matcher = any (`cardMatch` matcher) <$> getVictoryDisplay
-
-whenStandalone :: (HasGame m, Tracing m) => m () -> m ()
-whenStandalone = whenM getIsStandalone
-
 unlessStandalone :: (HasGame m, Tracing m) => m () -> m ()
 unlessStandalone = unlessM getIsStandalone
 

@@ -106,12 +106,6 @@ extendUnrevealed = withUnrevealedAbilities
 
 extendUnrevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendUnrevealed1 attrs ability = extendUnrevealed attrs [ability]
-
-getModifiedRevealClueCount :: (Tracing m, HasGame m) => LocationAttrs -> m Int
-getModifiedRevealClueCount attrs = do
-  mods <- getModifiers attrs
-  getModifiedRevealClueCountWithMods mods attrs
-
 getModifiedRevealClueCountWithMods
   :: (HasGame m, Tracing m) => [ModifierType] -> LocationAttrs -> m Int
 getModifiedRevealClueCountWithMods mods attrs =
@@ -684,10 +678,6 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead {} -> True
     _ -> False
-
-enemyAtLocation :: (HasGame m, Tracing m) => EnemyId -> LocationAttrs -> m Bool
-enemyAtLocation eid attrs = elem eid <$> select (enemyAt $ toId attrs)
-
 locationEnemiesWithTrait :: (HasGame m, Tracing m) => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 

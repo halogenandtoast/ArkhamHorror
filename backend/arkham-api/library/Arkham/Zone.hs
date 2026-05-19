@@ -134,17 +134,5 @@ instance FromJSONKey Zone where
     "FromRemovedZone" -> FromOutOfPlay RemovedZone
     "FromCollection" -> FromCollection
     other -> error ("Unhandled FromJSONKey for zone" <> show other)
-
-zoneLabel :: Zone -> Text
-zoneLabel = \case
-  FromHand -> "Hand"
-  FromDeck -> "Deck"
-  FromTopOfDeck n -> "Top " <> tshow n <> " Card of Deck"
-  FromBottomOfDeck n -> "Bottom " <> tshow n <> "Cards of Deck"
-  FromDiscard -> "Discard"
-  FromPlay -> "Play"
-  FromOutOfPlay _ -> "Out of Play"
-  FromCollection -> "Collection"
-
 instance ToJSONKey OutOfPlayZone
 instance FromJSONKey OutOfPlayZone

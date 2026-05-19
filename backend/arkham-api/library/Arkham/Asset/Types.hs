@@ -117,13 +117,6 @@ instance Entity Asset where
   overAttrs f (Asset a) = Asset $ overAttrs f a
 
 data SomeAssetCard = forall a. IsAsset a => SomeAssetCard (AssetCard a)
-
-liftAssetCard :: (forall a. AssetCard a -> b) -> SomeAssetCard -> b
-liftAssetCard f (SomeAssetCard a) = f a
-
-someAssetCardCode :: SomeAssetCard -> CardCode
-someAssetCardCode = liftAssetCard toCardCode
-
 someAssetCardCodes :: SomeAssetCard -> [(CardCode, SomeAssetCard)]
 someAssetCardCodes (SomeAssetCard CardBuilder {..}) =
   [ ( code
@@ -556,16 +549,6 @@ controlledBy a iid = a.isInPlay && a.controller == Just iid
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool
 ownedBy a iid = a.owner == Just iid
-
-attachedToEnemy :: AssetAttrs -> EnemyId -> Bool
-attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
-  AttachedToEnemy eid' -> eid == eid'
-  _ -> False
-
-whenControlledBy
-  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
-whenControlledBy a iid f = if controlledBy a iid then f else pure []
-
 makeLensesWith suffixedFields ''AssetAttrs
 
 getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
@@ -609,10 +592,6 @@ getAssetMeta :: FromJSON a => AssetAttrs -> Maybe a
 getAssetMeta attrs = case fromJSON attrs.meta of
   Error _ -> Nothing
   Success v' -> Just v'
-
-unsetMeta :: AssetAttrs -> AssetAttrs
-unsetMeta = metaL .~ Null
-
 getAssetMetaDefault :: FromJSON a => a -> AssetAttrs -> a
 getAssetMetaDefault def = fromMaybe def . getAssetMeta
 

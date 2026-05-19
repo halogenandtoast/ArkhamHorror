@@ -59,10 +59,11 @@ instance HasAbilities DyersClassroom where
 instance RunMessage DyersClassroom where
   runMessage msg l@(DyersClassroom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- select $ HealableInvestigator (attrs.ability 1) #horror (at_ $ be attrs)
-      assets <- select $ HealableAsset (attrs.ability 1) #horror (at_ $ be attrs)
+      let source = UseAbilitySource iid (toSource attrs) 1
+      investigators <- select $ HealableInvestigator source #horror (at_ $ be attrs)
+      assets <- select $ HealableAsset source #horror (at_ $ be attrs)
       chooseOneM iid do
-        targets investigators \investigator -> healHorror investigator (attrs.ability 1) 1
-        targets assets \asset -> healHorror asset (attrs.ability 1) 1
+        targets investigators \investigator -> healHorror investigator source 1
+        targets assets \asset -> healHorror asset source 1
       pure l
     _ -> DyersClassroom <$> mirageRunner Stories.dyersClassroom mirageCards 2 msg attrs

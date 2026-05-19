@@ -512,15 +512,6 @@ isSilentForcedAbilityType = \case
   Cosmos {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
   ConstantAbility {} -> False
-
-isPerWindowLimit :: AbilityLimit -> Bool
-isPerWindowLimit = \case
-  GroupLimit l _ -> l == PerWindow
-  PlayerLimit l _ -> l == PerWindow
-  PerInvestigatorLimit l _ -> l == PerWindow
-  MaxPer _ l _ -> l == PerWindow
-  NoLimit -> False
-
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility window' -> case window' of

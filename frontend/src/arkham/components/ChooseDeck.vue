@@ -4,6 +4,7 @@ import { computed, ref, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
+import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
 import type { ArkhamDbDecklist } from '@/arkham/types/Deck'
@@ -174,7 +175,7 @@ const players = computed<Player[]>(() => {
 })
 
 function portraitImage(investigator: Investigator) {
-  return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
+  return portraitImageHelper(investigator.cardCode)
 }
 
 const needsReply = computed(() => {

@@ -8,8 +8,6 @@ import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Helpers.Scenario
-import Arkham.Id
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
@@ -30,11 +28,6 @@ getCampaignOptions = campaignLogOptions <$> getCampaignLog
 
 hasCampaignOption :: (HasGame m, Tracing m) => CampaignOption -> m Bool
 hasCampaignOption option = member option <$> getCampaignOptions
-
-getInvestigatorHasRecord
-  :: (HasGame m, Tracing m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
-getInvestigatorHasRecord iid k = fieldMap InvestigatorLog (hasRecord k) iid
-
 getHasRecord :: (HasGame m, Tracing m, IsCampaignLogKey k) => k -> m Bool
 getHasRecord k = hasRecord k <$> getCampaignLog
 
@@ -113,15 +106,6 @@ getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k
   onlyRecorded = \case
     SomeRecorded RecordableCardCode (Recorded cCode) -> Just cCode
     _ -> Nothing
-
-getCrossedOutCardCodes :: (HasGame m, Tracing m, IsCampaignLogKey k) => k -> m [CardCode]
-getCrossedOutCardCodes k = mapMaybe onlyCrossedOut <$> getRecordSet k
- where
-  onlyCrossedOut :: SomeRecorded -> Maybe CardCode
-  onlyCrossedOut = \case
-    SomeRecorded RecordableCardCode (CrossedOut cCode) -> Just cCode
-    _ -> Nothing
-
 remembered :: (HasGame m, Tracing m) => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 

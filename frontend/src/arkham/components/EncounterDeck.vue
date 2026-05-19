@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
+import { cardImage, investigatorPortrait as portraitFor } from '@/arkham/cardImages'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { MessageType } from '@/arkham/types/Message'
 import { useDebug } from '@/arkham/debug'
@@ -45,7 +46,7 @@ const deckImage = computed(() => {
   if (revealTopCard.value) {
     let card = props.game.scenario?.encounterDeck[0]
     if (card) {
-      return imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)
+      return cardImage(card.cardCode)
     }
   }
 
@@ -62,20 +63,8 @@ const deckAction = computed(() => {
 
 const investigatorPortrait = computed(() => {
   const choice = choices.value[deckAction.value]
-
-  if (!choice || !investigator.value) {
-    return null;
-  }
-
-  if (investigator.value.form.tag === "HomunculusForm") {
-    return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
-  }
-
-  if (investigator.value.form.tag === "YithianForm") {
-    return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
-  }
-
-  return imgsrc(`portraits/${investigator.value.cardCode.replace('c', '')}.jpg`)
+  if (!choice || !investigator.value) return null
+  return portraitFor(props.game, investigator.value.id)
 })
 
 const deckLabel = computed(() => {

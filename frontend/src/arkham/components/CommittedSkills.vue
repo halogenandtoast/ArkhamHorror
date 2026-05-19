@@ -46,24 +46,6 @@ function skillId(card: Card) {
 </template>
 
 <style scoped>
-.card-row {
-  background: #759686;
-  width: 100%;
-  overflow-x: auto;
-  text-align: center;
-
-  header {
-    padding: 10px;
-  }
-
-  h2 {
-    font-size: 1.8em;
-    color: rgba(255,255,255,0.5);
-    padding: 0;
-    margin: 0;
-  }
-}
-
 .card-row-cards {
   position: relative;
   height: calc(var(--card-width) * 1.4);
@@ -80,10 +62,5 @@ function skillId(card: Card) {
   width: var(--card-width);
   border-radius: 6px;
   margin: 2px;
-}
-
-.skill--can-interact {
-  border: 3px solid var(--select);
-  cursor: pointer;
 }
 </style>

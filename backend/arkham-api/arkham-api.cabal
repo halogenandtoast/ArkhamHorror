@@ -49,6 +49,21 @@ library
       Arkham.Ability.Used
       Arkham.Act
       Arkham.Act.Acts
+      Arkham.Act.CardDefs.Base
+      Arkham.Act.CardDefs.Core2026
+      Arkham.Act.CardDefs.EdgeOfTheEarth
+      Arkham.Act.CardDefs.Import
+      Arkham.Act.CardDefs.NightOfTheZealot
+      Arkham.Act.CardDefs.ReturnTo
+      Arkham.Act.CardDefs.Standalone
+      Arkham.Act.CardDefs.TheCircleUndone
+      Arkham.Act.CardDefs.TheDreamEaters
+      Arkham.Act.CardDefs.TheDunwichLegacy
+      Arkham.Act.CardDefs.TheFeastOfHemlockVale
+      Arkham.Act.CardDefs.TheForgottenAge
+      Arkham.Act.CardDefs.TheInnsmouthConspiracy
+      Arkham.Act.CardDefs.ThePathToCarcosa
+      Arkham.Act.CardDefs.TheScarletKeys
       Arkham.Act.Cards
       Arkham.Act.Cards.ACircleUnbroken
       Arkham.Act.Cards.ACosmicJourney
@@ -364,6 +379,21 @@ library
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas
+      Arkham.Agenda.CardDefs.Base
+      Arkham.Agenda.CardDefs.Core2026
+      Arkham.Agenda.CardDefs.EdgeOfTheEarth
+      Arkham.Agenda.CardDefs.Import
+      Arkham.Agenda.CardDefs.NightOfTheZealot
+      Arkham.Agenda.CardDefs.ReturnTo
+      Arkham.Agenda.CardDefs.Standalone
+      Arkham.Agenda.CardDefs.TheCircleUndone
+      Arkham.Agenda.CardDefs.TheDreamEaters
+      Arkham.Agenda.CardDefs.TheDunwichLegacy
+      Arkham.Agenda.CardDefs.TheFeastOfHemlockVale
+      Arkham.Agenda.CardDefs.TheForgottenAge
+      Arkham.Agenda.CardDefs.TheInnsmouthConspiracy
+      Arkham.Agenda.CardDefs.ThePathToCarcosa
+      Arkham.Agenda.CardDefs.TheScarletKeys
       Arkham.Agenda.Cards
       Arkham.Agenda.Cards.ABetrayalOfEyes
       Arkham.Agenda.Cards.ACreatureOfTheBayou
@@ -1951,6 +1981,22 @@ library
       Arkham.EncounterCard.Source
       Arkham.EncounterSet
       Arkham.Enemy
+      Arkham.Enemy.CardDefs.Base
+      Arkham.Enemy.CardDefs.Core2026
+      Arkham.Enemy.CardDefs.EdgeOfTheEarth
+      Arkham.Enemy.CardDefs.Import
+      Arkham.Enemy.CardDefs.NightOfTheZealot
+      Arkham.Enemy.CardDefs.Promo
+      Arkham.Enemy.CardDefs.ReturnTo
+      Arkham.Enemy.CardDefs.Standalone
+      Arkham.Enemy.CardDefs.TheCircleUndone
+      Arkham.Enemy.CardDefs.TheDreamEaters
+      Arkham.Enemy.CardDefs.TheDunwichLegacy
+      Arkham.Enemy.CardDefs.TheFeastOfHemlockVale
+      Arkham.Enemy.CardDefs.TheForgottenAge
+      Arkham.Enemy.CardDefs.TheInnsmouthConspiracy
+      Arkham.Enemy.CardDefs.ThePathToCarcosa
+      Arkham.Enemy.CardDefs.TheScarletKeys
       Arkham.Enemy.Cards
       Arkham.Enemy.Cards.AbarranArrigorriagakoaAbarranUnleashed
       Arkham.Enemy.Cards.AbarranArrigorriagakoaTheManWithTheRubyRing
@@ -3102,7 +3148,6 @@ library
       Arkham.Helpers.EncounterCard
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
-      Arkham.Helpers.Event
       Arkham.Helpers.FetchCard
       Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
@@ -3144,6 +3189,10 @@ library
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
       Arkham.Helpers.Window
+      Arkham.Helpers.Window.Card
+      Arkham.Helpers.Window.Clue
+      Arkham.Helpers.Window.Damage
+      Arkham.Helpers.Window.Enemy
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.History.Types
@@ -3255,6 +3304,11 @@ library
       Arkham.Investigator.Investigators
       Arkham.Investigator.Projection
       Arkham.Investigator.Runner
+      Arkham.Investigator.Runner.Action
+      Arkham.Investigator.Runner.Card
+      Arkham.Investigator.Runner.Damage
+      Arkham.Investigator.Runner.Movement
+      Arkham.Investigator.Runner.Search
       Arkham.Investigator.Types
       Arkham.Json
       Arkham.Key
@@ -3265,6 +3319,21 @@ library
       Arkham.Location.Base
       Arkham.Location.Brazier
       Arkham.Location.BreachStatus
+      Arkham.Location.CardDefs.Base
+      Arkham.Location.CardDefs.Core2026
+      Arkham.Location.CardDefs.EdgeOfTheEarth
+      Arkham.Location.CardDefs.Import
+      Arkham.Location.CardDefs.NightOfTheZealot
+      Arkham.Location.CardDefs.ReturnTo
+      Arkham.Location.CardDefs.Standalone
+      Arkham.Location.CardDefs.TheCircleUndone
+      Arkham.Location.CardDefs.TheDreamEaters
+      Arkham.Location.CardDefs.TheDunwichLegacy
+      Arkham.Location.CardDefs.TheFeastOfHemlockVale
+      Arkham.Location.CardDefs.TheForgottenAge
+      Arkham.Location.CardDefs.TheInnsmouthConspiracy
+      Arkham.Location.CardDefs.ThePathToCarcosa
+      Arkham.Location.CardDefs.TheScarletKeys
       Arkham.Location.Cards
       Arkham.Location.Cards.AbandonedCamp
       Arkham.Location.Cards.AbandonedChapel
@@ -4363,13 +4432,19 @@ library
       Arkham.Message.Investigator
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Action
+      Arkham.Message.Lifted.Base
+      Arkham.Message.Lifted.Card
       Arkham.Message.Lifted.Choose
       Arkham.Message.Lifted.CreateEnemy
+      Arkham.Message.Lifted.Damage
       Arkham.Message.Lifted.Discover
+      Arkham.Message.Lifted.Location
       Arkham.Message.Lifted.Log
       Arkham.Message.Lifted.Move
       Arkham.Message.Lifted.Placement
+      Arkham.Message.Lifted.Prompt
       Arkham.Message.Lifted.Queue
+      Arkham.Message.Lifted.Scenario
       Arkham.Message.Lifted.SkillTest
       Arkham.Message.Lifted.Story
       Arkham.Message.Lifted.Upgrade
@@ -4626,6 +4701,23 @@ library
       Arkham.Search
       Arkham.SideStory
       Arkham.Skill
+      Arkham.Skill.CardDefs.Base
+      Arkham.Skill.CardDefs.Core2026
+      Arkham.Skill.CardDefs.EdgeOfTheEarth
+      Arkham.Skill.CardDefs.Import
+      Arkham.Skill.CardDefs.NightOfTheZealot
+      Arkham.Skill.CardDefs.Promo
+      Arkham.Skill.CardDefs.ReturnTo
+      Arkham.Skill.CardDefs.Standalone
+      Arkham.Skill.CardDefs.TheCircleUndone
+      Arkham.Skill.CardDefs.TheDreamEaters
+      Arkham.Skill.CardDefs.TheDrownedCity
+      Arkham.Skill.CardDefs.TheDunwichLegacy
+      Arkham.Skill.CardDefs.TheFeastOfHemlockVale
+      Arkham.Skill.CardDefs.TheForgottenAge
+      Arkham.Skill.CardDefs.TheInnsmouthConspiracy
+      Arkham.Skill.CardDefs.ThePathToCarcosa
+      Arkham.Skill.CardDefs.TheScarletKeys
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied
       Arkham.Skill.Cards.Accursed
@@ -4973,6 +5065,23 @@ library
       Arkham.Tracing
       Arkham.Trait
       Arkham.Treachery
+      Arkham.Treachery.CardDefs.Base
+      Arkham.Treachery.CardDefs.Core2026
+      Arkham.Treachery.CardDefs.EdgeOfTheEarth
+      Arkham.Treachery.CardDefs.Import
+      Arkham.Treachery.CardDefs.NightOfTheZealot
+      Arkham.Treachery.CardDefs.Promo
+      Arkham.Treachery.CardDefs.ReturnTo
+      Arkham.Treachery.CardDefs.Standalone
+      Arkham.Treachery.CardDefs.TheCircleUndone
+      Arkham.Treachery.CardDefs.TheDreamEaters
+      Arkham.Treachery.CardDefs.TheDrownedCity
+      Arkham.Treachery.CardDefs.TheDunwichLegacy
+      Arkham.Treachery.CardDefs.TheFeastOfHemlockVale
+      Arkham.Treachery.CardDefs.TheForgottenAge
+      Arkham.Treachery.CardDefs.TheInnsmouthConspiracy
+      Arkham.Treachery.CardDefs.ThePathToCarcosa
+      Arkham.Treachery.CardDefs.TheScarletKeys
       Arkham.Treachery.Cards
       Arkham.Treachery.Cards.ABalefulWelcome
       Arkham.Treachery.Cards.AbandonedAndAlone
@@ -5874,6 +5983,8 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Agenda.Cards.RestrictedAccessSpec
+      Arkham.Agenda.Cards.ShadowsDeepenSpec
       Arkham.Asset.Assets.Aquinnah1Spec
       Arkham.Asset.Assets.ArcaneInitiateSpec
       Arkham.Asset.Assets.ArcaneStudies2Spec
@@ -5993,6 +6104,7 @@ test-suite spec
       Arkham.Event.Events.OccultEvidenceSpec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
+      Arkham.Event.Events.RefineSpec
       Arkham.Event.Events.SearchForTheTruthSpec
       Arkham.Event.Events.SneakAttackSpec
       Arkham.Event.Events.SureGamble3Spec

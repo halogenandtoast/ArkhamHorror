@@ -26,9 +26,10 @@ instance RunMessage StirThePot where
       parley_ iid attrs eid #intellect $ sumFieldsOf eid [EnemyHealthDamage, EnemySanityDamage]
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy attrs
-      chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs 2
-      when (n >= 2) $ doStep 1 msg
+      withI18n $ cardNameVar attrs $ originalSkillTestOption (ikey' "name") do
+        enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy attrs
+        simultaneously $ for_ enemies (nonAttackEnemyDamage (Just iid) attrs 2)
+        when (n >= 2) $ doStep 1 msg
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       engaged <- select $ enemyEngagedWith iid

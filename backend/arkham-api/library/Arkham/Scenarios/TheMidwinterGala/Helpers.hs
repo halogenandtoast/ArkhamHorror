@@ -39,12 +39,6 @@ getGuestDeck = getScenarioDeck GuestDeck
 shuffleGuestDeck :: ReverseQueue m => m ()
 shuffleGuestDeck = shuffleDeck GuestDeck
 
-shuffleIntoGuestDeck
-  :: (IsCard (Element cards), ReverseQueue m, MonoFoldable cards)
-  => cards
-  -> m ()
-shuffleIntoGuestDeck cs = shuffleCardsIntoDeck GuestDeck $ map toCard $ toList cs
-
 handleSpellbound
   :: ( HasGame m
      , Tracing m

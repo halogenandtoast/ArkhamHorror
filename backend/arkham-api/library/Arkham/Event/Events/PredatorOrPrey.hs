@@ -19,12 +19,12 @@ predatorOrPrey = event PredatorOrPrey Cards.predatorOrPrey
 instance RunMessage PredatorOrPrey where
   runMessage msg e@(PredatorOrPrey attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ InPlayEnemy NonEliteEnemy
+      enemies <- select $ InPlayEnemy AnyEnemy
       if null enemies
         then drawCardsIfCan iid attrs 1
         else do
           unengagedEnemies <-
-            mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation (UnengagedEnemy <> not_ (at_ $ locationWithInvestigator iid))
+            mapMaybe (\(a, mb) -> (a,) <$> mb) <$> selectWithField EnemyLocation (UnengagedEnemy <> NonEliteEnemy <> not_ (at_ $ locationWithInvestigator iid))
           investigators <- select Anyone
           chooseOneM iid $ cardI18n $ scope "predatorOrPrey" do
             when (notNull unengagedEnemies) do

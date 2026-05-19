@@ -79,6 +79,7 @@ getSourceController = \case
   EventSource eid -> selectEventController eid
   SkillSource sid -> selectSkillController sid
   InvestigatorSource iid -> pure $ Just iid
+  ElderSignEffectSource iid -> pure $ Just iid
   _ -> pure Nothing
 
 sourceMatches :: (HasCallStack, HasGame m, Tracing m) => Source -> Matcher.SourceMatcher -> m Bool

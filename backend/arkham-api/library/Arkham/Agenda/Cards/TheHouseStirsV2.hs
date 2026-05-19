@@ -3,7 +3,6 @@ module Arkham.Agenda.Cards.TheHouseStirsV2 (theHouseStirsV2) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { useDebug } from '@/arkham/debug';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
 import { TokenType } from '@/arkham/types/Token';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -27,9 +27,7 @@ const emits = defineEmits<{ choose: [value: number] }>()
 const choose = (idx: number) => emits('choose', idx)
 
 const debug = useDebug()
-const image = computed(() => {
-  return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.avif`)
-})
+const image = computed(() => cardImage(props.treachery.cardCode))
 const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const isExhausted = computed(() => props.treachery.exhausted)

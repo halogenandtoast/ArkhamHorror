@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon, ArrowPathIcon, LockClosedIcon, LockOpenIcon, ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   watch,
@@ -27,7 +27,8 @@ import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
-import { useMenu } from '@/composeable/menu';
+import { cardImage as cardCodeImage } from '@/arkham/cardImages';
+import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
 import { keyToId } from '@/arkham/types/Key'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -52,6 +53,7 @@ import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -126,6 +128,249 @@ function decreaseZoom() {
   locationsZoom.value = parseFloat(Math.max(0.01, locationsZoom.value - zoomStep(locationsZoom.value)).toFixed(3))
 }
 
+const locationsUnlocked = ref(false)
+const draggingLocationId = ref<string | null>(null)
+// Optimistic offsets after a drop, kept until the server echoes them back.
+// Stored in canonical (rotationSteps=0) coordinates, same as the backend.
+const pendingOffsets = ref<Record<string, { x: number, y: number }>>({})
+
+// Plain (non-reactive) drag state. Mutated on every pointermove without
+// triggering Vue re-renders; the live drag visual is applied via direct DOM.
+type DragInternal = {
+  locationId: string
+  element: HTMLElement
+  pointerId: number
+  startX: number
+  startY: number
+  // Canonical base offset (matches what's stored on the backend).
+  baseCanonicalX: number
+  baseCanonicalY: number
+  // Pre-drag screen-space offset = displayOffset(base).
+  baseScreenX: number
+  baseScreenY: number
+  // Updated canonical offset after current drag delta (used by Vue fallback
+  // path if a mid-drag render happens).
+  canonicalFinalX: number
+  canonicalFinalY: number
+  // Capture rotation at start so mid-drag rotation changes don't desync.
+  rotationAtStart: number
+  moved: boolean
+}
+let dragInternal: DragInternal | null = null
+const DRAG_THRESHOLD_PX = 3
+
+// Measured location-cell dimensions (in unscaled CSS px). Updated after layout
+// changes so the rotation math can compensate for non-square cells: the grid
+// reshuffles via grid-template-areas (cells don't visually rotate), so a
+// "1 cell right" displacement before rotation isn't the same pixel distance as
+// "1 cell down" after rotation when cells aren't square.
+const cellDimensions = ref<{ w: number, h: number }>({ w: 1, h: 1 })
+
+function updateCellDimensions() {
+  nextTick(() => {
+    const cell = document.querySelector('.location-cell') as HTMLElement | null
+    if (!cell) return
+    const rect = cell.getBoundingClientRect()
+    const zoom = locationsZoom.value || 1
+    if (rect.width > 0 && rect.height > 0) {
+      cellDimensions.value = { w: rect.width / zoom, h: rect.height / zoom }
+    }
+  })
+}
+
+// Screen-space 90° CW rotation in pixels, with aspect-ratio correction so
+// "N cells worth of horizontal pixels" maps to "N cells worth of vertical
+// pixels" after rotation (and vice versa). For square cells this reduces to
+// the plain (-y, x) matrix; for rectangular cells it preserves the visual
+// relationship between cells across rotations. 180° always yields (-x, -y)
+// regardless of aspect ratio, which is why 180° looked right with the naive
+// matrix while 90°/270° looked off.
+function rotateOffset(off: { x: number, y: number }, steps: number): { x: number, y: number } {
+  const k = ((steps % 4) + 4) % 4
+  const { w, h } = cellDimensions.value
+  const ratio = w > 0 && h > 0 ? w / h : 1
+  let { x, y } = off
+  for (let i = 0; i < k; i++) {
+    const nx = -y * ratio
+    const ny = x / ratio
+    x = nx; y = ny
+  }
+  return { x, y }
+}
+
+const locationOffsets = computed<Record<string, { x: number, y: number }>>(() => {
+  // Iterate props.game.locations directly so this computed doesn't depend on
+  // the `locations` ref (which is declared later in this setup script and
+  // would otherwise TDZ when the watch below registers its source eagerly).
+  const offsets: Record<string, { x: number, y: number }> = {}
+  for (const loc of Object.values(props.game.locations)) {
+    for (const m of loc.modifiers ?? []) {
+      if (m.type.tag !== 'UIModifier') continue
+      const c = m.type.contents as any
+      if (c && typeof c === 'object' && c.tag === 'Positioned') {
+        offsets[loc.id] = { x: c.x, y: c.y }
+      }
+    }
+  }
+  return offsets
+})
+
+const hasAnyOffset = computed(() =>
+  Object.keys(locationOffsets.value).length > 0
+    || Object.keys(pendingOffsets.value).length > 0
+)
+
+// Padding to extend the scroll area so dragged locations near the edges
+// aren't clipped. Transforms don't expand the parent's layout box, so we
+// translate each location's screen-space offset into padding on the grid.
+const layoutPadding = computed(() => {
+  let left = 0, right = 0, top = 0, bottom = 0
+  const seen = new Set<string>()
+  const consider = (off: { x: number, y: number }) => {
+    const rot = rotateOffset(off, rotationSteps.value)
+    if (rot.x < 0) left = Math.max(left, -rot.x)
+    else if (rot.x > 0) right = Math.max(right, rot.x)
+    if (rot.y < 0) top = Math.max(top, -rot.y)
+    else if (rot.y > 0) bottom = Math.max(bottom, rot.y)
+  }
+  for (const id of Object.keys(pendingOffsets.value)) {
+    seen.add(id)
+    consider(pendingOffsets.value[id])
+  }
+  for (const id of Object.keys(locationOffsets.value)) {
+    if (seen.has(id)) continue
+    consider(locationOffsets.value[id])
+  }
+  return { left, right, top, bottom }
+})
+
+// Returns the CANONICAL offset for a location (server-side coordinate frame).
+function effectiveOffset(locationId: string): { x: number, y: number } {
+  if (dragInternal && dragInternal.locationId === locationId && dragInternal.moved) {
+    return { x: dragInternal.canonicalFinalX, y: dragInternal.canonicalFinalY }
+  }
+  return pendingOffsets.value[locationId] ?? locationOffsets.value[locationId] ?? { x: 0, y: 0 }
+}
+
+// Returns only the user-offset transform. Grid placement lives on the wrapper
+// `.location-cell` so Vue's TransitionGroup FLIP can animate the wrapper
+// without clobbering this transform during rotation reshuffles.
+function locationOffsetStyle(location: { id: string }) {
+  const canonical = effectiveOffset(location.id)
+  // Apply the user's current rotation so the offset moves with the rotated
+  // layout instead of staying in absolute screen space.
+  const off = rotateOffset(canonical, rotationSteps.value)
+  const style: Record<string, string> = {}
+  if (off.x !== 0 || off.y !== 0) {
+    style.transform = `translate(${off.x}px, ${off.y}px)`
+  }
+  return style
+}
+
+function onLocationPointerDown(event: PointerEvent, location: { id: string }) {
+  if (!locationsUnlocked.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  const element = event.currentTarget as HTMLElement | null
+  if (!element) return
+  const baseCanonical = effectiveOffset(location.id)
+  const baseScreen = rotateOffset(baseCanonical, rotationSteps.value)
+  dragInternal = {
+    locationId: location.id,
+    element,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    baseCanonicalX: baseCanonical.x,
+    baseCanonicalY: baseCanonical.y,
+    baseScreenX: baseScreen.x,
+    baseScreenY: baseScreen.y,
+    canonicalFinalX: baseCanonical.x,
+    canonicalFinalY: baseCanonical.y,
+    rotationAtStart: rotationSteps.value,
+    moved: false,
+  }
+  window.addEventListener('pointermove', onWindowPointerMove)
+  window.addEventListener('pointerup', onWindowPointerUp)
+  window.addEventListener('pointercancel', onWindowPointerUp)
+}
+
+function onWindowPointerMove(event: PointerEvent) {
+  if (!dragInternal || dragInternal.pointerId !== event.pointerId) return
+  const zoom = locationsZoom.value || 1
+  const screenDx = (event.clientX - dragInternal.startX) / zoom
+  const screenDy = (event.clientY - dragInternal.startY) / zoom
+  if (!dragInternal.moved
+    && Math.hypot(event.clientX - dragInternal.startX, event.clientY - dragInternal.startY) > DRAG_THRESHOLD_PX) {
+    dragInternal.moved = true
+    draggingLocationId.value = dragInternal.locationId
+  }
+  if (dragInternal.moved) {
+    // Live visual: screen-space delta on top of pre-drag screen position.
+    const screenX = dragInternal.baseScreenX + screenDx
+    const screenY = dragInternal.baseScreenY + screenDy
+    dragInternal.element.style.transform = `translate(${screenX}px, ${screenY}px)`
+    // Mirror it in canonical coords (inverse rotation) for commit + fallback.
+    const canonicalDelta = rotateOffset({ x: screenDx, y: screenDy }, -dragInternal.rotationAtStart)
+    dragInternal.canonicalFinalX = dragInternal.baseCanonicalX + canonicalDelta.x
+    dragInternal.canonicalFinalY = dragInternal.baseCanonicalY + canonicalDelta.y
+  }
+}
+
+function onWindowPointerUp(event: PointerEvent) {
+  if (!dragInternal || dragInternal.pointerId !== event.pointerId) return
+  const drag = dragInternal
+  dragInternal = null
+  window.removeEventListener('pointermove', onWindowPointerMove)
+  window.removeEventListener('pointerup', onWindowPointerUp)
+  window.removeEventListener('pointercancel', onWindowPointerUp)
+  draggingLocationId.value = null
+  if (!drag.moved) return
+  // Stash the drop position before the next render so the inline style stays
+  // at the drop point until the server echoes the new modifier back.
+  pendingOffsets.value = {
+    ...pendingOffsets.value,
+    [drag.locationId]: { x: drag.canonicalFinalX, y: drag.canonicalFinalY },
+  }
+  void setLocationOffset(props.game.id, drag.locationId, drag.canonicalFinalX, drag.canonicalFinalY)
+}
+
+// Drop a pending entry once the server's modifier confirms it.
+watch(locationOffsets, (newServer) => {
+  if (Object.keys(pendingOffsets.value).length === 0) return
+  const next = { ...pendingOffsets.value }
+  let changed = false
+  for (const id of Object.keys(next)) {
+    const server = newServer[id]
+    if (server && Math.abs(server.x - next[id].x) < 0.5 && Math.abs(server.y - next[id].y) < 0.5) {
+      delete next[id]
+      changed = true
+    }
+  }
+  if (changed) pendingOffsets.value = next
+}, { deep: true })
+
+function cancelActiveDrag() {
+  if (!dragInternal) return
+  window.removeEventListener('pointermove', onWindowPointerMove)
+  window.removeEventListener('pointerup', onWindowPointerUp)
+  window.removeEventListener('pointercancel', onWindowPointerUp)
+  dragInternal.element.style.transform = ''
+  dragInternal = null
+  draggingLocationId.value = null
+}
+
+function toggleLocationsUnlocked() {
+  locationsUnlocked.value = !locationsUnlocked.value
+  if (!locationsUnlocked.value) cancelActiveDrag()
+}
+
+function resetLocationsLayout() {
+  if (!hasAnyOffset.value) return
+  pendingOffsets.value = {}
+  void resetLocationOffsets(props.game.id)
+}
+
 let holdTimer: ReturnType<typeof setTimeout> | null = null
 let holdInterval: ReturnType<typeof setInterval> | null = null
 
@@ -147,6 +392,7 @@ const { isMobile } = IsMobile();
 onMounted(() => {
   setGameId(props.game.id)
   updateScrollMargins()
+  updateCellDimensions()
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -212,6 +458,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   legObserver?.disconnect()
   legObserver = null
+  cancelActiveDrag()
 })
 
 onUpdated(() => {
@@ -272,15 +519,12 @@ addEntry({
 // Computed
 const scenarioGuide = computed(() => {
   const { reference, difficulty } = props.scenario
-  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-    ? 'b'
-    : ''
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.avif`)
+  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert' ? 'b' : ''
+  return cardCodeImage(reference, difficultySuffix)
 })
 
 const additionalReferences = computed(() => {
-  const { additionalReferences } = props.scenario
-  return additionalReferences.map((s) => imgsrc(`cards/${s.replace('c', '')}.avif`))
+  return props.scenario.additionalReferences.map((s) => cardCodeImage(s))
 })
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
@@ -394,13 +638,20 @@ const gridAreas = computed(()=>{
 // transform: scale() is used rather than CSS zoom because it is handled consistently
 // by getBoundingClientRect() in all browsers. The scroll area doesn't follow transform
 // automatically, so we set margins after each render to compensate.
-const locationStyles = computed(() => ({
-  display: 'grid',
-  gap: '20px',
-  'grid-template-areas': gridAreas.value ?? '',
-  transform: `scale(${locationsZoom.value})`,
-  transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
-}))
+const locationStyles = computed(() => {
+  const pad = layoutPadding.value
+  return {
+    display: 'grid',
+    gap: '20px',
+    'grid-template-areas': gridAreas.value ?? '',
+    transform: `scale(${locationsZoom.value})`,
+    transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
+    paddingLeft: `${pad.left}px`,
+    paddingRight: `${pad.right}px`,
+    paddingTop: `${pad.top}px`,
+    paddingBottom: `${pad.bottom}px`,
+  }
+})
 
 async function updateScrollMargins() {
   await nextTick()
@@ -526,15 +777,13 @@ const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnde
 const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
-  const { cardCode } = props.scenario.discard[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(props.scenario.discard[0].cardCode)
 })
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 const topOfSpectralDiscard = computed(() => {
   if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
-  const { cardCode } = spectralDiscard.value[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
+  return cardCodeImage(spectralDiscard.value[0].cardCode)
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
@@ -559,6 +808,8 @@ const spentKeys = computed(() => props.scenario.keys)
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.placement === null && a.label !== "cosmos"))
 watch(locations, updateScrollMargins, { flush: 'post' })
+watch(layoutPadding, updateScrollMargins, { flush: 'post' })
+watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
@@ -1133,6 +1384,8 @@ async function addChaosToken(face: any){
               :agenda="agenda"
               :cardsUnder="cardsUnderAgenda"
               :cardsNextTo="cardsNextToAgenda"
+              :remainingStack="scenario.agendaStack[agenda.deckId] || []"
+              :completedStack="scenario.completedAgendaStack[agenda.deckId] || []"
               :game="game"
               :playerId="playerId"
               :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
@@ -1160,6 +1413,8 @@ async function addChaosToken(face: any){
             :act="act"
             :cardsUnder="cardsUnderAct"
             :cardsNextTo="cardsNextToAct"
+            :remainingStack="scenario.actStack[act.deckId] || []"
+            :completedStack="scenario.completedActStack[act.deckId] || []"
             :game="game"
             :playerId="playerId"
             :style="{ 'grid-area': `act${act.deckId}`, 'justify-self': 'center' }"
@@ -1290,17 +1545,24 @@ async function addChaosToken(face: any){
         <Connections :game="game" :playerId="playerId" />
         <div class="location-cards-scroller" ref="scrollerRef">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
-          <Location
+          <div
             v-for="location in locations"
-            class="location"
             :key="location.label"
-            :game="game"
-            :playerId="playerId"
-            :location="location"
+            class="location-cell"
             :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-            @choose="choose"
-            @show="doShowCards"
-          />
+          >
+            <Location
+              class="location"
+              :class="{ 'location--unlocked': locationsUnlocked, 'location--dragging': draggingLocationId === location.id }"
+              :game="game"
+              :playerId="playerId"
+              :location="location"
+              :style="locationOffsetStyle(location)"
+              @pointerdown.capture="onLocationPointerDown($event, location)"
+              @choose="choose"
+              @show="doShowCards"
+            />
+          </div>
           <EnemyView
             v-for="enemy in enemiesAsLocations"
             :key="enemy.id"
@@ -1362,6 +1624,23 @@ async function addChaosToken(face: any){
             <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
             <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
             <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
+            <button
+              class="zoom-btn"
+              :class="{ 'zoom-btn--active': locationsUnlocked }"
+              @click.stop="toggleLocationsUnlocked"
+              v-tooltip="locationsUnlocked ? 'Lock locations' : 'Unlock locations to drag'"
+            >
+              <LockOpenIcon v-if="locationsUnlocked" class="zoom-btn__icon" />
+              <LockClosedIcon v-else class="zoom-btn__icon" />
+            </button>
+            <button
+              v-if="hasAnyOffset"
+              class="zoom-btn"
+              @click.stop="resetLocationsLayout"
+              v-tooltip="'Reset location positions'"
+            >
+              <ArrowUturnLeftIcon class="zoom-btn__icon" />
+            </button>
           </div>
         </PlayerTabs>
         <div id="totals">
@@ -1464,7 +1743,7 @@ async function addChaosToken(face: any){
   @media (max-width: 800px) and (orientation: portrait) {
     padding-top: 10px;
     padding-bottom: 0;
-    height: calc(var(--card-height) + 10px);
+    min-height: calc(var(--card-height) + 10px);
   }
 }
 
@@ -2057,6 +2336,44 @@ async function addChaosToken(face: any){
     background: var(--button-1-highlight);
     color: white;
   }
+}
+
+.zoom-btn--active {
+  background: var(--button-1-highlight);
+  color: white;
+}
+
+.zoom-btn__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.location-cell {
+  /* Grid placement + TransitionGroup FLIP target. The inner .location carries
+     the user's drag offset transform, so rotation reshuffles (which FLIP-
+     animate the wrapper) don't wipe that offset. */
+  display: block;
+}
+
+.location-cell > .location {
+  /* Animate the offset along with the wrapper's FLIP move during rotation so
+     the offset doesn't snap to its rotated value before the wrapper slides
+     into place. Same easing/duration as .map-move keeps them in sync. */
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.location--unlocked {
+  cursor: grab;
+  outline: 1px dashed var(--spooky-green);
+  outline-offset: 4px;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+.location--dragging {
+  cursor: grabbing;
+  z-index: 50;
+  transition: none !important;
 }
 
 .zoom-slider {

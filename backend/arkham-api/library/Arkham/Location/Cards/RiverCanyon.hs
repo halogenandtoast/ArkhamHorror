@@ -29,10 +29,11 @@ instance HasAbilities RiverCanyon where
 instance RunMessage RiverCanyon where
   runMessage msg l@(RiverCanyon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = UseAbilitySource iid (toSource attrs) 1
       hasCanteen <- getHasSupply iid Canteen
       investigators <-
-        select $ HealableInvestigator (attrs.ability 1) #damage (affectsOthers $ investigatorAt attrs)
+        select $ HealableInvestigator source #damage (affectsOthers $ investigatorAt attrs)
       chooseOrRunOneM iid do
-        targets investigators \iid' -> healDamage iid' (attrs.ability 1) (if hasCanteen then 3 else 1)
+        targets investigators \iid' -> healDamage iid' source (if hasCanteen then 3 else 1)
       pure l
     _ -> RiverCanyon <$> liftRunMessage msg attrs

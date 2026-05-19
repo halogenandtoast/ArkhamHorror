@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
-import { imgsrc } from '@/arkham/helpers'
+import { cardImage } from '@/arkham/cardImages'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/ScarletKey'
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -24,8 +24,7 @@ const emit = defineEmits<{
 
 const image = computed(() => {
   const { id, stability } = props.scarletKey
-  const suffix = stability == 'Unstable' ? 'b' : ''
-  return imgsrc(`cards/${id.replace('c', '')}${suffix}.avif`);
+  return cardImage(id, stability === 'Unstable' ? 'b' : '')
 })
 
 const id = computed(() => props.scarletKey.id)

@@ -117,16 +117,8 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toTabooList _ = Nothing
   toMutated :: a -> Maybe Text
   toMutated _ = Nothing
-
-toCards :: (IsCard a, Functor f) => f a -> f Card
-toCards = fmap toCard
-
 sameCard :: (IsCard a, IsCard b) => a -> b -> Bool
 sameCard a b = toCardId a == toCardId b
-
-cardIds :: IsCard a => [a] -> [CardId]
-cardIds = map toCardId
-
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
@@ -200,12 +192,6 @@ genFlippedCard a = flipCard <$> genCard a
 
 genCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t Card)
 genCards = traverse genCard
-
-genSetAsideCards :: (HasCardDef a, CardGen m) => [a] -> m [Card]
-genSetAsideCards cards = traverse genCard $ concatMap splay cards
- where
-  splay card = replicate (fromMaybe 0 $ cdEncounterSetQuantity $ toCardDef card) card
-
 genPlayerCards :: (HasCardDef a, CardGen m, Traversable t) => t a -> m (t PlayerCard)
 genPlayerCards = traverse genPlayerCard
 

@@ -753,10 +753,7 @@
       "doNotSpendAnySecretsToPlayAnyCards": "不花费秘密"
     },
     "oldCompass": {
-      "exhaustOldCompass": "横置旧指南针"
-    },
-    "oldCompass2": {
-      "exhaustOldCompass": "横置旧指南针"
+      "exhaustToRepeat": "横置旧指南针，重复此次检定"
     },
     "onTheTrail": {
       "moveTowards": "朝着该敌人移动2次",
@@ -951,11 +948,11 @@
       "skip": "不采取任何行动 (结束此卡牌)"
     },
     "secondSight": {
-      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
     },
     "secondSight5": {
       "doNotSpendCharge": "不花费充能",
-      "spend1ChargeToDiscover1AdditionalClue": "花费1充能以发现你所在地点额外1个线索"
+      "spendChargeForClue": "花费1充能以发现你所在地点额外1个线索"
     },
     "sefinaRousseau": {
       "doneChoosingEvents": "结束选择事件"
@@ -1165,7 +1162,8 @@
       "deal1DamageFor": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
     },
     "twentyOneOrBust": {
-      "stop": "以{total}停下"
+      "stopWith": "以{total}停下",
+      "continue": "继续"
     },
     "underworldMarket2": {
       "placeTheRestOnTheBottomInAnyOrder": "将其余卡牌以任意顺序放回市场牌库底",
@@ -1563,10 +1561,6 @@
     },
     "trustyBullwhipAdvanced": {
       "dealDamageAndEvade": "自动躲避受到攻击的敌人并使本次攻击+1伤害"
-    },
-    "twentyOneOrBust": {
-      "stopWith": "以{total}停下",
-      "continue": "继续"
     },
     "untimelyTransaction1": {
       "noOnePays": "没有人打出",

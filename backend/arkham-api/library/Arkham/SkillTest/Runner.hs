@@ -57,6 +57,19 @@ autoFailSkillTestResultsData s = do
   let x = getSum $ mconcat [Sum n | SkillTestResultValueModifier n <- mods]
   pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty (guard (x /= 0) $> x) False
 
+computeCommitCosts :: HasGame m => InvestigatorId -> [Card] -> m [Cost]
+computeCommitCosts iid cards = do
+  modifiers' <- getModifiers iid
+  cardsAdditionalCosts <-
+    cards & concatMapM \c -> do
+      cardModifiers <- getModifiers c
+      let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
+      pure $ cardModifiers & mapMaybe \case
+        AdditionalCostToCommit iid' cst | iid' == iid && not noAdditionalCosts -> Just cst
+        _ -> Nothing
+  let playerCommitCosts = [c | CommitCost c <- modifiers']
+  pure (cardsAdditionalCosts <> playerCommitCosts)
+
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     RepeatSkillTest sid skillTestId' | skillTestId' == skillTestId -> do
@@ -484,21 +497,59 @@ instance RunMessage SkillTest where
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
       pure $ s & stepL .~ SkillTestFastWindow2
     CheckAllAdditionalCommitCosts -> do
-      pushAll $ Map.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
+      let perInvestigator = Map.toList skillTestCommittedCards
+      payable <- flip filterM perInvestigator $ \(iid, cards) -> do
+        additionalCosts <- computeCommitCosts iid cards
+        if null additionalCosts
+          then pure True
+          else getCanAffordCost iid (toSource s) [] [mkWhen Window.NonFast] (mconcat additionalCosts)
+      case payable of
+        [] -> pure ()
+        _ -> do
+          afterMsgs <- for payable \(iid, cards) ->
+            checkWindows [mkAfter $ Window.CommittedCards iid cards]
+          whenMsgs <- for payable \(iid, cards) ->
+            checkWindows [mkWhen $ Window.CommittedCards iid cards]
+          pushAll $ whenMsgs <> afterMsgs
+          let allCommits = [(i, c) | (i, cs) <- payable, c <- cs]
+          let (triggerCommits, noTriggerCommits) =
+                partition (cdCommitTrigger . toCardDef . snd) allCommits
+          -- Plain icon-only commits do nothing on `Do (CommitCard)`; run them
+          -- silently so the player isn't prompted with a meaningless choice.
+          unless (null noTriggerCommits)
+            $ pushAll [CommitCard i c | (i, c) <- noTriggerCommits]
+          -- Trigger cards may have effects whose ordering matters (e.g. Promise
+          -- of Power adds a curse that Unrelenting should be able to seal).
+          -- chooseOrRunOneAtATimeWithLabel auto-runs a single choice without
+          -- prompting; with 2+ it shows the label so the player understands
+          -- they're picking the order of on-commit effects.
+          case triggerCommits of
+            [] -> pure ()
+            _ -> do
+              player <- getPlayer skillTestInvestigator
+              push
+                $ Msg.chooseOrRunOneAtATimeWithLabel
+                  "$label.chooseCommitOrder"
+                  player
+                  [targetLabel (toCardId c) [CommitCard i c] | (i, c) <- triggerCommits]
+          pushAll [PayCommitCosts i cs | (i, cs) <- payable]
+      pure s
+    PayCommitCosts iid cards -> do
+      additionalCosts <- computeCommitCosts iid cards
+      unless (null additionalCosts) do
+        iid' <- getActiveInvestigatorId
+        pushAll
+          $ [SetActiveInvestigator iid | iid /= iid']
+          <> [ PayForAbility
+                 (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) [] $ mconcat additionalCosts)
+                 []
+             ]
+          <> [SetActiveInvestigator iid' | iid /= iid']
       pure s
     CheckAdditionalCommitCosts iid cards -> do
-      modifiers' <- getModifiers iid
+      -- Single-card path for post-test commits (e.g. CanCommitAfterRevealingTokens); pays and commits together since there's no batch to interleave.
+      additionalCosts <- computeCommitCosts iid cards
       let msgs = map (CommitCard iid) cards
-      cardsAdditionalCosts <-
-        cards & concatMapM \c -> do
-          cardModifiers <- getModifiers c
-          let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
-          pure $ cardModifiers & mapMaybe \case
-            AdditionalCostToCommit iid' cst | iid' == iid && not noAdditionalCosts -> Just cst
-            _ -> Nothing
-
-      let playerCommitCosts = [c | CommitCost c <- modifiers']
-      let additionalCosts = cardsAdditionalCosts <> playerCommitCosts
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts

@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, watch, ref } from 'vue';
-import useHighlighter from '@/composeable/useHighlighter';
+import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -64,17 +65,13 @@ const cardCode = computed(() => props.asset.cardCode)
 const isTheBeyond = computed(() => cardCode.value === 'c90052')
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
 const image = computed(() => {
-  const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped) {
-    if (cardCode.value === "c90052") {
-      return imgsrc(`cards/90052b.avif`)
-    }
-    if (cardCode.value === "c88043") {
-      return imgsrc(`cards/88043b.avif`)
-    }
+    if (cardCode.value === "c90052") return cardImage(cardCode.value, 'b')
+    if (cardCode.value === "c88043") return cardImage(cardCode.value, 'b')
     return imgsrc(`player_back.jpg`)
   }
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
+  const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
+  return cardImage(cardCode.value, mutated)
 })
 
 const dataImage = computed(() => {

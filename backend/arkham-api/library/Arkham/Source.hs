@@ -21,7 +21,6 @@ import Arkham.Matcher.Types (
 import Arkham.Prelude
 import Arkham.Tarot
 import Arkham.Trait hiding (ElderThing)
-import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import Data.UUID (nil)
 import GHC.OverloadedLabels
@@ -78,12 +77,6 @@ data Source
   | ScarletKeySource ScarletKeyId
   | ConcealedCardSource ConcealedCardId
   deriving stock (Show, Eq, Ord, Data, Generic)
-
-_AssetSource :: Prism' Source AssetId
-_AssetSource = prism' AssetSource $ \case
-  AssetSource aid -> Just aid
-  _ -> Nothing
-
 instance HasField "asset" Source (Maybe AssetId) where
   getField = \case
     AssetSource aid -> Just aid
@@ -170,10 +163,6 @@ isProxySource _ _ = False
 isIndexedSource :: Sourceable a => a -> Source -> Bool
 isIndexedSource a (IndexedSource _ source) = isSource a source
 isIndexedSource _ _ = False
-
-toProxySource :: Sourceable a => a -> Source -> Source
-toProxySource a source = ProxySource source (toSource a)
-
 proxy :: (Sourceable a, Sourceable b) => a -> b -> Source
 proxy a b = ProxySource (toSource a) (toSource b)
 

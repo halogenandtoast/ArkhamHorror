@@ -149,11 +149,6 @@ messageType (Do msg) = messageType msg
 messageType (When msg) = messageType msg
 messageType (After msg) = messageType msg
 messageType _ = Nothing
-
-isBlanked :: Message -> Bool
-isBlanked Blanked {} = True
-isBlanked _ = False
-
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
@@ -458,6 +453,8 @@ data Message
   | ClearAbilityUse AbilityRef
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
+  | SetLocationOffset LocationId Double Double
+  | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool
   | SetGameRunWindows Bool
   | SetGameState GameState
@@ -786,6 +783,7 @@ data Message
     CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | CheckAllAdditionalCommitCosts
   | CheckAdditionalCommitCosts InvestigatorId [Card]
+  | PayCommitCosts InvestigatorId [Card]
   | -- Maybe Target is handler for success
     Investigate Investigate
   | UpdateEventMeta EventId Value

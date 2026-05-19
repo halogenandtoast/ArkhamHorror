@@ -53,10 +53,6 @@ import Data.Typeable
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
-
-emptyLocationMap :: Map LocationId [LocationId]
-emptyLocationMap = mempty
-
 isActionTarget :: Targetable a => a -> Target -> Bool
 isActionTarget a = isTarget a . toProxyTarget
 

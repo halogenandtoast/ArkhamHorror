@@ -57,6 +57,10 @@ export type Scenario = {
   cardsNextToActDeck: Card[];
   foundCards: Record<string, Card[]>;
   cardsNextToAgendaDeck: Card[];
+  actStack: Record<string, Card[]>;
+  agendaStack: Record<string, Card[]>;
+  completedActStack: Record<string, Card[]>;
+  completedAgendaStack: Record<string, Card[]>;
   setAsideCards: Card[];
   setAsideKeys: ArkhamKey[];
   keys: ArkhamKey[];
@@ -117,6 +121,22 @@ const rememberedDecoder = JsonDecoder.oneOf([
 
 
 
+// IntMap [Card] from Aeson is serialized as [[key, value], ...]
+function intMapOfCardsDecoder(name: string) {
+  return JsonDecoder.array<[number, Card[]]>(
+    JsonDecoder.tuple(
+      [JsonDecoder.number(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')],
+      '[number, Card[]]'
+    ),
+    `${name} entries`
+  ).map<Record<string, Card[]>>(entries =>
+    entries.reduce<Record<string, Card[]>>((acc, [k, v]) => {
+      acc[k] = v
+      return acc
+    }, {})
+  )
+}
+
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string(),
@@ -157,6 +177,10 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
     }),
   cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
   cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
+  actStack: intMapOfCardsDecoder('ActStack'),
+  agendaStack: intMapOfCardsDecoder('AgendaStack'),
+  completedActStack: intMapOfCardsDecoder('CompletedActStack'),
+  completedAgendaStack: intMapOfCardsDecoder('CompletedAgendaStack'),
   setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),

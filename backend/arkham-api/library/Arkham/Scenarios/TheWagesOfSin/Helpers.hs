@@ -24,16 +24,12 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Tracing
 import Arkham.Trait (Trait (Spectral))
-import Control.Lens (non, _1, _2)
+import Control.Lens (non, _1)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
-
-getSpectralDiscards :: (HasGame m, Tracing m) => m [EncounterCard]
-getSpectralDiscards =
-  scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
 getSpectralDeck :: (HasGame m, Tracing m) => m (Deck EncounterCard)
 getSpectralDeck =

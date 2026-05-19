@@ -29,7 +29,7 @@ instance HasModifiersFor TheThirdOath where
     pure $ enemies <> investigators
 
 instance HasAbilities TheThirdOath where
-  getAbilities (TheThirdOath x) =
+  getAbilities (TheThirdOath x) | onSide A x =
     extend
       x
       [ restricted x 1 (exists $ TreacheryWithTrait Obstacle <> TreacheryAt YourLocation)
@@ -40,6 +40,7 @@ instance HasAbilities TheThirdOath where
           $ Objective
           $ forced AnyWindow
       ]
+  getAbilities _ = []
 
 instance RunMessage TheThirdOath where
   runMessage msg a@(TheThirdOath attrs) = runQueueT $ case msg of

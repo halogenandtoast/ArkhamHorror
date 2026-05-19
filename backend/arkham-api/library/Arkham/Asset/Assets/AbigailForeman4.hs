@@ -40,7 +40,12 @@ instance HasAbilities AbigailForeman4 where
 instance RunMessage AbigailForeman4 where
   runMessage msg a@(AbigailForeman4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      as <- select $ assetControlledBy iid <> #tome <> assetInPlayAreaOf iid
+      as <-
+        select
+          $ assetControlledBy iid
+          <> #tome
+          <> assetInPlayAreaOf iid
+          <> not_ (AssetAttachedToAsset (be attrs))
       mAttachedAsset <- selectOne $ AssetAttachedToAsset (be attrs)
       chooseOrRunOneM iid do
         targets as \x -> do

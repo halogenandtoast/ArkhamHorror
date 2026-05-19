@@ -501,11 +501,6 @@ const classObject = computed(() => {
 
 .engage-button {
   background-color: #555;
-  &:before {
-    font-family: "Arkham";
-    content: "\0048";
-    margin-right: 5px;
-  }
 }
 
 .ability-button {

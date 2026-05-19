@@ -44,3 +44,9 @@ extendTakenActions as = do
   insteadOfMatchingWith isCheckWindows \case
     CheckWindows ws -> pure [CheckWindows $ replaceWindow ws]
     _ -> error "no match"
+
+narrowTakenActions :: (MonadTrans t, HasQueue Message m) => [Action] -> t m ()
+narrowTakenActions remove = do
+  insteadOfMatchingWith isTakenActions \case
+    TakenActions iid' as' -> pure [TakenActions iid' (filter (`notElem` remove) as')]
+    _ -> error "no match"

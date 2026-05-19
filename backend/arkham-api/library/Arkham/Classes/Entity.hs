@@ -23,10 +23,6 @@ attr f = f . toAttrs
 
 updateAttrs :: Entity a => a -> (EntityAttrs a -> EntityAttrs a) -> a
 updateAttrs a f = overAttrs f a
-
-patchEntity :: Entity a => a -> EntityAttrs a -> a
-patchEntity a attrs = overAttrs (const attrs) a
-
 overAttrsM :: (Monad m, Entity a) => (EntityAttrs a -> m (EntityAttrs a)) -> a -> m a
 overAttrsM f a = do
   attrs <- f $ toAttrs a

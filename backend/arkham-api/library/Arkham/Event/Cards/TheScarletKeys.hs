@@ -571,6 +571,7 @@ refine =
     , cdCardTraits = setFromList [Supply, Double]
     , cdCriteria = Just $ exists $ OwnedBy You <> basic CardWithAvailableCustomization
     , cdAdditionalCost = Just (ActionCost 1)
+    , cdLimits = [MaxPerGamePerInvestigator 1]
     }
 
 quantumParadox :: CardDef

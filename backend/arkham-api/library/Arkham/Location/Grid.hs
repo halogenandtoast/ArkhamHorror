@@ -202,17 +202,6 @@ gridToTemplate c =
       yRange = reverse [-belowBy .. aboveBy]
    in [GridTemplateRow $ T.unwords [gridLabel (Pos x y) | x <- xRange] | y <- yRange]
 
-gridRowToTemplate :: GridRow -> GridTemplateRow
-gridRowToTemplate (GridRow left center right) =
-  GridTemplateRow
-    . T.unwords
-    $ toList (fmap (maybe "." gridCellToTemplate) left)
-    <> [maybe "." gridCellToTemplate center]
-    <> toList (fmap (maybe "." gridCellToTemplate) right)
-
-gridCellToTemplate :: GridLocation -> Text
-gridCellToTemplate (GridLocation pos _) = gridLabel pos
-
 clearGrid :: Pos -> Grid -> Grid
 clearGrid (Pos x y) (Grid above center below) =
   case compare y 0 of
@@ -272,10 +261,12 @@ findInGrid b c =
         _ -> False
 
 flattenGrid :: Grid -> [GridLocation]
-flattenGrid (Grid above center below) =
-  concat (toList (fmap flattenGridRow above))
-    <> flattenGridRow center
-    <> concat (toList (fmap flattenGridRow below))
+flattenGrid c =
+  let leftBy = gridLeftAmount c
+      rightBy = gridRightAmount c
+      aboveBy = gridAboveAmount c
+      belowBy = gridBelowAmount c
+      xRange = [-leftBy .. rightBy]
+      yRange = [-belowBy .. aboveBy]
+   in [loc | x <- xRange, y <- yRange, Just loc <- [viewGrid (Pos x y) c]]
 
-flattenGridRow :: GridRow -> [GridLocation]
-flattenGridRow (GridRow left center right) = catMaybes $ toList left <> [center] <> toList right

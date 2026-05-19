@@ -148,10 +148,6 @@ getsSkillTest f = fmap f . gameSkillTest <$> getGame
 
 getSkillTestId :: HasGame m => m (Maybe SkillTestId)
 getSkillTestId = fmap skillTestId . gameSkillTest <$> getGame
-
-getIsSkillTest :: HasGame m => m Bool
-getIsSkillTest = isJust <$> getSkillTest
-
 getActiveCosts :: HasGame m => m [ActiveCost]
 getActiveCosts = toList . gameActiveCost <$> getGame
 

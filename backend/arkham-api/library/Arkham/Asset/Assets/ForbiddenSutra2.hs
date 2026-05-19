@@ -38,10 +38,18 @@ instance RunMessage ForbiddenSutra2 where
         Nothing -> withSkillTest \sid ->
           skillTestModifier sid (attrs.ability 1) sid (ChangeRevealStrategy $ RevealAndChoose (1 + n) 1)
         Just drawSource -> do
-          steps <- maybe [] getSteps <$> getChaosBagChoice
+          -- Compose with any prior reactor on this WouldRevealChaosTokens
+          -- window by also preserving its nested choice as chooseAndThen.
+          mchoice <- getChaosBagChoice
+          let steps = maybe [] getSteps mchoice
+          let nested = mchoice >>= \case
+                Resolved {} -> Nothing
+                Decided s -> guard (s /= Draw) $> s
+                Undecided s -> guard (s /= Draw) $> s
+                Deciding s -> guard (s /= Draw) $> s
           push
             $ ReplaceCurrentDraw drawSource iid
-            $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] Nothing
+            $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] nested
           cancelledOrIgnoredCardOrGameEffect attrs
       pure a
     _ -> ForbiddenSutra2 <$> liftRunMessage msg attrs

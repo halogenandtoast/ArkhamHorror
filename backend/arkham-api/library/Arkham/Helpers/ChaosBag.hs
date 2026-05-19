@@ -56,10 +56,19 @@ getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice
 getChaosBag :: (HasGame m, Tracing m) => m ChaosBag
 getChaosBag = scenarioField ScenarioChaosBag
 
+-- | Extract the chain of step-states wrapped in a chaos-bag choice.
+--
+-- A 'Decided' state means the choice's composition has been committed but its
+-- draws have not yet been resolved into tokens — at that point the inner
+-- steps are still meaningful to a second reactor (e.g. Jacqueline Fine
+-- composing with an already-resolved Eyes of the Dreamer setup). We
+-- therefore extract from both 'Deciding' and 'Decided'. 'Resolved' is
+-- intentionally empty: by then tokens have been physically drawn and a
+-- second reactor cannot retroactively add to the pool.
 getSteps :: ChaosBagStepState -> [ChaosBagStepState]
 getSteps = \case
   Resolved {} -> []
-  Decided {} -> []
+  Decided s -> go s
   Undecided s -> go s
   Deciding s -> go s
  where

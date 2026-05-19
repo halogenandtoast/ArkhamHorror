@@ -14,6 +14,7 @@ cabal-dev/
 .hie/
 .stack-work/
 .stack-work-devel/
+stack-work-local
 yesod-devel/
 .cabal-sandbox
 cabal.sandbox.config

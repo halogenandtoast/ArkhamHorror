@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
+import { cardArt } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 
@@ -89,8 +90,7 @@ export default defineComponent({
           const location = this.game.locations[locationId]
 
           if (location) {
-            const suffix = location.revealed ? '' : 'b'
-            const actualCardCode = `${location.cardCode.replace('c', '')}${suffix}`
+            const actualCardCode = cardArt(location.cardCode, location.revealed ? '' : 'b')
             return name ? h('span', { 'data-image-id': actualCardCode }, name.replace(/\\"/g, "\"")) : split
           }
 

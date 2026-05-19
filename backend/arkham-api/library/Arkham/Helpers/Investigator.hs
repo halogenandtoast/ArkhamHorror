@@ -585,12 +585,6 @@ eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated 
 check
   :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
-
-checkAll
-  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m)
-  => a -> [InvestigatorMatcher] -> m Bool
-checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
-
 searchBonded
   :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
@@ -678,38 +672,12 @@ healAdditional (toSource -> source) dType ws' additional = do
     HorrorType -> push $ HealHorrorDirectly healedTarget source 1
     DamageType -> push $ HealDamageDirectly healedTarget source 1
 
-getAsIfInHandCardsNotForPlay :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
+getAsIfInHandCardsNotForPlay :: HasGame m => InvestigatorId -> m [Card]
 getAsIfInHandCardsNotForPlay iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  let
-    modifiersPermitPlayOfDiscard discard c =
-      any (modifierPermitsPlayOfDiscard discard c) modifiers
-    modifierPermitsPlayOfDiscard discard (c, _) = \case
-      CanPlayFromDiscard cardMatcher -> c `cardMatch` cardMatcher && c `elem` discard
-      CanPlayTopmostOfDiscard (mType, traits) ->
-        let cardMatcher = maybe AnyCard CardWithType mType <> foldMap CardWithTrait traits
-            allMatches = filter (`cardMatch` cardMatcher) discard
-         in case allMatches of
-              (topmost : _) -> topmost == c
-              _ -> False
-      _ -> False
-    modifiersPermitPlayOfDeck c = any (modifierPermitsPlayOfDeck c) modifiers
-    modifierPermitsPlayOfDeck (c, depth) = \case
-      CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
-      _ -> False
-  cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
+  flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
     _ -> pure Nothing
-  discard <- field InvestigatorDiscard iid
-  deck <- fieldMap InvestigatorDeck unDeck iid
-  pure
-    $ map
-      (PlayerCard . fst)
-      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
-    <> map
-      (PlayerCard . fst)
-      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
-    <> cardsAddedViaModifiers
 
 getAsIfInHandCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
 getAsIfInHandCards = getAsIfInHandCardsFor ForPlay
@@ -742,14 +710,17 @@ getAsIfInHandCardsFor forPlay iid = do
     _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid
-  pure
-    $ map
-      (PlayerCard . fst)
-      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
-    <> map
-      (PlayerCard . fst)
-      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
-    <> cardsAddedViaModifiers
+  let
+    playableFromOutOfHand = case forPlay of
+      ForPlay ->
+        map
+          (PlayerCard . fst)
+          (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
+          <> map
+            (PlayerCard . fst)
+            (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
+      NotForPlay -> []
+  pure $ playableFromOutOfHand <> cardsAddedViaModifiers
 
 matchWho
   :: (HasGame m, Tracing m)

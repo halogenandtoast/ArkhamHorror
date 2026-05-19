@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { updateGameRaw } from '@/arkham/api'
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
-import { useSettingsFocus } from '@/composeable/settingsFocus'
+import { useSettingsFocus } from '@/composable/settingsFocus'
 
 const props = defineProps<{
   game: Game

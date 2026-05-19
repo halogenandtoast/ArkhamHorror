@@ -67,6 +67,7 @@ initDeckXp deck' iid _target = pure do
                 [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$xp." <> nameToLabel card) xp]
             )
         , GainXP iid (CardIdSource card.id) xp
+        , SpendXP iid xp
         ]
 
 initDeckTrauma

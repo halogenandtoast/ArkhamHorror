@@ -52,10 +52,6 @@ getActiveInvestigatorId = selectJust ActiveInvestigator
 
 getInvestigatorPlayers :: (HasGame m, Tracing m) => m [(InvestigatorId, PlayerId)]
 getInvestigatorPlayers = selectWithField InvestigatorPlayerId UneliminatedInvestigator
-
-allInvestigatorPlayers :: (HasGame m, Tracing m) => m [(InvestigatorId, PlayerId)]
-allInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
-
 getInvestigators :: (HasGame m, Tracing m) => m [InvestigatorId]
 getInvestigators = inTurnOrder =<< select UneliminatedInvestigator
 
@@ -67,10 +63,6 @@ allPlayers = getAllPlayers
 
 getLeadPlayer :: (HasCallStack, HasGame m, Tracing m) => m PlayerId
 getLeadPlayer = maybe getActivePlayer (field InvestigatorPlayerId) =<< getLeadMay
-
-getLeadInvestigatorPlayer :: (HasCallStack, HasGame m, Tracing m) => m (InvestigatorId, PlayerId)
-getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLead
-
 selectAssetController :: (HasGame m, Tracing m) => AssetId -> m (Maybe InvestigatorId)
 selectAssetController aid =
   ((<|>) . join <$> fieldMay AssetController aid)
@@ -103,17 +95,9 @@ getSetAsideCardMaybe :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Ma
 getSetAsideCardMaybe def = do
   (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
     <$$> selectOne (SetAsideCardMatch $ cardIs def)
-
-getSetAsideEncounterCard :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m EncounterCard
-getSetAsideEncounterCard = fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
-
 getSetAsideEncounterSet :: (HasGame m, Tracing m) => EncounterSet -> m [Card]
 getSetAsideEncounterSet encounterSet =
   scenarioFieldMap ScenarioSetAsideCards (filter ((== Just encounterSet) . getEncounterSet))
-
-getOrGenerateSetAsideCard :: (CardGen m, HasGame m, Tracing m, HasCallStack) => CardDef -> m Card
-getOrGenerateSetAsideCard cardDef = maybe (genCard cardDef) pure =<< maybeGetSetAsideCard cardDef
-
 maybeGetSetAsideCard :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m (Maybe Card)
 maybeGetSetAsideCard def = runMaybeT do
   guardInScenario

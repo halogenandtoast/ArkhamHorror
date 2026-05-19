@@ -104,10 +104,6 @@ activeCostActions ac = case ac.target of
 
 instance HasField "actions" ActiveCost [Action] where
   getField = activeCostActions
-
-addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
-addActiveCostCost cost ac = ac & costsL <>~ cost
-
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> toSource a
@@ -122,10 +118,6 @@ instance HasField "canModify" ActiveCost Bool where
   getField c = case c.target of
     ForCard {} -> False
     _ -> True
-
-costsL :: Lens' ActiveCost Cost
-costsL = lens activeCostCosts $ \m x -> m {activeCostCosts = x}
-
 costPaymentsL :: Lens' ActiveCost Payment
 costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 

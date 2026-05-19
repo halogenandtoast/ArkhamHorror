@@ -5,7 +5,8 @@ import { useDebug } from '@/arkham/debug';
 import { useI18n } from 'vue-i18n';
 import { imgsrc, groupBy } from '@/arkham/helpers';
 import { type Game } from '@/arkham/types/Game';
-import { type Card, cardImage } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
+import { cardImage as cardCodeImage } from '@/arkham/cardImages'
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
@@ -14,6 +15,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
+import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
 const props = defineProps<{
@@ -21,6 +23,8 @@ const props = defineProps<{
   game: Game
   cardsUnder: Card[]
   cardsNextTo: Card[]
+  remainingStack: Card[]
+  completedStack: Card[]
   playerId: string
 }>()
 
@@ -44,12 +48,14 @@ const { t } = useI18n()
 
 const image = computed(() => {
   if (props.agenda.flipped) {
+    // c03276a and c03279a flip to their own 'b' side; other agendas drop the
+    // trailing 'a' before appending 'b'.
     if (["c03276a", "c03279a"].includes(id.value)) {
-      return imgsrc(`cards/${id.value.replace(/^c/, '')}b.avif`);
+      return cardCodeImage(id.value, 'b')
     }
-    return imgsrc(`cards/${id.value.replace(/^c/, '').replace(/a$/, '')}b.avif`);
+    return cardCodeImage(id.value.replace(/a$/, ''), 'b')
   }
-  return imgsrc(`cards/${id.value.replace(/^c/, '')}.avif`);
+  return cardCodeImage(id.value)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -97,6 +103,9 @@ const abilities = computed(() => {
 const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
 
+const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.agenda.id))
+const totalAgendas = computed(() => props.completedStack.length + props.remainingStack.length)
+
 const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
@@ -121,30 +130,40 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 
 <template>
   <div class="agenda-container">
-    <div class="agenda-card">
-      <img
-      :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
-        class="card card--agenda"
-        @click="$emit('choose', interactAction)"
-        :src="image"
+    <div class="agenda-row">
+      <StackIndicator
+        label="Agenda"
+        :current="agenda.sequence.step"
+        :total="totalAgendas"
+        :completedCards="completedStack"
+        :currentImage="image"
+        :remainingCards="futureStack"
       />
-      <div class="pool" v-if="!agenda.flipped">
-        <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})">-</button>
-        </template>
-
-        <PoolItem
-          type="doom"
-          :amount="agenda.doom"
+      <div class="agenda-card">
+        <img
+        :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
+          class="card card--agenda"
+          @click="$emit('choose', interactAction)"
+          :src="image"
         />
-        <PoolItem class="eclipse" v-if="eclipses" type="resource" :amount="eclipses" />
+        <div class="pool" v-if="!agenda.flipped">
+          <template v-if="debug.active">
+            <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})">-</button>
+          </template>
 
-        <template v-if="debug.active">
-          <button
-            @click.exact="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})"
-            @click.shift="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 5]}})"
-          >+</button>
-        </template>
+          <PoolItem
+            type="doom"
+            :amount="agenda.doom"
+          />
+          <PoolItem class="eclipse" v-if="eclipses" type="resource" :amount="eclipses" />
+
+          <template v-if="debug.active">
+            <button
+              @click.exact="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})"
+              @click.shift="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'PlaceTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 5]}})"
+            >+</button>
+          </template>
+        </div>
       </div>
     </div>
     <img
@@ -215,6 +234,13 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 .agenda-container {
   display: flex;
   flex-direction: column;
+}
+
+.agenda-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
 }
 
 .agenda--can-progress {
@@ -304,4 +330,5 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
   height: var(--card-width);
   aspect-ratio: var(--card-sideways-aspect);
 }
+
 </style>

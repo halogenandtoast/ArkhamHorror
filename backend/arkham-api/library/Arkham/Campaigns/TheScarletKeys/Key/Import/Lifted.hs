@@ -263,11 +263,6 @@ withInvestigatorBearer attrs f = case attrs.bearer of
   ScenarioTarget -> traverse_ f (maybeResult @InvestigatorId attrs.meta)
   _ -> pure ()
 
-withEnemyBearer :: Applicative m => ScarletKeyAttrs -> (EnemyId -> m ()) -> m ()
-withEnemyBearer attrs f = case attrs.bearer of
-  EnemyTarget eid -> f eid
-  _ -> pure ()
-
 shiftKey :: ReverseQueue m => ScarletKeyAttrs -> m () -> m ()
 shiftKey attrs body = do
   checkWhen $ CampaignEvent "shiftKey" Nothing (toJSON attrs.id)

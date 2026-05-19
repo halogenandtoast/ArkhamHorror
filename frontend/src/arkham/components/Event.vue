@@ -4,7 +4,7 @@ import { Game } from '@/arkham/types/Game';
 import { Card } from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
-import { imgsrc } from '@/arkham/helpers';
+import { cardImage } from '@/arkham/cardImages';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue';
@@ -36,7 +36,7 @@ const hasPool = computed(() => {
 const cardCode = computed(() => props.event.cardCode)
 const image = computed(() => {
   const mutated = props.event.mutated ? `_${props.event.mutated}` : ''
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
+  return cardImage(cardCode.value, mutated)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

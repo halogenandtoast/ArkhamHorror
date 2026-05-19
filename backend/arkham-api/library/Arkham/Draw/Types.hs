@@ -97,15 +97,6 @@ instance HasField "deck" CardDrew DeckSignifier where
 
 instance HasField "rules" CardDrew (Set CardDrawRules) where
   getField = cardDrewRules
-
-drewCard :: Card -> CardDraw msg -> CardDraw msg
-drewCard c draw = draw {cardDrawState = updatedState}
- where
-  updatedState = case cardDrawState draw of
-    UnresolvedCardDraw -> InProgress [c]
-    InProgress cs -> InProgress (c : cs)
-    ResolvedCardDraw _ -> error "card draw was already finished"
-
 class AsDeck a where
   asDeck :: a -> DeckSignifier
 

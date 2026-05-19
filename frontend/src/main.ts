@@ -37,7 +37,13 @@ const emitter = mitt()
 const app = createApp(App).
   use(router).
   use(pinia).
-  use(FloatingVue).
+  use(FloatingVue, {
+    themes: {
+      'stack-indicator-popover': {
+        $extend: 'dropdown',
+      },
+    },
+  }).
   use(Toast, {}).
   use(vfm).
   use(i18n).

@@ -5,6 +5,7 @@ import { Game } from '@/arkham/types/Game'
 import { keyToId } from '@/arkham/types/Key'
 import { TokenType } from '@/arkham/types/Token'
 import { imgsrc } from '@/arkham/helpers'
+import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
@@ -48,15 +49,9 @@ const isTrueForm = computed(() => {
   return cardCode === 'cxnyarlathotep'
 })
 
-const imageId = computed(() => {
-  const { cardCode, flipped } = props.enemy
-  const suffix = flipped ? 'b' : ''
-  return `${cardCode.replace('c', '')}${suffix}`
-})
+const imageId = computed(() => cardArt(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
 
-const image = computed(() => {
-  return imgsrc(`cards/${imageId.value}.avif`)
-})
+const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
 
 const id = computed(() => props.enemy.id)
 
@@ -171,55 +166,6 @@ function sourceIsSelf(source: Source): boolean {
   return false
 }
 
-function cannotBeDamagedSourceCardCode(source: Source): string | null {
-  if (source.tag === 'ProxySource') return cannotBeDamagedSourceCardCode(source.source)
-  if (source.tag === 'AbilitySource') {
-    const [inner] = (source.contents as unknown) as [Source, number]
-    return cannotBeDamagedSourceCardCode(inner)
-  }
-  if (source.tag === 'AssetSource') {
-    const asset = props.game.assets[source.contents as string]
-    if (!asset) return null
-    const mutated = asset.mutated ? `_${asset.mutated}` : ''
-    return `${asset.cardCode.replace('c', '')}${mutated}`
-  }
-  if (source.tag === 'TreacherySource') {
-    const treachery = props.game.treacheries[source.contents as string]
-    return treachery ? treachery.cardCode.replace('c', '') : null
-  }
-  if (source.tag === 'EnemySource') {
-    const enemy = props.game.enemies[source.contents as string]
-    if (!enemy) return null
-    return `${enemy.cardCode.replace('c', '')}${enemy.flipped ? 'b' : ''}`
-  }
-  if (source.tag === 'EventSource') {
-    const event = props.game.events[source.contents as string]
-    if (!event) return null
-    const mutated = event.mutated ? `_${event.mutated}` : ''
-    return `${event.cardCode.replace('c', '')}${mutated}`
-  }
-  if (source.tag === 'LocationSource') {
-    const location = props.game.locations[source.contents as string]
-    if (!location) return null
-    const suffix = location.revealed ? '' : 'b'
-    return `${location.cardCode.replace('c', '')}${suffix}`
-  }
-  if (source.tag === 'AgendaSource') {
-    const agenda = props.game.agendas[source.contents as string]
-    if (!agenda) return (source.contents as string).replace(/^c/, '')
-    if (agenda.flipped) {
-      if (["c03276a", "c03279a"].includes(agenda.id)) {
-        return `${agenda.id.replace(/^c/, '')}b`
-      }
-      return `${agenda.id.replace(/^c/, '').replace(/a$/, '')}b`
-    }
-    return agenda.id.replace(/^c/, '')
-  }
-  if (source.tag === 'ActSource') return (source.contents as string).replace(/^c/, '')
-  if (source.tag === 'InvestigatorSource') return (source.contents as string).replace('c', '')
-  return null
-}
-
 const cannotBeDamagedModifier = computed(() => {
   const modifiers = props.enemy.modifiers ?? []
   return modifiers.find(
@@ -235,8 +181,8 @@ const isCannotBeDamaged = computed(() => cannotBeDamagedModifier.value !== null)
 const cannotBeDamagedCardCode = computed<string | null>(() => {
   const m = cannotBeDamagedModifier.value
   if (!m) return null
-  if (m.card) return m.card.contents.cardCode.replace(/^c/, '')
-  return cannotBeDamagedSourceCardCode(m.source)
+  if (m.card) return cardArt(m.card.contents.cardCode)
+  return sourceCardCode(m.source, props.game)
 })
 
 const health = computed(() => {
@@ -410,7 +356,7 @@ function onDrop(event: DragEvent) {
         </div>
 
       </template>
-      <img v-for="card in referenceCards" :src="imgsrc(`cards/${card.replace(/^c/, '')}.avif`)" :key="card" class="attached card" />
+      <img v-for="card in referenceCards" :src="cardImage(card)" :key="card" class="attached card" />
       <Treachery
         v-for="treacheryId in enemy.treacheries"
         :key="treacheryId"

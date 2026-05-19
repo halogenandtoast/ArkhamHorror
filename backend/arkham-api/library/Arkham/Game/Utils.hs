@@ -441,10 +441,6 @@ gameEvents = entitiesEvents . gameEntities
 
 gameConcealed :: Game -> EntityMap ConcealedCard
 gameConcealed = entitiesConcealed . gameEntities
-
-gameEffects :: Game -> EntityMap Effect
-gameEffects = entitiesEffects . gameEntities
-
 gameActs :: Game -> EntityMap Act
 gameActs = entitiesActs . gameEntities
 

@@ -144,10 +144,6 @@ gameIdToText = UUID.toText . coerce
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
-
-noLogger :: Applicative m => Text -> m ()
-noLogger = const (pure ())
-
 gameChannel :: ArkhamGameId -> RedisChannel
 gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
@@ -299,27 +295,6 @@ roomHeartbeat app = case appMessageBroker app of
   keepIfActive (gid, room) = do
     n <- roomClientCount room
     pure $ if n > 0 then Just gid else Nothing
-
-displayCardType :: CardType -> Text
-displayCardType = \case
-  ActType -> "act"
-  AgendaType -> "act"
-  AssetType -> "asset"
-  EventType -> "event"
-  ScenarioType -> "scenario"
-  SkillType -> "skill"
-  StoryType -> "story"
-  PlayerTreacheryType -> "treachery"
-  PlayerEnemyType -> "enemy"
-  TreacheryType -> "treachery"
-  EnemyType -> "enemy"
-  LocationType -> "location"
-  EncounterAssetType -> "asset"
-  EncounterEventType -> "event"
-  InvestigatorType -> "investigator"
-  KeyType -> "key"
-  EnemyLocationCardType -> "enemy-location"
-
 lockGame :: ArkhamGameId -> DB ()
 lockGame gameId = void $ select do
   game <- from $ table @ArkhamGame

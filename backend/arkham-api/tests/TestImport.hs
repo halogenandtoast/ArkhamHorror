@@ -921,6 +921,7 @@ newGame scenario' investigator = do
         , gameUndoPhaseStep = Nothing
         , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
+        , gameLocationOffsets = mempty
         }
 
   liftIO $ do

@@ -26,6 +26,6 @@ instance RunMessage GilmanHouse where
       twice $ doStep 1 msg
       pure l
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      chooseHealDamageOrHorror (attrs.ability 1) iid
+      chooseHealDamageOrHorror (UseAbilitySource iid (toSource attrs) 1) iid
       pure l
     _ -> GilmanHouse <$> liftRunMessage msg attrs

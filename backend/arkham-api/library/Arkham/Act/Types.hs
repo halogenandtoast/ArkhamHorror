@@ -120,10 +120,6 @@ instance HasField "ability" ActAttrs (Int -> Source) where
 
 sequenceL :: Lens' ActAttrs AS.ActSequence
 sequenceL = lens actSequence $ \m x -> m {actSequence = x}
-
-cluesL :: Lens' ActAttrs Int
-cluesL = lens actClues $ \m x -> m {actClues = x}
-
 metaL :: Lens' ActAttrs Value
 metaL = lens actMeta $ \m x -> m {actMeta = x}
 

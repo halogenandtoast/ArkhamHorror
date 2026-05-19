@@ -1,6 +1,5 @@
 module Arkham.PlayerCard (
   lookupPlayerCardDef,
-  lookupPlayerCardName,
   allPlayerCards,
   allBasicWeaknesses,
   randomWeakness,
@@ -15,14 +14,9 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
-import Arkham.Name
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Story.Cards (realityAcid)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
-
-lookupPlayerCardName :: CardCode -> Name
-lookupPlayerCardName = cdName . lookupPlayerCardDef
-
 lookupPlayerCardDef :: CardCode -> CardDef
 lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)

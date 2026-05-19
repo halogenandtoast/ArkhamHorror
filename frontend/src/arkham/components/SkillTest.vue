@@ -11,7 +11,6 @@ import { Game } from '@/arkham/types/Game';
 import { Enemy } from '@/arkham/types/Enemy';
 import { Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
-import { Source } from '@/arkham/types/Source';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
 import Card from '@/arkham/components/Card.vue'
@@ -19,10 +18,11 @@ import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
+import { cardArt, portraitImage, sourceCardCode } from '@/arkham/cardImages';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
-import { useMenu } from '@/composeable/menu';
-import { useSettingsFocus } from '@/composeable/settingsFocus';
+import { useMenu } from '@/composable/menu';
+import { useSettingsFocus } from '@/composable/settingsFocus';
 
 const debug = useDebug()
 const { t } = useI18n()
@@ -109,30 +109,18 @@ const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
-
-    if (player.form.tag === "YithianForm") {
-      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
-    }
-
-    if (player.form.tag === "HomunculusForm") {
-      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+      ? choice.investigatorId
+      : player.cardCode
+    return portraitImage(code)
   }
 
   if (props.skillTest) {
     const player = props.game.investigators[props.skillTest.investigator]
-
-    if (player.form.tag === "YithianForm") {
-      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
-    }
-
-    if (player.form.tag === "HomunculusForm") {
-      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+      ? props.skillTest.investigator
+      : player.cardCode
+    return portraitImage(code)
   }
 
   return null;
@@ -165,82 +153,12 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-function sourceCardCode(source: Source) {
-  if (source.tag === 'LocationSource') {
-    const location = props.game.locations[source.contents]
-    if (!location) return null
-    const { cardCode, revealed } = location
-    const suffix = revealed ? '' : 'b'
-
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AssetSource') {
-    const asset = props.game.assets[source.contents]
-    if (!asset) return null
-
-    const mutated = asset.mutated ? `_${asset.mutated}` : ''
-    if (asset.flipped) {
-      if (asset.cardCode === "c90052") return "90052b"
-      return null
-    }
-    return `${asset.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'TreacherySource') {
-    const treachery = props.game.treacheries[source.contents]
-    if (!treachery) return null
-    return `${treachery.cardCode.replace('c', '')}`
-  }
-
-  if (source.tag === 'EnemySource') {
-    const enemy = props.game.enemies[source.contents]
-    if (!enemy) return null
-
-    const { cardCode, flipped } = enemy
-    const suffix = flipped ? 'b' : ''
-    return `${cardCode.replace('c', '')}${suffix}`
-  }
-
-  if (source.tag === 'AbilitySource') {
-    const [inner,] = source.contents
-    return sourceCardCode(inner)
-  }
-
-  if (source.tag === 'EventSource') {
-    const event = props.game.events[source.contents]
-    if (!event) return null
-
-    const mutated = event.mutated ? `_${event.mutated}` : ''
-    return `${event.cardCode.replace('c', '')}${mutated}`
-  }
-
-  if (source.tag === 'InvestigatorSource') {
-    return `${source.contents.replace('c', '')}`
-  }
-
-  if (source.tag === 'AgendaSource') {
-    const agenda = props.game.agendas[source.contents]
-    if (!agenda) return null
-    const id = agenda.id
-    if (agenda.flipped) {
-      if (["c03276a", "c03279a"].includes(id)) {
-        return `${id.replace(/^c/, '')}b`
-      }
-      return `${id.replace(/^c/, '').replace(/a$/, '')}b`
-    }
-    return `${id.replace(/^c/, '')}`
-  }
-
-  return null
-}
-
 function modifierSource(mod: Modifier) {
   if(mod.card) {
-    return mod.card.contents.cardCode.replace(/^c/, '')
+    return cardArt(mod.card.contents.cardCode)
   }
 
-  return sourceCardCode(mod.source)
+  return sourceCardCode(mod.source, props.game)
 }
 
 const targetCard = computed(() => {

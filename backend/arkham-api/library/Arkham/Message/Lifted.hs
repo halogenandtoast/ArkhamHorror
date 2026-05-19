@@ -10,13 +10,10 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
-import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
-import Arkham.CampaignStep hiding (continue)
-import Arkham.CampaignStep qualified as CS
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Capability
 import Arkham.Card
@@ -38,7 +35,6 @@ import Arkham.Effect.Builder
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.Effect.Window
 import Arkham.EffectMetadata (EffectMetadata)
-import Arkham.EncounterSet
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
@@ -48,10 +44,8 @@ import Arkham.Exhaust qualified as Exhaust
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers
 import Arkham.Helpers.Act
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.ChaosToken qualified as Msg
@@ -69,11 +63,9 @@ import Arkham.Helpers.Message.Discard qualified as HandDiscard
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution, getIsStandalone)
-import Arkham.Helpers.Shuffle
+import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
-import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.History
 import Arkham.I18n
@@ -83,12 +75,12 @@ import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Layout
-import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (DealtDamage, PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
+import Arkham.Message.Lifted.Base as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -109,17 +101,20 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Tracing
 import Arkham.Trait (Trait)
-import Arkham.Window (Window (..), WindowType, defaultWindows)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
-import Data.Map.Strict qualified as Map
 import Data.Typeable
+import Arkham.Message.Lifted.Location as X
+import Arkham.Message.Lifted.Scenario as X
+import Arkham.Message.Lifted.Damage as X
+import Arkham.Message.Lifted.Prompt as X
+import Arkham.Message.Lifted.Prompt qualified
+import Arkham.Message.Lifted.Card as X
 
-capture :: MonadIO m => QueueT msg m a -> m [msg]
-capture = evalQueueT
 
 withoutRunWindows :: ReverseQueue m => QueueT Message m () -> m ()
 withoutRunWindows body = do
@@ -128,9 +123,6 @@ withoutRunWindows body = do
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
-
-setEncounterDeck :: ReverseQueue m => Deck EncounterCard -> m ()
-setEncounterDeck = push . SetEncounterDeck
 
 setAgendaDeck :: ReverseQueue m => [CardDef] -> m ()
 setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
@@ -147,128 +139,6 @@ setActDeckN n = genCards >=> push . SetActDeckCards n
 setDecksLayout :: ReverseQueue m => [GridTemplateRow] -> m ()
 setDecksLayout = push . SetDecksLayout
 
-placeSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
-placeSetAsideLocation card = do
-  (lid, msg) <- Msg.placeSetAsideLocation card
-  push msg
-  pure lid
-
-selectOrPlaceSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
-selectOrPlaceSetAsideLocation def = maybe (placeSetAsideLocation def) pure =<< selectOne (locationIs def)
-
-placeSetAsideLocation_ :: ReverseQueue m => CardDef -> m ()
-placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
-
-placeSetAsideLocationWith_ :: ReverseQueue m => CardDef -> Update Location -> m ()
-placeSetAsideLocationWith_ def = push <=< Msg.placeSetAsideLocationWith_ def
-
-placeSetAsideLocations_ :: ReverseQueue m => [CardDef] -> m ()
-placeSetAsideLocations_ = pushAll <=< Msg.placeSetAsideLocations
-
-placeSetAsideLocationsMatching_ :: ReverseQueue m => CardMatcher -> m ()
-placeSetAsideLocationsMatching_ matcher = getSetAsideCardsMatching (#location <> matcher) >>= placeSetAsideLocations_ . map toCardDef
-
-placeLocationCard :: ReverseQueue m => CardDef -> m LocationId
-placeLocationCard def = do
-  (lid, placement) <- Msg.placeLocationCard def
-  push placement
-  pure lid
-
-placeLocationCardInGrid :: ReverseQueue m => Pos -> CardDef -> m LocationId
-placeLocationCardInGrid pos def = do
-  (lid, placement) <- Msg.placeLocationCardInGrid pos def
-  push placement
-  pure lid
-
-placeLocationCardInGrid_ :: ReverseQueue m => Pos -> CardDef -> m ()
-placeLocationCardInGrid_ pos def = void $ placeLocationCardInGrid pos def
-
-placeLocationInGrid :: ReverseQueue m => Pos -> Card -> m LocationId
-placeLocationInGrid pos card = do
-  (lid, placement) <- Msg.placeLocationInGrid pos card
-  push placement
-  pure lid
-
-placeLocationInGrid_ :: ReverseQueue m => Pos -> Card -> m ()
-placeLocationInGrid_ pos card = void $ placeLocationInGrid pos card
-
-placeLocation :: (ReverseQueue m, FetchCard card) => card -> m LocationId
-placeLocation card = do
-  (lid, placement) <- Msg.placeLocation =<< fetchCard card
-  push placement
-  pure lid
-
-placeLocation_ :: (ReverseQueue m, FetchCard card) => card -> m ()
-placeLocation_ = fetchCard >=> Msg.placeLocation_ >=> push
-
-placeLocationIfNotInPlay_ :: (HasCallStack, ReverseQueue m) => CardDef -> m ()
-placeLocationIfNotInPlay_ = void . placeLocationIfNotInPlay
-
-placeLocationIfNotInPlay :: (HasCallStack, ReverseQueue m) => CardDef -> m LocationId
-placeLocationIfNotInPlay def =
-  selectOne (locationIs def) >>= \case
-    Just lid -> pure lid
-    Nothing ->
-      getSetAsideCardMaybe def >>= \case
-        Nothing -> error $ "Location not found in play or set aside: " <> show def
-        Just card -> placeLocation card
-
-placeRandomLocationGroupCards :: ReverseQueue m => Text -> [CardDef] -> m ()
-placeRandomLocationGroupCards groupName = traverse fetchCard >=> placeRandomLocationGroup groupName
-
-placeRandomLocationGroupCardsCapture :: ReverseQueue m => Text -> [CardDef] -> m [LocationId]
-placeRandomLocationGroupCardsCapture groupName = genCards >=> placeRandomLocationGroupCapture groupName
-
-placeRandomLocationGroup :: ReverseQueue m => Text -> [Card] -> m ()
-placeRandomLocationGroup groupName cards = do
-  shuffled <- shuffleM cards
-  msgs <- Msg.placeLabeledLocations_ groupName shuffled
-  pushAll msgs
-
-placeRandomLocationGroupCapture :: ReverseQueue m => Text -> [Card] -> m [LocationId]
-placeRandomLocationGroupCapture groupName cards = do
-  shuffled <- shuffleM cards
-  (lids, msgs) <- Msg.placeLabeledLocations groupName shuffled
-  pushAll msgs
-  pure lids
-
-placeLabeledLocations_ :: ReverseQueue m => Text -> [Card] -> m ()
-placeLabeledLocations_ lbl cards = Msg.pushAllM $ Msg.placeLabeledLocations_ lbl cards
-
-placeLabeledLocations :: ReverseQueue m => Text -> [Card] -> m [LocationId]
-placeLabeledLocations lbl cards = Msg.placeLabeledLocations lbl cards >>= \(lids, msgs) -> pushAll msgs $> lids
-
-placeLabeledLocation_ :: ReverseQueue m => Text -> Card -> m ()
-placeLabeledLocation_ lbl card = Msg.placeLabeledLocation lbl card >>= \(_, msg) -> push msg
-
-placeLabeledLocation :: ReverseQueue m => Text -> Card -> m LocationId
-placeLabeledLocation lbl card = Msg.placeLabeledLocation lbl card >>= \(lid, msg) -> push msg >> pure lid
-
-placeLabeledLocationsFrom :: ReverseQueue m => Text -> Int -> [Card] -> m [LocationId]
-placeLabeledLocationsFrom lbl n cards = Msg.placeLabeledLocationsFrom lbl n cards >>= \(lids, msgs) -> pushAll msgs $> lids
-
-placeLocationCards :: ReverseQueue m => [CardDef] -> m ()
-placeLocationCards defs = for_ defs placeLocationCard
-
-placeOneLocationCard :: ReverseQueue m => NonEmpty CardDef -> m LocationId
-placeOneLocationCard = sample >=> placeLocationCard
-
-placeLocationCardM :: ReverseQueue m => m CardDef -> m LocationId
-placeLocationCardM = (>>= placeLocationCard)
-
-reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
-reveal (asId -> lid) = do
-  inSetup <- getInSetup
-  if inSetup
-    then unsafeReveal lid
-    else whenMatch lid UnrevealedLocation $ unsafeReveal lid
-
-unsafeReveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
-unsafeReveal (asId -> lid) = push $ Msg.RevealLocation Nothing lid
-
-revealMatching :: ReverseQueue m => LocationMatcher -> m ()
-revealMatching matcher = selectEach matcher (push . Msg.RevealLocation Nothing)
-
 revealBy
   :: ( AsId investigator
      , IdOf investigator ~ InvestigatorId
@@ -281,78 +151,6 @@ revealBy
   -> m ()
 revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
 
-storyI :: (HasI18n, ReverseQueue m) => Text -> m ()
-storyI flavor = do
-  players <- allPlayers
-  push $ Msg.story players (i18n flavor)
-
-story :: ReverseQueue m => FlavorText -> m ()
-story flavor = do
-  players <- allPlayers
-  push $ Msg.story players flavor
-
-storyWhen :: ReverseQueue m => Bool -> FlavorText -> m ()
-storyWhen cond flavor = when cond do
-  players <- allPlayers
-  push $ Msg.story players flavor
-
-storyWithCard :: ReverseQueue m => CardDef -> FlavorText -> m ()
-storyWithCard cardDef flavor = do
-  players <- allPlayers
-  push $ Msg.storyWithCards [cardDef] players flavor
-
-storyWithCards :: ReverseQueue m => [CardDef] -> FlavorText -> m ()
-storyWithCards cardDefs flavor = do
-  players <- allPlayers
-  push $ Msg.storyWithCards cardDefs players flavor
-
-storyOnly :: ReverseQueue m => [InvestigatorId] -> FlavorText -> m ()
-storyOnly [] _ = pure ()
-storyOnly iids flavor = do
-  players <- traverse getPlayer iids
-  push $ Msg.story players flavor
-
-storyOnly' :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> Scope -> m ()
-storyOnly' [] _ = pure ()
-storyOnly' iids lbl = do
-  players <- traverse getPlayer iids
-  push $ Msg.story players (i18n lbl)
-
-storyWithChooseOne :: ReverseQueue m => FlavorText -> [UI Message] -> m ()
-storyWithChooseOne flavor choices = do
-  players <- allPlayers
-  lead <- getLeadPlayer
-  push $ Msg.storyWithChooseOne lead players flavor choices
-
-playerStoryWithChooseOne :: ReverseQueue m => PlayerId -> FlavorText -> [UI Message] -> m ()
-playerStoryWithChooseOne pid flavor choices = do
-  players <- allPlayers
-  push $ Msg.storyWithChooseOne pid players flavor choices
-
-storyWithChooseN :: ReverseQueue m => Int -> FlavorText -> [UI Message] -> m ()
-storyWithChooseN n flavor choices = do
-  players <- allPlayers
-  lead <- getLeadPlayer
-  push $ Msg.storyWithChooseN lead players n flavor choices
-
-storyWithChooseUpToN :: ReverseQueue m => Int -> FlavorText -> [UI Message] -> m ()
-storyWithChooseUpToN n flavor choices = do
-  players <- allPlayers
-  lead <- getLeadPlayer
-  pushAll
-    [ SetActivePlayer lead
-    , Msg.storyWithChooseUpToN lead players n flavor choices
-    ]
-
-sufferTrauma :: ReverseQueue m => InvestigatorId -> Int -> Int -> m ()
-sufferTrauma iid physical mental = push $ SufferTrauma iid physical mental
-
-sufferMentalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
-sufferMentalTrauma iid mental = sufferTrauma iid 0 mental
-
-sufferPhysicalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
-sufferPhysicalTrauma iid physical = sufferTrauma iid physical 0
-
 gainXp
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Text -> Int -> m ()
 gainXp iid (toSource -> source) from xp = do
@@ -361,25 +159,6 @@ gainXp iid (toSource -> source) from xp = do
     let report = XpBreakdown [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$" <> from) xp]
     push $ ReportXp report
     push $ GainXP iid source xp
-
-allGainXpWithBonus :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m ()
-allGainXpWithBonus source xp = do
-  push . ReportXp =<< generateXpReport xp
-  pushAll =<< toGainXp source (getXpWithBonus xp.value)
-
-allGainXpWithBonus' :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m Int
-allGainXpWithBonus' source xp = do
-  push . ReportXp =<< generateXpReport xp
-  (initial, details) <- getXpWithBonus' xp.value
-  pushAll =<< toGainXp source (pure details)
-  pure initial
-
-allGainXp' :: (ReverseQueue m, Sourceable source) => source -> m Int
-allGainXp' source = do
-  (initial, details) <- getXp'
-  push . ReportXp =<< generateXpReport NoBonus
-  pushAll =<< toGainXp source (pure details)
-  pure initial
 
 allGainXpEdit'
   :: (ReverseQueue m, Sourceable source)
@@ -393,9 +172,6 @@ allGainXpEdit' source f g = do
   pushAll =<< toGainXp source (pure details)
   pure initial
 
-allGainXp :: (ReverseQueue m, Sourceable source) => source -> m ()
-allGainXp = void . allGainXp'
-
 allGainXpWith
   :: (ReverseQueue m, Sourceable source) => source -> (InvestigatorId -> [XpEntry]) -> m ()
 allGainXpWith source f = do
@@ -405,34 +181,6 @@ allGainXpWith source f = do
       <$> getXp
   push . ReportXp . (<> XpBreakdown additionalEntries) =<< generateXpReport NoBonus
   pushAll =<< toGainXp source (pure pairs')
-
-interludeXpAll :: ReverseQueue m => XpBonus -> m ()
-interludeXpAll xp = do
-  investigatorIds <- allInvestigators
-  push
-    $ ReportXp
-    $ XpBreakdown
-      [ InvestigatorGainXp iid $ XpDetail XpBonus txt n
-      | WithBonus txt n <- xp.flatten
-      , iid <- investigatorIds
-      ]
-  for_ investigatorIds \iid -> do
-    push $ GainXP iid CampaignSource xp.value
-
-interludeXp :: ReverseQueue m => InvestigatorId -> XpBonus -> m ()
-interludeXp iid xp = do
-  pushAll
-    [ ReportXp
-        $ XpBreakdown
-          [InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- xp.flatten]
-    , GainXP iid CampaignSource xp.value
-    ]
-
-endOfScenario :: ReverseQueue m => m ()
-endOfScenario = push $ EndOfGame Nothing
-
-endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
-endOfScenarioThen = push . EndOfGame . CS.continue
 
 dealAssetDirectDamage
   :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
@@ -449,12 +197,6 @@ dealAssetDirectDamageAndHorror
   => asset -> source -> Int -> Int -> m ()
 dealAssetDirectDamageAndHorror asset source damage horror =
   push $ DealAssetDirectDamage (asId asset) (toSource source) damage horror
-
-dealAssetDamage :: (ReverseQueue m, Sourceable source) => AssetId -> source -> Int -> m ()
-dealAssetDamage aid source damage = push $ Msg.DealAssetDamageWithCheck aid (toSource source) damage 0 True
-
-dealAssetHorror :: (ReverseQueue m, Sourceable source) => AssetId -> source -> Int -> m ()
-dealAssetHorror aid source horror = push $ Msg.DealAssetDamageWithCheck aid (toSource source) 0 horror True
 
 assignDamage
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -483,12 +225,6 @@ assignDamageAndHorror _ _ 0 0 = pure ()
 assignDamageAndHorror iid (toSource -> source) 0 horror = push $ Msg.assignHorror iid source horror
 assignDamageAndHorror iid (toSource -> source) damage 0 = push $ Msg.assignDamage iid source damage
 assignDamageAndHorror iid (toSource -> source) damage horror = push $ Msg.assignDamageAndHorror iid source damage horror
-
-directDamage :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-directDamage iid source = push . Msg.directDamage iid source
-
-directHorror :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-directHorror iid source = push . Msg.directHorror iid source
 
 directDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
@@ -575,27 +311,6 @@ repeatSkillTestWith f = Msg.withSkillTest \stid -> do
   f sid
   repeatSkillTest sid stid
 
-gameOverIf :: ReverseQueue m => Bool -> m ()
-gameOverIf t = when t gameOver
-
-gameOver :: ReverseQueue m => m ()
-gameOver = push GameOver
-
-kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
-kill (toSource -> source) iid = do
-  push $ InvestigatorKilled source iid
-  push CheckForRemainingInvestigators
-
-defeat :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
-defeat (toSource -> source) iid = do
-  push $ InvestigatorWhenDefeated source iid
-  push CheckForRemainingInvestigators
-
-drivenInsane :: ReverseQueue m => InvestigatorId -> m ()
-drivenInsane iid = do
-  push $ DrivenInsane iid
-  push CheckForRemainingInvestigators
-
 killRemaining
   :: (Sourceable source, ReverseQueue m) => source -> m [InvestigatorId]
 killRemaining (toSource -> source) = do
@@ -620,13 +335,6 @@ addCampaignCardToDeckChoice choices shouldShuffleIn card = do
   lead <- getLeadPlayer
   card' <- fetchCard card
   push $ Msg.addCampaignCardToDeckChoice lead choices shouldShuffleIn card'
-
-addCampaignCardToDeckChoice_ :: (FetchCard card, ReverseQueue m) => card -> m ()
-addCampaignCardToDeckChoice_ card = do
-  choices <- allInvestigators
-  lead <- getLeadPlayer
-  card' <- fetchCard card
-  push $ Msg.addCampaignCardToDeckChoice lead choices DoNotShuffleIn card'
 
 addCampaignCardToDeckChoiceWith
   :: (FetchCard card, ReverseQueue m)
@@ -873,14 +581,6 @@ spawnEnemyAt_ card location = do
   card' <- fetchCard card
   push $ SpawnEnemyAt card' (asId location)
 
-setAsideCards :: ReverseQueue m => [CardDef] -> m ()
-setAsideCards = genCards >=> push . Msg.SetAsideCards
-
-setCardAside :: ReverseQueue m => Card -> m ()
-setCardAside c = do
-  obtainCard c
-  push $ Msg.SetAsideCards [c]
-
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
 
@@ -890,27 +590,6 @@ removeChaosToken = push . RemoveChaosToken
 removeAllChaosTokens :: ReverseQueue m => ChaosTokenFace -> m ()
 removeAllChaosTokens = push . RemoveAllChaosTokens
 
-removeCampaignCard :: (HasCardDef a, ReverseQueue m) => a -> m ()
-removeCampaignCard (toCardDef -> def) = do
-  mOwner <- getOwner def
-  when def.unique do
-    case def.kind of
-      AssetType -> selectOne (assetIs def) >>= traverse_ removeFromGame
-      _ -> pure ()
-  for_ mOwner \owner -> do
-    findCard ((== def) . toCardDef) >>= traverse_ \card -> do
-      deck <- field InvestigatorDeck owner
-      obtainCard card
-      when (any ((== card.id) . toCardId) deck.cards) $ shuffleDeck owner
-    removeCampaignCardFromDeck owner def
-
-removeCampaignCardFromDeck
-  :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator
-  -> a
-  -> m ()
-removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
-  push $ RemoveCampaignCardFromDeck iid def
 
 placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -1080,12 +759,6 @@ drawAnotherChaosToken iid = do
     Just _ -> push $ DrawAnotherChaosToken iid
     Nothing -> push $ RequestAnotherChaosToken iid GameSource
 
-assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
-assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
-
-eachLocation :: ReverseQueue m => (LocationId -> m ()) -> m ()
-eachLocation = selectEach Anywhere
-
 eachInvestigator :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   inResolution <- getInResolution
@@ -1101,8 +774,6 @@ forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
 forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
 forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 
-selectEach :: (Query a, HasGame m, Tracing m) => a -> (QueryElement a -> m ()) -> m ()
-selectEach matcher f = select matcher >>= traverse_ f
 
 selectEachDiscardable
   :: (HasCardCode a, HasGame m, Tracing m)
@@ -1146,17 +817,9 @@ advanceToActA source nextAct = push $ AdvanceToAct 1 nextAct Act.A (toSource sou
 advanceToAgendaA :: (ReverseQueue m, Sourceable source) => source -> CardDef -> m ()
 advanceToAgendaA source nextAgenda = push $ AdvanceToAgenda 1 nextAgenda Agenda.A (toSource source)
 
-shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
-shuffleSetAsideEncounterSet eset = do
-  cards <- getSetAsideCardsMatching (fromSets [eset])
-  push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
-
 shuffleDiscardBackIn
   :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m ()
 shuffleDiscardBackIn investigator = push $ ShuffleDiscardBackIn (asId investigator)
-
-shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
-shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
 
 placeDoomOnAgenda :: ReverseQueue m => Int -> m ()
 placeDoomOnAgenda 0 = pure ()
@@ -1168,33 +831,6 @@ placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)
 
-chooseOrRunOne :: (ReverseQueue m, HasCallStack) => InvestigatorId -> [UI Message] -> m ()
-chooseOrRunOne iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunOne player msgs
-
-continue :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
-continue iid = prompt iid "$label.continue"
-
-continue_ :: ReverseQueue m => InvestigatorId -> m ()
-continue_ iid = continue iid (pure ())
-
-prompt :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
-prompt iid lbl body = do
-  msgs <- capture body
-  Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
-
-promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
-promptI iid lbl body = do
-  msgs <- capture body
-  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> labelKey lbl) msgs]
-
-prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
-prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> labelKey lbl) []]
-
-promptI_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
-promptI_ iid lbl = withI18n $ prompt_ iid lbl
-
 aspect
   :: (ReverseQueue m, IsAspect a b, IsMessage b, Sourceable source)
   => InvestigatorId
@@ -1204,42 +840,11 @@ aspect
   -> m ()
 aspect iid source a action = Msg.aspect iid source a action >>= pushAll . Msg.leftOr
 
-choose :: ReverseQueue m => InvestigatorId -> UI Message -> m ()
-choose iid msg = Arkham.Message.Lifted.chooseOne iid [msg]
-
-questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
-questionLabel lbl iid q = do
-  pid <- getPlayer iid
-  push $ Ask pid (QuestionLabel lbl Nothing q)
-
-questionLabel' :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
-questionLabel' lbl = Arkham.Message.Lifted.questionLabel ("$" <> lbl)
-
 questionLabelWithCard
   :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
 questionLabelWithCard lbl cCode iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl (Just cCode) q)
-
-chooseOne :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [UI Message] -> m ()
-chooseOne iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOne player msgs
-
-chooseOneFromEach :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [[UI Message]] -> m ()
-chooseOneFromEach iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneFromEach player msgs
-
-chooseSome :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
-chooseSome iid done msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseSome player done msgs
-
-chooseSome1 :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
-chooseSome1 iid done msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseSome1 player done msgs
 
 selectOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)
@@ -1268,7 +873,7 @@ chooseOneToHandle
   -> m ()
 chooseOneToHandle _ _ [] = pure ()
 chooseOneToHandle iid source targets =
-  Arkham.Message.Lifted.chooseOne iid
+  Arkham.Message.Lifted.Prompt.chooseOne iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -1281,7 +886,7 @@ chooseOneToHandleWith
   -> Message
   -> m ()
 chooseOneToHandleWith iid source targets msg =
-  Arkham.Message.Lifted.chooseOne iid
+  Arkham.Message.Lifted.Prompt.chooseOne iid
     $ targetLabels targets \target -> [Msg.handleTargetChoice iid source target, msg]
 
 selectOrRunOneToHandle
@@ -1300,7 +905,7 @@ chooseOrRunOneToHandle
   -> [target]
   -> m ()
 chooseOrRunOneToHandle iid source targets =
-  Arkham.Message.Lifted.chooseOrRunOne iid
+  Arkham.Message.Lifted.Prompt.chooseOrRunOne iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -1312,7 +917,7 @@ handleOneAtATime
   -> [target]
   -> m ()
 handleOneAtATime iid source targets =
-  Arkham.Message.Lifted.chooseOneAtATime iid
+  Arkham.Message.Lifted.Prompt.chooseOneAtATime iid
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -1333,7 +938,7 @@ handleN
   -> [target]
   -> m ()
 handleN iid source n targets =
-  Arkham.Message.Lifted.chooseN iid n
+  Arkham.Message.Lifted.Prompt.chooseN iid n
     $ targetLabels targets
     $ only
     . Msg.handleTargetChoice iid source
@@ -1346,26 +951,6 @@ handleNSelect
   -> matcher
   -> m ()
 handleNSelect iid source n matcher = handleN iid source n =<< select matcher
-
-chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
-chooseUpToN iid n label msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseUpToN player n label msgs
-
-chooseOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
-chooseOneAtATime iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneAtATime player msgs
-
-chooseOrRunOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
-chooseOrRunOneAtATime iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunOneAtATime player msgs
-
-chooseOneDropDown :: ReverseQueue m => InvestigatorId -> [(Text, Message)] -> m ()
-chooseOneDropDown iid msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOneDropDown player msgs
 
 chooseAmounts
   :: (Targetable target, ReverseQueue m)
@@ -1494,16 +1079,6 @@ withInvestigatorAmounts choices f = do
          in guard (amount > 0) $> (iid', amount)
   for_ iidsWithAmounts (uncurry f)
 
-chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
-chooseN iid n msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseN player n msgs
-
-chooseOrRunN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
-chooseOrRunN iid n msgs = do
-  player <- getPlayer iid
-  push $ Msg.chooseOrRunN player n msgs
-
 addToHand
   :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
   => InvestigatorId
@@ -1530,16 +1105,10 @@ addToDiscard iid (toList -> cards) = do
   for_ cards (obtainCard . toCard)
   for_ cards $ push . Msg.addToDiscard iid
 
-returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
-returnToHand iid = push . ReturnToHand iid . toTarget
-
 addToVictory
   :: (ReverseQueue m, Targetable target, ToId investigator InvestigatorId)
   => investigator -> target -> m ()
 addToVictory (asId -> iid) = push . AddToVictory (Just iid) . toTarget
-
-addToVictory_ :: (ReverseQueue m, Targetable target) => target -> m ()
-addToVictory_ = push . AddToVictory Nothing . toTarget
 
 createAbilityEffect :: ReverseQueue m => Msg.EffectWindow -> Ability -> m ()
 createAbilityEffect ew ab = push =<< Msg.createAbilityEffect ew ab
@@ -1718,12 +1287,6 @@ turnModifiers
   -> m ()
 turnModifiers iid source target modifiers = Msg.pushM $ Msg.turnModifiers iid source target modifiers
 
-setupModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
-
-keepCardCache :: ReverseQueue m => m ()
-keepCardCache = setupModifier GameSource GameTarget Persist
 
 scenarioSetupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1945,7 +1508,7 @@ chooseFightEnemyWithSkillChoice
 chooseFightEnemyWithSkillChoice sid iid source skillTypes = do
   fight <- mkChooseFight sid iid source
   let using = toMessage . (`Fight.withSkillType` fight)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -1995,7 +1558,7 @@ chooseEvadeEnemyWithSkillChoice
 chooseEvadeEnemyWithSkillChoice sid iid source skillTypes = do
   evade <- mkChooseEvade sid iid source
   let using = toMessage . (`Evade.withSkillType` evade)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -2018,7 +1581,7 @@ investigateWithSkillChoice
 investigateWithSkillChoice sid iid source skillTypes = do
   inv <- mkInvestigate sid iid source
   let using = toMessage . (`Investigate.withSkillType` inv)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -2033,7 +1596,7 @@ investigateLocationWithSkillChoice
 investigateLocationWithSkillChoice sid iid source skillTypes lid = do
   inv <- mkInvestigateLocation sid iid source lid
   let using = toMessage . (`Investigate.withSkillType` inv)
-  Arkham.Message.Lifted.chooseOne
+  Arkham.Message.Lifted.Prompt.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
@@ -2059,15 +1622,9 @@ toDiscard
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 toDiscard source target = push $ Msg.toDiscard source target
 
-putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
-putCardIntoPlay iid card = push $ Msg.putCardIntoPlayWithAdditionalCosts iid card
-
 putCardIntoPlayWithWindows
   :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> [Window] -> m ()
 putCardIntoPlayWithWindows iid card ws = push $ Msg.putCardIntoPlayWithAdditionalCostsAndWindows iid card ws
-
-putCampaignCardIntoPlay :: (ReverseQueue m, HasCardDef def) => InvestigatorId -> def -> m ()
-putCampaignCardIntoPlay iid def = push $ PutCampaignCardIntoPlay iid (toCardDef def)
 
 putOnBottomOfDeck
   :: (ReverseQueue m, IsDeck deck, Targetable target) => InvestigatorId -> deck -> target -> m ()
@@ -2107,9 +1664,6 @@ loseAllResources iid source = loseResources iid source =<< field InvestigatorRes
 loseAllClues :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 loseAllClues iid (toSource -> source) = push $ Msg.LoseAll iid source #clue
 
-drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-drawEncounterCard i source = drawEncounterCards i source 1
-
 drawEncounterCardAndThen
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> QueueT Message m () -> m ()
 drawEncounterCardAndThen i source andThenDo = do
@@ -2120,9 +1674,6 @@ drawEncounterCardEdit
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()
 drawEncounterCardEdit i source = drawEncounterCardsEdit i source 1
-
-drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-drawEncounterCards i source n = whenM (can.target.encounterDeck i) $ push $ Msg.drawEncounterCards i source n
 
 drawEncounterCardsEdit
   :: (ReverseQueue m, Sourceable source)
@@ -2212,15 +1763,8 @@ focusCards cards body = do
 focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
 focusCard card = focusCards [card]
 
-checkWindows :: ReverseQueue m => [Window] -> m ()
-checkWindows [] = pure ()
-checkWindows ws = Msg.pushM $ Msg.checkWindows ws
 
-checkAfter :: ReverseQueue m => WindowType -> m ()
-checkAfter = Msg.pushM . Msg.checkAfter
 
-checkWhen :: ReverseQueue m => WindowType -> m ()
-checkWhen = Msg.pushM . Msg.checkWhen
 
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
@@ -2334,23 +1878,6 @@ revealingEdit
   -> m ()
 revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ Msg.revealingEdit iid source target zone f
 
-shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
-shuffleIntoDeck deck target = whenCanShuffleIn deck (toTarget target) do
-  push $ Msg.shuffleIntoDeck deck target
-
-shuffleCardsIntoDeck
-  :: ( ReverseQueue m
-     , IsDeck deck
-     , MonoFoldable cards
-     , Element cards ~ card
-     , IsCard card
-     , CanShuffleIn cards
-     )
-  => deck
-  -> cards
-  -> m ()
-shuffleCardsIntoDeck deck cards = whenCanShuffleIn deck cards do
-  push $ Msg.shuffleCardsIntoDeck deck cards
 
 shuffleCardsIntoTopOfDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
@@ -2364,16 +1891,6 @@ shuffleCardsIntoTopOfDeck deck n cards =
     1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
     _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
-shuffleDeck :: (ReverseQueue m, IsDeck deck, HasCallStack) => deck -> m ()
-shuffleDeck deck = guardPlayerDeckIsNotEmpty deck $ push $ ShuffleDeck (toDeck deck)
-
-guardPlayerDeckIsNotEmpty :: (HasCallStack, ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
-guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
-  Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
-  Deck.InvestigatorDeckByKey iid deckKey -> do
-    mdeck <- Map.lookup deckKey <$> field InvestigatorDecks iid
-    when (maybe False (not . null) mdeck) body
-  _ -> body
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
@@ -2552,16 +2069,9 @@ addToVictoryIfNeeded (asId -> enemy) = doNow \case
   Do (AddToVictory _ (EnemyTarget eid)) | eid == enemy -> True
   _ -> False
 
-don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
-don'tAddToVictory eid = matchingDon't \case
-  AddToVictory _ target -> isTarget eid target
-  _ -> False
-
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
 fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 
-matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
-matchingDon't f = lift $ popMessageMatching_ f
 
 allMatchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 allMatchingDon't f = lift $ removeAllMessagesMatching f
@@ -2596,40 +2106,10 @@ abilityModifier
   -> m ()
 abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab source target modifier
 
-batchedOrCurrent :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
-batchedOrCurrent f =
-  getCurrentBatchId >>= \case
-    Just batchId -> withBatched batchId f
-    Nothing -> batched f
 
-batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
-batched f = do
-  batchId <- getId
-  withBatched batchId f
 
-withBatched :: ReverseQueue m => BatchId -> (BatchId -> QueueT Message m ()) -> m ()
-withBatched batchId f = do
-  msgs <- capture (f batchId)
-  push $ Would batchId $ map updateBatch msgs
- where
-  -- Sets the batch id for any top level window calls
-  updateBatch = \case
-    CheckWindows ws -> CheckWindows $ map (\w -> w {windowBatchId = Just batchId}) ws
-    other -> other
 
-payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
-payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost
 
-withCost :: ReverseQueue m => InvestigatorId -> Cost -> QueueT Message m () -> m ()
-withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
-
-oncePerCampaign :: ReverseQueue m => Text -> m () -> m ()
-oncePerCampaign k body = unlessM getIsStandalone do
-  stored @Bool k >>= \case
-    Nothing -> do
-      push $ SetGlobal CampaignTarget (Aeson.fromText k) (toJSON True)
-      body
-    Just _ -> pure ()
 
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()
@@ -2895,11 +2375,6 @@ takeActionAsIfTurn iid (toSource -> source) = do
     push $ PlayerWindow iid [] False True
     for_ mactive $ push . SetActiveInvestigator
 
-ifCardExists :: ReverseQueue m => ExtendedCardMatcher -> QueueT Message m () -> m ()
-ifCardExists matcher body = do
-  msgs <- capture body
-  push $ IfCardExists matcher msgs
-
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)
   => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
@@ -2909,17 +2384,6 @@ nonAttackEnemyDamage miid source damage enemy = do
     then push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
     else whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
       push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
-
-attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-attackEnemyDamage source damage enemy = do
-  whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.DealDamage (EnemyTarget enemy) (attack source damage)
-
-storyEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-storyEnemyDamage source damage enemy = push $ Msg.DealDamage (EnemyTarget enemy) (storyDamage source damage)
-
-exile :: (ReverseQueue m, Targetable target) => target -> m ()
-exile (toTarget -> target) = push $ Msg.Exile target
 
 skillTestAutomaticallySucceeds
   :: (ReverseQueue m, Sourceable source) => source -> SkillTestId -> m ()
@@ -2967,9 +2431,6 @@ healDamageIfCan target source n = whenM (canHaveDamageHealed source (asId target
 healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
-
-applyHealing :: (ReverseQueue m, Sourceable source) => source -> m ()
-applyHealing source = push $ Msg.ApplyHealing (toSource source)
 
 healHorrorDelayed
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
@@ -3034,7 +2495,7 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
   locations <- filterM (getCanDiscoverClues isInvestigate iid) =<< select mtchr
   when (notNull locations) do
     did <- getRandom
-    Arkham.Message.Lifted.chooseOrRunOne
+    Arkham.Message.Lifted.Prompt.chooseOrRunOne
       iid
       [ targetLabel
           location
@@ -3246,36 +2707,6 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
     Window.WouldEndTurn _ -> True
     _ -> False
 
-obtainCard :: (FetchCard a, ReverseQueue m) => a -> m ()
-obtainCard a =
-  fetchCardMaybe a >>= traverse_ \card -> do
-    filterInbox \case
-      Arkham.Message.Discarded _ _ discarded -> discarded.id == toCardId card
-      _ -> False
-    push $ ObtainCard $ toCardId card
-
-removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()
-removeCardFromGame card = do
-  obtainCard $ toCard card
-  push $ RemovedFromGame (toCard card)
-
-playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
-playCardPayingCost iid card = do
-  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCost iid card
-
-payCardCost :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
-payCardCost iid card = push $ Msg.PayCardCost iid (toCard card) (defaultWindows iid)
-
-playCardPayingCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
-playCardPayingCostWithWindows iid card ws = do
-  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCostWithWindows iid card ws
-
-payCardCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
-payCardCostWithWindows iid card ws = push $ Msg.PayCardCost iid card ws
-
-removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
-removeFromGame = push . Msg.RemoveFromGame . toTarget
-
 automaticallyEvadeEnemy
   :: ( ReverseQueue m
      , AsId enemy
@@ -3297,51 +2728,10 @@ placeInBonded iid = push . PlaceInBonded iid . toCard
 endYourTurn :: ReverseQueue m => InvestigatorId -> m ()
 endYourTurn iid = push $ ChooseEndTurn iid
 
-checkDefeated :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
-checkDefeated source target = push $ Msg.checkDefeated source target
-
-changeDrawnBy :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> InvestigatorId -> t m ()
-changeDrawnBy drawer newDrawer =
-  lift $ replaceAllMessagesMatching
-    \case
-      Revelation me _ -> me == drawer
-      Do (InvestigatorDrewEncounterCard me _) -> me == drawer
-      Do (InvestigatorDrewEncounterCardFrom me _ _) -> me == drawer
-      InvestigatorDrawEnemy me _ -> me == drawer
-      CheckWindows ws -> any (isDrawCard . Window.windowType) ws
-      Do (CheckWindows ws) -> any (isDrawCard . Window.windowType) ws
-      _ -> False
-    \case
-      Revelation _ source' -> [Revelation newDrawer source']
-      InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
-      Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
-      Do (InvestigatorDrewEncounterCardFrom _ c frm) -> [Do (InvestigatorDrewEncounterCardFrom newDrawer c frm)]
-      CheckWindows ws -> [CheckWindows $ map changeWindow ws]
-      Do (CheckWindows ws) -> [Do (CheckWindows $ map changeWindow ws)]
-      _ -> error "wrong message found"
- where
-  isDrawCard = \case
-    Window.DrawCard who _ _ -> who == drawer
-    _ -> False
-  changeWindow = \case
-    Window.Window t (Window.DrawCard who c f) batchId | who == drawer -> Window.Window t (Window.DrawCard newDrawer c f) batchId
-    other -> other
-
 chaosTokenEffect
   :: (ReverseQueue m, Sourceable source) => source -> ChaosToken -> ModifierType -> m ()
 chaosTokenEffect (toSource -> source) token modifier =
   Msg.pushM $ Msg.chaosTokenEffect source token modifier
-
-addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
-addCurseTokens mWho n = do
-  batchId <- getId
-  would <-
-    Msg.checkWindows
-      [ (Window.mkWhen $ Window.WouldAddChaosTokensToChaosBag mWho $ replicate n #curse)
-          { Window.windowBatchId = Just batchId
-          }
-      ]
-  Msg.push $ Would batchId $ would : replicate n (Msg.AddChaosToken #curse)
 
 whenNotAtMax :: (HasGame m, Tracing m) => CardDef -> Int -> (Int -> m ()) -> m ()
 whenNotAtMax def n f = do
@@ -3373,23 +2763,9 @@ takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
 loseControlOfAsset :: (ReverseQueue m, ToId asset AssetId) => asset -> m ()
 loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
 
-assetDefeated :: (ReverseQueue m, ToId asset AssetId, Sourceable source) => source -> asset -> m ()
-assetDefeated source asset = push $ Msg.AssetDefeated (toSource source) (asId asset)
-
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
 
-class Attachable a where
-  toAttach :: Targetable target => a -> target -> Message
-
-instance Attachable AssetAttrs where
-  toAttach attrs target = AttachAsset (asId attrs) (toTarget target)
-
-instance Attachable EventId where
-  toAttach eid target = AttachEvent eid (toTarget target)
-
-attach :: (HasQueue Message m, Attachable a, Targetable target) => a -> target -> m ()
-attach a = push . toAttach a
 
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
@@ -3641,9 +3017,6 @@ createAssetWithIdAt assetId c placement = do
   card <- fetchCard c
   push $ CreateAssetAt assetId card placement
 
-healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
-healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)
-
 healAllDamageAndHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamageAndHorror source target = push $ Msg.HealAllDamageAndHorror (toTarget target) (toSource source)
@@ -3651,58 +3024,15 @@ healAllDamageAndHorror source target = push $ Msg.HealAllDamageAndHorror (toTarg
 placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
 placeKey target key = push $ Msg.PlaceKey (toTarget target) key
 
-investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
-investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid
-
-shuffleSetAsideEncounterSetIntoEncounterDeck :: ReverseQueue m => EncounterSet -> m ()
-shuffleSetAsideEncounterSetIntoEncounterDeck =
-  getSetAsideEncounterSet
-    >=> shuffleCardsIntoDeck Deck.EncounterDeck
-    . filter (and . sequence [not . cdDoubleSided, isNothing . cdOtherSide] . toCardDef)
-
-shuffleSetAsideIntoEncounterDeck :: (ReverseQueue m, IsCardMatcher matcher) => matcher -> m ()
-shuffleSetAsideIntoEncounterDeck matcher = do
-  cards <- getSetAsideCardsMatching (toCardMatcher matcher)
-  push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
-
-shuffleScenarioDeckIntoEncounterDeck :: ReverseQueue m => ScenarioDeckKey -> m ()
-shuffleScenarioDeckIntoEncounterDeck = push . ShuffleScenarioDeckIntoEncounterDeck
-
 shuffleSetAsideIntoScenarioDeck
   :: (ReverseQueue m, IsCardMatcher matcher) => ScenarioDeckKey -> matcher -> m ()
 shuffleSetAsideIntoScenarioDeck key matcher = do
   cards <- getSetAsideCardsMatching (toCardMatcher matcher)
   push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey key) cards
 
-setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
-setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
-
-removeScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> m ()
-removeScenarioDeck key = setScenarioDeck key []
-
-chooseUpgradeDecks :: ReverseQueue m => m ()
-chooseUpgradeDecks = push . Msg.chooseUpgradeDecks =<< allPlayers
-
 placeCluesOnLocation
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n
-
-drawCardFrom :: (IsDeck deck, IsCard card, ReverseQueue m) => InvestigatorId -> deck -> card -> m ()
-drawCardFrom iid deck (toCard -> card) = do
-  obtainCard $ toCard card
-  case card of
-    EncounterCard ec -> push $ InvestigatorDrewEncounterCardFrom iid ec (Just $ toDeck deck)
-    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
-    VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid deck vc
-
-drawCard :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m ()
-drawCard iid card = do
-  c <- fetchCard card
-  obtainCard c
-  case c of
-    EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
-    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
-    VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
 
 resolveRevelation :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 resolveRevelation iid card = do
@@ -3711,12 +3041,6 @@ resolveRevelation iid card = do
 
 resolveRevelation_ :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 resolveRevelation_ iid = push . ResolveRevelation iid . toCard
-
-resign :: ReverseQueue m => InvestigatorId -> m ()
-resign iid = push $ Resign iid
-
-discard :: (IsCard card, ReverseQueue m) => card -> m ()
-discard card = push $ DiscardedCard (toCardId card)
 
 lookAtRevealed
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
@@ -3808,22 +3132,6 @@ resolveChaosTokens iid source tokens = do
            $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
-removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
-removeLocation (asId -> lid) = do
-  whenM (matches lid $ IncludeEmptySpace $ not_ LocationBeingRemoved) do
-    noClues <- lid <=~> LocationWithoutClues
-    if noClues
-      then
-        maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory_ lid)
-          =<< field LocationVictory lid
-      else pushAll $ resolve (RemoveLocation lid)
-
-chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-chooseAndDiscardAsset iid source = chooseAndDiscardAssetMatching iid source AnyAsset
-
-chooseAndDiscardAssetMatching
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
-chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher
 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n
@@ -3839,22 +3147,7 @@ requestChaosTokens iid source n = do
 resetChaosTokens :: (ReverseQueue m, Sourceable source) => source -> m ()
 resetChaosTokens source = push $ ResetChaosTokens (toSource source)
 
-withTimings :: ReverseQueue m => WindowType -> m () -> m ()
-withTimings w body = do
-  let (before, atIf, after) = Msg.timings w
-  checkWindows [before]
-  checkWindows [atIf]
-  body
-  checkWindows [after]
 
-withBatchedTimings :: ReverseQueue m => WindowType -> QueueT Message m () -> m ()
-withBatchedTimings w body = do
-  batched \batchId -> do
-    let (before, atIf, after) = Msg.batchedTimings batchId w
-    checkWindows [before]
-    checkWindows [atIf]
-    body
-    checkWindows [after]
 
 don'tRemove
   :: (Sourceable source, MonadTrans t, HasQueue Message m, ReverseQueue (t m))
@@ -3893,9 +3186,6 @@ sendMessage' :: (ReverseQueue m, Targetable target) => target -> QueueT Message 
 sendMessage' target body = do
   msgs <- capture body
   traverse_ (sendMessage target) msgs
-
-setLocationLabel :: (ToId location LocationId, ReverseQueue m) => location -> Text -> m ()
-setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl
 
 removeAsset :: (ReverseQueue m, ToId asset AssetId) => asset -> m ()
 removeAsset asset = push $ RemoveAsset (asId asset)
@@ -3965,9 +3255,6 @@ updateLocation
   -> m ()
 updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
 
-shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
-shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck GameSource (toTarget target)
-
 setActions
   :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)
   => investigator
@@ -3975,9 +3262,6 @@ setActions
   -> Int
   -> m ()
 setActions investigator source n = push $ SetActions (asId investigator) (toSource source) n
-
-commitCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
-commitCard iid card = push $ SkillTestCommitCard iid (toCard card)
 
 updateHistory
   :: (ReverseQueue m, ToId investigator InvestigatorId)
@@ -3994,14 +3278,6 @@ unfocusChaosTokens = push UnfocusChaosTokens
 
 returnChaosTokens :: ReverseQueue m => [ChaosToken] -> m ()
 returnChaosTokens = push . ReturnChaosTokens
-
-revealCard :: (IsCard card, ReverseQueue m, HasGameLogger m) => card -> m ()
-revealCard card = do
-  sendReveal (toJSON $ toCard card)
-  push $ RevealCard (toCardId card)
-
-addToEncounterDiscard :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs) => xs -> m ()
-addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (preview _EncounterCard . toCard) . otoList
 
 addToSpecificEncounterDiscard
   :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs)
@@ -4028,9 +3304,6 @@ flipCluesToDoom target n = push $ FlipClues (toTarget target) n
 
 flipDoomToClues :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
 flipDoomToClues target n = push $ FlipDoom (toTarget target) n
-
-allRandomDiscard :: (ReverseQueue m, Sourceable source) => source -> CardMatcher -> m ()
-allRandomDiscard source matcher = push $ AllRandomDiscard (toSource source) matcher
 
 discardEach
   :: (ReverseQueue m, Query query, Sourceable source, Targetable (QueryElement query))
@@ -4061,9 +3334,6 @@ createWeaknessInThreatArea card iid = do
   c <- fetchCard card
   push $ CreateWeaknessInThreatArea c (asId iid)
 
-allDrawEncounterCard :: ReverseQueue m => m ()
-allDrawEncounterCard = push Msg.AllDrawEncounterCard
-
 removeEnemy :: (ToId enemy EnemyId, ReverseQueue m) => enemy -> m ()
 removeEnemy = push . RemoveEnemy . asId
 
@@ -4080,24 +3350,6 @@ createWindowModifierEffect_ eWindow source target mods = do
 doFlip
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 doFlip iid (toSource -> source) (toTarget -> target) = push $ Flip iid source target
-
-campaignSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
-campaignSpecific key value = push $ CampaignSpecific key (toJSON value)
-
-campaignSpecific_ :: ReverseQueue m => Text -> m ()
-campaignSpecific_ key = push $ CampaignSpecific key Null
-
-investigatorSpecific :: (ToJSON a, ReverseQueue m) => InvestigatorId -> Text -> a -> m ()
-investigatorSpecific iid key value = push $ InvestigatorSpecific iid key (toJSON value)
-
-investigatorSpecific_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
-investigatorSpecific_ iid key = push $ InvestigatorSpecific iid key Null
-
-scenarioSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
-scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
-
-scenarioSpecific_ :: ReverseQueue m => Text -> m ()
-scenarioSpecific_ key = push $ ScenarioSpecific key Null
 
 handleGroupTarget
   :: (ReverseQueue m, Targetable target) => GroupKey -> target -> QueueT Message m () -> m ()

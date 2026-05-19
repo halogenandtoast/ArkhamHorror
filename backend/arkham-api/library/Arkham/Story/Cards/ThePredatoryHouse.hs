@@ -2,10 +2,14 @@
 
 module Arkham.Story.Cards.ThePredatoryHouse (thePredatoryHouse) where
 
+import Arkham.Attack (enemyAttack)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
+import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getLead)
@@ -116,10 +120,20 @@ instance RunMessage ThePredatoryHouse where
       bag' <- case resolvedFace of
         Cultist -> pure bag
         Tablet -> do
-          push $ ScenarioSpecific "predationTablet" (toJSON lead)
+          investigators <- select UneliminatedInvestigator
+          attackPairs <-
+            investigators & mapMaybeM \iid -> runMaybeT do
+              lid <- MaybeT $ getLocationOf iid
+              el <- MaybeT $ maybeEnemyLocation lid
+              pure (enemyLocationAsEnemyId el, iid)
+          for_ attackPairs \(eid, iid) ->
+            push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
+          when (null attackPairs)
+            $ drawEncounterCard lead attrs
           pure $ bag {predationTokens = predationTokens bag <> predationSetAside bag, predationSetAside = []}
         ElderThing -> do
-          mLid <- selectOne $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
+          mLid <-
+            selectOne $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
           for_ mLid \lid -> do
             card <- field LocationCard lid
             push $ FlipToEnemyLocation lid card

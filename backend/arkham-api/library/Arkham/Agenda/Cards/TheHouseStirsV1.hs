@@ -6,10 +6,14 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (LocationCard)
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token (Token (..))
+import Arkham.Trait (Trait (Dormant))
 
 newtype TheHouseStirsV1 = TheHouseStirsV1 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -42,6 +46,13 @@ instance RunMessage TheHouseStirsV1 where
       withLocationOf iid flipLocationOver
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      locations <-
+        select $ NearestLocationToMost (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
+      leadChooseOrRunOneM do
+        targets locations \location -> do
+          card <- field LocationCard location
+          push $ FlipToEnemyLocation location card
       advanceAgendaDeck attrs
       pure a
     _ -> TheHouseStirsV1 <$> liftRunMessage msg attrs

@@ -4,7 +4,6 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetLocation))
-import Arkham.Attack (enemyAttack)
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
@@ -14,15 +13,14 @@ import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Agenda (whenCurrentAgendaStepIs)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
-import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
+import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (incrementRecordCount, record, remember)
 import Arkham.Placement
@@ -269,7 +267,8 @@ instance RunMessage HemlockHouse where
           exhaustEnemy attrs (enemyLocationAsEnemyId el)
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _
-      | token.face == Cultist, isHardExpert attrs -> do
+      | token.face == Cultist
+      , isHardExpert attrs -> do
           -- "If you succeed and your location is an enemy, exhaust it."
           whenJustM (field InvestigatorLocation iid) \lid ->
             whenJustM (maybeEnemyLocation lid) \el ->
@@ -291,7 +290,8 @@ instance RunMessage HemlockHouse where
             sendMessage predatoryHouse $ AddChaosToken ElderThing
           pure s
     AfterSkillTest (PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
-      | token.face == ElderThing, isHardExpert attrs -> do
+      | token.face == ElderThing
+      , isHardExpert attrs -> do
           whenCurrentAgendaStepIs (`elem` [2, 3]) do
             removeChaosToken ElderThing
             predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
@@ -360,18 +360,6 @@ instance RunMessage HemlockHouse where
               | GridLocation (Pos (-1) y) locLid <- flattenGrid grid
               ]
           pure s
-    ScenarioSpecific "predationTablet" (maybeResult -> Just lead) -> do
-      investigators <- select UneliminatedInvestigator
-      attackPairs <-
-        investigators & mapMaybeM \iid -> runMaybeT do
-          lid <- MaybeT $ getLocationOf iid
-          el <- MaybeT $ maybeEnemyLocation lid
-          pure (enemyLocationAsEnemyId el, iid)
-      for_ attackPairs \(eid, iid) ->
-        push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
-      when (null attackPairs)
-        $ drawEncounterCard lead attrs
-      pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"

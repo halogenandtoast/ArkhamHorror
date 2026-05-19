@@ -2520,6 +2520,26 @@ getLocationsMatching lmatcher = do
             matchingLocationIds <- map toId <$> getLocationsMatching matcher
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationToMost matcher -> do
+      -- Mirror of FarthestLocationFromAll: among candidates, return the
+      -- location(s) whose maximum distance to any reachable investigator is the
+      -- smallest. Unreachable investigators contribute no distance for that
+      -- candidate, which lets locations in disconnected components still
+      -- qualify (and tie across components).
+      iids <- getInvestigators
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids \iid -> do
+        distanceSingletons . getMonoidalMap <$> execWriterT do
+          mloc <- getMaybeLocation iid
+          for_ mloc \start -> do
+            for_ candidates \candidate -> do
+              mDistance <- getDistance start candidate
+              for_ mDistance \(Distance distance) -> do
+                tell $ MonoidalMap.singleton distance [candidate]
+      let
+        overallDistances = distanceAggregates $ foldr (unionWith max) mempty distances
+        resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationToAny matcher -> do
       iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher

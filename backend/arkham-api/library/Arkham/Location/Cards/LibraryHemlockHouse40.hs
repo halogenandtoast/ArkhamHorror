@@ -23,9 +23,6 @@ libraryHemlockHouse40 =
     $ connectsToAdjacent
     . (canBeFlippedL .~ True)
 
--- The chosen "secret passage" location id is recorded in the meta of whichever
--- Library triggered the reaction. Both copies of Library look up the marker
--- across all Library locations so the connection applies symmetrically.
 findSecretPassage :: (HasGame m, Tracing m) => m (Maybe LocationId)
 findSecretPassage = do
   libs <- select (LocationWithTitle "Library")

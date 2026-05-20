@@ -18,10 +18,7 @@ diningRoomHemlockHouse =
 
 instance HasAbilities DiningRoomHemlockHouse where
   getAbilities (DiningRoomHemlockHouse a) =
-    extendRevealed1 a
-      $ mkAbility a 1
-      $ forced
-      $ DiscoveringLastClue #after You (be a)
+    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage DiningRoomHemlockHouse where
   runMessage msg l@(DiningRoomHemlockHouse attrs) = runQueueT $ case msg of

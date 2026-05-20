@@ -2528,12 +2528,12 @@ library
       Arkham.Enemy.Types.Attrs
       Arkham.EnemyLocation
       Arkham.EnemyLocation.Cards
-      Arkham.EnemyLocation.Cards.FoyerHemlockHouse
       Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse32
       Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse33
       Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse34
       Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse35
       Arkham.EnemyLocation.Cards.LivingDiningRoomHemlockHouse
+      Arkham.EnemyLocation.Cards.LivingFoyerHemlockHouse
       Arkham.EnemyLocation.Cards.LivingLibraryHemlockHouse39
       Arkham.EnemyLocation.Cards.LivingLibraryHemlockHouse40
       Arkham.EnemyLocation.Cards.LivingParlorHemlockHouse

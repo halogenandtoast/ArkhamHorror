@@ -3,10 +3,12 @@ module Arkham.EnemyLocation.Cards.LivingBedroomHemlockHouse33 (livingBedroomHeml
 import Arkham.Ability
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 
 newtype LivingBedroomHemlockHouse33 = LivingBedroomHemlockHouse33 EnemyLocationAttrs
-  deriving anyclass (IsEnemyLocation, HasModifiersFor)
+  deriving anyclass IsEnemyLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 livingBedroomHemlockHouse33 :: EnemyLocationCard LivingBedroomHemlockHouse33
@@ -14,9 +16,14 @@ livingBedroomHemlockHouse33 =
   enemyLocationWith
     LivingBedroomHemlockHouse33
     Cards.livingBedroomHemlockHouse33
-    (3, StaticWithPerPlayer 3 2, 3)
+    (3, Static 3, 3)
     (1, 1)
     \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}}
+
+instance HasModifiersFor LivingBedroomHemlockHouse33 where
+  getModifiersFor (LivingBedroomHemlockHouse33 a) = do
+    n <- perPlayer 2
+    modifySelf a [HealthModifier n]
 
 instance HasAbilities LivingBedroomHemlockHouse33 where
   getAbilities (LivingBedroomHemlockHouse33 a) =

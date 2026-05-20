@@ -5486,6 +5486,7 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. agendasL)
     traverse_ getModifiersFor (e ^. actsL)
     traverse_ getModifiersFor (e ^. locationsL)
+    traverse_ getModifiersFor (e ^. enemyLocationsL)
     traverse_ getModifiersFor (e ^. effectsL)
     traverse_ getModifiersFor (e ^. eventsL)
     traverse_ getModifiersFor (e ^. skillsL)

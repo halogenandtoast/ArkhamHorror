@@ -55,6 +55,6 @@ allEnemyLocations =
     , SomeEnemyLocationCard livingLibraryHemlockHouse40
     , SomeEnemyLocationCard livingParlorHemlockHouse
     , SomeEnemyLocationCard livingDiningRoomHemlockHouse
-    , SomeEnemyLocationCard foyerHemlockHouse
+    , SomeEnemyLocationCard livingFoyerHemlockHouse
     , SomeEnemyLocationCard shapelessCellar
     ]

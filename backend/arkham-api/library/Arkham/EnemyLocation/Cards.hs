@@ -52,7 +52,7 @@ allEnemyLocationCards =
     , livingLibraryHemlockHouse40
     , livingParlorHemlockHouse
     , livingDiningRoomHemlockHouse
-    , foyerHemlockHouse
+    , livingFoyerHemlockHouse
     , shapelessCellar
     ]
 
@@ -89,8 +89,8 @@ livingParlorHemlockHouse = enemyLocation "10541b" "Living Parlor"
 livingDiningRoomHemlockHouse :: CardDef
 livingDiningRoomHemlockHouse = enemyLocation "10542b" "Living Dining Room"
 
-foyerHemlockHouse :: CardDef
-foyerHemlockHouse = enemyLocation "10543b" "Living Foyer"
+livingFoyerHemlockHouse :: CardDef
+livingFoyerHemlockHouse = enemyLocation "10543b" "Living Foyer"
 
 shapelessCellar :: CardDef
 shapelessCellar = shapelessCellarDef

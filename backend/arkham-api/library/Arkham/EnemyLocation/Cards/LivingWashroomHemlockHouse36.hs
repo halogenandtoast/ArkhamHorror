@@ -14,20 +14,16 @@ livingWashroomHemlockHouse36 =
   enemyLocationWith
     LivingWashroomHemlockHouse36
     Cards.livingWashroomHemlockHouse36
-    (2, Static 3, 3)
-    (1, 1)
-    (\la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 4)}})
+    (3, PerPlayer 3, 3)
+    (2, 0)
+    \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 4)}}
 
 instance HasAbilities LivingWashroomHemlockHouse36 where
   getAbilities (LivingWashroomHemlockHouse36 a) =
-    getAbilities a
-      <> [ restricted
-             a
-             1
-             (LocationExists (LocationWithId a.id <> LocationWithAnyClues <> LocationWithInvestigator Anyone))
-             $ forced
-             $ FlipLocation #after Anyone (LocationWithId a.id)
-         ]
+    extend1 a
+      $ restricted a 1 (exists $ LocationWithId a.id <> LocationWithAnyClues <> LocationWithInvestigator Anyone)
+      $ forced
+      $ FlipLocation #after Anyone (LocationWithId a.id)
 
 instance RunMessage LivingWashroomHemlockHouse36 where
   runMessage msg el@(LivingWashroomHemlockHouse36 attrs) = runQueueT $ case msg of

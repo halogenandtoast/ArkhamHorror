@@ -222,7 +222,11 @@ instance RunMessage EnemyLocationAttrs where
       pure $ a & baseL . tokensL %~ subtractTokens Damage healAmount
     CheckDefeated source (isTarget a -> True) | not a.defeated -> do
       mHealth <- traverse calculate a.health
-      for_ mHealth \health -> do
+      modifiers' <- getModifiers (toTarget a)
+      let applyHealthMod (HealthModifier m) n = max 0 (n + m)
+          applyHealthMod _ n = n
+      let mModifiedHealth = fmap (\h -> foldr applyHealthMod h modifiers') mHealth
+      for_ mModifiedHealth \health -> do
         when (enemyLocationDamage a >= health) do
           (whenMsg, afterMsg) <- Defeat.wouldBeDefeatedWindows (asEnemyId a)
           pushAll

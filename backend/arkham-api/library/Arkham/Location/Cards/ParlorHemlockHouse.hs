@@ -2,7 +2,7 @@ module Arkham.Location.Cards.ParlorHemlockHouse (parlorHemlockHouse) where
 
 import Arkham.Ability
 import Arkham.ForMovement
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -40,9 +40,6 @@ instance RunMessage ParlorHemlockHouse where
           labeled "Skip" nothing
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      -- The skill test target is the chosen enemy; deal the bonus damage to it.
-      whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
-        _ -> pure ()
+      whenJustM getSkillTestTargetedEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure l
     _ -> ParlorHemlockHouse <$> liftRunMessage msg attrs

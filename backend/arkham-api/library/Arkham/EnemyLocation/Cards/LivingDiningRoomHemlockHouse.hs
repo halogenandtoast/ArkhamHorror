@@ -3,32 +3,32 @@ module Arkham.EnemyLocation.Cards.LivingDiningRoomHemlockHouse (livingDiningRoom
 import Arkham.Ability
 import Arkham.EnemyLocation.Cards qualified as Cards
 import Arkham.EnemyLocation.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Story.Cards qualified as Stories
 
 newtype LivingDiningRoomHemlockHouse = LivingDiningRoomHemlockHouse EnemyLocationAttrs
-  deriving anyclass (IsEnemyLocation, HasModifiersFor)
+  deriving anyclass IsEnemyLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- Living Dining Room: Massive. Cannot make attacks of opportunity.
--- Living Dining Room gets +2 [per_investigator] health.
 livingDiningRoomHemlockHouse :: EnemyLocationCard LivingDiningRoomHemlockHouse
 livingDiningRoomHemlockHouse =
   enemyLocationWith
     LivingDiningRoomHemlockHouse
     Cards.livingDiningRoomHemlockHouse
-    (2, StaticWithPerPlayer 4 2, 3)
+    (3, Static 4, 3)
     (1, 1)
-    (\la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 2)}})
+    \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 2)}}
+
+instance HasModifiersFor LivingDiningRoomHemlockHouse where
+  getModifiersFor (LivingDiningRoomHemlockHouse a) = do
+    n <- perPlayer 2
+    modifySelf a [HealthModifier n]
 
 instance HasAbilities LivingDiningRoomHemlockHouse where
   getAbilities (LivingDiningRoomHemlockHouse a) =
-    getAbilities a
-      <> [ -- "Forced - When this enemy-location is revealed: Make a predation test."
-           mkAbility a 1
-             $ forced
-             $ FlipLocation #after Anyone (LocationWithId a.id)
-         ]
+    extend1 a $ mkAbility a 1 $ forced $ FlipLocation #after Anyone (LocationWithId a.id)
 
 instance RunMessage LivingDiningRoomHemlockHouse where
   runMessage msg el@(LivingDiningRoomHemlockHouse attrs) = runQueueT $ case msg of

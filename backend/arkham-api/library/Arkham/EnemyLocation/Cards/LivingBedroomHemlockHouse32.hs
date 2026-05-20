@@ -10,14 +10,13 @@ newtype LivingBedroomHemlockHouse32 = LivingBedroomHemlockHouse32 EnemyLocationA
   deriving anyclass (IsEnemyLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- Stats: fight 2, health 3 + 2 per investigator, evade 3, 1 dmg / 1 horror
 livingBedroomHemlockHouse32 :: EnemyLocationCard LivingBedroomHemlockHouse32
 livingBedroomHemlockHouse32 =
   enemyLocationWith
     LivingBedroomHemlockHouse32
     Cards.livingBedroomHemlockHouse32
-    (2, StaticWithPerPlayer 3 2, 3)
-    (1, 1)
+    (3, StaticWithPerPlayer 3 2, 3)
+    (2, 0)
     \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}}
 
 instance HasAbilities LivingBedroomHemlockHouse32 where

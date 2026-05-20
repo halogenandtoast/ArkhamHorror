@@ -14,19 +14,13 @@ livingBedroomHemlockHouse33 =
   enemyLocationWith
     LivingBedroomHemlockHouse33
     Cards.livingBedroomHemlockHouse33
-    (2, StaticWithPerPlayer 3 2, 3)
+    (3, StaticWithPerPlayer 3 2, 3)
     (1, 1)
-    (\la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}})
+    \la -> la {enemyLocationBase = (enemyLocationBase la) {locationShroud = Just (Static 3)}}
 
 instance HasAbilities LivingBedroomHemlockHouse33 where
   getAbilities (LivingBedroomHemlockHouse33 a) =
-    getAbilities a
-      <> [ -- "Forced - When this enemy-location is revealed: It attacks each
-           -- investigator at this location."
-           mkAbility a 1
-             $ forced
-             $ FlipLocation #after Anyone (LocationWithId a.id)
-         ]
+    extend1 a $ mkAbility a 1 $ forced $ FlipLocation #after Anyone (LocationWithId a.id)
 
 instance RunMessage LivingBedroomHemlockHouse33 where
   runMessage msg el@(LivingBedroomHemlockHouse33 attrs) = runQueueT $ case msg of

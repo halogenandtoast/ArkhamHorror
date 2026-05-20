@@ -12,7 +12,9 @@ newtype DiningRoomHemlockHouse = DiningRoomHemlockHouse LocationAttrs
 
 diningRoomHemlockHouse :: LocationCard DiningRoomHemlockHouse
 diningRoomHemlockHouse =
-  locationWith DiningRoomHemlockHouse Cards.diningRoomHemlockHouse 2 (PerPlayer 3) connectsToAdjacent
+  locationWith DiningRoomHemlockHouse Cards.diningRoomHemlockHouse 2 (PerPlayer 3)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasAbilities DiningRoomHemlockHouse where
   getAbilities (DiningRoomHemlockHouse a) =

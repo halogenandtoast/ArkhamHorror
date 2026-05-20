@@ -31,6 +31,6 @@ instance HasAbilities LivingBedroomHemlockHouse33 where
 instance RunMessage LivingBedroomHemlockHouse33 where
   runMessage msg el@(LivingBedroomHemlockHouse33 attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ Do EnemiesAttack
+      sendMessage attrs $ Do EnemiesAttack
       pure el
     _ -> LivingBedroomHemlockHouse33 <$> liftRunMessage msg attrs

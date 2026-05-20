@@ -19,7 +19,9 @@ newtype LibraryHemlockHouse39 = LibraryHemlockHouse39 LocationAttrs
 
 libraryHemlockHouse39 :: LocationCard LibraryHemlockHouse39
 libraryHemlockHouse39 =
-  locationWith LibraryHemlockHouse39 Cards.libraryHemlockHouse39 3 (PerPlayer 1) connectsToAdjacent
+  locationWith LibraryHemlockHouse39 Cards.libraryHemlockHouse39 3 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 -- The chosen "secret passage" location id is recorded in the meta of whichever
 -- Library triggered the reaction. Both copies of Library look up the marker

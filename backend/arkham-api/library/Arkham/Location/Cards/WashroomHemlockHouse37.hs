@@ -13,7 +13,9 @@ newtype WashroomHemlockHouse37 = WashroomHemlockHouse37 LocationAttrs
 
 washroomHemlockHouse37 :: LocationCard WashroomHemlockHouse37
 washroomHemlockHouse37 =
-  locationWith WashroomHemlockHouse37 Cards.washroomHemlockHouse37 4 (PerPlayer 1) connectsToAdjacent
+  locationWith WashroomHemlockHouse37 Cards.washroomHemlockHouse37 4 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasAbilities WashroomHemlockHouse37 where
   getAbilities (WashroomHemlockHouse37 a) =

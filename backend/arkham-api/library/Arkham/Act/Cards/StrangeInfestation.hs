@@ -1,15 +1,17 @@
 module Arkham.Act.Cards.StrangeInfestation (strangeInfestation) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Card
 import Arkham.EnemyLocation.Cards qualified as EnemyLocations
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Location.Grid (GridLocation (..), Pos (..))
 import Arkham.Matcher
-import Arkham.Scenarios.HemlockHouse.Helpers (locationIsUnsealed)
+import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
+import Arkham.Scenarios.HemlockHouse.Helpers (locationIsUnsealed, locationSealCount)
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant))
 
@@ -22,22 +24,16 @@ strangeInfestation = act (1, A) StrangeInfestation Cards.strangeInfestation Noth
 
 instance HasModifiersFor StrangeInfestation where
   getModifiersFor (StrangeInfestation a) = do
-    -- "Clues cannot be discovered from locations with no investigators."
     modifySelect a Anyone [CannotDiscoverCluesAt $ not_ $ LocationWithInvestigator Anyone]
 
 instance HasAbilities StrangeInfestation where
   getAbilities (StrangeInfestation a) =
-    [ -- "[action] If your location is unsealed and [[Dormant]], investigators
-      -- at that location spend 1 [per_investigator] clues, as a group: Place 1
-      -- resource on it, as a seal."
-      restricted
+    [ restricted
         a
         1
         (exists $ YourLocation <> LocationWithTrait Dormant)
         $ actionAbilityWithCost (SameLocationGroupClueCost (PerPlayer 1) YourLocation)
-    , -- "Objective - At the end of the round, if a total of 7 locations are
-      -- sealed and/or in the victory display, advance."
-      restricted
+    , restricted
         a
         2
         ( HasCalculation
@@ -66,14 +62,21 @@ instance RunMessage StrangeInfestation where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      -- Strange Infestation → The Heart of the House. Bring the Shapeless
-      -- Cellar into play at floor 0 (the bottom of the middle column).
-      cellarCard <- genCard EnemyLocations.shapelessCellar
-      cellarLid <- LocationId <$> getRandom
-      pushAll
-        [ PlaceEnemyLocation cellarLid cellarCard
-        , PlaceGrid (GridLocation (Pos 0 (-1)) cellarLid)
-        ]
-      advanceActDeck attrs
+      sealedLocs <- select $ LocationWithToken Resource
+      sealCount <- sum <$> traverse locationSealCount sealedLocs
+      enemyLocVictory <-
+        scenarioFieldMap
+          ScenarioVictoryDisplay
+          (length . filter ((== EnemyLocationCardType) . toCardType))
+      if enemyLocVictory > sealCount
+        then advanceToAct attrs Cards.againstTheHouse A
+        else do
+          cellarCard <- genCard EnemyLocations.shapelessCellar
+          cellarLid <- LocationId <$> getRandom
+          pushAll
+            [ PlaceEnemyLocation cellarLid cellarCard
+            , PlaceGrid (GridLocation (Pos 0 (-1)) cellarLid)
+            ]
+          advanceActDeck attrs
       pure a
     _ -> StrangeInfestation <$> liftRunMessage msg attrs

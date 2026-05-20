@@ -59,7 +59,7 @@ instance RunMessage ShapelessCellar where
       placeClues attrs attrs 3
       pure el
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ Do EnemiesAttack
+      sendMessage attrs $ Do EnemiesAttack
       pure el
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       addToVictory_ attrs

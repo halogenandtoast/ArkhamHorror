@@ -19,7 +19,9 @@ newtype LibraryHemlockHouse40 = LibraryHemlockHouse40 LocationAttrs
 
 libraryHemlockHouse40 :: LocationCard LibraryHemlockHouse40
 libraryHemlockHouse40 =
-  locationWith LibraryHemlockHouse40 Cards.libraryHemlockHouse40 4 (PerPlayer 1) connectsToAdjacent
+  locationWith LibraryHemlockHouse40 Cards.libraryHemlockHouse40 4 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 -- The chosen "secret passage" location id is recorded in the meta of whichever
 -- Library triggered the reaction. Both copies of Library look up the marker
@@ -41,7 +43,7 @@ instance HasModifiersFor LibraryHemlockHouse40 where
 instance HasAbilities LibraryHemlockHouse40 where
   getAbilities (LibraryHemlockHouse40 a) =
     extendRevealed1 a
-      $ restricted a 1 (not_ (Remembered LibrarySecretPassageOpened))
+      $ restricted a 1 (not_ (Remembered LibrarySecretPassageOpened) <> exists (not_ (location_ $ be a)))
       $ freeReaction (DiscoveringLastClue #after You (be a))
 
 instance RunMessage LibraryHemlockHouse40 where

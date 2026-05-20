@@ -17,7 +17,9 @@ newtype BedroomHemlockHouse32 = BedroomHemlockHouse32 LocationAttrs
 -- HasModifiersFor instance bumps it to floor + 1 dynamically.
 bedroomHemlockHouse32 :: LocationCard BedroomHemlockHouse32
 bedroomHemlockHouse32 =
-  locationWith BedroomHemlockHouse32 Cards.bedroomHemlockHouse32 0 (PerPlayer 1) connectsToAdjacent
+  locationWith BedroomHemlockHouse32 Cards.bedroomHemlockHouse32 0 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasModifiersFor BedroomHemlockHouse32 where
   getModifiersFor (BedroomHemlockHouse32 a) = do

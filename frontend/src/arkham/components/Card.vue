@@ -68,8 +68,11 @@ function canInteract(c: Message): boolean {
       }
     }
     if (c.target.tag === 'EnemyTarget') {
-      if (typeof c.target.contents === 'string' && props.game.enemies[c.target.contents].cardId == id.value) {
-        return true
+      if (typeof c.target.contents === 'string') {
+        const enemy = props.game.enemies[c.target.contents]
+        if (enemy && enemy.cardId == id.value) {
+          return true
+        }
       }
     }
     return c.target.contents === id.value

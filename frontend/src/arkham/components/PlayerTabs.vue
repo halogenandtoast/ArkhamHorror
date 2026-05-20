@@ -126,12 +126,18 @@ const targetToPlacement = (target: Target): Placement | null => {
     case "EnemyTarget":
       {
         const { contents } = target
-        if (contents) return props.game.enemies[contents].placement
+        if (contents) {
+          const enemy = props.game.enemies[contents]
+          if (enemy) return enemy.placement
+        }
       }
     case "TreacheryTarget":
       {
         const { contents } = target
-        if (contents) return props.game.treacheries[contents].placement
+        if (contents) {
+          const treachery = props.game.treacheries[contents]
+          if (treachery) return treachery.placement
+        }
       }
     default:
   }

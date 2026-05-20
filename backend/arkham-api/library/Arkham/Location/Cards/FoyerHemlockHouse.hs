@@ -15,7 +15,10 @@ newtype FoyerHemlockHouse = FoyerHemlockHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 foyerHemlockHouse :: LocationCard FoyerHemlockHouse
-foyerHemlockHouse = locationWith FoyerHemlockHouse Cards.foyerHemlockHouse 2 (PerPlayer 1) connectsToAdjacent
+foyerHemlockHouse =
+  locationWith FoyerHemlockHouse Cards.foyerHemlockHouse 2 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasAbilities FoyerHemlockHouse where
   getAbilities (FoyerHemlockHouse a) =

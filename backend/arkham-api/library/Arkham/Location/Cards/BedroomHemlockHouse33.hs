@@ -15,7 +15,9 @@ newtype BedroomHemlockHouse33 = BedroomHemlockHouse33 LocationAttrs
 
 bedroomHemlockHouse33 :: LocationCard BedroomHemlockHouse33
 bedroomHemlockHouse33 =
-  locationWith BedroomHemlockHouse33 Cards.bedroomHemlockHouse33 0 (PerPlayer 1) connectsToAdjacent
+  locationWith BedroomHemlockHouse33 Cards.bedroomHemlockHouse33 0 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasModifiersFor BedroomHemlockHouse33 where
   getModifiersFor (BedroomHemlockHouse33 a) = do

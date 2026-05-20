@@ -21,9 +21,10 @@ livingWashroomHemlockHouse36 =
 instance HasAbilities LivingWashroomHemlockHouse36 where
   getAbilities (LivingWashroomHemlockHouse36 a) =
     getAbilities a
-      <> [ -- "Forced - When this enemy-location is revealed, if there are 1 or
-           -- more clues on it: It attacks each investigator at this location."
-           restricted a 1 (LocationExists (LocationWithId a.id <> LocationWithAnyClues))
+      <> [ restricted
+             a
+             1
+             (LocationExists (LocationWithId a.id <> LocationWithAnyClues <> LocationWithInvestigator Anyone))
              $ forced
              $ FlipLocation #after Anyone (LocationWithId a.id)
          ]
@@ -31,6 +32,6 @@ instance HasAbilities LivingWashroomHemlockHouse36 where
 instance RunMessage LivingWashroomHemlockHouse36 where
   runMessage msg el@(LivingWashroomHemlockHouse36 attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ Do EnemiesAttack
+      sendMessage attrs $ Do EnemiesAttack
       pure el
     _ -> LivingWashroomHemlockHouse36 <$> liftRunMessage msg attrs

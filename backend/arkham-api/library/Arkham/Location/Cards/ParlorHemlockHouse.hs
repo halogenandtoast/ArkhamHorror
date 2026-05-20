@@ -14,7 +14,9 @@ newtype ParlorHemlockHouse = ParlorHemlockHouse LocationAttrs
 
 parlorHemlockHouse :: LocationCard ParlorHemlockHouse
 parlorHemlockHouse =
-  locationWith ParlorHemlockHouse Cards.parlorHemlockHouse 4 (PerPlayer 2) connectsToAdjacent
+  locationWith ParlorHemlockHouse Cards.parlorHemlockHouse 4 (PerPlayer 2)
+    $ connectsToAdjacent
+    . (canBeFlippedL .~ True)
 
 instance HasAbilities ParlorHemlockHouse where
   getAbilities (ParlorHemlockHouse a) =

@@ -139,7 +139,7 @@ import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
 import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
-import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..))
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
@@ -4896,11 +4896,21 @@ instance Query KeyMatcher where
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
   select_ matcher = do
+    g <- getGame
+    let entities = view entitiesL g
+    -- EnemyLocation's `toTarget` only produces LocationTarget, but the runtime
+    -- treats the entity as an Enemy too (via the on-the-fly proxy). Without
+    -- exposing that EnemyTarget here, the `validChoice` filter for ChooseOne
+    -- silently strips any TargetLabel referring to an enemy-location's proxy
+    -- enemy id.
+    let enemyLocationProxyTargets =
+          map
+            (EnemyTarget . enemyLocationAsEnemyId . EnemyLocationId . toId)
+            (toList $ view enemyLocationsL entities)
     filterM (`targetMatches` matcher)
-      . (ScenarioTarget :)
-      . overEntities ((: []) . toTarget)
-      . view entitiesL
-      =<< getGame
+      $ ScenarioTarget
+      : enemyLocationProxyTargets
+      <> overEntities ((: []) . toTarget) entities
 
 instance Query SourceMatcher where
   toSomeQuery = SourceQuery

@@ -900,8 +900,9 @@ watchEffect(() => {
   const isDiscardChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false
     if (c.tag === "TargetLabel" && c.target.tag === "EnemyTarget") {
-      let enemyCardId = props.game.enemies[c.target.contents as string].cardId
-      return discards.value.some(card => cardId(card) === enemyCardId)
+      const enemy = props.game.enemies[c.target.contents as string]
+      if (!enemy) return false
+      return discards.value.some(card => cardId(card) === enemy.cardId)
     }
     if (c.target.tag !== "CardIdTarget") return false
     return discards.value.some(card => cardId(card) === c.target.contents)

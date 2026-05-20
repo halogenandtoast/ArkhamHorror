@@ -66,7 +66,7 @@
   },
   "enemyLocations": {
     "title": "Enemy-Locations",
-    "intro": "<h3>Enemy-Locations</h3><div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>This scenario introduces a new cardtype: _enemy-location_. An enemy-location is both an enemy and a location, and that enemy is considered to be at that location. Investigators may fight, evade, and investigate enemy-locations.</p><div style='flex:1; margin-top: -40px;' class='fan-thin'><img style='object-fit: contain;' src='{setImgPath}/../cards/10532.avif' /><img style='object-fit: contain;' src='{setImgPath}/../cards/10533b.avif' /></div></div>",
+    "intro": "<h3>Enemy-Locations</h3><div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>This scenario introduces a new cardtype: enemy-location. An enemy-location is both an enemy and a location, and that enemy is considered to be at that location. Investigators may fight, evade, and investigate enemy-locations.</p><div style='flex:1; margin-top: -40px;' class='fan-thin'><img style='object-fit: contain;' src='{setImgPath}/../cards/10532.avif' /><img style='object-fit: contain;' src='{setImgPath}/../cards/10533b.avif' /></div></div>",
     "noMove": "Enemy-locations cannot be moved by card effects.",
     "keepEntities": "When instructed to flip a location to its enemy-location side or vice versa, keep all investigators, enemies, attachments, and tokens on that location.",
     "sealed": "Locations with a seal on them are considered “sealed” and cannot be flipped to their enemy-location side by a predation test.",

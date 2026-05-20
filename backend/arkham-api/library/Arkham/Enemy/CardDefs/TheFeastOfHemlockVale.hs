@@ -51,7 +51,9 @@ grapplingSpawn :: CardDef
 grapplingSpawn =
   (enemy "10544" "Grappling Spawn" HemlockHouse 2)
     { cdCardTraits = setFromList [Monster, Mutated]
-    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdKeywords =
+        setFromList
+          [Keyword.Hunter, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Retaliate]
     }
 
 ursineHybridGlowingAbomination :: CardDef
@@ -85,7 +87,10 @@ miasmaticShadow =
     { cdCardTraits = setFromList [Monster, Colour]
     , cdKeywords =
         setFromList
-          [Keyword.Aloof, Keyword.Hunter, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive]
+          [ Keyword.Aloof
+          , Keyword.Hunter
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive
+          ]
     }
 
 poisonblossom :: CardDef

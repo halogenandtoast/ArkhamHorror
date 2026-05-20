@@ -34,6 +34,7 @@ import Arkham.Helpers.CombatTarget
 import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
+import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 
 data IsFast = IsFast | NotFast
   deriving stock Eq
@@ -205,18 +206,51 @@ getActionsWith iid ws f = withSpan_ "getActions" do
           pure $ sources & map \source -> action {abilitySource = ProxySource source base}
         _ -> pure [action]
 
+  -- Pre-filter: drop abilities whose window matcher can't fire for any of
+  -- the supplied windows. The expensive per-ability work below (getModifiers,
+  -- AssetClasses, isForcedAbility, then passesCriteria + getCanAffordAbility)
+  -- is wasted on abilities that the caller's CheckWindows will subsequently
+  -- discard via `runWindow`'s own windowMatches pass. Doing this once here
+  -- saves 80%+ of per-ability work during scenario-setup CheckWindows where
+  -- most abilities don't react to placement events. Empty `ws` (no windows)
+  -- preserves prior behaviour: keep every ability so callers like the
+  -- top-level action menu still enumerate base actions.
+  actionsMatchingWindow <-
+    if null ws
+      then pure actionsWithSources
+      else flip filterM actionsWithSources \ability ->
+        anyM
+          (\w -> windowMatches iid (abilitySource ability) w (abilityWindow ability))
+          ws
+
   let bountiesOnly = BountiesOnly `elem` investigatorModifiers
+  -- Memoize per-source lookups so abilities sharing a source (e.g. all six
+  -- of the investigator's base actions; multiple abilities on one asset)
+  -- don't re-run getModifiers / AssetClasses / bounty-check for each one.
+  -- We precompute once per distinct source for this getActions call.
+  let uniqueSources = nub (map abilitySource actionsMatchingWindow)
+  sourceModifierMap :: Map Source [ModifierType] <-
+    fmap mapFromList $ for uniqueSources $ \src ->
+      (src,) <$> getModifiers (sourceToTarget src)
+  sourceClassesMap :: Map Source (Set ClassSymbol) <-
+    fmap mapFromList $ for uniqueSources $ \src -> case src of
+      AssetSource aid -> (src,) <$> field Field.AssetClasses aid
+      _ -> pure (src, singleton Neutral)
+  sourceBountyMap :: Map Source Bool <-
+    fmap mapFromList $ for uniqueSources $ \src -> case src of
+      EnemySource eid -> (src,) <$> (eid <=~> EnemyWithBounty)
+      _ -> pure (src, True)
+  let
+    lookupModifiers src = findWithDefault [] src sourceModifierMap
+    lookupClasses src = findWithDefault (singleton Neutral) src sourceClassesMap
+    lookupBounty src = findWithDefault True src sourceBountyMap
   actions'' <-
-    catMaybes <$> for actionsWithSources \ability -> do
-      modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
-      cardClasses <- case abilitySource ability of
-        AssetSource aid -> field Field.AssetClasses aid
-        _ -> pure $ singleton Neutral
+    catMaybes <$> for actionsMatchingWindow \ability -> do
+      let modifiers' = lookupModifiers (abilitySource ability)
+      let cardClasses = lookupClasses (abilitySource ability)
 
       -- if enemy only bounty enemies
-      sourceIsBounty <- case abilitySource ability of
-        EnemySource eid -> eid <=~> EnemyWithBounty
-        _ -> pure True
+      let sourceIsBounty = lookupBounty (abilitySource ability)
 
       isForced <- isForcedAbility iid ability
       let

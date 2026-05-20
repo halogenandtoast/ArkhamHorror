@@ -94,6 +94,18 @@ hasEliminatedWindow = any $ \case
   (windowType -> EndOfGame {}) -> True
   _ -> False
 
+-- | True if the given window set is one in which a player can ever play a
+-- card with an Action cost. Used to short-circuit getPlayableCards in
+-- Do (CheckWindows) handlers when the windows clearly aren't player-input
+-- windows — e.g., during scenario setup where every state-change message
+-- triggers a window check but no card play is possible.
+hasCardPlayWindow :: [Window] -> Bool
+hasCardPlayWindow = any $ \case
+  (windowType -> FastPlayerWindow) -> True
+  (windowType -> NonFast) -> True
+  (windowType -> DuringTurn {}) -> True
+  _ -> False
+
 primaryWindowTarget :: WindowType -> Maybe Target
 primaryWindowTarget = \case
   Healed _ target _ _ -> Just target

@@ -222,14 +222,13 @@ main = do
     Nothing -> BL8.putStrLn (encode finalGame)
     Just f -> BSL.writeFile f (encode finalGame)
 
+  let elapsedMs = fromIntegral (wallEnd - wallStart) / (1_000_000 :: Double)
+  hPutStrLn stderr
+    $ "Replay wall-clock (excluding load + final encode): "
+    <> show elapsedMs
+    <> " ms"
   case (optMetrics opts, metricsRef) of
-    (Just dest, Just ref) -> do
-      let elapsedMs = fromIntegral (wallEnd - wallStart) / (1_000_000 :: Double)
-      hPutStrLn stderr
-        $ "Replay wall-clock (excluding load + final encode): "
-        <> show elapsedMs
-        <> " ms"
-      dumpMetricsTo dest ref (optMetricsTopN opts)
+    (Just dest, Just ref) -> dumpMetricsTo dest ref (optMetricsTopN opts)
     _ -> pure ()
 
   when (not (null perStepTimings)) $ do

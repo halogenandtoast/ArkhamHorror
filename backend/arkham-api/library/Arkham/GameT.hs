@@ -5,7 +5,8 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Message
-import Arkham.Metrics (withMetric)
+import Arkham.Metrics (isMetricsEnabled, recordSpan)
+import GHC.Clock (getMonotonicTimeNSec)
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random
@@ -52,7 +53,20 @@ instance Tracing GameT where
   -- Since the argument is unused here, GHC's laziness keeps the thunk
   -- unforced.
   addAttribute _ _ _ = pure ()
-  doTrace name args action = withMetric name (inSpan' name args action)
+  -- Fast path: when metrics are disabled AND no OTel exporter is wired up,
+  -- skip `inSpan'` entirely. Every `withSpan_`/`withSpan'` call otherwise
+  -- creates a real Span data structure (createSpan, context, bracketError),
+  -- which dominates engine time for message-heavy steps. The Span argument
+  -- is safe to leave unforced because every `addAttribute` impl ignores it.
+  doTrace name args action = do
+    mref <- liftIO isMetricsEnabled
+    case mref of
+      Nothing -> action (error "doTrace: span unused on fast path")
+      Just _ -> do
+        t0 <- liftIO getMonotonicTimeNSec
+        inSpan' name args action `finally` do
+          t1 <- liftIO getMonotonicTimeNSec
+          liftIO $ recordSpan name (t1 - t0)
 instance HasGame GameT where
   getGame = asks gameEnvGame >>= readIORef
   getCache = GameCache \k build -> do

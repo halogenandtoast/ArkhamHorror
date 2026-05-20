@@ -6144,6 +6144,11 @@ runMessages gameId mLogger = do
             BeginAction {} -> False
             CheckAttackOfOpportunity {} -> False
             CheckEnemyEngagement {} -> False
+            -- CheckWindows itself only pushes [Do (CheckWindows ws), EndCheckWindow]
+            -- and doesn't mutate game state (other than bumping windowDepth/stack),
+            -- so the heavy modifier preload pipeline is wasted work here. The real
+            -- preload happens when its consequent Do (CheckWindows) is processed.
+            CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
             CreatedCost {} -> False
@@ -6159,6 +6164,19 @@ runMessages gameId mLogger = do
             When {} -> False
             WhenCanMove {} -> False
             Would {} -> False
+            -- Display- and notification-only messages: they don't add/remove
+            -- entities, abilities, or modifiers, so running the entire
+            -- preloadModifiers + handleAsIfChanges + handleAloof + ...
+            -- pipeline after them is pure waste. Skipping ~50 of these per
+            -- scenario setup measurably shortens the heavy first step.
+            SetLayout {} -> False
+            SetLocationLabel {} -> False
+            PlaceGrid {} -> False
+            PlacedLocation {} -> False
+            PlacedLocationDirection {} -> False
+            LocationMoved {} -> False
+            SetActivePlayer {} -> False
+            Arkham.Helpers.Message.PhaseStep {} -> False
             _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger

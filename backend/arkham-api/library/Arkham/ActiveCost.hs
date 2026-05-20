@@ -610,8 +610,15 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
-      push $ toMessage $ randomDiscard iid source
-      pure c
+      hand <- field InvestigatorHand iid
+      candidates <- filterM (`matches` CardWithoutModifier CannotLeaveYourHand) hand
+      case nonEmpty candidates of
+        Nothing -> pure c
+        Just cards -> do
+          card <- sample cards
+          wouldDiscard <- checkWhen (Window.WouldDiscardFromHand iid source)
+          pushAll [wouldDiscard, DiscardCard iid source (toCardId card)]
+          withPayment $ DiscardCardPayment [card]
     DiscardCardCost card -> do
       push $ toMessage $ discardCard iid source card
       withPayment $ DiscardCardPayment [card]

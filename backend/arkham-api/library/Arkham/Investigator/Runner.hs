@@ -2069,16 +2069,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     | not investigatorSkippedWindow
         && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
         actions <- getActions a.id windows
-        -- getPlayableCards with `NeedsAction` returns non-empty only inside
-        -- player-input windows (DuringTurn / FastPlayerWindow / NonFast). For
-        -- the many CheckWindows that fire during scenario setup, encounter
-        -- card resolution, etc., this call walks every hand card just to
-        -- return []. Skip when the windows clearly aren't card-play windows.
         playableCards <-
-          if (investigatorDefeated || investigatorResigned)
-              || not (Window.hasCardPlayWindow windows)
-            then pure []
-            else getPlayableCards a a (UnpaidCost NeedsAction) windows
+          if not (investigatorDefeated || investigatorResigned)
+            then getPlayableCards a a (UnpaidCost NeedsAction) windows
+            else pure []
         runWindow a windows actions playableCards
         pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> handleSpendActions a iid

@@ -10,9 +10,7 @@ import Arkham.Debug
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
-import Arkham.Metrics (isMetricsEnabled, recordSpan)
-import GHC.Clock (getMonotonicTimeNSec)
-import UnliftIO.Exception (finally)
+import Arkham.Metrics (withMetric)
 import Arkham.Queue
 import Arkham.Random
 import Arkham.Tracing
@@ -139,16 +137,7 @@ instance Tracing GameAppT where
   -- (often `tshow` over deep ADTs) stay unforced.
   addAttribute _ _ _ = pure ()
   defaultSpanArgs = Trace.defaultSpanArguments
-  -- Mirror the fast path from Arkham.GameT.
-  doTrace name args action = do
-    mref <- liftIO isMetricsEnabled
-    case mref of
-      Nothing -> action (error "doTrace: span unused on fast path")
-      Just _ -> do
-        t0 <- liftIO getMonotonicTimeNSec
-        inSpan' name args action `finally` do
-          t1 <- liftIO getMonotonicTimeNSec
-          liftIO $ recordSpan name (t1 - t0)
+  doTrace name args action = withMetric name (inSpan' name args action)
 
 gameIdToText :: ArkhamGameId -> Text
 gameIdToText = UUID.toText . coerce

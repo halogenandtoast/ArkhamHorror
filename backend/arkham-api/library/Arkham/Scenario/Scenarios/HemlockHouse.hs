@@ -133,6 +133,18 @@ instance RunMessage HemlockHouse where
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
 
+      scope "enemyLocations" $ flavor do
+        setTitle "title"
+        p "intro"
+        ul do
+          li "noMove"
+          li "keepEntities"
+          li.nested "sealed" do
+            li "unsealed"
+          li.nested "defeat" do
+            li "noAbove"
+            li "middleEmpty"
+
       setUsesGrid
 
       gather Set.HemlockHouse

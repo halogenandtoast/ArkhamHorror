@@ -64,6 +64,17 @@
     "setOutOfPlay": "Set all five _Fire!_ treacheries and all copies of the _Out of the Walls_ and _Pulled In_ treacheries aside, out of play.",
     "shuffleEncounter": "Shuffle the remaining encounter cards to build the encounter deck."
   },
+  "enemyLocations": {
+    "title": "Enemy-Locations",
+    "intro": "<h3>Enemy-Locations</h3><div class='columns' style='padding-right: 30px;'><p class='basic' style='padding-left: 0; margin-left: 0;'>This scenario introduces a new cardtype: _enemy-location_. An enemy-location is both an enemy and a location, and that enemy is considered to be at that location. Investigators may fight, evade, and investigate enemy-locations.</p><div style='flex:1; margin-top: -40px;' class='fan-thin'><img style='object-fit: contain;' src='{setImgPath}/../cards/10532.avif' /><img style='object-fit: contain;' src='{setImgPath}/../cards/10533b.avif' /></div></div>",
+    "noMove": "Enemy-locations cannot be moved by card effects.",
+    "keepEntities": "When instructed to flip a location to its enemy-location side or vice versa, keep all investigators, enemies, attachments, and tokens on that location.",
+    "sealed": "Locations with a seal on them are considered “sealed” and cannot be flipped to their enemy-location side by a predation test.",
+    "unsealed": "An unsealed location is a location with no seals on it.",
+    "defeat": "When an enemy-location is defeated, add it to the victory display, leaving behind an empty space. Then, simultaneously slide each location that was above it in its column down one floor to fill that empty space. Place each investigator, story asset, and enemy that was at the defeated enemy-location at the newly-moved location.",
+    "noAbove": "If there are no locations above the empty space in its column, choose a location adjacent to the empty space and place each investigator, story asset, and enemy in the chosen location.",
+    "middleEmpty": "If the entire middle column is removed, slide the entire left column one step to the right, so that the two remaining columns are adjacent. (They remain the left and right columns, respectively; there is no middle column.)"
+  },
   "predationTest": {
     "title": "Predation Test",
     "cultist": "Set this token aside.",

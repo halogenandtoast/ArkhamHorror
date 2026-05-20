@@ -468,8 +468,7 @@ p.billenia, :deep(p.billenia) {
 }
 
 h3, :deep(h3) {
-  margin-bottom: 10px;
-  font-size: 1.1em;
+  font-size: 1.3em;
   font-weight: bold;
   text-decoration: underline;
   justify-self: center;
@@ -740,7 +739,7 @@ ul, :deep(ul) {
   align-self: start;
   justify-self: start;
   justify-content: start;
-  margin: 10px;
+  margin: 0;
 }
 
 :deep(h1) {

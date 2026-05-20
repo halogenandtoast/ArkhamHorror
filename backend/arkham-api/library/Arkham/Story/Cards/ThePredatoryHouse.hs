@@ -154,13 +154,10 @@ instance RunMessage ThePredatoryHouse where
               }
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ScenarioSpecific "predationCleanup" _) -> do
-      -- Resolution 2: "Remove 1 [tablet] token from the predation bag. Return
-      -- any remaining [tablet] tokens in the predation bag to the chaos bag for
-      -- the remainder of the campaign."
       let bag = predationBag attrs
-      let allTablets = filter (\t -> t.face == Tablet) (allBagTokens bag)
-      let extraTablets = drop 1 allTablets
-      for_ extraTablets $ \_ -> addChaosToken Tablet
+      let allElderThings = filter (\t -> t.face == ElderThing) (allBagTokens bag)
+      let extraElderThings = drop 1 allElderThings
+      for_ extraElderThings \_ -> addChaosToken ElderThing
       pure $ ThePredatoryHouse attrs
     SendMessage (isTarget attrs -> True) (ScenarioSpecific "cancelNextPredation" _) -> do
       let bag = predationBag attrs

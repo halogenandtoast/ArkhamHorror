@@ -222,27 +222,60 @@ const hasAnyOffset = computed(() =>
 
 // Padding to extend the scroll area so dragged locations near the edges
 // aren't clipped. Transforms don't expand the parent's layout box, so we
-// translate each location's screen-space offset into padding on the grid.
-const layoutPadding = computed(() => {
+// measure each moved cell's actual displaced position against the grid's
+// content bounds and only add padding for real overflow — a location moved
+// "into" the grid (e.g. a bottom-row cell nudged up) shouldn't grow padding.
+const layoutPadding = ref({ left: 0, right: 0, top: 0, bottom: 0 })
+
+async function updateLayoutPadding() {
+  await nextTick()
+  const grid = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
+  if (!grid) return
+
+  const current = layoutPadding.value
+  const allOffsets: Record<string, { x: number, y: number }> = {
+    ...locationOffsets.value,
+    ...pendingOffsets.value,
+  }
+
+  if (Object.keys(allOffsets).length === 0) {
+    if (current.left || current.right || current.top || current.bottom) {
+      layoutPadding.value = { left: 0, right: 0, top: 0, bottom: 0 }
+    }
+    return
+  }
+
+  const contentWidth = grid.clientWidth - current.left - current.right
+  const contentHeight = grid.clientHeight - current.top - current.bottom
+
   let left = 0, right = 0, top = 0, bottom = 0
-  const seen = new Set<string>()
-  const consider = (off: { x: number, y: number }) => {
-    const rot = rotateOffset(off, rotationSteps.value)
-    if (rot.x < 0) left = Math.max(left, -rot.x)
-    else if (rot.x > 0) right = Math.max(right, rot.x)
-    if (rot.y < 0) top = Math.max(top, -rot.y)
-    else if (rot.y > 0) bottom = Math.max(bottom, rot.y)
+  const cells = grid.querySelectorAll<HTMLElement>('.location-cell[data-location-id]')
+  for (const cell of cells) {
+    const id = cell.dataset.locationId
+    if (!id) continue
+    const offset = allOffsets[id]
+    if (!offset) continue
+
+    const rot = rotateOffset(offset, rotationSteps.value)
+    // offsetLeft/offsetTop are relative to the offset parent's border box and
+    // ignore CSS transforms, so they give us the cell's natural grid position
+    // *including* the grid's current padding — subtract it to get content-area
+    // coords, which are stable across padding updates.
+    const cellLeft = cell.offsetLeft - current.left + rot.x
+    const cellTop = cell.offsetTop - current.top + rot.y
+    const cellRight = cellLeft + cell.offsetWidth
+    const cellBottom = cellTop + cell.offsetHeight
+
+    if (cellLeft < 0) left = Math.max(left, -cellLeft)
+    if (cellTop < 0) top = Math.max(top, -cellTop)
+    if (cellRight > contentWidth) right = Math.max(right, cellRight - contentWidth)
+    if (cellBottom > contentHeight) bottom = Math.max(bottom, cellBottom - contentHeight)
   }
-  for (const id of Object.keys(pendingOffsets.value)) {
-    seen.add(id)
-    consider(pendingOffsets.value[id])
+
+  if (left !== current.left || right !== current.right || top !== current.top || bottom !== current.bottom) {
+    layoutPadding.value = { left, right, top, bottom }
   }
-  for (const id of Object.keys(locationOffsets.value)) {
-    if (seen.has(id)) continue
-    consider(locationOffsets.value[id])
-  }
-  return { left, right, top, bottom }
-})
+}
 
 // Returns the CANONICAL offset for a location (server-side coordinate frame).
 function effectiveOffset(locationId: string): { x: number, y: number } {
@@ -393,6 +426,7 @@ onMounted(() => {
   setGameId(props.game.id)
   updateScrollMargins()
   updateCellDimensions()
+  updateLayoutPadding()
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -810,6 +844,11 @@ const locations = computed(() => Object.values(props.game.locations).
 watch(locations, updateScrollMargins, { flush: 'post' })
 watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
+watch(
+  [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
+  updateLayoutPadding,
+  { flush: 'post', deep: true },
+)
 const usedLabels = computed(() => locations.value.map((l) => l.label))
 const unusedLabels = computed(() => {
   const { locationLayout, usesGrid } = props.scenario;
@@ -1550,6 +1589,7 @@ async function addChaosToken(face: any){
             v-for="location in locations"
             :key="location.label"
             class="location-cell"
+            :data-location-id="location.id"
             :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
           >
             <Location

@@ -6145,6 +6145,7 @@ runMessages gameId mLogger = do
             BeginAction {} -> False
             CheckAttackOfOpportunity {} -> False
             CheckEnemyEngagement {} -> False
+            CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
             CreatedCost {} -> False
@@ -6160,6 +6161,14 @@ runMessages gameId mLogger = do
             When {} -> False
             WhenCanMove {} -> False
             Would {} -> False
+            SetLayout {} -> False
+            SetLocationLabel {} -> False
+            PlaceGrid {} -> False
+            PlacedLocation {} -> False
+            PlacedLocationDirection {} -> False
+            LocationMoved {} -> False
+            SetActivePlayer {} -> False
+            Arkham.Helpers.Message.PhaseStep {} -> False
             _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger
@@ -6227,6 +6236,12 @@ runMessages gameId mLogger = do
                     >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            -- Setup pushes a CheckWindows for every location placed and every
+            -- clue placed. No triggered ability can resolve during setup, so
+            -- the entire preload + runWindow pipeline for those windows is
+            -- pure waste. Skip them outright while gameInSetup is True.
+            CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results

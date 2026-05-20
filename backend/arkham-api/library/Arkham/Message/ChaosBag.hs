@@ -47,6 +47,7 @@ data ChaosBagMessage
   | ForceChaosTokenDrawToken_ ChaosToken
   | SetChaosTokens_ [ChaosTokenFace]
   | SetChaosTokensForScenario_
+  | SetCampaignChaosBag_ [ChaosTokenFace]
   | ObtainChaosToken_ ChaosToken
   deriving stock (Show, Ord, Eq, Data)
 

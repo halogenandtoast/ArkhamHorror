@@ -1379,6 +1379,9 @@ pattern SetChaosTokens fs = ChaosBagMessage (SetChaosTokens_ fs)
 pattern SetChaosTokensForScenario :: Message
 pattern SetChaosTokensForScenario = ChaosBagMessage SetChaosTokensForScenario_
 
+pattern SetCampaignChaosBag :: [ChaosTokenFace] -> Message
+pattern SetCampaignChaosBag fs = ChaosBagMessage (SetCampaignChaosBag_ fs)
+
 pattern ObtainChaosToken :: ChaosToken -> Message
 pattern ObtainChaosToken t = ChaosBagMessage (ObtainChaosToken_ t)
 
@@ -2225,6 +2228,7 @@ legacyChaosBagMessageTags =
   , "RevealChaosToken"
   , "RunBag"
   , "RunDrawFromBag"
+  , "SetCampaignChaosBag"
   , "SetChaosBagChoice"
   , "SetChaosTokens"
   , "SetChaosTokensForScenario"

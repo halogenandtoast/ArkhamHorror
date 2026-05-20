@@ -285,8 +285,12 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
 .act-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
+}
+
+.act-row :deep(.v-popper) {
+  align-self: center;
 }
 
 .act-container :deep(.card--sideways) {

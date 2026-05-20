@@ -239,8 +239,12 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 .agenda-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
+}
+
+.agenda-row :deep(.v-popper) {
+  align-self: center;
 }
 
 .agenda--can-progress {

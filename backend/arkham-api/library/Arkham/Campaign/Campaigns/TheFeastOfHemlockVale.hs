@@ -197,4 +197,15 @@ instance RunMessage TheFeastOfHemlockVale where
       let meta = toResultDefault initMeta attrs.meta
       let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
+    NextCampaignStep mOverrideStep -> do
+      let mstep = mOverrideStep <|> nextStep c
+      let meta = toResultDefault initMeta attrs.meta
+      let
+        meta' =
+          case mstep of
+            Just PreludeDawnOfTheSecondDay -> meta {day = Day2, time = Day}
+            Just PreludeDawnOfTheFinalDay -> meta {day = Day3, time = Day}
+            _ -> meta
+      TheFeastOfHemlockVale attrs' <- lift $ defaultCampaignRunner msg c
+      pure $ TheFeastOfHemlockVale $ attrs' & metaL .~ toJSON meta'
     _ -> lift $ defaultCampaignRunner msg c

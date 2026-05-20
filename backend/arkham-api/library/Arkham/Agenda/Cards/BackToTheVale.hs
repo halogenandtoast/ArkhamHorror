@@ -27,7 +27,7 @@ instance HasAbilities BackToTheVale where
     [ mkAbility a 1
         $ FastAbility
           (OrCost [ExhaustAssetCost (AssetWithTitle "Vale Lantern"), GroupClueCost (PerPlayer 1) Anywhere])
-    , restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
 instance RunMessage BackToTheVale where

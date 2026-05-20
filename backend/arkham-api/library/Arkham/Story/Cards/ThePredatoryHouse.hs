@@ -15,6 +15,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (forget)
 import Arkham.Projection
 import Arkham.ScenarioLogKey (ScenarioLogKey (CancelNextPredation))
@@ -132,11 +133,12 @@ instance RunMessage ThePredatoryHouse where
             $ drawEncounterCard lead attrs
           pure $ bag {predationTokens = predationTokens bag <> predationSetAside bag, predationSetAside = []}
         ElderThing -> do
-          mLid <-
-            selectOne $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
-          for_ mLid \lid -> do
-            card <- field LocationCard lid
-            push $ FlipToEnemyLocation lid card
+          locations <-
+            select $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
+          leadChooseOrRunOneM do
+            targets locations \lid -> do
+              card <- field LocationCard lid
+              push $ FlipToEnemyLocation lid card
           pure bag
         _ -> error "Invalid predation token"
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}

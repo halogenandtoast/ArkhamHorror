@@ -52,43 +52,23 @@ instance HasChaosTokenValue HemlockHouse where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-{- | Chaos bag composition for standalone play (PDF page 16).
-Day 1/Night 1 baseline; Day 2/3 add extras at runtime.
--}
+{- FOURMOLU_DISABLE -}
 standaloneChaosBag :: [ChaosTokenFace]
 standaloneChaosBag =
-  [ #"+1"
-  , #"0"
-  , #"0"
-  , #"-1"
-  , #"-1"
-  , #"-2"
-  , #"-2"
-  , #"-3"
-  , #"-3"
-  , #"-5"
-  , Cultist
-  , Cultist
-  , Tablet
-  , Tablet
-  , ElderThing
-  , Skull
+  [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-3" , #"-5"
+  , Cultist , Cultist , Tablet , Tablet , ElderThing , Skull
   ]
+{- FOURMOLU_ENABLE -}
 
 instance RunMessage HemlockHouse where
   runMessage msg s@(HemlockHouse attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      -- "Shuffle each Time Marker and draw 1 at random." + "Flip a coin..."
-      -- Without campaign meta we default to Day 1 / Day; the per-day extras
-      -- below cover Day 2 and Day 3 if/when day selection is exposed to the
-      -- player.
       setChaosTokens standaloneChaosBag
       pure s
     PreScenarioSetup -> scope "intro" do
       day <- getCampaignDay
       time <- getCampaignTime
       let isNight = time == Night
-      -- "Check your Campaign Log" routing flavor (PDF page 14, top).
       flavor do
         setTitle "title"
         p.basic "body"
@@ -96,11 +76,6 @@ instance RunMessage HemlockHouse where
           li.validate (not isNight && day == Day1) "day1"
           li.validate (not isNight && day == Day2) "day2"
           li.validate (not isNight && day == Day3) "day3"
-      -- Intro routing per scenario reference:
-      --   Day 1 → Intro 1
-      --   Day 2 → Intro 2
-      --   Day 3 → Intro 3
-      --   Night 1/Night 2 → Intro 4
       case (day, time) of
         (Day1, Day) -> story $ i18nWithTitle "intro1"
         (Day2, Day) -> story $ i18nWithTitle "intro2"

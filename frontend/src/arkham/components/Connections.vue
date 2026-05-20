@@ -96,9 +96,9 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
 // source to destination. Chevrons are placed in the visible band between the
 // two cards (clipped to each card's actual bounding rect), with a fixed
 // spacing so they never get stretched to land on the card edges.
-const CHEVRON_SPACING = 12   // px between chevron centers along the line
-const CHEVRON_LEN = 10       // along-axis depth (back of polygon to outer tip)
-const CHEVRON_HEIGHT = 12    // total perpendicular height (wing tip to wing tip)
+const CHEVRON_SPACING = 10   // px between chevron centers along the line
+const CHEVRON_LEN = 8        // along-axis depth (back of polygon to outer tip)
+const CHEVRON_HEIGHT = 10    // total perpendicular height (wing tip to wing tip)
 const CHEVRON_EDGE_PAD = 8   // extra px past each card edge before drawing
 function makeOrUpdateChevrons(srcDiv: HTMLElement, dstDiv: HTMLElement, connection: string) {
   if (!svgEl || !chevronProto) return

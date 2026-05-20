@@ -716,8 +716,8 @@ section {
     }
   }
   &:has(.haunted) {
-    background: #050608;
-    color: #b8c4b0;
+    background: #0e0f06;
+    color: #c1c49c;
     border: 0;
     border-radius: 0;
     max-width: none;
@@ -737,8 +737,8 @@ section {
       inset: -120px;
       pointer-events: none;
       background:
-        radial-gradient(ellipse at 50% 40%, #1a2a1f 0%, #0a0d10 55%, #050608 80%);
-      background-image: v-bind(grunge), radial-gradient(ellipse at 50% 40%, #1a2a1f 0%, #0a0d10 55%, #050608 80%);
+        radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
+      background-image: v-bind(grunge), radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
       background-blend-mode: overlay;
       background-size: cover;
       z-index: 0;
@@ -750,8 +750,8 @@ section {
       inset: -120px;
       pointer-events: none;
       background:
-        radial-gradient(circle at 25% 75%, rgba(135, 156, 90, 0.16), transparent 55%),
-        radial-gradient(circle at 75% 25%, rgba(135, 156, 90, 0.12), transparent 55%);
+        radial-gradient(circle at 25% 75%, rgba(131, 137, 56, 0.16), transparent 55%),
+        radial-gradient(circle at 75% 25%, rgba(131, 137, 56, 0.12), transparent 55%);
       z-index: 0;
       animation: haunted-flicker 7s ease-in-out infinite;
     }

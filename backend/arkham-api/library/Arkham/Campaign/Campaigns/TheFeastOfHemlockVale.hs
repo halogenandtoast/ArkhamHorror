@@ -205,6 +205,7 @@ instance RunMessage TheFeastOfHemlockVale where
           case mstep of
             Just PreludeDawnOfTheSecondDay -> meta {day = Day2, time = Day}
             Just PreludeDawnOfTheFinalDay -> meta {day = Day3, time = Day}
+            Just PreludeTheFinalEvening -> meta {day = Day3, time = Night}
             _ -> meta
       TheFeastOfHemlockVale attrs' <- lift $ defaultCampaignRunner msg c
       pure $ TheFeastOfHemlockVale $ attrs' & metaL .~ toJSON meta'

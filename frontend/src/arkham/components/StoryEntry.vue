@@ -208,17 +208,17 @@ const flippableCard = (cardCode: string) => {
   }
   &:has(.haunted) {
     background:
-      radial-gradient(ellipse at 50% 30%, #1a2a1f 0%, #0a0d10 70%, #050608 100%);
-    background-image: v-bind(grunge), radial-gradient(ellipse at 50% 30%, #1a2a1f 0%, #0a0d10 70%, #050608 100%);
+      radial-gradient(ellipse at 50% 30%, #838938 0%, #5a5e22 70%, #3a3d16 100%);
+    background-image: v-bind(grunge), radial-gradient(ellipse at 50% 30%, #838938 0%, #5a5e22 70%, #3a3d16 100%);
     background-blend-mode: overlay;
     background-size: cover;
     box-shadow:
-      inset 0 0 220px rgba(0, 0, 0, 0.95),
-      inset 0 0 60px rgba(58, 81, 68, 0.35),
-      0 0 40px rgba(58, 81, 68, 0.45),
-      0 0 80px rgba(58, 81, 68, 0.25);
-    color: #b8c4b0;
-    border: 1px solid rgba(58, 81, 68, 0.5);
+      inset 0 0 120px rgba(31, 33, 12, 0.55),
+      inset 0 0 60px rgba(66, 69, 28, 0.35),
+      0 0 40px rgba(66, 69, 28, 0.45),
+      0 0 80px rgba(66, 69, 28, 0.25);
+    color: #c1c49c;
+    border: 1px solid rgba(66, 69, 28, 0.5);
     position: relative;
     overflow: hidden;
     isolation: isolate;
@@ -230,8 +230,8 @@ const flippableCard = (cardCode: string) => {
       inset: 0;
       pointer-events: none;
       background:
-        radial-gradient(circle at 20% 80%, rgba(135, 156, 90, 0.12), transparent 40%),
-        radial-gradient(circle at 80% 20%, rgba(135, 156, 90, 0.08), transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(131, 137, 56, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(131, 137, 56, 0.08), transparent 40%),
         radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.7), transparent 60%);
       z-index: 0;
     }
@@ -241,26 +241,26 @@ const flippableCard = (cardCode: string) => {
       position: absolute;
       inset: 6px;
       pointer-events: none;
-      border: 1px solid rgba(135, 156, 90, 0.25);
+      border: 1px solid rgba(131, 137, 56, 0.25);
       box-shadow:
-        inset 0 0 40px rgba(135, 156, 90, 0.15),
-        inset 0 0 4px rgba(135, 156, 90, 0.35);
+        inset 0 0 40px rgba(131, 137, 56, 0.15),
+        inset 0 0 4px rgba(131, 137, 56, 0.35);
       z-index: 0;
     }
 
     h1 {
       color: #c9d2a8;
       text-shadow:
-        0 0 8px rgba(135, 156, 90, 0.65),
-        0 0 18px rgba(58, 81, 68, 0.55),
+        0 0 8px rgba(131, 137, 56, 0.65),
+        0 0 18px rgba(66, 69, 28, 0.55),
         0 2px 2px rgba(0, 0, 0, 0.9);
       letter-spacing: 0.08em;
-      border-bottom-color: rgba(135, 156, 90, 0.4) !important;
+      border-bottom-color: rgba(131, 137, 56, 0.4) !important;
       animation: haunted-title-pulse 4.5s ease-in-out infinite;
       position: relative;
       z-index: 1;
       &::after {
-        border-bottom-color: rgba(135, 156, 90, 0.4) !important;
+        border-bottom-color: rgba(131, 137, 56, 0.4) !important;
       }
     }
 
@@ -286,15 +286,15 @@ const flippableCard = (cardCode: string) => {
 @keyframes haunted-title-pulse {
   0%, 100% {
     text-shadow:
-      0 0 8px rgba(135, 156, 90, 0.65),
-      0 0 18px rgba(58, 81, 68, 0.55),
+      0 0 8px rgba(131, 137, 56, 0.65),
+      0 0 18px rgba(66, 69, 28, 0.55),
       0 2px 2px rgba(0, 0, 0, 0.9);
   }
   50% {
     text-shadow:
-      0 0 14px rgba(135, 156, 90, 0.95),
-      0 0 28px rgba(58, 81, 68, 0.85),
-      0 0 50px rgba(58, 81, 68, 0.45),
+      0 0 14px rgba(131, 137, 56, 0.95),
+      0 0 28px rgba(66, 69, 28, 0.85),
+      0 0 50px rgba(66, 69, 28, 0.45),
       0 2px 2px rgba(0, 0, 0, 0.9);
   }
 }

@@ -438,6 +438,13 @@ function moveUp() {
       background: #0a0d10;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+
+      :deep(h1) {
+        color: #c9d2a8;
+        text-shadow:
+          0 0 6px rgba(131, 137, 56, 0.55),
+          0 1px 2px rgba(0, 0, 0, 0.9);
+      }
     }
   }
 }

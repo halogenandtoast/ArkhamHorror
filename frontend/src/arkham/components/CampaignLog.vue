@@ -26,6 +26,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 
 import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
 import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
+import DayTimeTracker from '@/arkham/components/TheFeastOfHemlockVale/DayTimeTracker.vue'
 
 export interface Props {
   game: Arkham.Game
@@ -63,6 +64,23 @@ const theta = computed(() => props.game.campaign?.meta?.theta)
 const delta = computed(() => props.game.campaign?.meta?.delta)
 const psi = computed(() => props.game.campaign?.meta?.psi)
 const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
+
+const hemlockDayTime = computed(() => {
+  if (props.game.campaign?.id !== '10') return null
+  const meta = props.game.campaign?.meta
+  if (!meta?.day || !meta?.time) return null
+  return { day: meta.day as string, time: meta.time as string }
+})
+
+const hemlockAreasSurveyedSection = computed(() => {
+  if (props.game.campaign?.id !== '10') return null
+  return sections.value.find((s) => s.id === 'areasSurveyed') ?? null
+})
+
+const visibleSections = computed(() => {
+  if (props.game.campaign?.id !== '10') return sections.value
+  return sections.value.filter((s) => s.id !== 'areasSurveyed')
+})
 
 // --- Determine available logs & titles -----------------------------------------
 const mainLog = computed<LogContents>(() => props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || EMPTY_LOG)
@@ -566,6 +584,23 @@ const mapData = computed(() => {
             </div>
           </div>
 
+          <div v-if="hemlockDayTime || hemlockAreasSurveyedSection" class="hemlock-overview">
+            <DayTimeTracker
+              v-if="hemlockDayTime"
+              :day="hemlockDayTime.day"
+              :time="hemlockDayTime.time"
+            />
+            <component
+              v-if="hemlockAreasSurveyedSection"
+              :is="hemlockAreasSurveyedSection.component"
+              class="hemlock-overview-grow"
+              :sectionId="hemlockAreasSurveyedSection.id"
+              :prefix="hemlockAreasSurveyedSection.titleKey.split('.').slice(0, 1).join('.')"
+              :records="hemlockAreasSurveyedSection.records"
+              :relationshipLevel="hemlockAreasSurveyedSection.relationshipLevel"
+            />
+          </div>
+
           <CampaignLogChaosBag
             v-if="chaosBag.length > 0"
             :chaosBag="chaosBag"
@@ -578,7 +613,7 @@ const mapData = computed(() => {
           />
 
           <!-- Campaign sections -->
-          <template v-for="section in sections" :key="section.key">
+          <template v-for="section in visibleSections" :key="section.key">
             <component
               v-if="section.component"
               :is="section.component"
@@ -699,6 +734,19 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.hemlock-overview {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hemlock-overview-grow {
+  flex: 1 1 320px;
+  min-width: 0;
 }
 
 /* ── Log tabs (Dream Eaters split) ───────────────────────── */

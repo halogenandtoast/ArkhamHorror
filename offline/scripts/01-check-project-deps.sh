@@ -357,28 +357,8 @@ install_nginx() {
         return 0
     fi
 
-    # Try the system-installed nginx first
-    local system_nginx=""
-    for path in /usr/sbin/nginx /usr/local/sbin/nginx /opt/homebrew/bin/nginx; do
-        if [ -x "$path" ]; then
-            system_nginx="$path"
-            break
-        fi
-    done
-    [ -z "$system_nginx" ] && has_cmd "nginx" && system_nginx="$(command -v nginx)"
-
-    if [ -n "$system_nginx" ]; then
-        info "Using system nginx: $system_nginx"
-        ensure_dir "$(dirname "$nginx_bin")"
-        cp "$system_nginx" "$nginx_bin"
-        chmod +x "$nginx_bin"
-        verify_cmd "Nginx" "$nginx_bin" "-v"
-        touch "$STAMP_NGINX"
-        return 0
-    fi
-
     # Build from source (minimal build, keep only HTTP core + proxy modules)
-    info "System nginx not found; building from source (about 2-3 minutes) ..."
+    info "Building nginx from source (about 2-3 minutes) ..."
     local ngx_archive="nginx-${NGINX_VERSION}.tar.gz"
     local ngx_url="https://nginx.org/download/${ngx_archive}"
     local ngx_path; ngx_path="$(download_cached "$ngx_url" "$ngx_archive")"

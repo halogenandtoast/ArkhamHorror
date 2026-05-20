@@ -164,6 +164,39 @@ configure_runtime_env() {
         Linux)  export LD_LIBRARY_PATH="$SCRIPT_DIR/lib:$SCRIPT_DIR/pgsql/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ;;
         Darwin) export DYLD_LIBRARY_PATH="$SCRIPT_DIR/lib:$SCRIPT_DIR/pgsql/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}" ;;
     esac
+
+    # Fix library symlinks: Windows extraction (zip/tar) often destroys symlinks,
+    # turning them into copies or broken files. Recreate the expected versioned symlinks.
+    _fix_lib_symlinks "$SCRIPT_DIR/pgsql/lib"
+    _fix_lib_symlinks "$SCRIPT_DIR/lib"
+}
+
+# Scan a directory for versioned .so files (lib*.so.X.Y) and recreate short symlinks:
+#   lib*.so.X.Y  →  lib*.so   and  lib*.so.X
+_fix_lib_symlinks() {
+    local dir="$1"
+    [ -d "$dir" ] || return 0
+    local f basename linkname
+    # Match files like libfoo.so.3.14 (major.minor)
+    for f in "$dir"/lib*.so.*.*; do
+        [ -f "$f" ] || continue
+        basename="$(basename "$f")"
+        # e.g. libpq.so.5.14 → derive libpq.so.5 and libpq.so
+        local soname="${basename%.*}"      # libpq.so.5
+        local bare="${soname%.*}"          # libpq.so  (strip .5) — but only if what remains ends with .so
+        # Recreate the soname symlink (libpq.so.5 -> libpq.so.5.14)
+        linkname="$dir/$soname"
+        if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
+            ln -sf "$basename" "$linkname"
+        fi
+        # Recreate the bare symlink (libpq.so -> libpq.so.5.14) only if soname looks like lib*.so.N
+        if [[ "$bare" == *.so ]]; then
+            linkname="$dir/$bare"
+            if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
+                ln -sf "$basename" "$linkname"
+            fi
+        fi
+    done
 }
 
 # ── macOS Gatekeeper: ad-hoc sign all binaries and clear quarantine ───────────
@@ -464,7 +497,7 @@ do_stop() {
         info "Backing up database ..."
         if ! rm -rf "$PGDATA_LOCAL" 2>/dev/null; then
             warn "[4005] pgdata backup failed: unable to remove old backup"
-        elif ! cp -a "$PG_DATA" "$PGDATA_LOCAL"; then
+        elif ! cp -a "$PG_DATA" "$PGDATA_LOCAL" 2>/dev/null && ! cp -r "$PG_DATA" "$PGDATA_LOCAL"; then
             warn "[4005] pgdata backup failed: copy error"
         else
             date +%s > "$VERSION_FILE"

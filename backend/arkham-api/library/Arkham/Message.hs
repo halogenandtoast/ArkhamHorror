@@ -2165,6 +2165,14 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- Legacy: pre-Message-refactor saves tagged entity-specific removals
+            -- with these names; they are now pattern synonyms over `Remove Target`.
+            "RemoveAsset" -> Remove . AssetTarget <$> o .: "contents"
+            "RemoveEnemy" -> Remove . EnemyTarget <$> o .: "contents"
+            "RemoveEvent" -> Remove . EventTarget <$> o .: "contents"
+            "RemoveSkill" -> Remove . SkillTarget <$> o .: "contents"
+            "RemoveTreachery" -> Remove . TreacheryTarget <$> o .: "contents"
+            "RemoveLocation" -> Remove . LocationTarget <$> o .: "contents"
             _ | t `elem` legacyChaosBagMessageTags -> asLegacyWrapped ChaosBagMessage t o
               | t `elem` legacyClueMessageTags -> asLegacyWrapped ClueMessage t o
               | t `elem` legacyDamageMessageTags -> asLegacyWrapped DamageMessage t o

@@ -378,6 +378,13 @@ instance RunMessage HemlockHouse where
                   sylvie <- selectJust $ assetIs Assets.littleSylvie
                   createAbilityEffect EffectGameWindow
                     $ restricted (SourceableWithCardCode Assets.littleSylvie sylvie) 3 OnSameLocation actionAbility
+                  createAbilityEffect EffectGameWindow
+                    $ skillTestAbility
+                    $ restricted
+                      (SourceableWithCardCode Assets.williamHemlockAspiringPoet william)
+                      2
+                      (OnSameLocation <> you (ControlsAsset (assetIs Assets.littleSylvie)))
+                      parleyAction_
             Day2 ->
               if sameLoc
                 then scenarioSpecific "codex" (iid, source, Sigma)

@@ -1753,10 +1753,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
   Do (X.Defeated (EnemyTarget eid) _ _ _) -> do
-    eattrs <- getAttrs @Enemy eid
-    printedHealth <- calculatePrinted (enemyHealth eattrs)
-    enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
-    pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
+    project @Enemy eid >>= \case
+      Nothing -> pure a
+      Just enemy -> do
+        let eattrs = toAttrs enemy
+        printedHealth <- calculatePrinted (enemyHealth eattrs)
+        enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
+        pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
     for_ cards obtainCard
     do_ msg

@@ -8,33 +8,31 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.ScenarioLogKey (ScenarioLogKey (LittleSylvieCanBeTakenControl))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype LittleSylvie = LittleSylvie AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 littleSylvie :: AssetCard LittleSylvie
 littleSylvie = assetWith LittleSylvie Cards.littleSylvie (sanityL ?~ 1)
 
-instance HasModifiersFor LittleSylvie where
-  getModifiersFor _ = pure mempty
-
 instance HasAbilities LittleSylvie where
   getAbilities (LittleSylvie a) =
-    [ -- "When Little Sylvie is discarded from your hand or deck: Play it"
-      restricted a 1 InYourDiscard
+    [ restricted a 1 InYourDiscard
         $ freeReaction
-        $ DiscardedFromHand #after You AnySource
-        $ PlayableCardWithCriteria NoAction (CriteriaOverride NoRestriction)
-        $ basic
-        $ CardWithId a.cardId
-    , -- "When a scenario card effect would discard a card from your hand or
-      -- deck, exhaust Little Sylvie: Place that card on top of your deck
-      -- instead." Hand and deck branches share an exhaust + replacement step.
-      controlled_ a 2
+        $ oneOf
+          [ DiscardedFromHand #after You AnySource
+              $ PlayableCardWithCriteria NoAction (CriteriaOverride NoRestriction)
+              $ basic
+              $ CardWithId a.cardId
+          , DiscardedFromDeck #after You AnySource
+              $ PlayableCardWithCriteria NoAction (CriteriaOverride NoRestriction)
+              $ basic
+              $ CardWithId a.cardId
+          ]
+    , controlled_ a 2
         $ triggered
           ( oneOf
               [ WouldDiscardFromHand #when You EncounterCardSource
@@ -42,9 +40,6 @@ instance HasAbilities LittleSylvie where
               ]
           )
           (exhaust a)
-    , -- Granted by Codex 4 (William Hemlock) on Day 1 when no investigator
-      -- already controls Sylvie: "[fast]: Take control of Little Sylvie."
-      restricted a 3 (Remembered LittleSylvieCanBeTakenControl) $ FastAbility Free
     ]
 
 instance RunMessage LittleSylvie where
@@ -76,11 +71,11 @@ instance RunMessage LittleSylvie where
               (const [])
           _ -> pure ()
       pure a
-    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 2) -> do
       hand <- field InvestigatorHand iid
       case hand of
         [] -> pure ()
-        cards -> chooseTargetM iid cards \c -> putCardOnTopOfDeck iid iid c
+        cards -> chooseTargetM iid cards $ putCardOnTopOfDeck iid iid
       pure a
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       takeControlOfAsset iid attrs

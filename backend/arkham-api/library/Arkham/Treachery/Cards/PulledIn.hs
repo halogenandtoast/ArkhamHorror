@@ -1,13 +1,14 @@
 module Arkham.Treachery.Cards.PulledIn (pulledIn) where
 
-import Arkham.Attack (enemyAttack)
 import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
+import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Movement
 import Arkham.Trait (Trait (Monster))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
-import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 
 newtype PulledIn = PulledIn TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -27,12 +28,11 @@ instance RunMessage PulledIn where
           revelationSkillTest sid iid attrs #combat (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      mTarget <- selectOne $ NearestLocationTo iid (LocationWithTrait Monster)
-      for_ mTarget \lid -> do
-        moveTowards attrs iid lid
+      locations <- select $ NearestLocationTo iid (LocationWithTrait Monster)
+      chooseTargetM iid locations \lid -> do
+        moveToEdit attrs iid lid \m -> m {moveMeans = OneAtATime}
         when (n >= 4) do
-          mEl <- maybeEnemyLocation lid
-          for_ mEl \el ->
-            push $ InitiateEnemyAttack $ enemyAttack (enemyLocationAsEnemyId el) attrs iid
+          whenJustM (maybeEnemyLocation lid) \el -> do
+            initiateEnemyAttack (enemyLocationAsEnemyId el) attrs iid
       pure t
     _ -> PulledIn <$> liftRunMessage msg attrs

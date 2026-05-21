@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.HemlockHouse (hemlockHouse) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -7,12 +8,14 @@ import Arkham.Asset.Types (Field (AssetLocation))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.EnemyLocation.Cards qualified as EnemyLocations
 import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.Agenda (whenCurrentAgendaStepIs)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (MetaModifier))
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Id
@@ -22,13 +25,13 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message (pattern AfterSkillTest)
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (incrementRecordCount, record, remember)
+import Arkham.Message.Lifted.Log (incrementRecordCount, record, remember, remembered)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
-import Arkham.ScenarioLogKey (ScenarioLogKey (CancelNextPredation, LittleSylvieCanBeTakenControl))
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.HemlockHouse.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
@@ -199,11 +202,6 @@ instance RunMessage HemlockHouse where
       startAt $ if day == Day3 then bedroom else foyer
 
       setAside [Acts.againstTheHouse]
-      -- The Predatory House story card is double-sided: the "in-play default"
-      -- side is the predation reference, and the alternate side is the setup
-      -- card. While set aside the UI should show the setup card, so we keep
-      -- cardCode "10524" (matchers continue to find it) and flip the display
-      -- flag so the front-end loads the alternate-side image.
       setAsideWith
         ( \case
             EncounterCard ec -> do
@@ -248,22 +246,17 @@ instance RunMessage HemlockHouse where
           assetAt_ Assets.judithParkTheMuscle parlor
           assetAt_ Assets.theoPetersJackOfAllTrades foyer
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
-      -- "If your location is an enemy, exhaust it."
       whenJustM (field InvestigatorLocation iid) \lid ->
-        whenJustM (maybeEnemyLocation lid) \el ->
-          exhaustEnemy attrs (enemyLocationAsEnemyId el)
+        whenJustM (maybeEnemyLocation lid) $ exhaustEnemy attrs . enemyLocationAsEnemyId
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _
       | token.face == Cultist
       , isHardExpert attrs -> do
-          -- "If you succeed and your location is an enemy, exhaust it."
           whenJustM (field InvestigatorLocation iid) \lid ->
-            whenJustM (maybeEnemyLocation lid) \el ->
-              exhaustEnemy attrs (enemyLocationAsEnemyId el)
+            whenJustM (maybeEnemyLocation lid) $ exhaustEnemy attrs . enemyLocationAsEnemyId
           pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
       | token.face == Tablet -> do
-          -- "If you fail, heal 1 damage from the nearest enemy-location."
           whenJustM (nearestEnemyLocationTo iid) \lid ->
             whenJustM (maybeEnemyLocation lid) \el ->
               healDamage (enemyLocationAsEnemyId el) attrs 1
@@ -271,7 +264,6 @@ instance RunMessage HemlockHouse where
     AfterSkillTest (FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _)
       | token.face == ElderThing -> do
           whenCurrentAgendaStepIs (`elem` [2, 3]) do
-            -- "remove this token from the chaos bag and add it to the predation bag"
             removeChaosToken ElderThing
             predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
             sendMessage predatoryHouse $ AddChaosToken ElderThing
@@ -287,8 +279,6 @@ instance RunMessage HemlockHouse where
     ScenarioSpecific "enemyLocationDefeated" (maybeResult -> Just lid) -> do
       grid <- getGrid
       lead <- getLead
-      -- InvestigatorAt (LocationWithId lid) returns empty for enemy-locations because
-      -- they are in enemyLocationsL, not locationsL.
       investigators <-
         filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
           =<< select UneliminatedInvestigator
@@ -353,70 +343,93 @@ instance RunMessage HemlockHouse where
       day <- getCampaignDay
       case n of
         4 -> do
-          entry "william"
           william <- selectJust $ assetIs Assets.williamHemlockAspiringPoet
+          judith <- selectOne $ assetIs Assets.judithParkTheMuscle
+          controlsSylvie <-
+            selectAny $ assetIs Assets.littleSylvie <> AssetControlledBy (InvestigatorWithId iid)
+          williamLoc <- field AssetLocation william
+          sameLoc <- case (judith, williamLoc) of
+            (Just jid, Just wloc) -> (== Just wloc) <$> field AssetLocation jid
+            _ -> pure False
+          let day1FoundSylvie = day == Day1 && controlsSylvie
+              day1Otherwise = day == Day1 && not controlsSylvie
+              day2Argument = day == Day2 && sameLoc
+              day2Otherwise = day == Day2 && not sameLoc
+          scope "william" $ flavor do
+            setTitle "title"
+            compose.green do
+              p.validate day1FoundSylvie "day1FoundSylvie"
+              hr
+              p.validate day1Otherwise "day1Otherwise"
+              hr
+              p.validate day2Argument "day2Argument"
+              hr
+              p.validate day2Otherwise "day2Otherwise"
           case day of
             Day1 -> do
-              controlsSylvie <-
-                selectAny
-                  $ assetIs Assets.littleSylvie
-                  <> AssetControlledBy (InvestigatorWithId iid)
               if controlsSylvie
                 then do
                   takeControlOfAsset iid william
-                  record FoundLittleSylvie
+                  remember FoundLittleSylvie
                   incrementRecordCount WilliamHemlockRelationshipLevel 1
                   interludeXpAll (toBonus "bonus" 1)
                 else do
                   eachInvestigator \iid' -> gainClues iid' source 1
-                  -- "For the rest of the scenario, the Little Sylvie story
-                  -- asset gains '[fast]: Take control of Little Sylvie.'"
-                  remember LittleSylvieCanBeTakenControl
-            Day2 -> do
-              judith <- selectOne $ assetIs Assets.judithParkTheMuscle
-              williamLoc <- field AssetLocation william
-              sameLoc <- case (judith, williamLoc) of
-                (Just jid, Just wloc) ->
-                  (== Just wloc) <$> field AssetLocation jid
-                _ -> pure False
+                  sylvie <- selectJust $ assetIs Assets.littleSylvie
+                  createAbilityEffect EffectGameWindow
+                    $ restricted (SourceableWithCardCode Assets.littleSylvie sylvie) 3 OnSameLocation actionAbility
+            Day2 ->
               if sameLoc
                 then scenarioSpecific "codex" (iid, source, Sigma)
                 else takeControlOfAsset iid william
             Day3 -> takeControlOfAsset iid william
         6 -> do
-          entry "gideon"
-          helping <- getHasRecord YouAreHelpingGideon
+          helping <- remembered YouAreHelpingGideon
+          scope "gideon" $ flavor do
+            setTitle "title"
+            compose.green do
+              p.validate helping "helping"
+              hr
+              p.validate (not helping) "otherwise"
           if helping
             then do
               incrementRecordCount GideonMizrahRelationshipLevel 1
               interludeXpAll (toBonus "bonus" 1)
             else do
-              record YouAreHelpingGideon
-              -- The Predatory House is set aside until Eerie Silence advances,
-              -- so it may not be in play yet when this codex fires. Defer the
-              -- cancel via a scenario log key; ThePredatoryHouse consumes it
-              -- on placement.
+              remember YouAreHelpingGideon
               selectOne (storyIs Stories.thePredatoryHouse) >>= \case
                 Just predatoryHouse ->
                   sendMessage predatoryHouse $ ScenarioSpecific "cancelNextPredation" Null
-                Nothing -> remember CancelNextPredation
+                Nothing ->
+                  gameModifier attrs (StoryTarget $ StoryId Stories.thePredatoryHouse.cardCode)
+                    $ MetaModifier
+                    $ object ["cancelNextPredation" .= True]
         7 -> do
-          entry "judith"
           judith <- selectJust $ assetIs Assets.judithParkTheMuscle
+          william <- selectOne $ assetIs Assets.williamHemlockAspiringPoet
+          judithLoc <- field AssetLocation judith
+          sameLoc <- case (william, judithLoc) of
+            (Just wid, Just jloc) -> (== Just jloc) <$> field AssetLocation wid
+            _ -> pure False
+          let day2Argument = day == Day2 && sameLoc
+              day2Otherwise = day == Day2 && not sameLoc
+              day3 = day == Day3
+          scope "judith" $ flavor do
+            setTitle "title"
+            compose.green do
+              p.validate day2Argument "day2Argument"
+              hr
+              p.validate day2Otherwise "day2Otherwise"
+              hr
+              p.validate day3 "day3"
           case day of
-            Day2 -> do
-              william <- selectOne $ assetIs Assets.williamHemlockAspiringPoet
-              judithLoc <- field AssetLocation judith
-              sameLoc <- case (william, judithLoc) of
-                (Just wid, Just jloc) ->
-                  (== Just jloc) <$> field AssetLocation wid
-                _ -> pure False
+            Day2 ->
               if sameLoc
                 then scenarioSpecific "codex" (iid, source, Sigma)
                 else takeControlOfAsset iid judith
             Day3 -> do
               takeControlOfAsset iid judith
-              record JudithIsRemodeling
+              remember JudithIsRemodeling
             _ -> takeControlOfAsset iid judith
         8 -> do
           entry "theo"
@@ -456,8 +469,14 @@ instance RunMessage HemlockHouse where
         _ -> error "invalid codex entry"
       pure s
     ScenarioResolution r -> scope "resolutions" do
-      let
-        resolution2 = do
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          push R2
+        Resolution 1 -> do
+          resolution "resolution1"
+          push R2
+        Resolution 2 -> do
           resolution "resolution2"
 
           -- "Remove 1 [tablet] token from the predation bag. Return any
@@ -469,10 +488,7 @@ instance RunMessage HemlockHouse where
           predatoryHouse <- selectJust $ storyIs Stories.thePredatoryHouse
           sendMessage predatoryHouse $ ScenarioSpecific "predationCleanup" Null
 
-          -- "If the investigators 'found Little Sylvie,' an investigator may
-          -- add the Little Sylvie story asset to their deck."
-          whenM (getHasRecord FoundLittleSylvie)
-            $ addCampaignCardToDeckChoice_ Assets.littleSylvie
+          whenM (remembered FoundLittleSylvie) $ addCampaignCardToDeckChoice_ Assets.littleSylvie
 
           sealedLocs <- select $ LocationWithToken Resource
           sealCount <- sum <$> traverse locationSealCount sealedLocs
@@ -488,11 +504,8 @@ instance RunMessage HemlockHouse where
           when (enemyLocVictory >= 10) $ interludeXpAll (toBonus "enemyLocationsBonus" 1)
 
           when (enemyLocVictory >= 8) do
-            judithControlled <-
-              selectAny
-                $ assetIs Assets.judithParkTheMuscle
-                <> AssetControlledBy Anyone
-            remodeling <- getHasRecord JudithIsRemodeling
+            judithControlled <- selectAny $ assetIs Assets.judithParkTheMuscle <> AssetControlledBy Anyone
+            remodeling <- remembered JudithIsRemodeling
             when (judithControlled && remodeling) do
               incrementRecordCount JudithParkRelationshipLevel 1
               interludeXpAll (toBonus "bonus" 1)
@@ -500,17 +513,7 @@ instance RunMessage HemlockHouse where
           allGainXp attrs
           record $ AreasSurveyed HemlockHarbor
 
-          -- Routing into the next prelude (per Day/Time) is handled by the
-          -- TheFeastOfHemlockVale campaign module's nextStep.
           endOfScenario
-      case r of
-        NoResolution -> do
-          resolution "noResolution"
-          push R2
-        Resolution 1 -> do
-          resolution "resolution1"
-          push R2
-        Resolution 2 -> resolution2
         _ -> error "invalid resolution"
       pure s
     _ -> HemlockHouse <$> liftRunMessage msg attrs

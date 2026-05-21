@@ -59,7 +59,6 @@ data GideonMizrahNotes
   | GideonToldTheTaleOfTheAnnabelleLee
   | GideonSharedADance
   | GideonStoodByYou
-  | YouAreHelpingGideon
   | GideonMizrahRelationshipLevel
   | GideonSacrificedThemselvesForTheInvestigators
   | GideonCrossedOut
@@ -72,7 +71,6 @@ data JudithParkNotes
   | JudithSharedADance
   | JudithStoodByYou
   | YouBackedJudithUp
-  | JudithIsRemodeling
   | JudithParkRelationshipLevel
   | JudithSacrificedThemselvesForTheInvestigators
   | JudithCrossedOut
@@ -85,7 +83,6 @@ data WilliamHemlockNotes
   | WilliamSharedADance
   | WilliamStoodByYou
   | WilliamIsResolved
-  | FoundLittleSylvie
   | WilliamHemlockRelationshipLevel
   | WilliamSacrificedThemselvesForTheInvestigators
   | WilliamCrossedOut

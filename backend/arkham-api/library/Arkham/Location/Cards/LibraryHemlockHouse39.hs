@@ -8,8 +8,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (remember)
-import Arkham.ScenarioLogKey (ScenarioLogKey (LibrarySecretPassageOpened))
 import Arkham.Token (Token (..))
 import Arkham.Tracing
 
@@ -40,7 +38,8 @@ instance HasModifiersFor LibraryHemlockHouse39 where
 instance HasAbilities LibraryHemlockHouse39 where
   getAbilities (LibraryHemlockHouse39 a) =
     extendRevealed1 a
-      $ restricted a 1 (not_ (Remembered LibrarySecretPassageOpened))
+      $ limited (MaxPer Cards.libraryHemlockHouse39 PerGame 1)
+      $ restricted a 1 (exists (not_ (location_ $ be a)))
       $ freeReaction (DiscoveringLastClue #after You (be a))
 
 instance RunMessage LibraryHemlockHouse39 where
@@ -50,6 +49,5 @@ instance RunMessage LibraryHemlockHouse39 where
       chooseTargetM iid locations \chosen -> do
         placeTokens (attrs.ability 1) chosen Horror 1
         setGlobal attrs "secretPassage" chosen
-        remember LibrarySecretPassageOpened
       pure l
     _ -> LibraryHemlockHouse39 <$> liftRunMessage msg attrs

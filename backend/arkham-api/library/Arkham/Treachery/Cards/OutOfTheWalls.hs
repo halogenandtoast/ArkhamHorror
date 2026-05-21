@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.OutOfTheWalls (outOfTheWalls) where
 
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
-import Arkham.Helpers.Investigator (getMaybeLocation)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
@@ -25,10 +25,8 @@ instance RunMessage OutOfTheWalls where
       revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      mlid <- getMaybeLocation iid
-      for_ mlid \lid -> do
-        mEnemyLoc <- maybeEnemyLocation lid
-        case mEnemyLoc of
+      withLocationOf iid \lid -> do
+        maybeEnemyLocation lid >>= \case
           Just _ -> assignDamageAndHorror iid attrs 1 1
           Nothing -> do
             seals <- locationSealCount lid

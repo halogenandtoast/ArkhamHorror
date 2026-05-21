@@ -10,15 +10,12 @@ import Arkham.EnemyLocation.Types (enemyLocationAsEnemyId)
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Log (remembered)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (forget)
 import Arkham.Projection
-import Arkham.ScenarioLogKey (ScenarioLogKey (CancelNextPredation))
 import Arkham.Scenarios.HemlockHouse.Helpers (scenarioI18n)
 import Arkham.Scenarios.HemlockHouse.PredationBag
 import Arkham.Story.Cards qualified as Cards
@@ -54,9 +51,9 @@ instance RunMessage ThePredatoryHouse where
             pure $ bag {predationTokens = PredationToken tokenId #cultist : bag.tokens}
           Day3 -> pure bag
       -- Honor any cancel-next-predation requests from Codex 6 (Gideon) that
-      -- fired while this story was still set aside.
-      pendingCancel <- remembered CancelNextPredation
-      when pendingCancel $ forget CancelNextPredation
+      -- fired while this story was still set aside. The scenario hands these
+      -- off via a MetaModifier so we don't need a remember key.
+      pendingCancel <- (== Just True) <$> getMeta attrs "cancelNextPredation"
       let bag'' = bag' {predationCancelNext = predationCancelNext bag' || pendingCancel}
       pure
         $ ThePredatoryHouse

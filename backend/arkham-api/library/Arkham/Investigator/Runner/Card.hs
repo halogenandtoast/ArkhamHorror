@@ -540,12 +540,15 @@ handleDoDiscardTopOfDeck a@InvestigatorAttrs{..} iid n source mTarget = do
               <$> checkWindows
                 ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
           else pure []
+      discardedFromDeckWindow <-
+        checkWindows [mkAfter (Window.DiscardedFromDeck iid source (toCard c)) | c <- cs']
       pushAll
         $ windowMsgs
         <> [DeckHasNoCards investigatorId mTarget | null deck']
         <> [ DiscardedTopOfDeck iid cs source target
            | target <- maybeToList mTarget
            ]
+        <> [discardedFromDeckWindow | notNull cs']
       pure
         $ a
         & (deckL .~ deck')

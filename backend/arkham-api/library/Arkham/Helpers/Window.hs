@@ -876,6 +876,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , extendedCardMatch card cardMatcher
             ]
         _ -> noMatch
+    Matcher.DiscardedFromDeck timing whoMatcher sourceMatcher cardMatcher ->
+      guardTiming timing $ \case
+        Window.DiscardedFromDeck who source' card ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            , extendedCardMatch card cardMatcher
+            ]
+        _ -> noMatch
     Matcher.DiscardedFromHand timing whoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.DiscardedFromHand who source' card ->

@@ -601,6 +601,7 @@ littleSylvie =
     { cdCardTraits = setFromList [Item, Charm, Cursed]
     , cdUnique = True
     , cdSlots = [#accessory]
+    , cdOutOfPlayEffects = [InDiscardEffect]
     }
 
 valeLanternBeaconOfHope :: CardDef

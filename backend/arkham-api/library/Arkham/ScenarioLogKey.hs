@@ -122,12 +122,10 @@ data ScenarioLogKey
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
-  | -- Hemlock House
-    LittleSylvieCanBeTakenControl
-  | -- Hemlock House: secret passage from Library
-    LibrarySecretPassageOpened
-  | -- Hemlock House: codex 6 (Gideon) triggered before The Predatory House was placed
-    CancelNextPredation
+  | -- | Hemlock House
+    JudithIsRemodeling
+  | FoundLittleSylvie
+  | YouAreHelpingGideon
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

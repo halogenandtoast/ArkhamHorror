@@ -25,6 +25,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Metrics qualified as Metrics
 import Arkham.Modifier
+import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -147,7 +148,8 @@ meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictio
 canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab a = withSpan_ ("canDoAction/" <> Metrics.messageTag a) $ canDoAction' iid ab a
 
-canDoAction' :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction'
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
@@ -508,7 +510,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           . getSum
           . foldMap (Sum . usedTimes)
           $ filter
-            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
       MaxPer cardDef _ n -> do
         let
@@ -535,7 +537,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           . getSum
           . foldMap (Sum . usedTimes)
           $ filter
-            ((Just cardDef ==) . abilityCardDef . abilityLimit . usedAbility)
+            ((Just cardDef.title ==) . fmap toTitle . abilityCardDef . abilityLimit . usedAbility)
             usedAbilities'
       PerInvestigatorLimit _ n -> do
         -- This is difficult and based on the window, so we need to match out the
@@ -560,8 +562,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         usedAbilities' <- getPerCampaignUsedAbilities
         let
           sameAbility u =
-            abilityCardCode (usedAbility u) == abilityCardCode ability
-              && abilityIndex (usedAbility u) == abilityIndex ability
+            abilityCardCode (usedAbility u)
+              == abilityCardCode ability
+              && abilityIndex (usedAbility u)
+              == abilityIndex ability
         let total = sum $ map usedTimes $ filter sameAbility usedAbilities'
         pure $ total < n
       GroupLimit PerWindow n -> do

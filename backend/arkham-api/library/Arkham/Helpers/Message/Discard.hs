@@ -25,6 +25,7 @@ discardFromHand iid (toSource -> source) strategy amount =
     , discardThen = Nothing
     , discardTarget = Nothing
     , discardInvestigator = iid
+    , discardDestination = ToDiscardPile
     }
 
 chooseAndDiscardCard
@@ -72,4 +73,5 @@ discardAll iid (toSource -> source) matcher =
     , discardThen = Nothing
     , discardTarget = Nothing
     , discardInvestigator = iid
+    , discardDestination = ToDiscardPile
     }

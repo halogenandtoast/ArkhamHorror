@@ -256,6 +256,13 @@ handleDiscardFromHand a@InvestigatorAttrs{..} handDiscard msg = do
 
 handleDoDiscardFromHand a@InvestigatorAttrs{..} handDiscard = do
   player <- getPlayer investigatorId
+  let mkMsg card = case handDiscard.destination of
+        ToDiscardPile -> DiscardCard investigatorId handDiscard.source (toCardId card)
+        ToTopOfDeck -> PutCardOnTopOfDeck investigatorId (Deck.InvestigatorDeck investigatorId) (toCard card)
+        ToBottomOfDeck -> PutCardOnBottomOfDeck investigatorId (Deck.InvestigatorDeck investigatorId) (toCard card)
+  let pushDiscardedCards cards = when (handDiscard.destination == ToDiscardPile) do
+        for_ handDiscard.target \target ->
+          push $ DiscardedCards investigatorId handDiscard.source target cards
   case discardableCards a of
     [] | handDiscard.strategy /= DiscardRandom -> pure ()
     cs -> case handDiscard.strategy of
@@ -263,19 +270,17 @@ handleDoDiscardFromHand a@InvestigatorAttrs{..} handDiscard = do
         case handDiscard.filter of
           CardWithId _ -> do
             let cs' = filterCards handDiscard.filter cs
-            pushAll [DiscardCard investigatorId handDiscard.source c.id | c <- cs']
-            for_ handDiscard.target \target ->
-              push $ DiscardedCards investigatorId handDiscard.source target cs'
+            pushAll [mkMsg c | c <- cs']
+            pushDiscardedCards cs'
           _ -> do
             let cs' = filterCards handDiscard.filter cs
             let n = min handDiscard.amount (length cs')
             pushWhen (n > 0)
               $ chooseN player n
-              $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+              $ [ targetLabel c [mkMsg c]
                 | c <- cs'
                 ]
-            for_ handDiscard.target \target ->
-              push $ DiscardedCards investigatorId handDiscard.source target cs'
+            pushDiscardedCards cs'
       DiscardAll -> do
         let cards' = filterCards handDiscard.filter cs
         cards <- cards' & filterM (`matches` CardWithoutModifier CannotLeaveYourHand)
@@ -283,20 +288,18 @@ handleDoDiscardFromHand a@InvestigatorAttrs{..} handDiscard = do
         when (notNull cards) do
           push
             $ chooseOneAtATime player
-            $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+            $ [ targetLabel c [mkMsg c]
               | c <- cards
               ]
-          for_ handDiscard.target \target ->
-            push $ DiscardedCards investigatorId handDiscard.source target cards
+          pushDiscardedCards cards
       DiscardRandom -> do
         -- only cards actually in hand
         let filtered' = filterCards handDiscard.filter investigatorHand
         filtered <- filtered' & filterM (`matches` CardWithoutModifier CannotLeaveYourHand)
         for_ (nonEmpty filtered) \targets -> do
           cards <- sampleN handDiscard.amount targets
-          pushAll $ map (DiscardCard investigatorId handDiscard.source . toCardId) cards
-          for_ handDiscard.target \target ->
-            push $ DiscardedCards investigatorId handDiscard.source target cards
+          pushAll $ map mkMsg cards
+          pushDiscardedCards cards
   push $ DoneDiscarding investigatorId
   pure $ a & discardingL ?~ handDiscard
 

@@ -4,10 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (Discarded, EncounterCardSource)
 import Arkham.Classes.HasQueue
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Discard
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -58,7 +56,8 @@ instance RunMessage LittleSylvie where
                   handDiscard.investigator == iid && handDiscard.source == toSource source
                 _ -> False
               \case
-                Do (DiscardFromHand _) -> [DoStep 1 msg]
+                Do (DiscardFromHand handDiscard) ->
+                  [Do (DiscardFromHand handDiscard {discardDestination = ToTopOfDeck})]
                 _ -> []
           Window.WouldDiscardFromDeck iid' source | iid == iid' -> do
             -- Cancel the upcoming `Do (DiscardTopOfDeck ...)` (the top card
@@ -70,12 +69,6 @@ instance RunMessage LittleSylvie where
                 _ -> False
               (const [])
           _ -> pure ()
-      pure a
-    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      hand <- field InvestigatorHand iid
-      case hand of
-        [] -> pure ()
-        cards -> chooseTargetM iid cards $ putCardOnTopOfDeck iid iid
       pure a
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
       takeControlOfAsset iid attrs

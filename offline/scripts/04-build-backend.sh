@@ -18,12 +18,101 @@ OS="$(detect_os)"
 
 BACKEND_DIR="${PROJECT_ROOT}/backend"
 BACKEND_BIN_OUTPUT="${DEPS_DIR}/arkham-api"
+STACK_ROOT_DIR="${DEPS_DIR}/stack-root"
 STACK_WORK_DIR="${DEPS_DIR}/stack-work"         # Root package stack-work under _deps/
 STACK_WORK_SUB_DIR="${DEPS_DIR}/stack-work-sub" # Subpackage stack-work under _deps/stack-work-sub/<pkg>/
 STACK_WORK_LINK="stack-work-local"              # Symlink name (STACK_WORK requires a pure relative path without / or ..)
 
 # The three subpackage directories defined in stack.yaml
 STACK_SUB_PACKAGES=("arkham-api" "cards-discover" "validate")
+
+print_dir_status() {
+    local label="$1"
+    local dir="$2"
+
+    if [ -d "$dir" ]; then
+        local file_count size
+        file_count="$(find "$dir" -type f 2>/dev/null | wc -l | tr -d ' ')"
+        size="$(du -sh "$dir" 2>/dev/null | awk '{print $1}')"
+        info "${label}: ${dir} (${size}, ${file_count} files)"
+    else
+        warn "${label}: missing (${dir})"
+    fi
+}
+
+print_stack_diagnostics() {
+    echo ""
+    substep "Stack cache diagnostics ..."
+    info "STACK_ROOT=${STACK_ROOT}"
+    info "STACK_WORK=${STACK_WORK}"
+    print_dir_status "stack root cache" "${STACK_ROOT_DIR}"
+    print_dir_status "stack-work cache" "${STACK_WORK_DIR}"
+    print_dir_status "stack-work subpackage cache" "${STACK_WORK_SUB_DIR}"
+    # NOTE: intentionally skip `stack path` queries here — on first run they
+    # trigger pantry index downloads (~200MB) with no visible progress, causing
+    # the script to appear stuck.  The actual build step handles this properly.
+}
+
+run_stack_build_with_log() {
+    local log_file="$1"
+    shift
+
+    info "Build log: ${log_file}"
+    info "Output is redirected to the log file; tail -f ${log_file} to watch live."
+
+    if "$@" > "${log_file}" 2>&1; then
+        return 0
+    fi
+
+    # On failure, dump enough context for CI debugging (no file access)
+    echo ""
+    warn "===== BUILD FAILED ===== Full log: ${log_file}"
+    echo ""
+
+    # 1) Extract first error block with surrounding context
+    local error_extract
+    error_extract="$(grep -n -i -E '^\s*(error|Error\b|.*: error:)' "${log_file}" | head -1 || true)"
+    if [ -n "$error_extract" ]; then
+        local first_err_line
+        first_err_line="$(echo "$error_extract" | cut -d: -f1)"
+        local start_line=$(( first_err_line > 10 ? first_err_line - 10 : 1 ))
+        local end_line=$(( first_err_line + 50 ))
+        warn "── First error (around line ${first_err_line}) ──"
+        sed -n "${start_line},${end_line}p" "${log_file}" || true
+        echo ""
+    fi
+
+    # 2) Print last 150 lines as tail context
+    warn "── Last 150 lines ──"
+    tail -n 150 "${log_file}" || true
+    return 1
+}
+
+summarize_build_log() {
+    local log_file="$1"
+
+    [ -f "$log_file" ] || return 0
+
+    local compiling_count linking_count preprocessing_count up_to_date_count
+    compiling_count="$(grep -cE '(^| )Compiling ' "$log_file" 2>/dev/null || true)"
+    linking_count="$(grep -cE '(^| )Linking ' "$log_file" 2>/dev/null || true)"
+    preprocessing_count="$(grep -cE '(^| )Preprocessing ' "$log_file" 2>/dev/null || true)"
+    up_to_date_count="$(grep -cE ' up to date$| is up-to-date$|up-to-date$' "$log_file" 2>/dev/null || true)"
+
+    echo ""
+    substep "Stack build summary ..."
+    info "Compiled modules: ${compiling_count}"
+    info "Preprocessed units: ${preprocessing_count}"
+    info "Linked binaries/libraries: ${linking_count}"
+
+    if [ "$compiling_count" -eq 0 ] && [ "$linking_count" -eq 0 ]; then
+        info "No compile/link lines were emitted; this was likely a cache hit or an up-to-date check."
+    fi
+
+    if [ "$up_to_date_count" -gt 0 ]; then
+        info "Up-to-date messages detected: ${up_to_date_count}"
+    fi
+}
 
 # ── Build backend ─────────────────────────────────────────────────────────────
 
@@ -35,6 +124,8 @@ build_backend() {
     fi
 
     pushd "$BACKEND_DIR" > /dev/null
+    ensure_dir "${STACK_ROOT_DIR}"
+    export STACK_ROOT="${STACK_ROOT_DIR}"
     export STACK_WORK="${STACK_WORK_LINK}"
 
     # ── Clean up legacy leftovers: backend/.stack-work (created when STACK_WORK was not set) ─
@@ -47,6 +138,7 @@ build_backend() {
     # ── Root package stack-work symlink ──────────────────────────────────────
     ensure_dir "${STACK_WORK_DIR}"
     ln -sfn "${STACK_WORK_DIR}" "${BACKEND_DIR}/${STACK_WORK_LINK}"
+    info "stack root → ${STACK_ROOT_DIR}"
     info "stack-work → ${STACK_WORK_DIR}"
 
     # ── Subpackage stack-work symlinks (STACK_WORK creates a same-named directory under each subpackage) ─
@@ -120,8 +212,13 @@ build_backend() {
     info "This may take 10-30 minutes; please be patient ..."
     echo ""
 
+    print_stack_diagnostics
+
     # Build environment: consistently use _deps/postgres
-    local stack_extra_flags="--extra-include-dirs=${DEPS_DIR}/postgres/include --extra-lib-dirs=${DEPS_DIR}/postgres/lib"
+    local -a stack_extra_flags=(
+        "--extra-include-dirs=${DEPS_DIR}/postgres/include"
+        "--extra-lib-dirs=${DEPS_DIR}/postgres/lib"
+    )
     export C_INCLUDE_PATH="${DEPS_DIR}/postgres/include:${C_INCLUDE_PATH:-}"
     export LIBRARY_PATH="${DEPS_DIR}/postgres/lib:${LIBRARY_PATH:-}"
     export PKG_CONFIG_PATH="${DEPS_DIR}/postgres/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
@@ -137,25 +234,30 @@ build_backend() {
         if [ -n "$brew_prefix" ]; then
             export C_INCLUDE_PATH="${brew_prefix}/include:${C_INCLUDE_PATH}"
             export LIBRARY_PATH="${brew_prefix}/lib:${LIBRARY_PATH}"
-            stack_extra_flags="${stack_extra_flags} --extra-include-dirs=${brew_prefix}/include --extra-lib-dirs=${brew_prefix}/lib"
+            stack_extra_flags+=("--extra-include-dirs=${brew_prefix}/include")
+            stack_extra_flags+=("--extra-lib-dirs=${brew_prefix}/lib")
         fi
         substep "Build environment: _deps/postgres + Homebrew ${brew_prefix}"
         echo ""
     fi
 
     # Run Stack build
-    local build_cmd="stack build --fast --ghc-options=\"-Wno-missing-home-modules\" ${stack_extra_flags}"
-    info "Running: cd ${BACKEND_DIR} && ${build_cmd}"
+    local build_log="${TMP_DIR}/stack-build.log"
+    local retry_log="${TMP_DIR}/stack-build-retry.log"
+    local -a build_cmd=(stack build --fast --ghc-options=-Wno-missing-home-modules "${stack_extra_flags[@]}")
+    info "Running: ${build_cmd[*]}"
     info "The first run downloads all Haskell dependencies and may take 10-30 minutes ..."
     echo ""
 
-    if ${build_cmd} 2>&1; then
+    if run_stack_build_with_log "${build_log}" "${build_cmd[@]}"; then
         info "Stack build succeeded"
+        summarize_build_log "${build_log}"
     else
         warn "stack build --fast failed; trying a full build instead ..."
-        local retry_cmd="stack build --ghc-options=\"-Wno-missing-home-modules\" ${stack_extra_flags}"
-        info "Running: ${retry_cmd}"
-        ${retry_cmd} 2>&1
+        local -a retry_cmd=(stack build --ghc-options=-Wno-missing-home-modules "${stack_extra_flags[@]}")
+        info "Running: ${retry_cmd[*]}"
+        run_stack_build_with_log "${retry_log}" "${retry_cmd[@]}"
+        summarize_build_log "${retry_log}"
     fi
 
     # Find the built artifact

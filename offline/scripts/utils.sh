@@ -22,6 +22,7 @@ DEPS_DIR=""
 SCRIPTS_DIR=""
 _DIST_DIR=""
 GHCUP_DIR=""    # GHC + Stack install directory: _deps/ghcup/
+STACK_ROOT_DIR="" # Stack root directory: _deps/stack-root/
 TMP_DIR=""      # Download cache + temporary extraction: offline/_tmp/
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -97,6 +98,7 @@ init_paths() {
     DEPS_DIR="${OFFLINE_DIR}/_deps"
     _DIST_DIR="${OFFLINE_DIR}/_dist"
     GHCUP_DIR="${DEPS_DIR}/ghcup"
+    STACK_ROOT_DIR="${DEPS_DIR}/stack-root"
     TMP_DIR="${OFFLINE_DIR}/_tmp"
 }
 
@@ -212,6 +214,10 @@ source_ghcup_env() {
 
 activate_deps_path() {
     source_ghcup_env || true
+    if [ -n "${STACK_ROOT_DIR:-}" ]; then
+        ensure_dir "${STACK_ROOT_DIR}"
+        export STACK_ROOT="${STACK_ROOT_DIR}"
+    fi
     if [ -d "${DEPS_DIR}/node/bin" ]; then
         export PATH="${DEPS_DIR}/node/bin:${PATH}"
     fi

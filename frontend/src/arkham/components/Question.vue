@@ -100,8 +100,10 @@ const focusedCards = computed(() => {
 })
 
 
+const isRead = computed(() => question.value?.tag === QuestionType.READ)
+
 const showChoices = computed(() => {
-  if (props.game.skillTest && !props.isSkillTest) {
+  if (props.game.skillTest && !props.isSkillTest && !isRead.value) {
     return false
   }
   if (choices.value.some(choiceRequiresModal)) {
@@ -151,6 +153,8 @@ const paymentAmountsChoices = computed(() => {
 })
 
 const readCards = computed(() => question.value?.readCards || [])
+
+const suppressReadInSkillTest = computed(() => props.isSkillTest && isRead.value)
 
 const chooseAmountsChoices = computed<AmountChoice[]>(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -394,7 +398,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       </template>
     </div>
 
-    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+    <div class="intro-text" v-if="question && question.tag === QuestionType.READ && !suppressReadInSkillTest">
       <div v-if="readCards.length > 0" class="story-with-card">
         <img :src="cardCodeImage(cardCode)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>

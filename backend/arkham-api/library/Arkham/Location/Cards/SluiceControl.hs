@@ -13,7 +13,10 @@ newtype SluiceControl = SluiceControl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sluiceControl :: LocationCard SluiceControl
-sluiceControl = location SluiceControl Cards.sluiceControl 4 (PerPlayer 2)
+sluiceControl =
+  locationWith SluiceControl Cards.sluiceControl 4 (PerPlayer 2)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasAbilities SluiceControl where
   getAbilities (SluiceControl a) =

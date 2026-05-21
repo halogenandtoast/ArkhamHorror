@@ -29,7 +29,8 @@ instance RunMessage Fire where
       validLocations <-
         select
           $ NearestLocationTo iid
-          $ noFire <> ConnectedTo ForMovement (LocationWithTreachery (treacheryIs Cards.fire))
+          $ noFire
+          <> ConnectedTo ForMovement (LocationWithTreachery (treacheryIs Cards.fire))
       finalLocations <-
         if null validLocations
           then select $ NearestLocationTo iid noFire

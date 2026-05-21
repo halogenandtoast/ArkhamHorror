@@ -27,14 +27,15 @@ instance RunMessage AlienWhispers where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       hasCards <- notNull <$> field InvestigatorHand iid
-      damageAssets <-
-        select $ assetControlledBy iid <> AssetCanBeDamagedBySource (toSource attrs)
-      horrorAssets <-
-        select $ assetControlledBy iid <> AssetCanBeAssignedHorrorBy iid
+      damageAssets <- select $ assetControlledBy iid <> AssetCanBeDamagedBySource (toSource attrs)
+      horrorAssets <- select $ assetControlledBy iid <> AssetCanBeAssignedHorrorBy iid
+
       chooseOrRunOneM iid $ withI18n do
         cardI18n $ scope "alienWhispers" do
-          when (notNull damageAssets) $ labeled' "damageAsset" $ chooseTargetM iid damageAssets \aid -> dealAssetDamage aid attrs 1
-          when (notNull horrorAssets) $ labeled' "horrorAsset" $ chooseTargetM iid horrorAssets \aid -> dealAssetHorror aid attrs 1
+          when (notNull damageAssets) do
+            labeled' "damageAsset" $ chooseTargetM iid damageAssets \aid -> dealAssetDamage aid attrs 1
+          when (notNull horrorAssets) do
+            labeled' "horrorAsset" $ chooseTargetM iid horrorAssets \aid -> dealAssetHorror aid attrs 1
         when hasCards $ labeled' "discardRandomCardsFromHand" $ randomDiscard iid attrs
       doStep (n - 1) msg'
       pure t

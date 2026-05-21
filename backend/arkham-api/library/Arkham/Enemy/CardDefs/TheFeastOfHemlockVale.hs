@@ -91,6 +91,7 @@ miasmaticShadow =
           , Keyword.Hunter
           , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive
           ]
+    , cdVictoryPoints = Just 0
     }
 
 poisonblossom :: CardDef

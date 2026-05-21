@@ -1,6 +1,6 @@
 module Arkham.Investigator.Cards.ZoeySamarasSpec (spec) where
 
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 import Arkham.Calculation
 import Arkham.Classes.HasChaosTokenValue

@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.KamanThah (kamanThah) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher

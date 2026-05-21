@@ -30,7 +30,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheBoundaryBeyond.Helpers
 import Arkham.Token
 import Arkham.Trait qualified as Trait

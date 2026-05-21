@@ -76,7 +76,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Types (Field (..), Location)
-import Arkham.Matcher hiding (PerformAction)
+import Arkham.Matcher hiding (DealtDamage, PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
 import Arkham.Message.Lifted.Queue as X
@@ -2381,9 +2381,9 @@ nonAttackEnemyDamage
 nonAttackEnemyDamage miid source damage enemy = do
   isLocation <- selectAny $ LocationWithId $ coerce @_ @LocationId (asId enemy)
   if isLocation
-    then push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+    then push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
     else whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-      push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+      push $ Msg.DealDamage (EnemyTarget (asId enemy)) (nonAttack miid source damage)
 
 skillTestAutomaticallySucceeds
   :: (ReverseQueue m, Sourceable source) => source -> SkillTestId -> m ()
@@ -2673,7 +2673,7 @@ cancelEnemyDamage
   -> t m ()
 cancelEnemyDamage enemy =
   don'tMatching \case
-    EnemyDamaged eid _ -> eid == asId enemy
+    Damaged (EnemyTarget eid) _ -> eid == asId enemy
     _ -> False
 
 shouldMoveWithSkillTest :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()

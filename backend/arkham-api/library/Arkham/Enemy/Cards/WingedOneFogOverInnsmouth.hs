@@ -30,9 +30,9 @@ instance HasModifiersFor WingedOneFogOverInnsmouth where
 
 instance RunMessage WingedOneFogOverInnsmouth where
   runMessage msg (WingedOneFogOverInnsmouth attrs) = runQueueT $ case msg of
-    Msg.EnemyDamage eid damage | eid == attrs.id -> fmap WingedOneFogOverInnsmouth do
+    Msg.DealDamage (EnemyTarget eid) damage | eid == attrs.id -> fmap WingedOneFogOverInnsmouth do
       traits <- sourceTraits damage.source
       let shouldUpdate = damage.amount > 1 && none (`elem` traits) [Ranged, Firearm, Spell]
       let damage' = if shouldUpdate then damage {damageAssignmentAmount = damage.amount - 1} else damage
-      liftRunMessage (Msg.EnemyDamage eid damage') attrs
+      liftRunMessage (Msg.DealDamage (EnemyTarget eid) damage') attrs
     _ -> WingedOneFogOverInnsmouth <$> liftRunMessage msg attrs

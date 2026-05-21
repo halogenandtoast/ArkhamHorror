@@ -324,6 +324,11 @@ allAgendas =
       --- Written in Rock
       SomeAgendaCard undergroundSurvey
     , SomeAgendaCard dangerousRide
+    , --- Hemlock House
+      SomeAgendaCard eerieSilence
+    , SomeAgendaCard theHouseStirsV1
+    , SomeAgendaCard theHouseStirsV2
+    , SomeAgendaCard livingWalls
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale

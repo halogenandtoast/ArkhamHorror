@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.PriestOfDagon (priestOfDagon, PriestOfDagon (..)) wher
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
+import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher
 
 newtype PriestOfDagon = PriestOfDagon EnemyAttrs

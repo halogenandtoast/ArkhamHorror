@@ -102,7 +102,7 @@ const choose = (idx: number) => emit('choose', idx)
     </div>
 
     <div v-if="debug.active && tokenAction !== -1" class="token-preview">
-      <div class="token-debug" v-for="tokenFace in allTokenFaces" :key="tokenFace" @click="debug.send(game.id, {tag: 'ForceChaosTokenDraw', contents: tokenFace})">
+      <div class="token-debug" v-for="tokenFace in allTokenFaces" :key="tokenFace" @click="debug.send(game.id, {tag: 'ChaosBagMessage', contents: {tag: 'ForceChaosTokenDraw_', contents: tokenFace}})">
         <img
           class="token"
           :src="imageFor(tokenFace)"

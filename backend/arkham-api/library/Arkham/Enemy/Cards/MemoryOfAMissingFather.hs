@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.MemoryOfAMissingFather (memoryOfAMissingFather) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Story
 import Arkham.Matcher
 import Arkham.Story.Cards qualified as Stories

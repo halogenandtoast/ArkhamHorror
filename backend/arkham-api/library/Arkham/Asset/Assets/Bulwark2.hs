@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.Bulwark2 (bulwark2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

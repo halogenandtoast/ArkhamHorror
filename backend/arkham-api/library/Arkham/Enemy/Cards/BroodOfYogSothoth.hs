@@ -27,10 +27,10 @@ instance HasModifiersFor BroodOfYogSothoth where
 
 instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = runQueueT $ case msg of
-    Msg.EnemyDamage eid (damageAssignmentSource -> (.asset) -> Just aid) | eid == enemyId attrs -> do
+    Msg.DealDamage (EnemyTarget eid) (damageAssignmentSource -> (.asset) -> Just aid) | eid == enemyId attrs -> do
       isEsotericFormula <- aid <=~> AssetWithTitle "Esoteric Formula"
       if isEsotericFormula
         then BroodOfYogSothoth <$> liftRunMessage msg attrs
         else pure e
-    Msg.EnemyDamage eid _ | eid == enemyId attrs -> pure e
+    Msg.DealDamage (EnemyTarget eid) _ | eid == enemyId attrs -> pure e
     _ -> BroodOfYogSothoth <$> liftRunMessage msg attrs

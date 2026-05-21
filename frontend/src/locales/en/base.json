@@ -524,6 +524,11 @@
       "placeClue": "Place Clue",
       "reset": "Reset"
     },
+    "story": {
+      "title": "Debug Story",
+      "inspectBag": "Inspect Bag",
+      "empty": "No bag contents to display."
+    },
     "common": {
       "place": "Place",
       "back": "Back",

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.QuickStudy2 (quickStudy2) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.GameValue
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -18,7 +19,7 @@ instance HasAbilities QuickStudy2 where
   getAbilities (QuickStudy2 a) =
     [ wantsSkillTest (YourSkillTest AnySkillTest)
         $ controlled a 1 DuringAnySkillTest
-        $ FastAbility (exhaust a <> PlaceClueOnLocationCost 1)
+        $ FastAbility (exhaust a <> PlaceClueOnLocationCost (Static 1))
     ]
 
 instance RunMessage QuickStudy2 where

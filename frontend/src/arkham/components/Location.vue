@@ -58,9 +58,14 @@ const emits = defineEmits<{
 
 const choose = (n: number) => emits('choose', n)
 
-const image = computed(() => cardImage(props.location.cardCode, props.location.revealed ? '' : 'b'))
+const image = computed(() => {
+  const { cardCode, revealed, enemyLocation } = props.location
+  if (enemyLocation) return cardImage(cardCode)
+  return cardImage(cardCode, revealed ? '' : 'b')
+})
 
 const id = computed(() => props.location.id)
+const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const locationStory = computed(() => {
@@ -93,7 +98,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
+    return c.ability.type.tag === "ActionAbility" && actionsToList(c.ability.type.actions).includes("Move") && c.ability.source.contents === id.value && c.ability.index === 104 && abilities.value.length == 1
   }
 
   return false
@@ -346,7 +351,7 @@ function onDrop(event: DragEvent) {
       const json = JSON.parse(data)
       if (json.tag === "EnemyTarget") {
         if (enemies.value.some(e => e === json.contents)) return false
-        debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
+        debug.send(props.game.id, {tag: 'HuntMessage', contents: {tag: 'EnemyMove_', contents: [json.contents, id.value]}})
       }
 
       if (json.tag === "AssetTarget") {
@@ -394,7 +399,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner" :class="{ highlighted, blocked }">
+          <div class="card-frame-inner" :class="{ highlighted, blocked, exhausted: isExhausted }">
             <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
             <template v-else>
               <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -786,6 +791,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
     }
     &.highlighted {
       transform: scale(1.1);
+    }
+
+    &.exhausted {
+      transform: rotate(90deg) translateX(-10px);
     }
     &.blocked {
       filter: grayscale(0.5) brightness(0.85);

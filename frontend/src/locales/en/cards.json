@@ -23,6 +23,10 @@
       "placeChargeOrSecret": "Place {count} charge or secret on an asset you control | Place {count} charges or secrets on an asset you control",
       "moveUpTo": "Move up to {count} times"
     },
+    "alienWhispers": {
+      "damageAsset": "Take 1 damage on an asset you control",
+      "horrorAsset": "Take 1 horror on an asset you control"
+    },
     "alyssaGraham": {
       "addDoom": "Add 1 Doom to Alyssa to move card to bottom",
       "add1DoomToAlyssaToMoveCardToBottom": "Add 1 Doom to Alyssa to move card to bottom",
@@ -339,6 +343,9 @@
     "enchantedBladeGuardian3": {
       "doNotSpendUse": "Do not spend use",
       "spend1UseToEmpower": "Spend 1 use to empower"
+    },
+    "enervation": {
+      "discardHighestCost": "Choose the card with the highest printed cost in your hand and discard it"
     },
     "eonChart4": {
       "move": "Move"

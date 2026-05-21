@@ -24,7 +24,7 @@ instance HasModifiersFor WayangKulitTheater where
   getModifiersFor (WayangKulitTheater a) = do
     mTheShadeReaper <- selectOne $ scarletKeyIs Keys.theShadeReaper
     for_ mTheShadeReaper \theShadeReaper -> do
-      x <- min 8 <$> fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
+      x <- min 8 . (`div` 2) . (+ 1) <$> fieldMap ScarletKeyTokens (countTokens #charge) theShadeReaper
       modifySelf a [ShroudModifier x]
 
 instance HasAbilities WayangKulitTheater where

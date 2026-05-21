@@ -16,6 +16,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Cost.Status
 import Arkham.Effect.Types (Field (..))
+import Arkham.Enemy.Types (Field (EnemyAttacking))
 import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.Game (abilityMatches)
 import {-# SOURCE #-} Arkham.GameEnv
@@ -382,6 +383,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let noMatch = pure False
   let isMatch' = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
+  let isAttackCancelled details = do
+        liveDetails <- field EnemyAttacking (attackEnemy details)
+        pure $ details.cancelled || maybe False (.cancelled) liveDetails
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
     Matcher.NotWindow inner -> not <$> windowMatches iid rawSource window' inner
@@ -852,6 +856,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
+    Matcher.WouldDiscardFromDeck timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDiscardFromDeck who source' ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
     Matcher.Discarded timing mWhoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.Discarded mWho source' card ->
@@ -860,6 +872,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                 (pure True)
                 (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
                 mWhoMatcher
+            , sourceMatches source' sourceMatcher
+            , extendedCardMatch card cardMatcher
+            ]
+        _ -> noMatch
+    Matcher.DiscardedFromDeck timing whoMatcher sourceMatcher cardMatcher ->
+      guardTiming timing $ \case
+        Window.DiscardedFromDeck who source' card ->
+          andM
+            [ matchWho iid who whoMatcher
             , sourceMatches source' sourceMatcher
             , extendedCardMatch card cardMatcher
             ]
@@ -1411,7 +1432,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyWouldAttack details -> case attackTarget details of
           SingleAttackTarget (InvestigatorTarget who) ->
             andM
-              [ matchWho iid who whoMatcher
+              [ not <$> isAttackCancelled details
+              , matchWho iid who whoMatcher
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
@@ -1422,7 +1444,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyAttacks details -> case attackTarget details of
           SingleAttackTarget (InvestigatorTarget who) ->
             andM
-              [ matchWho iid who whoMatcher
+              [ not <$> isAttackCancelled details
+              , matchWho iid who whoMatcher
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
@@ -1688,8 +1711,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.EnemyEntersYourLocation timing enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemyEntersYourLocation iid' enemyId _ | iid == iid' ->
-          matches enemyId enemyMatcher
+        Window.EnemyEntersYourLocation iid' enemyId _
+          | iid == iid' ->
+              matches enemyId enemyMatcher
         _ -> noMatch
     Matcher.EnemyLeaves timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case

@@ -17,6 +17,7 @@ import Arkham.Constants
 import Arkham.Deck
 import Arkham.Enemy.Cards
 import Arkham.Enemy.Types.Attrs as X
+import Arkham.EnemyLocation.Cards (allEnemyLocationCards)
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
@@ -164,9 +165,10 @@ instance IsCard EnemyAttrs where
   toCardOwner = enemyBearer
 
 instance HasCardDef EnemyAttrs where
-  toCardDef e = case lookup (enemyCardCode e) allEnemyCards of
-    Just def -> def
-    Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
+  toCardDef e =
+    case lookup (enemyCardCode e) allEnemyCards <|> lookup (enemyCardCode e) allEnemyLocationCards of
+      Just def -> def
+      Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
 enemy
   :: (EnemyAttrs -> a)

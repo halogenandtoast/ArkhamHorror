@@ -21,6 +21,7 @@ import ExchangeTokens from '@/arkham/components/ExchangeTokens.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 export interface Props {
   game: Game
@@ -99,8 +100,10 @@ const focusedCards = computed(() => {
 })
 
 
+const isRead = computed(() => question.value?.tag === QuestionType.READ)
+
 const showChoices = computed(() => {
-  if (props.game.skillTest && !props.isSkillTest) {
+  if (props.game.skillTest && !props.isSkillTest && !isRead.value) {
     return false
   }
   if (choices.value.some(choiceRequiresModal)) {
@@ -150,6 +153,8 @@ const paymentAmountsChoices = computed(() => {
 })
 
 const readCards = computed(() => question.value?.readCards || [])
+
+const suppressReadInSkillTest = computed(() => props.isSkillTest && isRead.value)
 
 const chooseAmountsChoices = computed<AmountChoice[]>(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -393,7 +398,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
       </template>
     </div>
 
-    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+    <div class="intro-text" v-if="question && question.tag === QuestionType.READ && !suppressReadInSkillTest">
       <div v-if="readCards.length > 0" class="story-with-card">
         <img :src="cardCodeImage(cardCode)" v-for="cardCode in readCards" :key="cardCode" class="card no-overlay" />
         <div>
@@ -714,6 +719,65 @@ section {
       content: "";
     }
   }
+  &:has(.haunted) {
+    background: #0e0f06;
+    color: #c1c49c;
+    border: 0;
+    border-radius: 0;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    margin: 0;
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
+      background-image: v-bind(grunge), radial-gradient(ellipse at 50% 40%, #3a3d16 0%, #1f2110 55%, #0e0f06 80%);
+      background-blend-mode: overlay;
+      background-size: cover;
+      z-index: 0;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 25% 75%, rgba(131, 137, 56, 0.16), transparent 55%),
+        radial-gradient(circle at 75% 25%, rgba(131, 137, 56, 0.12), transparent 55%);
+      z-index: 0;
+      animation: haunted-flicker 7s ease-in-out infinite;
+    }
+
+    .intro-text-body, &:deep(.intro-text-body) {
+      position: relative;
+      z-index: 1;
+      margin: -40px;
+    }
+  }
+}
+
+@keyframes haunted-flicker {
+  0%, 100% { filter: brightness(1); }
+  3% { filter: brightness(0.78); }
+  6% { filter: brightness(1.05); }
+  9% { filter: brightness(0.85); }
+  12% { filter: brightness(1); }
+  62% { filter: brightness(1); }
+  64% { filter: brightness(0.7); }
+  66% { filter: brightness(1.02); }
+  68% { filter: brightness(1); }
 }
 
 .status-bar {
@@ -1353,6 +1417,43 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.question-wrapper:has(.haunted) {
+  gap: 0;
+
+  :deep(.question-choices) {
+    gap: 0;
+    padding: 0 !important;
+  }
+
+  :deep(.message-label) {
+    margin: 0;
+    padding: 0;
+  }
+
+  .done,
+  :deep(.question-choices button),
+  :deep(.question-choices a.button) {
+    background:
+      linear-gradient(180deg, #14181b 0%, #0a0d10 100%);
+    color: #c9d2a8;
+    border: 0;
+    border-radius: 0 0 16px 16px;
+    margin: 0;
+    text-shadow:
+      0 0 6px rgba(135, 156, 90, 0.55),
+      0 1px 2px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.08em;
+    font-family: Teutonic, "Noto Sans", sans-serif;
+    transition: background 200ms ease, color 200ms ease;
+
+    &:hover {
+      background:
+        linear-gradient(180deg, #1a2620 0%, #0a0d10 100%);
+      color: #dfe6c4;
+    }
+  }
 }
 
 .question-wrapper:has(> .question-image) .question-image{

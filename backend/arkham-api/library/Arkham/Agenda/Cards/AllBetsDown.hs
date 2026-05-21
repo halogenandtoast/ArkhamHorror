@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.AllBetsDown (allBetsDown) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.FortuneAndFolly.Helpers
 import Arkham.Trait (Trait (Casino))

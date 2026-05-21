@@ -3,6 +3,7 @@
 // branch maps onto an i18n key in `label.cost.*` (see locale files); unknown tags
 // fall back to a literal "X" so a missing case never breaks the UI.
 import type { Cost } from '@/arkham/types/Cost'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 type Translate = (key: string, params?: Record<string, unknown>) => string
 
@@ -14,6 +15,15 @@ const num = (c: Cost, key: string): number => Number(get(c, key) ?? 0)
 const join = (parts: string[], separator: string): string =>
   parts.filter((p) => p.length > 0).join(separator)
 
+// Resolve a Haskell-side label string. Plain text is returned as-is; values
+// starting with `$` are treated as i18n keys (optionally followed by
+// space-separated `name=type:value` params) and resolved via the shared helper.
+const resolveLabel = (label: string, t: Translate): string => {
+  if (!label.startsWith('$')) return label
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return handleEmbeddedI18n(label, t as (key: string, params: { [key: string]: any }) => string)
+}
+
 // Multi-arg costs serialize `contents` as a positional tuple. Pull out element N as an int.
 const intAt = (c: Cost, idx: number): number => {
   const contents = get<unknown[]>(c, 'contents')
@@ -21,13 +31,18 @@ const intAt = (c: Cost, idx: number): number => {
 }
 
 // Extract a numeric count from a GameValue (Static n / PerPlayer n / ...).
-// Non-Static variants are shown with their literal count; the per-player nuance is
-// dropped here, but the magnitude is correct for most card text.
+// Callers that care about per-player vs static rendering should also check
+// `gameValueTag` and route to a different label key.
 const gameValueCount = (gv: unknown): number => {
   if (!gv || typeof gv !== 'object') return 0
   const v = gv as { tag?: string; contents?: unknown }
   if (v.tag === 'Static' || v.tag === 'PerPlayer') return Number(v.contents) || 0
   return 0
+}
+
+const gameValueTag = (gv: unknown): string | undefined => {
+  if (!gv || typeof gv !== 'object') return undefined
+  return (gv as { tag?: string }).tag
 }
 
 const useTypeLabel = (useType: unknown): string => {
@@ -43,6 +58,7 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.free')
     case 'ActionCost': {
       const n = num(cost, 'contents')
+      if (n <= 0) return ''
       return t('label.cost.action', { count: n })
     }
     case 'AdditionalActionCost':
@@ -158,7 +174,8 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.doom', { count: intAt(cost, 2) })
     case 'LabeledCost': {
       const contents = get<unknown[]>(cost, 'contents')
-      return typeof contents?.[0] === 'string' ? (contents[0] as string) : ''
+      const raw = typeof contents?.[0] === 'string' ? (contents[0] as string) : ''
+      return resolveLabel(raw, t)
     }
     case 'SkillTestCost': {
       const contents = get<unknown[]>(cost, 'contents') ?? []
@@ -168,8 +185,11 @@ export function formatCost(cost: Cost, t: Translate): string {
       const count = gameValue?.tag === 'Fixed' ? Number(gameValue.contents) : 0
       return t('label.test', { skill: `{${skill}}`, count })
     }
-    case 'UnlessFastActionCost':
-      return t('label.cost.action', { count: num(cost, 'contents') })
+    case 'UnlessFastActionCost': {
+      const n = num(cost, 'contents')
+      if (n <= 0) return ''
+      return t('label.cost.action', { count: n })
+    }
     case 'IncreaseCostOfThis':
       return t('label.cost.increaseCostOfThis', { count: intAt(cost, 1) })
     case 'CostToEnterUnrevealed': {
@@ -210,8 +230,15 @@ export function formatCost(cost: Cost, t: Translate): string {
     }
     case 'DiscoveredCluesCost':
       return t('label.cost.discoveredClues')
-    case 'PlaceClueOnLocationCost':
-      return t('label.cost.placeClueOnLocation', { count: num(cost, 'contents') })
+    case 'PlaceClueOnLocationCost': {
+      const gv = get(cost, 'contents')
+      const count = gameValueCount(gv)
+      const key =
+        gameValueTag(gv) === 'PerPlayer'
+          ? 'label.cost.placeClueOnLocationPerPlayer'
+          : 'label.cost.placeClueOnLocation'
+      return t(key, { count })
+    }
     case 'ShuffleTopOfScenarioDeckIntoYourDeck':
       return t('label.cost.shuffleTopOfScenarioDeck', { count: intAt(cost, 0) })
     case 'ChooseEnemyCost':

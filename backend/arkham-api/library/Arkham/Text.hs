@@ -6,6 +6,7 @@
 module Arkham.Text where
 
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
@@ -33,6 +34,7 @@ data FlavorTextModifier
   | NestedEntry
   | NoUnderline
   | CodexEntry
+  | HauntedEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -58,6 +60,7 @@ data FlavorTextEntry
   | ListEntry {list :: [ListItemEntry]}
   | CardEntry {cardCode :: CardCode, imageModifiers :: [ImageModifier]}
   | TarotEntry {tarot :: TarotCardArcana}
+  | ChaosTokenEntry {chaosTokenFace :: ChaosTokenFace}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 

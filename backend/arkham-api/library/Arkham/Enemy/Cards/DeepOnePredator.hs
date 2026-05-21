@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.DeepOnePredator (deepOnePredator, DeepOnePredator (..)
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
+import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key

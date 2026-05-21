@@ -16,7 +16,7 @@ import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.I18n
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
+import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
@@ -209,16 +209,16 @@ instance RunMessage RunicAxe where
             case target of
               EnemyTarget eid -> do
                 enemies <- select $ EnemyIsEngagedWith Anyone <> not_ (EnemyWithId eid)
-                for_ enemies \eid' -> push $ EnemyDamage eid' $ Msg.delayDamage $ Msg.attack (attrs.ability 1) furyCount
+                for_ enemies \eid' -> push $ DealDamage (EnemyTarget eid') $ Msg.delayDamage $ Msg.attack (attrs.ability 1) furyCount
                 pushAll $ Msg.checkDefeated (attrs.ability 1) <$> enemies
               _ -> pure ()
 
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       push $ DoStep (count (== Glory) (inscriptions meta)) msg
       attrs' <- liftRunMessage msg attrs
       pure $ RunicAxe $ attrs' `with` Metadata (filter (/= Glory) (inscriptions meta))
-    DoStep n msg'@(EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _) | n > 0 -> do
+    DoStep n msg'@(Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _) | n > 0 -> do
       for_ attrs.controller \iid -> do
         mCanDraw <- Msg.drawCardsIfCan iid (attrs.ability 1) 1
         canHealDamage <- canHaveDamageHealed (attrs.ability 1) iid

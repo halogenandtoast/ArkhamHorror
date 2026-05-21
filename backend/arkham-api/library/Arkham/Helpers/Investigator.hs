@@ -31,7 +31,8 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned, matchTarget)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message (
-  Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
+  Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly),
+  pattern InvestigatorMulligan,
  )
 import Arkham.Name
 import Arkham.Placement

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher.Base
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Window

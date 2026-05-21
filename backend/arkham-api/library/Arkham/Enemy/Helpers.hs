@@ -18,9 +18,9 @@ cancelEnemyDefeat (asId -> eid) = do
       Do (Discarded (EnemyTarget eid') _ _) -> eid == eid'
       RemoveFromPlay (EnemySource eid') -> eid == eid'
       RemovedFromPlay (EnemySource eid') -> eid == eid'
-      EnemyDefeated eid' _ _ _ -> eid == eid'
-      Do (EnemyDefeated eid' _ _ _) -> eid == eid'
-      After (EnemyDefeated eid' _ _ _) -> eid == eid'
+      Defeated (EnemyTarget eid') _ _ _ -> eid == eid'
+      Do (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
+      After (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
       CheckWindows ws -> any isEnemyDefeated ws
       Do (CheckWindows ws) -> any isEnemyDefeated ws
       _ -> False
@@ -38,9 +38,9 @@ cancelEnemyDefeatWithWindows (asId -> eid) = do
       Do (Discarded (EnemyTarget eid') _ _) -> eid == eid'
       RemoveFromPlay (EnemySource eid') -> eid == eid'
       RemovedFromPlay (EnemySource eid') -> eid == eid'
-      EnemyDefeated eid' _ _ _ -> eid == eid'
-      Do (EnemyDefeated eid' _ _ _) -> eid == eid'
-      After (EnemyDefeated eid' _ _ _) -> eid == eid'
+      Defeated (EnemyTarget eid') _ _ _ -> eid == eid'
+      Do (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
+      After (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
       _ -> False
   withQueue_ $ filter (not . isDiscardEnemy)
 

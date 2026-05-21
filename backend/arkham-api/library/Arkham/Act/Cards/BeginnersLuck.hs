@@ -2,7 +2,7 @@ module Arkham.Act.Cards.BeginnersLuck (beginnersLuck) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Import.Lifted
+import Arkham.Act.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag

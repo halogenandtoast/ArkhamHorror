@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheEndOfAllThings (theEndOfAllThings) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 

@@ -122,6 +122,10 @@ data ScenarioLogKey
     TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
+  | -- | Hemlock House
+    JudithIsRemodeling
+  | FoundLittleSylvie
+  | YouAreHelpingGideon
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

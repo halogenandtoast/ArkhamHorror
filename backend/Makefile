@@ -17,6 +17,14 @@ api.watch:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
+.PHONY: api.build
+api.build:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: api.watch.test
 api.watch.test:
 	cd arkham-api && \

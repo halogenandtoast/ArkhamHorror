@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.Cnidathqua (cnidathqua) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

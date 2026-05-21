@@ -311,7 +311,7 @@ handleInvestigatorDamageEnemy a@InvestigatorAttrs{..} iid eid source = do
           AbilitySource s 100 -> UseAbilitySource iid s 100
           UseAbilitySource _ s 100 -> UseAbilitySource iid s 100
           _ -> source
-    push $ EnemyDamage eid $ attack source' damage
+    push $ Msg.DealDamage (EnemyTarget eid) $ attack source' damage
   pure a
 
 handleCancelDamage a@InvestigatorAttrs{..} iid n = lift do

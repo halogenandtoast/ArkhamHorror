@@ -21,7 +21,7 @@ newtype MiguelsKnapsack = MiguelsKnapsack AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miguelsKnapsack :: AssetCard MiguelsKnapsack
-miguelsKnapsack = asset MiguelsKnapsack Cards.miguelsKnapsack
+miguelsKnapsack = assetWith MiguelsKnapsack Cards.miguelsKnapsack (healthL ?~ 2)
 
 instance HasModifiersFor MiguelsKnapsack where
   getModifiersFor (MiguelsKnapsack a) = unless a.exhausted do

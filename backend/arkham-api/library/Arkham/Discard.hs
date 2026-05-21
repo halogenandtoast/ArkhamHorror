@@ -11,6 +11,10 @@ data DiscardStrategy = DiscardChoose | DiscardRandom | DiscardAll
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data DiscardDestination = ToDiscardPile | ToTopOfDeck | ToBottomOfDeck
+  deriving stock (Show, Ord, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
 data HandDiscard msg = HandDiscard
   { discardStrategy :: DiscardStrategy
   , discardInvestigator :: InvestigatorId
@@ -19,9 +23,22 @@ data HandDiscard msg = HandDiscard
   , discardFilter :: CardMatcher
   , discardAmount :: Int
   , discardThen :: Maybe msg
+  , discardDestination :: DiscardDestination
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON msg => FromJSON (HandDiscard msg) where
+  parseJSON = withObject "HandDiscard" $ \o -> do
+    discardStrategy <- o .: "discardStrategy"
+    discardInvestigator <- o .: "discardInvestigator"
+    discardSource <- o .: "discardSource"
+    discardTarget <- o .: "discardTarget"
+    discardFilter <- o .: "discardFilter"
+    discardAmount <- o .: "discardAmount"
+    discardThen <- o .: "discardThen"
+    discardDestination <- o .:? "discardDestination" .!= ToDiscardPile
+    pure HandDiscard {..}
 
 instance HasField "strategy" (HandDiscard msg) DiscardStrategy where
   getField = discardStrategy
@@ -49,4 +66,8 @@ instance HasField "amount" (HandDiscard msg) Int where
 
 instance HasField "then" (HandDiscard msg) (Maybe msg) where
   getField = discardThen
+  {-# INLINE getField #-}
+
+instance HasField "destination" (HandDiscard msg) DiscardDestination where
+  getField = discardDestination
   {-# INLINE getField #-}

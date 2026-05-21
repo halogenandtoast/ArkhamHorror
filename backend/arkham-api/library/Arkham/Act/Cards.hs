@@ -28,6 +28,7 @@ allActCards =
       , aCosmicJourney
       , aFamiliarPattern
       , afterHours
+      , againstTheHouse
       , alejandrosPlight
       , alejandrosPrison
       , allIn
@@ -216,6 +217,7 @@ allActCards =
       , sprawlingCityV3
       , stalkedByShadows
       , stoppingTheRitual
+      , strangeInfestation
       , strangeOccurences
       , strangeRelicsMariaDeSilva
       , strangeRelicsMariasInformation
@@ -250,6 +252,7 @@ allActCards =
       , theGreatSeal
       , theGuardedRuins
       , theGuardiansInquiry
+      , theHeartOfTheHouse
       , theIsleOfOriab
       , theLadyWithTheRedParasol
       , theLighthouse

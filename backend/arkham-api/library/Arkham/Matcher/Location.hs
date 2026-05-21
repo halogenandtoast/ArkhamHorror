@@ -117,6 +117,7 @@ data LocationMatcher
   | --                           ^ start
     FarthestLocationFromInvestigator InvestigatorMatcher LocationMatcher
   | FarthestLocationFromAll LocationMatcher
+  | NearestLocationToMost LocationMatcher
   | NearestLocationToYou LocationMatcher
   | NearestLocationTo InvestigatorId LocationMatcher
   | NearestLocationToAny LocationMatcher

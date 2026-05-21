@@ -64,12 +64,14 @@ getPlayedEvent = \case
 cardDiscarded :: HasCallStack => [Window] -> Card
 cardDiscarded [] = error "missing play card window"
 cardDiscarded ((windowType -> Window.DiscardedFromHand _ _ c) : _) = c
+cardDiscarded ((windowType -> Window.DiscardedFromDeck _ _ c) : _) = c
 cardDiscarded ((windowType -> Window.Discarded _ _ c) : _) = c
 cardDiscarded (_ : xs) = cardDiscarded xs
 
 cardsDiscarded :: HasCallStack => [Window] -> [Card]
 cardsDiscarded [] = []
 cardsDiscarded ((windowType -> Window.DiscardedFromHand _ _ c) : ws) = c : cardsDiscarded ws
+cardsDiscarded ((windowType -> Window.DiscardedFromDeck _ _ c) : ws) = c : cardsDiscarded ws
 cardsDiscarded ((windowType -> Window.Discarded _ _ c) : ws) = c : cardsDiscarded ws
 cardsDiscarded (_ : xs) = cardsDiscarded xs
 

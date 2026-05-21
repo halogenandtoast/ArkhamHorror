@@ -5,7 +5,7 @@ import Arkham.ChaosToken
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Import.Lifted qualified as Msg (Message (RevealChaosToken))
+import Arkham.Investigator.Import.Lifted qualified as Msg (pattern RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

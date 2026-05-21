@@ -155,6 +155,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         targets <- select tm
         targets & anyM \case
           ScenarioTarget -> scenarioFieldMap ScenarioTokens ((> 0) . countTokens tkn)
+          LocationTarget lid -> fieldMap LocationTokens ((> 0) . countTokens tkn) lid
           _ -> pure False
       PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
       GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
@@ -421,7 +422,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         n <- perPlayer 1
         pure $ spendableClues >= n
       DiscoveredCluesCost -> pure True
-      PlaceClueOnLocationCost n -> do
+      PlaceClueOnLocationCost gv -> do
+        n <- getPlayerCountValue gv
         canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
         z <-
           if canParallelRex

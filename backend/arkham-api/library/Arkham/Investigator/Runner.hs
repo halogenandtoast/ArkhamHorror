@@ -1739,6 +1739,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> handleDiscardTopOfDeck a iid n source mTarget
+  Do (DiscardTopOfDeck iid n source mTarget) | iid == investigatorId -> handleDoDiscardTopOfDeck a iid n source mTarget
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> handleDiscardUntilFirst a iid' source iid matcher
   RevealUntilFirst iid source (Deck.InvestigatorDeck iid') matcher | iid == investigatorId && iid' == iid -> handleRevealUntilFirst a iid source iid' matcher
   DrawStartingHand iid | iid == investigatorId -> handleDrawStartingHand a iid

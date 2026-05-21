@@ -45,7 +45,7 @@ instance RunMessage HydraAwakenedAndEnraged where
           chooseOrRunTargetM iid brood $ push . Msg.EnemyEvaded eiid
         Window.DealtDamage source damageEffect _ n ->
           chooseOrRunTargetM iid brood \target ->
-            push $ EnemyDamage target $ DamageAssignment source n damageEffect False False
+            push $ DealDamage (EnemyTarget target) $ DamageAssignment source n damageEffect False False
         _ -> pure ()
       pure e
     _ -> HydraAwakenedAndEnraged <$> liftRunMessage msg attrs

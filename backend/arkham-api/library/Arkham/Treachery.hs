@@ -530,6 +530,8 @@ allTreacheries =
       , --- The Heart of Madness [eote]
         SomeTreacheryCard primevalTerror
       , SomeTreacheryCard rootsOfTheEarth
+      , --- The Great Seal [eote]
+        SomeTreacheryCard electrostaticDischarge
       , --- Agents of the Unknown [eote]
         SomeTreacheryCard theMadnessWithin
       , --- Creatures in the Ice [eote]
@@ -639,6 +641,9 @@ allTreacheries =
       , --- Written in Rock [fhv]
         SomeTreacheryCard caveIn
       , SomeTreacheryCard wildRide
+      , --- Hemlock House [fhv]
+        SomeTreacheryCard outOfTheWalls
+      , SomeTreacheryCard pulledIn
       , --- The Twisted Hollow [fhv]
         SomeTreacheryCard deepShadows
       , SomeTreacheryCard lurkingFear
@@ -647,10 +652,20 @@ allTreacheries =
         SomeTreacheryCard swarm
       , --- The Second Day [fhv]
         SomeTreacheryCard downpour
+      , --- The Final Day [fhv]
+        SomeTreacheryCard otherworldlyVisions
       , --- Horrors in the Rock [fhv]
         SomeTreacheryCard chromaBlight
       , SomeTreacheryCard calcification
-      , --- Horrors in the Rock [fhv]
+      , --- Agents of the Colour [fhv]
+        SomeTreacheryCard alienWhispers
+      , --- Transfiguration [fhv]
+        SomeTreacheryCard strangeMutations
+      , SomeTreacheryCard fungalRot
+      , --- Blight [fhv]
+        SomeTreacheryCard enervation
+      , SomeTreacheryCard desiccation
+      , --- Refractions [fhv]
         SomeTreacheryCard empyreanBrilliance
       , SomeTreacheryCard captivatingGleam
       , --- The Forest [fhv]
@@ -659,6 +674,8 @@ allTreacheries =
       , SomeTreacheryCard callOfTheWild
       , --- Myconids [fhv]
         SomeTreacheryCard psychotropicSpores
+      , --- Fire [fhv]
+        SomeTreacheryCard fire
       , -- The Drowned City
         -- signature [tdc]
         SomeTreacheryCard illDoItMyself

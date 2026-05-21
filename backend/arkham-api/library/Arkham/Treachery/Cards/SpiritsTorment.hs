@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.SpiritsTorment (spiritsTorment) where
 
 import Arkham.Ability
+import Arkham.GameValue
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.I18n
 import Arkham.Matcher
@@ -18,7 +19,7 @@ spiritsTorment = treachery SpiritsTorment Cards.spiritsTorment
 instance HasAbilities SpiritsTorment where
   getAbilities (SpiritsTorment a) =
     [ forcedAbility a 1 $ Leaves #after You $ locationWithTreachery a
-    , restricted a 2 OnSameLocation $ actionAbilityWithCost (PlaceClueOnLocationCost 1)
+    , restricted a 2 OnSameLocation $ actionAbilityWithCost (PlaceClueOnLocationCost (Static 1))
     ]
 
 instance RunMessage SpiritsTorment where

@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.SummonedBeast (summonedBeast) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Modifiers

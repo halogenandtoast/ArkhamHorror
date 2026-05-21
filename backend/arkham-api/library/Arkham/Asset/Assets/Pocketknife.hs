@@ -27,7 +27,7 @@ instance RunMessage Pocketknife where
       modifyAnySkill sid (attrs.ability 1) iid 1
       chooseFightEnemyWithSkillChoice sid iid (attrs.ability 1) [#combat, #agility]
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         chooseOneM iid do
           (cardI18n $ labeled' "pocketknife.exhaustPocketknifeGain1Resource") do

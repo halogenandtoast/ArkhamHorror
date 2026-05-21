@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Elite))
 
@@ -48,7 +48,7 @@ instance RunMessage StaffOfTheSerpentRelicOfThePast where
         others <- select $ not_ (be controller) <> NearestToLocation (locationWithInvestigator controller)
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    After (EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) traits) -> do
+    After (Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) traits) -> do
       dealAssetDamage attrs.id (attrs.ability 1) $ if Elite `elem` traits then 2 else 1
       pure a
     _ -> StaffOfTheSerpentRelicOfThePast <$> liftRunMessage msg attrs

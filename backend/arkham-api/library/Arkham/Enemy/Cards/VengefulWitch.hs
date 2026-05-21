@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.VengefulWitch (vengefulWitch) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
 import Arkham.Matcher
 import Arkham.Projection

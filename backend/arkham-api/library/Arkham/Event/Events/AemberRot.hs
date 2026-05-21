@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Enemy.Types (Field (EnemyHealthActual))
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Calculation
 import Arkham.Matcher
 import Arkham.Projection

@@ -12,7 +12,6 @@ import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Investigator as X (eliminationWindow)
 import Arkham.Helpers.Message as X hiding (
   DeckHasNoCards,
-  EnemyDefeated,
   InvestigatorDamage,
   InvestigatorEliminated,
   RevealChaosToken,

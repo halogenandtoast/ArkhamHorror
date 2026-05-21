@@ -1099,6 +1099,7 @@ allAssets =
       , SomeAssetCard bertieMusgraveATrueAesthete
       , SomeAssetCard drRosaMarquezBestInHerField
       , SomeAssetCard helenPetersTheEldestSister
+      , SomeAssetCard littleSylvie
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
       , SomeAssetCard cornHuskDoll

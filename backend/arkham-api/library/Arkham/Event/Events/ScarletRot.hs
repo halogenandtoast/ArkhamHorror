@@ -3,7 +3,7 @@ module Arkham.Event.Events.ScarletRot (scarletRot) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 
 newtype ScarletRot = ScarletRot EventAttrs

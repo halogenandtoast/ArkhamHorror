@@ -71,6 +71,7 @@ allAgendaCards =
       , doomFromBelow
       , drawnIn
       , easyPrey
+      , eerieSilence
       , empireOfTheDead
       , empireOfTheUndead
       , emptyStreets
@@ -113,6 +114,7 @@ allAgendaCards =
       , justiceXI
       , letTheStormRageTheFloodBelow
       , letTheStormRageTheVortexAbove
+      , livingWalls
       , lockedInside
       , lostAndForgotten
       , lostMemories
@@ -200,6 +202,8 @@ allAgendaCards =
       , theHermitIX
       , theHierophantV
       , theHouseAlwaysWatches
+      , theHouseStirsV1
+      , theHouseStirsV2
       , theHouseWithNoName
       , theInfestationSpreads
       , theInitiationV1

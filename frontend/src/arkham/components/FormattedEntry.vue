@@ -5,6 +5,7 @@ import { baseUrl, formatContent, imgsrc } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
 import { I18n, useI18n } from 'vue-i18n'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
+import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import CodexEntry from '@/arkham/components/CodexEntry.vue'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
@@ -18,6 +19,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'EntrySplit': return {}
     case 'HeaderEntry': return {}
     case 'TarotEntry': return {"card": true, "no-overlay": true}
+    case 'ChaosTokenEntry': return {"chaos-token": true}
     case 'CardEntry': {
       const mods = entry.imageModifiers.reduce((acc, m) => { return { [imageModifierToStyle(m)]: true, ...acc }}, {})
       return {"card": true, "no-overlay": true, ...mods}
@@ -46,6 +48,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'ResolutionEntry': return 'resolution'
     case 'CheckpointEntry': return 'checkpoint'
     case 'InterludeEntry': return 'interlude'
+    case 'HauntedEntry': return 'haunted'
     case 'RightAligned': return 'right'
     case 'CenteredEntry': return 'center'
     case 'NoUnderline': return 'no-underline'
@@ -84,6 +87,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
     case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: cardImage(entry.cardCode)})])
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
+    case 'ChaosTokenEntry': return h('div', [h('img', { class: entryStyles(entry), src: chaosTokenImage(entry.chaosTokenFace)})])
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
@@ -104,6 +108,14 @@ export default defineComponent({
 
 <style scoped>
 .composite { display: contents; }
+
+.chaos-token, :deep(.chaos-token) {
+  display: block;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  object-fit: contain;
+}
 .columns, :deep(.columns) {
   display: flex;
   flex-direction: row;
@@ -129,6 +141,30 @@ export default defineComponent({
     height: calc(100% - 20px);
     content: '';
     border-left: 1px solid black;
+  }
+
+  /* When a column contains a chaos token, drop the divider line and
+     center the token + paragraph as a stacked block. */
+  .composite:has(.chaos-token) {
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+
+    &::after {
+      content: none;
+    }
+
+    > div {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    p, :deep(p) {
+      margin: 0;
+      text-align: center;
+    }
   }
 
   &.simple {
@@ -317,6 +353,10 @@ p.indented, :deep(p.indented) {
   margin-inline: 50px;
 }
 
+div:has(p.unindented), :deep(div:has(p.unindented)) {
+  padding-inline: 0px;
+}
+
 p.billenia, :deep(p.billenia) {
   font-family: "Billenia";
   font-weight: 500;
@@ -428,8 +468,7 @@ p.billenia, :deep(p.billenia) {
 }
 
 h3, :deep(h3) {
-  margin-bottom: 10px;
-  font-size: 1.1em;
+  font-size: 1.3em;
   font-weight: bold;
   text-decoration: underline;
   justify-self: center;
@@ -612,6 +651,84 @@ ul, :deep(ul) {
   }
 }
 
+.haunted, :deep(.haunted) {
+  color: #fafbe8;
+
+  p, :deep(p) {
+    color: #fcfdef;
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 1),
+      0 0 8px rgba(0, 0, 0, 0.9),
+      0 0 18px rgba(0, 0, 0, 0.65);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .chaos-token, :deep(.chaos-token) {
+    border-radius: 50%;
+    filter:
+      drop-shadow(0 0 1px rgba(0, 0, 0, 1))
+      drop-shadow(0 0 2px rgba(0, 0, 0, 0.95))
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85))
+      drop-shadow(0 0 10px rgba(208, 215, 100, 0.95))
+      drop-shadow(0 0 22px rgba(180, 188, 75, 0.85))
+      drop-shadow(0 0 50px rgba(131, 137, 56, 0.6))
+      drop-shadow(0 0 90px rgba(131, 137, 56, 0.35));
+    animation: haunted-token-pulse 3.2s ease-in-out infinite;
+  }
+
+  .card, :deep(.card), img.card, :deep(img.card) {
+    filter:
+      brightness(0.7) contrast(1.15) saturate(0.6)
+      drop-shadow(0 0 18px rgba(0, 0, 0, 0.95))
+      drop-shadow(0 0 30px rgba(66, 69, 28, 0.5));
+    transition: filter 220ms ease;
+  }
+
+  .columns, :deep(.columns) {
+    justify-content: space-evenly;
+    gap: 0;
+
+    > * {
+      flex: 0 1 auto;
+      padding: 10px 8px;
+    }
+
+    .composite:has(.chaos-token), :deep(.composite:has(.chaos-token)) {
+      gap: 56px;
+    }
+
+    .composite::after {
+      border-left-color: rgba(131, 137, 56, 0.3) !important;
+    }
+  }
+}
+
+@keyframes haunted-token-pulse {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 1px rgba(0, 0, 0, 1))
+      drop-shadow(0 0 2px rgba(0, 0, 0, 0.95))
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85))
+      drop-shadow(0 0 10px rgba(208, 215, 100, 0.95))
+      drop-shadow(0 0 22px rgba(180, 188, 75, 0.85))
+      drop-shadow(0 0 50px rgba(131, 137, 56, 0.6))
+      drop-shadow(0 0 90px rgba(131, 137, 56, 0.35));
+    transform: scale(1);
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 1px rgba(0, 0, 0, 1))
+      drop-shadow(0 0 2px rgba(0, 0, 0, 0.95))
+      drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9))
+      drop-shadow(0 0 16px rgba(230, 235, 130, 1))
+      drop-shadow(0 0 34px rgba(208, 215, 100, 1))
+      drop-shadow(0 0 70px rgba(180, 188, 75, 0.85))
+      drop-shadow(0 0 120px rgba(131, 137, 56, 0.55));
+    transform: scale(1.05);
+  }
+}
+
 .note-green, :deep(.note-green) {
   h1 {
     text-align: center;
@@ -633,7 +750,7 @@ ul, :deep(ul) {
   align-self: start;
   justify-self: start;
   justify-content: start;
-  margin: 10px;
+  margin: 0;
 }
 
 :deep(h1) {

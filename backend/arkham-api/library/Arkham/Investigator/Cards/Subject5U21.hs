@@ -94,7 +94,9 @@ instance RunMessage Subject5U21 where
     Devoured iid card | iid == toId attrs -> do
       send $ format attrs <> " devours " <> format card
       selectOne (assetIs Assets.ravenousControlledHunger) >>= \case
-        Nothing -> pure . Subject5U21 $ attrs `with` Meta (card : devoured meta)
+        Nothing -> do
+          obtainCard card
+          pure . Subject5U21 $ attrs `with` Meta (card : devoured meta)
         Just aid -> do
           push $ PlaceUnderneath (toTarget aid) [card]
           pure i

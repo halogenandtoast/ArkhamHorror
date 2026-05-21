@@ -13,7 +13,7 @@ data MessageType
   | DrawEnemyMessage
   | EnemyDefeatedMessage
   | InvestigatorDefeatedMessage
-  | DamageMessage
+  | DealDamageMessage
   | AssetDamageMessage
   | DrawEncounterCardMessage
   | ExploreMessage

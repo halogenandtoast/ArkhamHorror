@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.AccursedCapeShroudOfChaos (accursedCapeShroudOfChaos)
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (AssetDefeated, EnemyDefeated)
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher

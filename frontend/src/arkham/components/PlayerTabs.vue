@@ -34,7 +34,7 @@ const userPicked = ref(false)
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
-const isWaiting = (investigator: Investigator) => investigator.playerId in props.game.question
+const isWaiting = (investigator: Investigator) => props.playerOrder.length > 1 && investigator.playerId in props.game.question
 const investigators = computed(() => 
   props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated).map(iid => props.players[iid])
 )
@@ -126,12 +126,18 @@ const targetToPlacement = (target: Target): Placement | null => {
     case "EnemyTarget":
       {
         const { contents } = target
-        if (contents) return props.game.enemies[contents].placement
+        if (contents) {
+          const enemy = props.game.enemies[contents]
+          if (enemy) return enemy.placement
+        }
       }
     case "TreacheryTarget":
       {
         const { contents } = target
-        if (contents) return props.game.treacheries[contents].placement
+        if (contents) {
+          const treachery = props.game.treacheries[contents]
+          if (treachery) return treachery.placement
+        }
       }
     default:
   }

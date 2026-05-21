@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.DeepOneBull (deepOneBull, DeepOneBull (..)) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move

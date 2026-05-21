@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Deck qualified as Deck
+import Arkham.GameValue
 import Arkham.Helpers.Scenario (getEncounterDeckKey)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
@@ -20,7 +21,7 @@ instance HasAbilities DrWilliamTMaleson where
     [ controlled_ attrs 1
         $ triggered
           (DrawCard #when You (basic IsEncounterCard) EncounterDeck)
-          (exhaust attrs <> PlaceClueOnLocationCost 1)
+          (exhaust attrs <> PlaceClueOnLocationCost (Static 1))
     ]
 
 instance RunMessage DrWilliamTMaleson where

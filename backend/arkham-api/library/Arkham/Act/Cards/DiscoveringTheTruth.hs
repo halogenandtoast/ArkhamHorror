@@ -2,7 +2,7 @@ module Arkham.Act.Cards.DiscoveringTheTruth (discoveringTheTruth) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Import.Lifted
+import Arkham.Act.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

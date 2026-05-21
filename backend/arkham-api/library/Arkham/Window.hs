@@ -94,6 +94,17 @@ hasEliminatedWindow = any $ \case
   (windowType -> EndOfGame {}) -> True
   _ -> False
 
+-- | Windows that fire constantly during scenario setup as locations and clues
+-- are placed, but which cannot trigger any abilities while @gameInSetup@ is
+-- @True@. Used by 'Arkham.Game.runMessages' to drop their CheckWindows before
+-- the heavy modifier preload pipeline.
+isSetupSkippableWindow :: Window -> Bool
+isSetupSkippableWindow w = case windowType w of
+  PutLocationIntoPlay {} -> True
+  LocationEntersPlay {} -> True
+  PlacedToken _ _ Clue _ -> True
+  _ -> False
+
 primaryWindowTarget :: WindowType -> Maybe Target
 primaryWindowTarget = \case
   Healed _ target _ _ -> Just target
@@ -186,7 +197,9 @@ data WindowType
   | EncounterDeckRunsOutOfCards
   | Discarded (Maybe InvestigatorId) Source Card
   | DiscardedFromHand InvestigatorId Source Card
+  | DiscardedFromDeck InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
+  | WouldDiscardFromDeck InvestigatorId Source
   | DiscoverClues InvestigatorId LocationId Source Int
   | WouldDiscoverClues InvestigatorId LocationId DiscoverId Source Int
   | SpentClues InvestigatorId Int

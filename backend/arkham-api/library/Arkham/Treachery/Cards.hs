@@ -173,6 +173,7 @@ allEncounterTreacheryCards =
       , accosted
       , acridMiasma
       , action
+      , alienWhispers
       , alteredBeast
       , anamnesis
       , ancestralFear
@@ -276,6 +277,7 @@ allEncounterTreacheryCards =
       , deepOneInvasion
       , delusoryEvils
       , descentIntoMadness
+      , desiccation
       , despoiled
       , dholeTunnel
       , diabolicVoices
@@ -300,6 +302,7 @@ allEncounterTreacheryCards =
       , encephalonSignal
       , endlessDescent
       , endlessWeaving
+      , enervation
       , entombed
       , entrap
       , ephemeralExhibits
@@ -319,6 +322,7 @@ allEncounterTreacheryCards =
       , figuresInTheDark
       , finalMistake
       , fineDining
+      , fire
       , flipTheScript
       , fogOverInnsmouth
       , forcedIntoHiding
@@ -332,6 +336,7 @@ allEncounterTreacheryCards =
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , fulfillTheOaths
+      , fungalRot
       , furtiveLocals
       , ghostlyPresence
       , giftOfMadnessMisery
@@ -448,6 +453,8 @@ allEncounterTreacheryCards =
       , onWingsOfDarkness
       , oozeAndFilth
       , oppressiveMists
+      , otherworldlyVisions
+      , outOfTheWalls
       , outbreak
       , outsmarted
       , overgrowth
@@ -475,6 +482,7 @@ allEncounterTreacheryCards =
       , psychotropicSpores
       , pulledBack
       , pulledByTheStars
+      , pulledIn
       , punishment
       , pushedIntoTheBeyond
       , pushedIntoTheBeyondTheMidwinterGala
@@ -534,6 +542,7 @@ allEncounterTreacheryCards =
       , stoneBarrier
       , stowaway
       , straitjacket
+      , strangeMutations
       , strangeSigns
       , substanceDissimulation
       , supernaturalTempest

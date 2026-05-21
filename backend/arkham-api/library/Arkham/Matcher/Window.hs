@@ -197,7 +197,9 @@ data WindowMatcher
   | WouldRevealChaosTokens Timing Who
   | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
   | DiscardedFromHand Timing Who SourceMatcher ExtendedCardMatcher
+  | DiscardedFromDeck Timing Who SourceMatcher ExtendedCardMatcher
   | WouldDiscardFromHand Timing Who SourceMatcher
+  | WouldDiscardFromDeck Timing Who SourceMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher

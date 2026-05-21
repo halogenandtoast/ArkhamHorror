@@ -3,7 +3,6 @@
 module Arkham.Scenario.Runner (runScenarioAttrs, module X) where
 
 import Arkham.Helpers.Message as X hiding (
-  EnemyDamage,
   InvestigatorDamage,
   addToHand,
   chooseN,
@@ -1596,6 +1595,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         investigatorIds
     push $ RemovedLocation lid
     pure $ a & gridL %~ deleteInGrid lid
+  RemoveEnemyLocation lid ->
+    pure $ a & gridL %~ deleteInGrid lid
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     xs <-
@@ -1751,11 +1752,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
-  Do (X.EnemyDefeated eid _ _ _) -> do
-    eattrs <- getAttrs @Enemy eid
-    printedHealth <- calculatePrinted (enemyHealth eattrs)
-    enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
-    pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
+  Do (X.Defeated (EnemyTarget eid) _ _ _) -> do
+    project @Enemy eid >>= \case
+      Nothing -> pure a
+      Just enemy -> do
+        let eattrs = toAttrs enemy
+        printedHealth <- calculatePrinted (enemyHealth eattrs)
+        enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
+        pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
     for_ cards obtainCard
     do_ msg
@@ -1778,7 +1782,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ReportXp breakdown -> do
     pure $ a & xpBreakdownL ?~ breakdown
   PlaceGrid gloc@(GridLocation pos lid) -> do
-    let grid = insertGrid gloc scenarioGrid
+    let gridCleared = case findInGrid lid scenarioGrid of
+          Nothing -> scenarioGrid
+          Just oldPos -> clearGrid oldPos scenarioGrid
+        grid = insertGrid gloc gridCleared
     let getAdjacent = selectOne . Matcher.LocationWithLabel . mkLabel . gridLabel . updatePosition pos
     mTopLocation <- getAdjacent GridUp
     mBottomLocation <- getAdjacent GridDown

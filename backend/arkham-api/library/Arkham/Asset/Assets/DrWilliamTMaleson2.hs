@@ -1,14 +1,15 @@
 module Arkham.Asset.Assets.DrWilliamTMaleson2 (drWilliamTMaleson2) where
 
 import Arkham.Ability
-import Arkham.Message.Lifted.Choose
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
+import Arkham.GameValue
 import Arkham.Helpers.Window (cardDrawnBy)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype Meta = Meta {drawnCard :: Maybe EncounterCard}
   deriving stock (Show, Eq, Generic)
@@ -26,7 +27,7 @@ instance HasAbilities DrWilliamTMaleson2 where
     [ restricted attrs 1 ControlsThis
         $ triggered
           (DrawCard #when (affectsOthers Anyone) (basic IsEncounterCard) EncounterDeck)
-          (exhaust attrs <> PlaceClueOnLocationCost 1)
+          (exhaust attrs <> PlaceClueOnLocationCost (Static 1))
     ]
 
 instance RunMessage DrWilliamTMaleson2 where

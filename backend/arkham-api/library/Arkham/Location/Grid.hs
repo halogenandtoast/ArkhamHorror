@@ -260,3 +260,13 @@ findInGrid b c =
         Just (GridLocation _ b') -> b == b'
         _ -> False
 
+flattenGrid :: Grid -> [GridLocation]
+flattenGrid c =
+  let leftBy = gridLeftAmount c
+      rightBy = gridRightAmount c
+      aboveBy = gridAboveAmount c
+      belowBy = gridBelowAmount c
+      xRange = [-leftBy .. rightBy]
+      yRange = [-belowBy .. aboveBy]
+   in [loc | x <- xRange, y <- yRange, Just loc <- [viewGrid (Pos x y) c]]
+

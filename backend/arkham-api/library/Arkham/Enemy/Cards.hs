@@ -233,6 +233,7 @@ allEncounterEnemyCards =
       , glacialPhantasm
       , goatSpawn
       , grapplingHorror
+      , grapplingSpawn
       , graveEater
       , greyWeaver
       , guardianElderThing
@@ -330,6 +331,7 @@ allEncounterEnemyCards =
       , memoryOfAnAlienTranslation
       , memoryOfAnUnrequitedLove
       , memoryOfAnUnspeakableEvil
+      , miasmaticShadow
       , mimeticNemesisInfiltratorOfRealities
       , mimeticNemesisOtherworldlySubjugator
       , mindlessDancer

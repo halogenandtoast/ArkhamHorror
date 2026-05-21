@@ -56,7 +56,7 @@ instance RunMessage SergeantMonroe where
             chooseOrRunOne player
               $ targetLabels enemies
               $ only
-              . (`EnemyDamage` nonAttack (Just iid) (toAbilitySource attrs 1) n)
+              . (\eid -> DealDamage (EnemyTarget eid) (nonAttack (Just iid) (toAbilitySource attrs 1) n))
       push
         $ chooseOrRunOne player
         $ [Label (cardI18n $ countVar damage $ ikey' "label.sergeantMonroe.dealDamage") [deal damage] | damage > 0]

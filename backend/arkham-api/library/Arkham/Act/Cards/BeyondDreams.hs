@@ -31,6 +31,7 @@ instance HasAbilities BeyondDreams where
         (EachUndefeatedInvestigator $ at_ $ locationIs Locations.onyxGates <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
+    | onSide A x
     ]
 
 instance RunMessage BeyondDreams where

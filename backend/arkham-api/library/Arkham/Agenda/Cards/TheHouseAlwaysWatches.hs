@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheHouseAlwaysWatches (theHouseAlwaysWatches) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Matcher

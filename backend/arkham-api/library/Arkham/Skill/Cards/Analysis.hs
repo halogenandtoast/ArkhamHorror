@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.Analysis (analysis) where
 
 import Arkham.Ability
+import Arkham.GameValue
 import Arkham.Helpers.SkillTest (withSkillTestInvestigator)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
@@ -22,7 +23,7 @@ instance HasAbilities Analysis where
         $ ConstantReaction
           "Place 1 of your clues on your location (Analysis)"
           (RevealChaosToken #cancel Anyone $ CancelableChaosToken AnyChaosToken)
-          (PlaceClueOnLocationCost 1)
+          (PlaceClueOnLocationCost (Static 1))
     ]
 
 instance RunMessage Analysis where

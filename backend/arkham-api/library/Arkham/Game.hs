@@ -94,7 +94,6 @@ import Arkham.Helpers.Location hiding (getConnectedMatcher)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Log (hasCampaignOption)
 import Arkham.Helpers.Message hiding (
-  EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,
   InvestigatorResigned,
@@ -138,6 +137,9 @@ import Arkham.Investigator.Types (
 import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
@@ -163,7 +165,6 @@ import Arkham.Matcher hiding (
   DuringTurn,
   EncounterCardSource,
   EnemyAttacks,
-  EnemyDefeated,
   EventCard,
   FastPlayerWindow,
   InvestigatorDefeated,
@@ -446,6 +447,70 @@ withLocationConnectionData inner@(With target _) = do
         ]
   pure $ inner `with` LocationMetadata {..}
 
+withEnemyLocationAsLocationData :: (HasGame m, Tracing m) => EnemyLocation -> m Value
+withEnemyLocationAsLocationData el = do
+  let lid = toId el
+      attrs = toAttrs el :: EnemyLocationAttrs
+  -- InvestigatorAt (LocationWithId lid) fails because enemy locations aren't in locationsL;
+  -- check each investigator's location directly instead.
+  lInvestigators <-
+    filterM (\iid -> (== Just lid) <$> field InvestigatorLocation iid)
+      =<< select UneliminatedInvestigator
+  -- EnemyAt (LocationWithId lid) has the same problem; use EnemyWithPlacement directly.
+  lEnemies <-
+    select $ IncludeOmnipotent $ oneOf
+      [ EnemyWithPlacement $ AtLocation lid
+      , EnemyWithPlacement $ AttachedToLocation lid
+      ]
+  lTreacheries <- select $ oneOf
+    [ TreacheryWithPlacement $ AtLocation lid
+    , TreacheryWithPlacement $ AttachedToLocation lid
+    ]
+  lAssets <- select $ IgnoreVisibility $ oneOf
+    [ AssetWithPlacement $ AtLocation lid
+    , AssetWithPlacement $ AttachedToLocation lid
+    ]
+  lEvents <- select $ oneOf
+    [ EventWithPlacement $ AtLocation lid
+    , EventWithPlacement $ AttachedToLocation lid
+    ]
+  -- Enemy locations are always revealed. Connections come from two sources:
+  -- (1) explicit revealed matchers, and (2) directional connections stored in
+  -- enemyLocationDirections (the grid-based mechanism used by most scenarios).
+  let directionConnectedIds = concatMap snd $ mapToList attrs.directions
+      connectedMatchers =
+        attrs.revealedConnectedMatchers
+          <> map LocationWithId directionConnectedIds
+  lConnectedLocations <- select $ LocationMatchAny connectedMatchers
+  pure $ object
+    [ "id" .= lid
+    , "cardId" .= toCardId el
+    , "cardCode" .= toCardCode el
+    , "label" .= attrs.label
+    , "tokens" .= attrs.tokens
+    , "shroud" .= attrs.shroud
+    , "revealed" .= True
+    , "enemyLocation" .= True
+    , "exhausted" .= attrs.exhausted
+    , "investigators" .= lInvestigators
+    , "enemies" .= lEnemies
+    , "treacheries" .= lTreacheries
+    , "assets" .= lAssets
+    , "events" .= lEvents
+    , "scarletKeys" .= emptyArray
+    , "cardsUnderneath" .= emptyArray
+    , "modifiers" .= emptyArray
+    , "connectedLocations" .= lConnectedLocations
+    , "placement" .= attrs.placement
+    , "brazier" .= (Nothing :: Maybe Text)
+    , "breaches" .= (Nothing :: Maybe Text)
+    , "floodLevel" .= (Nothing :: Maybe Text)
+    , "keys" .= emptyArray
+    , "seals" .= emptyArray
+    , "sealedChaosTokens" .= emptyArray
+    , "concealedCards" .= emptyArray
+    ]
+
 withAssetMetadata :: (HasGame m, Tracing m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
@@ -559,6 +624,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -585,7 +652,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("mode" .= gameMode)
       <> ("modifiers" .= Map.filter notNull gameModifiers)
       <> ("encounterDeckSize" .= maybe 0 (length . attr scenarioEncounterDeck) (modeScenario gameMode))
-      <> ("locations" .= locations)
+      <> ("locations" .= allLocations')
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
       <> ("killedInvestigators" .= killedInvestigators)
@@ -687,6 +754,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
+    enemyLocationViews' <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    let allLocations' = Map.map toJSON locations <> enemyLocationViews'
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -714,7 +783,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
         , "encounterDeckSize"
             .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
-        , "locations" .= toJSON locations
+        , "locations" .= toJSON allLocations'
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
         , "killedInvestigators" .= toJSON killedInvestigators
@@ -1752,7 +1821,7 @@ abilityMatches a@Ability {..} = \case
     _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
-  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)
+  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 105)
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
   AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
   AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a
@@ -1844,7 +1913,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIsAction Action.Activate -> pure $ filter abilityIsActivate as
     AbilityIsAction action -> pure $ filter (elem action . abilityActions) as
     AbilityIsActionAbility ->
-      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 102)) as
+      pure $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 105)) as
     AbilityIsFastAbility -> pure $ filter abilityIsFastAbility as
     AbilityIsForcedAbility -> pure $ filter abilityIsForcedAbility as
     AbilityIsReactionAbility -> pure $ filter abilityIsReactionAbility as
@@ -1881,6 +1950,7 @@ getGameAbilities = do
   locationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities locationsL)
   blankedLocationAbilities <-
     concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities locationsL)
+  enemyLocationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities enemyLocationsL)
   assetAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities assetsL)
   treacheryAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities treacheriesL)
   actAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities actsL)
@@ -1904,6 +1974,7 @@ getGameAbilities = do
     <> blankedEnemyAbilities
     <> locationAbilities
     <> blankedLocationAbilities
+    <> enemyLocationAbilities
     <> assetAbilities
     <> treacheryAbilities
     <> eventAbilities
@@ -1948,12 +2019,18 @@ getLocationsMatching lmatcher = do
       IncludeEmptySpace inner -> (True, inner, const True)
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
-  ls <-
-    filter (not . attr locationOutOfGame)
-      . filter isEmptySpaceFilter
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+  let regularLs =
+        filter (not . attr locationOutOfGame)
+          . filter isEmptySpaceFilter
+          . toList
+          . view (entitiesL . locationsL)
+          $ g
+  let enemyProxies =
+        map (toEnemyLocationProxy . toAttrs)
+          . toList
+          . view (entitiesL . enemyLocationsL)
+          $ g
+  let ls = regularLs <> enemyProxies
   flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
  where
   go [] = const (pure [])
@@ -2443,6 +2520,26 @@ getLocationsMatching lmatcher = do
             matchingLocationIds <- map toId <$> getLocationsMatching matcher
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationToMost matcher -> do
+      -- Mirror of FarthestLocationFromAll: among candidates, return the
+      -- location(s) whose maximum distance to any reachable investigator is the
+      -- smallest. Unreachable investigators contribute no distance for that
+      -- candidate, which lets locations in disconnected components still
+      -- qualify (and tie across components).
+      iids <- getInvestigators
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids \iid -> do
+        distanceSingletons . getMonoidalMap <$> execWriterT do
+          mloc <- getMaybeLocation iid
+          for_ mloc \start -> do
+            for_ candidates \candidate -> do
+              mDistance <- getDistance start candidate
+              for_ mDistance \(Distance distance) -> do
+                tell $ MonoidalMap.singleton distance [candidate]
+      let
+        overallDistances = distanceAggregates $ foldr (unionWith max) mempty distances
+        resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationToAny matcher -> do
       iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
@@ -3344,7 +3441,15 @@ getEnemiesMatching matcher' = do
       enemyMatcherFilter allGameEnemies matcher
     matcher -> do
       let isOutOfGame e = e.placement.outOfGame
-      allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
+      g <- getGame
+      let regularEnemies = filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) $ g
+      let enemyLocationProxies =
+            map (toEnemyLocationEnemyProxy . toAttrs)
+              . filter (not . (.defeated))
+              . toList
+              . view (entitiesL . enemyLocationsL)
+              $ g
+      let allGameEnemies = regularEnemies <> enemyLocationProxies
       enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m, Tracing m) => [Enemy] -> EnemyMatcher -> m [Enemy]
@@ -4265,7 +4370,11 @@ instance Projection Location where
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> do
         let card = lookupCard locationCardCode locationCardId
-        pure $ if locationRevealed && not card.singleSided then flipCard card else card
+        let shouldFlip =
+              toCardType card /= EnemyLocationCardType
+                && locationRevealed
+                && not card.singleSided
+        pure $ if shouldFlip then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure $ if locationRevealed then locationRevealedSymbol else locationSymbol
       UnsafeLocationRevealedSymbol -> pure locationRevealedSymbol
@@ -4787,11 +4896,21 @@ instance Query KeyMatcher where
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
   select_ matcher = do
+    g <- getGame
+    let entities = view entitiesL g
+    -- EnemyLocation's `toTarget` only produces LocationTarget, but the runtime
+    -- treats the entity as an Enemy too (via the on-the-fly proxy). Without
+    -- exposing that EnemyTarget here, the `validChoice` filter for ChooseOne
+    -- silently strips any TargetLabel referring to an enemy-location's proxy
+    -- enemy id.
+    let enemyLocationProxyTargets =
+          map
+            (EnemyTarget . enemyLocationAsEnemyId . EnemyLocationId . toId)
+            (toList $ view enemyLocationsL entities)
     filterM (`targetMatches` matcher)
-      . (ScenarioTarget :)
-      . overEntities ((: []) . toTarget)
-      . view entitiesL
-      =<< getGame
+      $ ScenarioTarget
+      : enemyLocationProxyTargets
+      <> overEntities ((: []) . toTarget) entities
 
 instance Query SourceMatcher where
   toSomeQuery = SourceQuery
@@ -5367,6 +5486,7 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. agendasL)
     traverse_ getModifiersFor (e ^. actsL)
     traverse_ getModifiersFor (e ^. locationsL)
+    traverse_ getModifiersFor (e ^. enemyLocationsL)
     traverse_ getModifiersFor (e ^. effectsL)
     traverse_ getModifiersFor (e ^. eventsL)
     traverse_ getModifiersFor (e ^. skillsL)
@@ -6025,6 +6145,7 @@ runMessages gameId mLogger = do
             BeginAction {} -> False
             CheckAttackOfOpportunity {} -> False
             CheckEnemyEngagement {} -> False
+            CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
             CreatedCost {} -> False
@@ -6040,6 +6161,14 @@ runMessages gameId mLogger = do
             When {} -> False
             WhenCanMove {} -> False
             Would {} -> False
+            SetLayout {} -> False
+            SetLocationLabel {} -> False
+            PlaceGrid {} -> False
+            PlacedLocation {} -> False
+            PlacedLocationDirection {} -> False
+            LocationMoved {} -> False
+            SetActivePlayer {} -> False
+            Arkham.Helpers.Message.PhaseStep {} -> False
             _ -> True
           go = \case
             Priority msg' -> push msg' >> runMessages gameId mLogger
@@ -6107,6 +6236,12 @@ runMessages gameId mLogger = do
                     >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            -- Setup pushes a CheckWindows for every location placed and every
+            -- clue placed. No triggered ability can resolve during setup, so
+            -- the entire preload + runWindow pipeline for those windows is
+            -- pure waste. Skip them outright while gameInSetup is True.
+            CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results

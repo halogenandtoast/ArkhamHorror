@@ -27,6 +27,11 @@ const cardContents = computed<CardContents>(() => {
   return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
 })
 
+const isEnemyLocationCard = computed(() => {
+  const id = cardContents.value.id
+  return Object.values(props.game.locations).some(loc => loc.enemyLocation && loc.cardId === id)
+})
+
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
     const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
@@ -46,7 +51,8 @@ const image = computed(() => {
   if (!isFlipped && cardCode in sleeperPair) {
     return cardImage(cardCode.slice(0, -1), sleeperPair[cardCode])
   }
-  const suffix = !props.revealed && isFlipped ? 'b' : ''
+  const revealed = props.revealed && !isEnemyLocationCard.value
+  const suffix = !revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return cardImage(cardCode, `${suffix}${mutatedSuffix}`)
 })
@@ -62,8 +68,11 @@ function canInteract(c: Message): boolean {
       }
     }
     if (c.target.tag === 'EnemyTarget') {
-      if (typeof c.target.contents === 'string' && props.game.enemies[c.target.contents].cardId == id.value) {
-        return true
+      if (typeof c.target.contents === 'string') {
+        const enemy = props.game.enemies[c.target.contents]
+        if (enemy && enemy.cardId == id.value) {
+          return true
+        }
       }
     }
     return c.target.contents === id.value

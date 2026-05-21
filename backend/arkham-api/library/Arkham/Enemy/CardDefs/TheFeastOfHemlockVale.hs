@@ -47,6 +47,15 @@ frenziedMiner =
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
+grapplingSpawn :: CardDef
+grapplingSpawn =
+  (enemy "10544" "Grappling Spawn" HemlockHouse 2)
+    { cdCardTraits = setFromList [Monster, Mutated]
+    , cdKeywords =
+        setFromList
+          [Keyword.Hunter, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Retaliate]
+    }
+
 ursineHybridGlowingAbomination :: CardDef
 ursineHybridGlowingAbomination =
   doubleSided "10607a"
@@ -70,6 +79,19 @@ crystalParasite =
     { cdCardTraits = setFromList [Monster, Insect, Blight]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
+    }
+
+miasmaticShadow :: CardDef
+miasmaticShadow =
+  (enemy "10724" "Miasmatic Shadow" AgentsOfTheColour 2)
+    { cdCardTraits = setFromList [Monster, Colour]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Aloof
+          , Keyword.Hunter
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Elusive
+          ]
+    , cdVictoryPoints = Just 0
     }
 
 poisonblossom :: CardDef

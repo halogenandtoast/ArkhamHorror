@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Search
 import Arkham.Matcher

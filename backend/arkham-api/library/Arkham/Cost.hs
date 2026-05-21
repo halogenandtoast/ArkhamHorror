@@ -108,7 +108,7 @@ data Cost
   | GroupClueCost GameValue LocationMatcher
   | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
-  | PlaceClueOnLocationCost Int
+  | PlaceClueOnLocationCost GameValue
   | ExhaustCost Target
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
@@ -316,6 +316,10 @@ instance FromJSON Cost where
       "GroupClueCostX" -> do
         mcontents <- o .:? "contents"
         pure $ GroupClueCostX $ fromMaybe Anywhere mcontents
+      "PlaceClueOnLocationCost" -> do
+        contents <- o .: "contents"
+        gv <- parseJSON contents <|> (Static <$> parseJSON contents)
+        pure $ PlaceClueOnLocationCost gv
       _ -> $(mkParseJSON defaultOptions ''Cost) (Object o)
 
 totalActionCost :: Cost -> Int

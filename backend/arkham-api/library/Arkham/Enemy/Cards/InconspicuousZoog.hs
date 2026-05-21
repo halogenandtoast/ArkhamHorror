@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.InconspicuousZoog (inconspicuousZoog) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

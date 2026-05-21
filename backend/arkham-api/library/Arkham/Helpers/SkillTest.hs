@@ -37,7 +37,14 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (IgnoreChaosToken)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message (Message (..), pattern BeginSkillTest)
+import Arkham.Message (
+  Message (..),
+  pattern BeginSkillTest,
+  pattern NextChaosBagStep,
+  pattern RevelationSkillTest,
+  pattern RunBag,
+  pattern SkillTestEnds,
+ )
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude

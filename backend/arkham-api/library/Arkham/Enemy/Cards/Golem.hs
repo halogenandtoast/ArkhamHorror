@@ -14,7 +14,7 @@ golem = enemy Golem Cards.golem (1, Static 1, 1) (1, 0)
 
 instance RunMessage Golem where
   runMessage msg e@(Golem attrs) = runQueueT $ case msg of 
-    Do (EnemyDefeated eid _ _ _) | eid == attrs.id -> do
+    Do (Defeated (EnemyTarget eid) _ _ _) | eid == attrs.id -> do
       removeFromGame attrs
       case toCard attrs of
         c@(PlayerCard pc) -> for_ pc.owner (`hollow` c)

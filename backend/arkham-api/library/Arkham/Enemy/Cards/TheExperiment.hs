@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher

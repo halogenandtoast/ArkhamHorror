@@ -161,10 +161,10 @@ assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 attackEnemyDamage source damage enemy = do
   whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.EnemyDamage enemy (attack source damage)
+    push $ Msg.DealDamage (EnemyTarget enemy) (attack source damage)
 
 storyEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-storyEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (storyDamage source damage)
+storyEnemyDamage source damage enemy = push $ Msg.DealDamage (EnemyTarget enemy) (storyDamage source damage)
 
 applyHealing :: (ReverseQueue m, Sourceable source) => source -> m ()
 applyHealing source = push $ Msg.ApplyHealing (toSource source)

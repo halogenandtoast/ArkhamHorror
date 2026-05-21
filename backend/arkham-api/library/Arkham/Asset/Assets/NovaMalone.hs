@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.NovaMalone (novaMalone) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier

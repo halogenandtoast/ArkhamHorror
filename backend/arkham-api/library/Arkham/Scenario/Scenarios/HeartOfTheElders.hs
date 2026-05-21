@@ -38,7 +38,7 @@ import Arkham.Projection
 import Arkham.Queue (QueueT)
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (
   Field (ScenarioVictoryDisplay),
   ScenarioAttrs (..),

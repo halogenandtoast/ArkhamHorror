@@ -9,7 +9,7 @@ import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport.New hiding (EnemyDamage)
+import TestImport.New
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do

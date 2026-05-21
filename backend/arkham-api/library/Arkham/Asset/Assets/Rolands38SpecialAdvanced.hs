@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.Rolands38SpecialAdvanced (rolands38SpecialAdvanced) w
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Token
 
@@ -32,7 +32,7 @@ instance RunMessage Rolands38SpecialAdvanced where
         ]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
+    Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         valid <- selectAny $ locationWithInvestigator iid <> LocationWithoutClues
         when valid $ placeTokens (attrs.ability 1) attrs Ammo 1

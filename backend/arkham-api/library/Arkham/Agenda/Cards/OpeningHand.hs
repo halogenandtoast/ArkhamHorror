@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.OpeningHand (openingHand) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Agenda.Import.Lifted
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher

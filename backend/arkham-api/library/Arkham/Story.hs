@@ -159,7 +159,9 @@ allStories =
     , SomeStoryCard sympathyPain
     , SomeStoryCard familialPain
     , -- The Feast of Hemlock Vale
-      --- The First Day
+      --- Hemlock House
+      SomeStoryCard thePredatoryHouse
+    , --- The First Day
       SomeStoryCard dayOne
     , SomeStoryCard nightOne
     , SomeStoryCard dayTwo

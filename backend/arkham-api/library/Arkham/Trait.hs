@@ -84,6 +84,7 @@ data Trait
   | Dhole
   | Dilemma
   | Dinosaur
+  | Dormant
   | Double
   | Dreamer
   | Dreamlands
@@ -234,6 +235,7 @@ data Trait
   | Riverside
   | Road
   | Role
+  | Room
   | Rot
   | Ruins
   | Salem

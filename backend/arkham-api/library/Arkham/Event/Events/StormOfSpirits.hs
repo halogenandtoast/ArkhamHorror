@@ -35,8 +35,8 @@ instance RunMessage StormOfSpirits where
       let
         toMsg eid' =
           if eid == eid'
-            then EnemyDamage eid' $ delayDamage $ attack attrs 2
-            else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 2
+            then DealDamage (EnemyTarget eid') $ delayDamage $ attack attrs 2
+            else DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 2
       eids <- select $ enemyAtLocationWith iid
       pushAll $ map toMsg eids
       for_ eids (checkDefeated attrs)

@@ -132,6 +132,7 @@ defaultCampaignRunner msg a = case msg of
     select Anyone >>= traverse_ \iid -> push $ SpendXP iid xp
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
+  SetCampaignChaosBag tokens' -> pure $ updateAttrs a (chaosBagL .~ tokens')
   AddCampaignCardToDeck iid _ card -> do
     card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card'])

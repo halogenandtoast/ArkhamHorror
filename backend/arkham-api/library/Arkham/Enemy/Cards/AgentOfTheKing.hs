@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.AgentOfTheKing (agentOfTheKing) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks, EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs

@@ -51,6 +51,14 @@ instance IsCampaign TheFeastOfHemlockVale where
             (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
             (Day2, Night) -> Nothing
             (Day3, _) -> continueEdit (CampaignSpecificStep "preludeTheFinalEvening" Nothing) allowOptions
+    HemlockHouse ->
+      let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
+       in case (meta.day, meta.time) of
+            (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
+            (Day1, Night) -> continue PreludeDawnOfTheSecondDay
+            (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
+            (Day2, Night) -> continue PreludeDawnOfTheFinalDay
+            (Day3, _) -> continueEdit (CampaignSpecificStep "preludeTheFinalEvening" Nothing) allowOptions
     TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
@@ -189,4 +197,16 @@ instance RunMessage TheFeastOfHemlockVale where
       let meta = toResultDefault initMeta attrs.meta
       let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
+    NextCampaignStep mOverrideStep -> do
+      let mstep = mOverrideStep <|> nextStep c
+      let meta = toResultDefault initMeta attrs.meta
+      let
+        meta' =
+          case mstep of
+            Just PreludeDawnOfTheSecondDay -> meta {day = Day2, time = Day}
+            Just PreludeDawnOfTheFinalDay -> meta {day = Day3, time = Day}
+            Just PreludeTheFinalEvening -> meta {day = Day3, time = Night}
+            _ -> meta
+      TheFeastOfHemlockVale attrs' <- lift $ defaultCampaignRunner msg c
+      pure $ TheFeastOfHemlockVale $ attrs' & metaL .~ toJSON meta'
     _ -> lift $ defaultCampaignRunner msg c

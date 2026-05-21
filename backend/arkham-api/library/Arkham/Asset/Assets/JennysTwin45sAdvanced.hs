@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.JennysTwin45sAdvanced (jennysTwin45sAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyHealthActual))

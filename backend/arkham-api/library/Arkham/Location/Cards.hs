@@ -41,10 +41,10 @@ allLocationCards =
       , administrationOffice_131
       , airfield
       , alaskanWilds
+      , alchemyLabs
       , alienConservatory
       , alienFrontierA
       , alienFrontierB
-      , alchemyLabs
       , alkalineForest
       , alkalineRailA
       , alkalineRailB
@@ -106,6 +106,10 @@ allLocationCards =
       , bathroom
       , bearDen
       , bedroom
+      , bedroomHemlockHouse32
+      , bedroomHemlockHouse33
+      , bedroomHemlockHouse34
+      , bedroomHemlockHouse35
       , bedroomTheMidwinterGala
       , bigBen
       , billiardsRoom
@@ -163,8 +167,8 @@ allLocationCards =
       , cavernsBeneathTheMoonLightSide
       , cavernsOfYoth
       , celephais
-      , cementarioDeLaRecoleta
       , cellar
+      , cementarioDeLaRecoleta
       , centralLotBlurred
       , centralLotQuietOnSet
       , chamberOfTime
@@ -193,9 +197,9 @@ allLocationCards =
       , cityOfTheSerpents
       , cityOfTheUnseen
       , cityWhichAppearsOnNoMap
-      , cliffsOfInsanity
       , cliffsideRoad_a
       , cliffsideRoad_b
+      , cliffsOfInsanity
       , clockTowerIncessantlyTicking
       , cloister
       , cloudForest
@@ -271,6 +275,7 @@ allLocationCards =
       , dimStreetsTheKingsParade
       , diningCar
       , diningRoom
+      , diningRoomHemlockHouse
       , doorwayToTheDepths
       , dormitories
       , downstairsDoorwayDen
@@ -290,8 +295,8 @@ allLocationCards =
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
-      , elMalecon
       , elderChamber
+      , elMalecon
       , emergencyRoom
       , enchantedWoodsFungalForest
       , enchantedWoodsGreatStoneCircle
@@ -357,6 +362,7 @@ allLocationCards =
       , foulCorridors
       , foulSwamp
       , foyer
+      , foyerHemlockHouse
       , foyerMurderAtTheExcelsiorHotel
       , frankElwoodsRoom
       , freightCar
@@ -382,7 +388,6 @@ allLocationCards =
       , glimmeringMeadow
       , gondola
       , gothicSet
-      , granTeatroDeLaHabana
       , grandBazaarBusyWalkway
       , grandBazaarCrowdedShops
       , grandBazaarDarkenedAlley
@@ -395,6 +400,7 @@ allLocationCards =
       , grandEntryway
       , grandGuignol
       , grandRue
+      , granTeatroDeLaHabana
       , graveyard
       , gravityDefyingClimb
       , greatHallOfCeleano
@@ -507,11 +513,13 @@ allLocationCards =
       , landlordsQuarters
       , lanternChamber
       , lanternRoom
-      , leMarais217
-      , leMarais218
       , leftTurnA
       , leftTurnB
+      , leMarais217
+      , leMarais218
       , library
+      , libraryHemlockHouse39
+      , libraryHemlockHouse40
       , libraryOfEbla
       , libraryOfKos
       , libraryTheMidwinterGala
@@ -625,6 +633,7 @@ allLocationCards =
       , palacioErrazuriz
       , parlor
       , parlorCar
+      , parlorHemlockHouse
       , parlorTheMidwinterGala
       , passengerCar_167
       , passengerCar_168
@@ -770,9 +779,9 @@ allLocationCards =
       , seaOfSkulls
       , secondFloorHall
       , secretPassage
+      , securityOffice
       , securityOffice_128
       , securityOffice_129
-      , securityOffice
       , selangorClub
       , selangorClubPadang
       , sentinelPeak
@@ -839,9 +848,9 @@ allLocationCards =
       , tanneries
       , tanneriesAbandoned
       , tarPit
-      , teatroColon
       , tearThroughSpace
       , tearThroughTime
+      , teatroColon
       , teetawnPassage
       , templeOfRlyeh
       , templeOfTheElderThings
@@ -857,9 +866,9 @@ allLocationCards =
       , temploMayor_175
       , tenAcreMeadow_246
       , tenAcreMeadow_247
+      , the9thWard
       , theatre
       , theatreLounge
-      , the9thWard
       , theAtwoodHouseDay
       , theAtwoodHouseNight
       , theBlackCore
@@ -990,6 +999,9 @@ allLocationCards =
       , warpedRailA
       , warpedRailB
       , warrenObservatory
+      , washroomHemlockHouse36
+      , washroomHemlockHouse37
+      , washroomHemlockHouse38
       , waterfall
       , wavewornIsland
       , wayangKulitTheater
@@ -1001,11 +1013,11 @@ allLocationCards =
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
+      , windingGulf
       , windsorPalaceHotel
+      , windsweptPath
       , wineCellar
       , wineCellarSpectral
-      , windingGulf
-      , windsweptPath
       , witchesCircle
       , witchHauntedWoodsAbandonedMine
       , witchHauntedWoodsCairnStones

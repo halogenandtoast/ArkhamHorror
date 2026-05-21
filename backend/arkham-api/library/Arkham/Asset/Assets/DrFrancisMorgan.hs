@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.DrFrancisMorgan (drFrancisMorgan) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 

@@ -575,6 +575,54 @@ instance RunMessage EnemyAttrs where
               [(iid', eid') | iid' <- iidsHere, eid' <- entries]
           pushAll (afterWindows <> yourLocationAfters)
       pure a
+    EnemyEnteredFollowing movingIid eid lid | eid == enemyId -> do
+      -- Variant of EnemyEntered for an engaged enemy following the moving
+      -- investigator. `iidsHere` excludes `movingIid` so the "your location"
+      -- flavour of EnemyEnters does not fire for the investigator the enemy
+      -- is already engaged with (they're entering simultaneously, not having
+      -- an enemy walk in on them).
+      case enemyPlacement of
+        AsSwarm eid' _ -> do
+          push $ EnemyEnteredFollowing movingIid eid' lid
+          pure a
+        _ -> do
+          swarm <- select $ SwarmOf eid
+          when (isOutOfPlayPlacement a.placement) do
+            pushM $ checkWhen $ Window.EnemySpawns eid lid
+            pushM $ checkAfter $ Window.EnemySpawns eid lid
+
+          let entries = eid : swarm
+          iidsHere <- filter (/= movingIid) <$> select (investigatorAt lid)
+
+          whenWindows <-
+            traverse
+              (\eid' -> checkWindows [mkWhen (Window.EnemyEnters eid' lid)])
+              entries
+          yourLocationWhens <-
+            traverse
+              (\(iid', eid') -> checkWindows [mkWhen (Window.EnemyEntersYourLocation iid' eid' lid)])
+              [(iid', eid') | iid' <- iidsHere, eid' <- entries]
+          pushAll (whenWindows <> yourLocationWhens <> [After msg])
+          case a.placement of
+            InThreatArea {} -> pure a
+            _ -> pure $ a & placementL .~ AtLocation lid
+    After (EnemyEnteredFollowing movingIid eid lid) | eid == enemyId -> do
+      case enemyPlacement of
+        AsSwarm eid' _ -> push $ After (EnemyEnteredFollowing movingIid eid' lid)
+        _ -> do
+          swarm <- select $ SwarmOf eid
+          let entries = eid : swarm
+          iidsHere <- filter (/= movingIid) <$> select (investigatorAt lid)
+          afterWindows <-
+            traverse
+              (\eid' -> checkWindows [mkAfter (Window.EnemyEnters eid' lid)])
+              entries
+          yourLocationAfters <-
+            traverse
+              (\(iid', eid') -> checkWindows [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid)])
+              [(iid', eid') | iid' <- iidsHere, eid' <- entries]
+          pushAll (afterWindows <> yourLocationAfters)
+      pure a
     Ready (isTarget a -> True) -> do
       whenM (getCanReady a) do
         wouldDo msg (Window.WouldReady $ toTarget a) (Window.Readies $ toTarget a)
@@ -1802,24 +1850,13 @@ instance RunMessage EnemyAttrs where
         let (sbefore, _, safter) = frame (Window.EnemyEngaged iid s)
         pushAll [sbefore, safter]
       pure a
-    WhenWillEnterLocation iid lid -> do
-      -- An engaged, non-massive enemy that can enter the destination follows
-      -- the investigator and DOES enter the new location (per the move/engagement
-      -- rules). We push `EnemyEntered` here so location-bound EnemyEnters windows
-      -- (Decoy Trap and other trap-trait cards attached to lid) fire on the
-      -- dragged enemy. The "your location" flavour is exempted automatically:
-      -- this push happens before `Do (WhenWillEnterLocation iid lid)` updates
-      -- the investigator's placement, so the EnemyEntered handler's
-      -- `select $ investigatorAt lid` does not yet include this investigator
-      -- and `Window.EnemyEntersYourLocation` doesn't fire for them.
-      case enemyPlacement of
-        InThreatArea iid' | iid' == iid -> do
-          keywords <- getModifiedKeywords a
-          willMove <- canEnterLocation enemyId lid
-          if #massive `notElem` keywords && willMove
-            then push $ EnemyEntered enemyId lid
-            else push $ DisengageEnemy iid enemyId
-        _ -> pure ()
+    WhenWillEnterLocation _iid _lid -> do
+      -- The engaged-follow flow (pushing `EnemyEnteredFollowing` for engaged
+      -- enemies that follow the investigator, or `DisengageEnemy` for those
+      -- that can't) is now driven from `handleDoResolveMovement` in
+      -- `Arkham/Investigator/Runner/Movement.hs` so the entries can be
+      -- grouped with the investigator's own entry inside a `Simultaneously`
+      -- block. Nothing for the Enemy runner to do here.
       pure a
     InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do
       pure $ a & attackingL . _Just . damagedL . at (toTarget iid) . non (0, 0) %~ bimap (+ x) (+ y)

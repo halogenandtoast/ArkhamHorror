@@ -21,6 +21,13 @@ data SpawnMessage
   | EnemySpawnEngagedWithPrey_ EnemyId
   | EnemySpawnEngagedWith_ EnemyId InvestigatorMatcher
   | EnemyEntered_ EnemyId LocationId
+  | -- | Variant of 'EnemyEntered_' used when an engaged enemy follows the
+    -- moving investigator into a new location. The 'InvestigatorId' is the
+    -- moving investigator; the EnemyEnters / EnemyEntersYourLocation window
+    -- handlers exclude this investigator from `iidsHere` so the "your
+    -- location" flavour does not fire for the investigator the enemy is
+    -- already engaged with.
+    EnemyEnteredFollowing_ InvestigatorId EnemyId LocationId
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''SpawnMessage)

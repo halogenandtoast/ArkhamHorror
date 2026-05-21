@@ -1690,6 +1690,9 @@ pattern EnemySpawnEngagedWith eid m = SpawnMessage (EnemySpawnEngagedWith_ eid m
 pattern EnemyEntered :: EnemyId -> LocationId -> Message
 pattern EnemyEntered eid lid = SpawnMessage (EnemyEntered_ eid lid)
 
+pattern EnemyEnteredFollowing :: InvestigatorId -> EnemyId -> LocationId -> Message
+pattern EnemyEnteredFollowing iid eid lid = SpawnMessage (EnemyEnteredFollowing_ iid eid lid)
+
 -- Bidirectional pattern synonyms preserving the public API for HuntMessage.
 pattern EnemyMove :: EnemyId -> LocationId -> Message
 pattern EnemyMove eid lid = HuntMessage (EnemyMove_ eid lid)

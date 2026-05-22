@@ -183,6 +183,7 @@ investigate i l = do
       , investigateSource = TestSource mempty
       , investigateTarget = Nothing
       , investigateIsAction = False
+      , investigatePayCost = False
       , investigateSkillTest = sid
       }
 

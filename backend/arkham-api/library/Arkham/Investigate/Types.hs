@@ -17,11 +17,24 @@ data Investigate = MkInvestigate
   , investigateSource :: Source
   , investigateTarget :: Maybe Target
   , investigateIsAction :: Bool
+  , investigatePayCost :: Bool
   , investigateSkillTest :: SkillTestId
   }
   deriving stock (Show, Ord, Eq, Data)
 
-$(deriveJSON defaultOptions ''Investigate)
+$(deriveToJSON defaultOptions ''Investigate)
+
+instance FromJSON Investigate where
+  parseJSON = withObject "Investigate" \o -> do
+    investigateInvestigator <- o .: "investigateInvestigator"
+    investigateLocation <- o .: "investigateLocation"
+    investigateSkillType <- o .: "investigateSkillType"
+    investigateSource <- o .: "investigateSource"
+    investigateTarget <- o .:? "investigateTarget"
+    investigateIsAction <- o .: "investigateIsAction"
+    investigatePayCost <- o .:? "investigatePayCost" .!= investigateIsAction
+    investigateSkillTest <- o .: "investigateSkillTest"
+    pure MkInvestigate {..}
 
 instance HasField "investigator" Investigate InvestigatorId where
   getField = investigateInvestigator
@@ -31,6 +44,9 @@ instance HasField "location" Investigate LocationId where
 
 instance HasField "isAction" Investigate Bool where
   getField = investigateIsAction
+
+instance HasField "payCost" Investigate Bool where
+  getField = investigatePayCost
 
 instance HasField "skillType" Investigate SkillType where
   getField = investigateSkillType

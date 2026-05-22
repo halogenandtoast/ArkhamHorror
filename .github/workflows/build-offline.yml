@@ -89,6 +89,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
+            offline/_deps/stack-root/
             offline/_deps/stack-work/
             offline/_deps/stack-work-sub/
           key: arkham-stack-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/stack.yaml', 'backend/stack.yaml.lock') }}

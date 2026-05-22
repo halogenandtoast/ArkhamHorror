@@ -83,6 +83,7 @@ import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources, hasSkillTes
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
+import Arkham.Helpers.Enemy (canEnterLocation, getModifiedKeywords)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (
   getCanMoveTo,
@@ -477,12 +478,32 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
               [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
         pure a
       ToLocation lid -> do
+        -- Engaged, non-massive enemies that can enter follow the investigator
+        -- into lid; others disengage. We push EnemyEnteredFollowing for each
+        -- follower inside a Simultaneously block alongside the investigator's
+        -- own entry messages so their CheckWindows merge at one sync point.
+        -- In particular this puts EnterLocation's RevealLocation push in the
+        -- pre-window pool so the location is revealed (and clues placed)
+        -- before the EnemyEnters After window fires — reactions like Glassing
+        -- then see the post-reveal state.
+        engagedEnemies <- select $ enemyEngagedWith iid
+        (followers, disengagers) <-
+          partitionM
+            ( \eid -> do
+                keywords <- getModifiedKeywords eid
+                canEnter <- canEnterLocation eid lid
+                pure (#massive `notElem` keywords && canEnter)
+            )
+            engagedEnemies
+
         pushAll
-          [ WhenWillEnterLocation iid lid
-          , Do (WhenWillEnterLocation iid lid)
-          , After (MoveTo movement)
-          , EnterLocation iid lid
-          ]
+          $ [WhenWillEnterLocation iid lid]
+          <> [ Simultaneously
+                $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid]
+                : [EnemyEnteredFollowing iid eid lid | eid <- followers]
+             ]
+          <> [DisengageEnemy iid eid | eid <- disengagers]
+          <> [After (MoveTo movement)]
 
         when (movement.means /= Place) do
           moveWith <-

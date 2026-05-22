@@ -36,5 +36,6 @@ mkInvestigateLocation sid iid source lid = do
       , investigateSource = toSource source
       , investigateTarget = Nothing
       , investigateIsAction = False
+      , investigatePayCost = False
       , investigateSkillTest = sid
       }

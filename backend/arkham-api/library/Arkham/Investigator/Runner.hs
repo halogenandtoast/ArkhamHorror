@@ -1105,8 +1105,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       pushAll
         $ [ BeginAction
           , beforeWindowMsg
-          , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
           ]
+        <> [ TakeActions investigatorId [#investigate] (ActionCost investigateCost)
+           | investigation.payCost
+           ]
         <> [ Will (CheckAttackOfOpportunity investigatorId False Nothing)
            | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
            ]

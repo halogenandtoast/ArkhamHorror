@@ -1,19 +1,19 @@
 module Arkham.Act.Cards (module Arkham.Act.Cards, module X) where
 
 import Arkham.Act.CardDefs.Base as X
-import Arkham.Act.CardDefs.NightOfTheZealot as X
-import Arkham.Act.CardDefs.TheDunwichLegacy as X
-import Arkham.Act.CardDefs.ThePathToCarcosa as X
-import Arkham.Act.CardDefs.TheForgottenAge as X
-import Arkham.Act.CardDefs.TheCircleUndone as X
-import Arkham.Act.CardDefs.TheDreamEaters as X
-import Arkham.Act.CardDefs.TheInnsmouthConspiracy as X
-import Arkham.Act.CardDefs.EdgeOfTheEarth as X
-import Arkham.Act.CardDefs.TheScarletKeys as X
-import Arkham.Act.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Act.CardDefs.Core2026 as X
+import Arkham.Act.CardDefs.EdgeOfTheEarth as X
+import Arkham.Act.CardDefs.NightOfTheZealot as X
 import Arkham.Act.CardDefs.ReturnTo as X
 import Arkham.Act.CardDefs.Standalone as X
+import Arkham.Act.CardDefs.TheCircleUndone as X
+import Arkham.Act.CardDefs.TheDreamEaters as X
+import Arkham.Act.CardDefs.TheDunwichLegacy as X
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale as X
+import Arkham.Act.CardDefs.TheForgottenAge as X
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy as X
+import Arkham.Act.CardDefs.ThePathToCarcosa as X
+import Arkham.Act.CardDefs.TheScarletKeys as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -29,6 +29,7 @@ allActCards =
       , aFamiliarPattern
       , afterHours
       , againstTheHouse
+      , aLostLegacy
       , alejandrosPlight
       , alejandrosPrison
       , allIn
@@ -201,6 +202,7 @@ allActCards =
       , searchForTheTalisman
       , searchingForAnswers
       , searchingForTheTome
+      , searchingTheHeath
       , searchingTheUnnamable
       , secretsAndLiesV1
       , secretsAndLiesV2
@@ -318,15 +320,15 @@ allActCards =
       , witchHauntings
       , worldsBeyond
       , worshippersOfTheDeep
-      --- Core2026
-      --- Spreading Flames
-      , whereTheresSmoke
+      , --- Core2026
+        --- Spreading Flames
+        whereTheresSmoke
       , escapeTheDorms
       , searchingForDrArmitage
       , blazeOfGlory
-      --- Smoke and Mirrors
-      , augursOfFlame
-      --- Queen of Ash
-      , searchTheSewers
+      , --- Smoke and Mirrors
+        augursOfFlame
+      , --- Queen of Ash
+        searchTheSewers
       , stopTheRite
       ]

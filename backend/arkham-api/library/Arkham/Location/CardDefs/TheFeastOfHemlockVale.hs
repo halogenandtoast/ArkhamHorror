@@ -154,6 +154,24 @@ foyerHemlockHouse =
     $ victory 0
     $ location_ "10543" "Foyer" [Room, Dormant] HemlockHouse
 
+crystalGrove :: CardDef
+crystalGrove = location "10555" "Crystal Grove" [Blight] Triangle [Equals, Circle] TheSilentHeath
+
+pearlEstateRuins :: CardDef
+pearlEstateRuins = location "10556" "Pearl Estate Ruins" [Ruins] Equals [Triangle, Circle] TheSilentHeath
+
+ashenSlope :: CardDef
+ashenSlope = location "10557" "Ashen Slope" [Blight] Circle [Triangle, Equals] TheSilentHeath
+
+saltChamber :: CardDef
+saltChamber = singleSided $ location_ "10558" "Salt Chamber" [Cave, Lair] TheSilentHeath
+
+larvalTunnel :: CardDef
+larvalTunnel = singleSided $ location_ "10559" "Larval Tunnel" [Cave, Lair] TheSilentHeath
+
+crystalNursery :: CardDef
+crystalNursery = singleSided $ location_ "10560" "Crystal Nursery" [Cave, Lair, Blight] TheSilentHeath
+
 glimmeringMeadow :: CardDef
 glimmeringMeadow =
   locationWithUnrevealed_

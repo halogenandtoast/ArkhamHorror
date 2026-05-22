@@ -369,6 +369,9 @@ allActs =
       SomeActCard strangeInfestation
     , SomeActCard againstTheHouse
     , SomeActCard theHeartOfTheHouse
+    , --- The Silent Heath
+      SomeActCard aLostLegacy
+    , SomeActCard searchingTheHeath
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie

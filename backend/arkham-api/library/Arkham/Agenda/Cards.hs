@@ -68,6 +68,8 @@ allAgendaCards =
       , deathsApproach
       , decrepitDecay
       , deepeningDark
+      , desolationV1
+      , desolationV2
       , doomFromBelow
       , drawnIn
       , easyPrey
@@ -259,6 +261,7 @@ allAgendaCards =
       , undergroundSurvey
       , underTheSurface
       , unexpectedGuests
+      , unsettlingSilence
       , vengeance
       , vengeanceAwaits
       , welcomeToHemlockVale

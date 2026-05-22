@@ -2,21 +2,21 @@
 module Arkham.Treachery.Cards (module Arkham.Treachery.Cards, module X) where
 
 import Arkham.Treachery.CardDefs.Base as X
-import Arkham.Treachery.CardDefs.NightOfTheZealot as X
-import Arkham.Treachery.CardDefs.TheDunwichLegacy as X
-import Arkham.Treachery.CardDefs.ThePathToCarcosa as X
-import Arkham.Treachery.CardDefs.TheForgottenAge as X
-import Arkham.Treachery.CardDefs.TheCircleUndone as X
-import Arkham.Treachery.CardDefs.TheDreamEaters as X
-import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy as X
-import Arkham.Treachery.CardDefs.EdgeOfTheEarth as X
-import Arkham.Treachery.CardDefs.TheScarletKeys as X
-import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale as X
-import Arkham.Treachery.CardDefs.TheDrownedCity as X
 import Arkham.Treachery.CardDefs.Core2026 as X
+import Arkham.Treachery.CardDefs.EdgeOfTheEarth as X
+import Arkham.Treachery.CardDefs.NightOfTheZealot as X
+import Arkham.Treachery.CardDefs.Promo as X
 import Arkham.Treachery.CardDefs.ReturnTo as X
 import Arkham.Treachery.CardDefs.Standalone as X
-import Arkham.Treachery.CardDefs.Promo as X
+import Arkham.Treachery.CardDefs.TheCircleUndone as X
+import Arkham.Treachery.CardDefs.TheDreamEaters as X
+import Arkham.Treachery.CardDefs.TheDrownedCity as X
+import Arkham.Treachery.CardDefs.TheDunwichLegacy as X
+import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale as X
+import Arkham.Treachery.CardDefs.TheForgottenAge as X
+import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy as X
+import Arkham.Treachery.CardDefs.ThePathToCarcosa as X
+import Arkham.Treachery.CardDefs.TheScarletKeys as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -244,6 +244,7 @@ allEncounterTreacheryCards =
       , cloudedMemory
       , coldStreak
       , collapsingReality
+      , commandingResonance
       , compulsion
       , confusion
       , conspiracyInRed
@@ -275,6 +276,7 @@ allEncounterTreacheryCards =
       , deeperSlumber
       , deepOneAssault
       , deepOneInvasion
+      , defendTheNest
       , delusoryEvils
       , descentIntoMadness
       , desiccation

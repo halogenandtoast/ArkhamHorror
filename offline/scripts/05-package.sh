@@ -384,35 +384,44 @@ generate_nginx_conf() {
     local conf="$SCRIPT_DIR/config/nginx.conf"
     local mime="$SCRIPT_DIR/config/mime.types"
     local frontend_root="$SCRIPT_DIR/frontend/dist"
+    local cards_root="$SCRIPT_DIR/cards"
     cat > "$conf" << NGINX_EOF
 worker_processes auto;
-pid $NGINX_PID;
-error_log $NGINX_LOG_DIR/error.log warn;
+pid "$NGINX_PID";
+error_log "$NGINX_LOG_DIR/error.log" warn;
 events { worker_connections 256; }
 http {
-  include $mime;
+  include "$mime";
   default_type application/octet-stream;
-  access_log $NGINX_LOG_DIR/access.log;
+  access_log "$NGINX_LOG_DIR/access.log";
   sendfile on;
   keepalive_timeout 65;
-  client_body_temp_path $DATA_DIR/nginx_temp;
-  proxy_temp_path       $DATA_DIR/nginx_temp;
+  client_body_temp_path "$DATA_DIR/nginx_temp";
+  proxy_temp_path       "$DATA_DIR/nginx_temp";
   map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
   server {
     listen $NGINX_PORT;
     server_name localhost;
     client_max_body_size 5M;
     location / {
-      root $frontend_root;
+      root "$frontend_root";
       try_files \$uri \$uri/ /index.html;
     }
-    # Normalize image path handling: /img/arkham/cards/ → mapped to zh/cards/
+    # Card images: user cards/{lang}/ first, then built-in frontend/dist/, then CDN
+    location /img/arkham/zh/cards/ {
+      alias "$cards_root/zh/";
+      try_files \$uri @img_builtin;
+    }
     location /img/arkham/cards/ {
-      alias $frontend_root/img/arkham/zh/cards/;
+      alias "$cards_root/en/";
+      try_files \$uri @img_builtin;
+    }
+    location @img_builtin {
+      root "$frontend_root";
       try_files \$uri @img_cdn;
     }
     location /img/ {
-      root $frontend_root;
+      root "$frontend_root";
       try_files \$uri @img_cdn;
     }
     location @img_cdn {
@@ -655,7 +664,7 @@ do_start() {
     # Unified PostgreSQL startup (init_database no longer starts PG; this is the only pg_ctl start entry point)
     if ! pg_ready; then
         info "Starting PostgreSQL ..."
-        if ! pg_ctl -D "$PG_DATA" -l "$PG_LOG" -o "-k $PG_SOCKET_DIR" start; then
+        if ! pg_ctl -D "$PG_DATA" -l "$PG_LOG" -o "-k '$PG_SOCKET_DIR'" start; then
             die 2004 "PostgreSQL failed to start" "$PG_LOG"
         fi
         local tries=0
@@ -714,6 +723,11 @@ do_start() {
 
     # 3. nginx (port 3000)
     info "Configuring and starting nginx ..."
+
+    # Ensure user-facing card image directories exist
+    ensure_dir "$SCRIPT_DIR/cards/en"
+    ensure_dir "$SCRIPT_DIR/cards/zh"
+
     ensure_dir "$DATA_DIR/nginx_temp"
     generate_nginx_conf
     touch "$NGINX_LOG_DIR/error.log" "$NGINX_LOG_DIR/access.log" 2>/dev/null || true

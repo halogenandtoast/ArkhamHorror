@@ -196,9 +196,20 @@ build_frontend() {
         local js_file="${TMP_DIR}/cdn-detector.js"
         cat > "$js_file" << 'CDNJS'
 (function(){
+  var BADGE_KEY='arkham_show_cdn_badge';
   var cloudSVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>';
   var cdnPaths=new Set();
-  var cdnBase="https://assets.arkhamhorror.app";
+
+  function isEnabled(){return localStorage.getItem(BADGE_KEY)==='1'}
+
+  // Extract card code from image path, e.g. /img/arkham/cards/01104.avif -> 01104
+  function cardCodeFromPath(path){
+    var m=path.match(/\/img\/arkham\/cards\/([^/.]+)/);
+    return m?m[1]:null;
+  }
+
+  // Build ArkhamDB link from card code
+  function arkhamDbUrl(code){return 'https://zh.arkhamdb.com/card/'+code}
 
   // Extract pathname from a full URL so different URL formats share the same matching key
   function getPath(url){
@@ -207,9 +218,12 @@ build_frontend() {
     return a.pathname;
   }
 
-  function addBadge(img,cdnUrl){
+  function addBadge(img,path){
+    if(!isEnabled())return;
     if(img.dataset.cdnBadged)return;
     img.dataset.cdnBadged="1";
+    var code=cardCodeFromPath(path);
+    if(!code)return;
     // Wrap the image in a span so the badge is positioned relative to the image instead of the parent container
     var wrap=document.createElement("span");
     wrap.style.position="relative";
@@ -221,18 +235,36 @@ build_frontend() {
     wrap.appendChild(img);
     var b=document.createElement("span");
     b.innerHTML=cloudSVG;
-    b.title="CDN resource: click to view original\n"+cdnUrl;
+    var linkUrl=arkhamDbUrl(code);
+    b.title="CDN image — click to view on ArkhamDB\n"+linkUrl;
     b.setAttribute("style","position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(255,255,255,0.82);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.12)");
-    b.onclick=function(e){e.stopPropagation();window.open(cdnUrl,"_blank")};
+    b.onclick=function(e){e.stopPropagation();window.open(linkUrl,"_blank")};
     wrap.appendChild(b);
   }
 
-  function scanAll(){
-    document.querySelectorAll("img").forEach(function(img){
-      var path=getPath(img.src);
-      if(cdnPaths.has(path))addBadge(img,cdnBase+path);
+  function removeBadges(){
+    document.querySelectorAll('[data-cdn-badged]').forEach(function(img){
+      var wrap=img.parentNode;
+      if(wrap&&wrap.tagName==='SPAN'&&wrap.querySelector('span[style]')){
+        wrap.parentNode.insertBefore(img,wrap);
+        wrap.remove();
+      }
+      delete img.dataset.cdnBadged;
     });
   }
+
+  function scanAll(){
+    if(!isEnabled())return;
+    document.querySelectorAll("img").forEach(function(img){
+      var path=getPath(img.src);
+      if(cdnPaths.has(path))addBadge(img,path);
+    });
+  }
+
+  // Listen for setting changes from settings UI
+  window.addEventListener('cdn-badge-toggle',function(){
+    if(isEnabled()){scanAll()}else{removeBadges()}
+  });
 
   try{
     var po=new PerformanceObserver(function(list){
@@ -253,16 +285,17 @@ build_frontend() {
     po.observe({type:"resource",buffered:true});
 
     var mo=new MutationObserver(function(mutations){
+      if(!isEnabled())return;
       mutations.forEach(function(m){
         m.addedNodes.forEach(function(node){
           if(node.tagName==="IMG"){
             var path=getPath(node.src);
-            if(cdnPaths.has(path))addBadge(node,cdnBase+path);
+            if(cdnPaths.has(path))addBadge(node,path);
           }
           if(node.querySelectorAll){
             node.querySelectorAll("img").forEach(function(img){
               var path=getPath(img.src);
-              if(cdnPaths.has(path))addBadge(img,cdnBase+path);
+              if(cdnPaths.has(path))addBadge(img,path);
             });
           }
         });
@@ -283,6 +316,168 @@ open(sys.argv[1], 'w').write(html)
 PYEOF
         rm -f "$js_file"
         info "  ✓ CDN detection script injected"
+
+        # 5. Inject card hover zoom feature (settings UI + CSS hover effect)
+        substep "Injecting card hover zoom feature ..."
+        local zoom_file="${TMP_DIR}/card-hover-zoom.js"
+        cat > "$zoom_file" << 'ZOOMJS'
+(function(){
+  var KEY='arkham_card_hover_zoom';
+  var OPTIONS=[0,10,15,20,30,40,50,70];
+
+  function applyZoom(){
+    var v=+(localStorage.getItem(KEY)||0);
+    var s=v>0?(1+v/100):1;
+    document.documentElement.style.setProperty('--card-hover-zoom',String(s));
+  }
+  applyZoom();
+
+  // Global CSS for hover zoom
+  var style=document.createElement('style');
+  style.textContent=[
+    '#zoom-settings input[type="radio"]{display:unset;accent-color:var(--spooky-green)}'
+  ].join('\n');
+  document.head.appendChild(style);
+
+  // Adjust overlay: apply scale + translate to keep it within viewport
+  var _adjusting=false;
+  function adjustOverlays(){
+    if(_adjusting)return;
+    _adjusting=true;
+    var overlays=document.querySelectorAll('.card-overlay');
+    var vh=window.innerHeight;
+    var vw=window.innerWidth;
+    var s=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-hover-zoom'))||1;
+    if(s<=1){
+      overlays.forEach(function(el){el.style.transform='';el.style.transformOrigin=''});
+      _adjusting=false;
+      return;
+    }
+    overlays.forEach(function(el){
+      // Remove our transform to read the true layout position set by Vue
+      el.style.transform='none';
+      el.style.transformOrigin='';
+      // Force layout recalc
+      var rect=el.getBoundingClientRect();
+      var scaledH=rect.height*s;
+      var scaledW=rect.width*s;
+
+      // Calculate shift needed to keep scaled overlay within viewport
+      var shiftY=0;
+      if(rect.top+scaledH>vh) shiftY=vh-(rect.top+scaledH);  // shift up if bottom overflows
+      if(rect.top+shiftY<0) shiftY=-rect.top;                 // clamp: don't go above viewport top
+
+      var shiftX=0;
+      if(rect.left+scaledW>vw) shiftX=vw-(rect.left+scaledW); // shift left if right overflows
+      if(rect.left+shiftX<0) shiftX=-rect.left;               // clamp: don't go past left edge
+
+      el.style.transformOrigin='top left';
+      el.style.transform='translate('+shiftX+'px,'+shiftY+'px) scale('+s+')';
+    });
+    _adjusting=false;
+  }
+
+  // Schedule adjustment with debounce; run multiple times to handle Vue async positioning
+  var _aoTimer=null;
+  function scheduleAdjust(){
+    if(_aoTimer)return;
+    _aoTimer=requestAnimationFrame(function(){
+      _aoTimer=null;
+      adjustOverlays();
+      // Re-run after a short delay in case Vue updated position asynchronously
+      setTimeout(adjustOverlays,50);
+      setTimeout(adjustOverlays,150);
+    });
+  }
+
+  // Observe both new nodes AND style attribute changes (Vue sets top/left via style)
+  new MutationObserver(function(mutations){
+    if(_adjusting)return;
+    var dominated=false;
+    for(var i=0;i<mutations.length;i++){
+      var m=mutations[i];
+      if(m.type==='attributes'&&m.target.classList&&m.target.classList.contains('card-overlay')){dominated=true;break}
+      if(m.type==='childList'){
+        for(var j=0;j<m.addedNodes.length;j++){
+          var n=m.addedNodes[j];
+          if(n.classList&&n.classList.contains('card-overlay')){dominated=true;break}
+          if(n.querySelectorAll&&n.querySelectorAll('.card-overlay').length){dominated=true;break}
+        }
+      }
+      if(dominated)break;
+    }
+    if(dominated)scheduleAdjust();
+  }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style']});
+
+  // Inject settings section when on /settings page (hash mode: /#/settings)
+  function injectSettingsUI(){
+    if(!/\/settings/.test(location.hash||location.pathname))return;
+    if(document.getElementById('zoom-settings'))return;
+    var container=document.querySelector('.page-content');
+    if(!container)return;
+    var sections=container.querySelectorAll('section.box');
+    if(sections.length<1)return;
+
+    // --- Card Hover Zoom section ---
+    var current=+(localStorage.getItem(KEY)||0);
+    var section=document.createElement('section');
+    section.id='zoom-settings';
+    section.className='box column';
+    section.innerHTML='<h3 style="font-size:1.4em;font-weight:bold;color:var(--title);text-transform:uppercase;font-family:teutonic,sans-serif">Card Hover Zoom</h3>'
+      +'<p style="color:var(--title);opacity:0.8">Scale percentage when hovering over card images in game</p>'
+      +'<div class="row" style="gap:12px;flex-wrap:wrap">'+OPTIONS.map(function(v){
+        var checked=v===current?' checked':'';
+        return '<label style="display:flex;align-items:center;gap:6px;color:var(--title);cursor:pointer"><input type="radio" name="cardZoom" value="'+v+'"'+checked+'>'+(v===0?'Off':'+'+v+'%')+'</label>';
+      }).join('')+'</div>';
+
+    sections[0].after(section);
+
+    section.querySelectorAll('input[name="cardZoom"]').forEach(function(radio){
+      radio.addEventListener('change',function(){
+        localStorage.setItem(KEY,this.value);
+        applyZoom();
+      });
+    });
+
+    // --- CDN Badge toggle section ---
+    if(!document.getElementById('cdn-badge-settings')){
+      var cdnSection=document.createElement('section');
+      cdnSection.id='cdn-badge-settings';
+      cdnSection.className='box column';
+      var cdnEnabled=localStorage.getItem('arkham_show_cdn_badge')==='1';
+      cdnSection.innerHTML='<h3 style="font-size:1.4em;font-weight:bold;color:var(--title);text-transform:uppercase;font-family:teutonic,sans-serif">CDN Badge</h3>'
+        +'<p style="color:var(--title);opacity:0.8">Show a cloud icon on card images loaded from CDN (click to open ArkhamDB)</p>'
+        +'<label style="display:flex;align-items:center;gap:8px;color:var(--title);cursor:pointer">'
+        +'<input type="checkbox" id="cdn-badge-toggle"'+(cdnEnabled?' checked':'')+' style="accent-color:var(--spooky-green)">'
+        +'Show CDN badge</label>';
+      section.after(cdnSection);
+      cdnSection.querySelector('#cdn-badge-toggle').addEventListener('change',function(){
+        localStorage.setItem('arkham_show_cdn_badge',this.checked?'1':'0');
+        window.dispatchEvent(new Event('cdn-badge-toggle'));
+      });
+    }
+  }
+
+  // Detect Vue Router navigation (hash mode uses hashchange; history mode uses pushState/popstate)
+  window.addEventListener('hashchange',function(){setTimeout(injectSettingsUI,150)});
+  var _pushState=history.pushState;
+  history.pushState=function(){_pushState.apply(this,arguments);setTimeout(injectSettingsUI,150)};
+  window.addEventListener('popstate',function(){setTimeout(injectSettingsUI,150)});
+
+  // MutationObserver for Vue rendering (settings UI injection)
+  new MutationObserver(function(){injectSettingsUI()}).observe(document.body,{childList:true,subtree:true});
+  setTimeout(injectSettingsUI,500);
+})();
+ZOOMJS
+        python3 - "$index_html" "$zoom_file" << 'PYEOF'
+import sys
+html = open(sys.argv[1], 'r').read()
+js = open(sys.argv[2], 'r').read()
+html = html.replace('</body>', '<script>' + js + '</script></body>')
+open(sys.argv[1], 'w').write(html)
+PYEOF
+        rm -f "$zoom_file"
+        info "  ✓ Card hover zoom feature injected"
     fi
 
     echo "$current_hash" > "$FRONTEND_BUILT_MARKER"

@@ -23,6 +23,7 @@ instance HasModifiersFor BroodOfYogSothoth where
       a
       [ HealthModifier healthModifier
       , CanOnlyBeAttackedByAbilityOn $ singleton Assets.esotericFormula.cardCode
+      , CannotBeDamagedByPlayerSourcesExcept (SourceIsAsset (AssetIs Assets.esotericFormula.cardCode))
       ]
 
 instance RunMessage BroodOfYogSothoth where

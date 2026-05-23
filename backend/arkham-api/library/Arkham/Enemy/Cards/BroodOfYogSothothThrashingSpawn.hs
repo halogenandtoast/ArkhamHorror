@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Matcher
 
 newtype BroodOfYogSothothThrashingSpawn = BroodOfYogSothothThrashingSpawn EnemyAttrs
   deriving anyclass IsEnemy
@@ -21,6 +22,7 @@ instance HasModifiersFor BroodOfYogSothothThrashingSpawn where
       a
       [ HealthModifier healthModifier
       , CanOnlyBeAttackedByAbilityOn $ singleton Assets.esotericFormula.cardCode
+      , CannotBeDamagedByPlayerSourcesExcept (SourceIsAsset (AssetIs Assets.esotericFormula.cardCode))
       ]
 
 instance RunMessage BroodOfYogSothothThrashingSpawn where

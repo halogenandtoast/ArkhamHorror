@@ -39,7 +39,7 @@ instance RunMessage SpecialAgentCallahan where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      enemies <- select $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy (attrs.ability 2)
       chooseTargetM iid enemies $ \enemy -> do
         nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy
       pure a

@@ -1,0 +1,26 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of _Insect_ enemies in play and in the victory display (rounded up).",
+      "cultist": "-1. You may shuffle a non-_Elite_ enemy in the victory display into the encounter deck.",
+      "tablet": "-3. If you fail, choose an _Insect_ enemy at your location. It engages you and makes an immediate attack.",
+      "elderThing": "-2. If you are at a _Lair_ location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of _Insect_ enemies in play and in the victory display.",
+      "cultist": "-3. If you succeed, you may shuffle a non-_Elite_ enemy in the victory display into the encounter deck.",
+      "tablet": "-5. Ready the nearest _Insect_ enemy. It moves and attacks as if it were the enemy phase.",
+      "elderThing": "-4. If you are at a _Lair_ location, you automatically fail."
+    }
+  },
+  "searchingTheHeath": {
+    "placeOnBottom": "Place on bottom",
+    "leaveOnTop": "Leave on top"
+  },
+  "codex": {
+    "broodQueen": {
+      "title": "{'{'}codex{'}'} Codex Σ: Brood Queen",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.broodQueen.title </h3><p>The massive, corpulent form of an insect lurches out of a dark tunnel. The Brood Queen’s antennae wave in the dark, emitting unsettling vibrations. In moments, the cave is filled with her brood, each of them glowing with faint blue light.</p><p class='basic right'>Spawn the Brood Queen at the location nearest to the most investigators (at a _Cave_ location, if able). Remove each _Insect_ enemy from the victory display and spawn it at the Brood Queen’s location.</p>"
+    }
+  }
+}

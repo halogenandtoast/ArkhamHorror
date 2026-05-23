@@ -23,7 +23,7 @@ instance RunMessage TheRitualBegins where
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid attrs iid #willpower (Fixed 6)
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       searchCollectionForRandomBasicWeakness iid attrs [Madness]

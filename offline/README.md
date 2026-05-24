@@ -307,18 +307,48 @@ Logs are cleared automatically after a normal Ctrl+C shutdown. They are preserve
 
 **Q: Where are image assets loaded from?**
 
-A: nginx implements a hybrid strategy: local-first with CDN fallback. Requests under `/img/` are served from disk if the file exists locally; otherwise nginx transparently proxies the request to the CDN. Local images live under `frontend/dist/img/` inside the distribution package.
+A: nginx implements a hybrid strategy: local-first with CDN fallback. Requests under `/img/` are served from disk if the file exists locally; otherwise nginx transparently proxies the request to the CDN. Local images live under `frontend/dist/img/` inside the distribution package, and user-supplied card overrides live under `cards/` and `cards_en/`.
 
 ```text
+cards/
+└── ...              # User-supplied language-agnostic card overrides (highest priority)
+
+cards_en/
+└── ...              # User-supplied English fallback card overrides
+
 frontend/dist/img/arkham/
 ├── cards/            # English cards (for example 01116.avif)
 ├── zh/cards/         # Chinese translated cards
+├── fr/cards/         # French translated cards
+├── es/cards/         # Spanish translated cards
+├── ko/cards/         # Korean translated cards
+├── ita/cards/        # Italian translated cards
+├── xx/cards/         # Other built-in translated cards, if the frontend adds them later
 ├── portraits/        # Investigator portraits
 ├── encounter-sets/   # Encounter cards
 ├── icons/            # Icons
 ├── tokens/           # Tokens
 └── ...
 ```
+
+The offline package keeps nginx minimal, but now leaves the regex-related support enabled so card routes can stay simple. Card image requests are resolved in this order:
+
+1. `cards/`
+2. `cards_en/`
+3. `frontend/dist/img/arkham/<language>/cards/`
+4. `frontend/dist/img/arkham/cards/`
+5. CDN fallback
+
+The current frontend generates these card image request forms:
+
+- `/img/arkham/cards/...` for English or when no translated card image is available
+- `/img/arkham/zh/cards/...`
+- `/img/arkham/fr/cards/...`
+- `/img/arkham/es/cards/...`
+- `/img/arkham/ko/cards/...`
+- `/img/arkham/ita/cards/...`
+
+nginx matches those paths with regex locations in `start.sh` and applies the local-first fallback chain directly.
 
 To fetch images, run `scripts/fetch-assets.sh en` (English, about 1.3 GB) or `scripts/fetch-assets.sh en+zh` (English + Chinese, about 1.5 GB) from the repository root, then copy `frontend/public/img/` into `frontend/dist/img/` in the distribution package. You do not have to download everything; nginx automatically falls back to the CDN for missing files.
 

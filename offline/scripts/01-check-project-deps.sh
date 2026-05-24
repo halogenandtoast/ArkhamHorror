@@ -381,7 +381,6 @@ install_nginx() {
     ./configure \
         --prefix="${DEPS_DIR}/nginx" \
         --without-http_gzip_module \
-        --without-http_rewrite_module \
         --without-http_fastcgi_module \
         --without-http_uwsgi_module \
         --without-http_scgi_module \

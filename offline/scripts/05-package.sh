@@ -576,18 +576,34 @@ http {
       root "$frontend_root";
       try_files \$uri \$uri/ /index.html;
     }
-    # Card images: user cards/{lang}/ first, then built-in frontend/dist/, then CDN
-    location /img/arkham/zh/cards/ {
-      alias "$cards_root/zh/";
-      try_files \$uri @img_builtin;
+    # Card image routing:
+    # 1. user cards/
+    # 2. user cards_en/
+    # 3. built-in frontend/dist/img/arkham/{lang}/cards/
+    # 4. built-in frontend/dist/img/arkham/cards/
+    # 5. CDN fallback
+    location ~ ^/img/arkham/(?<request_lang>zh|fr|es|ko)/cards/(?<card_path>.+)$ {
+      root "$SCRIPT_DIR";
+      try_files /cards/\$card_path
+                /cards_en/\$card_path
+                /frontend/dist/img/arkham/\$request_lang/cards/\$card_path
+                /frontend/dist/img/arkham/cards/\$card_path
+                @img_cdn;
     }
-    location /img/arkham/cards/ {
-      alias "$cards_root/en/";
-      try_files \$uri @img_builtin;
+    location ~ ^/img/arkham/ita/cards/(?<card_path>.+)$ {
+      root "$SCRIPT_DIR";
+      try_files /cards/\$card_path
+                /cards_en/\$card_path
+                /frontend/dist/img/arkham/ita/cards/\$card_path
+                /frontend/dist/img/arkham/cards/\$card_path
+                @img_cdn;
     }
-    location @img_builtin {
-      root "$frontend_root";
-      try_files \$uri @img_cdn;
+    location ~ ^/img/arkham/cards/(?<card_path>.+)$ {
+      root "$SCRIPT_DIR";
+      try_files /cards/\$card_path
+                /cards_en/\$card_path
+                /frontend/dist/img/arkham/cards/\$card_path
+                @img_cdn;
     }
     location /img/ {
       root "$frontend_root";
@@ -886,8 +902,8 @@ do_start() {
     info "Configuring and starting nginx ..."
 
     # Ensure user-facing card image directories exist
-    ensure_dir "$SCRIPT_DIR/cards/en"
-    ensure_dir "$SCRIPT_DIR/cards/zh"
+    ensure_dir "$SCRIPT_DIR/cards"
+    ensure_dir "$SCRIPT_DIR/cards_en"
 
     ensure_dir "$DATA_DIR/nginx_temp"
     generate_nginx_conf

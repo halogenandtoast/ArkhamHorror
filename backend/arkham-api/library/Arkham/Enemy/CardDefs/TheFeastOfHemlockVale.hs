@@ -81,6 +81,47 @@ broodQueenDyingMother =
     , cdVictoryPoints = Just 2
     }
 
+limulusHybridInTheLight :: CardDef
+limulusHybridInTheLight =
+  doubleSided "10583b"
+    $ (enemy "10583a" ("Limulus Hybrid" <:> "In the Light") TheLostSister 1)
+      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Elusive, Keyword.Massive]
+      , cdVictoryPoints = Just 2
+      }
+
+limulusHybridInTheDark :: CardDef
+limulusHybridInTheDark =
+  doubleSided "10583a"
+    $ (enemy "10583b" ("Limulus Hybrid" <:> "In the Dark") TheLostSister 1)
+      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+      , cdVictoryPoints = Just 2
+      }
+
+crustaceanHybridInTheLight :: CardDef
+crustaceanHybridInTheLight =
+  doubleSided "10584b"
+    $ (enemy "10584a" ("Crustacean Hybrid" <:> "In the Light") TheLostSister 2)
+      { cdCardTraits = setFromList [Creature, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+      }
+
+crustaceanHybridInTheDark :: CardDef
+crustaceanHybridInTheDark =
+  doubleSided "10584a"
+    $ (enemy "10584b" ("Crustacean Hybrid" <:> "In the Dark") TheLostSister 2)
+      { cdCardTraits = setFromList [Creature, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      }
+
+cavernMoss :: CardDef
+cavernMoss =
+  (enemy "10585" "Cavern Moss" TheLostSister 3)
+    { cdCardTraits = setFromList [Flora, Mutated]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
 ursineHybridGlowingAbomination :: CardDef
 ursineHybridGlowingAbomination =
   doubleSided "10607a"

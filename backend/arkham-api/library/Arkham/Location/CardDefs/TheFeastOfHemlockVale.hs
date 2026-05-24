@@ -172,6 +172,40 @@ larvalTunnel = revelation $ singleSided $ location_ "10559" "Larval Tunnel" [Cav
 crystalNursery :: CardDef
 crystalNursery = revelation $ singleSided $ location_ "10560" "Crystal Nursery" [Cave, Lair, Blight] TheSilentHeath
 
+akwan :: CardDef
+akwan = location_ "10575" "Akwan" [Coastal] TheLostSister
+
+suspendedGraveyard :: CardDef
+suspendedGraveyard =
+  quantity 2
+    $ locationWithUnrevealed_ "10576" "Cavern" [Cave] "Suspended Graveyard" [Cave, Coastal] TheLostSister
+
+hiddenCoveTheLostSister :: CardDef
+hiddenCoveTheLostSister =
+  locationWithUnrevealed_ "10577" "Cavern" [Cave] "Hidden Cove" [Coastal] TheLostSister
+
+weedChokedBeach :: CardDef
+weedChokedBeach =
+  locationWithUnrevealed_ "10578" "Cavern" [Cave] "Weed-Choked Beach" [Coastal] TheLostSister
+
+rockyShoreline :: CardDef
+rockyShoreline =
+  locationWithUnrevealed_ "10579" "Cavern" [Cave] "Rocky Shoreline" [Coastal] TheLostSister
+
+undergroundPools :: CardDef
+undergroundPools =
+  locationWithUnrevealed_ "10580" "Cavern" [Cave] "Underground Pools" [Cave, Dark] TheLostSister
+
+openCave :: CardDef
+openCave =
+  quantity 2
+    $ locationWithUnrevealed_ "10581" "Cavern" [Cave] "Open Cave" [Cave, Dark] TheLostSister
+
+fungalCave :: CardDef
+fungalCave =
+  victory 1
+    $ locationWithUnrevealed_ "10582" "Cavern" [Cave] "Fungal Cave" [Cave, Lair, Dark] TheLostSister
+
 glimmeringMeadow :: CardDef
 glimmeringMeadow =
   locationWithUnrevealed_

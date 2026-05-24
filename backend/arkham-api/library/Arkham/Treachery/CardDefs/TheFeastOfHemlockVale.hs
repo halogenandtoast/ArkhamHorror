@@ -58,6 +58,18 @@ defendTheNest =
     { cdCardTraits = setFromList [Scheme]
     }
 
+reclaimedByNature :: CardDef
+reclaimedByNature =
+  (treachery "10586" "Reclaimed by Nature" TheLostSister 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+luminousGrowth :: CardDef
+luminousGrowth =
+  (treachery "10587" "Luminous Growth" TheLostSister 3)
+    { cdCardTraits = setFromList [Hazard, Trait.Flora]
+    }
+
 deepShadows :: CardDef
 deepShadows =
   (treachery "10622" "Deep Shadows" TheTwistedHollow 2)

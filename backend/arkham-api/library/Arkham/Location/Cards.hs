@@ -40,6 +40,7 @@ allLocationCards =
       , administrationOffice_130
       , administrationOffice_131
       , airfield
+      , akwan
       , alaskanWilds
       , alchemyLabs
       , alienConservatory
@@ -376,6 +377,7 @@ allLocationCards =
       , frozenLake
       , frozenShores
       , frozenSpring
+      , fungalCave
       , galata
       , galataDocks
       , gallery
@@ -440,6 +442,7 @@ allLocationCards =
       , hereticsGravesSpectral_171
       , hereticsGravesSpectral_172
       , hiddenCove
+      , hiddenCoveTheLostSister
       , hiddenLibrary
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
@@ -618,6 +621,7 @@ allLocationCards =
       , officeSpectral
       , onyxGates
       , onyxGuardians
+      , openCave
       , operaGarnier212
       , operaGarnier213
       , operatingRoom
@@ -741,6 +745,7 @@ allLocationCards =
       , riverviewTheatre
       , rockyCrags
       , rockyLedge
+      , rockyShoreline
       , rooflessRampart
       , room212
       , room225
@@ -848,6 +853,7 @@ allLocationCards =
       , sunkenHalls
       , sunkenRailA
       , sunkenRailB
+      , suspendedGraveyard
       , syzygyChamber
       , tadsGeneralStoreDay
       , tadsGeneralStoreNight
@@ -962,6 +968,7 @@ allLocationCards =
       , ulthar
       , ultimaThule
       , undercityAltar
+      , undergroundPools
       , undergroundRiver
       , undergroundRuins
       , underseaCorridors
@@ -1013,6 +1020,7 @@ allLocationCards =
       , wayangKulitTheater
       , wealdOfEffigiesA
       , wealdOfEffigiesB
+      , weedChokedBeach
       , wellOfSouls
       , westernRidge
       , westminsterAbbey

@@ -411,6 +411,7 @@ allEncounterTreacheryCards =
       , lostInVenice
       , lowOnSupplies
       , lunarPatrol
+      , luminousGrowth
       , lurkingFear
       , macabreMemento
       , maddeningDelusions
@@ -492,6 +493,7 @@ allEncounterTreacheryCards =
       , raiseTheStakes
       , realmOfMadness
       , realmOfTorment
+      , reclaimedByNature
       , resentfulWilds
       , restlessJourneyFallacy
       , restlessJourneyHardship

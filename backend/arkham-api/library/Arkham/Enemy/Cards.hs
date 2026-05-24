@@ -135,6 +135,7 @@ allEncounterEnemyCards =
       , catacombsDocent
       , catsFromSaturn
       , catsOfUlthar
+      , cavernMoss
       , cellKeeper
       , cerenerianDeepOne
       , cloverClubPitBoss
@@ -165,6 +166,8 @@ allEncounterEnemyCards =
       , crazedShoggoth
       , creatureOutOfDemhe
       , crystalParasite
+      , crustaceanHybridInTheDark
+      , crustaceanHybridInTheLight
       , cultistOfTheEnclave
       , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged
@@ -308,6 +311,8 @@ allEncounterEnemyCards =
       , legsOfAtlachNacha_349
       , legsOfAtlachNacha_350
       , liarWithNoFace
+      , limulusHybridInTheDark
+      , limulusHybridInTheLight
       , lloigor
       , lodgeEnforcer
       , lodgeJailor

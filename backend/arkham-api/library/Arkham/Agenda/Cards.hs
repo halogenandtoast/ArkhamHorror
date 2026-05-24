@@ -63,6 +63,7 @@ allAgendaCards =
       , confluxOfConsequence
       , crossroadsOfFate
       , dangerousRide
+      , darknessClosesIn
       , darkClouds
       , deadOfNight
       , deathsApproach
@@ -107,6 +108,7 @@ allAgendaCards =
       , humanityFading
       , icyDepths
       , inEveryShadow
+      , intoTheCaves
       , intoTheWhite
       , intruders
       , itAwaits

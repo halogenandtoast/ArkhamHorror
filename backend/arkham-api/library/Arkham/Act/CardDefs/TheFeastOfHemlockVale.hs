@@ -23,6 +23,15 @@ aLostLegacy = act "10553" "A Lost Legacy" 1 TheSilentHeath
 searchingTheHeath :: CardDef
 searchingTheHeath = act "10554" "Searching the Heath" 2 TheSilentHeath
 
+theMissingSibling :: CardDef
+theMissingSibling = act "10572" "The Missing Sibling" 1 TheLostSister
+
+onTheTrail :: CardDef
+onTheTrail = act "10573" "On the Trail" 2 TheLostSister
+
+faceToCarapace :: CardDef
+faceToCarapace = act "10574" "Face to Carapace" 3 TheLostSister
+
 desperateSearch :: CardDef
 desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherSide = Just "10607b"}
 

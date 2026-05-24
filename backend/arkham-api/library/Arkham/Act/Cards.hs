@@ -91,6 +91,7 @@ allActCards =
       , exploringTheMoon
       , exploringTheRainforest
       , eyesInTheTower
+      , faceToCarapace
       , falseColorsV1
       , falseColorsV2
       , falseLight
@@ -159,6 +160,7 @@ allActCards =
       , openingTheMaw
       , openThePathAbove
       , openThePathBelow
+      , onTheTrail
       , outOfThisWorld
       , paradiseLost
       , pastAndPresent
@@ -262,6 +264,7 @@ allActCards =
       , theKingInTatters
       , theKingsDecree
       , theMoonsCore
+      , theMissingSibling
       , theOath
       , theOvergrownEstateClintonFreeman
       , theOvergrownEstateSentFromAnotherTime

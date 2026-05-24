@@ -1,0 +1,29 @@
+{
+  "intro": {
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: You are sitting in the small kitchen of the Peters family home in Akwan, on the north shore of Hemlock Isle. Cold Atlantic seawater laps at the stilts below the house as Helen Peters sets her steaming mug on the table. \"The north shore caverns are a death trap,\" she says firmly. \"I don't think you know what you're getting into.\"</p><p>You tell her you are well aware of the danger. According to local rumors, some folks have gone missing recently. The most recent disappearance was Helen's sister, so you paid a visit to the Peters home to offer your help.</p><p>Helen looks you over, as if sizing you up, and finally nods. \"Alright then. You're either brave, or you're stupid. Or you're both, like my little brother.\" She rubs her brow in frustration. \"I last saw Lizzie—Elizabeth—taking a walk with our dog Bruce along the coastline. I told her to stay away from those caves, but she never listens. It's easy to get lost in 'em and there are things in there that'd haunt your nightmares.\" She sets a flashlight on the table. \"But that's where we're going to start.\"</p>"
+    },
+    "body": "<p class='basic unindented'>Check your Campaign Log.</p>",
+    "nightSkip": "If it is _Night 1_ or _Night 2_, skip to _Intro 5_. Otherwise:",
+    "day1": "If it is _Day 1_, proceed to _Intro 2_.",
+    "day2": "If it is _Day 2_, skip to _Intro 3_.",
+    "day3": "If it is _Day 3_, skip to _Intro 4_.",
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: You follow Helen outside and onto the creaking boardwalks of Akwan village. Nestled in a small, rocky bay on the island's northern shore, Akwan has been the home of Abenaki families and former whalers for generations. The steady swell and break of seawater on the stony shore lends the scene an eerie disquiet. Helen grabs a harpoon from a whaler's shack and leads you to the beach.</p><p>A familiar old pickup truck slows to a stop nearby. Theo steps out and greets you with a broad smile. \"I'm back! I had to run back to the Vale for something,\" he waves. His smile vanishes when he sees Helen.</p><p>\"I'm surprised you came,\" Helen says cooly.</p><p>Theo looks crestfallen. \"Of course I came, sis. How could I not?\"</p><p>His sister says nothing as she strides past you both toward the bleak shoreline. A curl of waves crashes against the walk, breaking the apparent drama of the moment. You ask Theo for the reason behind his sister's chilly response, and he looks distant for a moment.</p><p>\"Y'know, sometimes people just grow apart. Like two branches. They'll always be connected, but they—\" The extended metaphor is interrupted by Helen, calling you to the mouth of a seaside cave.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: As you and Helen make preparations to leave, the sound of rain breaks the silence. Theo steps through the front door, brushing his wet hair out of his face. He locks eyes with Helen. \"So she's still not back,\" he says soberly. Theo drips rainwater on the weatherbeaten floor as Helen glowers at him. \"I'm surprised you came, little brother. Better late than never, I guess. Get the rope.\" She slings a harpoon over her shoulder and walks out into the pouring rain. Theo scrambles for rope and a second flashlight as you ask him what the matter is.</p><p>\"Our sister is missing. I told Helen she would come back, and now it's been two days. That's, uh. That's what the matter is.\"</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: You follow Helen outside and onto the creaking boardwalks of Akwan village. Nestled in a small, rocky bay on the island's northern shore, Akwan has been the home of Abenaki families and former whalers for generations. \"Hemlock Isle isn't safe anymore. I thought this could be our home, but I guess it's just another stop on the way,\" Helen says wistfully. The village is all but deserted, save for an old sailor in a navy blue coat. He nearly drops his fishing rod as you approach.</p><p>\"Gideon! Fishing again?\" Helen says with a wry smile.</p><p>The old sailor pulls his haul out of the water. \"Nae but an ugly cod. An' this e'en uglier haddock.\" The fish strung through the twine have too many fins and spined, barnacle-like growths. \"An ye, Helen?\" Gideon asks.</p><p>Helen tells the old sailor about her missing sister. The old sailor looks concerned. \"Little Lizzie's quite the treasure. I'll help, if ye'll have me.\"</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro5": {
+      "title": "Intro 5",
+      "body": "<p>_Intro 5_: You follow Helen outside and onto the creaking boardwalks of Akwan village. The night sky is dreary and overcast, but an unsettling glimmer lingers over the southern horizon: a distant, shifting luminescence of blues and greens beyond the treetops. The light forms familiar patterns: A lion's paw, a spring blossom, a longship, and finally, a vague humanoid outline. You look down to see Helen disappearing into an inky black cave.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    }
+  }
+}

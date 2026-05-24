@@ -1177,8 +1177,7 @@
         [ "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusEight"
         , "Skull", "Skull", "Tablet", "ElderThing", "AutoFail", "ElderSign"
         ]
-    },
-    "beta": true
+    }
   },
   {
     "id": "10",

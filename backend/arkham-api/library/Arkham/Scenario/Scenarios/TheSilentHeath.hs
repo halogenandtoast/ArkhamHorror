@@ -69,6 +69,25 @@ instance RunMessage TheSilentHeath where
         _ -> story $ i18nWithTitle "intro4"
       pure s
     Setup -> runScenarioSetup TheSilentHeath attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "currentDaySet"
+        li.nested "currentDayMarker" do
+          li "desolationV1"
+          li "desolationV2"
+        li.nested "locations" do
+          li "startAt"
+        li "setAside"
+        li "crystalRemains"
+        li "horrorsInTheRock"
+        li.nested "residents" do
+          li "leahAtwood"
+          li "drRosaMarquez"
+          li "motherRachel"
+          li "removeResidents"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
       setUsesGrid
 
       gather Set.TheSilentHeath

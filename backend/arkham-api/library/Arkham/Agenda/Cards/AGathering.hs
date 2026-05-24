@@ -45,7 +45,7 @@ instance RunMessage AGathering where
         sid <- getRandom
         beginSkillTest sid iid attrs iid #willpower (Fixed 4)
 
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       directHorror iid attrs 1

@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Matcher
 
 newtype BroodOfYogSothothSwellingDevourer = BroodOfYogSothothSwellingDevourer EnemyAttrs
   deriving anyclass IsEnemy
@@ -25,6 +26,7 @@ instance HasModifiersFor BroodOfYogSothothSwellingDevourer where
       a
       [ HealthModifier healthModifier
       , CanOnlyBeAttackedByAbilityOn $ singleton Assets.esotericFormula.cardCode
+      , CannotBeDamagedByPlayerSourcesExcept (SourceIsAsset (AssetIs Assets.esotericFormula.cardCode))
       ]
 
 instance RunMessage BroodOfYogSothothSwellingDevourer where

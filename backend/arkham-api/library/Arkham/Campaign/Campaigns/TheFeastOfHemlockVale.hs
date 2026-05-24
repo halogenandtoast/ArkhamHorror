@@ -41,28 +41,24 @@ campaignChaosBag = \case
 
 instance IsCampaign TheFeastOfHemlockVale where
   campaignTokens = campaignChaosBag
-  nextStep a = case (campaignStep (toAttrs a)).normalize of
-    PrologueStep -> continue PreludeWelcomeToHemlockVale
-    WrittenInRock ->
-      let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
-       in case (meta.day, meta.time) of
+  nextStep a =
+    let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
+        handleTime = do
+          case (meta.day, meta.time) of
             (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
             (Day1, Night) -> continue PreludeDawnOfTheSecondDay
             (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
             (Day2, Night) -> Nothing
             (Day3, _) -> continueEdit (CampaignSpecificStep "preludeTheFinalEvening" Nothing) allowOptions
-    HemlockHouse ->
-      let meta = toResult @TheFeastOfHemlockValeMeta (toAttrs a).meta
-       in case (meta.day, meta.time) of
-            (Day1, Day) -> continueEdit (CampaignSpecificStep "preludeTheFirstEvening" Nothing) allowOptions
-            (Day1, Night) -> continue PreludeDawnOfTheSecondDay
-            (Day2, Day) -> continueEdit (CampaignSpecificStep "preludeTheSecondEvening" Nothing) allowOptions
-            (Day2, Night) -> continue PreludeDawnOfTheFinalDay
-            (Day3, _) -> continueEdit (CampaignSpecificStep "preludeTheFinalEvening" Nothing) allowOptions
-    TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
-    EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+     in case (campaignStep (toAttrs a)).normalize of
+          PrologueStep -> continue PreludeWelcomeToHemlockVale
+          WrittenInRock -> handleTime
+          HemlockHouse -> handleTime
+          TheSilentHeath -> handleTime
+          TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
+          EpilogueStep -> Nothing
+          UpgradeDeckStep nextStep' -> Just nextStep'
+          _ -> Nothing
 
 instance RunMessage TheFeastOfHemlockVale where
   runMessage msg c@(TheFeastOfHemlockVale attrs) = runQueueT $ campaignI18n $ case msg of

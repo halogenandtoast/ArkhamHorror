@@ -604,6 +604,36 @@ littleSylvie =
     , cdOutOfPlayEffects = [InDiscardEffect]
     }
 
+crystalRemainsTheChild :: CardDef
+crystalRemainsTheChild =
+  (storyAsset "10566" ("Crystal Remains" <:> "The Child") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
+crystalRemainsTheFather :: CardDef
+crystalRemainsTheFather =
+  (storyAsset "10567" ("Crystal Remains" <:> "The Father") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
+crystalRemainsTheMother :: CardDef
+crystalRemainsTheMother =
+  (storyAsset "10568" ("Crystal Remains" <:> "The Mother") 1 TheSilentHeath)
+    { cdCardTraits = setFromList [Humanoid, Trait.Blight]
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdVictoryPoints = Just 1
+    , cdRevelation = IsRevelation
+    }
+
 valeLanternBeaconOfHope :: CardDef
 valeLanternBeaconOfHope =
   (storyAsset "10610a" ("Vale Lantern" <:> "Beacon of Hope") 2 TheTwistedHollow)

@@ -31,7 +31,7 @@ instance HasAbilities SignMagick3 where
             <> AssetWithPerformableAbility AbilityIsActionAbility [ActionCostSetToModifier 0]
         )
         $ triggered
-          (ActivateAbility #after You $ AssetAbility $ hasAnyTrait [Spell, Ritual])
+          (ActivateAbility #after You $ AbilityIsActionAbility <> AssetAbility (hasAnyTrait [Spell, Ritual]))
           (exhaust a)
     ]
 

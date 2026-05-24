@@ -329,6 +329,10 @@ allAgendas =
     , SomeAgendaCard theHouseStirsV1
     , SomeAgendaCard theHouseStirsV2
     , SomeAgendaCard livingWalls
+    , --- The Silent Heath
+      SomeAgendaCard unsettlingSilence
+    , SomeAgendaCard desolationV1
+    , SomeAgendaCard desolationV2
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale

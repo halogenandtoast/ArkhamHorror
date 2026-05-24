@@ -32,6 +32,9 @@ instance HasField "row" Pos Int where
 instance HasField "column" Pos Int where
   getField = positionColumn
 
+instance HasField "adjacents" Pos [Pos] where
+  getField = adjacentPositions
+
 data GridLocation = GridLocation Pos LocationId
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

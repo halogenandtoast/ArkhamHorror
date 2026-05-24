@@ -644,6 +644,9 @@ allTreacheries =
       , --- Hemlock House [fhv]
         SomeTreacheryCard outOfTheWalls
       , SomeTreacheryCard pulledIn
+      , --- The Silent Heath [fhv]
+        SomeTreacheryCard commandingResonance
+      , SomeTreacheryCard defendTheNest
       , --- The Twisted Hollow [fhv]
         SomeTreacheryCard deepShadows
       , SomeTreacheryCard lurkingFear

@@ -1082,6 +1082,12 @@ allAssets =
       , --- Written in Rock [fhv]
         SomeAssetCard mineCartReliableButBroken
       , SomeAssetCard prismaticShardAlienMeteorite
+      , --- Hemlock House [fhv]
+        SomeAssetCard littleSylvie
+      , --- The Silent Heath [fhv]
+        SomeAssetCard crystalRemainsTheChild
+      , SomeAssetCard crystalRemainsTheFather
+      , SomeAssetCard crystalRemainsTheMother
       , --- The Twisted Hollow [fhv]
         SomeAssetCard valeLanternBeaconOfHope
       , SomeAssetCard valeLanternExtinguishedLightBoon

@@ -583,6 +583,10 @@ allEnemies =
       , SomeEnemyCard frenziedMiner
       , --- Hemlock House [fhv]
         SomeEnemyCard grapplingSpawn
+      , --- The Silent Heath [fhv]
+        SomeEnemyCard colorlessLarva
+      , SomeEnemyCard broodSoldier
+      , SomeEnemyCard broodQueenDyingMother
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid

@@ -44,7 +44,7 @@ instance RunMessage BidingItsTime where
           selectEach (colocatedWith lead) \iid -> do
             sid <- getRandom
             beginSkillTest sid iid attrs enemy #agility (Fixed 4)
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) (Initiator (EnemyTarget enemy)) _ _ -> do
       initiateEnemyAttack enemy attrs iid

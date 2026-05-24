@@ -333,6 +333,9 @@ allAgendas =
       SomeAgendaCard unsettlingSilence
     , SomeAgendaCard desolationV1
     , SomeAgendaCard desolationV2
+    , --- The Lost Sister
+      SomeAgendaCard intoTheCaves
+    , SomeAgendaCard darknessClosesIn
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale

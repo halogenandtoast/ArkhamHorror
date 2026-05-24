@@ -59,6 +59,19 @@
     }
   },
   "codex": {
+    "motherRachel": {
+      "title": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.motherRachel.title </h3><p>\"We do not choose our path. Whether for the simple, the wise, or those fools who think themselves wise, it is the same. The choices are made for us. The best we can do is to accept our place,\" the matron says, kneeling. She looks past you to the ruined house. \"You shall soon know your place. As will the people of the Vale.\"</p><p class='basic right'>Increase Mother Rachel's Relationship Level. Each investigator earns 1 bonus experience.</p>"
+    },
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.leahAtwood.title </h3><p>\"Used to be this was about the only place on the island where you could get anything to grow. In fact, you couldn't get things to stop growing. The Pearl family had a whole operation: orchards and vineyards, to say nothing of the mining and whaling. Then, twenty years ago, almost to the day, something happened. Can you believe my sister talks about it like it was some kind of miracle?\" she scoffs.</p><p class='basic right'>In Leah Atwood's Notes, record <i>Leah searched the Pearl Ruins</i>. Each investigator gains 1 clue (from the token pool).</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "act1": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.drRosaMarquez.title </h3><p>_If it is Act 1:_</p><p>Dr. Marquez holds up a round piece of glass to the light. It is a cross-section of a petrified tree, riven with gossamer patterns. The professor pockets the sample. \"The apple orchard wasn't petrified: the structure of the wood itself changed. This cross section is a dozen different trees, each with its own history and rings. All crystallized.\"</p><p class='basic right'>Draw 3 cards. An investigator may trigger this codex again during a different act.</p>",
+      "act2": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.drRosaMarquez.title </h3><p>_If it is Act 2:_</p><p>The professor hefts a desiccated mandible the size of her forearm. \"These creatures have both termite, wasp, and other features from a number of insects. It's out of my field—Dr. Christopher would lose his mind if he saw this—but I was able to dig up some interesting findings in the tunnels. Look at this.\"</p><p class='basic right'>Choose a location in play. Reveal all cards beneath the chosen location. Discard each treachery revealed and put the rest back in any order.</p>"
+    },
     "larvalTunnel": {
       "title": "{'{'}codex{'}'} Codex Ψ: Larval Tunnel",
       "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.larvalTunnel.title </h3><p>A bilious stench wafts from a tunnel crawling with pillowy white insects. Monstrous larvae stare blindly out of the dark with milky white eyes. The insect colony keeps its young in this tunnel to mature. Judging by the gory and dessicated remains on the floor, the older brood soldiers feed them with a steady supply of local wildlife and anyone foolish enough to venture into their caves.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Larval Tunnel.</p>"
@@ -74,6 +87,9 @@
     "broodQueen": {
       "title": "{‘{‘}codex{‘}’} Codex Σ: Brood Queen",
       "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.broodQueen.title </h3><p>The massive, corpulent form of an insect lurches out of a dark tunnel. The Brood Queen’s antennae wave in the dark, emitting unsettling vibrations. In moments, the cave is filled with her brood, each of them glowing with faint blue light.</p><p class=’basic right’>Spawn the Brood Queen at the location nearest to the most investigators (at a _Cave_ location, if able). Remove each _Insect_ enemy from the victory display and spawn it at the Brood Queen’s location.</p>"
+    },
+    "xp": {
+      "bonus": "Bonus experience"
     }
   },
   "resolutions": {

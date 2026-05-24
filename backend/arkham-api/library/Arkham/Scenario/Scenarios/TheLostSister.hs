@@ -8,7 +8,9 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
@@ -18,20 +20,27 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheLostSister.Helpers
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Trait (Trait (Abomination, Cave))
 
 newtype TheLostSister = TheLostSister ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor TheLostSister where
+  getModifiersFor (TheLostSister a) = do
+    modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
 
 theLostSister :: Difficulty -> TheLostSister
 theLostSister difficulty = scenario TheLostSister "10569" "The Lost Sister" difficulty []
 
 instance HasChaosTokenValue TheLostSister where
   getChaosTokenValue iid tokenFace (TheLostSister attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- selectCount $ RevealedLocation <> LocationWithTrait Cave
+      pure $ toChaosTokenValue attrs Skull (ceiling @Double $ fromIntegral n / 2.0) n
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 1
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheLostSister where
@@ -117,19 +126,20 @@ instance RunMessage TheLostSister where
       setAside [Locations.fungalCave]
 
       horrorsInTheRockLocations <-
-        fromGathered (CardFromEncounterSet Set.HorrorsInTheRock <> #location)
-      toRemove <- sampleListN 2 horrorsInTheRockLocations
-      let remainingHorrorsLocations = filter (`notElem` toRemove) horrorsInTheRockLocations
+        fmap (drop 2)
+          $ shuffle
+          =<< fromGathered (CardFromEncounterSet Set.HorrorsInTheRock <> #location)
 
       lostSisterLocations <-
-        fromGathered (CardFromEncounterSet Set.TheLostSister <> #location)
+        fromGathered
+          $ CardFromEncounterSet Set.TheLostSister
+          <> #location
+          <> not_ (cardIs Locations.fungalCave)
 
-      cavernsCards <- shuffle (lostSisterLocations <> remainingHorrorsLocations)
+      cavernsCards <- shuffle (lostSisterLocations <> horrorsInTheRockLocations)
       let (topThree, rest) = splitAt 3 cavernsCards
 
-      placeCardInGrid_ (Pos (-1) 1) =<< maybe (error "empty caverns deck") pure (topThree !!? 0)
-      placeCardInGrid_ (Pos 0 1) =<< maybe (error "empty caverns deck") pure (topThree !!? 1)
-      placeCardInGrid_ (Pos 1 1) =<< maybe (error "empty caverns deck") pure (topThree !!? 2)
+      for_ (zip [Pos (-1) 0, Pos 0 (-1), Pos 1 0] topThree) (uncurry placeCardInGrid_)
 
       addExtraDeck CavernsDeck rest
 
@@ -182,5 +192,24 @@ instance RunMessage TheLostSister where
             $ questionLabeled' "chooseInvestigatorToTakeControlOf"
           questionLabeledCard Assets.helenPetersTheEldestSister
           portraits investigators (`takeControlOfAsset` helenPeters)
-
+    ResolveChaosToken drawnToken Tablet iid -> do
+      atCave <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Cave
+      when atCave do
+        withSkillTest \sid ->
+          skillTestModifier sid Tablet drawnToken
+            $ ChangeChaosTokenModifier (NegativeModifier $ if isEasyStandard attrs then 4 else 6)
+      pure s
+    ResolveChaosToken _ ElderThing iid | isEasyStandard attrs -> do
+      hasAbomination <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Abomination
+      when hasAbomination $ drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      hasAbomination <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Abomination
+      when hasAbomination failSkillTest
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n
+      | token.face == Cultist -> do
+          when (isEasyStandard attrs || n >= 2) do
+            healHorrorIfCan iid ScenarioSource 1
+          pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

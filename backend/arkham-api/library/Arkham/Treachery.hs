@@ -647,6 +647,9 @@ allTreacheries =
       , --- The Silent Heath [fhv]
         SomeTreacheryCard commandingResonance
       , SomeTreacheryCard defendTheNest
+      , --- The Lost Sister [fhv]
+        SomeTreacheryCard reclaimedByNature
+      , SomeTreacheryCard luminousGrowth
       , --- The Twisted Hollow [fhv]
         SomeTreacheryCard deepShadows
       , SomeTreacheryCard lurkingFear
@@ -677,6 +680,9 @@ allTreacheries =
       , SomeTreacheryCard callOfTheWild
       , --- Myconids [fhv]
         SomeTreacheryCard psychotropicSpores
+      , --- Mutations [fhv]
+        SomeTreacheryCard suddenMutation
+      , SomeTreacheryCard unnaturalGrowth
       , --- Fire [fhv]
         SomeTreacheryCard fire
       , -- The Drowned City

@@ -25,5 +25,41 @@
       "title": "Intro 5",
       "body": "<p>_Intro 5_: You follow Helen outside and onto the creaking boardwalks of Akwan village. The night sky is dreary and overcast, but an unsettling glimmer lingers over the southern horizon: a distant, shifting luminescence of blues and greens beyond the treetops. The light forms familiar patterns: A lion's paw, a spring blossom, a longship, and finally, a vague humanoid outline. You look down to see Helen disappearing into an inky black cave.</p><p class='basic right'>Proceed to _Setup_.</p>"
     }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Lost Sister*, *Blight*, *Horrors in the Rock*, *Mutations*, and *Myconids*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-lost-sister.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/mutations.png' /><img src='{setImgPath}/myconids.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "putAkwan": "Put the Akwan location into play. Each investigator begins play at Akwan.",
+    "cavernsDeck": "Construct the \"Caverns deck\" as follows:",
+    "gatherCavernsLocations": "Gather each location from the *The Lost Sister* and *Horrors in the Rock* encounter sets.",
+    "setAsideFungalCave": "Set the Fungal Cave location aside, out of play.",
+    "removeTwoCaves": "Remove 2 random _Cave_ locations from the *Horrors in the Rock* encounter set from the game.",
+    "shuffleCavernsDeck": "Shuffle each remaining location together to form the Caverns deck. Place this deck near the scenario reference card.",
+    "putTopThree": "Put the top three cards of the Caverns deck into play, unrevealed, below and to the left and right of Akwan (see Location Adjacency on page 3).",
+    "dayResidents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "helenPeters": "Put Helen Peters into play under the control of an investigator. She does not take up an ally slot during this scenario.",
+    "theoPeters": "If it is _Day 1_ or _Day 2_, put Theo Peters into play under the control of an investigator.",
+    "gideonMizrah": "If it is _Day 2_ or _Day 3_, put Gideon Mizrah into play under the control of an investigator.",
+    "williamHemlock": "If it is _Day 3_, put William Hemlock into play at Akwan.",
+    "removeResidents": "Remove each other card from the *Residents* encounter set from the game.",
+    "nightResidents": "If it is (_Night {'{'}night{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "helenPetersNight": "Put Helen Peters into play under the control of an investigator. She does not take up an ally slot during this scenario.",
+    "removeResidentsNight": "Remove each other card from the *Residents* encounter set from the game.",
+    "setAsideEnemies": "Set each of the following enemies aside, out of play: Limulus Hybrid, both copies of Crystal Parasite, and both copies of Crustacean Hybrid."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of revealed _Cave_ locations in play (rounded up).",
+      "cultist": "-1. If you succeed, heal 1 horror.",
+      "tablet": "-2. If you are at a _Cave_ location, treat this token's modifier as -4 instead.",
+      "elderThing": "-2. If an _Abomination_ enemy is at your location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of revealed _Cave_ locations in play.",
+      "cultist": "-1. If you succeed by 2 or more, heal 1 horror.",
+      "tablet": "-4. If you are at a _Cave_ location, treat this token's modifier as -6 instead.",
+      "elderThing": "-3. If an _Abomination_ enemy is at your location, this test automatically fails instead."
+    }
   }
 }

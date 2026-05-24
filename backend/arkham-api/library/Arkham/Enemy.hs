@@ -587,6 +587,12 @@ allEnemies =
         SomeEnemyCard colorlessLarva
       , SomeEnemyCard broodSoldier
       , SomeEnemyCard broodQueenDyingMother
+      , --- The Lost Sister [fhv]
+        SomeEnemyCard limulusHybridInTheLight
+      , SomeEnemyCard limulusHybridInTheDark
+      , SomeEnemyCard crustaceanHybridInTheLight
+      , SomeEnemyCard crustaceanHybridInTheDark
+      , SomeEnemyCard cavernMoss
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid

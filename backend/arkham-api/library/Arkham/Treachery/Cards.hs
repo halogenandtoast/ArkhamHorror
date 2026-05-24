@@ -549,6 +549,7 @@ allEncounterTreacheryCards =
       , strangeMutations
       , strangeSigns
       , substanceDissimulation
+      , suddenMutation
       , supernaturalTempest
       , suspiciousGazeA
       , suspiciousGazeB
@@ -608,6 +609,7 @@ allEncounterTreacheryCards =
       , unknowablePast
       , unlucky
       , unstableEnergies
+      , unnaturalGrowth
       , vampiresKiss
       , vastExpanse
       , vaultOfEarthlyDemise

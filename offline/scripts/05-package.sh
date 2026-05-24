@@ -138,6 +138,131 @@ open_browser() {
     fi
 }
 
+get_primary_url() {
+    echo "http://localhost:${NGINX_PORT}"
+}
+
+get_local_ipv4() {
+    local candidate=""
+    case "$(uname -s)" in
+        Darwin)
+            local iface=""
+            iface="$(route -n get default 2>/dev/null | awk '/interface: / { print $2; exit }')"
+            if [ -n "$iface" ] && command -v ipconfig >/dev/null 2>&1; then
+                candidate="$(ipconfig getifaddr "$iface" 2>/dev/null || true)"
+            fi
+            if [ -z "$candidate" ] && command -v ifconfig >/dev/null 2>&1; then
+                candidate="$(ifconfig 2>/dev/null | awk '
+                    /^[a-z0-9]/ { iface=$1; sub(":", "", iface) }
+                    /inet / && $2 != "127.0.0.1" {
+                        if (iface !~ /^(lo|utun|awdl|llw|bridge)/) { print $2; exit }
+                    }')"
+            fi
+            ;;
+        Linux)
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                candidate="$(hostname -I 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i !~ /^127\./) { print $i; exit } }')"
+            elif command -v ip >/dev/null 2>&1; then
+                candidate="$(ip -4 route get 1 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i == "src") { print $(i + 1); exit } }')"
+            fi
+            if [ -z "$candidate" ]; then
+                candidate="$(hostname -I 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i !~ /^127\./) { print $i; exit } }')"
+            fi
+            ;;
+    esac
+    printf '%s\n' "$candidate"
+}
+
+get_fallback_url() {
+    local ip=""
+    ip="$(get_local_ipv4)"
+    [ -n "$ip" ] || return 1
+    printf 'http://%s:%s\n' "$ip" "$NGINX_PORT"
+}
+
+is_wsl() {
+    grep -qi microsoft /proc/version 2>/dev/null
+}
+
+can_host_reach_localhost() {
+    local url
+    url="$(get_primary_url)"
+    if is_wsl; then
+        if command -v curl.exe >/dev/null 2>&1; then
+            curl.exe -I --max-time 5 "$url" >/dev/null 2>&1
+            case $? in
+                0) return 0 ;;
+                7|28) return 1 ;;
+                *) return 2 ;;
+            esac
+        fi
+        if command -v powershell.exe >/dev/null 2>&1; then
+            powershell.exe -NoProfile -Command \
+                "try { Invoke-WebRequest -UseBasicParsing '$url' -Method Head -TimeoutSec 5 | Out-Null; exit 0 } catch { exit 1 }" \
+                >/dev/null 2>&1
+            case $? in
+                0) return 0 ;;
+                1) return 1 ;;
+                *) return 2 ;;
+            esac
+        fi
+        return 2
+    fi
+    if ! command -v curl >/dev/null 2>&1; then
+        return 2
+    fi
+    curl -fsI --max-time 5 "$url" >/dev/null 2>&1
+    case $? in
+        0) return 0 ;;
+        7|28) return 1 ;;
+        *) return 2 ;;
+    esac
+}
+
+get_browser_url() {
+    local primary fallback
+    primary="$(get_primary_url)"
+    if can_host_reach_localhost; then
+        printf '%s\n' "$primary"
+        return 0
+    fi
+    case $? in
+        2)
+            printf '%s\n' "$primary"
+            return 0
+            ;;
+    esac
+    fallback="$(get_fallback_url || true)"
+    if [ -n "$fallback" ]; then
+        printf '%s\n' "$fallback"
+        return 0
+    fi
+    printf '%s\n' "$primary"
+}
+
+print_access_urls() {
+    local primary fallback
+    primary="$(get_primary_url)"
+    printf '  %-14s %s%s%s\n' "URL" "$GREEN" "$primary" "$RESET"
+    fallback="$(get_fallback_url || true)"
+    if [ -n "$fallback" ] && [ "$fallback" != "$primary" ]; then
+        printf '  %-14s %s%s%s\n' "Fallback URL" "$GREEN" "$fallback" "$RESET"
+    fi
+}
+
+warn_localhost_fallback_if_needed() {
+    local fallback
+    if can_host_reach_localhost; then
+        return 0
+    fi
+    case $? in
+        2) return 0 ;;
+    esac
+    fallback="$(get_fallback_url || true)"
+    [ -n "$fallback" ] || return 0
+    warn "localhost:${NGINX_PORT} is not reachable from this host; opening fallback URL instead: ${fallback}"
+}
+
 # If startup exits abnormally, automatically clean up all started services
 _CLEANUP_ON_EXIT=0
 _cleanup_on_exit() {
@@ -931,7 +1056,7 @@ do_start() {
     printf '%s  Arkham Horror LCG Started!%s\n' "$BOLD" "$RESET"
     printf '%s============================================%s\n' "$CYAN" "$RESET"
     echo ""
-    printf '  %-14s %shttp://localhost:%s%s\n' "URL" "$GREEN" "$NGINX_PORT" "$RESET"
+    print_access_urls
     echo ""
     printf '  %-14s PID %-8s Port %s\n' "PostgreSQL" "$(get_pg_pid)" "$PG_PORT"
     printf '  %-14s PID %-8s Port %s\n' "arkham-api" "$(get_api_pid)" "$API_PORT"
@@ -942,7 +1067,8 @@ do_start() {
     echo ""
 
     # Open the browser automatically (silent; failure does not affect services)
-    open_browser "http://localhost:${NGINX_PORT}"
+    warn_localhost_fallback_if_needed
+    open_browser "$(get_browser_url)"
 }
 
 # ── Foreground keepalive: keep the terminal window open and stop all services automatically when the window closes ─
@@ -993,7 +1119,7 @@ case "$ACTION" in
             printf '%s  Arkham Horror LCG (Already Running)%s\n' "$BOLD" "$RESET"
             printf '%s============================================%s\n' "$CYAN" "$RESET"
             echo ""
-            printf '  %-14s %shttp://localhost:%s%s\n' "URL" "$GREEN" "$NGINX_PORT" "$RESET"
+            print_access_urls
             echo ""
             printf '  %-14s PID %-8s Port %s\n' "PostgreSQL" "$(get_pg_pid)" "$PG_PORT"
             printf '  %-14s PID %-8s Port %s\n' "arkham-api" "$(get_api_pid)" "$API_PORT"
@@ -1001,7 +1127,8 @@ case "$ACTION" in
             echo ""
             printf '  This window will close automatically in 10 seconds.\n'
             echo ""
-            open_browser "http://localhost:${NGINX_PORT}"
+            warn_localhost_fallback_if_needed
+            open_browser "$(get_browser_url)"
             sleep 10
             close_terminal_window_if_needed
             exit 10
@@ -1011,7 +1138,8 @@ case "$ACTION" in
                 echo ""
                 printf '  Services are already running. This window will close automatically in 10 seconds.\n'
                 echo ""
-                open_browser "http://localhost:${NGINX_PORT}"
+                warn_localhost_fallback_if_needed
+                open_browser "$(get_browser_url)"
                 sleep 10
                 close_terminal_window_if_needed
                 exit 10

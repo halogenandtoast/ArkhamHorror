@@ -122,9 +122,6 @@ instance RunMessage TheLostSister where
       akwan <- placeInGrid (Pos 0 0) Locations.akwan
       startAt akwan
 
-      -- Construct the Caverns deck
-      setAside [Locations.fungalCave]
-
       horrorsInTheRockLocations <-
         fmap (drop 2)
           $ shuffle
@@ -136,23 +133,21 @@ instance RunMessage TheLostSister where
           <> #location
           <> not_ (cardIs Locations.fungalCave)
 
-      cavernsCards <- shuffle (lostSisterLocations <> horrorsInTheRockLocations)
-      let (topThree, rest) = splitAt 3 cavernsCards
+      (topThree, cavernsDeck) <- splitAt 3 <$> shuffle (lostSisterLocations <> horrorsInTheRockLocations)
 
       for_ (zip [Pos (-1) 0, Pos 0 (-1), Pos 1 0] topThree) (uncurry placeCardInGrid_)
 
-      addExtraDeck CavernsDeck rest
+      addExtraDeck CavernsDeck cavernsDeck
 
-      -- Set aside enemies
       setAside
         [ Enemies.limulusHybridInTheLight
         , Enemies.crystalParasite
         , Enemies.crystalParasite
         , Enemies.crustaceanHybridInTheLight
         , Enemies.crustaceanHybridInTheLight
+        , Locations.fungalCave
         ]
 
-      -- Residents
       investigators <- allInvestigators
       when (time == Day) do
         helenPeters <- createAsset =<< genCard Assets.helenPetersTheEldestSister
@@ -199,17 +194,13 @@ instance RunMessage TheLostSister where
           skillTestModifier sid Tablet drawnToken
             $ ChangeChaosTokenModifier (NegativeModifier $ if isEasyStandard attrs then 4 else 6)
       pure s
-    ResolveChaosToken _ ElderThing iid | isEasyStandard attrs -> do
+    ResolveChaosToken _ ElderThing iid -> do
       hasAbomination <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Abomination
-      when hasAbomination $ drawAnotherChaosToken iid
+      when hasAbomination do
+        if isEasyStandard then drawAnotherChaosToken iid else failSkillTest
       pure s
-    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
-      hasAbomination <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Abomination
-      when hasAbomination failSkillTest
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | token.face == Cultist -> do
+      when (isEasyStandard attrs || n >= 2) do
+        healHorrorIfCan iid ScenarioSource 1
       pure s
-    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n
-      | token.face == Cultist -> do
-          when (isEasyStandard attrs || n >= 2) do
-            healHorrorIfCan iid ScenarioSource 1
-          pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

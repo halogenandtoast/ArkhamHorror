@@ -924,6 +924,13 @@ allLocations =
     , SomeLocationCard parlorHemlockHouse
     , SomeLocationCard diningRoomHemlockHouse
     , SomeLocationCard foyerHemlockHouse
+    , --- Hemlock House
+      SomeLocationCard crystalGrove
+    , SomeLocationCard pearlEstateRuins
+    , SomeLocationCard ashenSlope
+    , SomeLocationCard saltChamber
+    , SomeLocationCard larvalTunnel
+    , SomeLocationCard crystalNursery
     , --- The Twisted Hollow
       SomeLocationCard glimmeringMeadow
     , SomeLocationCard blightedGlade

@@ -33,7 +33,7 @@ instance RunMessage ItAwaits where
         eachInvestigator \iid -> do
           sid <- getRandom
           beginSkillTest sid iid attrs iid #willpower (Fixed 4)
-      advanceAgendaDeck attrs
+      advanceAgendaDeckAfterSkillTest attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignDamageAndHorror iid attrs 1 1

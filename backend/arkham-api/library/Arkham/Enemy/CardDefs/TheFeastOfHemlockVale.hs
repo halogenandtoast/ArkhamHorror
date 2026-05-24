@@ -56,6 +56,31 @@ grapplingSpawn =
           [Keyword.Hunter, Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Retaliate]
     }
 
+colorlessLarva :: CardDef
+colorlessLarva =
+  (enemy "10563" "Colorless Larva" TheSilentHeath 3)
+    { cdCardTraits = setFromList [Creature, Insect, Mutated]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    , cdVictoryPoints = Just 0
+    }
+
+broodSoldier :: CardDef
+broodSoldier =
+  (enemy "10564" "Brood Soldier" TheSilentHeath 3)
+    { cdCardTraits = setFromList [Creature, Insect, Mutated]
+    , cdKeywords =
+        setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithTrait Cave <> LocationWithAnyClues)]
+    , cdVictoryPoints = Just 0
+    }
+
+broodQueenDyingMother :: CardDef
+broodQueenDyingMother =
+  (enemy "10565" ("Brood Queen" <:> "Dying Mother") TheSilentHeath 1)
+    { cdCardTraits = setFromList [Creature, Insect, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert]
+    , cdVictoryPoints = Just 2
+    }
+
 ursineHybridGlowingAbomination :: CardDef
 ursineHybridGlowingAbomination =
   doubleSided "10607a"

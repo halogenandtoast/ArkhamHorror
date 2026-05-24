@@ -1,8 +1,8 @@
 module Arkham.Treachery.CardDefs.TheFeastOfHemlockVale where
 
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Treachery.CardDefs.Import
 import Arkham.Trait qualified as Trait
+import Arkham.Treachery.CardDefs.Import
 
 hastyRepairs :: CardDef
 hastyRepairs =
@@ -44,6 +44,18 @@ pulledIn :: CardDef
 pulledIn =
   (treachery "10546" "Pulled In" HemlockHouse 2)
     { cdCardTraits = setFromList [Blunder]
+    }
+
+commandingResonance :: CardDef
+commandingResonance =
+  (treachery "10561" "Commanding Resonanace" TheSilentHeath 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+defendTheNest :: CardDef
+defendTheNest =
+  (treachery "10562" "Defend the Nest" TheSilentHeath 2)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 deepShadows :: CardDef

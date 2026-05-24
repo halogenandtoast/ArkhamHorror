@@ -272,6 +272,10 @@ import Arkham.Resolution
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgenda attrs = push $ AdvanceAgendaBy attrs.id AgendaAdvancedWithOther
 
+advanceAgendaDeckAfterSkillTest :: ReverseQueue m => AgendaAttrs -> m ()
+advanceAgendaDeckAfterSkillTest attrs =
+  push $ MoveWithSkillTest $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+
 noResolution :: ReverseQueue m => m ()
 noResolution = push $ ScenarioResolution NoResolution
 

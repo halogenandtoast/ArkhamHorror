@@ -1,0 +1,104 @@
+{
+  "intro": {
+    "title": "Scenario: The Silent Heath",
+    "body": "<p class='basic unindented'>Check your Campaign Log.</p>",
+    "nightSkip": "If it is _Night 1_ or _Night 2_, skip to _Intro 4_. Otherwise:",
+    "day1": "If it is _Day 1_, proceed to _Intro 1_.",
+    "day2": "If it is _Day 2_, skip to _Intro 2_.",
+    "day3": "If it is _Day 3_, skip to _Intro 3_.",
+    "intro1": {
+      "title": "Intro 1",
+      "body": "<p>_Intro 1_: You step out of Theo's truck accompanied by Leah Atwood and look up at Hemlock Isle's highest point. The narrow winding road gives way to the soft, sand-like ash that blankets the heath. The black rocks at the top of the hill look like jagged teeth. A dread silence pervades everything as you walk up the hill with the Vale's cook. “There's a reason folks don't live here anymore. Watch yourself up here. I don't know what lives in the caves, and I don't intend to find out,” she says. As if in response, a strong wind blows up clouds of white ash.</p><p class='basic right'>Skip to _Intro 5_.</p>"
+    },
+    "intro2": {
+      "title": "Intro 2",
+      "body": "<p>_Intro 2_: You step out of Theo's truck into the pouring rain, accompanied by Dr. Marquez. The narrow winding road gives way to the soft, sand-like ash that blankets the heath. The black rocks at the top of the hill look like jagged teeth. A dread silence pervades everything as you walk up the hill with the professor, who wears a bright yellow and blue poncho. “If the locals are to be believed, we want to head this way,” she points up the hillside to a glimmering orchard. After hiking the steep incline, the professor lets out a gasp.</p><p>Rows of crystalline trees shimmer in the light. A crack of lightning from the southern clouds refracts a band of gorgeous, prismatic radiance through hanging apples and knotted glass trunks. Although beautiful, you can't help but feel an anxious pang: the trees are wondrous, but they are long dead, frozen in time. Dr. Marquez begins chipping away at a young sapling with a hammer and chisel. “Fan out and explore the ruins. Leah warned me to keep clear of the ants, whatever that means. Don't kick any anthills, I guess.” she says, already engrossed in her work.</p><p class='basic right'>Skip to _Intro 5_.</p>"
+    },
+    "intro3": {
+      "title": "Intro 3",
+      "body": "<p>_Intro 3_: You step out of Theo's truck and look up at Hemlock Isle's highest point. The narrow winding road gives way to the soft, sand-like ash that blankets the heath. The black rocks at the top of the hill look like jagged teeth. A dread silence pervades everything as you walk up the hill and spot a robed figure standing on a jutting rock, staring down at Hemlock Isle. You recognize the figure as Mother Rachel as you draw closer. She nods as if to acknowledge your presence, then spreads her arms in an exultant pose. The sky overhead shimmers with a band of strange colors.</p><p class='basic right'>Skip to _Intro 5_.</p>"
+    },
+    "intro4": {
+      "title": "Intro 4",
+      "body": "<p>_Intro 4_: You step out of Theo's truck and look up at Hemlock Isle's highest point. The narrow winding road gives way to the soft, sand-like ash that blankets the heath: silvery and bright in the moonlight. The black rocks at the top of the hill look like jagged teeth. You feel strangely calmed by the silence as you walk up the hill, and see brilliant bands of color in the starlight overhead.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "intro5": {
+      "title": "Intro 5",
+      "body": "<p>_Intro 5_: You reach the old Pearl Estate and stop yourself from walking into the yawning dark chasm in front of the dilapidated house. A shattered rooftop at the northern end of the estate tells a story of some violent impact: judging by the scattered boards, something shot out of the interior with the force of a cannonball. As you survey the ruins, you wonder what awful catastrophe befell the Pearl family. A skittering black shadow flits at the edge of your vision. When you turn to look, it has gone.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Silent Heath*, *Agents of the Colour*, *Blight*, *Horrors in the Rock*, *Refractions*, *Transfiguration*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-silent-heath.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/blight.png' /><img src='{setImgPath}/horrors-in-the-rock.png' /><img src='{setImgPath}/refractions.png' /><img src='{setImgPath}/transfiguration.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "currentDaySet": "In addition, check the Campaign Log for the current day and gather its corresponding encounter set for *The First Day*, *The Second Day*, or *The Final Day*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/the-second-day.png' /><img src='{setImgPath}/the-final-day.png' /></section>",
+    "currentDayMarker": "Check your Campaign Log for the current day and time. Put the Time Marker card into play on its corresponding (_Day {'{'}day{'}'}_) or (_Night {'{'}night{'}'}_) side.",
+    "desolationV1": "If it is _Day 1_ or _Night 1_, remove Agenda 2a: _Desolation (v.II)_ from the game.",
+    "desolationV2": "Otherwise, remove Agenda 2a: _Desolation (v.I)_ from the game.",
+    "locations": "Put the following locations into play: Crystal Grove, Pearl Estate Ruins, and Ashen Slope. Use the diagram on this page for reference.",
+    "startAt": "Each investigator begins play at the Pearl Estate Ruins.",
+    "setAside": "Set each of the following aside, out of play: the Brood Queen enemy, both copies of the Crystal Parasite enemy, and the single-sided Salt Chamber, Larval Tunnel, and Crystal Nursery locations.",
+    "crystalRemains": "Shuffle the 3 Crystal Remains story asset cards facedown (*so you do not know which is which*) and set them aside, out of play.",
+    "horrorsInTheRock": "Choose 3 locations at random from the *Horrors in the Rock* encounter set and set them aside without looking at their revealed sides. Remove the remaining *Horrors in the Rock* locations from the game.",
+    "residents": "If it is (_Day {'{'}day{'}'}_), gather each story asset from the *Residents* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/residents.png' /></section>",
+    "leahAtwood": "If it is _Day 1_, place Leah Atwood at the Pearl Estate Ruins location.",
+    "drRosaMarquez": "If it is _Day 2_, place Dr. Rosa Marquez at the Crystal Grove location.",
+    "motherRachel": "If it is _Day 3_, place Mother Rachel at the Ashen Slope location.",
+    "removeResidents": "Remove the rest of the *Residents* encounter set from the game."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of _Insect_ enemies in play and in the victory display (rounded up).",
+      "cultist": "-1. You may shuffle a non-_Elite_ enemy in the victory display into the encounter deck.",
+      "tablet": "-3. If you fail, choose an _Insect_ enemy at your location. It engages you and makes an immediate attack.",
+      "elderThing": "-2. If you are at a _Lair_ location, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of _Insect_ enemies in play and in the victory display.",
+      "cultist": "-3. If you succeed, you may shuffle a non-_Elite_ enemy in the victory display into the encounter deck.",
+      "tablet": "-5. Ready the nearest _Insect_ enemy. It moves and attacks as if it were the enemy phase.",
+      "elderThing": "-4. If you are at a _Lair_ location, you automatically fail."
+    }
+  },
+  "codex": {
+    "larvalTunnel": {
+      "title": "{'{'}codex{'}'} Codex Ψ: Larval Tunnel",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.larvalTunnel.title </h3><p>A bilious stench wafts from a tunnel crawling with pillowy white insects. Monstrous larvae stare blindly out of the dark with milky white eyes. The insect colony keeps its young in this tunnel to mature. Judging by the gory and dessicated remains on the floor, the older brood soldiers feed them with a steady supply of local wildlife and anyone foolish enough to venture into their caves.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Larval Tunnel.</p>"
+    },
+    "saltChamber": {
+      "title": "{'{'}codex{'}'} Codex Ω: Salt Chamber",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.saltChamber.title </h3><p>A narrow cleft in the side of a tunnel leads into a spacious cavern. Salt formations form delicate, spidery patterns that hang from the ceiling and rise from the floor. The air is sharp with a bitter, alkaline taste, mixed with a repugnant musky scent. Several dessicated corpses—some of them human—litter the floor, overgrown with salt. Perhaps the local creatures use the salt in this chamber as a natural preservative. A pantry, of sorts.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Salt Chamber.</p>"
+    },
+    "crystalNursery": {
+      "title": "{'{'}codex{'}'} Codex Φ: Crystal Nursery",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.crystalNursery.title </h3><p>You enter a massive cavern the size of an amphitheater, filled with milky white crystals. Innumerable insects hang from the walls and bask on the floor in pale, watery light that filters down from a hole in the ceiling. You realize the opening above is the massive chasm in front of the Pearl Estate. A low, subsonic hum permeates the room. You feel as though you have entered a sacred space.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Crystal Nursery.</p>"
+    },
+    "broodQueen": {
+      "title": "{‘{‘}codex{‘}’} Codex Σ: Brood Queen",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.broodQueen.title </h3><p>The massive, corpulent form of an insect lurches out of a dark tunnel. The Brood Queen’s antennae wave in the dark, emitting unsettling vibrations. In moments, the cave is filled with her brood, each of them glowing with faint blue light.</p><p class=’basic right’>Spawn the Brood Queen at the location nearest to the most investigators (at a _Cave_ location, if able). Remove each _Insect_ enemy from the victory display and spawn it at the Brood Queen’s location.</p>"
+    }
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: As you walk down the slope, utterly exhausted, you hear the sound of a hundred beating wings. Pale, translucent insects cover the black rocks atop the hill, whirring incessantly. What are they saying to each other in their own alien language? Do they know about the world beyond the heath? You shudder when you wonder how many more lurk in the caverns below.</p><p class=’basic’>Check your Campaign Log.</p>",
+      "proceedToResolution1": "If there are exactly 3 Crystal Remains in the victory display, proceed to _Resolution 1_.",
+      "skipToResolution2": "If there are exactly 1 or 2 Crystal Remains in the victory display, skip to _Resolution 2_.",
+      "skipToResolution4": "Otherwise, skip to _Resolution 4_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You lay the three desiccated corpses in the bed of the truck. The buildup of minerals makes them simultaneously heavy and incredibly brittle. The belly of the son is swollen with crystals the size of a basketball, and the mother’s skin is leathery with salt. You don’t know what warped the bodies of the Pearl Family, but it surely wasn’t quick; they must have been horribly deformed when they died. You document the remains and a few samples of the crystal growths. The Pearl family deserved better than this. With a shovel from the back of Theo’s truck, you set to digging the three corpses a proper grave.</p><ul><li>In your Campaign Log, record *the investigators laid the Pearl Family to rest*.</li><li>Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You lay the remains you could recover in the bed of Theo’s sky blue truck. The buildup of minerals makes them simultaneously heavy and incredibly brittle. You don’t know what warped the bodies of the Pearl Family, but it surely wasn’t quick; they must have been horribly deformed when they died. You document the remains and a few samples of the crystal growths, then bury the remains in a shallow grave at the base of Pearl Ridge.</p><ul><li>In your Campaign Log, record *the remains were partially recovered*.</li><li>Proceed to _Resolution 3_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: Once you have left Pearl Ridge behind, you study Susan Pearl’s diary. The account chronicles the rise and fall of Susan Pearl’s investments in agriculture and mining on Hemlock Isle in the decade leading up to 1906. The business entries are interspersed with prayers, illustrations of birds, and occasional details on the strange “Warrens” underneath Pearl Ridge. Other entries mention spreading sickness in the orchard workers and the Pearl family, along with repeated hardship in their mining efforts. The last entry, written in a long, erratic scrawl, catches your attention:</p><p class=’italic’>I am still not certain if what I experienced was a dream or vision. At midnight, I awoke to the uncanny feeling of being watched, and when I opened my eyes, I saw a pale sphere of watery light in the corner of my room, dancing like something in a faery story. As soon as I laid eyes on it, the thing flew out the window, and I followed it out into the orchard. What I saw is something I can only describe as a miracle: A hundred more faery lights danced in the orchard. As I watched the lights, they grew brighter, and I felt almost as though I was flying. A heady bliss took over my mind, and I felt different, somehow. As if there were another me—five other me’s—beating within my chest. And as I looked out at the trees, I saw myself in them, too. In all of this. Strong and thick with knotted skin and branches for arms. I saw myself, my place, in all of creation. And all of my fears—for Ezra, for the mine, for our health—melted away. I knew only joy. Such joy!</p><p class=’italic’>I am the eyes. All eyes that see. I am the brilliance.</p><p class=’italic right’>Susan Pearl. June 22, 1906</p><ul><li>In your Campaign Log, record *Madame Pearl’s diary was recovered*.</li><li>Proceed to _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: “Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. Surveyed Pearl Ridge. Northern hills were devastated in an unknown event. Persistent contamination has led to mineralization and crystallization of organic life. Local caverns overrun by a massive insect colony. Insects exhibited vespid and termitid behaviors and physiology. Further study needed.”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under “Unspent Experience” in your Campaign Log._</li><li>In the “Areas Surveyed” section of your Campaign Log, check off *Pearl Ridge*.</li><li>Check your Campaign Log.<ul><li>If it is Day 1, turn to _Prelude: The First Evening_ (*page 31*).</li><li>If it is Night 1, turn to _Prelude: Dawn of the Second Day_ (*page 39*).</li><li>If it is Day 2, turn to _Prelude: The Second Evening_ (*page 43*).</li><li>If it is Night 2, turn to _Prelude: Dawn of the Final Day_ (*page 51*).</li><li>If it is Day 3, turn to _Prelude: The Final Evening_ (*page 55*).</li></ul></li></ul>"
+    }
+  }
+}

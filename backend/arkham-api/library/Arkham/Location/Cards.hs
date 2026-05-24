@@ -1,19 +1,19 @@
 module Arkham.Location.Cards (module Arkham.Location.Cards, module X) where
 
 import Arkham.Location.CardDefs.Base as X
-import Arkham.Location.CardDefs.NightOfTheZealot as X
-import Arkham.Location.CardDefs.TheDunwichLegacy as X
-import Arkham.Location.CardDefs.ThePathToCarcosa as X
-import Arkham.Location.CardDefs.TheForgottenAge as X
-import Arkham.Location.CardDefs.TheCircleUndone as X
-import Arkham.Location.CardDefs.TheDreamEaters as X
-import Arkham.Location.CardDefs.TheInnsmouthConspiracy as X
-import Arkham.Location.CardDefs.EdgeOfTheEarth as X
-import Arkham.Location.CardDefs.TheScarletKeys as X
-import Arkham.Location.CardDefs.TheFeastOfHemlockVale as X
 import Arkham.Location.CardDefs.Core2026 as X
+import Arkham.Location.CardDefs.EdgeOfTheEarth as X
+import Arkham.Location.CardDefs.NightOfTheZealot as X
 import Arkham.Location.CardDefs.ReturnTo as X
 import Arkham.Location.CardDefs.Standalone as X
+import Arkham.Location.CardDefs.TheCircleUndone as X
+import Arkham.Location.CardDefs.TheDreamEaters as X
+import Arkham.Location.CardDefs.TheDunwichLegacy as X
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale as X
+import Arkham.Location.CardDefs.TheForgottenAge as X
+import Arkham.Location.CardDefs.TheInnsmouthConspiracy as X
+import Arkham.Location.CardDefs.ThePathToCarcosa as X
+import Arkham.Location.CardDefs.TheScarletKeys as X
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -72,6 +72,7 @@ allLocationCards =
       , artGalleryTheMidwinterGala
       , ascendingPath
       , ascendingPathWarpedAndTwisted
+      , ashenSlope
       , asylumHallsEasternPatientWing_170
       , asylumHallsEasternPatientWing_171
       , asylumHallsWesternPatientWing_168
@@ -235,6 +236,8 @@ allLocationCards =
       , crumblingPrecipice
       , cryptOfTheSepulchralLamp
       , crystallineCavern
+      , crystalGrove
+      , crystalNursery
       , crystalPillars
       , curiositieShoppe
       , cursedShores
@@ -513,6 +516,7 @@ allLocationCards =
       , landlordsQuarters
       , lanternChamber
       , lanternRoom
+      , larvalTunnel
       , leftTurnA
       , leftTurnB
       , leMarais217
@@ -647,6 +651,7 @@ allLocationCards =
       , patientConfinementFamiliarCell
       , patientConfinementOccupiedCell
       , peaksOfThok
+      , pearlEstateRuins
       , pereLachaiseCemetery
       , perilousGulch
       , physicsClassroom
@@ -756,6 +761,7 @@ allLocationCards =
       , sacredWoods_184
       , sacredWoods_185
       , salemGaol1692
+      , saltChamber
       , saltMarshes
       , sanctumDoorwayCeremonyRoom
       , sanctumDoorwayHoldingCells

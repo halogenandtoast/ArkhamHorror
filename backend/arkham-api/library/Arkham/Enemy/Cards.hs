@@ -118,6 +118,8 @@ allEncounterEnemyCards =
       , broodOfYogSothothChargingBeast
       , broodOfYogSothothSwellingDevourer
       , broodOfYogSothothThrashingSpawn
+      , broodQueenDyingMother
+      , broodSoldier
       , brotherhoodAcolyte
       , brotherhoodCultist
       , brownJenkin
@@ -138,6 +140,7 @@ allEncounterEnemyCards =
       , cloverClubPitBoss
       , cnidathqua
       , cochlealStag
+      , colorlessLarva
       , conglomerationOfSpheres
       , conspicuousStaff
       , constanceDumaine

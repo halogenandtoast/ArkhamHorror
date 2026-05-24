@@ -392,7 +392,11 @@ instance RunMessage AssetAttrs where
       let sanity = findWithDefault 0 source assetAssignedSanityHeal
       when (health > 0) $ Heal.pushHealedAfter DamageType (toTarget a) source health
       when (sanity > 0) $ Heal.pushHealedAfter HorrorType (toTarget a) source sanity
-      pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
+      pure
+        $ a
+        & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
+        & assignedHealthHealL %~ deleteMap source
+        & assignedSanityHealL %~ deleteMap source
     HealDamage (isTarget a -> True) source amount -> do
       mods <- getModifiers a
       let n = sum [x | HealingTaken x <- mods]

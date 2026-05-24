@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
@@ -16,6 +17,8 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheSilentHeath.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -42,8 +45,28 @@ instance HasChaosTokenValue TheSilentHeath where
 
 instance RunMessage TheSilentHeath where
   runMessage msg s@(TheSilentHeath attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+    PreScenarioSetup -> scope "intro" do
+      day <- getCampaignDay
+      time <- getCampaignTime
+      let isNight = time == Night
+      flavor do
+        setTitle "title"
+        p.basic "body"
+        ul $ li.nested.validate isNight "nightSkip" do
+          li.validate (not isNight && day == Day1) "day1"
+          li.validate (not isNight && day == Day2) "day2"
+          li.validate (not isNight && day == Day3) "day3"
+      case (day, time) of
+        (Day1, Day) -> do
+          story $ i18nWithTitle "intro1"
+          story $ i18nWithTitle "intro5"
+        (Day2, Day) -> do
+          story $ i18nWithTitle "intro2"
+          story $ i18nWithTitle "intro5"
+        (Day3, Day) -> do
+          story $ i18nWithTitle "intro3"
+          story $ i18nWithTitle "intro5"
+        _ -> story $ i18nWithTitle "intro4"
       pure s
     Setup -> runScenarioSetup TheSilentHeath attrs do
       setUsesGrid
@@ -202,7 +225,8 @@ instance RunMessage TheSilentHeath where
         Sigma -> do
           entry "broodQueen"
           createSetAsideEnemy_ Enemies.broodQueenDyingMother
-            $ NearestLocationToMost Anywhere <> FirstLocation [LocationWithTrait Cave, Anywhere]
+            $ NearestLocationToMost Anywhere
+            <> FirstLocation [LocationWithTrait Cave, Anywhere]
           doStep 1 msg
         _ -> pure ()
       pure s
@@ -216,5 +240,40 @@ instance RunMessage TheSilentHeath where
             obtainCard card
             createEnemyAt_ card loc
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> scope "noResolution" do
+          crystalRemainsCount <-
+            selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Crystal Remains"
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li.validate (crystalRemainsCount == 3) "proceedToResolution1"
+              li.validate (crystalRemainsCount `elem` [1, 2]) "skipToResolution2"
+              li.validate (crystalRemainsCount == 0) "skipToResolution4"
+
+          if
+            | crystalRemainsCount == 3 -> push R1
+            | crystalRemainsCount `elem` [1, 2] -> push R2
+            | otherwise -> push R4
+        Resolution 1 -> do
+          record TheInvestigatorsLaidThePearlFamilyToRest
+          resolution "resolution1"
+          push R3
+        Resolution 2 -> do
+          record TheRemainsWerePartiallyRecovered
+          resolution "resolution2"
+          push R3
+        Resolution 3 -> do
+          record MadamePearlsDiaryWasRecovered
+          resolution "resolution3"
+          push R4
+        Resolution 4 -> do
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          record $ AreasSurveyed PearlRidge
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> TheSilentHeath <$> liftRunMessage msg attrs

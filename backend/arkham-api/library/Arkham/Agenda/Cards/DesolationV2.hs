@@ -22,7 +22,10 @@ desolationV2 = agenda (2, A) DesolationV2 Cards.desolationV2 (Static 7)
 
 instance HasModifiersFor DesolationV2 where
   getModifiersFor (DesolationV2 a) = do
-    modifySelect a (EnemyWithTrait Insect) [RemoveKeyword Keyword.Aloof, LosePatrol, AddKeyword Hunter]
+    modifySelect
+      a
+      (EnemyWithTrait Insect)
+      [RemoveKeyword Keyword.Aloof, LosePatrol, AddKeyword Keyword.Hunter]
 
 instance HasAbilities DesolationV2 where
   getAbilities (DesolationV2 a) =

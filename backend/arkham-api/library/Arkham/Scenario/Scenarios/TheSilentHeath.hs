@@ -4,10 +4,13 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers (unDeck)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
@@ -151,6 +154,51 @@ instance RunMessage TheSilentHeath where
       let (_iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
+        Psi -> do
+          entry "larvalTunnel"
+          loc <- selectJust $ locationIs Locations.larvalTunnel
+          crystalRemains <-
+            take 1
+              <$> getSetAsideCardsMatching
+                ( mapOneOf
+                    cardIs
+                    [Assets.crystalRemainsTheChild, Assets.crystalRemainsTheFather, Assets.crystalRemainsTheMother]
+                )
+          topTwo <- take 2 . unDeck <$> getEncounterDeck
+          for_ topTwo obtainCard
+          shuffled <- shuffle $ crystalRemains <> map toCard topTwo
+          facedown <- traverse (setFacedown True) shuffled
+          placeUnderneath loc facedown
+        Omega -> do
+          entry "saltChamber"
+          loc <- selectJust $ locationIs Locations.saltChamber
+          crystalRemains <-
+            take 1
+              <$> getSetAsideCardsMatching
+                ( mapOneOf
+                    cardIs
+                    [Assets.crystalRemainsTheChild, Assets.crystalRemainsTheFather, Assets.crystalRemainsTheMother]
+                )
+          topTwo <- take 2 . unDeck <$> getEncounterDeck
+          for_ topTwo obtainCard
+          shuffled <- shuffle $ crystalRemains <> map toCard topTwo
+          facedown <- traverse (setFacedown True) shuffled
+          placeUnderneath loc facedown
+        Phi -> do
+          entry "crystalNursery"
+          loc <- selectJust $ locationIs Locations.crystalNursery
+          crystalRemains <-
+            take 1
+              <$> getSetAsideCardsMatching
+                ( mapOneOf
+                    cardIs
+                    [Assets.crystalRemainsTheChild, Assets.crystalRemainsTheFather, Assets.crystalRemainsTheMother]
+                )
+          topTwo <- take 2 . unDeck <$> getEncounterDeck
+          for_ topTwo obtainCard
+          shuffled <- shuffle $ crystalRemains <> map toCard topTwo
+          facedown <- traverse (setFacedown True) shuffled
+          placeUnderneath loc facedown
         Sigma -> do
           entry "broodQueen"
           createSetAsideEnemy_ Enemies.broodQueenDyingMother

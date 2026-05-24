@@ -164,13 +164,13 @@ ashenSlope :: CardDef
 ashenSlope = location "10557" "Ashen Slope" [Blight] Circle [Triangle, Equals] TheSilentHeath
 
 saltChamber :: CardDef
-saltChamber = singleSided $ location_ "10558" "Salt Chamber" [Cave, Lair] TheSilentHeath
+saltChamber = revelation $ singleSided $ location_ "10558" "Salt Chamber" [Cave, Lair] TheSilentHeath
 
 larvalTunnel :: CardDef
-larvalTunnel = singleSided $ location_ "10559" "Larval Tunnel" [Cave, Lair] TheSilentHeath
+larvalTunnel = revelation $ singleSided $ location_ "10559" "Larval Tunnel" [Cave, Lair] TheSilentHeath
 
 crystalNursery :: CardDef
-crystalNursery = singleSided $ location_ "10560" "Crystal Nursery" [Cave, Lair, Blight] TheSilentHeath
+crystalNursery = revelation $ singleSided $ location_ "10560" "Crystal Nursery" [Cave, Lair, Blight] TheSilentHeath
 
 glimmeringMeadow :: CardDef
 glimmeringMeadow =

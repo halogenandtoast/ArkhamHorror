@@ -13,11 +13,19 @@
       "elderThing": "-4. If you are at a _Lair_ location, you automatically fail."
     }
   },
-  "searchingTheHeath": {
-    "placeOnBottom": "Place on bottom",
-    "leaveOnTop": "Leave on top"
-  },
   "codex": {
+    "larvalTunnel": {
+      "title": "{'{'}codex{'}'} Codex Ψ: Larval Tunnel",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.larvalTunnel.title </h3><p>A bilious stench wafts from a tunnel crawling with pillowy white insects. Monstrous larvae stare blindly out of the dark with milky white eyes. The insect colony keeps its young in this tunnel to mature. Judging by the gory and dessicated remains on the floor, the older brood soldiers feed them with a steady supply of local wildlife and anyone foolish enough to venture into their caves.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Larval Tunnel.</p>"
+    },
+    "saltChamber": {
+      "title": "{'{'}codex{'}'} Codex Ω: Salt Chamber",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.saltChamber.title </h3><p>A narrow cleft in the side of a tunnel leads into a spacious cavern. Salt formations form delicate, spidery patterns that hang from the ceiling and rise from the floor. The air is sharp with a bitter, alkaline taste, mixed with a repugnant musky scent. Several dessicated corpses—some of them human—litter the floor, overgrown with salt. Perhaps the local creatures use the salt in this chamber as a natural preservative. A pantry, of sorts.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Salt Chamber.</p>"
+    },
+    "crystalNursery": {
+      "title": "{'{'}codex{'}'} Codex Φ: Crystal Nursery",
+      "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.crystalNursery.title </h3><p>You enter a massive cavern the size of an amphitheater, filled with milky white crystals. Innumerable insects hang from the walls and bask on the floor in pale, watery light that filters down from a hole in the ceiling. You realize the opening above is the massive chasm in front of the Pearl Estate. A low, subsonic hum permeates the room. You feel as though you have entered a sacred space.</p><p class='basic right'>Gather 1 of the set-aside Crystal Remains cards along with the top 2 cards of the encounter deck. Shuffle them together and place the 3 cards facedown in a stack beneath Crystal Nursery.</p>"
+    },
     "broodQueen": {
       "title": "{'{'}codex{'}'} Codex Σ: Brood Queen",
       "body": "<h3>@:theFeastOfHemlockVale.theSilentHeath.codex.broodQueen.title </h3><p>The massive, corpulent form of an insect lurches out of a dark tunnel. The Brood Queen’s antennae wave in the dark, emitting unsettling vibrations. In moments, the cave is filled with her brood, each of them glowing with faint blue light.</p><p class='basic right'>Spawn the Brood Queen at the location nearest to the most investigators (at a _Cave_ location, if able). Remove each _Insect_ enemy from the victory display and spawn it at the Brood Queen’s location.</p>"

@@ -84,7 +84,7 @@ instance RunMessage ShadesOfSuffering where
       addCampaignCardToDeckChoice iids ShuffleIn Assets.inspectorFlintWithPrideAndCare
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ setTitle "title" >> p "intro2"
       pure s
     Setup -> runScenarioSetup ShadesOfSuffering attrs do
       t <- getTime

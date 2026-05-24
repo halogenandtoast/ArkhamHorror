@@ -75,10 +75,19 @@ case "$(uname -s)" in
     Linux)  PGDATA_OS="$HOME/.local/share/ArkhamHorror/pgdata" ;;
 esac
 PGDATA_OS_PARENT="$(dirname "$PGDATA_OS")"
-PGDATA_LOCAL="$DATA_DIR/pgdata"        # Backed up here on shutdown for easier manual copying
+PGDATA_LOCAL="$DATA_DIR/pgdata"        # Legacy physical backup location from older builds
+BACKUP_DIR="$DATA_DIR/backup"
+PG_DUMP_FILE="$BACKUP_DIR/latest.dump"
+PG_DUMP_PREV="$BACKUP_DIR/previous.dump"
+PG_DUMP_TMP="$BACKUP_DIR/latest.dump.tmp"
+PG_DUMP_LOG="$DATA_DIR/pg_dump.log"
+PG_RESTORE_LOG="$DATA_DIR/pg_restore.log"
 VERSION_FILE="$PGDATA_OS_PARENT/pgdata_version"
 VERSION_FILE_LOCAL="$DATA_DIR/pgdata_version"
 PG_DATA="$PGDATA_OS"                    # Actual pgdata path used at runtime
+START_LOCK_DIR="$PGDATA_OS_PARENT/start.lock"
+START_LOCK_PID="$START_LOCK_DIR/pid"
+START_LOCK_TS="$START_LOCK_DIR/timestamp"
 
 # Unix domain socket directory:
 # - macOS: distribution paths can be long; a Unix socket path longer than 103 bytes can make PostgreSQL fail to start
@@ -132,6 +141,7 @@ open_browser() {
 # If startup exits abnormally, automatically clean up all started services
 _CLEANUP_ON_EXIT=0
 _cleanup_on_exit() {
+    release_start_lock
     if [ "$_CLEANUP_ON_EXIT" = "1" ]; then
         _CLEANUP_ON_EXIT=0          # Prevent re-triggering if do_stop itself fails
         warn "Startup did not finish; cleaning up any started services ..."
@@ -144,6 +154,8 @@ pg_bin()  { echo "$SCRIPT_DIR/pgsql/bin"; }
 pg_ctl()  { "$(pg_bin)/pg_ctl" "$@"; }
 pg_ready(){ { "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$PG_PORT" -q; } 2>/dev/null; }
 psql_cmd(){ "$(pg_bin)/psql" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
+pg_dump_cmd(){ "$(pg_bin)/pg_dump" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
+pg_restore_cmd(){ "$(pg_bin)/pg_restore" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
 
 # On WSL/NTFS (DrvFS), mkdir can fail because of timing issues, so retry
 ensure_dir() {
@@ -169,6 +181,163 @@ configure_runtime_env() {
     # turning them into copies or broken files. Recreate the expected versioned symlinks.
     _fix_lib_symlinks "$SCRIPT_DIR/pgsql/lib"
     _fix_lib_symlinks "$SCRIPT_DIR/lib"
+}
+
+close_terminal_window_if_needed() {
+    if [ "$(uname -s)" = "Darwin" ]; then
+        ( sleep 0.5; osascript -e "tell application \"Terminal\" to close front window" 2>/dev/null ) &
+        disown 2>/dev/null
+    fi
+}
+
+_START_LOCK_HELD=0
+_STARTED_BY_OTHER=0
+
+release_start_lock() {
+    if [ "$_START_LOCK_HELD" = "1" ]; then
+        rm -rf "$START_LOCK_DIR" 2>/dev/null || true
+        _START_LOCK_HELD=0
+    fi
+}
+
+acquire_start_lock() {
+    if mkdir "$START_LOCK_DIR" 2>/dev/null; then
+        echo "$$" > "$START_LOCK_PID"
+        date +%s > "$START_LOCK_TS"
+        _START_LOCK_HELD=1
+        return 0
+    fi
+
+    local lock_pid=""
+    lock_pid="$(cat "$START_LOCK_PID" 2>/dev/null || echo "")"
+    if [ -n "$lock_pid" ] && kill -0 "$lock_pid" 2>/dev/null; then
+        return 1
+    fi
+
+    warn "Detected a stale startup lock; removing it ..."
+    rm -rf "$START_LOCK_DIR" 2>/dev/null || true
+    if mkdir "$START_LOCK_DIR" 2>/dev/null; then
+        echo "$$" > "$START_LOCK_PID"
+        date +%s > "$START_LOCK_TS"
+        _START_LOCK_HELD=1
+        return 0
+    fi
+    return 1
+}
+
+wait_for_existing_startup() {
+    local waited=0
+    warn "Another startup is already in progress; waiting for it to finish ..."
+    while [ -d "$START_LOCK_DIR" ] && [ "$waited" -lt 90 ]; do
+        if is_all_services_running; then
+            _STARTED_BY_OTHER=1
+            info "Another launcher finished startup successfully."
+            return 0
+        fi
+        waited=$((waited + 1))
+        sleep 1
+    done
+
+    if is_all_services_running; then
+        _STARTED_BY_OTHER=1
+        info "Services became healthy while waiting."
+        return 0
+    fi
+
+    return 1
+}
+
+cluster_is_valid() {
+    local cluster_dir="$1"
+    [ -d "$cluster_dir" ] || return 1
+    [ -f "$cluster_dir/PG_VERSION" ] || return 1
+    [ -f "$cluster_dir/global/pg_control" ] || return 1
+    [ -d "$cluster_dir/base" ] || return 1
+    [ -d "$cluster_dir/pg_wal" ] || return 1
+    [ -f "$cluster_dir/postgresql.conf" ] || return 1
+    [ -f "$cluster_dir/pg_hba.conf" ] || return 1
+}
+
+dump_file_is_valid() {
+    local dump_file="$1"
+    [ -s "$dump_file" ] || return 1
+    pg_restore_cmd -l "$dump_file" > /dev/null 2>&1
+}
+
+database_exists() {
+    psql_cmd -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$PG_DB'" 2>/dev/null | grep -q 1
+}
+
+cleanup_invalid_cluster() {
+    local cluster_dir="$1"
+    [ -e "$cluster_dir" ] || return 0
+    warn "Removing invalid PostgreSQL cluster: $cluster_dir"
+    rm -rf "$cluster_dir" 2>/dev/null || die 2008 "Failed to remove invalid PostgreSQL cluster"
+}
+
+backup_database_dump() {
+    [ -d "$PG_DATA" ] || return 0
+    pg_ready || return 0
+    database_exists || return 0
+
+    ensure_dir "$BACKUP_DIR"
+    rm -f "$PG_DUMP_TMP" 2>/dev/null || true
+
+    info "Exporting database backup ..."
+    if ! pg_dump_cmd -d "$PG_DB" -Fc -f "$PG_DUMP_TMP" > "$PG_DUMP_LOG" 2>&1; then
+        warn "[4006] Logical backup failed during pg_dump"
+        return 1
+    fi
+    if ! dump_file_is_valid "$PG_DUMP_TMP"; then
+        warn "[4006] Logical backup validation failed"
+        rm -f "$PG_DUMP_TMP" 2>/dev/null || true
+        return 1
+    fi
+
+    rm -f "$PG_DUMP_PREV" 2>/dev/null || true
+    [ -f "$PG_DUMP_FILE" ] && mv "$PG_DUMP_FILE" "$PG_DUMP_PREV" 2>/dev/null || true
+    mv "$PG_DUMP_TMP" "$PG_DUMP_FILE" || {
+        warn "[4006] Failed to publish logical backup"
+        rm -f "$PG_DUMP_TMP" 2>/dev/null || true
+        return 1
+    }
+
+    date +%s > "$VERSION_FILE"
+    date +%s > "$VERSION_FILE_LOCAL"
+    info "Database backup written to $PG_DUMP_FILE"
+}
+
+start_postgres() {
+    if pg_ready; then
+        return 0
+    fi
+
+    info "Starting PostgreSQL ..."
+    if ! pg_ctl -D "$PG_DATA" -l "$PG_LOG" -o "-k '$PG_SOCKET_DIR'" start; then
+        die 2004 "PostgreSQL failed to start" "$PG_LOG"
+    fi
+    local tries=0
+    while ! pg_ready; do
+        tries=$((tries + 1)); [ "$tries" -gt 30 ] && die 2005 "PostgreSQL startup timed out" "$PG_LOG"
+        sleep 1
+    done
+    info "PostgreSQL started (port $PG_PORT, PID $(get_pg_pid))"
+}
+
+restore_database_from_dump() {
+    local dump_file="$1"
+
+    info "Restoring database from logical backup ..."
+    init_database
+    start_postgres
+
+    psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
+        > "$DATA_DIR/psql.log" 2>&1 \
+        || die 2006 "Failed to create database" "$DATA_DIR/psql.log"
+    pg_restore_cmd -d "$PG_DB" --clean --if-exists --no-owner "$dump_file" \
+        > "$PG_RESTORE_LOG" 2>&1 \
+        || die 2009 "Logical backup restore failed" "$PG_RESTORE_LOG"
+    info "Logical backup restore complete."
 }
 
 # Scan a directory for versioned .so files (lib*.so.X.Y) and recreate short symlinks:
@@ -487,6 +656,9 @@ do_stop() {
     fi
     rm -f "$API_PID_FILE"
 
+    # Export the logical backup while PostgreSQL is still running and the backend is already stopped.
+    backup_database_dump || true
+
     # --- PostgreSQL ---
     if [ -f "$PG_DATA/postmaster.pid" ]; then
         # -m fast: roll back active transactions and disconnect clients; -w: wait for shutdown to complete
@@ -501,24 +673,13 @@ do_stop() {
     rm -f "$PG_SOCKET_DIR/.s.PGSQL.${PG_PORT}" 2>/dev/null
     rm -f "$PG_SOCKET_DIR/.s.PGSQL.${PG_PORT}.lock" 2>/dev/null
 
-    # After a normal stop, back up pgdata into the distribution directory for easier backup/migration
-    if [ -f "$PG_DATA/PG_VERSION" ]; then
-        info "Backing up database ..."
-        if ! rm -rf "$PGDATA_LOCAL" 2>/dev/null; then
-            warn "[4005] pgdata backup failed: unable to remove old backup"
-        elif ! cp -a "$PG_DATA" "$PGDATA_LOCAL" 2>/dev/null && ! cp -r "$PG_DATA" "$PGDATA_LOCAL"; then
-            warn "[4005] pgdata backup failed: copy error"
-        else
-            date +%s > "$VERSION_FILE"
-            date +%s > "$VERSION_FILE_LOCAL"
-        fi
-    fi
-
     # Clear runtime logs after a normal shutdown (keep them when startup fails for troubleshooting)
     if [ "$_STARTUP_SUCCEEDED" = "1" ]; then
         for f in "$PG_LOG" \
                  "$DATA_DIR/initdb.log" \
                  "$DATA_DIR/psql.log" \
+                 "$PG_DUMP_LOG" \
+                 "$PG_RESTORE_LOG" \
                  "$DATA_DIR/arkham-api.log" \
                  "$NGINX_LOG_DIR/error.log" \
                  "$NGINX_LOG_DIR/access.log"; do
@@ -572,6 +733,7 @@ do_status() {
 init_database() {
     info "First run detected, initializing database ..."
     ensure_dir "$DATA_DIR"
+    rm -f "$PG_LOG" "$DATA_DIR/psql.log" "$DATA_DIR/initdb.log" "$PG_RESTORE_LOG" 2>/dev/null || true
     ensure_dir "$PG_DATA"
     "$(pg_bin)/initdb" -D "$PG_DATA" -U "$PG_USER" --no-locale -E UTF8 \
         > "$DATA_DIR/initdb.log" 2>&1 \
@@ -617,25 +779,35 @@ do_start() {
 
     # 1. PostgreSQL
     # Store pgdata under the OS user data directory to avoid WSL/NTFS permission issues.
-    # On first startup, automatically migrate old data from data/pgdata if present.
+    # Restore from logical backup when the live cluster is missing or invalid.
     ensure_dir "$PGDATA_OS_PARENT" || die 2001 "Unable to create user data directory"
+    ensure_dir "$BACKUP_DIR"
+
+    if ! acquire_start_lock; then
+        wait_for_existing_startup || die 2010 "Another startup is already in progress"
+        _CLEANUP_ON_EXIT=0
+        return 0
+    fi
 
     local is_fresh=0
-    if [ -d "$PG_DATA" ] && [ -f "$PG_DATA/PG_VERSION" ]; then
-        # A valid cluster already exists in the OS data directory; use it directly
+    if cluster_is_valid "$PG_DATA"; then
         :
-    elif [ -d "$PGDATA_LOCAL" ] && [ -f "$PGDATA_LOCAL/PG_VERSION" ]; then
-        # First-time migration: old data exists inside the distribution, so copy it to the OS data directory
-        info "First startup detected; migrating database to the user data directory ..."
-        cp -a "$PGDATA_LOCAL" "$PG_DATA" || die 2002 "Old data migration failed"
-        date +%s > "$VERSION_FILE"
-        date +%s > "$VERSION_FILE_LOCAL"
     else
-        # Fresh installation: initdb only (initialize structure without starting PostgreSQL)
-        init_database
-        is_fresh=1
-        date +%s > "$VERSION_FILE"
-        date +%s > "$VERSION_FILE_LOCAL"
+        [ -e "$PG_DATA" ] && cleanup_invalid_cluster "$PG_DATA"
+
+        if dump_file_is_valid "$PG_DUMP_FILE"; then
+            restore_database_from_dump "$PG_DUMP_FILE"
+        elif cluster_is_valid "$PGDATA_LOCAL"; then
+            info "Legacy physical backup detected; migrating it to the user data directory ..."
+            cp -a "$PGDATA_LOCAL" "$PG_DATA" || die 2002 "Old data migration failed"
+            date +%s > "$VERSION_FILE"
+            date +%s > "$VERSION_FILE_LOCAL"
+        else
+            init_database
+            is_fresh=1
+            date +%s > "$VERSION_FILE"
+            date +%s > "$VERSION_FILE_LOCAL"
+        fi
     fi
 
     # Check and repair pgdata permissions (PostgreSQL requires 0700 or 0750)
@@ -661,19 +833,8 @@ do_start() {
         fi
     fi
 
-    # Unified PostgreSQL startup (init_database no longer starts PG; this is the only pg_ctl start entry point)
-    if ! pg_ready; then
-        info "Starting PostgreSQL ..."
-        if ! pg_ctl -D "$PG_DATA" -l "$PG_LOG" -o "-k '$PG_SOCKET_DIR'" start; then
-            die 2004 "PostgreSQL failed to start" "$PG_LOG"
-        fi
-        local tries=0
-        while ! pg_ready; do
-            tries=$((tries + 1)); [ "$tries" -gt 30 ] && die 2005 "PostgreSQL startup timed out" "$PG_LOG"
-            sleep 1
-        done
-    fi
-    info "PostgreSQL started (port $PG_PORT, PID $(get_pg_pid))"
+    # Unified PostgreSQL startup (restore_database_from_dump starts PostgreSQL already)
+    start_postgres
 
     # Create the database on the first run of a fresh cluster only
     if [ "$is_fresh" = "1" ]; then
@@ -688,7 +849,7 @@ do_start() {
     fi
 
     # Recovery check: ensure the database exists (prevents retries from skipping DB creation after a first-run failure)
-    if ! psql_cmd -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$PG_DB'" 2>/dev/null | grep -q 1; then
+    if ! database_exists; then
         info "Database $PG_DB does not exist; recreating it ..."
         psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
             >> "$DATA_DIR/psql.log" 2>&1 \
@@ -747,6 +908,7 @@ do_start() {
     # Startup succeeded completely; disable cleanup protection
     _CLEANUP_ON_EXIT=0
     _STARTUP_SUCCEEDED=1
+    release_start_lock
 
     echo ""
     printf '%s============================================%s\n' "$CYAN" "$RESET"
@@ -769,17 +931,11 @@ do_start() {
 
 # ── Foreground keepalive: keep the terminal window open and stop all services automatically when the window closes ─
 run_foreground() {
-    # On macOS, delay closing the terminal window until the shell fully exits to avoid a "Terminate" dialog
-    _close_terminal_window() {
-        ( sleep 0.5; osascript -e "tell application \"Terminal\" to close front window" 2>/dev/null ) &
-        disown 2>/dev/null
-    }
-
     # On exit signal: stop services → clear EXIT trap → close window → exit
     trap 'info "Exit signal received, stopping all services ..."; \
           do_stop; \
           trap - EXIT; \
-          [ "$(uname -s)" = "Darwin" ] && _close_terminal_window; \
+          close_terminal_window_if_needed; \
           exit 0' HUP INT TERM
     trap 'do_stop 2>/dev/null || true' EXIT
 
@@ -827,10 +983,23 @@ case "$ACTION" in
             printf '  %-14s PID %-8s Port %s\n' "arkham-api" "$(get_api_pid)" "$API_PORT"
             printf '  %-14s PID %-8s Port %s\n' "nginx" "$(get_nginx_pid)" "$NGINX_PORT"
             echo ""
+            printf '  This window will close automatically in 10 seconds.\n'
+            echo ""
             open_browser "http://localhost:${NGINX_PORT}"
-            run_foreground
+            sleep 10
+            close_terminal_window_if_needed
+            exit 10
         else
             do_start
+            if [ "$_STARTED_BY_OTHER" = "1" ]; then
+                echo ""
+                printf '  Services are already running. This window will close automatically in 10 seconds.\n'
+                echo ""
+                open_browser "http://localhost:${NGINX_PORT}"
+                sleep 10
+                close_terminal_window_if_needed
+                exit 10
+            fi
             run_foreground
         fi
         ;;
@@ -979,6 +1148,7 @@ echo.
 wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh"
 set START_EXIT=!ERRORLEVEL!
 
+if !START_EXIT! equ 10 goto :ALREADY_RUNNING
 if !START_EXIT! equ 0 goto :START_OK
 goto :START_RETRY
 
@@ -994,6 +1164,7 @@ echo [*] Starting services again...
 echo.
 wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh"
 set START_EXIT=!ERRORLEVEL!
+if !START_EXIT! equ 10 goto :ALREADY_RUNNING
 if !START_EXIT! equ 0 goto :START_OK
 
 echo.
@@ -1004,9 +1175,18 @@ goto :END
 
 :START_OK
 echo.
+goto :END
+
+:ALREADY_RUNNING
+echo.
+echo [*] Services are already running. Closing this window now.
+echo.
+goto :END_NO_PAUSE
 
 :END
 pause
+
+:END_NO_PAUSE
 BATSCRIPT
 
     # The bat file must use CRLF line endings (required on Windows)
@@ -1123,7 +1303,7 @@ main() {
 
     # Copy PostgreSQL
     substep "Copy PostgreSQL binaries ..."
-    for b in postgres initdb pg_ctl pg_isready psql; do
+    for b in postgres initdb pg_ctl pg_isready psql pg_dump pg_restore; do
         [ -x "${PG_BIN_DIR}/${b}" ] && cp "${PG_BIN_DIR}/${b}" "${PKG_DIR}/pgsql/bin/"
     done
     [ -d "$PG_LIB_DIR" ] && cp -r "${PG_LIB_DIR}/"* "${PKG_DIR}/pgsql/lib/" 2>/dev/null || true
@@ -1311,7 +1491,7 @@ main() {
     # Verification
     echo ""
     substep "Verifying distribution integrity ..."
-    local required=("bin/arkham-api" "bin/nginx" "pgsql/bin/postgres" "pgsql/bin/initdb" "pgsql/bin/pg_ctl" "frontend/dist/index.html" "start.sh" "stop.sh")
+    local required=("bin/arkham-api" "bin/nginx" "pgsql/bin/postgres" "pgsql/bin/initdb" "pgsql/bin/pg_ctl" "pgsql/bin/pg_dump" "pgsql/bin/pg_restore" "frontend/dist/index.html" "start.sh" "stop.sh")
     if [ "$OS" = "linux" ]; then
         required+=("start.bat" "Start-ArkhamHorror.bat")
     elif [ "$OS" = "macos" ]; then

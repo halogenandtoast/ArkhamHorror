@@ -55,9 +55,12 @@ instance RunMessage TheMissingSibling where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      coastalWithoutInvestigators <- select $ LocationWithTrait Coastal <> LocationWithoutInvestigators
-      coastalLocations <- select $ LocationWithTrait Coastal
-      let locations = if null coastalWithoutInvestigators then coastalLocations else coastalWithoutInvestigators
+      let hasEmptyAdjacent lid = do
+            pos <- fieldJust LocationPosition lid
+            notNull <$> filterM (selectNone . LocationInPosition) pos.adjacents
+      locations <-
+        filterM hasEmptyAdjacent
+          =<< select (FirstLocation [LocationWithTrait Coastal <> LocationWithoutInvestigators, LocationWithTrait Coastal])
       leadChooseOrRunOneM $ targets locations \chosenLid -> do
         chosenPos <- fieldJust LocationPosition chosenLid
         emptyPositions <- filterM (selectNone . LocationInPosition) chosenPos.adjacents

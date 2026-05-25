@@ -289,10 +289,11 @@ instance RunMessage TheLostSister where
                   hr
                   p.validate False "otherwise"
               for_ mTheo \theo -> do
-                limulusHybrid <-
-                  selectJust
-                    $ mapOneOf enemyIs [Enemies.limulusHybridInTheLight, Enemies.limulusHybridInTheDark]
-                moveTokens source theo limulusHybrid #damage 1
+                whenMatch theo AssetWithDamage do
+                  limulusHybrid <-
+                    selectJust
+                      $ mapOneOf enemyIs [Enemies.limulusHybridInTheLight, Enemies.limulusHybridInTheDark]
+                  moveTokens source theo limulusHybrid #damage 1
             else do
               scope "lobstrosity" $ flavor do
                 setTitle "title"

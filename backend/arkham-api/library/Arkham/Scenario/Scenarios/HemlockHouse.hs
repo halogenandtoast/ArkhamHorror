@@ -113,7 +113,7 @@ instance RunMessage HemlockHouse where
 
       scope "enemyLocations" $ flavor do
         setTitle "title"
-        p "intro"
+        p "body"
         ul do
           li "noMove"
           li "keepEntities"

@@ -31,6 +31,7 @@ allLocationCards =
       , abandonedCamp
       , abandonedChapel
       , abandonedChapelSpectral
+      , abandonedShack
       , abandonedSite
       , abbeyChurch
       , abbeyTowerSpiresForbidden
@@ -40,6 +41,7 @@ allLocationCards =
       , administrationOffice_130
       , administrationOffice_131
       , airfield
+      , akwan
       , alaskanWilds
       , alchemyLabs
       , alienConservatory
@@ -229,6 +231,7 @@ allLocationCards =
       , courtOfTheGreatOldOnesANotTooDistantFuture
       , courtOfTheOutsiders
       , courtyard
+      , coveredBridge
       , coyoacan
       , cragOfTheGhouls
       , crashSite
@@ -340,12 +343,14 @@ allLocationCards =
       , fathomlessLake
       , faubourgMarigny
       , fecundThicket
+      , fetidPool
       , firstNationalGrocery
       , firstNationalGroceryInTooDeep
       , fishGraveyard
       , fishStreetBridge
       , fishStreetBridgeInTooDeep
       , flightIntoOblivion
+      , floodedPath
       , floodedSquare
       , forbiddenLands
       , forbiddingShore
@@ -376,6 +381,7 @@ allLocationCards =
       , frozenLake
       , frozenShores
       , frozenSpring
+      , fungalCave
       , galata
       , galataDocks
       , gallery
@@ -440,6 +446,7 @@ allLocationCards =
       , hereticsGravesSpectral_171
       , hereticsGravesSpectral_172
       , hiddenCove
+      , hiddenCoveTheLostSister
       , hiddenLibrary
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
@@ -591,6 +598,7 @@ allLocationCards =
       , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
       , mu
+      , muddyFen
       , museumEntrance
       , museumHalls
       , mushroomGrove
@@ -618,6 +626,14 @@ allLocationCards =
       , officeSpectral
       , onyxGates
       , onyxGuardians
+      , openCave
+      , openWater10593b
+      , openWater10594b
+      , openWater10595b
+      , openWater10596b
+      , openWater10597b
+      , openWater10598b
+      , openWater10599b
       , operaGarnier212
       , operaGarnier213
       , operatingRoom
@@ -741,11 +757,13 @@ allLocationCards =
       , riverviewTheatre
       , rockyCrags
       , rockyLedge
+      , rockyShoreline
       , rooflessRampart
       , room212
       , room225
       , room245
       , ropeBridge
+      , rottenDock
       , rouletteWheel
       , ruinousStreets
       , ruinsOfCarcosaAMomentsRest
@@ -848,11 +866,13 @@ allLocationCards =
       , sunkenHalls
       , sunkenRailA
       , sunkenRailB
+      , suspendedGraveyard
       , syzygyChamber
       , tadsGeneralStoreDay
       , tadsGeneralStoreNight
       , tanneries
       , tanneriesAbandoned
+      , tangledThicket
       , tarPit
       , tearThroughSpace
       , tearThroughTime
@@ -962,6 +982,7 @@ allLocationCards =
       , ulthar
       , ultimaThule
       , undercityAltar
+      , undergroundPools
       , undergroundRiver
       , undergroundRuins
       , underseaCorridors
@@ -1013,6 +1034,7 @@ allLocationCards =
       , wayangKulitTheater
       , wealdOfEffigiesA
       , wealdOfEffigiesB
+      , weedChokedBeach
       , wellOfSouls
       , westernRidge
       , westminsterAbbey

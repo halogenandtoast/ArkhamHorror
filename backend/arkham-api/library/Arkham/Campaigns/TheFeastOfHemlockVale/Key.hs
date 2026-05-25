@@ -92,6 +92,7 @@ data WilliamHemlockNotes
 data RiverHawthorneNotes
   = RiverSharedTheirAmbitions
   | TheSchemeIsInMotion
+  | RiverAskedForHelp
   | RiverSharedADance
   | RiverStoodByYou
   | RiverIsReclaimingTheirLegacy

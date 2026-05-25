@@ -957,6 +957,10 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                     orKey "replacedIsWithoutClues" (locationWithoutClues oldAttrs) && oldAttrs.clues == 0
                 , locationGlobalMeta =
                     Map.insert "replacedLocation" (toJSON oldAttrs.cardCode) (locationGlobalMeta oldAttrs)
+                , locationPosition = locationPosition oldAttrs
+                , locationLabel = locationLabel oldAttrs
+                , locationDirections = locationDirections oldAttrs
+                , locationConnectsTo = locationConnectsTo oldAttrs
                 }
     -- todo: should we just run this in place?
     enemies <- select $ enemyAt lid

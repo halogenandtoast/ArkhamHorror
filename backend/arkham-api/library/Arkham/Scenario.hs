@@ -658,6 +658,8 @@ allScenarios =
     , ("10502", SomeScenario writtenInRock) -- duplicated for card view
     , ("10523", SomeScenario hemlockHouse)
     , ("10549", SomeScenario theSilentHeath)
+    , ("10569", SomeScenario theLostSister)
+    , ("10588", SomeScenario theThingInTheDepths)
     , ("10605", SomeScenario theTwistedHollow)
     , ("10677a", SomeScenario preludeDawnOfTheSecondDay)
     , ("10704", SomeScenario preludeWelcomeToHemlockVale)
@@ -792,6 +794,8 @@ scenarioEncounterSets =
     , ("10502", EncounterSet.WrittenInRock)
     , ("10523", EncounterSet.HemlockHouse)
     , ("10549", EncounterSet.TheSilentHeath)
+    , ("10569", EncounterSet.TheLostSister)
+    , ("10588", EncounterSet.TheThingInTheDepths)
     , ("10605", EncounterSet.TheTwistedHollow)
     , ("10677a", EncounterSet.TheVale)
     , ("10704", EncounterSet.TheVale)

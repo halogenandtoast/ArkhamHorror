@@ -924,13 +924,37 @@ allLocations =
     , SomeLocationCard parlorHemlockHouse
     , SomeLocationCard diningRoomHemlockHouse
     , SomeLocationCard foyerHemlockHouse
-    , --- Hemlock House
+    , --- The Silent Heath
       SomeLocationCard crystalGrove
     , SomeLocationCard pearlEstateRuins
     , SomeLocationCard ashenSlope
     , SomeLocationCard saltChamber
     , SomeLocationCard larvalTunnel
     , SomeLocationCard crystalNursery
+    , --- The Lost Sister
+      SomeLocationCard akwan
+    , SomeLocationCard suspendedGraveyard
+    , SomeLocationCard hiddenCoveTheLostSister
+    , SomeLocationCard weedChokedBeach
+    , SomeLocationCard rockyShoreline
+    , SomeLocationCard undergroundPools
+    , SomeLocationCard openCave
+    , SomeLocationCard fungalCave
+    , --- The Thing in the Depths
+      SomeLocationCard muddyFen
+    , SomeLocationCard openWater10593b
+    , SomeLocationCard tangledThicket
+    , SomeLocationCard openWater10594b
+    , SomeLocationCard fetidPool
+    , SomeLocationCard openWater10595b
+    , SomeLocationCard floodedPath
+    , SomeLocationCard openWater10596b
+    , SomeLocationCard abandonedShack
+    , SomeLocationCard openWater10597b
+    , SomeLocationCard rottenDock
+    , SomeLocationCard openWater10598b
+    , SomeLocationCard coveredBridge
+    , SomeLocationCard openWater10599b
     , --- The Twisted Hollow
       SomeLocationCard glimmeringMeadow
     , SomeLocationCard blightedGlade
@@ -1209,14 +1233,14 @@ allLocations =
     , --- Core 2026
       --- Spreading Flames
       SomeLocationCard yourFriendsRoom
-      --- Miskatonic University
-    , SomeLocationCard miskatonicQuad_MiskatonicUniversity
+    , --- Miskatonic University
+      SomeLocationCard miskatonicQuad_MiskatonicUniversity
     , SomeLocationCard dormitories_MiskatonicUniversity
     , SomeLocationCard scienceHall
     , SomeLocationCard warrenObservatory_MiskatonicUniversity
     , SomeLocationCard orneLibrary_MiskatonicUniversity
-      --- Arkham
-    , SomeLocationCard downtownFirstBankOfArkham_Arkham
+    , --- Arkham
+      SomeLocationCard downtownFirstBankOfArkham_Arkham
     , SomeLocationCard downtownArkhamSanatorium
     , SomeLocationCard uptownStMarysHospital
     , SomeLocationCard uptownYeOldeMagickShoppe
@@ -1228,8 +1252,8 @@ allLocations =
     , SomeLocationCard frenchHill_Arkham
     , SomeLocationCard miskatonicUniversityInFlames
     , SomeLocationCard miskatonicUniversityQuietCampus
-      --- Queen of Flames
-    , SomeLocationCard sewerCulvert
+    , --- Queen of Flames
+      SomeLocationCard sewerCulvert
     , SomeLocationCard sewerTunnelsInfestedPipes
     , SomeLocationCard sewerTunnelsOvergrownTunnels
     , SomeLocationCard sewerTunnelsFloodedCrypt

@@ -1701,6 +1701,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch
+    Matcher.EnemyFlipped timing enemyMatcher ->
+      guardTiming timing $ \case
+        Window.EnemyFlipped enemyId ->
+          matches enemyId enemyMatcher
+        _ -> noMatch
     Matcher.EnemyEnters timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEnters enemyId lid ->

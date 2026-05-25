@@ -32,6 +32,7 @@ data Trait
   | Blight
   | Blunder
   | Boat
+  | Bog
   | Bold
   | Boon
   | Bridge
@@ -272,6 +273,7 @@ data Trait
   | Station
   | Steps
   | Summon
+  | Sunken
   | Supply
   | Surface
   | Suspect

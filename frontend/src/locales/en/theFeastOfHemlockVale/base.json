@@ -20,6 +20,10 @@
     },
     "psychotropicSpores": {
       "pay": "Take 1 direct horror for this test to automatically succeed"
+    },
+    "reclaimedByNature": {
+      "nearestEnemyAttacks": "Choose the nearest enemy. That enemy attacks you",
+      "enemiesHeal": "Each enemy at your location and each connecting location heals 1 damage"
     }
   },
   "remembered": {
@@ -394,6 +398,7 @@
     "finishedTheirMeal": "Finished Their Meal",
     "madamePearlsDiaryWasRecovered": "Madam Pearl's Diary was Recovered",
     "theInvestigatorsLaidThePearlFamilyToRest": "The Investigators Laid the Pearl Family to Rest",
+    "elizabethPetersWasSaved": "Elizabeth Peters Was Saved",
     "motherRachelRelationshipLevel": "Mother Rachel Relationship Level",
     "leahAtwoodRelationshipLevel": "Leah Atwood Relationship Level",
     "simeonAtwoodRelationshipLevel": "Simeon Atwood Relationship Level",
@@ -495,7 +500,8 @@
     },
     "[theoPetersNotes]": {
       "orderKey": "i",
-      "name": "Theo Peters"
+      "name": "Theo Peters",
+      "theoReconciledWithHelen": "Theo Reconciled With Helen"
     }
   }
 }

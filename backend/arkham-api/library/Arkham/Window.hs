@@ -236,6 +236,7 @@ data WindowType
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId
   | EnemySpawns EnemyId LocationId
+  | EnemyFlipped EnemyId
   | EnemyPlaced EnemyId Placement
   | EnemyWouldAttack EnemyAttackDetails
   | EnemyWouldBeDefeated EnemyId

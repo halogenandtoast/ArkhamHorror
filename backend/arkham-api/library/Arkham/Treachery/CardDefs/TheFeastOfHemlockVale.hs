@@ -58,6 +58,30 @@ defendTheNest =
     { cdCardTraits = setFromList [Scheme]
     }
 
+reclaimedByNature :: CardDef
+reclaimedByNature =
+  (treachery "10586" "Reclaimed by Nature" TheLostSister 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+luminousGrowth :: CardDef
+luminousGrowth =
+  (treachery "10587" "Luminous Growth" TheLostSister 3)
+    { cdCardTraits = setFromList [Hazard, Trait.Flora]
+    }
+
+groundDisturbance :: CardDef
+groundDisturbance =
+  (treachery "10603" "Ground Disturbance" TheThingInTheDepths 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+sinkingSludge :: CardDef
+sinkingSludge =
+  (treachery "10604" "Sinking Sludge" TheThingInTheDepths 4)
+    { cdCardTraits = singleton Hazard
+    }
+
 deepShadows :: CardDef
 deepShadows =
   (treachery "10622" "Deep Shadows" TheTwistedHollow 2)
@@ -172,6 +196,18 @@ psychotropicSpores :: CardDef
 psychotropicSpores =
   (treachery "10740" "Psychotropic Spores" Myconids 2)
     { cdCardTraits = setFromList [Hazard, Flora]
+    }
+
+suddenMutation :: CardDef
+suddenMutation =
+  (treachery "10741" "Sudden Mutation" Mutations 2)
+    { cdCardTraits = setFromList [Power, Colour]
+    }
+
+unnaturalGrowth :: CardDef
+unnaturalGrowth =
+  (treachery "10742" "Unnatural Growth" Mutations 3)
+    { cdCardTraits = singleton Curse
     }
 
 fire :: CardDef

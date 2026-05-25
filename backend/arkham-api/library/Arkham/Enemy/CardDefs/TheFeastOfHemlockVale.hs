@@ -81,6 +81,49 @@ broodQueenDyingMother =
     , cdVictoryPoints = Just 2
     }
 
+limulusHybridInTheLight :: CardDef
+limulusHybridInTheLight =
+  doubleSided "10583b"
+    $ (enemy "10583a" ("Limulus Hybrid" <:> "In the Light") TheLostSister 1)
+      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Elusive, Keyword.Massive]
+      , cdVictoryPoints = Just 2
+      }
+
+limulusHybridInTheDark :: CardDef
+limulusHybridInTheDark =
+  doubleSided "10583a"
+    $ (enemy "10583b" ("Limulus Hybrid" <:> "In the Dark") TheLostSister 1)
+      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+      , cdVictoryPoints = Just 2
+      }
+
+crustaceanHybridInTheLight :: CardDef
+crustaceanHybridInTheLight =
+  doubleSided "10584b"
+    $ (enemy "10584a" ("Crustacean Hybrid" <:> "In the Light") TheLostSister 2)
+      { cdCardTraits = setFromList [Creature, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+      , cdVictoryPoints = Just 0
+      }
+
+crustaceanHybridInTheDark :: CardDef
+crustaceanHybridInTheDark =
+  doubleSided "10584a"
+    $ (enemy "10584b" ("Crustacean Hybrid" <:> "In the Dark") TheLostSister 2)
+      { cdCardTraits = setFromList [Creature, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      , cdVictoryPoints = Just 0
+      }
+
+cavernMoss :: CardDef
+cavernMoss =
+  (enemy "10585" "Cavern Moss" TheLostSister 3)
+    { cdCardTraits = setFromList [Flora, Mutated]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
 ursineHybridGlowingAbomination :: CardDef
 ursineHybridGlowingAbomination =
   doubleSided "10607a"
@@ -151,6 +194,33 @@ blackAmanita =
         setFromList
           [ Keyword.ScenarioModifierKeyword "time" (String "Day") Keyword.Aloof
           , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Massive
+          ]
+    }
+
+thingInTheDepths :: CardDef
+thingInTheDepths =
+  (enemy "10600" ("Thing in the Depths" <:> "Rising from the Deep") TheThingInTheDepths 1)
+    { cdCardTraits = setFromList [Abomination, Flora, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdUnique = True
+    , cdVictoryPoints = Just 2
+    }
+
+chelydranHybrid :: CardDef
+chelydranHybrid =
+  (enemy "10601" ("Chelydran Hybrid" <:> "Flowering Anomaly") TheThingInTheDepths 1)
+    { cdCardTraits = setFromList [Creature, Flora, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Patrol EmptyLocation]
+    }
+
+graspingTendril :: CardDef
+graspingTendril =
+  (enemy "10602" "Grasping Tendril" TheThingInTheDepths 5)
+    { cdCardTraits = setFromList [Abomination, Flora, Mutated]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Surge
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Aloof
           ]
     }
 

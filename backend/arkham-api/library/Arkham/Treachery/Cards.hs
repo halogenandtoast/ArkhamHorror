@@ -411,6 +411,7 @@ allEncounterTreacheryCards =
       , lostInVenice
       , lowOnSupplies
       , lunarPatrol
+      , luminousGrowth
       , lurkingFear
       , macabreMemento
       , maddeningDelusions
@@ -492,6 +493,7 @@ allEncounterTreacheryCards =
       , raiseTheStakes
       , realmOfMadness
       , realmOfTorment
+      , reclaimedByNature
       , resentfulWilds
       , restlessJourneyFallacy
       , restlessJourneyHardship
@@ -547,6 +549,7 @@ allEncounterTreacheryCards =
       , strangeMutations
       , strangeSigns
       , substanceDissimulation
+      , suddenMutation
       , supernaturalTempest
       , suspiciousGazeA
       , suspiciousGazeB
@@ -606,6 +609,7 @@ allEncounterTreacheryCards =
       , unknowablePast
       , unlucky
       , unstableEnergies
+      , unnaturalGrowth
       , vampiresKiss
       , vastExpanse
       , vaultOfEarthlyDemise
@@ -680,4 +684,6 @@ allEncounterTreacheryCards =
       , fire1
       , noxiousSmoke
       , ashenRebirth
+      , sinkingSludge
+      , groundDisturbance
       ]

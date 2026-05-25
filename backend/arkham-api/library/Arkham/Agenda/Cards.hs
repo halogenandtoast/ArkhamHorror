@@ -63,6 +63,7 @@ allAgendaCards =
       , confluxOfConsequence
       , crossroadsOfFate
       , dangerousRide
+      , darknessClosesIn
       , darkClouds
       , deadOfNight
       , deathsApproach
@@ -107,6 +108,7 @@ allAgendaCards =
       , humanityFading
       , icyDepths
       , inEveryShadow
+      , intoTheCaves
       , intoTheWhite
       , intruders
       , itAwaits
@@ -162,6 +164,7 @@ allAgendaCards =
       , showbusinessAsUsual
       , silenceSpeaks
       , silentStirring
+      , sinkingGround
       , snappedThreads
       , somethingStirs
       , specialInvestigation
@@ -229,6 +232,7 @@ allAgendaCards =
       , theShapeOfChaos
       , theTempleWarden
       , theTerrifyingTruth
+      , theThingInTheBog
       , theThingWithNoName
       , theThirdAct
       , theThirdNight

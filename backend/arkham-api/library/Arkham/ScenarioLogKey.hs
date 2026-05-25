@@ -126,6 +126,11 @@ data ScenarioLogKey
     JudithIsRemodeling
   | FoundLittleSylvie
   | YouAreHelpingGideon
+  | -- | The Lost Sister
+    FoundATornDogLeash
+  | FoundASetOfFootprints
+  | TheoIsArguingWithHelen
+  | GideonIsSearchingForAnHeirloom
   deriving stock (Eq, Show, Ord, Data)
 
 data ScenarioCountKey

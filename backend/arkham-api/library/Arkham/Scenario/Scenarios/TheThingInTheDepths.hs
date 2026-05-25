@@ -129,9 +129,6 @@ instance RunMessage TheThingInTheDepths where
       day <- getCampaignDay
       time <- getCampaignTime
 
-      when (time == Day) do
-        gatherAndSetAside Set.Residents
-
       case day of
         Day1 -> do
           gather Set.TheFirstDay

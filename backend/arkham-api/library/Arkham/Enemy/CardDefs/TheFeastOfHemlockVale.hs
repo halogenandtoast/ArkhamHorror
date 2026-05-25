@@ -105,6 +105,7 @@ crustaceanHybridInTheLight =
     $ (enemy "10584a" ("Crustacean Hybrid" <:> "In the Light") TheLostSister 2)
       { cdCardTraits = setFromList [Creature, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+      , cdVictoryPoints = Just 0
       }
 
 crustaceanHybridInTheDark :: CardDef
@@ -113,6 +114,7 @@ crustaceanHybridInTheDark =
     $ (enemy "10584b" ("Crustacean Hybrid" <:> "In the Dark") TheLostSister 2)
       { cdCardTraits = setFromList [Creature, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
+      , cdVictoryPoints = Just 0
       }
 
 cavernMoss :: CardDef

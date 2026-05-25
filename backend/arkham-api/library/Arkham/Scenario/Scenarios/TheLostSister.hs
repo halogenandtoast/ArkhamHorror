@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.TheLostSister (theLostSister) where
 
+import Arkham.Ability.Types (AbilityRef (..))
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -11,12 +12,13 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (LocationPosition))
@@ -25,6 +27,7 @@ import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record, remember, remembered)
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
@@ -44,6 +47,17 @@ instance HasModifiersFor TheLostSister where
       (InvestigatorAt $ LocationWithTrait Dark)
       [ScenarioModifierValue "time" (toJSON Night)]
     modifySelect a (EnemyAt $ LocationWithTrait Dark) [ScenarioModifierValue "time" (toJSON Night)]
+    runMaybeT_ do
+      liftGuardM $ remembered TheoIsArguingWithHelen
+      liftGuardM $ not <$> getHasRecord TheoReconciledWithHelen
+      theo <- MaybeT $ selectOne $ assetIs Assets.theoPetersJackOfAllTrades
+      helen <- MaybeT $ selectOne $ assetIs Assets.helenPetersTheEldestSister
+      theoLoc <- MaybeT $ field AssetLocation theo
+      helenLoc <- MaybeT $ field AssetLocation helen
+      guard $ theoLoc == helenLoc
+      lift do
+        selectEach Anyone \iid -> do
+          modified_ a (AbilityTarget iid (AbilityRef (toSource theo) 1)) [IgnoreLimit]
 
 theLostSister :: Difficulty -> TheLostSister
 theLostSister difficulty = scenario TheLostSister "10569" "The Lost Sister" difficulty []
@@ -313,5 +327,45 @@ instance RunMessage TheLostSister where
       record TheoReconciledWithHelen
       increaseRelationshipLevel TheoPeters 1
       interludeXpAll (toBonus "bonus" 1)
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          interludeXpAll (toBonus "noResolutionBonus" 1)
+          push R4
+        Resolution 1 -> do
+          theoReconciled <- getHasRecord TheoReconciledWithHelen
+          resolutionFlavor do
+            setTitle "resolution1.title"
+            p "resolution1.body"
+            ul do
+              li.validate theoReconciled "resolution1.proceedToResolution2"
+              li.validate (not theoReconciled) "resolution1.skipToResolution3"
+          if theoReconciled then push R2 else push R3
+        Resolution 2 -> do
+          resolution "resolution2"
+          interludeXpAll (toBonus "helenBonus" 2)
+          record ThePetersFamilyWereReunited
+          push R4
+        Resolution 3 -> do
+          resolution "resolution3"
+          interludeXpAll (toBonus "helenBonus" 2)
+          record ElizabethPetersWasSaved
+          push R4
+        Resolution 4 -> do
+          gideonSearching <- remembered GideonIsSearchingForAnHeirloom
+          clues <- getSum <$> selectAgg Sum InvestigatorClues Anyone
+          let gideonBonus =
+                if gideonSearching && clues >= 2
+                  then toBonus "gideonBonus" 1
+                  else mempty
+          when (gideonSearching && clues >= 2) do
+            increaseRelationshipLevel GideonMizrah 1
+            record GideonFoundHisTreasure
+          resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs gideonBonus
+          record $ AreasSurveyed AkwanShoreline
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

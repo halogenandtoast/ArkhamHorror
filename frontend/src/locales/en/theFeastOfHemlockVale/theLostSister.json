@@ -104,6 +104,35 @@
       "bonus": "Bonus experience"
     }
   },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: Your efforts have reached their limit. The unnatural fungus and aggressive wildlife are too much for you to handle. You have no choice but to abandon the search.</p><ul><li>Each investigator earns 1 bonus experience for coming face to face with the horrors of the coastal caves.</li><li>Skip to _Resolution 4_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You return to Akwan with Helen and Lizzie. The younger sister thanks you as she stares back at the caves. Helen takes the frayed dog leash from her. \"Bruce was a good dog,\" she says. The ocean wind blows the youngest Peters' dark brown hair across her round face as Helen wraps an arm around her shoulder. You ask what their plan is now.</p><p>\"We can't stay here,\" Helen says, more to Elizabeth than to you. Before her sister can protest, Helen goes on. \"Remember the story Nokemes told us? The one about Gluskab turning a man into a tree. Everything on this island is wrong. It's transformed into something deadly. Maybe it's time we pay a visit to Uncle George in Portland.\"</p><p class='basic'>Check your Campaign Log.</p>",
+      "proceedToResolution2": "If _Theo reconciled with Helen_ is recorded in _Theo Peters' Notes_, proceed to _Resolution 2_.",
+      "skipToResolution3": "Otherwise, skip to _Resolution 3_."
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: After returning from his truck, Theo asks his sister why she wandered off. Lizzie brushes tears from her eyes and holds up the torn dog leash. \"Bruce wanted to go for one last walk. Like we used to.\" Theo looks crestfallen as his two sisters look out to sea, past the rolling waves and the silver clouds. Theo hesitates, searching for what to say as his sisters face the crashing surf.</p><p>\"Come here, Theo,\" Helen beckons him over. The three siblings stand together, looking out to the sea in silence.</p><ul><li>Each investigator earns 2 bonus experience for helping Helen save her sister.</li><li>In your campaign log, record <i>The Peters family was reunited</i>.</li><li>Skip to _Resolution 4_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: \"I'll start making preparations soon and hopefully we'll be off the island in a few more days,\" Helen tells you. \"I suggest you leave soon, as well.\" You tell her the survey is far from over, and there's still more you have to do. Helen scoffs. \"Your funeral,\" she says, then after a brief silence she looks at you again. \"Sorry. I don't know why I said that,\" she says. \"Thank you for your help. Nobody from the Vale would have helped.\" She looks down the black sanded shore toward Akwan. \"Gideon used to fish here often, but not anymore. The Vale took him from us. Now they've taken Theo.\"</p><p>She looks back to you. \"I have another favor to ask. Please. Look after Theo. He means well, even if he's a little thick in the head. Make sure he's okay. No matter what he thinks, he's still family.\"</p><ul><li>Each investigator earns 2 bonus experience for helping Helen save her sister.</li><li>In your campaign log, record <i>Elizabeth Peters was saved</i>.</li><li>Proceed to _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: \"Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii. Northern shore and coastal caves extremely dangerous. Identified dozens of hitherto undocumented species of bioluminescent fungus. An exceedingly hostile ecosystem with extreme sensitivity to light. Further analysis and observation recommended. Future expeditions should come prepared with appropriate gear and extreme caution. Avoid the Akwan caves, if at all possible.\"</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. _Each investigator may now spend the experience recorded under \"Unspent Experience\" in your Campaign Log._</li><li>In the \"Areas Surveyed\" section of your Campaign Log, check off <i>Akwan Shoreline</i>.</li></ul>"
+    },
+    "xp": {
+      "noResolutionBonus": "Bonus experience for coming face to face with the horrors of the coastal caves",
+      "helenBonus": "Bonus experience for helping Helen save her sister",
+      "gideonBonus": "Bonus experience for helping Gideon find his treasure"
+    }
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is half the number of revealed _Cave_ locations in play (rounded up).",

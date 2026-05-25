@@ -225,6 +225,7 @@ data WindowMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
+  | EnemyFlipped Timing EnemyMatcher
   | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
   | EnemyMovedTo Timing Where MovesViaMatcher EnemyMatcher

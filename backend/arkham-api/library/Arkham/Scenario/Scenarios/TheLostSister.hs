@@ -3,7 +3,10 @@ module Arkham.Scenario.Scenarios.TheLostSister (theLostSister) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (AssetLocation))
+import Arkham.Calculation
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -11,16 +14,23 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
+import Arkham.Message (pattern PassedThisSkillTest)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (record, remember, remembered)
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLostSister.Helpers
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Trait (Trait (Abomination, Cave))
+import Arkham.Trait (Trait (Abomination, Cave, Dark))
 
 newtype TheLostSister = TheLostSister ScenarioAttrs
   deriving anyclass IsScenario
@@ -29,6 +39,11 @@ newtype TheLostSister = TheLostSister ScenarioAttrs
 instance HasModifiersFor TheLostSister where
   getModifiersFor (TheLostSister a) = do
     modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
+    modifySelect
+      a
+      (InvestigatorAt $ LocationWithTrait Dark)
+      [ScenarioModifierValue "time" (toJSON Night)]
+    modifySelect a (EnemyAt $ LocationWithTrait Dark) [ScenarioModifierValue "time" (toJSON Night)]
 
 theLostSister :: Difficulty -> TheLostSister
 theLostSister difficulty = scenario TheLostSister "10569" "The Lost Sister" difficulty []
@@ -87,6 +102,9 @@ instance RunMessage TheLostSister where
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
 
+      scope "darkLocations" $ flavor $ setTitle "title" >> p "body"
+      scope "doubleSidedEnemies" $ flavor $ setTitle "title" >> p "body"
+
       setUsesGrid
 
       gather Set.TheLostSister
@@ -95,9 +113,12 @@ instance RunMessage TheLostSister where
       gather Set.Mutations
       gather Set.Myconids
 
-      setScenarioDayAndTime
+      -- do not setScenarioDayAndTime
       day <- getCampaignDay
       time <- getCampaignTime
+      gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "day" (toJSON day))
+      -- We default the time to Day, locations will apply Night to enemies/investigators directly
+      gameModifier ScenarioSource ScenarioTarget (ScenarioModifierValue "time" (toJSON Day))
 
       case day of
         Day1 -> do
@@ -197,10 +218,100 @@ instance RunMessage TheLostSister where
     ResolveChaosToken _ ElderThing iid -> do
       hasAbomination <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Abomination
       when hasAbomination do
-        if isEasyStandard then drawAnotherChaosToken iid else failSkillTest
+        if isEasyStandard attrs then drawAnotherChaosToken iid else failSkillTest
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | token.face == Cultist -> do
       when (isEasyStandard attrs || n >= 2) do
         healHorrorIfCan iid ScenarioSource 1
+      pure s
+    ScenarioSpecific "codex" v -> scope "codex" do
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      case n of
+        4 -> do
+          entry "williamHemlock"
+          increaseRelationshipLevel WilliamHemlock 1
+          interludeXpAll (toBonus "bonus" 1)
+        6 -> do
+          entry "gideonMizrah"
+          remember GideonIsSearchingForAnHeirloom
+        8 -> do
+          arguing <- remembered TheoIsArguingWithHelen
+          theo <- selectJust $ assetIs Assets.theoPetersJackOfAllTrades
+          helen <- selectJust $ assetIs Assets.helenPetersTheEldestSister
+          theoLoc <- fieldJust AssetLocation theo
+          helenLoc <- field AssetLocation helen
+          let sameLoc = helenLoc == Just theoLoc
+          if arguing && sameLoc
+            then do
+              scope "theoPeters" $ flavor do
+                setTitle "title"
+                compose.green do
+                  p.validate True "arguing"
+                  hr
+                  p.validate False "otherwise"
+              iids <- select $ InvestigatorAt (LocationWithId theoLoc)
+              leadChooseOneM do
+                portraits iids \chosen -> do
+                  sid <- getRandom
+                  beginSkillTest sid chosen attrs attrs #willpower (Fixed 4)
+            else do
+              scope "theoPeters" $ flavor do
+                setTitle "title"
+                compose.green do
+                  p.validate False "arguing"
+                  hr
+                  p.validate True "otherwise"
+              remember TheoIsArguingWithHelen
+        Sigma -> do
+          theoReconciled <- getHasRecord TheoReconciledWithHelen
+          mTheo <- selectOne $ assetIs Assets.theoPetersJackOfAllTrades
+          if theoReconciled
+            then do
+              scope "lobstrosity" $ flavor do
+                setTitle "title"
+                compose.green do
+                  p.validate True "reconciled"
+                  hr
+                  p.validate False "otherwise"
+              for_ mTheo \theo -> do
+                limulusHybrid <-
+                  selectJust
+                    $ mapOneOf enemyIs [Enemies.limulusHybridInTheLight, Enemies.limulusHybridInTheDark]
+                moveTokens source theo limulusHybrid #damage 1
+            else do
+              scope "lobstrosity" $ flavor do
+                setTitle "title"
+                compose.green do
+                  p.validate False "reconciled"
+                  hr
+                  p.validate True "otherwise"
+              for_ mTheo removeFromGame
+        Theta -> do
+          entry "drRosaMarquez"
+          getScenarioDeck CavernsDeck >>= \case
+            [] -> pure ()
+            (card : rest) -> do
+              focusCards [card] do
+                nearestCaves <- select $ NearestLocationTo iid (LocationWithTrait Cave)
+                chooseOneM iid do
+                  for_ nearestCaves \cave -> do
+                    pos <- fieldJust LocationPosition cave
+                    emptyPositions <- filterM (selectNone . LocationInPosition) pos.adjacents
+                    for_ emptyPositions \emptyPos ->
+                      gridLabeled_ emptyPos do
+                        setScenarioDeck CavernsDeck rest
+                        placeLocationInGrid_ emptyPos card
+                  labeled' "bottom" do
+                    setScenarioDeck CavernsDeck (rest <> [card])
+        _ -> error "invalid codex entry"
+      pure s
+    PassedThisSkillTest _iid (isSource attrs -> True) -> scope "codex" do
+      scope "theoPeters" $ flavor do
+        setTitle "title"
+        p.green "passed"
+      record TheoReconciledWithHelen
+      increaseRelationshipLevel TheoPeters 1
+      interludeXpAll (toBonus "bonus" 1)
       pure s
     _ -> TheLostSister <$> liftRunMessage msg attrs

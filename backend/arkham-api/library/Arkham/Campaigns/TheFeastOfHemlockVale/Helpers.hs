@@ -12,10 +12,15 @@ import Arkham.Card.CardDef
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Criteria
+import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Location.Base
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Investigator
 import Arkham.Matcher.Scenario
 import Arkham.Message (Message (NextCampaignStep))
 import Arkham.Message.Lifted hiding (continue)
@@ -26,6 +31,7 @@ import Arkham.Scenario.Options
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
+import Data.Monoid (First (..))
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theFeastOfHemlockVale" a
@@ -65,15 +71,57 @@ getCampaignTime = withCampaignMeta @TheFeastOfHemlockValeMeta (.time)
 getCampaignDay :: (Tracing m, HasGame m) => m Day
 getCampaignDay = withCampaignMeta @TheFeastOfHemlockValeMeta (.day)
 
-pattern IsDay :: Criterion
-pattern IsDay <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
-  where
-    IsDay = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
+getTimeFor :: (Targetable a, Tracing m, HasGame m) => a -> m Time
+getTimeFor a = do
+  mods <- getModifiers a
+  maybe getCampaignTime pure
+    $ getFirst
+    $ mconcat [First t | ScenarioModifierValue "time" (maybeResult -> Just t) <- mods]
 
-pattern IsNight :: Criterion
-pattern IsNight <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+class HasTimeOverride a where
+  isDark :: a -> Criterion
+  isLight :: a -> Criterion
+  isLight = not_ . isDark
+
+instance HasTimeOverride EnemyAttrs where
+  isDark a = thisExists a (EnemyWithModifier $ ScenarioModifierValue "time" (String "Night"))
+
+instance HasTimeOverride LocationAttrs where
+  isDark _ = IsNight_
+
+instance HasTimeOverride InvestigatorMatcher where
+  isDark a = exists $ a <> InvestigatorWithModifier (ScenarioModifierValue "time" (String "Night"))
+
+isDayFor :: HasTimeOverride a => a -> Criterion
+isDayFor a = not_ (isDark a) <> IsDay_
+
+isNightFor :: HasTimeOverride a => a -> Criterion
+isNightFor a = not_ (isLight a) <> IsNight_
+
+pattern IsDay_ :: Criterion
+pattern IsDay_ <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
   where
-    IsNight = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+    IsDay_ = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Day")))
+
+pattern IsNight_ :: Criterion
+pattern IsNight_ <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+  where
+    IsNight_ = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "time" (String "Night")))
+
+pattern IsDay1 :: Criterion
+pattern IsDay1 <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day1")))
+  where
+    IsDay1 = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day1")))
+
+pattern IsDay2 :: Criterion
+pattern IsDay2 <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day2")))
+  where
+    IsDay2 = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day2")))
+
+pattern IsDay3 :: Criterion
+pattern IsDay3 <- ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day3")))
+  where
+    IsDay3 = ScenarioExists (ScenarioWithModifier (ScenarioModifierValue "day" (String "Day3")))
 
 setScenarioDayAndTime :: ReverseQueue m => m ()
 setScenarioDayAndTime = do

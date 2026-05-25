@@ -20,19 +20,16 @@ instance RunMessage IntoTheCaves where
   runMessage msg a@(IntoTheCaves attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       locations <- select $ NearestLocationToMost (LocationWithTrait Coastal)
-      leadChooseOrRunOneM do
-        targets locations $ createSetAsideEnemy_ Enemies.crustaceanHybridInTheLight
+      leadChooseOrRunOneM $ targets locations $ createSetAsideEnemy_ Enemies.crustaceanHybridInTheLight
+      selectEach (InvestigatorAt $ LocationWithTrait Dark) (`randomDiscard` attrs)
 
-      selectEach (InvestigatorAt $ LocationWithTrait Dark) \iid ->
-        randomDiscard iid attrs
-
-      day <- getCampaignDay
-      let doomCount = case day of
-            Day1 -> 1
-            Day2 -> 2
-            Day3 -> 3
-      placeDoomOnAgenda doomCount
+      doomCount <-
+        getCampaignDay <&> \case
+          Day1 -> 1
+          Day2 -> 2
+          Day3 -> 3
 
       advanceAgendaDeck attrs
+      placeDoomOnAgenda doomCount
       pure a
     _ -> IntoTheCaves <$> liftRunMessage msg attrs

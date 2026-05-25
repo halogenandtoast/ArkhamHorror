@@ -29,7 +29,13 @@ const deckAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "ScenarioDeckTarget")
 })
 
-const showCards = () => emits('show', cards, props.deck[0], false)
+const flippedCards = computed(() => props.deck[1].map(card => {
+  if (card.tag === 'EncounterCard') {
+    return { ...card, contents: { ...card.contents, isFlipped: !(card.contents.isFlipped ?? false) } }
+  }
+  return card
+}))
+const showCards = () => emits('show', flippedCards, props.deck[0], false)
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {
@@ -54,6 +60,8 @@ const deckImage = computed(() => {
       }
     case 'WoodsDeck':
       return imgsrc("cards/10612b.avif");
+    case 'CavernsDeck':
+      return imgsrc("cards/10577b.avif");
     default:
       return imgsrc("back.png");
   }

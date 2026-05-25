@@ -17,8 +17,8 @@ wallOfThorns = treachery WallOfThorns Cards.wallOfThorns
 
 instance HasAbilities WallOfThorns where
   getAbilities (WallOfThorns a) =
-    [ restricted a 1 IsDay $ forced $ Enters #when You (locationWithTreachery a)
-    , restricted a 2 IsNight $ forced $ Enters #when You (locationWithTreachery a)
+    [ restricted a 1 (isDayFor You) $ forced $ Enters #when You (locationWithTreachery a)
+    , restricted a 2 (isNightFor You) $ forced $ Enters #when You (locationWithTreachery a)
     ]
 
 instance RunMessage WallOfThorns where

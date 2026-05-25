@@ -20,8 +20,8 @@ instance HasAbilities DryBurrow where
   getAbilities (DryBurrow a) =
     extendRevealed
       a
-      [ groupLimit PerRound $ restricted a 1 (Here <> IsDay) $ FastAbility' Free #move
-      , restricted a 2 (Here <> IsNight) $ forced $ TurnEnds #after You
+      [ groupLimit PerRound $ restricted a 1 (Here <> isDayFor a) $ FastAbility' Free #move
+      , restricted a 2 (Here <> isNightFor a) $ forced $ TurnEnds #after You
       ]
 
 instance RunMessage DryBurrow where

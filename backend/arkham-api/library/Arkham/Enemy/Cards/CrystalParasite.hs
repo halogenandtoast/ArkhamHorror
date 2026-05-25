@@ -18,13 +18,13 @@ crystalParasite = enemy CrystalParasite Cards.crystalParasite (2, Static 6, 2) (
 instance HasAbilities CrystalParasite where
   getAbilities (CrystalParasite a) =
     extend1 a
-      $ restricted a 1 IsDay
+      $ restricted a 1 (isDayFor a)
       $ forced
       $ EnemyAttacks #after Anyone AnyEnemyAttack (be a <> EnemyWithAnyDamage)
 
 instance HasModifiersFor CrystalParasite where
   getModifiersFor (CrystalParasite a) = do
-    time <- getCampaignTime
+    time <- getTimeFor a
     let n = enemyDamage a `div` 2
     when (time == Night && n > 0) do
       modifySelf a [DamageDealt n, EnemyFight (n * 2)]

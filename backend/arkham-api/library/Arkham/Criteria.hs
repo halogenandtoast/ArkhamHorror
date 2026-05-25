@@ -327,7 +327,8 @@ _DuringSkillTest = prism' DuringSkillTest $ \case
   _ -> Nothing
 
 instance Not Criterion where
-  not_ = Negate
+  not_ (Negate x) = x
+  not_ x = Negate x
 
 instance OneOf Criterion where
   oneOf = AnyCriterion

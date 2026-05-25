@@ -774,3 +774,12 @@ cornHuskDoll =
       , cdUses = uses Wish 3
       , cdSkills = [#willpower, #agility]
       }
+
+thePearlDiaryAGrimAccount :: CardDef
+thePearlDiaryAGrimAccount =
+  (storyAsset "10715" ("The Pearl Diary" <:> "A Grim Account") 1 Heirlooms)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdSkills = [#intellect, #agility]
+    , cdUnique = True
+    }

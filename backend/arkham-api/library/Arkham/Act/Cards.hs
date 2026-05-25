@@ -24,7 +24,8 @@ allActCards =
   mapFromList
     $ map
       (toCardCode &&& id)
-      [ aCircleUnbroken
+      [ aBotanicalSurvey
+      , aCircleUnbroken
       , aCosmicJourney
       , aFamiliarPattern
       , afterHours
@@ -79,6 +80,7 @@ allActCards =
       , destroyTheSource
       , discoverTheTruth
       , discoveringTheTruth
+      , discoveryOfALifetime
       , disruptingTheRitual
       , dormancy
       , enteringTheDreamlands
@@ -91,6 +93,7 @@ allActCards =
       , exploringTheMoon
       , exploringTheRainforest
       , eyesInTheTower
+      , faceToCarapace
       , falseColorsV1
       , falseColorsV2
       , falseLight
@@ -159,6 +162,7 @@ allActCards =
       , openingTheMaw
       , openThePathAbove
       , openThePathBelow
+      , onTheTrail
       , outOfThisWorld
       , paradiseLost
       , pastAndPresent
@@ -262,6 +266,7 @@ allActCards =
       , theKingInTatters
       , theKingsDecree
       , theMoonsCore
+      , theMissingSibling
       , theOath
       , theOvergrownEstateClintonFreeman
       , theOvergrownEstateSentFromAnotherTime

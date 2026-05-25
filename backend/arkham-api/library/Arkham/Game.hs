@@ -55,6 +55,9 @@ import Arkham.Distance
 import Arkham.Effect.Types
 import Arkham.Enemy (lookupEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
+import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Entities
 import Arkham.Event.Types
 import Arkham.ForMovement
@@ -137,9 +140,6 @@ import Arkham.Investigator.Types (
 import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Concealed, _Swarming)
 import Arkham.Keyword qualified as Keyword
-import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
-import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
-import Arkham.EnemyLocation.Types (EnemyLocation, EnemyLocationAttrs (..), enemyLocationAsEnemyId)
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
@@ -458,22 +458,31 @@ withEnemyLocationAsLocationData el = do
       =<< select UneliminatedInvestigator
   -- EnemyAt (LocationWithId lid) has the same problem; use EnemyWithPlacement directly.
   lEnemies <-
-    select $ IncludeOmnipotent $ oneOf
-      [ EnemyWithPlacement $ AtLocation lid
-      , EnemyWithPlacement $ AttachedToLocation lid
-      ]
-  lTreacheries <- select $ oneOf
-    [ TreacheryWithPlacement $ AtLocation lid
-    , TreacheryWithPlacement $ AttachedToLocation lid
-    ]
-  lAssets <- select $ IgnoreVisibility $ oneOf
-    [ AssetWithPlacement $ AtLocation lid
-    , AssetWithPlacement $ AttachedToLocation lid
-    ]
-  lEvents <- select $ oneOf
-    [ EventWithPlacement $ AtLocation lid
-    , EventWithPlacement $ AttachedToLocation lid
-    ]
+    select
+      $ IncludeOmnipotent
+      $ oneOf
+        [ EnemyWithPlacement $ AtLocation lid
+        , EnemyWithPlacement $ AttachedToLocation lid
+        ]
+  lTreacheries <-
+    select
+      $ oneOf
+        [ TreacheryWithPlacement $ AtLocation lid
+        , TreacheryWithPlacement $ AttachedToLocation lid
+        ]
+  lAssets <-
+    select
+      $ IgnoreVisibility
+      $ oneOf
+        [ AssetWithPlacement $ AtLocation lid
+        , AssetWithPlacement $ AttachedToLocation lid
+        ]
+  lEvents <-
+    select
+      $ oneOf
+        [ EventWithPlacement $ AtLocation lid
+        , EventWithPlacement $ AttachedToLocation lid
+        ]
   -- Enemy locations are always revealed. Connections come from two sources:
   -- (1) explicit revealed matchers, and (2) directional connections stored in
   -- enemyLocationDirections (the grid-based mechanism used by most scenarios).
@@ -482,34 +491,35 @@ withEnemyLocationAsLocationData el = do
         attrs.revealedConnectedMatchers
           <> map LocationWithId directionConnectedIds
   lConnectedLocations <- select $ LocationMatchAny connectedMatchers
-  pure $ object
-    [ "id" .= lid
-    , "cardId" .= toCardId el
-    , "cardCode" .= toCardCode el
-    , "label" .= attrs.label
-    , "tokens" .= attrs.tokens
-    , "shroud" .= attrs.shroud
-    , "revealed" .= True
-    , "enemyLocation" .= True
-    , "exhausted" .= attrs.exhausted
-    , "investigators" .= lInvestigators
-    , "enemies" .= lEnemies
-    , "treacheries" .= lTreacheries
-    , "assets" .= lAssets
-    , "events" .= lEvents
-    , "scarletKeys" .= emptyArray
-    , "cardsUnderneath" .= emptyArray
-    , "modifiers" .= emptyArray
-    , "connectedLocations" .= lConnectedLocations
-    , "placement" .= attrs.placement
-    , "brazier" .= (Nothing :: Maybe Text)
-    , "breaches" .= (Nothing :: Maybe Text)
-    , "floodLevel" .= (Nothing :: Maybe Text)
-    , "keys" .= emptyArray
-    , "seals" .= emptyArray
-    , "sealedChaosTokens" .= emptyArray
-    , "concealedCards" .= emptyArray
-    ]
+  pure
+    $ object
+      [ "id" .= lid
+      , "cardId" .= toCardId el
+      , "cardCode" .= toCardCode el
+      , "label" .= attrs.label
+      , "tokens" .= attrs.tokens
+      , "shroud" .= attrs.shroud
+      , "revealed" .= True
+      , "enemyLocation" .= True
+      , "exhausted" .= attrs.exhausted
+      , "investigators" .= lInvestigators
+      , "enemies" .= lEnemies
+      , "treacheries" .= lTreacheries
+      , "assets" .= lAssets
+      , "events" .= lEvents
+      , "scarletKeys" .= emptyArray
+      , "cardsUnderneath" .= emptyArray
+      , "modifiers" .= emptyArray
+      , "connectedLocations" .= lConnectedLocations
+      , "placement" .= attrs.placement
+      , "brazier" .= (Nothing :: Maybe Text)
+      , "breaches" .= (Nothing :: Maybe Text)
+      , "floodLevel" .= (Nothing :: Maybe Text)
+      , "keys" .= emptyArray
+      , "seals" .= emptyArray
+      , "sealedChaosTokens" .= emptyArray
+      , "concealedCards" .= emptyArray
+      ]
 
 withAssetMetadata :: (HasGame m, Tracing m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
@@ -754,7 +764,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
-    enemyLocationViews' <- traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
+    enemyLocationViews' <-
+      traverse withEnemyLocationAsLocationData (entitiesEnemyLocations gameEntities)
     let allLocations' = Map.map toJSON locations <> enemyLocationViews'
     investigators <-
       traverse withInvestigatorConnectionData
@@ -1950,7 +1961,8 @@ getGameAbilities = do
   locationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities locationsL)
   blankedLocationAbilities <-
     concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities locationsL)
-  enemyLocationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities enemyLocationsL)
+  enemyLocationAbilities <-
+    concatMap getAbilities <$> filterM unblanked (findEntities enemyLocationsL)
   assetAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities assetsL)
   treacheryAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities treacheriesL)
   actAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities actsL)
@@ -4371,7 +4383,8 @@ instance Projection Location where
       LocationCard -> do
         let card = lookupCard locationCardCode locationCardId
         let shouldFlip =
-              toCardType card /= EnemyLocationCardType
+              toCardType card
+                /= EnemyLocationCardType
                 && locationRevealed
                 && not card.singleSided
         pure $ if shouldFlip then flipCard card else card
@@ -4705,9 +4718,13 @@ getEnemyField f e = do
       setFromList
         <$> ( keywords' & mapMaybeM \case
                 Keyword.ScenarioModifierKeyword k v kw -> do
-                  selectAny (ScenarioWithModifier (ScenarioModifierValue k v)) <&> \case
-                    True -> Just kw
-                    False -> Nothing
+                  ok <- selectAny (ScenarioWithModifier (ScenarioModifierValue k v))
+                  if ok
+                    then pure $ Just kw
+                    else
+                      selectAny (EnemyWithModifier (ScenarioModifierValue k v)) <&> \case
+                        True -> Just kw
+                        False -> Nothing
                 other -> pure $ Just other
             )
     EnemyAbilities -> pure $ getAbilities e
@@ -4910,7 +4927,7 @@ instance Query TargetMatcher where
     filterM (`targetMatches` matcher)
       $ ScenarioTarget
       : enemyLocationProxyTargets
-      <> overEntities ((: []) . toTarget) entities
+        <> overEntities ((: []) . toTarget) entities
 
 instance Query SourceMatcher where
   toSomeQuery = SourceQuery

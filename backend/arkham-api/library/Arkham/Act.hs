@@ -372,6 +372,13 @@ allActs =
     , --- The Silent Heath
       SomeActCard aLostLegacy
     , SomeActCard searchingTheHeath
+    , --- The Lost Sister
+      SomeActCard theMissingSibling
+    , SomeActCard onTheTrail
+    , SomeActCard faceToCarapace
+    , --- The Thing in the Depths
+      SomeActCard aBotanicalSurvey
+    , SomeActCard discoveryOfALifetime
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie
@@ -452,9 +459,9 @@ allActs =
     , SomeActCard escapeTheDorms
     , SomeActCard searchingForDrArmitage
     , SomeActCard blazeOfGlory
-      --- Smoke And Mirrors
-    , SomeActCard augursOfFlame
-      --- Queen of Ash
-    , SomeActCard searchTheSewers
+    , --- Smoke And Mirrors
+      SomeActCard augursOfFlame
+    , --- Queen of Ash
+      SomeActCard searchTheSewers
     , SomeActCard stopTheRite
     ]

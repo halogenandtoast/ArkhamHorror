@@ -29,6 +29,18 @@ desolationV1 = agenda "10551" "Desolation (v. I)" 2 TheSilentHeath
 desolationV2 :: CardDef
 desolationV2 = agenda "10552" "Desolation (v. II)" 2 TheSilentHeath
 
+intoTheCaves :: CardDef
+intoTheCaves = agenda "10570" "Into the Caves" 1 TheLostSister
+
+darknessClosesIn :: CardDef
+darknessClosesIn = agenda "10571" "Darkness Closes In" 2 TheLostSister
+
+sinkingGround :: CardDef
+sinkingGround = agenda "10589" "Sinking Ground" 1 TheThingInTheDepths
+
+theThingInTheBog :: CardDef
+theThingInTheBog = agenda "10590" "The Thing in the Bog" 2 TheThingInTheDepths
+
 deepeningDark :: CardDef
 deepeningDark = agenda "10606" "Deepening Dark" 1 TheTwistedHollow
 

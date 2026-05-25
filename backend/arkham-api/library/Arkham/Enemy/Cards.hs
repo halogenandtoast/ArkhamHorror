@@ -135,7 +135,9 @@ allEncounterEnemyCards =
       , catacombsDocent
       , catsFromSaturn
       , catsOfUlthar
+      , cavernMoss
       , cellKeeper
+      , chelydranHybrid
       , cerenerianDeepOne
       , cloverClubPitBoss
       , cnidathqua
@@ -165,6 +167,8 @@ allEncounterEnemyCards =
       , crazedShoggoth
       , creatureOutOfDemhe
       , crystalParasite
+      , crustaceanHybridInTheDark
+      , crustaceanHybridInTheLight
       , cultistOfTheEnclave
       , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged
@@ -235,6 +239,7 @@ allEncounterEnemyCards =
       , giantAlbinoPenguin
       , glacialPhantasm
       , goatSpawn
+      , graspingTendril
       , grapplingHorror
       , grapplingSpawn
       , graveEater
@@ -308,6 +313,8 @@ allEncounterEnemyCards =
       , legsOfAtlachNacha_349
       , legsOfAtlachNacha_350
       , liarWithNoFace
+      , limulusHybridInTheDark
+      , limulusHybridInTheLight
       , lloigor
       , lodgeEnforcer
       , lodgeJailor
@@ -488,6 +495,7 @@ allEncounterEnemyCards =
       , theUnnamable
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
+      , thingInTheDepths
       , thorneOpenToNegotiation
       , thorneTheOneWithTheRedCravat
       , thrall

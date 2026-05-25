@@ -480,8 +480,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   ScenarioResolution _ ->
     error "The scenario should specify what to do for no resolution"
-  LookAtTopOfDeck _ (ScenarioDeckTarget _) _ ->
-    error "The scenario should handle looking at the top of the scenario deck"
+  LookAtTopOfDeck iid (ScenarioDeckTarget dkey) n -> do
+    let cards = take n $ fromMaybe [] $ lookup dkey scenarioDecks
+    focusCards (map flipCard cards) $ continue_ iid
+    pure a
   ChooseFrom iid choices | Just key <- collectionToScenarioDeckKey choices.collection ->
     case lookup key scenarioDecks of
       Just [] -> pure a
@@ -908,17 +910,21 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       ) -> do
       mods <- getModifiers iid
       let
+        isScenarioDeck = case t of
+          ScenarioDeckTarget _ -> True
+          _ -> False
+        flipForDisplay c = if searchType == Looking && isScenarioDeck then flipCard c else c
         additionalDepth =
           sum [x | searchType == Searching, SearchDepth x <- mods]
             + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
             ( \hmap (cardSource, _) -> case cardSource of
-                Zone.FromDeck -> insertWith (<>) Zone.FromDeck (deckGet a) hmap
+                Zone.FromDeck -> insertWith (<>) Zone.FromDeck (map flipForDisplay $ deckGet a) hmap
                 Zone.FromTopOfDeck n ->
-                  insertWith (<>) Zone.FromDeck (take (n + additionalDepth) $ deckGet a) hmap
+                  insertWith (<>) Zone.FromDeck (map flipForDisplay . take (n + additionalDepth) $ deckGet a) hmap
                 Zone.FromBottomOfDeck n ->
-                  insertWith (<>) Zone.FromDeck (take (n + additionalDepth) . reverse $ deckGet a) hmap
+                  insertWith (<>) Zone.FromDeck (map flipForDisplay . take (n + additionalDepth) . reverse $ deckGet a) hmap
                 Zone.FromDiscard ->
                   insertWith (<>) Zone.FromDiscard (map EncounterCard scenarioDiscard) hmap
                 other -> error $ mconcat ["Zone ", show other, " not yet handled"]
@@ -1206,6 +1212,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     case scenarioSearch of
       Nothing -> pure a
       Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
+  AddFocusedToTopOfDeck iid (ScenarioDeckTarget dkey) cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (fromMaybe [] $ lookup dkey scenarioDecks)
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ PutCardOnTopOfDeck iid (Deck.ScenarioDeckByKey dkey) card
+    pure $ a & foundCardsL .~ foundCards
   AddFocusedToTopOfDeck iid EncounterDeckTarget cardId -> do
     let
       card =

@@ -55,6 +55,8 @@ instance IsCampaign TheFeastOfHemlockVale where
           WrittenInRock -> handleTime
           HemlockHouse -> handleTime
           TheSilentHeath -> handleTime
+          TheLostSister -> handleTime
+          TheThingInTheDepths -> handleTime
           TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
           EpilogueStep -> Nothing
           UpgradeDeckStep nextStep' -> Just nextStep'

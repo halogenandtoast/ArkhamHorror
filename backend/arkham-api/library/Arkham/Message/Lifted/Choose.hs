@@ -15,6 +15,7 @@ import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.Location.Grid
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
@@ -297,6 +298,9 @@ gridLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 gridLabeled label action = unterminated do
   msgs <- lift $ capture action
   tell [GridLabel label msgs]
+
+gridLabeled_ :: ReverseQueue m => Pos -> QueueT Message m () -> ChooseT m ()
+gridLabeled_ (gridLabel -> label) = gridLabeled label
 
 portraitLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 portraitLabeled iid action = unterminated do

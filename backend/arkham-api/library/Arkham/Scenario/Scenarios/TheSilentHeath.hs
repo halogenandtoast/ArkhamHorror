@@ -10,14 +10,18 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers (unDeck)
+import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheSilentHeath.Helpers
@@ -193,9 +197,32 @@ instance RunMessage TheSilentHeath where
       when atLair failSkillTest
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
-      let (_iid :: InvestigatorId, _source :: Source, n :: Int) = toResult v
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
       case n of
+        1 -> do
+          entry "motherRachel"
+          increaseRelationshipLevel MotherRachel 1
+          interludeXpAll (toBonus "bonus" 1)
+        2 -> do
+          entry "leahAtwood"
+          record LeahSearchedThePearlRuins
+          eachInvestigator \iid' -> gainClues iid' source 1
+        Theta -> do
+          step <- getCurrentActStep
+          if step == 1
+            then do
+              scope "drRosaMarquez" $ flavor $ setTitle "title" >> p.green "act1"
+              drawCards iid source 3
+            else do
+              scope "drRosaMarquez" $ flavor $ setTitle "title" >> p.green "act2"
+              locations <- select $ LocationWithCardsUnderneath AnyCards
+              chooseTargetM iid locations \lid -> do
+                cards <- field LocationCardsUnderneath lid
+                focusCards cards do
+                  let (treacheries, rest) = partition (`cardMatch` card_ #treachery) cards
+                  addToEncounterDiscard treacheries
+                  placeUnderneath lid rest
         Psi -> do
           entry "larvalTunnel"
           loc <- selectJust $ locationIs Locations.larvalTunnel

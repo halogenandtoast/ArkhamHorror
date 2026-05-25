@@ -57,7 +57,7 @@
   { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9770, "playerCards": 0, "code": "tskc", "cycle": 9, "encounterDuplicates": 13 },
 
   { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 138, "code": "fhvp", "cycle": 10 },
-  { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10742, "playerCards": 0, "code": "fhvc", "cycle": 10 },
+  { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10743, "playerCards": 0, "code": "fhvc", "cycle": 10 },
   { "name": "The Drowned City Investigator Expansion", "min": 11001, "max": 11129, "playerCards": 129, "code": "tdcp", "cycle": 11 },
   { "name": "Core 2026", "min": 12001, "max": 12195, "playerCards": 104, "code": "core2026", "cycle": 12 },
 

@@ -75,8 +75,10 @@
     "startingLocation": "Starting Location",
     "cranberryBog": "Cranberry Bog"
   },
-  "groundDisturbance": {
-    "placeSinkhole": "Place 1 damage on the nearest _Bog_ location, as a sinkhole"
+  "label": {
+    "groundDisturbance": {
+      "placeSinkhole": "Place 1 damage on the nearest _Bog_ location, as a sinkhole"
+    }
   },
   "codex": {
     "riverHawthorne": {
@@ -95,6 +97,20 @@
     },
     "xp": {
       "bonus": "Bonus experience"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of Sunken locations in play (rounded up).",
+      "cultist": "-1. You may remove 1 sinkhole from the nearest Bog location.",
+      "tablet": "-3. If you fail, place 1 damage on the nearest Bog location, as a sinkhole.",
+      "elderThing": "-4. If you fail, search the encounter deck and discard pile for a Grasping Tendril enemy and draw it, ignoring its surge keyword."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of Sunken locations in play (rounded up).",
+      "cultist": "-3. If you succeed, you may remove 1 sinkhole from the nearest Bog location.",
+      "tablet": "-5. Place 1 damage on the nearest Bog location, as a sinkhole.",
+      "elderThing": "-5. Search the encounter deck and discard pile for a Grasping Tendril enemy and draw it, ignoring its surge keyword."
     }
   },
   "resolutions": {

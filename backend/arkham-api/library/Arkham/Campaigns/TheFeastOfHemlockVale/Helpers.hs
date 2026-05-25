@@ -43,6 +43,12 @@ data Day = Day1 | Day2 | Day3
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+dayNumber :: Day -> Int
+dayNumber = \case
+  Day1 -> 1
+  Day2 -> 2
+  Day3 -> 3
+
 data Time = Night | Day
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

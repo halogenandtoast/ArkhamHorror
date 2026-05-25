@@ -137,6 +137,7 @@ allEncounterEnemyCards =
       , catsOfUlthar
       , cavernMoss
       , cellKeeper
+      , chelydranHybrid
       , cerenerianDeepOne
       , cloverClubPitBoss
       , cnidathqua
@@ -238,6 +239,7 @@ allEncounterEnemyCards =
       , giantAlbinoPenguin
       , glacialPhantasm
       , goatSpawn
+      , graspingTendril
       , grapplingHorror
       , grapplingSpawn
       , graveEater
@@ -493,6 +495,7 @@ allEncounterEnemyCards =
       , theUnnamable
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
+      , thingInTheDepths
       , thorneOpenToNegotiation
       , thorneTheOneWithTheRedCravat
       , thrall

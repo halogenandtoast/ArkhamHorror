@@ -650,6 +650,9 @@ allTreacheries =
       , --- The Lost Sister [fhv]
         SomeTreacheryCard reclaimedByNature
       , SomeTreacheryCard luminousGrowth
+      , --- The Thing in the Depths [fhv]
+        SomeTreacheryCard groundDisturbance
+      , SomeTreacheryCard sinkingSludge
       , --- The Twisted Hollow [fhv]
         SomeTreacheryCard deepShadows
       , SomeTreacheryCard lurkingFear

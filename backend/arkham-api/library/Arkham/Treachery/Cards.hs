@@ -684,4 +684,6 @@ allEncounterTreacheryCards =
       , fire1
       , noxiousSmoke
       , ashenRebirth
+      , sinkingSludge
+      , groundDisturbance
       ]

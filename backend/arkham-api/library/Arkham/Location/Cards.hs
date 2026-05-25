@@ -31,6 +31,7 @@ allLocationCards =
       , abandonedCamp
       , abandonedChapel
       , abandonedChapelSpectral
+      , abandonedShack
       , abandonedSite
       , abbeyChurch
       , abbeyTowerSpiresForbidden
@@ -230,6 +231,7 @@ allLocationCards =
       , courtOfTheGreatOldOnesANotTooDistantFuture
       , courtOfTheOutsiders
       , courtyard
+      , coveredBridge
       , coyoacan
       , cragOfTheGhouls
       , crashSite
@@ -341,12 +343,14 @@ allLocationCards =
       , fathomlessLake
       , faubourgMarigny
       , fecundThicket
+      , fetidPool
       , firstNationalGrocery
       , firstNationalGroceryInTooDeep
       , fishGraveyard
       , fishStreetBridge
       , fishStreetBridgeInTooDeep
       , flightIntoOblivion
+      , floodedPath
       , floodedSquare
       , forbiddenLands
       , forbiddingShore
@@ -594,6 +598,7 @@ allLocationCards =
       , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
       , mu
+      , muddyFen
       , museumEntrance
       , museumHalls
       , mushroomGrove
@@ -622,6 +627,13 @@ allLocationCards =
       , onyxGates
       , onyxGuardians
       , openCave
+      , openWater10593b
+      , openWater10594b
+      , openWater10595b
+      , openWater10596b
+      , openWater10597b
+      , openWater10598b
+      , openWater10599b
       , operaGarnier212
       , operaGarnier213
       , operatingRoom
@@ -751,6 +763,7 @@ allLocationCards =
       , room225
       , room245
       , ropeBridge
+      , rottenDock
       , rouletteWheel
       , ruinousStreets
       , ruinsOfCarcosaAMomentsRest
@@ -859,6 +872,7 @@ allLocationCards =
       , tadsGeneralStoreNight
       , tanneries
       , tanneriesAbandoned
+      , tangledThicket
       , tarPit
       , tearThroughSpace
       , tearThroughTime

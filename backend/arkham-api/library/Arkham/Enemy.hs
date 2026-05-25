@@ -593,6 +593,10 @@ allEnemies =
       , SomeEnemyCard crustaceanHybridInTheLight
       , SomeEnemyCard crustaceanHybridInTheDark
       , SomeEnemyCard cavernMoss
+      , --- The Thing in the Depths [fhv]
+        SomeEnemyCard thingInTheDepths
+      , SomeEnemyCard chelydranHybrid
+      , SomeEnemyCard graspingTendril
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid

@@ -197,6 +197,33 @@ blackAmanita =
           ]
     }
 
+thingInTheDepths :: CardDef
+thingInTheDepths =
+  (enemy "10600" ("Thing in the Depths" <:> "Rising from the Deep") TheThingInTheDepths 1)
+    { cdCardTraits = setFromList [Abomination, Flora, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdUnique = True
+    , cdVictoryPoints = Just 2
+    }
+
+chelydranHybrid :: CardDef
+chelydranHybrid =
+  (enemy "10601" ("Chelydran Hybrid" <:> "Flowering Anomaly") TheThingInTheDepths 1)
+    { cdCardTraits = setFromList [Creature, Flora, Mutated, Elite]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Patrol EmptyLocation]
+    }
+
+graspingTendril :: CardDef
+graspingTendril =
+  (enemy "10602" "Grasping Tendril" TheThingInTheDepths 5)
+    { cdCardTraits = setFromList [Abomination, Flora, Mutated]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Surge
+          , Keyword.ScenarioModifierKeyword "time" (String "Night") Keyword.Aloof
+          ]
+    }
+
 corpseLichen :: CardDef
 corpseLichen =
   (enemy "10739" "Corpse Lichen" Myconids 1)

@@ -940,6 +940,21 @@ allLocations =
     , SomeLocationCard undergroundPools
     , SomeLocationCard openCave
     , SomeLocationCard fungalCave
+    , --- The Thing in the Depths
+      SomeLocationCard muddyFen
+    , SomeLocationCard openWater10593b
+    , SomeLocationCard tangledThicket
+    , SomeLocationCard openWater10594b
+    , SomeLocationCard fetidPool
+    , SomeLocationCard openWater10595b
+    , SomeLocationCard floodedPath
+    , SomeLocationCard openWater10596b
+    , SomeLocationCard abandonedShack
+    , SomeLocationCard openWater10597b
+    , SomeLocationCard rottenDock
+    , SomeLocationCard openWater10598b
+    , SomeLocationCard coveredBridge
+    , SomeLocationCard openWater10599b
     , --- The Twisted Hollow
       SomeLocationCard glimmeringMeadow
     , SomeLocationCard blightedGlade

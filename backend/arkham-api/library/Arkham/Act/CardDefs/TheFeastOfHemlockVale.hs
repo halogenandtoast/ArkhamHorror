@@ -32,6 +32,12 @@ onTheTrail = act "10573" "On the Trail" 2 TheLostSister
 faceToCarapace :: CardDef
 faceToCarapace = act "10574" "Face to Carapace" 3 TheLostSister
 
+aBotanicalSurvey :: CardDef
+aBotanicalSurvey = act "10591" "A Botanical Survey" 1 TheThingInTheDepths
+
+discoveryOfALifetime :: CardDef
+discoveryOfALifetime = act "10592" "Discovery of a Lifetime" 2 TheThingInTheDepths
+
 desperateSearch :: CardDef
 desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherSide = Just "10607b"}
 

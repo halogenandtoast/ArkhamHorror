@@ -70,6 +70,18 @@ luminousGrowth =
     { cdCardTraits = setFromList [Hazard, Trait.Flora]
     }
 
+groundDisturbance :: CardDef
+groundDisturbance =
+  (treachery "10603" "Ground Disturbance" TheThingInTheDepths 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+sinkingSludge :: CardDef
+sinkingSludge =
+  (treachery "10604" "Sinking Sludge" TheThingInTheDepths 4)
+    { cdCardTraits = singleton Hazard
+    }
+
 deepShadows :: CardDef
 deepShadows =
   (treachery "10622" "Deep Shadows" TheTwistedHollow 2)

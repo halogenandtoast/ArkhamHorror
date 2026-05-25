@@ -376,6 +376,9 @@ allActs =
       SomeActCard theMissingSibling
     , SomeActCard onTheTrail
     , SomeActCard faceToCarapace
+    , --- The Thing in the Depths
+      SomeActCard aBotanicalSurvey
+    , SomeActCard discoveryOfALifetime
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie

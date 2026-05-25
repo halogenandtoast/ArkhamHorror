@@ -24,7 +24,8 @@ allActCards =
   mapFromList
     $ map
       (toCardCode &&& id)
-      [ aCircleUnbroken
+      [ aBotanicalSurvey
+      , aCircleUnbroken
       , aCosmicJourney
       , aFamiliarPattern
       , afterHours
@@ -79,6 +80,7 @@ allActCards =
       , destroyTheSource
       , discoverTheTruth
       , discoveringTheTruth
+      , discoveryOfALifetime
       , disruptingTheRitual
       , dormancy
       , enteringTheDreamlands

@@ -164,6 +164,7 @@ allAgendaCards =
       , showbusinessAsUsual
       , silenceSpeaks
       , silentStirring
+      , sinkingGround
       , snappedThreads
       , somethingStirs
       , specialInvestigation
@@ -231,6 +232,7 @@ allAgendaCards =
       , theShapeOfChaos
       , theTempleWarden
       , theTerrifyingTruth
+      , theThingInTheBog
       , theThingWithNoName
       , theThirdAct
       , theThirdNight

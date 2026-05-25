@@ -336,6 +336,9 @@ allAgendas =
     , --- The Lost Sister
       SomeAgendaCard intoTheCaves
     , SomeAgendaCard darknessClosesIn
+    , --- The Thing in the Depths
+      SomeAgendaCard sinkingGround
+    , SomeAgendaCard theThingInTheBog
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale

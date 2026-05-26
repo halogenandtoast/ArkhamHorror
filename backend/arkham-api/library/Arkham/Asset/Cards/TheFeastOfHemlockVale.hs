@@ -783,3 +783,19 @@ thePearlDiaryAGrimAccount =
     , cdSkills = [#intellect, #agility]
     , cdUnique = True
     }
+
+theCaptives :: CardDef
+theCaptives =
+  (storyAsset_ "10641" ("The Captives" <:> "Star Children") TheLongestNight)
+    { cdCardTraits = setFromList [Trait.Innocent, Mutated]
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    }
+
+ajax :: CardDef
+ajax =
+  (storyAsset "10642" ("Ajax" <:> "Faithful Steed") 2 TheLongestNight)
+    { cdCardTraits = setFromList [Ally, Creature]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }

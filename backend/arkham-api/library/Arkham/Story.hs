@@ -161,6 +161,8 @@ allStories =
     , -- The Feast of Hemlock Vale
       --- Hemlock House
       SomeStoryCard thePredatoryHouse
+    , --- The Longest Night
+      SomeStoryCard barriersDecoysAndTraps
     , --- The First Day
       SomeStoryCard dayOne
     , SomeStoryCard nightOne

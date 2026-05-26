@@ -215,3 +215,15 @@ fire =
   (treachery "10743" "Fire!" Fire 5)
     { cdCardTraits = singleton Hazard
     }
+
+endlessNight :: CardDef
+endlessNight =
+  (treachery "10649" "Endless Night" TheLongestNight 2)
+    { cdCardTraits = singleton Terror
+    }
+
+incursion :: CardDef
+incursion =
+  (treachery "10650" "Incursion" TheLongestNight 4)
+    { cdCardTraits = singleton Scheme
+    }

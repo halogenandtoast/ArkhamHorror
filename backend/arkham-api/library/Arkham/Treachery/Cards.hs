@@ -303,6 +303,7 @@ allEncounterTreacheryCards =
       , empyreanBrilliance
       , encephalonSignal
       , endlessDescent
+      , endlessNight
       , endlessWeaving
       , enervation
       , entombed
@@ -381,6 +382,7 @@ allEncounterTreacheryCards =
       , inconvenientQuesitoningC
       , inconvenientQuesitoningD
       , incriminatingEvidence
+      , incursion
       , indescribableApparition
       , inexplicableCold
       , inexplicableColdTheMidwinterGala

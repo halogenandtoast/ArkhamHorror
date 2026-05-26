@@ -39,6 +39,7 @@ allPlayerAssetCards =
       , adaptable1
       , agentAriQuinnFoundationResearcher
       , agencyBackup5
+      , ajax
       , alchemicalDistillation
       , alchemicalTransmutation
       , alchemicalTransmutation2
@@ -1103,6 +1104,7 @@ allEncounterAssetCards =
       , crystalRemainsTheChild
       , crystalRemainsTheFather
       , crystalRemainsTheMother
+      , theCaptives
       , valeLanternBeaconOfHope
       , valeLanternExtinguishedLightBoon
       , valeLanternAFaintHope

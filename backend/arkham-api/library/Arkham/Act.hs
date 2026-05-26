@@ -382,6 +382,8 @@ allActs =
     , --- The Twisted Hollow
       SomeActCard desperateSearch
     , SomeActCard wheresBertie
+    , --- The Longest Night
+      SomeActCard theLongestNight
     , --- Day of Rest
       SomeActCard dawnOfTheFirstDay
     , --- Day of Rain

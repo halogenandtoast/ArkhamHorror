@@ -62,6 +62,8 @@ const deckImage = computed(() => {
       return imgsrc("cards/10612b.avif");
     case 'CavernsDeck':
       return imgsrc("cards/10577b.avif");
+    case 'EnemyDeck':
+      return imgsrc("backs/back_the_longest_night.jpg");
     default:
       return imgsrc("back.png");
   }

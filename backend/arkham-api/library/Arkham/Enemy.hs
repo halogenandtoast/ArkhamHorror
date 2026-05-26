@@ -597,6 +597,19 @@ allEnemies =
         SomeEnemyCard thingInTheDepths
       , SomeEnemyCard chelydranHybrid
       , SomeEnemyCard graspingTendril
+      , --- The Longest Night [fhv]
+        SomeEnemyCard ursineHybrid
+      , SomeEnemyCard moltingHybridA
+      , SomeEnemyCard moltingHybridB
+      , SomeEnemyCard moltingHybridC
+      , SomeEnemyCard lupineHybridA
+      , SomeEnemyCard lupineHybridB
+      , SomeEnemyCard lupineHybridC
+      , SomeEnemyCard capraHybrid
+      , SomeEnemyCard equineHybridA
+      , SomeEnemyCard equineHybridB
+      , SomeEnemyCard equineHybridC
+      , SomeEnemyCard slitheringHybrid
       , --- The Twisted Hollow [fhv]
         SomeEnemyCard ursineHybridGlowingAbomination
       , SomeEnemyCard stalkingHybrid

@@ -126,6 +126,7 @@ allEncounterEnemyCards =
       , buriedMinerALostMemento
       , buriedMinerExhumeTheBones
       , burrowingHybrid
+      , capraHybrid
       , captiveSubjects
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
@@ -215,6 +216,9 @@ allEncounterEnemyCards =
       , emissaryFromYuggoth
       , enragedGug
       , enthralledSecurityGuard
+      , equineHybridA
+      , equineHybridB
+      , equineHybridC
       , erikaStrandPossessedProducer
       , eztliGuardian
       , fanatic
@@ -322,6 +326,9 @@ allEncounterEnemyCards =
       , lanternClubMember
       , lostResearcher
       , lumberingGug
+      , lupineHybridA
+      , lupineHybridB
+      , lupineHybridC
       , lupineThrall
       , lurkingDeepOne
       , madPatient
@@ -347,6 +354,9 @@ allEncounterEnemyCards =
       , mindlessDancer
       , mrTrombly
       , mobster
+      , moltingHybridA
+      , moltingHybridB
+      , moltingHybridC
       , moonBeast
       , moonLizard
       , moonboundByakhee
@@ -444,6 +454,7 @@ allEncounterEnemyCards =
       , slainForemanSympathyPain
       , slimeCoveredDhole
       , slitheringDhole
+      , slitheringHybrid
       , spawnOfHali
       , specterOfDeath
       , spectralRaven
@@ -510,6 +521,7 @@ allEncounterEnemyCards =
       , uncannyShadowPlayfulShadows
       , uncannyShadowTimorousShadows
       , unsealedPhantasm
+      , ursineHybrid
       , ursineHybridGlowingAbomination
       , valentinoRivas
       , vampireThrall

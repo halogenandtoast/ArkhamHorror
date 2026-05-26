@@ -342,6 +342,8 @@ allAgendas =
     , --- The Twisted Hollow
       SomeAgendaCard deepeningDark
     , SomeAgendaCard backToTheVale
+    , --- The Longest Night
+      SomeAgendaCard theOnslaught
     , --- Day of Rest
       SomeAgendaCard welcomeToHemlockVale
     , --- Day of Rain

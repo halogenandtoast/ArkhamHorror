@@ -5,5 +5,6 @@ import hemlockHouse from '@/locales/en/theFeastOfHemlockVale/hemlockHouse.json'
 import theSilentHeath from '@/locales/en/theFeastOfHemlockVale/theSilentHeath.json'
 import theLostSister from '@/locales/en/theFeastOfHemlockVale/theLostSister.json'
 import theThingInTheDepths from '@/locales/en/theFeastOfHemlockVale/theThingInTheDepths.json'
+import theLongestNight from '@/locales/en/theFeastOfHemlockVale/theLongestNight.json'
 
-export default { ...base, writtenInRock, theTwistedHollow, hemlockHouse, theSilentHeath, theLostSister, theThingInTheDepths }
+export default { ...base, writtenInRock, theTwistedHollow, hemlockHouse, theSilentHeath, theLostSister, theThingInTheDepths, theLongestNight }

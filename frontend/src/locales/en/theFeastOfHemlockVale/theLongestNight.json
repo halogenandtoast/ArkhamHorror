@@ -81,8 +81,92 @@
     "title": "Traps",
     "body": "<h3>Traps</h3><p class='basic'>Some card abilities lay traps around the farm for enemies to fall into.</p><ul><li>To lay a trap, place 1 damage token (from the token pool) on your location, as a trap. Limit 1 trap per location.</li><li>When an enemy enters a location with a trap, remove the trap and deal 2 damage to that enemy.</li><li>Enemies that ignore traps do not resolve any of the above effects (including removing the trap).</li></ul>"
   },
+  "label": {
+    "placeBarrier": "Place a barrier",
+    "placeDecoy": "Place a decoy",
+    "placeTrap": "Place a trap",
+    "moveBarrier": "Move a barrier",
+    "moveDecoy": "Move a decoy",
+    "moveTrap": "Move a trap"
+  },
+  "codex": {
+    "leahAtwood": {
+      "title": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.leahAtwood.title </h3><p>A lupine figure with sharp, glistening teeth charges you, laughing like a hyena. Leah steps between you and brings her shovel down on the creature's head. \"Don't you dare!\" she yells at it.</p><p class='basic right'>In Leah Atwood's Notes, record <i>Leah stood by you</i>. Deal 3 damage to the nearest enemy.</p>"
+    },
+    "simeonAtwood": {
+      "title": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.simeonAtwood.title </h3><p>\"You gotta lure them out and trip 'em!\" Simeon cackles, looping a thread of baling wire around a collapsed fence. Just beyond it, he fills a shallow pit with half-eaten bones and gore. \"Now we wait,\" he whispers. His obvious delight in placing lethal traps is troubling, to say the least.</p><p class='basic right'>In Simeon Atwood's Notes, record <i>Simeon stood by you</i>. Place 1 decoy at any location.</p>"
+    },
+    "williamHemlock": {
+      "title": "{'{'}codex{'}'} Codex 4: William Hemlock",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.williamHemlock.title </h3><p>\"I found this stowed in the cellar.\" William sets a knapsack filled with tools and scrap metal on the ground. \"I hope it helps. I must say, I'm not particularly handy myself.\" You thank him before rummaging through the bag for supplies.</p><p class='basic right'>In William Hemlock's Notes, record <i>William stood by you</i>. Each investigator gains 1 clue (from the token pool).</p>"
+    },
+    "riverHawthorne": {
+      "title": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.riverHawthorne.title </h3><p>You explain your plan to River after spotting a pair of glowing blue eyes across the yard. \"Don't worry, darling. I'm used to having all eyes on me. Thankfully for you, I used to be quite the sprinter.\" River dashes across the clearing shouting expletives as they draw the creature away.</p><p class='basic right'>In River Hawthorne's Notes, record <i>River stood by you</i>. Choose a non-Elite enemy. Move that enemy to any location.</p>"
+    },
+    "gideonMizrah": {
+      "title": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.gideonMizrah.title </h3><p>\"Keep yer eyes peeled fer a strong door or lock,\" Gideon instructs. \"If ye take enough care, I may be able to trap one. Reminds me of the time I nearly died in the jungles of New Guinea. Summat was following me from…\" You quickly lose track of the old man's story.</p><p class='basic right'>In Gideon Mizrah's Notes, record <i>Gideon stood by you</i>. The next time an investigator would draw a card from the Enemy deck, discard that card instead.</p>"
+    },
+    "judithPark": {
+      "title": "{'{'}codex{'}'} Codex 7: Judith Park",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.judithPark.title </h3><p>\"About time they brought the hunt to us. I was getting tired of hiking all over the island just for a little action,\" She points her rifle at a pit lined with sharp scrap metal. \"I say we wait for 'em to get here and rain hell.\"</p><p class='basic right'>In Judith Park's Notes, record <i>Judith stood by you</i>. Place 1 trap at any location.</p>"
+    },
+    "theoPeters": {
+      "title": "{'{'}codex{'}'} Codex 8: Theo Peters",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.theoPeters.title </h3><p>Theo's blue truck barrels down the road toward you with a pack of snarling, ravenous creatures in hot pursuit. \"Get in!\" Theo shouts as he brakes. You hop into the truckbed as he guns the engine.</p><p class='basic right'>In Theo Peters' Notes, record <i>Theo stood by you</i>. You may move 1 barrier, decoy, or trap from your location to any location. Disengage from each enemy engaged with you and move to that location.</p>"
+    },
+    "drRosaMarquez": {
+      "title": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.drRosaMarquez.title </h3><p>\"This is Cantigny all over again,\" Dr. Marquez says as she drags several heavy crates to form a barrier. She tells you more about her first and last battle in the Great War, and the death of her partner. \"We can't die. Not like this,\" she says. \"We just have to hold out until dawn.\"</p><p class='basic right'>Place 2 barriers at your location.</p>"
+    },
+    "ajax": {
+      "title": "{'{'}codex{'}'} Codex Ω: Ajax",
+      "body": "<h3>@:theFeastOfHemlockVale.theLongestNight.codex.ajax.title </h3><p>A braying sound from the barn sets your nerves on edge. You step tentatively toward the barn, expecting to see yet another monstrosity, but instead find a palomino horse standing in a dirty cell. The name Ajax is engraved on a sign next to him. The noble beast lets out an impatient whinny as he tosses his head.</p><p class='basic right'>Take control of the Ajax story asset. He does not take up an ally slot for the remainder of this scenario.</p>"
+    }
+  },
+  "endlessNight": {
+    "damageCaptives": "Deal 2 damage to The Captives story asset"
+  },
   "enemyDeckRules": {
     "title": "The Enemy Deck",
     "body": "<h3>The Enemy Deck</h3><p class='basic'>During the setup of this scenario, a second deck with a different encounter back is constructed: the Enemy deck. This deck is a separate deck made up of only enemies, and represents the relentless horde of frenzied beasts coming for the captives. During the mythos phase, the agenda's forced effect prompts each investigator to draw the top card of the Enemy deck. The Enemy deck has its own discard pile and is immune to player card effects. Non-weakness enemies in this scenario are discarded to the Enemy discard pile. If the Enemy deck is empty, shuffle the Enemy discard pile back into the Enemy deck.</p>"
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Investigator Defeat",
+      "body": "<p>_Investigator Defeat_: The last thing you remember before the nightmarish shapes overwhelm you is a feeling of intense calm. The silver moonlight bathes the farm in stark monochrome as the creatures rip into your flesh. For a moment, you see your place in this world, as Mother Rachel intended. You are merely energy being converted to another form of energy.</p><p>Nothing else seems so perfect.</p><ul><li>Each defeated investigator is devoured (they are killed).</li><li>If there are no surviving investigators to continue the campaign, the investigators lose the campaign.</li><li>If another resolution was reached, the remaining investigators proceed to that resolution.</li><li>If no resolution was reached (each surviving investigator resigned): Skip to _Resolution 3_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: \"Please, listen,\" Dr. Marquez implores the captives. \"Each of you deserves to live a full life. We can help! You can receive care on the mainland.\" Tad spits in response. \"You've robbed us of a great privilege. We were chosen.\" Dr. Marquez hardly answers before a jagged plank of wood swings out from behind her, striking her on the shoulder. One of the captives holds it overhead, while several others gather round. Tad looks balefully at the professor and growls, \"Leave now.\" Dr. Marquez rises gingerly and walks out of the farmhouse. You follow her. \"Idiots. We saved their lives,\" she scoffs. As you leave, a young girl wearing a rabbit mask peers out from under some debris. You recognize her as Rebecca, Mother Rachel's daughter.</p>",
+      "xp5": "If the amount of damage on The Captives story asset is 0, each investigator earns 5 bonus experience.",
+      "xp4": "If the amount of damage on The Captives story asset is 1 or 2, each investigator earns 4 bonus experience.",
+      "xp3": "If the amount of damage on The Captives story asset is 3 or 4, each investigator earns 3 bonus experience.",
+      "captivesSaved": "In your Campaign Log, record <i>the captives were saved</i>.",
+      "skipToResolution4": "Skip to _Resolution 4_."
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Tad stands in the center of the farmhouse, his white-gold Vale cloak stained crimson. Surrounding him, the half-eaten corpses of the slain captives are arranged in a kind of circle. When you approach, the middle-aged man laughs bitterly. \"Why was I spared, and so many others taken?\" He raises both hands to his face and laughs hysterically. \"Why is everything so bright?!\" he giggles, clawing at his own eyes. You turn away and join Dr. Marquez outside, hunched over a pile of wreckage. A young girl wearing a rabbit mask scrambles out from underneath the debris. You recognize her as Rebecca, Mother Rachel's daughter.</p>",
+      "xp3": "If the amount of damage on The Captives story asset is 5 or 6, each investigator earns 3 bonus experience.",
+      "xp2": "If the amount of damage on The Captives story asset is 7 or 8, each investigator earns 2 bonus experience.",
+      "xp1": "If the amount of damage on The Captives story asset is 9, each investigator earns 1 bonus experience.",
+      "captivesLost": "In your Campaign Log, record <i>many captives were lost</i>.",
+      "skipToResolution4": "Skip to _Resolution 4_."
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: \"We can't stay!\" Dr. Marquez shouts. Utterly overwhelmed, you dash out of the fray and into the cornfields. Nightmarish shadows charge past you, braying and howling. You think of the captives in the farmhouse, staring their deaths head-on. At the far edge of the field, you find Dr. Marquez holding a young girl wearing a rabbit mask. You recognize her as Rebecca, Mother Rachel's daughter.</p><ul><li>The guilt from failing to help those in need haunts you forever. Each investigator must search the collection for a random basic Madness weakness and add it to their deck.</li><li>In your Campaign Log, record <i>all the captives were lost</i>.</li><li>Proceed to _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: The morning sun beats down, blindingly bright, as you cut through the fields back to the Vale. Flecks of slick, dark liquid drip from the withered stalks as you push through. Dr. Marquez stops and runs a hand under the brittle leaves. \"The fields are painted with blood. But why?\" She wipes the blood on a handkerchief and surveys the dripping field. \"What kind of monster would do this? Sentencing her followers—her own daughter—to death. It's almost biblical.\"</p><p>Rebecca pulls back her mask and shakes her head. \"Mother says it's our way. And she doesn't want me to die. She told me to hide. She said we were playing a game. 'Make yourself very small and hide near the barrels of kerosene. The animals won't smell you there'.\"</p><p>\"But why bring you here at all?\" the professor asks.</p><p>\"Some people didn't want to come to the barn. But when mama told them I would be there too, they said it was okay.\"</p><p>The group falls silent as you pass from one field and back into view of the Vale, veiled in gold under the radiant dawn. Suddenly, Dr. Marquez stops and takes you aside. \"We may be able to use this as leverage. Rebecca is living proof of Mother Rachel's hypocrisy, as horrible as that sounds. Everyone on Hemlock Isle will be at the Feast tonight. If we ask Rebecca to tell them what Mother Rachel said to her, we may be able to sway at least some of them to leave. And if that doesn't work, we can high-tail it back to the mainland and get the law involved.\"</p><p>The professor turns to Rebecca. \"Can we play a game? Like last night? Your mother told me she wants you to hide until the Feast.\" The young girl nods. Dr. Marquez lets out a manic giggle: strangely out of character for her usual controlled affect. You can't help but suppress a grin, too, despite the horrors you just witnessed.</p><ul><li>If the Ajax story asset was under the control of an investigator at the end of this scenario, choose an investigator to add it to their deck for the remainder of the campaign. It does not count toward their deck size.</li><li>Choose an investigator to add the Dr. Rosa Marquez story asset to their deck for the remainder of the campaign. It does not count toward their deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display ({xp}). Each investigator may now spend the experience recorded under \"Unspent Experience\" in your Campaign Log.</li><li>Update your Campaign Log: Record <i>Dr. Marquez has a plan</i>. In the \"Areas Surveyed\" section, check off <i>Southern Fields</i>.</li><li>Proceed to _Prelude: Dawn of the Final Day_.</li></ul>"
+    },
+    "xp": {
+      "bonus": "Bonus experience"
+    }
   }
 }

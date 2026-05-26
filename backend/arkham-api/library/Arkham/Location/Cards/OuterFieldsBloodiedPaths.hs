@@ -1,7 +1,12 @@
 module Arkham.Location.Cards.OuterFieldsBloodiedPaths (outerFieldsBloodiedPaths) where
 
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype OuterFieldsBloodiedPaths = OuterFieldsBloodiedPaths LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -12,8 +17,27 @@ outerFieldsBloodiedPaths = symbolLabel $ locationWith OuterFieldsBloodiedPaths C
 
 instance HasAbilities OuterFieldsBloodiedPaths where
   getAbilities (OuterFieldsBloodiedPaths a) =
-    extendRevealed a []
+    extendRevealed
+      a
+      [ groupLimit PerGame
+          $ restricted a 1 (Here <> exists (enemyAt a))
+          $ actionAbility
+      , groupLimit PerGame
+          $ mkAbility a 2
+          $ freeReaction
+          $ DiscoveringLastClue #after You (be a)
+      ]
 
 instance RunMessage OuterFieldsBloodiedPaths where
-  runMessage msg (OuterFieldsBloodiedPaths attrs) = runQueueT $ case msg of
+  runMessage msg l@(OuterFieldsBloodiedPaths attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemies <- select $ enemyAt attrs
+      chooseTargetM iid enemies \enemy -> do
+        connectingLocations <- select $ connectedFrom (be attrs) <> LocationCanBeEnteredBy enemy
+        chooseTargetM iid connectingLocations $ enemyMoveTo (attrs.ability 1) enemy
+      pure l
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      selectForMaybeM (assetIs Assets.theCaptives) \captives ->
+        healDamage captives (attrs.ability 2) 2
+      pure l
     _ -> OuterFieldsBloodiedPaths <$> liftRunMessage msg attrs

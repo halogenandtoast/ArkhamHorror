@@ -598,7 +598,7 @@ allEnemies =
       , SomeEnemyCard chelydranHybrid
       , SomeEnemyCard graspingTendril
       , --- The Longest Night [fhv]
-        SomeEnemyCard ursineHybrid
+        SomeEnemyCard ursineHybridStarvingAbomination
       , SomeEnemyCard moltingHybridA
       , SomeEnemyCard moltingHybridB
       , SomeEnemyCard moltingHybridC

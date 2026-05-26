@@ -249,6 +249,7 @@ import Arkham.Scenario.Runner as X (
   ScenarioAttrs,
   actStackL,
   additionalReferencesL,
+  deckDiscardsL,
   decksL,
   decksLayoutL,
   discardL,

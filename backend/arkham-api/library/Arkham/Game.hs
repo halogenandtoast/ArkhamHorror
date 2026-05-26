@@ -2234,6 +2234,9 @@ getLocationsMatching lmatcher = do
     LocationWithMostEnemies locationMatcher enemyMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (selectCount . (enemyMatcher <>) . enemyAt . toId)
+    LocationWithFewestEnemies locationMatcher enemyMatcher -> do
+      matches' <- go ls locationMatcher
+      mins <$> forToSnd matches' (selectCount . (enemyMatcher <>) . enemyAt . toId)
     LocationWithMostClues locationMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (pure . attr locationClues)
@@ -5852,6 +5855,7 @@ instance Projection Scenario where
       ScenarioEncounterDecks -> pure scenarioEncounterDecks
       ScenarioDifficulty -> pure scenarioDifficulty
       ScenarioDecks -> pure scenarioDecks
+      ScenarioDeckDiscards -> pure scenarioDeckDiscards
       ScenarioVictoryDisplay -> do
         enemies <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay VictoryDisplayZone)
         pure $ nubOrdOn (.id) (scenarioVictoryDisplay <> enemies)

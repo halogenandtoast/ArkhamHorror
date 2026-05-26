@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier (ModifierType (ScenarioModifier))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -40,7 +41,7 @@ instance RunMessage Fire where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       for_ attrs.attached.location \lid -> do
         assets <- select $ at_ (LocationWithId lid) <> AssetWithHealth
-        enemies <- select $ at_ (LocationWithId lid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
+        enemies <- select $ at_ (LocationWithId lid) <> EnemyCanBeDamagedBySource (attrs.ability 1) <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
         investigators <- select $ InvestigatorAt (LocationWithId lid)
         for_ assets \aid -> dealAssetDirectDamage aid (attrs.ability 1) 1
         for_ enemies $ nonAttackEnemyDamage Nothing (attrs.ability 1) 1

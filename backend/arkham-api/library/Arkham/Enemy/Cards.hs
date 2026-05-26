@@ -521,8 +521,8 @@ allEncounterEnemyCards =
       , uncannyShadowPlayfulShadows
       , uncannyShadowTimorousShadows
       , unsealedPhantasm
-      , ursineHybrid
       , ursineHybridGlowingAbomination
+      , ursineHybridStarvingAbomination
       , valentinoRivas
       , vampireThrall
       , vassalOfTheLurker

@@ -14,6 +14,10 @@
     "agnesBakerParallel": {
       "shuffle": "Shuffle event back in instead of discard?"
     },
+    "ajax": {
+      "moveTwice": "Move twice",
+      "moveToField": "Move to any Field location"
+    },
     "alchemicalDistillation": {
       "doNotEmpower": "Do not empower",
       "doNotResolveASecondOption": "Do not resolve a second option",

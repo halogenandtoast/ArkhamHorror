@@ -1,6 +1,7 @@
 module Arkham.Treachery.CardDefs.TheFeastOfHemlockVale where
 
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Keyword qualified as Keyword
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.CardDefs.Import
 
@@ -220,6 +221,7 @@ endlessNight :: CardDef
 endlessNight =
   (treachery "10649" "Endless Night" TheLongestNight 2)
     { cdCardTraits = singleton Terror
+    , cdKeywords = singleton Keyword.Peril
     }
 
 incursion :: CardDef

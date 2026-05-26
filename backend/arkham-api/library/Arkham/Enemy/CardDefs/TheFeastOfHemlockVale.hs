@@ -238,8 +238,8 @@ corpseLichen =
 longestNightBack :: Map Text Value
 longestNightBack = mapFromList [("customBack", String "back_the_longest_night.jpg")]
 
-ursineHybrid :: CardDef
-ursineHybrid =
+ursineHybridStarvingAbomination :: CardDef
+ursineHybridStarvingAbomination =
   (enemy "10643" ("Ursine Hybrid" <:> "Starving Abomination") TheLongestNight 1)
     { cdCardTraits = setFromList [Creature, Monster, Mutated, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]

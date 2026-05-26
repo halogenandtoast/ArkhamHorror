@@ -3,28 +3,38 @@ module Arkham.Scenario.Scenarios.TheLongestNight (theLongestNight) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Query (allInvestigators, getLead, getSetAsideCard)
+import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.SortedPair
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
+import Arkham.Trait (Trait (Madness))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Control.Lens (non)
+import Data.Map.Strict qualified as Map
 
 newtype TheLongestNight = TheLongestNight ScenarioAttrs
   deriving anyclass IsScenario
@@ -34,6 +44,7 @@ instance HasModifiersFor TheLongestNight where
   getModifiersFor (TheLongestNight a) = do
     modifySelect a (assetIs Assets.drRosaMarquezBestInHerField) [DoNotTakeUpSlot #ally]
     modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
+    modifySelect a (assetIs Assets.ajax) [DoNotTakeUpSlot #ally]
 
 theLongestNight :: Difficulty -> TheLongestNight
 theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night" difficulty []
@@ -158,6 +169,7 @@ instance RunMessage TheLongestNight where
       gather Set.StrikingFear
 
       placeStory Stories.nightTwo
+      placeStory Stories.barriersDecoysAndTraps
       setScenarioDayAndTime
 
       setAgendaDeck [Agendas.theOnslaught]
@@ -194,7 +206,7 @@ instance RunMessage TheLongestNight where
       eachInvestigator \iid -> chooseTargetM iid allLocations $ moveTo_ attrs iid
 
       let westOuterFieldsLid = maybe farmhouse snd $ find ((== westOuterPos) . fst) outerFields
-      ursine <- enemyAt Enemies.ursineHybrid westOuterFieldsLid
+      ursine <- enemyAt Enemies.ursineHybridStarvingAbomination westOuterFieldsLid
 
       enemyCards <- fromGathered (CardFromEncounterSet Set.TheLongestNight <> #enemy)
       addExtraDeck EnemyDeck =<< shuffle enemyCards
@@ -204,12 +216,7 @@ instance RunMessage TheLongestNight where
         nonAttackEnemyDamage Nothing ScenarioSource 2 ursine
         exhaustEnemy ScenarioSource ursine
 
-      lead <- getLead
-      chooseTargetM lead allLocations \lid ->
-        placeTokens ScenarioSource lid Horror 1
-      chooseTargetM lead allLocations \lid ->
-        placeTokens ScenarioSource lid Damage 1
-      chooseTargetM lead allLocations (`forTarget` Setup)
+      doStep 1 msg
 
       facedAlone <- getHasRecord TheInvestigatorsFacedTheLongestNightAlone
       let clueCount = if facedAlone then 3 else 2
@@ -260,10 +267,220 @@ instance RunMessage TheLongestNight where
 
       setAsideEvery (cardIs Treacheries.fire)
       setAside [Assets.ajax]
+    DoStep 1 Setup -> do
+      lead <- getLead
+      allLocations <- select Anywhere
+      decoyLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveDecoys) allLocations
+      chooseOneM lead do
+        questionLabeled' "placeDecoy"
+        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Horror 1
+      trapLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveTraps) allLocations
+      chooseOneM lead do
+        questionLabeled' "placeTrap"
+        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Damage 1
+      chooseOneM lead do
+        questionLabeled' "placeBarrier"
+        unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
+      pure s
     ForTarget (LocationTarget lid) Setup -> do
       lead <- getLead
       connected <- select $ connectedTo (LocationWithId lid)
       chooseTargetM lead connected \lid2 ->
         push $ ScenarioCountIncrementBy (Barriers lid lid2) 1
+      pure s
+    ScenarioSpecific "codex" v -> scope "codex" do
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      case n of
+        2 -> do
+          entry "leahAtwood"
+          record LeahStoodByYou
+          enemies <- select $ NearestEnemyTo iid AnyEnemy
+          chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) source 3
+          pure s
+        3 -> do
+          entry "simeonAtwood"
+          record SimeonStoodByYou
+          decoyLocations <- select $ LocationWithoutModifier CannotHaveDecoys
+          chooseTargetM iid decoyLocations \lid -> placeTokens source lid Horror 1
+          pure s
+        4 -> do
+          entry "williamHemlock"
+          record WilliamStoodByYou
+          eachInvestigator \iid' -> gainClues iid' source 1
+          pure s
+        5 -> do
+          entry "riverHawthorne"
+          record RiverStoodByYou
+          enemies <- select $ NonEliteEnemy
+          allLocations <- select Anywhere
+          chooseTargetM iid enemies \eid ->
+            chooseTargetM iid allLocations $ enemyMoveTo source eid
+          pure s
+        6 -> do
+          entry "gideonMizrah"
+          record GideonStoodByYou
+          let meta = toResultDefault defaultMeta attrs.meta
+          pure $ TheLongestNight $ attrs & metaL .~ toJSON meta {discardNextEnemyDraw = True}
+        7 -> do
+          entry "judithPark"
+          record JudithStoodByYou
+          trapLocations <- select $ LocationWithoutModifier CannotHaveTraps
+          chooseTargetM iid trapLocations \lid -> placeTokens source lid Damage 1
+          pure s
+        8 -> do
+          entry "theoPeters"
+          record TheoStoodByYou
+          doStep 1 msg
+          pure s
+        Theta -> do
+          entry "drRosaMarquez"
+          lid <- selectJust $ locationWithInvestigator iid
+          doStep 2 (ForTarget (LocationTarget lid) msg)
+          doStep 2 (ForTarget (LocationTarget lid) msg)
+          pure s
+        Omega -> do
+          entry "ajax"
+          ajaxCard <- getSetAsideCard Assets.ajax
+          takeControlOfSetAsideAsset iid ajaxCard
+          pure s
+        _ -> pure s
+    DoStep 1 (ScenarioSpecific "codex" v) -> scope "codex" do
+      let (iid :: InvestigatorId, source :: Source, _n :: Int) = toResult v
+      lid <- selectJust $ locationWithInvestigator iid
+      hasDecoy <- lid <=~> LocationWithHorror (atLeast 1)
+      hasTrap <- lid <=~> LocationWithDamage (atLeast 1)
+      connected <- select $ connectedTo (LocationWithId lid)
+      let meta = toResultDefault defaultMeta attrs.meta
+      let barrierPairs =
+            filter
+              (\lid2 -> Map.findWithDefault 0 (sortedPair lid lid2) meta.barriers > 0)
+              connected
+      let hasOptions = hasDecoy || hasTrap || notNull barrierPairs
+      allLocations <- select Anywhere
+      when hasOptions do
+        chooseOneM iid do
+          when hasDecoy do
+            labeled' "moveDecoy" do
+              chooseTargetM iid allLocations \toLid -> do
+                removeTokens source lid Horror 1
+                placeTokens source toLid Horror 1
+                selectEach (enemyEngagedWith iid) $ disengageEnemy iid
+                moveTo_ source iid toLid
+          when hasTrap do
+            labeled' "moveTrap" do
+              chooseTargetM iid allLocations \toLid -> do
+                removeTokens source lid Damage 1
+                placeTokens source toLid Damage 1
+                selectEach (enemyEngagedWith iid) $ disengageEnemy iid
+                moveTo_ source iid toLid
+          when (notNull barrierPairs) do
+            labeled' "moveBarrier" do
+              chooseTargetM iid barrierPairs \fromLid -> do
+                push $ ScenarioCountDecrementBy (Barriers lid fromLid) 1
+                chooseTargetM iid allLocations \toLid -> do
+                  connectedToTarget <- select $ connectedTo (LocationWithId toLid)
+                  chooseTargetM iid connectedToTarget \toLid2 ->
+                    push $ ScenarioCountIncrementBy (Barriers toLid toLid2) 1
+                  selectEach (enemyEngagedWith iid) $ disengageEnemy iid
+                  moveTo_ source iid toLid
+      pure s
+    DoStep 2 (ForTarget (LocationTarget lid) (ScenarioSpecific "codex" v)) -> do
+      let (iid :: InvestigatorId, _source :: Source, _n :: Int) = toResult v
+      connected <- select $ connectedTo (LocationWithId lid)
+      chooseTargetM iid connected \toLid ->
+        push $ ScenarioCountIncrementBy (Barriers lid toLid) 1
+      pure s
+    DrewCards _iid drew
+      | drew.deck == Deck.ScenarioDeckByKey EnemyDeck -> do
+          let meta = toResultDefault defaultMeta attrs.meta
+          if meta.discardNextEnemyDraw
+            then do
+              pure
+                $ TheLongestNight
+                $ attrs
+                & metaL
+                .~ toJSON meta {discardNextEnemyDraw = False}
+                & deckDiscardsL
+                . at EnemyDeck
+                . non []
+                %~ (drew.cards <>)
+            else TheLongestNight <$> liftRunMessage msg attrs
+    ScenarioCountIncrementBy (Barriers l1 l2) n -> do
+      let meta' = incrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
+      pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'
+    ScenarioCountDecrementBy (Barriers l1 l2) n -> do
+      let meta' = decrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
+      pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'
+    ScenarioResolution r -> scope "resolutions" do
+      defeated <- select DefeatedInvestigator
+      unless (null defeated) do
+        resolutionOnly defeated $ scope "investigatorDefeat" $ setTitle "title" >> p "body"
+        for_ defeated (kill attrs)
+      remaining <- selectAny UneliminatedInvestigator
+      resigned <- selectAny ResignedInvestigator
+      if remaining || resigned
+        then case r of
+          NoResolution -> do_ R3
+          _ -> do_ msg
+        else gameOver
+      pure s
+    Do (ScenarioResolution r) -> scope "resolutions" do
+      case r of
+        Resolution 1 -> do
+          captives <- selectJust $ assetIs Assets.theCaptives
+          damage <- fieldMap AssetTokens (countTokens Damage) captives
+          resolutionFlavor do
+            setTitle "resolution1.title"
+            p "resolution1.body"
+            ul do
+              li.validate (damage == 0) "resolution1.xp5"
+              li.validate (damage >= 1 && damage <= 2) "resolution1.xp4"
+              li.validate (damage >= 3) "resolution1.xp3"
+              li "resolution1.captivesSaved"
+              li "resolution1.skipToResolution4"
+          record TheCaptivesWereSaved
+          let bonus
+                | damage == 0 = toBonus "bonus" 5
+                | damage <= 2 = toBonus "bonus" 4
+                | otherwise = toBonus "bonus" 3
+          interludeXpAll bonus
+          do_ R4
+        Resolution 2 -> do
+          captives <- selectJust $ assetIs Assets.theCaptives
+          damage <- fieldMap AssetTokens (countTokens Damage) captives
+          resolutionFlavor do
+            setTitle "resolution2.title"
+            p "resolution2.body"
+            ul do
+              li.validate (damage >= 5 && damage <= 6) "resolution2.xp3"
+              li.validate (damage >= 7 && damage <= 8) "resolution2.xp2"
+              li.validate (damage >= 9) "resolution2.xp1"
+              li "resolution2.captivesLost"
+              li "resolution2.skipToResolution4"
+          record ManyCaptivesWereLost
+          let bonus
+                | damage <= 6 = toBonus "bonus" 3
+                | damage <= 8 = toBonus "bonus" 2
+                | otherwise = toBonus "bonus" 1
+          interludeXpAll bonus
+          do_ R4
+        Resolution 3 -> do
+          resolution "resolution3"
+          record AllTheCaptivesWereLost
+          eachInvestigator \iid -> searchCollectionForRandomBasicWeakness iid attrs [Madness]
+          do_ R4
+        Resolution 4 -> do
+          ajaxControlled <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.ajax
+          when ajaxControlled do
+            investigators <- allInvestigators
+            forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.ajax
+          investigators <- allInvestigators
+          forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drRosaMarquezBestInHerField
+          record DrMarquezHasAPlan
+          record $ AreasSurveyed SouthernFields
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> TheLongestNight <$> liftRunMessage msg attrs

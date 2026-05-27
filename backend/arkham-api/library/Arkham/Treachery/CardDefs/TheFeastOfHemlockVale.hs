@@ -1,6 +1,7 @@
 module Arkham.Treachery.CardDefs.TheFeastOfHemlockVale where
 
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Keyword qualified as Keyword
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.CardDefs.Import
 
@@ -214,4 +215,17 @@ fire :: CardDef
 fire =
   (treachery "10743" "Fire!" Fire 5)
     { cdCardTraits = singleton Hazard
+    }
+
+endlessNight :: CardDef
+endlessNight =
+  (treachery "10649" "Endless Night" TheLongestNight 2)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+incursion :: CardDef
+incursion =
+  (treachery "10650" "Incursion" TheLongestNight 4)
+    { cdCardTraits = singleton Scheme
     }

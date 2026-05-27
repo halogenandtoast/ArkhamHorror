@@ -12,6 +12,7 @@ decoyTrap =
       { cdCardTraits = setFromList [Trap, Trick]
       , cdSkills = [#agility, #combat, #wild]
       , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
       }
 
 glassing :: CardDef
@@ -21,6 +22,7 @@ glassing =
       { cdCardTraits = setFromList [Insight, Trap]
       , cdSkills = [#agility, #intellect, #wild]
       , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
       }
 
 guerrillaTactics :: CardDef
@@ -43,6 +45,7 @@ hiddenShelter :: CardDef
 hiddenShelter =
   (event "60565" "Hidden Shelter" 1 Survivor)
     { cdCardTraits = setFromList [Supply, Trick]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 lieInWait :: CardDef
@@ -52,6 +55,7 @@ lieInWait =
       { cdCardTraits = setFromList [Tactic, Trap]
       , cdSkills = [#combat, #wild, #willpower]
       , cdLimits = [LimitPerTraitPerLocation Trap 1]
+      , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
       }
 
 stalkPrey :: CardDef
@@ -104,6 +108,7 @@ ropeTrap2 =
     , cdSkills = [#combat, #intellect]
     , cdLevel = Just 2
     , cdLimits = [LimitPerTraitPerLocation Trap 1]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 makeshiftBomb3 :: CardDef
@@ -113,4 +118,5 @@ makeshiftBomb3 =
     , cdSkills = [#agility, #combat, #wild]
     , cdLevel = Just 3
     , cdLimits = [LimitPerTraitPerLocation Trap 1]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }

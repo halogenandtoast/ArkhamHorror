@@ -11,6 +11,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Source
 
 newtype TheFeastOfHemlockVale = TheFeastOfHemlockVale CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -95,7 +96,20 @@ instance RunMessage TheFeastOfHemlockVale where
           labeled' "gatherMoreInformation" do
             addChaosToken #tablet
             addChaosToken #elderthing
-            nextCampaignStep
+            areas <- getAreasSurveyed
+            let survey k = unless (k `elem` areas)
+            leadChooseOneM do
+              questionLabeled' "survey"
+              survey NorthPointMine do
+                scenarioLabeled' "writtenInRock" "10501-night1" $ afterPrelude WrittenInRock
+              survey HemlockHarbor do
+                scenarioLabeled' "hemlockHouse" "10523-night1" $ afterPrelude HemlockHouse
+              survey PearlRidge do
+                scenarioLabeled' "theSilentHeath" "10549-night1" $ afterPrelude TheSilentHeath
+              survey AkwanShoreline do
+                scenarioLabeled' "theLostSister" "10569-night1" $ afterPrelude TheLostSister
+              survey EastwickBog do
+                scenarioLabeled' "theThingInTheDepths" "10588-night1" $ afterPrelude TheThingInTheDepths
       pure c
     ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" Nothing)) -> do
       scope "prelude.theFirstEvening" do
@@ -191,6 +205,197 @@ instance RunMessage TheFeastOfHemlockVale where
           "pi" -> do
             flavor $ setTitle "title" >> p "friendlyStrangers"
             addCampaignCardToDeck iid DoNotShuffleIn Assets.worryRockTokenOfSafety
+          _ -> error "Unknown codex"
+      let meta = toResultDefault initMeta attrs.meta
+      let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
+    CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" Nothing) -> do
+      scope "prelude.theSecondEvening" do
+        simeonSurvived <- getHasRecord SimeonSurvived
+        flavor do
+          setTitle "title"
+          p "theSecondEvening1"
+          unscoped $ p.basic "checkCampaignLog"
+          ul do
+            li.validate simeonSurvived "simeonSurvived"
+            li.validate (not simeonSurvived) "simeonDidNotSurvive"
+        if simeonSurvived
+          then flavor $ setTitle "title" >> p "theSecondEvening2"
+          else do
+            flavor $ setTitle "title" >> p "theSecondEvening3"
+            record LeahIsSearchingForSimeon
+            record SimeonCrossedOut
+        flavor $ setTitle "title" >> p "theSecondEvening4"
+      n <- getPlayerCount
+      eachInvestigator (`forInvestigator` msg)
+      when (n == 1) $ eachInvestigator (`forInvestigator` msg)
+      doStep 1 msg
+      let meta = toResultDefault initMeta attrs.meta
+      let meta' = meta {chosenCodexEntries = [], time = Night}
+      pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
+    DoStep 1 (CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" Nothing)) -> do
+      scope "prelude.theSecondEvening" do
+        flavor $ setTitle "resolution1.title" >> p "resolution1.body"
+        diaryRecovered <- getHasRecord MadamePearlsDiaryWasRecovered
+        when diaryRecovered do
+          flavor $ setTitle "resolution2.title" >> p "resolution2.body"
+          addCampaignCardToDeckChoice_ Assets.thePearlDiaryAGrimAccount
+        flavor $ setTitle "resolution3.title" >> p "resolution3.body"
+        bertieRescued <- getHasRecord BertieWasRescued
+        if bertieRescued
+          then flavor $ setTitle "resolution4.title" >> p "resolution4.body"
+          else do
+            flavor $ setTitle "resolution5.title" >> p "resolution5.body"
+            record BertieHadAnEpiphany
+        resolutionFlavorWithChooseOne (setTitle "resolution6.title" >> p "resolution6.body") do
+          labeled' "followDrMarquez" $ setNextCampaignStep TheLongestNight
+          labeled' "gatherMoreInformation" do
+            addChaosToken Skull
+            addChaosToken #cultist
+            addChaosToken ElderThing
+            areas <- getAreasSurveyed
+            let survey k = unless (k `elem` areas)
+            leadChooseOneM do
+              questionLabeled' "survey"
+              survey NorthPointMine do
+                scenarioLabeled' "writtenInRock" "10501-night2" $ afterPrelude WrittenInRock
+              survey HemlockHarbor do
+                scenarioLabeled' "hemlockHouse" "10523-night2" $ afterPrelude HemlockHouse
+              survey PearlRidge do
+                scenarioLabeled' "theSilentHeath" "10549-night2" $ afterPrelude TheSilentHeath
+              survey AkwanShoreline do
+                scenarioLabeled' "theLostSister" "10569-night2" $ afterPrelude TheLostSister
+              survey EastwickBog do
+                scenarioLabeled' "theThingInTheDepths" "10588-night2" $ afterPrelude TheThingInTheDepths
+      pure c
+    ForInvestigator iid (CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" Nothing)) -> do
+      scope "prelude.theSecondEvening" do
+        let meta = toResultDefault initMeta attrs.meta
+        crossedOut <- getCrossedOutResidents
+        let residentOption r k =
+              labeledValidate' (r `notElem` crossedOut && k `notElem` meta.chosenCodexEntries) k
+                $ forInvestigator iid
+                $ CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just k))
+        let option k =
+              labeledValidate' (k `notElem` meta.chosenCodexEntries) k
+                $ forInvestigator iid
+                $ CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just k))
+        investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
+          residentOption MotherRachel "motherRachel"
+          residentOption LeahAtwood "leah"
+          residentOption SimeonAtwood "simeon"
+          residentOption WilliamHemlock "william"
+          residentOption RiverHawthorne "river"
+          residentOption GideonMizrah "gideon"
+          residentOption JudithPark "judith"
+          residentOption TheoPeters "theo"
+          option "alone"
+          option "omega"
+          option "theta"
+      pure c
+    ForInvestigator _iid (CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just entry))) -> do
+      scope "prelude.theSecondEvening" do
+        case entry of
+          "motherRachel" -> do
+            flavor do
+              compose.green do
+                h3 "codex1.header"
+                p "codex1.body"
+            record MotherRachelSharedHerDoubts
+          "leah" -> do
+            leahSearching <- getHasRecord LeahIsSearchingForSimeon
+            flavor do
+              compose.green do
+                h3 "codex2.header"
+                p.validate leahSearching "codex2.searching"
+                hr
+                p.validate (not leahSearching) "codex2.otherwise"
+            unless leahSearching $ record LeahSharedADance
+          "simeon" -> do
+            level <- getRelationshipLevel SimeonAtwood
+            flavor do
+              compose.green do
+                h3 "codex3.header"
+                p.validate (level >= 3) "codex3.highLevel"
+                hr
+                p.validate (level < 3) "codex3.otherwise"
+            when (level >= 3) $ record SimeonSharedADance
+          "william" -> do
+            level <- getRelationshipLevel WilliamHemlock
+            flavor do
+              compose.green do
+                h3 "codex4.header"
+                p.validate (level >= 3) "codex4.highLevel"
+                hr
+                p.validate (level < 3) "codex4.otherwise"
+            when (level >= 3) $ record WilliamSharedADance
+          "river" -> do
+            level <- getRelationshipLevel RiverHawthorne
+            flavor do
+              compose.green do
+                h3 "codex5.header"
+                p.validate (level >= 3) "codex5.highLevel"
+                hr
+                p.validate (level < 3) "codex5.otherwise"
+            when (level >= 3) $ record RiverSharedADance
+          "gideon" -> do
+            level <- getRelationshipLevel GideonMizrah
+            flavor do
+              compose.green do
+                h3 "codex6.header"
+                p.validate (level >= 3) "codex6.highLevel"
+                hr
+                p.validate (level < 3) "codex6.otherwise"
+            when (level >= 3) $ record GideonSharedADance
+          "judith" -> do
+            level <- getRelationshipLevel JudithPark
+            flavor do
+              compose.green do
+                h3 "codex7.header"
+                p.validate (level >= 3) "codex7.highLevel"
+                hr
+                p.validate (level < 3) "codex7.otherwise"
+            when (level >= 3) $ record JudithSharedADance
+          "theo" -> do
+            level <- getRelationshipLevel TheoPeters
+            flavor do
+              compose.green do
+                h3 "codex8.header"
+                p.validate (level >= 3) "codex8.highLevel"
+                hr
+                p.validate (level < 3) "codex8.otherwise"
+            when (level >= 3) $ record TheoSharedADance
+          "alone" -> do
+            flavor do
+              compose.green do
+                h3 "codex9.header"
+                p "codex9.body"
+            interludeXpAll (toBonus "bonus" 1)
+          "omega" -> do
+            helenJoined <- getHasRecord HelenPetersJoinedTheSurvey
+            reunited <- getHasRecord ThePetersFamilyWereReunited
+            flavor do
+              compose.green do
+                h3 "codexOmega.header"
+                p.validate helenJoined "codexOmega.helenJoined"
+                hr
+                p.validate (not helenJoined && reunited) "codexOmega.reunited"
+                hr
+                p.validate (not helenJoined && not reunited) "codexOmega.otherwise"
+            if helenJoined
+              then record HelenSharedADance
+              else
+                if reunited
+                  then do
+                    record HelenPetersJoinedTheSurvey
+                    addCampaignCardToDeckChoice_ Assets.helenPetersTheEldestSister
+                  else record TheoRejectedHisFamily
+          "theta" -> do
+            flavor do
+              compose.green do
+                h3 "codexTheta.header"
+                p "codexTheta.body"
+            eachInvestigator \iid' -> gainResources iid' CampaignSource 2
           _ -> error "Unknown codex"
       let meta = toResultDefault initMeta attrs.meta
       let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}

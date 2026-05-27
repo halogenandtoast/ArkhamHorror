@@ -666,16 +666,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   Discarded (EnemyTarget eid) _ _ -> do
     getEnemyField EnemyPlacement eid >>= \case
       Just (AsSwarm {}) -> pure a
-      _ ->
-        convertToCard eid >>= \case
-          PlayerCard _ -> pure a
-          card@(EncounterCard ec) -> do
-            if card.singleSided
-              then do
-                handler <- getEncounterDeckHandler card.id
-                pure $ a & discardLens handler %~ (ec :)
-              else pure a
-          VengeanceCard _ -> error "vengeance card"
+      _ -> do
+        mDrawnFrom <- fieldMayJoin EnemyDrawnFrom eid
+        case mDrawnFrom >>= Deck.deckSignifierToScenarioDeckKey of
+          Just key -> do
+            card <- convertToCard eid
+            pure $ a & deckDiscardsL . at key . non [] %~ (card :)
+          Nothing ->
+            convertToCard eid >>= \case
+              PlayerCard _ -> pure a
+              card@(EncounterCard ec) -> do
+                if card.singleSided
+                  then do
+                    handler <- getEncounterDeckHandler card.id
+                    pure $ a & discardLens handler %~ (ec :)
+                  else pure a
+              VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
     convertToCard lid >>= \case
       PlayerCard _ -> pure a
@@ -839,7 +845,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
     case lookup key scenarioDecks of
-      Just [] -> pure a
+      Just [] -> do
+        let discardPile = findWithDefault [] key scenarioDeckDiscards
+        if notNull discardPile
+          then do
+            shuffled <- shuffleM discardPile
+            push $ Do (DrawCards iid drawing)
+            pure $ a & decksL . at key ?~ shuffled & deckDiscardsL . at key .~ Nothing
+          else pure a
       Just xs -> do
         let (drew, rest) = splitAt drawing.amount xs
         push $ DrewCards iid $ finalizeDraw drawing drew

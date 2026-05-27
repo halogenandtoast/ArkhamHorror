@@ -966,6 +966,18 @@ allLocations =
     , SomeLocationCard corpseGrove
     , SomeLocationCard bearDen
     , SomeLocationCard theTwistedHollow
+    , --- The Longest Night
+      SomeLocationCard theFarmhouse
+    , SomeLocationCard milkhouse
+    , SomeLocationCard vineyard
+    , SomeLocationCard coop
+    , SomeLocationCard barn
+    , SomeLocationCard pasture
+    , SomeLocationCard outerFieldsBloodiedPaths
+    , SomeLocationCard outerFieldsDesolateHills
+    , SomeLocationCard outerFieldsBlightedCornfields
+    , SomeLocationCard outerFieldsScorchedKnoll
+    , SomeLocationCard outerFieldsRancidCrops
     , --- The Vale
       SomeLocationCard boardingHouseDay
     , SomeLocationCard boardingHouseNight

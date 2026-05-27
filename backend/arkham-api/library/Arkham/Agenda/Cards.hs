@@ -221,6 +221,7 @@ allAgendaCards =
       , theMurder
       , theNightHowls
       , theOldOnesHunger
+      , theOnslaught
       , theRedDepths
       , theRitualAdvances
       , theRitualBegins

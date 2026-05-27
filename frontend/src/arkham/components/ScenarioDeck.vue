@@ -12,6 +12,7 @@ export interface Props {
   game: Game
   playerId: string
   deck: [string, Card[]]
+  discardPile?: Card[]
 }
 
 
@@ -29,13 +30,13 @@ const deckAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "ScenarioDeckTarget")
 })
 
-const flippedCards = computed(() => props.deck[1].map(card => {
+const revealedCards = computed(() => props.deck[1].map(card => {
   if (card.tag === 'EncounterCard') {
-    return { ...card, contents: { ...card.contents, isFlipped: !(card.contents.isFlipped ?? false) } }
+    return { ...card, contents: { ...card.contents, isFlipped: false } }
   }
   return card
 }))
-const showCards = () => emits('show', flippedCards, props.deck[0], false)
+const showCards = () => emits('show', revealedCards, props.deck[0], false)
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {
@@ -62,9 +63,21 @@ const deckImage = computed(() => {
       return imgsrc("cards/10612b.avif");
     case 'CavernsDeck':
       return imgsrc("cards/10577b.avif");
+    case 'EnemyDeck':
+      return imgsrc("backs/back_the_longest_night.jpg");
     default:
       return imgsrc("back.png");
   }
+})
+
+const topOfDiscard = computed(() => {
+  if (!props.discardPile || props.discardPile.length === 0) return null
+  return props.discardPile[0]
+})
+
+const topOfDiscardImage = computed(() => {
+  if (!topOfDiscard.value) return null
+  return imgsrc(cardImage(topOfDiscard.value))
 })
 
 const deckLabel = computed(() => {
@@ -84,20 +97,31 @@ const deckLabel = computed(() => {
 </script>
 
 <template>
-  <div class="deck">
-    <img
-      :src="deckImage"
-      class="card"
-      :class="{ 'can-interact': deckAction !== -1 }"
-      @click="choose(deckAction)"
-    />
-    <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
-    <span class="deck-size">{{deck[1].length}}</span>
+  <div class="scenario-deck-area">
+    <div v-if="topOfDiscard" class="discard-card">
+      <img :src="topOfDiscardImage" class="card" />
+      <span class="deck-size">{{ discardPile!.length }}</span>
+    </div>
+    <div class="deck">
+      <img
+        :src="deckImage"
+        class="card"
+        :class="{ 'can-interact': deckAction !== -1 }"
+        @click="choose(deckAction)"
+      />
+      <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
+      <span class="deck-size">{{deck[1].length}}</span>
+    </div>
+    <button v-if="debug.active" @click="showCards">{{ $t('scenarioDeck.showCards') }}</button>
   </div>
-  <button v-if="debug.active" @click="showCards">{{ $t('scenarioDeck.showCards') }}</button>
 </template>
 
 <style scoped>
+.scenario-deck-area {
+  display: flex;
+  gap: 2px;
+}
+
 .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
@@ -107,6 +131,40 @@ const deckLabel = computed(() => {
 
 .deck {
   position: relative;
+}
+
+.discard-card {
+  position: relative;
+  width: fit-content;
+  line-height: 0;
+  height: min-content;
+
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  .card {
+    box-shadow: unset;
+    margin: 0;
+    display: block;
+  }
+  .deck-size {
+    z-index: 1;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 1);
+    bottom: 55%;
+    -webkit-text-stroke: 1px black;
+  }
+  &::after {
+    border-radius: 6px;
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: #FFF;
+    opacity: .85;
+    mix-blend-mode: saturation;
+  }
 }
 
 .deck-label {

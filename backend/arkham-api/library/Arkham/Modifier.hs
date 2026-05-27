@@ -330,7 +330,6 @@ data ModifierType
   | IgnoreAllCosts
   | IgnoreAloof
   | IgnoreAttacksOfOpportunity
-  | IgnoreBarriers
   | IgnoreChaosToken
   | IgnoreChaosTokenEffects
   | IgnoreChaosTokenModifier

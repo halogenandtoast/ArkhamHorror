@@ -711,7 +711,7 @@ instance RunMessage EnemyAttrs where
             batchId <- getRandom
             mRunWouldMove <- runMaybeT do
               from <- MaybeT $ getLocationOf eid
-              source <- hoistMaybe a.movement.source
+              let source = fromMaybe (toSource eid) a.movement.source
               let (whens, _, _) = batchedTimings batchId (Window.EnemyWouldMove eid source from lid)
               lift $ checkWindows [whens]
             enemyLocation <- field EnemyLocation enemyId

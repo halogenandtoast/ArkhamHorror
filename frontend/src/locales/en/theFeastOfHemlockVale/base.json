@@ -1,6 +1,7 @@
 {
   "headings": {
-    "preludeTheFirstEvening": "Prelude: The First Evening"
+    "preludeTheFirstEvening": "Prelude: The First Evening",
+    "preludeTheSecondEvening": "Prelude: The Second Evening"
   },
   "campaignLog": {
     "residents": {
@@ -133,7 +134,7 @@
       "intro1": "<p>_Intro 1_: <span class='wolgast'>June 1926</span></p><p class='indented'>Miskatonic Survey, June 1926. Members Marquez, Musgrave, et alii.</p><p class='indented'>After three separate reviews by Miskatonic University’s board and grant commitee, we have reached Hemlock Isle. Our driver took us across a natural land-bridge they call the “causeway”—only traversible at low tide—to a small fishing village called Akwan. Bertie showed the locals several sketches and photographs of the alkaline blossom, but the locals would have none of it. Or maybe none of him. Bertie is exceedingly chipper.</p><p class='indented'>The survey consists of myself, my assistant Bertie Musgrave, and some contacts of Dr. Armitage. He insisted they accompany me as part of the terms of the grant. I just hope they don’t get in the way. The island is private property and has been off-limits to visitors for some time—until now. The locals are advertising some kind of festival throughout New England, even as far south as Boston and Arkham.</p><p class='indented'>There were no lodgings in Akwan, and according to local rumors, camping on the island is a risky affair. The locals were unresponsive when I pressed further, but I was at least able to procure a map of the island as well as some basic supplies. We were all but resigned to pitching a tent west of Akwan, but then we met a young man named Theo who offered us lodging in a village called ‘Hemlock Vale’.</p><p class='right'><span class='wolgast'>Dr. Rosa Marquez</span></p><p>“But really, I think you’re gonna love it here,” Theo shouts from the truck window. Dr. Marquez—athletic and well-tanned at 40—closes her survey journal and looks up at the sky. “I don’t know anyone who doesn’t love Hemlock Isle,” Theo continues. “And I don’t know why we haven’t invited folks sooner! I assume you’re here for the Feast.”</p><p>“Is this feast some sort of local tradition?” Bertie says in a crisp British accent. The breeze stirs the round man’s shock of thick hair as he leans forward eagerly.</p><p>“This is the first one ever! Everyone in the Vale’s pulled out all the stops so everyone feels welcome. We’re just so excited to have visitors!” The young man laughs as your truck crests the hilltop. Hemlock Isle stretches away in every direction.</p><p>To the south, glistening black lakes dot a tangled marsh all the way to the coast. Up north, whitecapped hills gather around jutting obsidian rocks, resembling an exposed spine. Past a huddle of hills, the dense western forest grows up the rocky hillside, bisected by a wide river. And even further north, past the white hills, is a bleak rocky coastline at the edge of the slatey Atlantic waters.</p><p>The road takes you past lush farmland into a village nestled in the hills. Gaudy floral arrangments and brilliant ribbons hang from rooftops and fenceposts. A prismatic rainbow shimmers in a cloudless sky, lending the scene an idyllic air. As the truck rolls to a stop in the crossroads, locals and children in white-gold cloaks and wooden animal masks gather around you, grinning from ear to ear.</p><p>“Willkommen!” An imposing woman with steel-gray hair and a white-gold cloak cuts through the crowd. “Welcome to Hemlock Vale. I am Mother Rachel, and these are my people. What brings you here?”</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*“We’re here on a survey from Miskatonic University.”* Proceed to _Intro 2_.</li><li>*“We’re here for the Feast.”* Skip to _Intro 3_.</li></ul>",
       "intro2": "<p>_Intro 2_: You introduce yourself and the members of the survey by name, along with your backing from Miskatonic University. Dr. Marquez leans heavily on her cane as she extends one hand to shake.</p><ul><li>Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Proceed to _Intro 4_.</li></ul>",
       "intro3": "<p>_Intro 3_: The matron smiles benevolently. “And we are overjoyed to have you. Our food and shelter are yours. The Feast is in three days’ time; we ask only that you open your heart and mind to experience our way of life.” Dr. Marquez shoots you a sharp look as she leans forward on her cane. “Actually, we’re here on a survey from Miskatonic University.”</p><ul><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Skip to _Intro 4_.</li></ul>",
-      "intro4": "<p>_Intro 4_: Mother Rachel’s friendly mask breaks for just a moment as she registers your response. “Surveyers. I see. You are quite welcome here as well. But mind your place. We have rules. Do not harm anyone in the Vale and we will not harm you. Keep to the village at night, and take care out in the wilderness. Nature is crueller here.”</p><p>Down the road, a small doe walks alongside a pair of children, almost as if to contradict the matron’s words. Before you can ask her more, a gaggle of locals descend on the truck, eager for news from the mainland. After fielding multiple questions about sports outcomes and elections, Dr. Marquez suggests you split up to acquaint yourselves with the locals. “Ask around about the island and meet back here in an hour.”</p><p class='basic right'>Proceed to _Setup_</p>" 
+      "intro4": "<p>_Intro 4_: Mother Rachel’s friendly mask breaks for just a moment as she registers your response. “Surveyers. I see. You are quite welcome here as well. But mind your place. We have rules. Do not harm anyone in the Vale and we will not harm you. Keep to the village at night, and take care out in the wilderness. Nature is crueller here.”</p><p>Down the road, a small doe walks alongside a pair of children, almost as if to contradict the matron’s words. Before you can ask her more, a gaggle of locals descend on the truck, eager for news from the mainland. After fielding multiple questions about sports outcomes and elections, Dr. Marquez suggests you split up to acquaint yourselves with the locals. “Ask around about the island and meet back here in an hour.”</p><p class='basic right'>Proceed to _Setup_</p>"
     },
     "setup": {
       "gatherSets": "Gather all cards from the following encounter sets: *The First Day*, *Day of Rest*, *Residents*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-first-day.png' /><img src='{setImgPath}/day-of-rest.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/the-vale.png' /></section>",
@@ -320,6 +321,12 @@
         "bonus": "Bonus experience"
       },
       "label": {
+        "survey": "Gather more information on Hemlock Isle’s unique ecosystem at night.",
+        "writtenInRock": "Brave the dangers of _Written in Rock_",
+        "hemlockHouse": "Investigate _Hemlock House_",
+        "theSilentHeath": "Explore _The Silent Heath_",
+        "theLostSister": "Save _The Lost Sister_",
+        "theThingInTheDepths": "Discover _The Thing in the Depths_",
         "keepEating": "*Keep eating.*",
         "dontEatAnymore": "*Don’t eat any more.*",
         "theta": "Dr. Marquez, Mother Rachel, and William sit at the head of the room at a large open table. To sit with them, ({'{'}codex{'}'} Θ)",
@@ -367,6 +374,117 @@
       "resolution1": {
         "title": "Resolution 1",
         "body": "<div class='resolution'><p>_Resolution 1_: The evening chatter fades as residents trickle out of the Commons. There is an uncharacteristic spring in Dr. Marquez’s step as you reconvene outside the Commons. The sunset casts the sky in shades from ochre, to lilac, to violet. The professor cracks a handful of walnuts as you share your impressions of Hemlock Isle.</p><p>“This island has the density and special variance of a jungle, but it’s far more dangerous than any jungle. I have no clue why someone would start a commune in such a hazardous environment, but I understand it wasn’t always so deadly. Something was introduced and fundamentally changed the local ecosystem,” Dr. Marquez muses.</p><p>You mention the unusually good mood shared by everyone in the village, and the professor nods. “Most everyone looks blissed out of their minds. It’s like walking into an opium den. But as far as I can tell, the food isn’t laced with anything. Though I didn’t try the bread pudding. I’ve never liked bread, and the last time I had pudding was in Oxford.”</p><p>The professor’s reference to the prestigious university brings Bertie Musgrave to mind, and you ask where he is.</p><p>“You haven’t seen him? I assumed he went back to the boarding house to rest,” she scowls. “Theo offered to lend us his truck for the evening. I thought we could observe some of the local wildlife at night, but I suppose we should find him first.”</p><p>A heavy breeze stirs the trees and grass around you, smelling of cedar and pine. Dr. Marquez grips her cane. “If you’d rather take the truck and continue the survey, I can look for Bertie on my own.”</p><ul><li>Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>The investigators must decide (choose one):<ul><li>*Search for Bertie Musgrave with Dr. Marquez*. Proceed to _The Twisted Hollow_</li><li>*Gather more information on Hemlock Isle’s unique ecosystem at night*. Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off. _If you do, add 1 {'{'}tablet{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign_.</li></ul></li></ul></div>"
+      }
+    },
+    "theSecondEvening": {
+      "xp": {
+        "bonus": "Bonus experience"
+      },
+      "label": {
+        "survey": "Gather more information on Hemlock Isle’s unique ecosystem at night.",
+        "writtenInRock": "Brave the decaying North Point Mine in _Written in Rock_",
+        "hemlockHouse": "Investigate the long-abandoned _Hemlock House_",
+        "theSilentHeath": "Explore the eerily quiet Pearl Ridge in _The Silent Heath_",
+        "theLostSister": "Explore the Awkwan Shoreline up north in _The Lost Sister_",
+        "theThingInTheDepths": "Survey Eastwick Bog and risk an encounter with _The Thing in the Depths_",
+        "motherRachel": "Mother Rachel watches the room ({'{'}codex{'}'} 1).",
+        "leah": "Next to the dinner spread, Leah looks utterly exhausted ({'{'}codex{'}'} 2).",
+        "simeon": "Simeon makes bird noises to a gaggle of children ({'{'}codex{'}'} 3).",
+        "william": "William sits in a corner, penning the first lines of what is sure to be an overwrought poem about his family legacy ({'{'}codex{'}'} 4).",
+        "river": "River is tearing it up on the dance floor ({'{'}codex{'}'} 5).",
+        "gideon": "Gideon sits on a stool near the dancing ({'{'}codex{'}'} 6).",
+        "judith": "Standing by the entrance, Judith watches the door ({'{'}codex{'}'} 7).",
+        "theo": "Theo bobs his head in rhythm in the crowd ({'{'}codex{'}'} 8).",
+        "alone": "Dance by yourself ({'{'}codex{'}'} 9).",
+        "omega": "A woman in hunting clothes stands at the edge of the room ({'{'}codex{'}'} ώ).",
+        "theta": "Dr. Marquez eyes you from across the room ({'{'}codex{'}'} Θ).",
+        "followDrMarquez": "*Follow Dr. Marquez’s lead out to the Atwood Farm.*",
+        "gatherMoreInformation": "*Gather more information on Hemlock Isle’s unique ecosystem at night.*"
+      },
+      "title": "Prelude: The Second Evening",
+      "theSecondEvening1": "<p>_The Second Evening 1:_ The rain continues through the day. When you arrive at the Commons for dinner, the tables have been pushed to the sides of the room and warm lamps are hung from colorful ribbons. Dozens of new faces peer out from the crowd of cloaked locals: visitors from the mainland. A large sculpture looms in the center of the room, festooned with violet and white blossoms that seem to palpitate in the soft light.</p><p>The room goes silent as Mother Rachel addresses the assembly. “Friends. Brethren. Each of you is a miracle of time and light. You are the promise of your true self—” The matron stops mid-sentence.</p>",
+      "simeonSurvived": "If *Simeon survived* is recorded in Simeon Atwood's Notes, proceed to _The Second Evening 2_.",
+      "simeonDidNotSurvive": "Otherwise, skip to _The Second Evening 3_.",
+      "theSecondEvening2": "<p>_The Second Evening 2:_ A shadow passes over the matron’s face as she sways, looking for a moment as though she might faint. The air in the room swirls thickly. Oily patterns dance in the light as you feel a now-familiar light-headedness. Someone steps forward to help Mother Rachel, but she holds up one hand and steadies herself.</p>",
+      "theSecondEvening3": "<p>_The Second Evening 3:_ A sturdy figure cuts through the crowd. “Has anyone seen Simeon?” Leah Atwood asks in a trembling voice. She looks at the assembly with wide, searching eyes. “Please. Simeon. Now’s not the time for pranks,” she addresses her son, but to no response. The air in the room swirls thickly. “Enough,” Mother Rachel shoos her sister away. Oily patterns dance in the light as you feel a now-familiar light-headedness.</p><p class='basic right'>In Leah Atwood’s Notes, record *Leah is searching for Simeon*. Cross out Simeon Atwood’s name.</p>",
+      "theSecondEvening4": "<p>_The Second Evening 4:_ Mother Rachel regains her composure. “Tonight is the shortest night of the year. And tomorrow is the beginning of eternity. So on this night, let us dance.” The assembly bursts into rapturous applause. A ragtag band in the corner starts playing as the dance begins. Several friendly faces beckon you to join.</p>",
+      "codexChoice": "<p class='basic'>You may choose whom you would like to dance with. One at a time, each investigator may choose a different codex entry from the following (if there is only one investigator, you may choose two to resolve instead). If a resident’s name is crossed out, you cannot choose their codex. After you have read the appropriate number of sections, proceed to _Resolution 1_.</p>",
+      "codex1": {
+        "header": "{'{'}codex{'}'} Codex 1: Mother Rachel",
+        "body": "<p>The Vale’s matriarch stands apart from the throng, arms crossed. Tears glisten on her cheeks as she watches the room. You approach and ask her to dance. “I’m sorry. I can’t,” she replies. The strain in her voice is evident, and you ask what the matter is. “We are called to give up many things in this life. I only pray that what we gain is worth the cost.”</p><p class='basic right'>In Mother Rachel’s Notes, record *Mother Rachel shared her doubts*.</p>"
+      },
+      "codex2": {
+        "header": "{'{'}codex{'}'} Codex 2: Leah Atwood",
+        "searching": "<p class='basic'>_If Leah is searching for Simeon:_</p><p>You find Leah standing by the dinner spread, hands trembling. “Simeon kept talking about a ‘Miner Club’ lately. I wonder if—” she goes pale. “Sorry, I can’t dance right now.”</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>Leah steps out onto the wooden floor with you and dances along. Although she can’t quite keep step with the music, she sweeps you off your feet with surprising ease and spins you around. The others cheer as you take a bow.</p><p class='basic right'>In Leah Atwood’s Notes, record *Leah shared a dance*.</p>"
+      },
+      "codex3": {
+        "header": "{'{'}codex{'}'} Codex 3: Simeon Atwood",
+        "highLevel": "<p class='basic'>_If Simeon Atwood is at Relationship Level 3 or higher:_</p><p>“Get ready for the Texas Tommy!” Simeon waves his hands overhead as the band picks up the tempo. “Not bad, not bad.” You feel something cold and slick creep up your leg. He smiles mischievously as you extract the garter snake from around your ankle.</p><p class='basic right'>In Simeon Atwood’s Notes, record *Simeon shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“Sorry, but you’re kind of boring,” Simeon shrugs. “Get ready for the Texas Tommy!” he shouts to his friends.</p>"
+      },
+      "codex4": {
+        "header": "{'{'}codex{'}'} Codex 4: William Hemlock",
+        "highLevel": "<p class='basic'>_If William Hemlock is at Relationship Level 3 or higher:_</p><p>“It’s been years and I’m out of practice, but why not?” William joins you on the dance floor and leads you in a waltz. After several bumps and awkward gaffes, the dance ends mercifully early. The older Hemlock looks quite pleased as he takes his place back in the corner.</p><p class='basic right'>In William Hemlock’s Notes, record *William shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“It’s been many years and I’m out of practice,” William says, straightening his jacket. “But thank you for asking.”</p>"
+      },
+      "codex5": {
+        "header": "{'{'}codex{'}'} Codex 5: River Hawthorne",
+        "highLevel": "<p class='basic'>_If River Hawthorne is at Relationship Level 3 or higher:_</p><p>“Hop down front, then doodle back!” River calls instructions to the Black Bottom dance to everyone around. While the others struggle to keep step, you lock eyes with River and follow their every move. When it’s over, they pat your shoulder. “Not bad, dear. Not bad.”</p><p class='basic right'>In River Hawthorne’s Notes, record *River shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“Sorry, but you just can’t keep up.” River teaches the Black Bottom to the other dancers. Unfortunately, you don’t make the cut.</p>"
+      },
+      "codex6": {
+        "header": "{'{'}codex{'}'} Codex 6: Gideon Mizrah",
+        "highLevel": "<p class='basic'>_If Gideon Mizrah is at Relationship Level 3 or higher:_</p><p>“Aye, but only if we dance the Yankee Doodle,” Gideon says with a youthful grin. You go to the band and make the request, and return to find the old sailor swaying in time to the music. “My niece Gavriella loved this song. I hae’n’t seen ’er in years though…”</p><p class='basic right'>In Gideon Mizrah’s Notes, record *Gideon shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“Nae, I dare not,” Gideon shakes his head. “These old hips ain’t what they used to be.”</p>"
+      },
+      "codex7": {
+        "header": "{'{'}codex{'}'} Codex 7: Judith Park",
+        "highLevel": "<p class='basic'>_If Judith Park is at Relationship Level 3 or higher:_</p><p>“I’m supposed to be working, but what the hell?” Judith smiles rakishly as she joins you on the dance floor. The bodyguard is surprisingly good as she leads you in the Charleston and the Fox Trot. “That was more fun than I expected,” she says after, cheeks flushed.</p><p class='basic right'>In Judith Park’s Notes, record *Judith shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“Sorry, but I’m working,” Judith says. “One time, a wolf just wandered in during community dinner. I can’t let that happen again.” She rests one hand on the butt of her gun.</p>"
+      },
+      "codex8": {
+        "header": "{'{'}codex{'}'} Codex 8: Theo Peters",
+        "highLevel": "<p class='basic'>_If Theo Peters is at Relationship Level 3 or higher:_</p><p>“But how can you ask me to dance with you if we’re already dancing?” Theo giggles as he shuffles out of time with the music. He nearly slips in a patch of mud, but you catch him just in time. “I think you just saved my life,” he gasps.</p><p class='basic right'>In Theo Peters’ Notes, record *Theo shared a dance*.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>“Thanks but I—” Theo slips in some mud and careens into a dancing couple, who topple another half dozen revelers. The Commons go quiet for a moment. “I’m okay!” Theo shouts as he scrambles to his feet.</p>"
+      },
+      "codex9": {
+        "header": "{'{'}codex{'}'} Codex 9: Dancing Alone",
+        "body": "<p>You move in time to the music. The dim light casts each face in soft, dark shadows as the sky outside darkens. A palpable presence blankets the room, moving between the dancing figures and slowing your senses. You close your eyes for what feels like just a moment. When you open them, you are lying on the floor. Several dancers stand around you, and someone helps you to your feet.</p><p class='basic right'>Each investigator earns 1 bonus experience.</p>"
+      },
+      "codexOmega": {
+        "header": "{'{'}codex{'}'} Codex Ω: Helen Peters",
+        "helenJoined": "<p class='basic'>_Check your Campaign Log. If Helen joined the survey:_</p><p>“I thought you’d never ask,” Helen smiles. You keep step with her as best you can; she is unsurprisingly agile as she leads you in the dance, then lets you guide as the song turns from upbeat to contemplative. As the dance ends, you look out to the crowd to see everyone looking on with the same wide, dopey grin.</p><p class='basic right'>In your Campaign Log, record *Helen shared a dance*.</p>",
+        "reunited": "<p class='basic'>_If the Peters family was reunited:_</p><p>Helen Peters stands at the entrance to The Commons, looking rather out of place in her rugged attire. Lizzie stands nearby, staring out at the dance floor. When you ask Helen to dance, she smiles wryly and shakes her head. “I just came to thank you. And to ask for something.” You ask her what, and she smiles warmly. “Let me help the survey. Lizzie’ll be safe in Portland. Maybe you and I can convince my brother to leave.”</p><p class='basic right'>In your Campaign Log, record *Helen Peters joined the survey*. Any one investigator may choose to add the Helen Peters story asset to their deck. It does not count toward their deck size.</p>",
+        "otherwise": "<p class='basic'>_Otherwise:_</p><p>You approach to find the woman in hunting clothes locked in an argument with Theo. “For the last time, sis, I can’t. They need me here,” Theo says, flustered. She gives him a pitying look. “What would Mother think?” Theo glowers at her. “Just leave,” he says darkly.</p><p class='basic right'>In Theo Peters’ Notes, record *Theo rejected his family*.</p>"
+      },
+      "codexTheta": {
+        "header": "{'{'}codex{'}'} Codex Θ: Dr. Rosa Marquez",
+        "body": "<p>“Meet me outside afterward,” Dr. Marquez says, all business. You ask her why and she shakes her head. “This is the last place I’d want to discuss anything. I’m going to gather some supplies before we talk. I recommend you do the same.”</p><p class='basic right'>Each investigator begins the next scenario with 2 additional resources.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<div class='resolution'><p>_Resolution 1_: Midway into the evening, the dance reaches a lull. While rain patters outside, the dancing revelers move like smoke in the dim commons. Dr. Marquez signals you to join her at the side of the room. “There’s something very wrong here,” she says in a low voice. “There are maybe a dozen members of the Vale who have disappeared—some even in the last few days. Mother Rachel seems blissfully unconcerned. And then there are these ‘wonders’ everyone talks about. I’m starting to suspect the ‘wondrous’ feeling here isn’t just hypoxia.” You mention your own dizziness and strange euphoria over the past few days.</p></div>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<div class='resolution'><p>_Resolution 2_: The professor hands you Susan Pearl’s diary. “Thank you for recovering this, by the way. It’s a fascinating read. In the last year of her life, Madame Pearl was wracked by hallucinations and a chronic wasting disease. Whatever it is, it incites rapid mutation before breaking down muscles, organs, and cognitive function. Reading between the lines, I get the impression the entire Pearl family was similarly affected prior to the incident that devastated the ridge.”</p><p class='basic right'>Any one investigator may choose to add The Pearl Diary story asset to their deck. It does not count toward their deck size. This card can be found in the *Heirlooms* encounter set, indicated by the following encounter set icon:<section class='encounter-sets'><img src='{setImgPath}/heirlooms.png' /></section></p></div>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<div class='resolution'><p>_Resolution 3_: You share your own observations of Hemlock Isle. More than just ‘wonders,’ the creatures here are either sickly and malnourished, or aggressively vivacious. Dr. Marquez nods along. “Everything is affected. Sickly. Starving. Mutating. And it’s all highly localized. There are no reports of these strange phenomena elsewhere. It’s only here.” She produces a creased map of the island and points to the north hills. “Pearl Ridge hasn’t recovered in the past twenty years since it was obliterated.”</p><p>Marquez holds up two rings of glassy wood from both Eastwick Bog and Pearl Orchard, then draws a ring around Pearl Ridge on her map. “The bitter eggs this morning reminded me of a report after the Tunguska event. A meteorite obliterated miles of Russian countryside, but the effects on the locals were even more devastating. Stores of food were poisoned. Livestock perished. Nearby villages were slowly deserted as families who lived there for generations died of starvation or worse.” She draws a larger concentric circle around the first.</p><p>“Nobody has said anything about a meteor, but judging by the massive sinkhole in front of the Pearl Estate, something emerged from the rock. My working theory is that the mining operation opened a vein and released whatever poisoned gas or mineral affecting the island.”</p><p>Dr. Marquez’s expression goes grave. “There’s something else. Something we shouldn’t discuss here. Follow me.” As you follow the professor out of the Commons, a stout figure bumps into you.</p></div>"
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "<div class='resolution'><p>_Resolution 4_: “Terribly sorry,” Bertie says. “Professor! And you! I assumed you had retired early.” His eyes go wide. “Are we conspiring? Surveying? I would love to—” Dr. Marquez cuts him off with a sharp glance. “After last night, Bertie, I think it’s best if you stay in your room tonight and rest.” The young assistant looks quite wounded, but doesn’t object. “Very well then,” he mutters.</p></div>"
+      },
+      "resolution5": {
+        "title": "Resolution 5",
+        "body": "<div class='resolution'><p>_Resolution 5_: “Terrible—sorry,” Bertie slurs. A dopey smile spreads across his face. “They told me not to worry about you. The people told me. The people. The people in the—” he gestures to the crowd around. “The place. I had an epiphany but I quite forgot it. Mother Rachel has been taking care of me. They told me there will be more dancing later, in the crossroads, and a large bonfire.”</p><p>“You need to rest. Head back to the boarding house,” Marquez insists. You can’t be sure if Bertie even heard her as he slips away.</p><p class='basic right'>In your Campaign Log, record *Bertie had an epiphany*.</p></div>"
+      },
+      "resolution6": {
+        "title": "Resolution 6",
+        "body": "<div class='resolution'><p>_Resolution 6_: “We didn’t need to involve him. He’s much better in a lab than in the field anyway.” Dr. Marquez leads you outside. “Something followed me down from the ridge today. Something big and hungry. I tried to take shelter at the old Atwood Farm, but it was boarded up. Windows and doors. It smelled something awful. I’m not even sure what I heard coming from inside,” she says soberly. When you ask her to explain, she shakes her head.</p><p>“This place definitely isn’t what it seems. I don’t know what the Vale folks are hiding in that old farmhouse, but I plan to find out.”</p><ul><li>Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>The investigators must decide (choose one):<ul><li>*Follow Dr. Marquez’s lead out to the Atwood Farm.* What is the Vale hiding? Proceed to _The Longest Night_.</li><li>*Gather more information on Hemlock Isle’s unique ecosystem at night.* Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off. _If you do, add 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign_.</li></ul></li></ul></div>"
       }
     }
   },
@@ -460,11 +578,20 @@
     "[motherRachelNotes]": {
       "orderKey": "b",
       "name": "Mother Rachel",
-      "motherRachelIntervened": "Mother Rachel Intervened"
+      "motherRachelIntervened": "Mother Rachel Intervened",
+      "motherRachelSharedHerDoubts": "Mother Rachel Shared Her Doubts"
     },
     "[leahAtwoodNotes]": {
       "orderKey": "c",
-      "name": "Leah Atwood"
+      "name": "Leah Atwood",
+      "leahIsSearchingForSimeon": "Leah Is Searching For Simeon",
+      "leahSharedADance": "Leah Shared A Dance",
+      "leahSharedHerFrustrations": "Leah Shared Her Frustrations",
+      "leahSawSomethingInTheMine": "Leah Saw Something In The Mine",
+      "leahAndSimeonWereReunited": "Leah And Simeon Were Reunited",
+      "leahSearchedThePearlRuins": "Leah Searched The Pearl Ruins",
+      "leahStoodByYou": "Leah Stood By You",
+      "leahSacrificedThemselvesForTheInvestigators": "Leah Sacrificed Themselves For The Investigators"
     },
     "[simeonAtwoodNotes]": {
       "orderKey": "d",
@@ -480,28 +607,57 @@
     "[williamHemlockNotes]": {
       "orderKey": "e",
       "name": "William Hemlock",
-      "williamTookHeart": "William Took Heart"
+      "williamTookHeart": "William Took Heart",
+      "williamSharedHisLegacy": "William Shared His Legacy",
+      "williamSharedADance": "William Shared A Dance",
+      "williamStoodByYou": "William Stood By You",
+      "williamIsResolved": "William Is Resolved",
+      "williamSacrificedThemselvesForTheInvestigators": "William Sacrificed Themselves For The Investigators"
     },
     "[riverHawthorneNotes]": {
       "orderKey": "f",
       "name": "River Hawthorne",
-      "theSchemeIsInMotion": "The Scheme Is In Motion"
+      "theSchemeIsInMotion": "The Scheme Is In Motion",
+      "riverSharedTheirAmbitions": "River Shared Their Ambitions",
+      "riverAskedForHelp": "River Asked For Help",
+      "riverSharedADance": "River Shared A Dance",
+      "riverStoodByYou": "River Stood By You",
+      "riverIsReclaimingTheirLegacy": "River Is Reclaiming Their Legacy",
+      "riverSacrificedThemselvesForTheInvestigators": "River Sacrificed Themselves For The Investigators"
     },
     "[gideonMizrahNotes]": {
       "orderKey": "g",
       "name": "Gideon Mizrah",
       "gideonToldTheStoryOfCaptainHemlock": "Gideon Told The Story Of Captain Hemlock",
-      "gideonToldTheTaleOfTheAnnabelleLee": "Gideon Told The Tale Of The Annabelle Lee"
+      "gideonToldTheTaleOfTheAnnabelleLee": "Gideon Told The Tale Of The Annabelle Lee",
+      "gideonFoundHisTreasure": "Gideon Found His Treasure",
+      "gideonSharedADance": "Gideon Shared A Dance",
+      "gideonStoodByYou": "Gideon Stood By You",
+      "gideonSacrificedThemselvesForTheInvestigators": "Gideon Sacrificed Themselves For The Investigators"
     },
     "[judithParkNotes]": {
       "orderKey": "h",
       "name": "Judith Park",
-      "judithSavedYourAss": "Judith Saved Your Ass"
+      "judithSavedYourAss": "Judith Saved Your Ass",
+      "judithSharedAGrudge": "Judith Shared A Grudge",
+      "judithSharedADance": "Judith Shared A Dance",
+      "judithStoodByYou": "Judith Stood By You",
+      "youBackedJudithUp": "You Backed Judith Up",
+      "judithSacrificedThemselvesForTheInvestigators": "Judith Sacrificed Themselves For The Investigators"
     },
     "[theoPetersNotes]": {
       "orderKey": "i",
       "name": "Theo Peters",
-      "theoReconciledWithHelen": "Theo Reconciled With Helen"
-    }
+      "theoReconciledWithHelen": "Theo Reconciled With Helen",
+      "theoDistractedTheBear": "Theo Distracted The Bear",
+      "theoSharedADance": "Theo Shared A Dance",
+      "theoRejectedHisFamily": "Theo Rejected His Family",
+      "theoStoodByYou": "Theo Stood By You",
+      "theoIsHavingSecondThoughts": "Theo Is Having Second Thoughts",
+      "theoSacrificedThemselvesForTheInvestigators": "Theo Sacrificed Themselves For The Investigators"
+    },
+    "helenSharedADance": "Helen Shared A Dance",
+    "helenPetersJoinedTheSurvey": "Helen Peters Joined The Survey",
+    "bertieHadAnEpiphany": "Bertie Had An Epiphany"
   }
 }

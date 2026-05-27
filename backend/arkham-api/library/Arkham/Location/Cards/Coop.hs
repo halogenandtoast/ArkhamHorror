@@ -25,13 +25,12 @@ instance HasAbilities Coop where
   getAbilities (Coop a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 Here actionAbility
+      $ restricted a 1 (Here <> exists (SetAsideCardMatch $ cardIs Treacheries.fire)) actionAbility
 
 instance RunMessage Coop where
   runMessage msg l@(Coop attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      fires <- getSetAsideCardsMatching $ cardIs Treacheries.fire
-      case fires of
+      getSetAsideCardsMatching (cardIs Treacheries.fire) >>= \case
         (drawFire : shuffleFire : _) -> do
           drawCard iid drawFire
           shuffleCardsIntoDeck Deck.EncounterDeck [shuffleFire]

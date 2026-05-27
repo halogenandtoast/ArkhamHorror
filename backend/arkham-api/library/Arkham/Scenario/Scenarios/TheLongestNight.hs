@@ -11,8 +11,9 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators, getLead, getSetAsideCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Window (wouldDo)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -22,19 +23,19 @@ import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
-import Arkham.Helpers.Window (wouldDo)
 import Arkham.Scenarios.TheLongestNight.Helpers
 import Arkham.SortedPair
-import Arkham.Window qualified as Window
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 import Arkham.Trait (Trait (Madness))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Data.Map.Strict qualified as Map
 
@@ -44,9 +45,17 @@ newtype TheLongestNight = TheLongestNight ScenarioAttrs
 
 instance HasModifiersFor TheLongestNight where
   getModifiersFor (TheLongestNight a) = do
-    modifySelect a (assetIs Assets.drRosaMarquezBestInHerField) [DoNotTakeUpSlot #ally]
-    modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
-    modifySelect a (assetIs Assets.ajax) [DoNotTakeUpSlot #ally]
+    modifySelectWith
+      a
+      (assetIs Assets.drRosaMarquezBestInHerField)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
+    modifySelectWith
+      a
+      (assetIs Assets.helenPetersTheEldestSister)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
+    modifySelectWith a (assetIs Assets.ajax) setActiveDuringSetup [DoNotTakeUpSlot #ally]
 
 theLongestNight :: Difficulty -> TheLongestNight
 theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night" difficulty []
@@ -328,7 +337,7 @@ instance RunMessage TheLongestNight where
           entry "judithPark"
           record JudithStoodByYou
           trapLocations <- select $ LocationWithoutModifier CannotHaveTraps
-          chooseTargetM iid trapLocations \lid -> placeTrap source lid
+          chooseTargetM iid trapLocations $ placeTrap source
           pure s
         8 -> do
           entry "theoPeters"
@@ -343,8 +352,8 @@ instance RunMessage TheLongestNight where
           pure s
         Omega -> do
           entry "ajax"
-          ajaxCard <- getSetAsideCard Assets.ajax
-          takeControlOfSetAsideAsset iid ajaxCard
+          ajax <- selectJust $ assetIs Assets.ajax
+          takeControlOfAsset iid ajax
           pure s
         _ -> pure s
     DoStep 1 (ScenarioSpecific "codex" v) -> scope "codex" do
@@ -410,7 +419,10 @@ instance RunMessage TheLongestNight where
             else TheLongestNight <$> liftRunMessage msg attrs
     ScenarioSpecific "placeTrap" v -> do
       let (_source :: Source, lid :: LocationId) = toResult v
-      wouldDo msg (Window.ScenarioEvent ("wouldPlaceTrap:" <> tshow lid) Nothing v) (Window.ScenarioEvent "placedTrap" Nothing v)
+      wouldDo
+        msg
+        (Window.ScenarioEvent ("wouldPlaceTrap:" <> tshow lid) Nothing v)
+        (Window.ScenarioEvent "placedTrap" Nothing v)
       pure s
     DoBatch _ (ScenarioSpecific "placeTrap" v) -> do
       let (source :: Source, lid :: LocationId) = toResult v
@@ -418,7 +430,10 @@ instance RunMessage TheLongestNight where
       pure s
     ScenarioSpecific "placeDecoy" v -> do
       let (_source :: Source, lid :: LocationId) = toResult v
-      wouldDo msg (Window.ScenarioEvent ("wouldPlaceDecoy:" <> tshow lid) Nothing v) (Window.ScenarioEvent "placedDecoy" Nothing v)
+      wouldDo
+        msg
+        (Window.ScenarioEvent ("wouldPlaceDecoy:" <> tshow lid) Nothing v)
+        (Window.ScenarioEvent "placedDecoy" Nothing v)
       pure s
     DoBatch _ (ScenarioSpecific "placeDecoy" v) -> do
       let (source :: Source, lid :: LocationId) = toResult v

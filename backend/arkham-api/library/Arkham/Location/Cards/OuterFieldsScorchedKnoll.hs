@@ -13,7 +13,14 @@ newtype OuterFieldsScorchedKnoll = OuterFieldsScorchedKnoll LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outerFieldsScorchedKnoll :: LocationCard OuterFieldsScorchedKnoll
-outerFieldsScorchedKnoll = symbolLabel $ locationWith OuterFieldsScorchedKnoll Cards.outerFieldsScorchedKnoll 0 (Static 0) connectsToAdjacent
+outerFieldsScorchedKnoll =
+  symbolLabel
+    $ locationWith
+      OuterFieldsScorchedKnoll
+      Cards.outerFieldsScorchedKnoll
+      3
+      (PerPlayer 2)
+      connectsToAdjacent
 
 instance HasAbilities OuterFieldsScorchedKnoll where
   getAbilities (OuterFieldsScorchedKnoll a) =

@@ -439,6 +439,9 @@ instance RunMessage TheLongestNight where
       let (source :: Source, lid :: LocationId) = toResult v
       placeTokens source lid Horror 1
       pure s
+    ScenarioSpecific "discardFromEnemyDeck" v -> do
+      let cards :: [Card] = toResult v
+      pure $ TheLongestNight $ attrs & deckDiscardsL . at EnemyDeck . non [] %~ (cards <>)
     ScenarioCountIncrementBy (Barriers l1 l2) n -> do
       let meta' = incrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
       pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'

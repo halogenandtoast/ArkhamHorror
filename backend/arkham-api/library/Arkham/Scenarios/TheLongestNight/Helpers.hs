@@ -1,6 +1,7 @@
 module Arkham.Scenarios.TheLongestNight.Helpers where
 
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Card
 import Arkham.Direction
 import Arkham.I18n
 import Arkham.Id
@@ -78,3 +79,6 @@ placeTrap source lid = scenarioSpecific "placeTrap" (toSource source, lid)
 
 placeDecoy :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 placeDecoy source lid = scenarioSpecific "placeDecoy" (toSource source, lid)
+
+discardFromEnemyDeck :: (ReverseQueue m, IsCard card) => [card] -> m ()
+discardFromEnemyDeck cards = scenarioSpecific "discardFromEnemyDeck" (map toCard cards)

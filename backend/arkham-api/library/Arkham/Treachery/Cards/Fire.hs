@@ -23,7 +23,11 @@ instance HasAbilities Fire where
               & restrict
                 ( AnyCriterion
                     [ exists (at_ atLid <> AssetWithHealth)
-                    , exists (EnemyAt atLid)
+                    , exists
+                        ( EnemyAt atLid
+                            <> EnemyCanBeDamagedBySource (a.ability 1)
+                            <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
+                        )
                     , exists (InvestigatorAt atLid)
                     ]
                 )
@@ -49,7 +53,11 @@ instance RunMessage Fire where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       for_ attrs.attached.location \lid -> do
         assets <- select $ at_ (LocationWithId lid) <> AssetWithHealth
-        enemies <- select $ at_ (LocationWithId lid) <> EnemyCanBeDamagedBySource (attrs.ability 1) <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
+        enemies <-
+          select
+            $ at_ (LocationWithId lid)
+            <> EnemyCanBeDamagedBySource (attrs.ability 1)
+            <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
         investigators <- select $ InvestigatorAt (LocationWithId lid)
         for_ assets \aid -> dealAssetDirectDamage aid (attrs.ability 1) 1
         for_ enemies $ nonAttackEnemyDamage Nothing (attrs.ability 1) 1

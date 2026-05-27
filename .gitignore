@@ -87,3 +87,4 @@ kubeconfig*
 .claude/
 CLAUDE.md
 .mcp.json
+AGENTS.md

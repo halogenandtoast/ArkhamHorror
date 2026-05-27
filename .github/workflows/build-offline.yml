@@ -129,12 +129,12 @@ jobs:
         working-directory: offline
         run: bash scripts/05-package.sh
 
-      - name: Rename distribution
+      - name: Repack distribution
         shell: bash
         run: |
-          src="offline/_dist/${{ matrix.artifact }}.tar.gz"
+          dir="offline/_dist/${{ matrix.artifact }}"
           dst="offline/_dist/${{ matrix.artifact }}-${{ env.VERSION }}.tar.gz"
-          mv "$src" "$dst"
+          tar -czf "$dst" -C "$dir" .
 
       - name: Upload distribution archive
         uses: actions/upload-artifact@v4

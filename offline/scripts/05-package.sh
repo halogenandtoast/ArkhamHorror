@@ -26,7 +26,6 @@ NGINX_BIN="${DEPS_DIR}/nginx/bin/nginx"
 
 PKG_NAME="ArkhamHorror-${PLATFORM}"
 PKG_DIR="${_DIST_DIR}/${PKG_NAME}"
-PKG_ARCHIVE="${_DIST_DIR}/${PKG_NAME}.tar.gz"
 
 # ═════════════════════════════════════════════════════════════════════════════
 # Generate start.sh (launcher script) — supports macOS / Linux / WSL
@@ -35,18 +34,18 @@ PKG_ARCHIVE="${_DIST_DIR}/${PKG_NAME}.tar.gz"
 generate_launch_script() {
     substep "Generating start.sh ..."
 
-    cat > "${PKG_DIR}/start.sh" << 'LAUNCHSCRIPT'
+    cat > "${PKG_DIR}/game/start.sh" << 'LAUNCHSCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
 
 # ── Root check: PostgreSQL must not run as root ───────────────────────────────
-# Windows: start.bat already ensures a non-root user through -u arkham
+# Windows: Start-ArkhamHorror.bat already ensures a non-root user through -u arkham
 # macOS/Linux: users normally run as a regular user; this is only a safety fallback
 if [ "$(id -u)" = "0" ]; then
     echo "[ARKHAM] Error: running as root is not allowed." >&2
     echo "         PostgreSQL refuses to run initdb/pg_ctl as root." >&2
     if grep -qi microsoft /proc/version 2>/dev/null; then
-        echo "         Please launch via start.bat (it runs automatically as user arkham)," >&2
+        echo "         Please launch via Start-ArkhamHorror.bat (it runs automatically as user arkham)," >&2
         echo "         or specify the user manually: su arkham -c 'bash start.sh'" >&2
     else
         echo "         Please run as a regular user: bash start.sh" >&2
@@ -76,7 +75,7 @@ case "$(uname -s)" in
 esac
 PGDATA_OS_PARENT="$(dirname "$PGDATA_OS")"
 PGDATA_LOCAL="$DATA_DIR/pgdata"        # Legacy physical backup location from older builds
-BACKUP_DIR="$DATA_DIR/backup"
+BACKUP_DIR="$SCRIPT_DIR/../backup"
 PG_DUMP_FILE="$BACKUP_DIR/latest.dump"
 PG_DUMP_PREV="$BACKUP_DIR/previous.dump"
 PG_DUMP_TMP="$BACKUP_DIR/latest.dump.tmp"
@@ -129,8 +128,10 @@ die() {
 open_browser() {
     local url="$1"
     if grep -qi microsoft /proc/version 2>/dev/null; then
-        # WSL: use explorer.exe to open the Windows default browser (returns immediately)
-        explorer.exe "$url" >/dev/null 2>&1 || true
+        # WSL: use /init to invoke cmd.exe. This bypasses binfmt_misc interop
+        # which is often unavailable for non-default users (e.g. arkham).
+        # /init is always present and can always call Windows executables.
+        /init /mnt/c/Windows/System32/cmd.exe /c start "" "$url" >/dev/null 2>&1 || true
     elif [ "$(uname -s)" = "Darwin" ]; then
         open "$url" >/dev/null 2>&1 || true
     elif command -v xdg-open >/dev/null 2>&1; then
@@ -185,59 +186,31 @@ is_wsl() {
 }
 
 can_host_reach_localhost() {
-    local url
-    url="$(get_primary_url)"
+    # Test whether the host browser can reach localhost:<NGINX_PORT>.
+    # On WSL, use /init to call Windows-side curl.exe — this tests the actual
+    # WSL2 localhost forwarding path from the Windows network stack.
+    # /init bypasses binfmt_misc interop (which is often missing for non-default
+    # users) and correctly propagates exit codes.
+    # curl.exe is guaranteed present on Windows 10 1803+; WSL2 requires 1903+.
     if is_wsl; then
-        if command -v curl.exe >/dev/null 2>&1; then
-            curl.exe -I --max-time 5 "$url" >/dev/null 2>&1
-            case $? in
-                0) return 0 ;;
-                7|28) return 1 ;;
-                *) return 2 ;;
-            esac
-        fi
-        if command -v powershell.exe >/dev/null 2>&1; then
-            powershell.exe -NoProfile -Command \
-                "try { Invoke-WebRequest -UseBasicParsing '$url' -Method Head -TimeoutSec 5 | Out-Null; exit 0 } catch { exit 1 }" \
-                >/dev/null 2>&1
-            case $? in
-                0) return 0 ;;
-                1) return 1 ;;
-                *) return 2 ;;
-            esac
-        fi
-        return 2
+        /init /mnt/c/Windows/System32/curl.exe -sI --max-time 3 \
+            "http://localhost:${NGINX_PORT}" >/dev/null 2>&1 && return 0 || return 1
     fi
-    if ! command -v curl >/dev/null 2>&1; then
-        return 2
-    fi
-    curl -fsI --max-time 5 "$url" >/dev/null 2>&1
-    case $? in
-        0) return 0 ;;
-        7|28) return 1 ;;
-        *) return 2 ;;
-    esac
+    return 0
 }
 
 get_browser_url() {
-    local primary fallback
-    primary="$(get_primary_url)"
     if can_host_reach_localhost; then
-        printf '%s\n' "$primary"
-        return 0
+        get_primary_url
+    else
+        local fallback
+        fallback="$(get_fallback_url || true)"
+        if [ -n "$fallback" ]; then
+            printf '%s\n' "$fallback"
+        else
+            get_primary_url
+        fi
     fi
-    case $? in
-        2)
-            printf '%s\n' "$primary"
-            return 0
-            ;;
-    esac
-    fallback="$(get_fallback_url || true)"
-    if [ -n "$fallback" ]; then
-        printf '%s\n' "$fallback"
-        return 0
-    fi
-    printf '%s\n' "$primary"
 }
 
 print_access_urls() {
@@ -251,13 +224,8 @@ print_access_urls() {
 }
 
 warn_localhost_fallback_if_needed() {
+    can_host_reach_localhost && return 0
     local fallback
-    if can_host_reach_localhost; then
-        return 0
-    fi
-    case $? in
-        2) return 0 ;;
-    esac
     fallback="$(get_fallback_url || true)"
     [ -n "$fallback" ] || return 0
     warn "localhost:${NGINX_PORT} is not reachable from this host; opening fallback URL instead: ${fallback}"
@@ -265,6 +233,7 @@ warn_localhost_fallback_if_needed() {
 
 # If startup exits abnormally, automatically clean up all started services
 _CLEANUP_ON_EXIT=0
+_STARTUP_SUCCEEDED=0
 _cleanup_on_exit() {
     release_start_lock
     if [ "$_CLEANUP_ON_EXIT" = "1" ]; then
@@ -278,9 +247,9 @@ trap '_cleanup_on_exit' EXIT
 pg_bin()  { echo "$SCRIPT_DIR/pgsql/bin"; }
 pg_ctl()  { "$(pg_bin)/pg_ctl" "$@"; }
 pg_ready(){ { "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$PG_PORT" -q; } 2>/dev/null; }
-psql_cmd(){ "$(pg_bin)/psql" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
-pg_dump_cmd(){ "$(pg_bin)/pg_dump" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
-pg_restore_cmd(){ "$(pg_bin)/pg_restore" -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
+psql_cmd(){ "$(pg_bin)/psql" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
+pg_dump_cmd(){ "$(pg_bin)/pg_dump" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
+pg_restore_cmd(){ "$(pg_bin)/pg_restore" -w -h 127.0.0.1 -p "$PG_PORT" -U "$PG_USER" "$@"; }
 
 # On WSL/NTFS (DrvFS), mkdir can fail because of timing issues, so retry
 ensure_dir() {
@@ -434,6 +403,10 @@ backup_database_dump() {
 
 start_postgres() {
     if pg_ready; then
+        # Verify it is actually our instance (trust auth, no password required)
+        if pg_port_is_foreign "$PG_PORT"; then
+            die 2009 "Port $PG_PORT has a foreign PostgreSQL instance (requires password); cannot start"
+        fi
         return 0
     fi
 
@@ -452,24 +425,74 @@ start_postgres() {
 restore_database_from_dump() {
     local dump_file="$1"
 
-    info "Restoring database from logical backup ..."
-    init_database
-    start_postgres
+    info "Restoring database from logical backup: $(basename "$dump_file") ..."
 
-    psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
-        > "$DATA_DIR/psql.log" 2>&1 \
-        || die 2006 "Failed to create database" "$DATA_DIR/psql.log"
-    pg_restore_cmd -d "$PG_DB" --clean --if-exists --no-owner "$dump_file" \
-        > "$PG_RESTORE_LOG" 2>&1 \
-        || die 2009 "Logical backup restore failed" "$PG_RESTORE_LOG"
+    # Initialize a fresh cluster (inline; must not die so caller can fall back)
+    ensure_dir "$DATA_DIR"
+    rm -f "$PG_LOG" "$DATA_DIR/psql.log" "$DATA_DIR/initdb.log" "$PG_RESTORE_LOG" 2>/dev/null || true
+    ensure_dir "$PG_DATA"
+    if ! "$(pg_bin)/initdb" -D "$PG_DATA" -U "$PG_USER" --no-locale -E UTF8 \
+        > "$DATA_DIR/initdb.log" 2>&1; then
+        warn "initdb failed during restore (see $DATA_DIR/initdb.log)"
+        return 1
+    fi
+    cat > "$PG_DATA/pg_hba.conf" << HBA_EOF
+local   all   all                 trust
+host    all   all   127.0.0.1/32  trust
+host    all   all   ::1/128       trust
+HBA_EOF
+
+    # Configure socket directory
+    cat >> "$PG_DATA/postgresql.conf" << PG_CONF_EOF
+
+port = $PG_PORT
+unix_socket_directories = '$PG_SOCKET_DIR'
+listen_addresses = '127.0.0.1'
+PG_CONF_EOF
+
+    # Start PostgreSQL (inline; must not die)
+    if ! pg_ctl -D "$PG_DATA" -l "$PG_LOG" -o "-k '$PG_SOCKET_DIR'" start; then
+        warn "PostgreSQL failed to start during restore (see $PG_LOG)"
+        return 1
+    fi
+    local tries=0
+    while ! pg_ready; do
+        tries=$((tries + 1))
+        if [ "$tries" -gt 30 ]; then
+            warn "PostgreSQL startup timed out during restore (see $PG_LOG)"
+            return 1
+        fi
+        sleep 1
+    done
+
+    # Create database and restore dump
+    if ! psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
+        > "$DATA_DIR/psql.log" 2>&1; then
+        warn "Failed to create database during restore (see $DATA_DIR/psql.log)"
+        return 1
+    fi
+    if ! pg_restore_cmd -d "$PG_DB" --clean --if-exists --no-owner "$dump_file" \
+        > "$PG_RESTORE_LOG" 2>&1; then
+        warn "pg_restore failed for $(basename "$dump_file") (see $PG_RESTORE_LOG)"
+        return 1
+    fi
     info "Logical backup restore complete."
+    return 0
 }
 
 # Scan a directory for versioned .so files (lib*.so.X.Y) and recreate short symlinks:
 #   lib*.so.X.Y  →  lib*.so   and  lib*.so.X
+# On NTFS/DrvFS (WSL /mnt/ paths) symlinks are not supported; fall back to copying.
 _fix_lib_symlinks() {
     local dir="$1"
     [ -d "$dir" ] || return 0
+
+    # Detect whether symlinks are supported: NTFS via DrvFS (/mnt/[a-z]) does not allow ln -s
+    local use_copy=0
+    if [[ "$dir" == /mnt/[a-z]/* ]] && grep -qi microsoft /proc/version 2>/dev/null; then
+        use_copy=1
+    fi
+
     local f basename linkname
     # Match files like libfoo.so.3.14 (major.minor)
     for f in "$dir"/lib*.so.*.*; do
@@ -478,16 +501,29 @@ _fix_lib_symlinks() {
         # e.g. libpq.so.5.14 → derive libpq.so.5 and libpq.so
         local soname="${basename%.*}"      # libpq.so.5
         local bare="${soname%.*}"          # libpq.so  (strip .5) — but only if what remains ends with .so
-        # Recreate the soname symlink (libpq.so.5 -> libpq.so.5.14)
+        # Recreate the soname link (libpq.so.5 -> libpq.so.5.14)
         linkname="$dir/$soname"
-        if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
-            ln -sf "$basename" "$linkname"
-        fi
-        # Recreate the bare symlink (libpq.so -> libpq.so.5.14) only if soname looks like lib*.so.N
-        if [[ "$bare" == *.so ]]; then
-            linkname="$dir/$bare"
+        if [ "$use_copy" = "1" ]; then
+            # On NTFS: copy the file if the link target doesn't already exist or differs
+            if [ ! -f "$linkname" ] || [ "$linkname" -ot "$f" ]; then
+                cp -f "$f" "$linkname"
+            fi
+        else
             if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
                 ln -sf "$basename" "$linkname"
+            fi
+        fi
+        # Recreate the bare link (libpq.so -> libpq.so.5.14) only if soname looks like lib*.so.N
+        if [[ "$bare" == *.so ]]; then
+            linkname="$dir/$bare"
+            if [ "$use_copy" = "1" ]; then
+                if [ ! -f "$linkname" ] || [ "$linkname" -ot "$f" ]; then
+                    cp -f "$f" "$linkname"
+                fi
+            else
+                if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
+                    ln -sf "$basename" "$linkname"
+                fi
             fi
         fi
     done
@@ -674,11 +710,67 @@ is_port_in_use() {
     fi
 }
 
+# Find an available port starting from the given base, incrementing up to max_attempts times
+# Usage: find_available_port <base_port> <label> <max_attempts>
+# Prints the available port to stdout; dies if all attempts fail
+find_available_port() {
+    local base="$1" label="$2" max_attempts="${3:-3}"
+    local port="$base" attempt=0
+    while [ $attempt -lt $max_attempts ]; do
+        if ! is_port_in_use "$port"; then
+            echo "$port"
+            return 0
+        fi
+        warn "Port $port ($label) is already in use; trying $((port + 1)) ..."
+        port=$((port + 1))
+        attempt=$((attempt + 1))
+    done
+    die 1010 "All ports $base-$((base + max_attempts - 1)) ($label) are occupied; cannot start"
+}
+
+# Check if a PostgreSQL instance on the given port requires authentication.
+# Our own instance uses trust auth (no password); if a password is required,
+# it means the port is occupied by a foreign PostgreSQL instance.
+pg_port_is_foreign() {
+    local port="$1"
+    # Not listening at all → not foreign
+    is_port_in_use "$port" || return 1
+    # Server not accepting connections → not a PG instance we can test
+    "$(pg_bin)/pg_isready" -h 127.0.0.1 -p "$port" -q 2>/dev/null || return 1
+    # Attempt a passwordless query using -w (--no-password) so psql exits immediately
+    # instead of waiting for interactive password input when auth is required
+    ! "$(pg_bin)/psql" -w -h 127.0.0.1 -p "$port" -U "$PG_USER" -d postgres -tAc "SELECT 1" >/dev/null 2>&1
+}
+
+# Find an available PostgreSQL port: skip ports that are occupied OR running a foreign instance
+# Usage: find_available_pg_port <base_port> <max_attempts>
+find_available_pg_port() {
+    local base="$1" max_attempts="${2:-3}"
+    local port="$base" attempt=0
+    while [ $attempt -lt $max_attempts ]; do
+        if is_port_in_use "$port"; then
+            if pg_port_is_foreign "$port"; then
+                warn "Port $port (PostgreSQL) belongs to a foreign instance (requires password); trying $((port + 1)) ..."
+            else
+                warn "Port $port (PostgreSQL) is already in use; trying $((port + 1)) ..."
+            fi
+        elif pg_port_is_foreign "$port"; then
+            warn "Port $port (PostgreSQL) belongs to a foreign instance (requires password); trying $((port + 1)) ..."
+        else
+            echo "$port"
+            return 0
+        fi
+        port=$((port + 1))
+        attempt=$((attempt + 1))
+    done
+    die 1010 "All ports $base-$((base + max_attempts - 1)) (PostgreSQL) are occupied or foreign; cannot start"
+}
+
 generate_nginx_conf() {
     local conf="$SCRIPT_DIR/config/nginx.conf"
     local mime="$SCRIPT_DIR/config/mime.types"
     local frontend_root="$SCRIPT_DIR/frontend/dist"
-    local cards_root="$SCRIPT_DIR/cards"
+    local pkg_root="$SCRIPT_DIR/.."
     cat > "$conf" << NGINX_EOF
 worker_processes auto;
 pid "$NGINX_PID";
@@ -708,34 +800,54 @@ http {
     # 4. built-in frontend/dist/img/arkham/cards/
     # 5. CDN fallback
     location ~ ^/img/arkham/(?<request_lang>zh|fr|es|ko)/cards/(?<card_path>.+)$ {
-      root "$SCRIPT_DIR";
+      root "$pkg_root";
       try_files /cards/\$card_path
                 /cards_en/\$card_path
-                /frontend/dist/img/arkham/\$request_lang/cards/\$card_path
-                /frontend/dist/img/arkham/cards/\$card_path
+                /game/frontend/dist/img/arkham/\$request_lang/cards/\$card_path
+                /game/frontend/dist/img/arkham/cards/\$card_path
                 @img_cdn;
     }
     location ~ ^/img/arkham/ita/cards/(?<card_path>.+)$ {
-      root "$SCRIPT_DIR";
+      root "$pkg_root";
       try_files /cards/\$card_path
                 /cards_en/\$card_path
-                /frontend/dist/img/arkham/ita/cards/\$card_path
-                /frontend/dist/img/arkham/cards/\$card_path
+                /game/frontend/dist/img/arkham/ita/cards/\$card_path
+                /game/frontend/dist/img/arkham/cards/\$card_path
                 @img_cdn;
     }
     location ~ ^/img/arkham/cards/(?<card_path>.+)$ {
-      root "$SCRIPT_DIR";
+      root "$pkg_root";
       try_files /cards/\$card_path
                 /cards_en/\$card_path
-                /frontend/dist/img/arkham/cards/\$card_path
+                /game/frontend/dist/img/arkham/cards/\$card_path
                 @img_cdn;
     }
+    # Localized non-card arkham images (e.g. /img/arkham/fr/tarot/tarot-0.jpg):
+    # Priority: user cards/{path} > cards_en/{path} > dist/{lang}/{path} > dist/{path} > CDN
+    location ~ ^/img/arkham/(?<request_lang>zh|fr|es|ko|ita)/(?<img_path>.+)$ {
+      root "$pkg_root";
+      try_files /cards/\$img_path
+                /cards_en/\$img_path
+                /game/frontend/dist/img/arkham/\$request_lang/\$img_path
+                /game/frontend/dist/img/arkham/\$img_path
+                @img_cdn;
+    }
+    # All other arkham images (portraits, boxes, sets, tarot, encounter-sets, root-level, etc.):
+    # Priority: user cards/{path} > cards_en/{path} > dist/{path} > CDN
+    location ~ ^/img/arkham/(?<img_path>.+)$ {
+      root "$pkg_root";
+      try_files /cards/\$img_path
+                /cards_en/\$img_path
+                /game/frontend/dist/img/arkham/\$img_path
+                @img_cdn;
+    }
+    # Non-arkham images (e.g. /img/icons/favicon.ico)
     location /img/ {
       root "$frontend_root";
       try_files \$uri @img_cdn;
     }
     location @img_cdn {
-      expires 7d;
+      expires 10m;
       add_header Server-Timing "cdn" always;
       proxy_pass http://assets.arkhamhorror.app;
       proxy_set_header Host assets.arkhamhorror.app;
@@ -909,6 +1021,12 @@ do_start() {
         do_stop; sleep 1
     fi
 
+    # Auto-increment ports if still occupied by external processes (up to 3 attempts each)
+    # PostgreSQL uses a dedicated check that also detects foreign instances requiring authentication
+    PG_PORT="$(find_available_pg_port "$PG_PORT" 3)"
+    API_PORT="$(find_available_port "$API_PORT" "arkham-api" 3)"
+    NGINX_PORT="$(find_available_port "$NGINX_PORT" "nginx" 3)"
+
     # Enable cleanup protection: from here until startup fully succeeds, any abnormal exit triggers do_stop automatically
     _CLEANUP_ON_EXIT=1
 
@@ -930,24 +1048,88 @@ do_start() {
         return 0
     fi
 
+    # ── Handle force_init.dump: forced re-initialization from a user-supplied dump ──
+    local FORCE_INIT_DUMP="$BACKUP_DIR/force_init.dump"
     local is_fresh=0
-    if cluster_is_valid "$PG_DATA"; then
-        :
-    else
-        [ -e "$PG_DATA" ] && cleanup_invalid_cluster "$PG_DATA"
+    if [ -f "$FORCE_INIT_DUMP" ]; then
+        info "Detected force_init.dump; will re-initialize the database cluster ..."
 
-        if dump_file_is_valid "$PG_DUMP_FILE"; then
-            restore_database_from_dump "$PG_DUMP_FILE"
-        elif cluster_is_valid "$PGDATA_LOCAL"; then
-            info "Legacy physical backup detected; migrating it to the user data directory ..."
-            cp -a "$PGDATA_LOCAL" "$PG_DATA" || die 2002 "Old data migration failed"
-            date +%s > "$VERSION_FILE"
-            date +%s > "$VERSION_FILE_LOCAL"
+        # If the current cluster is valid, export a backup as old.dump before destroying it
+        if cluster_is_valid "$PG_DATA"; then
+            info "Backing up current cluster before forced re-initialization ..."
+            # Temporarily start PostgreSQL to perform the backup
+            start_postgres
+            if database_exists; then
+                local OLD_DUMP="$BACKUP_DIR/old.dump"
+                rm -f "$OLD_DUMP" 2>/dev/null || true
+                if pg_dump_cmd -d "$PG_DB" -Fc -f "$OLD_DUMP" > "$PG_DUMP_LOG" 2>&1 \
+                   && dump_file_is_valid "$OLD_DUMP"; then
+                    info "Current database backed up to $OLD_DUMP"
+                else
+                    warn "Failed to back up current database (continuing with forced init anyway)"
+                    rm -f "$OLD_DUMP" 2>/dev/null || true
+                fi
+            fi
+            pg_ctl -D "$PG_DATA" -m fast -w stop 2>/dev/null || true
+        fi
+
+        # Destroy existing cluster
+        cleanup_invalid_cluster "$PG_DATA"
+
+        if dump_file_is_valid "$FORCE_INIT_DUMP"; then
+            # Restore from force_init.dump
+            if restore_database_from_dump "$FORCE_INIT_DUMP"; then
+                info "Forced initialization from force_init.dump complete."
+            else
+                warn "Restore from force_init.dump failed; falling back to fresh initialization ..."
+                pg_ctl -D "$PG_DATA" -m immediate stop 2>/dev/null || true
+                cleanup_invalid_cluster "$PG_DATA"
+                init_database
+                is_fresh=1
+            fi
         else
+            warn "force_init.dump is invalid; starting fresh initialization ..."
             init_database
             is_fresh=1
-            date +%s > "$VERSION_FILE"
-            date +%s > "$VERSION_FILE_LOCAL"
+        fi
+
+        # Remove force_init.dump after processing (one-shot trigger)
+        rm -f "$FORCE_INIT_DUMP" 2>/dev/null || true
+        date +%s > "$VERSION_FILE"
+        date +%s > "$VERSION_FILE_LOCAL"
+    fi
+
+    if [ "$is_fresh" != "1" ] && ! cluster_is_valid "$PG_DATA"; then
+        [ -e "$PG_DATA" ] && cleanup_invalid_cluster "$PG_DATA"
+
+        local restored=0
+        # Try latest.dump first, then fall back to previous.dump
+        for _dump_candidate in "$PG_DUMP_FILE" "$PG_DUMP_PREV"; do
+            [ "$restored" = "1" ] && break
+            if dump_file_is_valid "$_dump_candidate"; then
+                if restore_database_from_dump "$_dump_candidate"; then
+                    restored=1
+                else
+                    warn "Restore from $(basename "$_dump_candidate") failed; cleaning up ..."
+                    # Stop PG if it was started during the failed restore, then wipe the broken cluster
+                    pg_ctl -D "$PG_DATA" -m immediate stop 2>/dev/null || true
+                    cleanup_invalid_cluster "$PG_DATA"
+                fi
+            fi
+        done
+
+        if [ "$restored" = "0" ]; then
+            if cluster_is_valid "$PGDATA_LOCAL"; then
+                info "Legacy physical backup detected; migrating it to the user data directory ..."
+                cp -a "$PGDATA_LOCAL" "$PG_DATA" || die 2002 "Old data migration failed"
+                date +%s > "$VERSION_FILE"
+                date +%s > "$VERSION_FILE_LOCAL"
+            else
+                init_database
+                is_fresh=1
+                date +%s > "$VERSION_FILE"
+                date +%s > "$VERSION_FILE_LOCAL"
+            fi
         fi
     fi
 
@@ -983,7 +1165,7 @@ do_start() {
         psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
             > "$DATA_DIR/psql.log" 2>&1 \
             || die 2006 "Failed to create database" "$DATA_DIR/psql.log"
-        psql_cmd -d "$PG_DB" -f "$SCRIPT_DIR/setup.sql" \
+        psql_cmd -d "$PG_DB" -f "$DATA_DIR/setup.sql" \
             >> "$DATA_DIR/psql.log" 2>&1 \
             || die 2007 "Schema import failed" "$DATA_DIR/psql.log"
         info "Database initialization complete."
@@ -995,7 +1177,7 @@ do_start() {
         psql_cmd -d postgres -c "CREATE DATABASE \"$PG_DB\";" \
             >> "$DATA_DIR/psql.log" 2>&1 \
             || die 2006 "Failed to create database" "$DATA_DIR/psql.log"
-        psql_cmd -d "$PG_DB" -f "$SCRIPT_DIR/setup.sql" \
+        psql_cmd -d "$PG_DB" -f "$DATA_DIR/setup.sql" \
             >> "$DATA_DIR/psql.log" 2>&1 \
             || die 2007 "Schema import failed" "$DATA_DIR/psql.log"
         info "Database recreation complete."
@@ -1026,9 +1208,9 @@ do_start() {
     # 3. nginx (port 3000)
     info "Configuring and starting nginx ..."
 
-    # Ensure user-facing card image directories exist
-    ensure_dir "$SCRIPT_DIR/cards"
-    ensure_dir "$SCRIPT_DIR/cards_en"
+    # Ensure user-facing card image directories exist (at pkg root, one level above game/)
+    ensure_dir "$SCRIPT_DIR/../cards"
+    ensure_dir "$SCRIPT_DIR/../cards_en"
 
     ensure_dir "$DATA_DIR/nginx_temp"
     generate_nginx_conf
@@ -1062,8 +1244,20 @@ do_start() {
     printf '  %-14s PID %-8s Port %s\n' "arkham-api" "$(get_api_pid)" "$API_PORT"
     printf '  %-14s PID %-8s Port %s\n' "nginx" "$(get_nginx_pid)" "$NGINX_PORT"
     echo ""
-    printf '  Status: %sbash %s/start.sh --status%s\n' "$CYAN" "$SCRIPT_DIR" "$RESET"
-    printf '  Stop:   %sbash %s/start.sh --stop%s\n' "$CYAN" "$SCRIPT_DIR" "$RESET"
+    local pkg_name; pkg_name="$(basename "$(dirname "$SCRIPT_DIR")")"
+    local dir_name; dir_name="$(basename "$SCRIPT_DIR")"
+    printf '  Status: %sbash %s/%s/start.sh --status%s\n' "$CYAN" "$pkg_name" "$dir_name" "$RESET"
+    printf '  Stop:   %sbash %s/%s/start.sh --stop%s\n' "$CYAN" "$pkg_name" "$dir_name" "$RESET"
+
+    # Display current version from marker file (absent before first update → show "dev")
+    local _cur_ver="dev"
+    for _marker in "$SCRIPT_DIR"/current_v[0-9]*; do
+        [ -e "$_marker" ] || continue
+        _cur_ver="$(basename "$_marker")"
+        _cur_ver="${_cur_ver#current_}"
+        break
+    done
+    printf '  Version: %s%s%s\n' "$GREEN" "$_cur_ver" "$RESET"
     echo ""
 
     # Open the browser automatically (silent; failure does not affect services)
@@ -1073,13 +1267,23 @@ do_start() {
 
 # ── Foreground keepalive: keep the terminal window open and stop all services automatically when the window closes ─
 run_foreground() {
-    # On exit signal: stop services → clear EXIT trap → close window → exit
-    trap 'info "Exit signal received, stopping all services ..."; \
-          do_stop; \
-          trap - EXIT; \
-          close_terminal_window_if_needed; \
-          exit 0' HUP INT TERM
-    trap 'do_stop 2>/dev/null || true' EXIT
+    # Graceful shutdown handler for HUP/INT/TERM signals.
+    # When the terminal is already dead (e.g. Command+Q on macOS closes pty before
+    # delivering SIGHUP), writing to stdout/stderr returns EIO. Under set -e this would
+    # abort the handler before do_stop runs. Detect and redirect to avoid this.
+    _on_exit_signal() {
+        if ! : >/dev/tty 2>/dev/null; then
+            # Terminal is gone; redirect all output to prevent EIO failures
+            exec >/dev/null 2>&1
+        fi
+        info "Exit signal received, stopping all services ..."
+        do_stop
+        trap - EXIT
+        close_terminal_window_if_needed
+        exit 0
+    }
+    trap '_on_exit_signal' HUP INT TERM
+    trap 'do_stop >/dev/null 2>&1 || true' EXIT
 
     echo ""
     printf '%s────────────────────────────────────────────%s\n' "$CYAN" "$RESET"
@@ -1088,9 +1292,28 @@ run_foreground() {
     printf '%s────────────────────────────────────────────%s\n' "$CYAN" "$RESET"
     echo ""
 
-    # Sleep in the foreground without spawning a background child process
+    # All platforms: poll /dev/tty every 5 seconds as a safety net.
+    #
+    # WSL:         Windows terminates wsl.exe without delivering any signal — polling
+    #              is the ONLY cleanup mechanism.
+    # macOS/Linux: SIGHUP is normally delivered on terminal close, but Command+Q or
+    #              force-quit may bypass it. If SIGHUP works, the trap fires first and
+    #              the poll never triggers; otherwise the poll catches it within 5s.
+    #
+    # Why not `read -t N </dev/tty`: bash's read -t uses alarm()/SIGALRM internally.
+    # On WSL2 bash, when redirected from a pty device, SIGALRM can escape the internal
+    # handler and kill the script (exit 142), breaking Start-ArkhamHorror.bat's retry logic.
+    #
+    # Cost: one fork(sleep) every 5s — negligible next to PG + API + nginx.
     while true; do
-        sleep 86400 || true
+        sleep 5 || true
+        if ! : < /dev/tty 2>/dev/null; then
+            exec >/dev/null 2>&1
+            info "Terminal disconnected (window closed), stopping all services ..."
+            do_stop
+            trap - EXIT
+            exit 0
+        fi
     done
 }
 
@@ -1152,25 +1375,14 @@ case "$ACTION" in
 esac
 LAUNCHSCRIPT
 
-    chmod +x "${PKG_DIR}/start.sh"
+    chmod +x "${PKG_DIR}/game/start.sh"
     info "  ✓ start.sh generated"
 }
 
-# ── Generate stop.sh (shortcut) ───────────────────────────────────────────────
-
-generate_stop_script() {
-    cat > "${PKG_DIR}/stop.sh" << 'STOPSCRIPT'
-#!/usr/bin/env bash
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-exec bash "$SCRIPT_DIR/start.sh" --stop
-STOPSCRIPT
-    chmod +x "${PKG_DIR}/stop.sh"
-}
-
-# ── Generate start.bat (Windows launcher) ────────────────────────────────────
+# ── Generate Start-ArkhamHorror.bat (Windows launcher) ────────────────────────
 
 generate_start_bat() {
-    cat > "${PKG_DIR}/start.bat" << 'BATSCRIPT'
+    cat > "${PKG_DIR}/Start-ArkhamHorror.bat" << 'BATSCRIPT'
 @echo off
 chcp 65001 >nul 2>&1
 setlocal EnableDelayedExpansion
@@ -1195,7 +1407,7 @@ echo.
 powershell -Command "Start-Process cmd -ArgumentList '/c wsl --install -d Ubuntu && pause' -Verb RunAs"
 echo.
 echo [^!] WSL installation has been launched in an elevated window.
-echo     After installation finishes and the computer is restarted, double-click start.bat again.
+echo     After installation finishes and the computer is restarted, double-click Start-ArkhamHorror.bat again.
 echo.
 pause
 exit /b 0
@@ -1229,7 +1441,7 @@ echo.
 wsl --install -d Ubuntu
 if !ERRORLEVEL! neq 0 goto :INSTALL_FAILED
 echo.
-echo [^!] Ubuntu installation completed. Please double-click start.bat again.
+echo [^!] Ubuntu installation completed. Please double-click Start-ArkhamHorror.bat again.
 echo.
 pause
 exit /b 0
@@ -1289,7 +1501,7 @@ echo.
 REM ---- 4. Start services ----
 echo [*] Starting Arkham Horror LCG ...
 echo.
-wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh"
+wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!/game' && bash start.sh"
 set START_EXIT=!ERRORLEVEL!
 
 if !START_EXIT! equ 10 goto :ALREADY_RUNNING
@@ -1301,12 +1513,12 @@ REM ---- 5. Startup failed: retry after restart ----
 echo.
 echo [^!] Startup failed (exit code: !START_EXIT!). Restarting !WSL_DISTRO! and retrying...
 echo.
-wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh --stop" 2>nul
+wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!/game' && bash start.sh --stop" 2>nul
 wsl --terminate !WSL_DISTRO! >nul 2>nul
 timeout /t 2 /nobreak >nul
 echo [*] Starting services again...
 echo.
-wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh"
+wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!/game' && bash start.sh"
 set START_EXIT=!ERRORLEVEL!
 if !START_EXIT! equ 10 goto :ALREADY_RUNNING
 if !START_EXIT! equ 0 goto :START_OK
@@ -1314,7 +1526,7 @@ if !START_EXIT! equ 0 goto :START_OK
 echo.
 echo [^!] It still failed after restart (exit code: !START_EXIT!). Please check the error messages above.
 echo.
-wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!' && bash start.sh --stop" 2>nul
+wsl -d !WSL_DISTRO! -u arkham -- bash -c "cd '!WSL_DIR!/game' && bash start.sh --stop" 2>nul
 goto :END
 
 :START_OK
@@ -1335,19 +1547,19 @@ BATSCRIPT
 
     # The bat file must use CRLF line endings (required on Windows)
     if command -v unix2dos >/dev/null 2>&1; then
-        unix2dos "${PKG_DIR}/start.bat" 2>/dev/null || true
+        unix2dos "${PKG_DIR}/Start-ArkhamHorror.bat" 2>/dev/null || true
     elif command -v sed >/dev/null 2>&1; then
-        sed -i.bak 's/$/\r/' "${PKG_DIR}/start.bat" 2>/dev/null && rm -f "${PKG_DIR}/start.bat.bak" || true
+        sed -i.bak 's/$/\r/' "${PKG_DIR}/Start-ArkhamHorror.bat" 2>/dev/null && rm -f "${PKG_DIR}/Start-ArkhamHorror.bat.bak" || true
     fi
 
-    info "  ✓ start.bat generated"
+    info "  ✓ Start-ArkhamHorror.bat generated"
 }
 
 # ── Generate mime.types ───────────────────────────────────────────────────────
 
 generate_mime_types() {
-    ensure_dir "${PKG_DIR}/config"
-    cat > "${PKG_DIR}/config/mime.types" << 'MIME_EOF'
+    ensure_dir "${PKG_DIR}/game/config"
+    cat > "${PKG_DIR}/game/config/mime.types" << 'MIME_EOF'
 types {
   text/html                             html htm shtml;
   text/css                              css;
@@ -1372,29 +1584,349 @@ MIME_EOF
     substep "mime.types generated"
 }
 
-# ── Generate Start-ArkhamHorror.bat ───────────────────────────────────────────
-
-generate_windows_shortcut() {
-    cat > "${PKG_DIR}/Start-ArkhamHorror.bat" << 'WINSHORTCUT'
-@echo off
-chcp 65001 >nul 2>&1
-cd /d "%~dp0"
-call start.bat
-WINSHORTCUT
-    info "  ✓ Start-ArkhamHorror.bat generated"
-}
-
 # ── Generate Start-ArkhamHorror.command ───────────────────────────────────────
 
 generate_macos_command() {
     cat > "${PKG_DIR}/Start-ArkhamHorror.command" << 'MACCOMMAND'
 #!/bin/bash
-cd "$(dirname "$0")" && bash start.sh
+cd "$(dirname "$0")/game" && bash start.sh
 MACCOMMAND
     chmod +x "${PKG_DIR}/Start-ArkhamHorror.command"
     info "  ✓ Start-ArkhamHorror.command generated"
 }
 
+# ═════════════════════════════════════════════════════════════════════════════
+# Generate update.sh — in-place upgrade script
+# ═════════════════════════════════════════════════════════════════════════════
+
+generate_update_script() {
+    substep "Generating update.sh ..."
+
+    cat > "${PKG_DIR}/game/update.sh" << 'UPDATESCRIPT'
+#!/usr/bin/env bash
+# =============================================================================
+# update.sh — In-place upgrade for Arkham Horror LCG offline distribution
+#
+# This script is designed to be copied to a temporary location and executed
+# from there (by the platform-specific update launcher), because it renames
+# the game/ directory during the upgrade process.
+#
+# Flow:
+#   1. Stop running services (via start.sh --stop)
+#   2. Read current version from game/current_v* marker file
+#   3. Find the latest release archive in BASE_DIR
+#   4. Rename game/ → game_v{old_version}
+#   5. Extract only game/ from the new archive
+#   6. Done — cards/, cards_en/, backup/ are untouched
+# =============================================================================
+set -euo pipefail
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+RED='\033[31m'; GREEN='\033[32m'; YELLOW='\033[33m'; CYAN='\033[36m'; RESET='\033[0m'
+die()  { printf "${RED}[ERROR]${RESET} %s\n" "$*" >&2; exit 1; }
+info() { printf "${CYAN}[info]${RESET} %s\n" "$*"; }
+warn() { printf "${YELLOW}[warn]${RESET} %s\n" "$*"; }
+ok()   { printf "${GREEN}[ok]${RESET} %s\n" "$*"; }
+
+# ── Determine BASE_DIR ───────────────────────────────────────────────────────
+# BASE_DIR is the directory containing game/, cards/, backup/, etc.
+# This script receives BASE_DIR as the first argument (set by the launcher).
+if [ $# -ge 1 ] && [ -n "$1" ]; then
+    BASE_DIR="$1"
+else
+    # Fallback: assume script is inside game/
+    BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+fi
+
+GAME_DIR="${BASE_DIR}/game"
+
+if [ ! -d "$GAME_DIR" ]; then
+    die "game/ directory not found at: $GAME_DIR"
+fi
+
+echo ""
+echo "  ============================================"
+echo "    Arkham Horror LCG — Update"
+echo "  ============================================"
+echo ""
+
+# ── 1. Stop running services ────────────────────────────────────────────────
+if [ -f "${GAME_DIR}/start.sh" ]; then
+    info "Stopping running services ..."
+    bash "${GAME_DIR}/start.sh" --stop 2>/dev/null || true
+    # Give processes time to release file handles
+    sleep 1
+fi
+
+# ── 2. Read current version ─────────────────────────────────────────────────
+# Version is stored as a marker filename: game/current_v<VERSION>
+# Before first update, no marker exists → treat as "dev"
+CURRENT_VERSION="dev"
+for marker in "${GAME_DIR}"/current_v[0-9]*; do
+    [ -e "$marker" ] || continue
+    # Extract version from filename: current_v20260528.1 → v20260528.1
+    fname="$(basename "$marker")"
+    CURRENT_VERSION="${fname#current_}"
+    break
+done
+info "Current version: ${CURRENT_VERSION}"
+
+# ── 3. Find the latest release archive ──────────────────────────────────────
+# Pattern: ArkhamHorror-<platform>-v<YYYYMMDD>.<N>.tar.gz
+# We look for the archive with the highest version number in BASE_DIR.
+ARCHIVE=""
+ARCHIVE_VERSION=""
+
+# Detect platform from existing archive names
+for f in "${BASE_DIR}"/ArkhamHorror-*-v*.tar.gz; do
+    [ -f "$f" ] || continue
+    # Extract version: everything between the last "-v" and ".tar.gz"
+    fname="$(basename "$f")"
+    ver="$(printf '%s' "$fname" | sed -E 's/.*-v([0-9]+\.[0-9]+)\.tar\.gz$/\1/')"
+    if [ -z "$ver" ] || [ "$ver" = "$fname" ]; then
+        continue
+    fi
+    # Compare: pick the one with the largest version (YYYYMMDD.N → lexicographic sort works)
+    if [ -z "$ARCHIVE_VERSION" ] || [ "$ver" \> "$ARCHIVE_VERSION" ]; then
+        ARCHIVE="$f"
+        ARCHIVE_VERSION="$ver"
+    fi
+done
+
+if [ -z "$ARCHIVE" ]; then
+    printf "${RED}[ERROR]${RESET} No release archive found in: %s/\n" "$BASE_DIR" >&2
+    printf "    Expected pattern: ArkhamHorror-<platform>-v<YYYYMMDD.N>.tar.gz\n" >&2
+    echo "" >&2
+    printf "    Download the latest release from:\n" >&2
+    printf "      ${GREEN}https://github.com/halogenandtoast/ArkhamHorror/releases${RESET}\n" >&2
+    exit 1
+fi
+
+NEW_VERSION="v${ARCHIVE_VERSION}"
+info "Found archive: $(basename "$ARCHIVE")"
+info "New version:   ${NEW_VERSION}"
+
+# Compare versions: only upgrade, never downgrade
+# Strip leading "v" for comparison; format is YYYYMMDD.N so lexicographic works
+CURRENT_VER_CMP="$(printf '%s' "$CURRENT_VERSION" | sed 's/^v//')"
+NEW_VER_CMP="$ARCHIVE_VERSION"
+
+if [ "$NEW_VERSION" = "$CURRENT_VERSION" ]; then
+    warn "Current version is already ${CURRENT_VERSION}. Nothing to do."
+    echo ""
+    info "Download newer releases from:"
+    printf "  ${GREEN}https://github.com/halogenandtoast/ArkhamHorror/releases${RESET}\n"
+    exit 0
+fi
+
+if [ "$CURRENT_VER_CMP" != "dev" ] && [ "$CURRENT_VER_CMP" \> "$NEW_VER_CMP" ]; then
+    warn "Archive version ${NEW_VERSION} is older than current ${CURRENT_VERSION}. Skipping."
+    echo ""
+    info "Download newer releases from:"
+    printf "  ${GREEN}https://github.com/halogenandtoast/ArkhamHorror/releases${RESET}\n"
+    exit 0
+fi
+
+# ── 3.5. Extract to temp dir and validate before making any changes ──────────
+TMPDIR_UPDATE="$(mktemp -d)"
+
+info "Extracting archive to temporary directory for validation ..."
+if ! tar -xzf "$ARCHIVE" -C "$TMPDIR_UPDATE" 2>&1; then
+    rm -rf "$TMPDIR_UPDATE"
+    die "Failed to extract archive: $(basename "$ARCHIVE")
+    The file may be corrupted. Please re-download the release package."
+fi
+
+# Verify that game/ with start.sh exists in the extracted content
+if [ ! -d "${TMPDIR_UPDATE}/game" ] || [ ! -f "${TMPDIR_UPDATE}/game/start.sh" ]; then
+    rm -rf "$TMPDIR_UPDATE"
+    die "Archive does not contain a valid game/ directory: $(basename "$ARCHIVE")
+    This does not look like a valid release package."
+fi
+
+ok "Archive validated: game/ directory with start.sh confirmed"
+echo ""
+
+# ── 4. Rename game/ → game_v{old_version} ───────────────────────────────────
+# When no marker exists (first update, CURRENT_VERSION="dev"), name the backup
+# using the new version's date with suffix .0 (releases always start at .1)
+if [ "$CURRENT_VERSION" = "dev" ]; then
+    BACKUP_NAME="game_v$(printf '%s' "$ARCHIVE_VERSION" | sed 's/\.[0-9]*$/.0/')"
+else
+    BACKUP_NAME="game_${CURRENT_VERSION}"
+fi
+# Avoid collision if backup already exists
+if [ -d "${BASE_DIR}/${BACKUP_NAME}" ]; then
+    BACKUP_NAME="${BACKUP_NAME}_$(date +%Y%m%d%H%M%S)"
+fi
+
+info "Renaming game/ → ${BACKUP_NAME}/ ..."
+if ! mv "${GAME_DIR}" "${BASE_DIR}/${BACKUP_NAME}"; then
+    rm -rf "$TMPDIR_UPDATE"
+    die "Failed to rename game/ — are services still running?"
+fi
+
+ok "Old version preserved at: ${BACKUP_NAME}/"
+
+# ── Rollback helper: restore game/ from backup if anything fails below ──────
+rollback() {
+    warn "Rolling back: restoring ${BACKUP_NAME}/ → game/ ..."
+    if [ -d "${BASE_DIR}/game" ]; then
+        rm -rf "${BASE_DIR}/game"
+    fi
+    mv "${BASE_DIR}/${BACKUP_NAME}" "${GAME_DIR}"
+    warn "Rollback complete. game/ has been restored to the previous state."
+}
+
+# ── 5. Move validated game/ from temp to BASE_DIR ────────────────────────────
+info "Installing new game/ ..."
+if ! mv "${TMPDIR_UPDATE}/game" "${BASE_DIR}/game" 2>/dev/null; then
+    # mv across filesystems may fail; fall back to cp
+    if ! cp -r "${TMPDIR_UPDATE}/game" "${BASE_DIR}/game"; then
+        rollback
+        rm -rf "$TMPDIR_UPDATE"
+        die "Failed to install new game/ directory"
+    fi
+fi
+
+# ── 6. Write new version marker ─────────────────────────────────────────────
+# Remove old marker(s) and create new one
+rm -f "${BASE_DIR}/game"/current_v* 2>/dev/null || true
+if ! touch "${BASE_DIR}/game/current_${NEW_VERSION}" 2>/dev/null; then
+    rollback
+    rm -rf "$TMPDIR_UPDATE"
+    die "Failed to write version marker"
+fi
+
+rm -rf "$TMPDIR_UPDATE"
+
+echo ""
+ok "Update complete: ${CURRENT_VERSION} → ${NEW_VERSION}"
+echo ""
+info "The old version is preserved at: ${BACKUP_NAME}/"
+info "You can delete it manually once you confirm the update works."
+echo ""
+UPDATESCRIPT
+
+    chmod +x "${PKG_DIR}/game/update.sh"
+    info "  ✓ game/update.sh generated"
+}
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Generate Update-ArkhamHorror.bat (Windows/WSL launcher for update)
+# ═════════════════════════════════════════════════════════════════════════════
+
+generate_update_bat() {
+    cat > "${PKG_DIR}/Update-ArkhamHorror.bat" << 'BATSCRIPT'
+@echo off
+chcp 65001 >nul 2>&1
+setlocal EnableDelayedExpansion
+
+title Arkham Horror LCG - Update
+
+echo.
+echo   ============================================
+echo     Arkham Horror LCG - Update
+echo   ============================================
+echo.
+
+REM ---- 1. Check WSL ----
+where wsl >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo [^!] WSL is not installed. Please install WSL first by running Start-ArkhamHorror.bat.
+    pause
+    exit /b 1
+)
+
+REM ---- 2. Probe Ubuntu distributions ----
+set "WSL_DISTRO="
+
+wsl -d Ubuntu -- echo ok >nul 2>&1
+if !ERRORLEVEL! equ 0 (set "WSL_DISTRO=Ubuntu"& goto :FOUND_DISTRO)
+
+wsl -d Ubuntu-24.04 -- echo ok >nul 2>&1
+if !ERRORLEVEL! equ 0 (set "WSL_DISTRO=Ubuntu-24.04"& goto :FOUND_DISTRO)
+
+wsl -d Ubuntu-22.04 -- echo ok >nul 2>&1
+if !ERRORLEVEL! equ 0 (set "WSL_DISTRO=Ubuntu-22.04"& goto :FOUND_DISTRO)
+
+wsl -d Ubuntu-20.04 -- echo ok >nul 2>&1
+if !ERRORLEVEL! equ 0 (set "WSL_DISTRO=Ubuntu-20.04"& goto :FOUND_DISTRO)
+
+echo [^!] No Ubuntu distribution found. Please run Start-ArkhamHorror.bat first.
+pause
+exit /b 1
+
+:FOUND_DISTRO
+echo [*] Using distribution: !WSL_DISTRO!
+echo.
+
+REM ---- 3. Get WSL path ----
+set "WIN_DIR=%~dp0"
+if "!WIN_DIR:~-1!"=="\" set "WIN_DIR=!WIN_DIR:~0,-1!"
+
+for /f "tokens=*" %%i in ('wsl -d !WSL_DISTRO! wslpath -u "!WIN_DIR!" 2^>nul') do set "WSL_DIR=%%i"
+if "!WSL_DIR!"=="" (
+    echo [^!] WSL path conversion failed.
+    pause
+    exit /b 1
+)
+
+echo [*] Package path: !WIN_DIR!
+echo [*] WSL path:    !WSL_DIR!
+echo.
+
+REM ---- 4. Copy update.sh to temp and execute ----
+echo [*] Starting update ...
+echo.
+wsl -d !WSL_DISTRO! -u arkham -- bash -c "cp '!WSL_DIR!/game/update.sh' /tmp/arkham-update.sh && bash /tmp/arkham-update.sh '!WSL_DIR!'; ret=$?; rm -f /tmp/arkham-update.sh; exit $ret"
+set UPDATE_EXIT=!ERRORLEVEL!
+
+if !UPDATE_EXIT! neq 0 (
+    echo.
+    echo [^!] Update failed (exit code: !UPDATE_EXIT!^). Please check the error messages above.
+    echo.
+)
+
+pause
+BATSCRIPT
+
+    # CRLF line endings for Windows
+    if command -v unix2dos >/dev/null 2>&1; then
+        unix2dos "${PKG_DIR}/Update-ArkhamHorror.bat" 2>/dev/null || true
+    elif command -v sed >/dev/null 2>&1; then
+        sed -i.bak 's/$/\r/' "${PKG_DIR}/Update-ArkhamHorror.bat" 2>/dev/null && rm -f "${PKG_DIR}/Update-ArkhamHorror.bat.bak" || true
+    fi
+
+    info "  ✓ Update-ArkhamHorror.bat generated"
+}
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Generate Update-ArkhamHorror.command (macOS launcher for update)
+# ═════════════════════════════════════════════════════════════════════════════
+
+generate_update_command() {
+    cat > "${PKG_DIR}/Update-ArkhamHorror.command" << 'MACCOMMAND'
+#!/bin/bash
+# Copy update.sh to a temp location and execute from there
+# (because update.sh renames the game/ directory during the upgrade)
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+cp "${BASE_DIR}/game/update.sh" /tmp/arkham-update.sh
+bash /tmp/arkham-update.sh "$BASE_DIR"
+ret=$?
+rm -f /tmp/arkham-update.sh
+if [ $ret -ne 0 ]; then
+    echo ""
+    echo "Update failed. Please check the error messages above."
+fi
+echo ""
+echo "Press Enter to close..."
+read -r
+exit $ret
+MACCOMMAND
+    chmod +x "${PKG_DIR}/Update-ArkhamHorror.command"
+    info "  ✓ Update-ArkhamHorror.command generated"
+}
 
 # ═════════════════════════════════════════════════════════════════════════════
 
@@ -1408,13 +1940,13 @@ main() {
     [ -f "$NGINX_BIN" ]     || die "Nginx does not exist: $NGINX_BIN"
 
     # If an old distribution exists and has start.sh, stop any possibly running services first (to avoid NTFS file locks)
-    if [ -d "$PKG_DIR" ] && [ -f "${PKG_DIR}/start.sh" ]; then
+    if [ -d "$PKG_DIR" ] && [ -f "${PKG_DIR}/game/start.sh" ]; then
         substep "Old distribution detected; stopping any possibly running services first ..."
-        bash "${PKG_DIR}/start.sh" --stop 2>/dev/null || true
+        bash "${PKG_DIR}/game/start.sh" --stop 2>/dev/null || true
     fi
 
     # Remove old distribution directory
-    # Problem: start.bat runs PostgreSQL initdb as the arkham user (UID 1001),
+    # Problem: Start-ArkhamHorror.bat runs PostgreSQL initdb as the arkham user (UID 1001),
     # so the created pgdata directory is 0700 and owned by arkham; the current dev user may not be allowed to delete it.
     # Solution: try normal rm first, then fall back to sudo rm if needed.
     if [ -d "$PKG_DIR" ]; then
@@ -1424,41 +1956,42 @@ main() {
                 || die "Unable to delete old distribution directory: $PKG_DIR\n  Manual fix: sudo rm -rf $PKG_DIR"
         fi
     fi
-    ensure_dir "${PKG_DIR}/bin"
-    ensure_dir "${PKG_DIR}/pgsql/bin"
-    ensure_dir "${PKG_DIR}/pgsql/lib"
-    ensure_dir "${PKG_DIR}/frontend/dist"
-    ensure_dir "${PKG_DIR}/config"
-    ensure_dir "${PKG_DIR}/data"
+    ensure_dir "${PKG_DIR}/game/bin"
+    ensure_dir "${PKG_DIR}/game/pgsql/bin"
+    ensure_dir "${PKG_DIR}/game/pgsql/lib"
+    ensure_dir "${PKG_DIR}/game/frontend/dist"
+    ensure_dir "${PKG_DIR}/game/config"
+    ensure_dir "${PKG_DIR}/game/data"
+    ensure_dir "${PKG_DIR}/backup"
 
     # Copy backend
-    substep "Copy: ${BACKEND_BIN} → ${PKG_DIR}/bin/arkham-api"
-    cp "$BACKEND_BIN" "${PKG_DIR}/bin/arkham-api"
-    chmod +x "${PKG_DIR}/bin/arkham-api"
+    substep "Copy: ${BACKEND_BIN} → ${PKG_DIR}/game/bin/arkham-api"
+    cp "$BACKEND_BIN" "${PKG_DIR}/game/bin/arkham-api"
+    chmod +x "${PKG_DIR}/game/bin/arkham-api"
 
     # Copy Nginx
-    substep "Copy: ${NGINX_BIN} → ${PKG_DIR}/bin/nginx"
-    cp "$NGINX_BIN" "${PKG_DIR}/bin/nginx"
-    chmod +x "${PKG_DIR}/bin/nginx"
+    substep "Copy: ${NGINX_BIN} → ${PKG_DIR}/game/bin/nginx"
+    cp "$NGINX_BIN" "${PKG_DIR}/game/bin/nginx"
+    chmod +x "${PKG_DIR}/game/bin/nginx"
 
     # Copy frontend
-    substep "Copy: ${FRONTEND_SRC}/ → ${PKG_DIR}/frontend/dist/"
-    cp -r "${FRONTEND_SRC}/"* "${PKG_DIR}/frontend/dist/"
+    substep "Copy: ${FRONTEND_SRC}/ → ${PKG_DIR}/game/frontend/dist/"
+    cp -r "${FRONTEND_SRC}/"* "${PKG_DIR}/game/frontend/dist/"
 
     # Copy PostgreSQL
     substep "Copy PostgreSQL binaries ..."
     for b in postgres initdb pg_ctl pg_isready psql pg_dump pg_restore; do
-        [ -x "${PG_BIN_DIR}/${b}" ] && cp "${PG_BIN_DIR}/${b}" "${PKG_DIR}/pgsql/bin/"
+        [ -x "${PG_BIN_DIR}/${b}" ] && cp "${PG_BIN_DIR}/${b}" "${PKG_DIR}/game/pgsql/bin/"
     done
-    [ -d "$PG_LIB_DIR" ] && cp -r "${PG_LIB_DIR}/"* "${PKG_DIR}/pgsql/lib/" 2>/dev/null || true
+    [ -d "$PG_LIB_DIR" ] && cp -r "${PG_LIB_DIR}/"* "${PKG_DIR}/game/pgsql/lib/" 2>/dev/null || true
     local pg_share="${DEPS_DIR}/postgres/share"
-    [ -d "$pg_share" ] && { ensure_dir "${PKG_DIR}/pgsql/share"; cp -r "${pg_share}/"* "${PKG_DIR}/pgsql/share/" 2>/dev/null || true; }
+    [ -d "$pg_share" ] && { ensure_dir "${PKG_DIR}/game/pgsql/share"; cp -r "${pg_share}/"* "${PKG_DIR}/game/pgsql/share/" 2>/dev/null || true; }
 
     # setup.sql is a full production database dump (tables + columns + constraints + indexes + triggers)
     # Docker initializes the database directly from this file instead of composing Sqitch migrations
     if [ -f "$SETUP_SQL" ]; then
-        cp "$SETUP_SQL" "${PKG_DIR}/setup.sql"
-        substep "setup.sql copied (full production database dump)"
+        cp "$SETUP_SQL" "${PKG_DIR}/game/data/setup.sql"
+        substep "setup.sql copied to game/data/ (full production database dump)"
     else
         warn "setup.sql not found"
     fi
@@ -1466,32 +1999,41 @@ main() {
     # Config files
     local config_src="${PROJECT_ROOT}/backend/arkham-api/config"
     for f in settings.yml client_session_key.aes favicon.ico robots.txt routes; do
-        [ -f "${config_src}/$f" ] && cp "${config_src}/$f" "${PKG_DIR}/config/" 2>/dev/null || true
+        [ -f "${config_src}/$f" ] && cp "${config_src}/$f" "${PKG_DIR}/game/config/" 2>/dev/null || true
     done
 
     # Generate nginx/mime runtime files
     generate_mime_types
     generate_launch_script
-    generate_stop_script
 
     # Generate user-facing launch shortcuts (per target platform)
     if [ "$OS" = "linux" ]; then
         generate_start_bat
-        generate_windows_shortcut
     elif [ "$OS" = "macos" ]; then
         generate_macos_command
     fi
 
+    # Generate update scripts
+    generate_update_script
+    if [ "$OS" = "linux" ]; then
+        generate_update_bat
+    elif [ "$OS" = "macos" ]; then
+        generate_update_command
+    fi
+
+    # No version marker written at build time.
+    # The first update.sh run will create game/current_v<VERSION> automatically.
+
     # ── Collect dynamic library dependencies (self-contained distribution; target environment needs no dev packages) ─
     if [ "$OS" = "macos" ]; then
         substep "Bundling macOS dynamic library dependencies ..."
-        ensure_dir "${PKG_DIR}/lib"
+        ensure_dir "${PKG_DIR}/game/lib"
 
         # Use otool -L to scan non-system dylib dependencies of arkham-api and nginx
         # System libraries under /usr/lib/ and /System/Library/ are not bundled
         # Homebrew libraries (/opt/homebrew/ or /usr/local/) must be bundled
         local bundled=0
-        for bin in "${PKG_DIR}/bin/arkham-api" "${PKG_DIR}/bin/nginx"; do
+        for bin in "${PKG_DIR}/game/bin/arkham-api" "${PKG_DIR}/game/bin/nginx"; do
             while IFS= read -r line; do
                 local lib_path
                 lib_path="$(echo "$line" | sed 's/^[[:space:]]*//;s/ (compatibility.*//;s/ (.*//')"
@@ -1501,13 +2043,13 @@ main() {
                     @rpath/*|@executable_path/*)  continue ;;  # already using relative paths
                 esac
                 local lib_name="$(basename "$lib_path")"
-                [ -f "${PKG_DIR}/lib/${lib_name}" ] && continue  # already bundled
+                [ -f "${PKG_DIR}/game/lib/${lib_name}" ] && continue  # already bundled
                 if [ -f "$lib_path" ]; then
-                    cp "$lib_path" "${PKG_DIR}/lib/"
+                    cp "$lib_path" "${PKG_DIR}/game/lib/"
                     # Homebrew source dylibs may be read-only (0444); chmod is required before signing
-                    chmod u+w "${PKG_DIR}/lib/${lib_name}"
+                    chmod u+w "${PKG_DIR}/game/lib/${lib_name}"
                     # Strip the original Homebrew signature (it will be invalid on another machine and can block replacement with a fresh ad-hoc signature)
-                    codesign --remove-signature "${PKG_DIR}/lib/${lib_name}" || warn "Failed to remove signature: ${lib_name}"
+                    codesign --remove-signature "${PKG_DIR}/game/lib/${lib_name}" || warn "Failed to remove signature: ${lib_name}"
                     # Rewrite absolute library references to @rpath (paired with -add_rpath)
                     install_name_tool -change "$lib_path" "@rpath/${lib_name}" "$bin" || warn "install_name_tool failed: ${lib_name}"
                     bundled=$((bundled + 1))
@@ -1517,27 +2059,27 @@ main() {
         done
 
         # Fix rpath so binaries prefer dylibs from the bundled lib/ directory
-        for bin in "${PKG_DIR}/bin/arkham-api" "${PKG_DIR}/bin/nginx"; do
+        for bin in "${PKG_DIR}/game/bin/arkham-api" "${PKG_DIR}/game/bin/nginx"; do
             install_name_tool -add_rpath "@executable_path/../lib" "$bin" 2>/dev/null || true
         done
 
-        info "  ✓ Bundled ${bundled} macOS dynamic libraries → ${PKG_DIR}/lib/"
+        info "  ✓ Bundled ${bundled} macOS dynamic libraries → ${PKG_DIR}/game/lib/"
     elif [ "$OS" = "linux" ]; then
         substep "Collecting dynamic library dependencies ..."
-        ensure_dir "${PKG_DIR}/lib"
+        ensure_dir "${PKG_DIR}/game/lib"
 
         # Collect direct + transitive dependencies for all binaries and already bundled .so files
         # Exclude glibc core libraries (libc/libm/libdl/libpthread/librt/ld-linux/linux-vdso)
         #   because they are present on any Linux distribution and must match the target system kernel
         # Exclude libraries already present under pgsql/lib/ (for example libpq.so.5 from our own build)
         local bins_to_scan=(
-            "${PKG_DIR}/bin/arkham-api"
-            "${PKG_DIR}/bin/nginx"
+            "${PKG_DIR}/game/bin/arkham-api"
+            "${PKG_DIR}/game/bin/nginx"
         )
         # Also scan .so files under pgsql/lib (for example uuid-ossp.so depends on libuuid.so.1)
         while IFS= read -r extra_so; do
             bins_to_scan+=("$extra_so")
-        done < <(find "${PKG_DIR}/pgsql/lib" -name '*.so' -type f 2>/dev/null)
+        done < <(find "${PKG_DIR}/game/pgsql/lib" -name '*.so' -type f 2>/dev/null)
 
         # First scan the NEEDED entries of binaries (direct dependencies)
         local needed_libs=()
@@ -1555,11 +2097,11 @@ main() {
                 continue
             fi
             # Skip libraries already under pgsql/lib (our self-built libpq must not be overridden by the system version)
-            if [ -f "${PKG_DIR}/pgsql/lib/${lib_name}" ]; then
+            if [ -f "${PKG_DIR}/game/pgsql/lib/${lib_name}" ]; then
                 continue
             fi
             # Skip libraries already copied
-            if [ -f "${PKG_DIR}/lib/${lib_name}" ]; then
+            if [ -f "${PKG_DIR}/game/lib/${lib_name}" ]; then
                 continue
             fi
             # Find the system path
@@ -1570,7 +2112,7 @@ main() {
                 lib_path="$(find /lib /usr/lib -name "$lib_name" 2>/dev/null | head -1)"
             fi
             if [ -n "$lib_path" ] && [ -f "$lib_path" ]; then
-                cp "$lib_path" "${PKG_DIR}/lib/"
+                cp "$lib_path" "${PKG_DIR}/game/lib/"
                 copied_count=$((copied_count + 1))
                 info "    Bundled: ${lib_name} ← ${lib_path}"
 
@@ -1579,7 +2121,7 @@ main() {
                     if echo "$transitive_lib" | grep -qE "^(libc\.so|libm\.so|libdl\.so|libpthread\.so|librt\.so)"; then
                         continue
                     fi
-                    if [ -f "${PKG_DIR}/lib/${transitive_lib}" ] || [ -f "${PKG_DIR}/pgsql/lib/${transitive_lib}" ]; then
+                    if [ -f "${PKG_DIR}/game/lib/${transitive_lib}" ] || [ -f "${PKG_DIR}/game/pgsql/lib/${transitive_lib}" ]; then
                         continue
                     fi
                     local t_path
@@ -1588,7 +2130,7 @@ main() {
                         t_path="$(find /lib /usr/lib -name "$transitive_lib" 2>/dev/null | head -1)"
                     fi
                     if [ -n "$t_path" ] && [ -f "$t_path" ]; then
-                        cp "$t_path" "${PKG_DIR}/lib/"
+                        cp "$t_path" "${PKG_DIR}/game/lib/"
                         copied_count=$((copied_count + 1))
                         info "    Bundled: ${transitive_lib} ← ${t_path} (transitive dependency)"
                     fi
@@ -1598,7 +2140,7 @@ main() {
             fi
         done
 
-        info "  Bundled ${copied_count} dynamic libraries into lib/"
+        info "  Bundled ${copied_count} dynamic libraries into game/lib/"
     fi
 
     # ── macOS Gatekeeper: ad-hoc signing after library collection ─────────────
@@ -1607,11 +2149,11 @@ main() {
     # → finally clear quarantine. The target Mac's start.sh will re-sign lib/ dylibs.
     if [ "$OS" = "macos" ]; then
         # Step 1: ensure dylibs under lib/ are writable first (Homebrew sources may be read-only)
-        if [ -d "${PKG_DIR}/lib" ]; then
-            chmod -R u+w "${PKG_DIR}/lib/" 2>/dev/null || true
+        if [ -d "${PKG_DIR}/game/lib" ]; then
+            chmod -R u+w "${PKG_DIR}/game/lib/" 2>/dev/null || true
             # Fully strip the original Homebrew signatures (run twice to be safe)
-            find "${PKG_DIR}/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
-            find "${PKG_DIR}/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
+            find "${PKG_DIR}/game/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
+            find "${PKG_DIR}/game/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
             substep "Original signatures stripped from bundled dylibs"
         fi
 
@@ -1626,7 +2168,7 @@ main() {
         info "  ✓ Signed ${signed} files"
 
         # Step 3: strip signatures from lib/ dylibs again (they will always be invalid after cross-machine transfer)
-        find "${PKG_DIR}/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
+        find "${PKG_DIR}/game/lib" -name '*.dylib' -exec codesign --remove-signature {} \; >/dev/null 2>&1 || true
 
         # Step 4: clear all quarantine attributes
         xattr -rd com.apple.quarantine "${PKG_DIR}" || true
@@ -1635,11 +2177,11 @@ main() {
     # Verification
     echo ""
     substep "Verifying distribution integrity ..."
-    local required=("bin/arkham-api" "bin/nginx" "pgsql/bin/postgres" "pgsql/bin/initdb" "pgsql/bin/pg_ctl" "pgsql/bin/pg_dump" "pgsql/bin/pg_restore" "frontend/dist/index.html" "start.sh" "stop.sh")
+    local required=("game/bin/arkham-api" "game/bin/nginx" "game/pgsql/bin/postgres" "game/pgsql/bin/initdb" "game/pgsql/bin/pg_ctl" "game/pgsql/bin/pg_dump" "game/pgsql/bin/pg_restore" "game/frontend/dist/index.html" "game/start.sh" "game/update.sh")
     if [ "$OS" = "linux" ]; then
-        required+=("start.bat" "Start-ArkhamHorror.bat")
+        required+=("Start-ArkhamHorror.bat" "Update-ArkhamHorror.bat")
     elif [ "$OS" = "macos" ]; then
-        required+=("Start-ArkhamHorror.command")
+        required+=("Start-ArkhamHorror.command" "Update-ArkhamHorror.command")
     fi
     local ok=true
     for f in "${required[@]}"; do
@@ -1647,17 +2189,15 @@ main() {
     done
     [ "$ok" = true ] && info "  ✓ All core files are present" || die "  ✗ Distribution is incomplete"
 
-    # Archive
-    echo ""
-    step "Creating archive"
-    pushd "$_DIST_DIR" > /dev/null
-    tar -czf "${PKG_ARCHIVE}" "$PKG_NAME"
-    popd > /dev/null
+    # Create empty card image directories (users can drop custom card images here)
+    ensure_dir "${PKG_DIR}/cards"
+    ensure_dir "${PKG_DIR}/cards_en"
 
-    local sz; sz="$(du -h "$PKG_ARCHIVE" | cut -f1)"
-    info "  ✓ ${PKG_ARCHIVE} ($sz)"
     echo ""
-    info "Usage: tar -xzf ${PKG_NAME}.tar.gz && cd ${PKG_NAME} && bash start.sh"
+    local sz; sz="$(du -sh "$PKG_DIR" | cut -f1)"
+    info "  ✓ Distribution ready: ${PKG_DIR} ($sz)"
+    echo ""
+    info "Usage: cd ${PKG_NAME}/game && bash start.sh"
 }
 
 main "$@"

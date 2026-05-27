@@ -28,7 +28,7 @@ instance HasAbilities OuterFieldsScorchedKnoll where
 instance RunMessage OuterFieldsScorchedKnoll where
   runMessage msg l@(OuterFieldsScorchedKnoll attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeTokens attrs attrs Damage 1
+      placeTrap attrs attrs.id
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       trapLocations <- select $ LocationWithDamage (atLeast 1)

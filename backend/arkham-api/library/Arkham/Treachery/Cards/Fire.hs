@@ -18,9 +18,17 @@ fire = treachery Fire Cards.fire
 instance HasAbilities Fire where
   getAbilities (Fire a) = case a.attached.location of
     Just lid ->
-      [ forcedAbility a 1 $ RoundEnds #when
-      , skillTestAbility $ restricted a 2 (OnLocation $ LocationWithId lid) actionAbility
-      ]
+      let atLid = LocationWithId lid
+       in [ forcedAbility a 1 (RoundEnds #when)
+              & restrict
+                ( AnyCriterion
+                    [ exists (at_ atLid <> AssetWithHealth)
+                    , exists (EnemyAt atLid)
+                    , exists (InvestigatorAt atLid)
+                    ]
+                )
+          , skillTestAbility $ restricted a 2 (OnLocation atLid) actionAbility
+          ]
     _ -> []
 
 instance RunMessage Fire where

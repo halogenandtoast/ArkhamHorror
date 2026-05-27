@@ -27,8 +27,10 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
+import Arkham.Helpers.Window (wouldDo)
 import Arkham.Scenarios.TheLongestNight.Helpers
 import Arkham.SortedPair
+import Arkham.Window qualified as Window
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 import Arkham.Trait (Trait (Madness))
@@ -273,11 +275,11 @@ instance RunMessage TheLongestNight where
       decoyLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveDecoys) allLocations
       chooseOneM lead do
         questionLabeled' "placeDecoy"
-        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Horror 1
+        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeDecoy ScenarioSource lid
       trapLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveTraps) allLocations
       chooseOneM lead do
         questionLabeled' "placeTrap"
-        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Damage 1
+        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
       chooseOneM lead do
         questionLabeled' "placeBarrier"
         unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
@@ -302,7 +304,7 @@ instance RunMessage TheLongestNight where
           entry "simeonAtwood"
           record SimeonStoodByYou
           decoyLocations <- select $ LocationWithoutModifier CannotHaveDecoys
-          chooseTargetM iid decoyLocations \lid -> placeTokens source lid Horror 1
+          chooseTargetM iid decoyLocations \lid -> placeDecoy source lid
           pure s
         4 -> do
           entry "williamHemlock"
@@ -326,7 +328,7 @@ instance RunMessage TheLongestNight where
           entry "judithPark"
           record JudithStoodByYou
           trapLocations <- select $ LocationWithoutModifier CannotHaveTraps
-          chooseTargetM iid trapLocations \lid -> placeTokens source lid Damage 1
+          chooseTargetM iid trapLocations \lid -> placeTrap source lid
           pure s
         8 -> do
           entry "theoPeters"
@@ -406,6 +408,22 @@ instance RunMessage TheLongestNight where
                 . non []
                 %~ (drew.cards <>)
             else TheLongestNight <$> liftRunMessage msg attrs
+    ScenarioSpecific "placeTrap" v -> do
+      let (_source :: Source, lid :: LocationId) = toResult v
+      wouldDo msg (Window.ScenarioEvent ("wouldPlaceTrap:" <> tshow lid) Nothing v) (Window.ScenarioEvent "placedTrap" Nothing v)
+      pure s
+    DoBatch _ (ScenarioSpecific "placeTrap" v) -> do
+      let (source :: Source, lid :: LocationId) = toResult v
+      placeTokens source lid Damage 1
+      pure s
+    ScenarioSpecific "placeDecoy" v -> do
+      let (_source :: Source, lid :: LocationId) = toResult v
+      wouldDo msg (Window.ScenarioEvent ("wouldPlaceDecoy:" <> tshow lid) Nothing v) (Window.ScenarioEvent "placedDecoy" Nothing v)
+      pure s
+    DoBatch _ (ScenarioSpecific "placeDecoy" v) -> do
+      let (source :: Source, lid :: LocationId) = toResult v
+      placeTokens source lid Horror 1
+      pure s
     ScenarioCountIncrementBy (Barriers l1 l2) n -> do
       let meta' = incrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
       pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'

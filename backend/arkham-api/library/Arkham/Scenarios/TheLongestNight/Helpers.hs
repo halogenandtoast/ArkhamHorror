@@ -5,9 +5,12 @@ import Arkham.Direction
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Grid (Pos (..))
+import Arkham.Message.Lifted.Queue
+import Arkham.Message.Lifted.Scenario
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.SortedPair
+import Arkham.Source
 import Data.Map.Strict qualified as Map
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -69,3 +72,9 @@ barrierModifier = \case
   South -> "barrierSouth"
   East -> "barrierEast"
   West -> "barrierWest"
+
+placeTrap :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
+placeTrap source lid = scenarioSpecific "placeTrap" (toSource source, lid)
+
+placeDecoy :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
+placeDecoy source lid = scenarioSpecific "placeDecoy" (toSource source, lid)

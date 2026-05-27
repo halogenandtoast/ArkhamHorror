@@ -26,6 +26,7 @@ export type CardDef = {
   skills: SkillIcon[];
   cost: CardCost | null;
   otherSide: string | null;
+  meta: Record<string, any>;
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -57,6 +58,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),
     name: nameDecoder,
     cost: JsonDecoder.nullable(cardCostDecoder),
+    meta: JsonDecoder.succeed(),
   },
   'CardDef',
 );

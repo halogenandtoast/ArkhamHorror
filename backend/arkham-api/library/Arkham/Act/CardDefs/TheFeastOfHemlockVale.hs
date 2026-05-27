@@ -44,6 +44,9 @@ desperateSearch = (act "10607a" "Desperate Search" 1 TheTwistedHollow) {cdOtherS
 wheresBertie :: CardDef
 wheresBertie = act "10608" "Where's Bertie" 2 TheTwistedHollow
 
+theLongestNight :: CardDef
+theLongestNight = act "10629" "The Longest Night" 1 TheLongestNight
+
 dawnOfTheFirstDay :: CardDef
 dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest
 

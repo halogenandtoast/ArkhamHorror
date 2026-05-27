@@ -166,6 +166,7 @@ setAsideEvery matcher = do
 placeStory :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 placeStory def = do
   card <- genCard def
+  removeEvery [def]
   push $ StoryMessage $ PlaceStory card Global
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()

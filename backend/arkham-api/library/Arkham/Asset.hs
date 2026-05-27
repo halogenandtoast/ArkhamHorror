@@ -1109,6 +1109,9 @@ allAssets =
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
       , SomeAssetCard cornHuskDoll
+      , --- The Longest Night [fhv]
+        SomeAssetCard theCaptives
+      , SomeAssetCard ajax
       , -- The Drowned City
         --- signature [tdc]
         SomeAssetCard bookOfVerseUnCommonplaceBook

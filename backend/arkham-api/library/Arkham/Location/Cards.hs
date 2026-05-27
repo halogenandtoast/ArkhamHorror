@@ -98,6 +98,7 @@ allLocationCards =
       , ballroom
       , ballroomTheMidwinterGala
       , bancoDeLaProvincia
+      , barn
       , barrierCamp
       , barroom
       , baseCamp
@@ -221,6 +222,7 @@ allLocationCards =
       , congressChamberLair
       , congressChamberSanctum
       , controlStation
+      , coop
       , corpseGrove
       , cosmicGate
       , cosmicIngress
@@ -568,6 +570,7 @@ allLocationCards =
       , merchantDistrict_301
       , messHall
       , metropolitanCathedral
+      , milkhouse
       , mineralTunnel
       , miramarYachtClub
       , miskatonicQuad
@@ -641,6 +644,11 @@ allLocationCards =
       , osbornsGeneralStore_206
       , osbornsGeneralStore_207
       , ottomanFront
+      , outerFieldsBlightedCornfields
+      , outerFieldsBloodiedPaths
+      , outerFieldsDesolateHills
+      , outerFieldsRancidCrops
+      , outerFieldsScorchedKnoll
       , outerWall_285
       , outerWall_286
       , outsidersLair
@@ -660,6 +668,7 @@ allLocationCards =
       , passengerCar_169
       , passengerCar_170
       , passengerCar_171
+      , pasture
       , pathOfThorns
       , pathwayIntoVoid
       , patientConfinementDanielsCell
@@ -913,6 +922,7 @@ allLocationCards =
       , theDarkCrater
       , theEdgeOfTheUniverse
       , theEnchantedPath
+      , theFarmhouse
       , theGallows_169
       , theGallows_170
       , theGallowsSpectral_169
@@ -1020,6 +1030,7 @@ allLocationCards =
       , victorianHallsSpectral
       , villageCommons
       , villageCommonsSilentDecay
+      , vineyard
       , vipArea
       , waitingRoom
       , walterGilmansRoom

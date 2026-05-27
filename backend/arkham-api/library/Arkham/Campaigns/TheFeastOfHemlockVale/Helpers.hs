@@ -232,5 +232,39 @@ increaseRelationshipLevel r = incrementRecordCount (relationshipKey r)
 decreaseRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
 decreaseRelationshipLevel r = decrementRecordCount (relationshipKey r)
 
+crossedOutKey :: Resident -> CampaignLogKey
+crossedOutKey = \case
+  WilliamHemlock -> toCampaignLogKey WilliamCrossedOut
+  RiverHawthorne -> toCampaignLogKey RiverCrossedOut
+  MotherRachel -> toCampaignLogKey MotherRachelCrossedOut
+  SimeonAtwood -> toCampaignLogKey SimeonCrossedOut
+  LeahAtwood -> toCampaignLogKey LeahCrossedOut
+  TheoPeters -> toCampaignLogKey TheoCrossedOut
+  GideonMizrah -> toCampaignLogKey GideonCrossedOut
+  JudithPark -> toCampaignLogKey JudithCrossedOut
+
+sacrificedKey :: Resident -> CampaignLogKey
+sacrificedKey = \case
+  WilliamHemlock -> toCampaignLogKey WilliamSacrificedThemselvesForTheInvestigators
+  RiverHawthorne -> toCampaignLogKey RiverSacrificedThemselvesForTheInvestigators
+  MotherRachel -> error "Mother Rachel cannot sacrifice herself"
+  SimeonAtwood -> toCampaignLogKey SimeonSacrificedThemselvesForTheInvestigators
+  LeahAtwood -> toCampaignLogKey LeahSacrificedThemselvesForTheInvestigators
+  TheoPeters -> toCampaignLogKey TheoSacrificedThemselvesForTheInvestigators
+  GideonMizrah -> toCampaignLogKey GideonSacrificedThemselvesForTheInvestigators
+  JudithPark -> toCampaignLogKey JudithSacrificedThemselvesForTheInvestigators
+
+residentFromCardDef :: CardDef -> Maybe Resident
+residentFromCardDef def
+  | def == Assets.williamHemlockAspiringPoet = Just WilliamHemlock
+  | def == Assets.riverHawthorneBigInNewYork = Just RiverHawthorne
+  | def == Assets.motherRachelKindlyMatron = Just MotherRachel
+  | def == Assets.simeonAtwoodDedicatedTroublemaker = Just SimeonAtwood
+  | def == Assets.leahAtwoodTheValeCook = Just LeahAtwood
+  | def == Assets.theoPetersJackOfAllTrades = Just TheoPeters
+  | def == Assets.gideonMizrahSeasonedSailor = Just GideonMizrah
+  | def == Assets.judithParkTheMuscle = Just JudithPark
+  | otherwise = Nothing
+
 getAreasSurveyed :: (HasGame m, Tracing m) => m [AreasSurveyed]
 getAreasSurveyed = filterM (getHasRecord . AreasSurveyed) [NorthPointMine ..]

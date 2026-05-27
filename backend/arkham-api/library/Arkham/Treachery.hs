@@ -686,6 +686,9 @@ allTreacheries =
       , --- Mutations [fhv]
         SomeTreacheryCard suddenMutation
       , SomeTreacheryCard unnaturalGrowth
+      , --- The Longest Night [fhv]
+        SomeTreacheryCard endlessNight
+      , SomeTreacheryCard incursion
       , --- Fire [fhv]
         SomeTreacheryCard fire
       , -- The Drowned City

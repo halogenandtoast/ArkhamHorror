@@ -106,8 +106,10 @@ data Trait
   | Eztli
   | FalconPoint
   | Familiar
+  | Farm
   | Fated
   | Favor
+  | Field
   | Firearm
   | Flaw
   | Flora

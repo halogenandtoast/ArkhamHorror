@@ -163,6 +163,7 @@ allStoryCards =
       , sympathyPain
       , familialPain
       , thePredatoryHouse
+      , barriersDecoysAndTraps
       , dayOne
       , nightOne
       , dayTwo
@@ -552,6 +553,9 @@ familialPain = story "09676d" "Familial Pain" ShadesOfSuffering & otherSideIs "0
 
 thePredatoryHouse :: CardDef
 thePredatoryHouse = story "10524" "The Predatory House" HemlockHouse & otherSideIs "10524b"
+
+barriersDecoysAndTraps :: CardDef
+barriersDecoysAndTraps = story "10627" "Barriers, Decoys, and Traps" TheLongestNight
 
 dayOne :: CardDef
 dayOne = story "10675" "Day One" TheFirstDay & otherSideIs "10675b"

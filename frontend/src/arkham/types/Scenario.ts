@@ -51,6 +51,7 @@ export type Scenario = {
   usesGrid: boolean;
   decksLayout: string[];
   decks: [string, Card[]][];
+  deckDiscards: [string, Card[]][];
   cardsUnderScenarioReference: Card[];
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
@@ -149,6 +150,10 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   usesGrid: JsonDecoder.boolean(),
   decksLayout: JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
+  deckDiscards: JsonDecoder.oneOf<[string, Card[]][]>([
+    JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
+    JsonDecoder.succeed<[string, Card[]][]>([]),
+  ], 'deckDiscards'),
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),

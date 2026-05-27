@@ -565,6 +565,13 @@ const scenarioDecks = computed(() => {
   return Object.entries(props.scenario.decks)
 })
 
+const scenarioDeckDiscard = (key: string) => {
+  const discards = props.scenario.deckDiscards
+  if (!discards) return undefined
+  const entry = discards.find(([k]) => k === key)
+  return entry ? entry[1] : undefined
+}
+
 const isVertical = function(area: string) {
   const [start, end] = area.split('--')
   const startLocation = locations.value.find((l) => l.id === start);
@@ -1364,6 +1371,7 @@ async function addChaosToken(face: any){
           v-for="[,scenarioDeck] in scenarioDecks"
           :key="scenarioDeck[0]"
           :deck="scenarioDeck"
+          :discardPile="scenarioDeckDiscard(scenarioDeck[0])"
           :game="game"
           :playerId="playerId"
           @choose="choose"

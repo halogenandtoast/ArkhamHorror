@@ -262,6 +262,7 @@ allActCards =
       , theIsleOfOriab
       , theLadyWithTheRedParasol
       , theLighthouse
+      , theLongestNight
       , theLostExpedition
       , theKingInTatters
       , theKingsDecree

@@ -59,6 +59,7 @@ instance IsCampaign TheFeastOfHemlockVale where
           TheLostSister -> handleTime
           TheThingInTheDepths -> handleTime
           TheTwistedHollow -> continue PreludeDawnOfTheSecondDay
+          TheLongestNight -> continue PreludeDawnOfTheFinalDay
           EpilogueStep -> Nothing
           UpgradeDeckStep nextStep' -> Just nextStep'
           _ -> Nothing

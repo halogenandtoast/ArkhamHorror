@@ -43,7 +43,7 @@ instance RunMessage AstralMirror2 where
           let remove = emptyArcaneSlots meta - slots
           let add = slots - emptyArcaneSlots meta
           when (remove > 0) do
-            replicateM_ remove $ push $ RemoveSlotFrom iid (toSource attrs) #arcane
+            replicateM_ remove $ push $ RemoveSlotFrom iid (toSource attrs) #hand
           when (add > 0) do
             replicateM_ add $ push $ AddSlot iid #hand (Slot (toSource attrs) [])
           pure $ AstralMirror2 $ attrs' `with` Meta slots

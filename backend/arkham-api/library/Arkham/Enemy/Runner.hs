@@ -9,6 +9,7 @@ import Arkham.Behavior.Fight qualified as Fight
 import Arkham.Behavior.Heal qualified as Heal
 import Arkham.Calculation as X
 import Arkham.Enemy.Helpers as X
+
 -- Hide the GADT Field constructors that previously clashed with the Message
 -- constructors (now generic 'Damaged'/'DealDamage'/'Defeated'). Files that need
 -- the Field projections (about a dozen) import 'Arkham.Enemy.Types' directly.
@@ -632,12 +633,19 @@ instance RunMessage EnemyAttrs where
         False -> pure a
         True -> do
           case enemyPlacement of
+            -- Delegate to host so the swarm-wide cascade happens once;
+            -- otherwise each swarm card pushes Ready for its siblings,
+            -- producing O(n^2) CheckWindow batches during upkeep.
             AsSwarm eid' _ -> do
-              others <- select $ SwarmOf eid' <> not_ (be a) <> ExhaustedEnemy
-              pushAll $ map (Ready . toTarget) others
+              hostExhausted <- eid' <=~> ExhaustedEnemy
+              when hostExhausted $ push (Ready (EnemyTarget eid'))
             _ -> do
               others <- select $ SwarmOf a.id <> ExhaustedEnemy
-              pushAll $ map (Ready . toTarget) others
+              -- Ready the whole swarm in a single Simultaneously so each
+              -- WouldReady/Readies window is merged across all swarm cards
+              -- instead of producing a CheckWindows batch per card.
+              unless (null others)
+                $ push (Simultaneously $ map (Ready . toTarget) others)
 
           preyIds <- getAvailablePrey a
           unless (null preyIds) $ do
@@ -974,7 +982,7 @@ instance RunMessage EnemyAttrs where
             [lid] -> do
               pushAll
                 [ EnemyMove enemyId lid
-                , CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaOther enemyId]
+                , CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaPatrol enemyId]
                 ]
             ls -> do
               push
@@ -983,7 +991,7 @@ instance RunMessage EnemyAttrs where
                   [ targetLabel
                       l
                       [ EnemyMove enemyId l
-                      , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
+                      , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaPatrol enemyId]
                       ]
                   | l <- ls
                   ]
@@ -1307,7 +1315,8 @@ instance RunMessage EnemyAttrs where
               then do
                 player <- getPlayer iid
                 when canIgnore do
-                  push $ chooseOne player [Label "$label.ignoreAttackOfOpportunity" [], Label "$label.doNotIgnore" [Do msg]]
+                  push
+                    $ chooseOne player [Label "$label.ignoreAttackOfOpportunity" [], Label "$label.doNotIgnore" [Do msg]]
               else push $ Do msg
           _ -> push $ Do msg
       pure $ a & wantsToAttackL .~ False

@@ -792,6 +792,9 @@
     "outOfSight3": {
       "disengageAndMove2": "Disengage from each enemy and move to a revealed location up to 2 connections away."
     },
+    "outerFieldsDesolateHills": {
+      "doneDiscarding": "Done discarding"
+    },
     "patriceHathaway": {
       "shuffleDiscardKeepOne": "Shuffle all but 1 card from your discard pile into your deck",
       "chooseOneCardToLeave": "Choose 1 card to leave in discard",

@@ -11,8 +11,9 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators, getLead, getSetAsideCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Helpers.Query (allInvestigators, getLead)
+import Arkham.Helpers.Window (wouldDo)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -22,6 +23,7 @@ import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -33,6 +35,7 @@ import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 import Arkham.Trait (Trait (Madness))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Data.Map.Strict qualified as Map
 
@@ -42,9 +45,17 @@ newtype TheLongestNight = TheLongestNight ScenarioAttrs
 
 instance HasModifiersFor TheLongestNight where
   getModifiersFor (TheLongestNight a) = do
-    modifySelect a (assetIs Assets.drRosaMarquezBestInHerField) [DoNotTakeUpSlot #ally]
-    modifySelect a (assetIs Assets.helenPetersTheEldestSister) [DoNotTakeUpSlot #ally]
-    modifySelect a (assetIs Assets.ajax) [DoNotTakeUpSlot #ally]
+    modifySelectWith
+      a
+      (assetIs Assets.drRosaMarquezBestInHerField)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
+    modifySelectWith
+      a
+      (assetIs Assets.helenPetersTheEldestSister)
+      setActiveDuringSetup
+      [DoNotTakeUpSlot #ally]
+    modifySelectWith a (assetIs Assets.ajax) setActiveDuringSetup [DoNotTakeUpSlot #ally]
 
 theLongestNight :: Difficulty -> TheLongestNight
 theLongestNight difficulty = scenario TheLongestNight "10626" "The Longest Night" difficulty []
@@ -273,11 +284,11 @@ instance RunMessage TheLongestNight where
       decoyLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveDecoys) allLocations
       chooseOneM lead do
         questionLabeled' "placeDecoy"
-        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Horror 1
+        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeDecoy ScenarioSource lid
       trapLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveTraps) allLocations
       chooseOneM lead do
         questionLabeled' "placeTrap"
-        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTokens ScenarioSource lid Damage 1
+        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
       chooseOneM lead do
         questionLabeled' "placeBarrier"
         unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
@@ -302,7 +313,7 @@ instance RunMessage TheLongestNight where
           entry "simeonAtwood"
           record SimeonStoodByYou
           decoyLocations <- select $ LocationWithoutModifier CannotHaveDecoys
-          chooseTargetM iid decoyLocations \lid -> placeTokens source lid Horror 1
+          chooseTargetM iid decoyLocations \lid -> placeDecoy source lid
           pure s
         4 -> do
           entry "williamHemlock"
@@ -326,7 +337,7 @@ instance RunMessage TheLongestNight where
           entry "judithPark"
           record JudithStoodByYou
           trapLocations <- select $ LocationWithoutModifier CannotHaveTraps
-          chooseTargetM iid trapLocations \lid -> placeTokens source lid Damage 1
+          chooseTargetM iid trapLocations $ placeTrap source
           pure s
         8 -> do
           entry "theoPeters"
@@ -341,8 +352,8 @@ instance RunMessage TheLongestNight where
           pure s
         Omega -> do
           entry "ajax"
-          ajaxCard <- getSetAsideCard Assets.ajax
-          takeControlOfSetAsideAsset iid ajaxCard
+          ajax <- selectJust $ assetIs Assets.ajax
+          takeControlOfAsset iid ajax
           pure s
         _ -> pure s
     DoStep 1 (ScenarioSpecific "codex" v) -> scope "codex" do
@@ -406,6 +417,31 @@ instance RunMessage TheLongestNight where
                 . non []
                 %~ (drew.cards <>)
             else TheLongestNight <$> liftRunMessage msg attrs
+    ScenarioSpecific "placeTrap" v -> do
+      let (_source :: Source, lid :: LocationId) = toResult v
+      wouldDo
+        msg
+        (Window.ScenarioEvent ("wouldPlaceTrap:" <> tshow lid) Nothing v)
+        (Window.ScenarioEvent "placedTrap" Nothing v)
+      pure s
+    DoBatch _ (ScenarioSpecific "placeTrap" v) -> do
+      let (source :: Source, lid :: LocationId) = toResult v
+      placeTokens source lid Damage 1
+      pure s
+    ScenarioSpecific "placeDecoy" v -> do
+      let (_source :: Source, lid :: LocationId) = toResult v
+      wouldDo
+        msg
+        (Window.ScenarioEvent ("wouldPlaceDecoy:" <> tshow lid) Nothing v)
+        (Window.ScenarioEvent "placedDecoy" Nothing v)
+      pure s
+    DoBatch _ (ScenarioSpecific "placeDecoy" v) -> do
+      let (source :: Source, lid :: LocationId) = toResult v
+      placeTokens source lid Horror 1
+      pure s
+    ScenarioSpecific "discardFromEnemyDeck" v -> do
+      let cards :: [Card] = toResult v
+      pure $ TheLongestNight $ attrs & deckDiscardsL . at EnemyDeck . non [] %~ (cards <>)
     ScenarioCountIncrementBy (Barriers l1 l2) n -> do
       let meta' = incrementBarriers n l1 l2 $ toResultDefault defaultMeta attrs.meta
       pure $ TheLongestNight $ attrs & metaL .~ toJSON meta'

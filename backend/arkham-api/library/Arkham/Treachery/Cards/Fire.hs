@@ -18,9 +18,21 @@ fire = treachery Fire Cards.fire
 instance HasAbilities Fire where
   getAbilities (Fire a) = case a.attached.location of
     Just lid ->
-      [ forcedAbility a 1 $ RoundEnds #when
-      , skillTestAbility $ restricted a 2 (OnLocation $ LocationWithId lid) actionAbility
-      ]
+      let atLid = LocationWithId lid
+       in [ forcedAbility a 1 (RoundEnds #when)
+              & restrict
+                ( AnyCriterion
+                    [ exists (at_ atLid <> AssetWithHealth)
+                    , exists
+                        ( EnemyAt atLid
+                            <> EnemyCanBeDamagedBySource (a.ability 1)
+                            <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
+                        )
+                    , exists (InvestigatorAt atLid)
+                    ]
+                )
+          , skillTestAbility $ restricted a 2 (OnLocation atLid) actionAbility
+          ]
     _ -> []
 
 instance RunMessage Fire where
@@ -41,7 +53,11 @@ instance RunMessage Fire where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       for_ attrs.attached.location \lid -> do
         assets <- select $ at_ (LocationWithId lid) <> AssetWithHealth
-        enemies <- select $ at_ (LocationWithId lid) <> EnemyCanBeDamagedBySource (attrs.ability 1) <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
+        enemies <-
+          select
+            $ at_ (LocationWithId lid)
+            <> EnemyCanBeDamagedBySource (attrs.ability 1)
+            <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
         investigators <- select $ InvestigatorAt (LocationWithId lid)
         for_ assets \aid -> dealAssetDirectDamage aid (attrs.ability 1) 1
         for_ enemies $ nonAttackEnemyDamage Nothing (attrs.ability 1) 1

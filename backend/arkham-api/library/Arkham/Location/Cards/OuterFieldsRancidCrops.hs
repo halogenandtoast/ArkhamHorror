@@ -13,7 +13,9 @@ newtype OuterFieldsRancidCrops = OuterFieldsRancidCrops LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outerFieldsRancidCrops :: LocationCard OuterFieldsRancidCrops
-outerFieldsRancidCrops = symbolLabel $ locationWith OuterFieldsRancidCrops Cards.outerFieldsRancidCrops 0 (Static 0) connectsToAdjacent
+outerFieldsRancidCrops =
+  symbolLabel
+    $ locationWith OuterFieldsRancidCrops Cards.outerFieldsRancidCrops 3 (PerPlayer 2) connectsToAdjacent
 
 instance HasAbilities OuterFieldsRancidCrops where
   getAbilities (OuterFieldsRancidCrops a) =
@@ -28,7 +30,7 @@ instance HasAbilities OuterFieldsRancidCrops where
 instance RunMessage OuterFieldsRancidCrops where
   runMessage msg l@(OuterFieldsRancidCrops attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeTokens attrs attrs Horror 1
+      placeDecoy attrs attrs.id
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       decoyLocations <- select $ LocationWithHorror (atLeast 1)

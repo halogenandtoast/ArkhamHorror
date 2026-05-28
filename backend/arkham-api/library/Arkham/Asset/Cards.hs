@@ -962,6 +962,7 @@ allPlayerAssetCards =
       , thePaleLanternBeguilingAura
       , thePaleLanternHypnoticGlow
       , thePallidMask
+      , thePearlDiaryAGrimAccount
       , theRedClockBrokenButReliable2
       , theRedClockBrokenButReliable5
       , theRedGlovedMan5

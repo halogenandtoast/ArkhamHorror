@@ -42,10 +42,10 @@ instance RunMessage TheLongestNight where
               push $ ScenarioCountIncrementBy (Barriers lid toLid) 1
         when (canHaveDecoys && not hasDecoy) do
           labeled' "placeDecoy" do
-            placeTokens attrs lid Horror 1
+            placeDecoy attrs lid
         when (canHaveTraps && not hasTrap) do
           labeled' "placeTrap" do
-            placeTokens attrs lid Damage 1
+            placeTrap attrs lid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       resign iid

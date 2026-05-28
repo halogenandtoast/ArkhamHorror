@@ -28,8 +28,9 @@ instance HasModifiersFor Ajax where
 
 instance HasAbilities Ajax where
   getAbilities (Ajax a) =
-    [ controlled a 1 (youExist InvestigatorCanMove) $ ActionAbility #move Nothing (ActionCost 1 <> exhaust a)
-    , restricted a 2 OnSameLocation #action
+    [ controlled a 1 (youExist InvestigatorCanMove)
+        $ ActionAbility #move Nothing (ActionCost 1 <> exhaust a)
+    , restricted a 2 (OnSameLocation <> youExist (not_ $ ControlsAsset $ AssetWithId a.id)) #action
     ]
 
 instance RunMessage Ajax where
@@ -43,16 +44,15 @@ instance RunMessage Ajax where
           labeled' "moveToField" do
             chooseTargetM iid fieldLocations $ moveTo (attrs.ability 1) iid
       pure a
-    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    DoStep 2 msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <- getAccessibleLocations iid (attrs.ability 1)
       chooseTargetM iid locations \loc -> do
         moveTo (attrs.ability 1) iid loc
-        doStep 1 msg
+        doStep 1 msg'
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <- getAccessibleLocations iid (attrs.ability 1)
-      when (notNull locations) do
-        chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
+      chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       takeControlOfAsset iid attrs

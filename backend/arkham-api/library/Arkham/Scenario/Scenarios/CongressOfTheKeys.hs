@@ -25,6 +25,7 @@ import Arkham.Helpers.Agenda (getCurrentAgenda)
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveTo, withLocationOf)
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest (isFightWith, withSkillTest)
 import Arkham.Helpers.Xp
@@ -917,9 +918,13 @@ instance RunMessage CongressOfTheKeys where
           forTarget_ loc msg
           pure s
         Nothing -> do
-          removeFromGame c
-          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-          pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
+          mods <- getModifiers c
+          if ScenarioModifier "doNotRemove" `elem` mods
+            then pure s
+            else do
+              removeFromGame c
+              let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+              pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
     ScenarioSpecific "exposed[CityOfRemnantsM]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
@@ -931,9 +936,13 @@ instance RunMessage CongressOfTheKeys where
           forTarget_ loc msg
           pure s
         Nothing -> do
-          removeFromGame c
-          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-          pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
+          mods <- getModifiers c
+          if ScenarioModifier "doNotRemove" `elem` mods
+            then pure s
+            else do
+              removeFromGame c
+              let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+              pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
     ScenarioSpecific "exposed[CityOfRemnantsR]" v -> do
       let (iid, c) :: (InvestigatorId, ConcealedCard) = toResult v
       let meta = toResult @LocationsInShadowsMetadata attrs.meta
@@ -945,9 +954,13 @@ instance RunMessage CongressOfTheKeys where
           forTarget_ loc msg
           pure s
         Nothing -> do
-          removeFromGame c
-          let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
-          pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
+          mods <- getModifiers c
+          if ScenarioModifier "doNotRemove" `elem` mods
+            then pure s
+            else do
+              removeFromGame c
+              let concealedCards = Map.map (filter (/= c.id)) meta.concealedCards
+              pure $ CongressOfTheKeys $ attrs & metaL .~ toJSON (meta {concealedCards})
     ForTarget (LocationTarget loc) (ScenarioSpecific x v)
       | x `elem` ["exposed[CityOfRemnantsL]", "exposed[CityOfRemnantsM]", "exposed[CityOfRemnantsR]"] -> do
           let (iid, _c) :: (InvestigatorId, ConcealedCard) = toResult v

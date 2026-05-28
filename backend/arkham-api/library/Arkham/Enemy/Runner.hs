@@ -633,12 +633,19 @@ instance RunMessage EnemyAttrs where
         False -> pure a
         True -> do
           case enemyPlacement of
+            -- Delegate to host so the swarm-wide cascade happens once;
+            -- otherwise each swarm card pushes Ready for its siblings,
+            -- producing O(n^2) CheckWindow batches during upkeep.
             AsSwarm eid' _ -> do
-              others <- select $ SwarmOf eid' <> not_ (be a) <> ExhaustedEnemy
-              pushAll $ map (Ready . toTarget) others
+              hostExhausted <- eid' <=~> ExhaustedEnemy
+              when hostExhausted $ push (Ready (EnemyTarget eid'))
             _ -> do
               others <- select $ SwarmOf a.id <> ExhaustedEnemy
-              pushAll $ map (Ready . toTarget) others
+              -- Ready the whole swarm in a single Simultaneously so each
+              -- WouldReady/Readies window is merged across all swarm cards
+              -- instead of producing a CheckWindows batch per card.
+              unless (null others)
+                $ push (Simultaneously $ map (Ready . toTarget) others)
 
           preyIds <- getAvailablePrey a
           unless (null preyIds) $ do

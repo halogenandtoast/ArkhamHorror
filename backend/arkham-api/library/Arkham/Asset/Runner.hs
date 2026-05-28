@@ -78,7 +78,7 @@ hasUses :: AssetAttrs -> Bool
 hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
-  runMessage msg x@(Asset a) = withSpan_ ("Asset[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Asset a) = do
     if x.placement.outOfGame
       then case msg of
         ReturnLocationToGame _ -> Asset <$> runMessage msg a
@@ -226,13 +226,13 @@ instance RunMessage AssetAttrs where
     ReadyExhausted -> do
       mods <- getModifiers a
       phase <- getPhase
-      unless (CannotReady `elem` mods || (phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods)) do
-        case a.controller of
+      if CannotReady `elem` mods || (phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods)
+        then pure a
+        else case a.controller of
           Just iid -> do
             modifiers <- getModifiers iid
-            pushWhen (ControlledAssetsCannotReady `notElem` modifiers) (Ready $ toTarget a)
-          _ -> push (Ready $ toTarget a)
-      pure a
+            pure $ if ControlledAssetsCannotReady `elem` modifiers then a else a & exhaustedL .~ False
+          _ -> pure $ a & exhaustedL .~ False
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens source target tType n | isTarget a target -> runQueueT do
       pushM $ checkWhen $ Window.PlacedToken source target tType n

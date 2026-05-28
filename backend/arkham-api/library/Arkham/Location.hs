@@ -13,7 +13,6 @@ import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X (Location)
 import Arkham.Prelude
-import Arkham.Tracing
 
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
@@ -30,7 +29,7 @@ instance RunMessage Location where
       $ overAttrs
         (\y -> y {locationLabel = locationLabel a, locationDirections = locationDirections a})
         (lookupLocation (toCardCode a) a.id (toCardId a))
-  runMessage msg x@(Location l) = withSpan_ ("Location[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Location l) = do
     modifiers' <- getModifiers (toTarget x)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Location <$> runMessage msg' l

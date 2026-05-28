@@ -633,19 +633,18 @@ instance RunMessage EnemyAttrs where
         False -> pure a
         True -> do
           case enemyPlacement of
-            -- Delegate to host so the swarm-wide cascade happens once;
-            -- otherwise each swarm card pushes Ready for its siblings,
-            -- producing O(n^2) CheckWindow batches during upkeep.
             AsSwarm eid' _ -> do
               hostExhausted <- eid' <=~> ExhaustedEnemy
               when hostExhausted $ push (Ready (EnemyTarget eid'))
             _ -> do
               others <- select $ SwarmOf a.id <> ExhaustedEnemy
-              -- Ready the whole swarm in a single Simultaneously so each
-              -- WouldReady/Readies window is merged across all swarm cards
-              -- instead of producing a CheckWindows batch per card.
-              unless (null others)
-                $ push (Simultaneously $ map (Ready . toTarget) others)
+              -- Ready all swarm cards directly via Do(Ready) which just
+              -- flips exhausted. Skip the per-card wouldDo window chain
+              -- entirely—the host already fires WouldReady/Readies windows,
+              -- and per-swarm-card windows would produce O(N) CheckWindows
+              -- batches each requiring a full getActions scan.
+              unless (null others) do
+                pushAll $ map (Do . Ready . toTarget) others
 
           preyIds <- getAvailablePrey a
           unless (null preyIds) $ do
@@ -658,7 +657,7 @@ instance RunMessage EnemyAttrs where
       case [source | AlternativeReady source <- mods] of
         [] ->
           when (enemyExhausted && DoesNotReadyDuringUpkeep `notElem` mods && not (isSwarm a))
-            $ pushAll (resolve $ Ready $ toTarget a)
+            $ push (Ready $ toTarget a)
         [source] -> push (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
       pure a

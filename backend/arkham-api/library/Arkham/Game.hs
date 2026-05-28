@@ -6170,6 +6170,9 @@ runMessages gameId mLogger = do
             CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
+            ExhaustMessage {} -> False
+            After {} -> False
+            DoBatch {} -> False
             CreatedCost {} -> False
             EndCheckWindow {} -> False
             PaidAllCosts {} -> False
@@ -6264,6 +6267,8 @@ runMessages gameId mLogger = do
             -- pure waste. Skip them outright while gameInSetup is True.
             CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
             Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
+            CheckWindows ws | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
+            Do (CheckWindows ws) | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results
@@ -6285,13 +6290,11 @@ runMessages gameId mLogger = do
                           then do
                             overGameM
                               $ runMessage m
-                              >=> withSpan_ "preloadModifiers"
-                              . preloadModifiers
+                              >=> preloadModifiers
                             overGameM
                               $ handleAsIfChanges asIfLocations'
                               >=> handleAloofChanges aloofEnemies'
-                              >=> withSpan_ "handleTraitRestrictedModifiers"
-                              . handleTraitRestrictedModifiers
+                              >=> handleTraitRestrictedModifiers
                               >=> handleBlanked
                               >=> handleDefeatedByModifiers investigatorSanityHealth'
                           else overGameM $ runMessage m
@@ -6521,6 +6524,14 @@ applyBlank s = do
         Modifier s' _ _ _ | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
+
+hasEnemyReadyAbilities :: Game -> Bool
+hasEnemyReadyAbilities g =
+  any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. assetsL)
+    || any ((`elem` enemyReadyCodes) . toCardCode) (gameEntities g ^. eventsL)
+ where
+  enemyReadyCodes :: [CardCode]
+  enemyReadyCodes = ["90038", "02031", "03199"]
 
 delve :: Game -> Game
 delve = over depthLockL (+ 1)

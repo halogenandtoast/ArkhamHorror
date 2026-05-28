@@ -3,6 +3,7 @@
 
 module Arkham.Classes.HasGame where
 
+import Arkham.Ability.Types (Ability)
 import Arkham.Action
 import Arkham.Card (Card)
 import Arkham.Cost
@@ -58,6 +59,7 @@ data CacheKey v where
   CanMoveToLocationsKey :: InvestigatorId -> Source -> CacheKey [LocationId]
   PlayableCardsKey
     :: InvestigatorId -> Source -> CostStatus -> [Window] -> CacheKey [Card]
+  GetAllAbilitiesKey :: CacheKey [Ability]
   SelectKey :: Typeable a => SomeQuery a -> CacheKey [a]
   ExistKey :: Typeable a => SomeQuery a -> CacheKey Bool
 
@@ -96,6 +98,7 @@ instance GEq CacheKey where
     (PlayableCardsKey a2 b2 c2 d2)
       | (a1, b1, c1, d1) == (a2, b2, c2, d2) = Just Refl
       | otherwise = Nothing
+  geq GetAllAbilitiesKey GetAllAbilitiesKey = Just Refl
   geq (SelectKey (q1 :: SomeQuery a)) (SelectKey (q2 :: SomeQuery b))
     | Just Refl <- eqT @a @b, q1 == q2 = Just Refl -- requires Eq (SomeQuery a)
     | otherwise = Nothing
@@ -132,11 +135,15 @@ instance GCompare CacheKey where
     (PlayableCardsKey a1 b1 c1 d1, PlayableCardsKey a2 b2 c2 d2) ->
       compareTuple (a1, b1, c1, d1) (a2, b2, c2, d2)
     (PlayableCardsKey {}, _) -> GLT
+    (GetAllAbilitiesKey, GetAllAbilitiesKey) -> GEQ
+    (GetAllAbilitiesKey, PlayableCardsKey {}) -> GGT
+    (GetAllAbilitiesKey, _) -> GLT
     (SelectKey (q1 :: SomeQuery a), SelectKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->
       case compare q1 q2 of -- requires Ord (SomeQuery a)
         LT -> GLT
         EQ -> GEQ
         GT -> GGT
+    (SelectKey {}, GetAllAbilitiesKey {}) -> GGT
     (SelectKey {}, PlayableCardsKey {}) -> GGT
     (SelectKey {}, _) -> GGT
     (ExistKey (q1 :: SomeQuery a), ExistKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->

@@ -7,7 +7,6 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Prelude
-import Arkham.Tracing
 
 lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
@@ -15,9 +14,7 @@ lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
   Just (SomeAgendaCard a) -> \i cardId -> Agenda $ cbCardBuilder a cardId (i, agendaId)
 
 instance RunMessage Agenda where
-  runMessage msg x@(Agenda a) =
-    withSpan_ ("Agenda[" <> unCardCode (toCardCode x) <> "].runMessage") do
-      Agenda <$> runMessage msg a
+  runMessage msg (Agenda a) = Agenda <$> runMessage msg a
 
 instance FromJSON Agenda where
   parseJSON = withObject "Agenda" $ \o -> do

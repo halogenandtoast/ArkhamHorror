@@ -10,7 +10,6 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Skill.Runner
 import Arkham.Skill.Skills
-import Arkham.Tracing
 
 createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
 createSkill a iid sId =
@@ -41,7 +40,7 @@ createSkill a iid sId =
     _ -> Nothing
 
 instance RunMessage Skill where
-  runMessage msg x@(Skill a) = withSpan_ ("Skill[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Skill a) = do
     if x.placement.outOfGame
       then case msg of
         ReturnLocationToGame _ -> Skill <$> runMessage msg a

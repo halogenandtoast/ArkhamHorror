@@ -74,7 +74,7 @@ getCanPerformAbility !iid !ws !ability = do
 
 preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
-preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
+preventedByInvestigatorModifiers iid ability = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
   let cannotTriggerMatchers =
@@ -130,7 +130,7 @@ explicitlyTargetsForcedAbilities = \case
 
 meetsActionRestrictions
   :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
-meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictions" $ go abilityType
+meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
     Haunted -> pure False

@@ -161,7 +161,7 @@ import Arkham.Investigator.Runner.Action
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
-    withSpan_ ("Investigator[" <> unCardCode (toCardCode i) <> "].runMessage") do
+    do
       modifiers' <- getModifiers (toTarget i)
       let msg' = if Blank `elem` modifiers' then Blanked msg else msg
       case investigatorForm (toAttrs a) of
@@ -379,7 +379,7 @@ runWindow attrs windows actions playableCards = do
 
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
-runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigatorMessage" $ runQueueT $ case msg of
+runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ClearAbilityUse ref -> do
     pure $ a & usedAbilitiesL %~ filter ((/= ref) . (.ref) . usedAbility)
   SealedChaosToken token miid (isTarget a -> True) -> do

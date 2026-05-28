@@ -8,7 +8,6 @@ import Arkham.Classes
 import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Prelude hiding (catch)
-import Arkham.Tracing
 
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =
@@ -36,7 +35,7 @@ createEvent a iid eid =
     _ -> Nothing
 
 instance RunMessage Event where
-  runMessage msg x@(Event a) = withSpan_ ("Event[" <> unCardCode (toCardCode x) <> "].runMessage") do
+  runMessage msg x@(Event a) = do
     if x.placement.outOfGame
       then case msg of
         ReturnLocationToGame {} -> Event <$> runMessage msg a

@@ -57,15 +57,12 @@ getPlayableCards
      , IdOf investigator ~ InvestigatorId
      )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
-getPlayableCards source investigator costStatus windows' = withSpan_ "getPlayableCards" do
+getPlayableCards source investigator costStatus windows' = do
   let iid = asId investigator
   cached (PlayableCardsKey iid (toSource source) costStatus windows') do
-    asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards iid
-    otherPlayersPlayableCards <-
-      withSpan_ "getOtherPlayersPlayableCards"
-        $ getOtherPlayersPlayableCards iid costStatus windows'
-    playableDiscards <-
-      withSpan_ "getPlayableDiscards" $ getPlayableDiscards source iid costStatus windows'
+    asIfInHandCards <- getAsIfInHandCards iid
+    otherPlayersPlayableCards <- getOtherPlayersPlayableCards iid costStatus windows'
+    playableDiscards <- getPlayableDiscards source iid costStatus windows'
     hand <- field InvestigatorHand iid
     playableHandCards <-
       filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
@@ -123,7 +120,7 @@ filterPlayable
   -> [Window]
   -> [Card]
   -> m [Card]
-filterPlayable investigator source costStatus windows' cards = withSpan_ "filterPlayable" do
+filterPlayable investigator source costStatus windows' cards =
   filterM (getIsPlayable investigator source costStatus windows') cards
 
 getIsPlayable
@@ -140,10 +137,9 @@ getIsPlayable
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable (asId -> iid) source costStatus windows' c =
-  withSpan_ ("getIsPlayable[ " <> unCardCode c.cardCode <> "]") do
-    availableResources <- getSpendableResources iid
-    getIsPlayableWithResources iid source availableResources costStatus windows' c
+getIsPlayable (asId -> iid) source costStatus windows' c = do
+  availableResources <- getSpendableResources iid
+  getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 withReducedCost
   :: ( Tracing m

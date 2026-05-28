@@ -50,7 +50,7 @@ if [ "$(id -u)" = "0" ]; then
     else
         echo "         Please run as a regular user: bash start.sh" >&2
     fi
-    die 1001 "Running as root is not allowed"
+    exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -106,6 +106,7 @@ GREEN=$'\033[0;32m'
 YELLOW=$'\033[0;33m'
 RED=$'\033[0;31m'
 CYAN=$'\033[0;36m'
+MAGENTA=$'\033[0;35m'
 BOLD=$'\033[1m'
 RESET=$'\033[0m'
 
@@ -487,42 +488,58 @@ _fix_lib_symlinks() {
     local dir="$1"
     [ -d "$dir" ] || return 0
 
-    # Detect whether symlinks are supported: NTFS via DrvFS (/mnt/[a-z]) does not allow ln -s
-    local use_copy=0
-    if [[ "$dir" == /mnt/[a-z]/* ]] && grep -qi microsoft /proc/version 2>/dev/null; then
-        use_copy=1
+    # Short-circuit: if the first versioned .so already has valid soname and bare symlinks, skip
+    local first_versioned
+    first_versioned="$(find "$dir" -maxdepth 1 -name 'lib*.so.*' -print -quit 2>/dev/null)"
+    if [ -n "$first_versioned" ]; then
+        local bn="${first_versioned##*/}"
+        local sn="${bn%.*}"
+        local bare="${sn%.*}"
+        # Verify soname link (e.g. libpq.so.5 -> libpq.so.5.14)
+        local soname_ok=false
+        if [ -L "$dir/$sn" ] && [ "$(readlink "$dir/$sn")" = "$bn" ]; then
+            soname_ok=true
+        fi
+        # Verify bare link if applicable (e.g. libpq.so -> libpq.so.5.14)
+        local bare_ok=false
+        if [[ "$bare" == *.so ]]; then
+            if [ -L "$dir/$bare" ]; then
+                bare_ok=true
+            fi
+        else
+            bare_ok=true  # no bare link expected for this file
+        fi
+        if $soname_ok && $bare_ok; then
+            return 0
+        fi
     fi
 
     local f basename linkname
-    # Match files like libfoo.so.3.14 (major.minor)
-    for f in "$dir"/lib*.so.*.*; do
+    # Match versioned .so files: lib*.so.X, lib*.so.X.Y, lib*.so.X.Y.Z, etc.
+    # Glob returns entries in lexicographic order, so libpq.so.5 comes before libpq.so.5.14;
+    # later iterations naturally overwrite earlier symlinks with the correct longest target.
+    for f in "$dir"/lib*.so.*; do
         [ -f "$f" ] || continue
         basename="$(basename "$f")"
-        # e.g. libpq.so.5.14 → derive libpq.so.5 and libpq.so
-        local soname="${basename%.*}"      # libpq.so.5
-        local bare="${soname%.*}"          # libpq.so  (strip .5) — but only if what remains ends with .so
+        # e.g. libpq.so.5.14 → soname=libpq.so.5, bare=libpq.so
+        #      libpq.so.5.14.3 → soname=libpq.so.5.14, bare=libpq.so.5 (not .so, skip bare link)
+        local soname="${basename%.*}"      # strip last .N segment
+        local bare="${soname%.*}"          # strip one more segment
         # Recreate the soname link (libpq.so.5 -> libpq.so.5.14)
         linkname="$dir/$soname"
-        if [ "$use_copy" = "1" ]; then
-            # On NTFS: copy the file if the link target doesn't already exist or differs
-            if [ ! -f "$linkname" ] || [ "$linkname" -ot "$f" ]; then
+        if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
+            # Try symlink first; fall back to copy if filesystem doesn't support symlinks
+            # (e.g. NTFS via DrvFS without Developer Mode / SeCreateSymbolicLinkPrivilege)
+            if ! ln -sf "$basename" "$linkname" 2>/dev/null; then
                 cp -f "$f" "$linkname"
             fi
-        else
-            if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
-                ln -sf "$basename" "$linkname"
-            fi
         fi
-        # Recreate the bare link (libpq.so -> libpq.so.5.14) only if soname looks like lib*.so.N
+        # Recreate the bare link (libpq.so -> libpq.so.5.14) only if bare ends with .so
         if [[ "$bare" == *.so ]]; then
             linkname="$dir/$bare"
-            if [ "$use_copy" = "1" ]; then
-                if [ ! -f "$linkname" ] || [ "$linkname" -ot "$f" ]; then
+            if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
+                if ! ln -sf "$basename" "$linkname" 2>/dev/null; then
                     cp -f "$f" "$linkname"
-                fi
-            else
-                if [ ! -L "$linkname" ] || [ "$(readlink "$linkname")" != "$basename" ]; then
-                    ln -sf "$basename" "$linkname"
                 fi
             fi
         fi
@@ -539,6 +556,18 @@ ensure_macos_signing() {
     if ! command -v codesign >/dev/null 2>&1; then
         warn "codesign not found; skipping signing (manual approval may be needed on macOS)"
         return 0
+    fi
+
+    # Skip if binaries haven't changed since last successful signing,
+    # but verify the signature is still intact (user may have tampered with binaries)
+    local marker="$DATA_DIR/signed.marker"
+    local ref_bin="$SCRIPT_DIR/bin/arkham-api"
+    if [ -f "$marker" ] && [ -f "$ref_bin" ] && [ "$marker" -nt "$ref_bin" ]; then
+        if codesign --verify -q "$ref_bin" 2>/dev/null; then
+            return 0
+        fi
+        # Signature broken; remove stale marker and re-sign
+        rm -f "$marker"
     fi
 
     # 1) Ensure all files that need signing are writable (Homebrew dylibs may be read-only)
@@ -573,13 +602,16 @@ ensure_macos_signing() {
 
     # 3) Clear quarantine attributes again after signing (codesign may re-trigger them)
     xattr -rd com.apple.quarantine "$SCRIPT_DIR" 2>/dev/null || true
+
+    # Record successful signing so subsequent starts can skip this step
+    touch "$marker"
 }
 
 is_pg_running()   { pg_ready; }
 is_api_running()  {
     if [ -f "$API_PID_FILE" ]; then
         local p; p="$(cat "$API_PID_FILE" 2>/dev/null)"
-        [ -n "$p" ] && [ -d "/proc/$p" ] && return 0
+        [ -n "$p" ] && kill -0 "$p" 2>/dev/null && return 0
     fi
     # Fallback: probe the port directly (PID files may be inaccessible across users)
     (echo >/dev/tcp/127.0.0.1/$API_PORT) 2>/dev/null
@@ -587,7 +619,7 @@ is_api_running()  {
 is_nginx_running() {
     if [ -f "$NGINX_PID" ]; then
         local p; p="$(cat "$NGINX_PID" 2>/dev/null)"
-        [ -n "$p" ] && [ -d "/proc/$p" ] && return 0
+        [ -n "$p" ] && kill -0 "$p" 2>/dev/null && return 0
     fi
     (echo >/dev/tcp/127.0.0.1/$NGINX_PORT) 2>/dev/null
 }
@@ -754,8 +786,6 @@ find_available_pg_port() {
             else
                 warn "Port $port (PostgreSQL) is already in use; trying $((port + 1)) ..."
             fi
-        elif pg_port_is_foreign "$port"; then
-            warn "Port $port (PostgreSQL) belongs to a foreign instance (requires password); trying $((port + 1)) ..."
         else
             echo "$port"
             return 0
@@ -766,11 +796,40 @@ find_available_pg_port() {
     die 1010 "All ports $base-$((base + max_attempts - 1)) (PostgreSQL) are occupied or foreign; cannot start"
 }
 
+# Detect system DNS resolvers for nginx.
+# Prefers non-loopback entries from /etc/resolv.conf (Linux/WSL),
+# falls back to scutil --dns (macOS), then to public DNS as last resort.
+detect_resolvers() {
+    local resolvers=""
+    if [ -r /etc/resolv.conf ]; then
+        resolvers=$(grep -E '^nameserver' /etc/resolv.conf \
+            | awk '{print $2}' \
+            | grep -vE '^(127\.|::1$)' \
+            | head -3 \
+            | tr '\n' ' ')
+    fi
+    if [ -z "$resolvers" ] && [ "$(uname -s)" = "Darwin" ]; then
+        resolvers=$(scutil --dns 2>/dev/null \
+            | grep 'nameserver\[' \
+            | awk '{print $3}' \
+            | grep -vE '^(127\.|::1$)' \
+            | sort -u \
+            | head -3 \
+            | tr '\n' ' ')
+    fi
+    if [ -z "$resolvers" ]; then
+        resolvers="223.5.5.5 8.8.8.8"
+    fi
+    echo "$resolvers"
+}
+
 generate_nginx_conf() {
     local conf="$SCRIPT_DIR/config/nginx.conf"
     local mime="$SCRIPT_DIR/config/mime.types"
     local frontend_root="$SCRIPT_DIR/frontend/dist"
     local pkg_root="$SCRIPT_DIR/.."
+    local dns_resolvers
+    dns_resolvers="$(detect_resolvers)"
     cat > "$conf" << NGINX_EOF
 worker_processes auto;
 pid "$NGINX_PID";
@@ -847,9 +906,14 @@ http {
       try_files \$uri @img_cdn;
     }
     location @img_cdn {
+      # Use a variable so nginx resolves the hostname at request time, not at startup.
+      # This prevents nginx from failing to start when DNS is unavailable (e.g. offline WSL).
+      set \$cdn_upstream "http://assets.arkhamhorror.app";
+      resolver $dns_resolvers valid=300s ipv6=off;
+      resolver_timeout 5s;
       expires 10m;
       add_header Server-Timing "cdn" always;
-      proxy_pass http://assets.arkhamhorror.app;
+      proxy_pass \$cdn_upstream\$request_uri;
       proxy_set_header Host assets.arkhamhorror.app;
     }
     location /api {
@@ -1010,6 +1074,8 @@ PG_CONF_EOF
 
 # ── Start ────────────────────────────────────────────────────────────────────
 do_start() {
+    # Record start time. GNU date supports %N (nanoseconds); macOS date does not, falls back to integer seconds.
+    local _start_epoch; _start_epoch="$(date +%s.%N 2>/dev/null)"; _start_epoch="${_start_epoch/N/0}"
     [ -x "$SCRIPT_DIR/bin/arkham-api" ] || die 1002 "bin/arkham-api not found"
     [ -x "$SCRIPT_DIR/bin/nginx" ]      || die 1003 "bin/nginx not found"
     [ -d "$SCRIPT_DIR/pgsql/bin" ]      || die 1004 "pgsql/bin/ not found"
@@ -1034,7 +1100,6 @@ do_start() {
     ensure_macos_signing
 
     ensure_dir "$DATA_DIR"
-    configure_runtime_env
 
     # 1. PostgreSQL
     # Store pgdata under the OS user data directory to avoid WSL/NTFS permission issues.
@@ -1201,7 +1266,7 @@ do_start() {
 
     local tries=0
     while ! curl -fs "http://127.0.0.1:${API_PORT}/health" > /dev/null 2>&1; do
-        tries=$((tries + 1)); [ "$tries" -gt 30 ] && die 3003 "Backend API startup timed out" "$DATA_DIR/arkham-api.log"; sleep 1
+        tries=$((tries + 1)); [ "$tries" -gt 150 ] && die 3003 "Backend API startup timed out" "$DATA_DIR/arkham-api.log"; sleep 0.2
     done
     info "Backend API started (port $API_PORT, PID $(get_api_pid))"
 
@@ -1223,7 +1288,7 @@ do_start() {
 
     # ── Post-start health check: wait 2 seconds, then verify all services are still alive ─
     # Prevent a silent crash (for example, delayed termination by macOS Gatekeeper) from being treated as a successful startup
-    sleep 2
+    sleep 0.5
     if ! is_pg_running;  then die 3004 "PostgreSQL crashed after startup" "$PG_LOG"; fi
     if ! is_api_running; then die 3005 "arkham-api crashed after startup" "$DATA_DIR/arkham-api.log"; fi
     if ! is_nginx_running; then die 3006 "nginx crashed after startup" "$NGINX_LOG_DIR/error.log"; fi
@@ -1258,6 +1323,9 @@ do_start() {
         break
     done
     printf '  Version: %s%s%s\n' "$GREEN" "$_cur_ver" "$RESET"
+    local _end_epoch; _end_epoch="$(date +%s.%N 2>/dev/null)"; _end_epoch="${_end_epoch/N/0}"
+    local _elapsed; _elapsed="$(awk "BEGIN{printf \"%.1f\", ${_end_epoch} - ${_start_epoch}}")"
+    printf '  Started in %s%ss%s\n' "$MAGENTA" "$_elapsed" "$RESET"
     echo ""
 
     # Open the browser automatically (silent; failure does not affect services)

@@ -13,7 +13,14 @@ newtype OuterFieldsScorchedKnoll = OuterFieldsScorchedKnoll LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outerFieldsScorchedKnoll :: LocationCard OuterFieldsScorchedKnoll
-outerFieldsScorchedKnoll = symbolLabel $ locationWith OuterFieldsScorchedKnoll Cards.outerFieldsScorchedKnoll 0 (Static 0) connectsToAdjacent
+outerFieldsScorchedKnoll =
+  symbolLabel
+    $ locationWith
+      OuterFieldsScorchedKnoll
+      Cards.outerFieldsScorchedKnoll
+      3
+      (PerPlayer 2)
+      connectsToAdjacent
 
 instance HasAbilities OuterFieldsScorchedKnoll where
   getAbilities (OuterFieldsScorchedKnoll a) =
@@ -28,7 +35,7 @@ instance HasAbilities OuterFieldsScorchedKnoll where
 instance RunMessage OuterFieldsScorchedKnoll where
   runMessage msg l@(OuterFieldsScorchedKnoll attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      placeTokens attrs attrs Damage 1
+      placeTrap attrs attrs.id
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       trapLocations <- select $ LocationWithDamage (atLeast 1)

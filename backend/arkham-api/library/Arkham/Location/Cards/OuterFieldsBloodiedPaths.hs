@@ -13,17 +13,22 @@ newtype OuterFieldsBloodiedPaths = OuterFieldsBloodiedPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outerFieldsBloodiedPaths :: LocationCard OuterFieldsBloodiedPaths
-outerFieldsBloodiedPaths = symbolLabel $ locationWith OuterFieldsBloodiedPaths Cards.outerFieldsBloodiedPaths 0 (Static 0) connectsToAdjacent
+outerFieldsBloodiedPaths =
+  symbolLabel
+    $ locationWith
+      OuterFieldsBloodiedPaths
+      Cards.outerFieldsBloodiedPaths
+      2
+      (PerPlayer 3)
+      connectsToAdjacent
 
 instance HasAbilities OuterFieldsBloodiedPaths where
   getAbilities (OuterFieldsBloodiedPaths a) =
     extendRevealed
       a
-      [ groupLimit PerGame
-          $ restricted a 1 (Here <> exists (enemyAt a))
-          $ actionAbility
+      [ groupLimit PerGame $ restricted a 1 (Here <> exists (enemyAt a)) actionAbility
       , groupLimit PerGame
-          $ mkAbility a 2
+          $ restricted a 2 (exists $ assetIs Assets.theCaptives <> AssetWithDamage)
           $ freeReaction
           $ DiscoveringLastClue #after You (be a)
       ]

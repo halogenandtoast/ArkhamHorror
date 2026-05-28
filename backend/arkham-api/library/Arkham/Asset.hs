@@ -1109,6 +1109,7 @@ allAssets =
       , --- Heirlooms [fhv]
         SomeAssetCard worryRockTokenOfSafety
       , SomeAssetCard cornHuskDoll
+      , SomeAssetCard thePearlDiaryAGrimAccount
       , --- The Longest Night [fhv]
         SomeAssetCard theCaptives
       , SomeAssetCard ajax

@@ -4,10 +4,15 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.Matcher
-import Arkham.Scenarios.TheLongestNight.Helpers (pattern IgnoreBarriers, pattern IgnoreDecoys, pattern IgnoreFireDamage, pattern IgnoreTraps)
+import Arkham.Scenarios.TheLongestNight.Helpers (
+  pattern IgnoreBarriers,
+  pattern IgnoreDecoys,
+  pattern IgnoreFireDamage,
+  pattern IgnoreTraps,
+ )
 
 newtype SlitheringHybrid = SlitheringHybrid EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 slitheringHybrid :: EnemyCard SlitheringHybrid
@@ -18,6 +23,3 @@ slitheringHybrid =
 instance HasModifiersFor SlitheringHybrid where
   getModifiersFor (SlitheringHybrid a) =
     modifySelf a [IgnoreBarriers, IgnoreDecoys, IgnoreTraps, IgnoreFireDamage]
-
-instance RunMessage SlitheringHybrid where
-  runMessage msg (SlitheringHybrid attrs) = SlitheringHybrid <$> runMessage msg attrs

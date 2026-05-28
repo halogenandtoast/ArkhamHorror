@@ -4,11 +4,13 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheLongestNight.Helpers (discardFromEnemyDeck)
 
 newtype Meta = Meta {topCards :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -37,13 +39,15 @@ instance RunMessage OuterFieldsDesolateHills where
       let (top, rest) = splitAt n allCards
       push $ SetScenarioDeck EnemyDeck rest
       focusCards top do
-        chooseUpToNM_ iid (length top) do
+        cardI18n $ scope "outerFieldsDesolateHills" $ chooseUpToNM' iid (length top) "doneDiscarding" do
           targets top $ handleTarget iid (attrs.ability 1)
         doStep 1 msg
         unfocusCards
       pure $ OuterFieldsDesolateHills $ attrs `with` Meta top
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
-      pure $ OuterFieldsDesolateHills $ attrs `with` Meta (filter ((/= cid) . toCardId) (topCards meta))
+      let (discarded, remaining) = partition ((== cid) . toCardId) (topCards meta)
+      discardFromEnemyDeck discarded
+      pure $ OuterFieldsDesolateHills $ attrs `with` Meta remaining
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       let remaining = topCards meta
       when (notNull remaining) do

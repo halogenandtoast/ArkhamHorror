@@ -5,6 +5,8 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types (Field (..))
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -76,7 +78,10 @@ instance RunMessage FalseColorsV2 where
       turnOverAllConcealed attrs
       do_ msg
       inPlayVersion <- selectJust $ enemyIs Enemies.desiderioDelgadoAlvarez106
-      mlocation <- placementLocation =<< field EnemyPlacement inPlayVersion
+      mDesiMiniCard <- selectOne $ ConcealedCardIs DesiderioDelgadoAlvarez
+      mlocation <- case mDesiMiniCard of
+        Just miniCard -> fieldMap ConcealedCardPlacement (preview _AtLocation) miniCard.id
+        Nothing -> placementLocation =<< field EnemyPlacement inPlayVersion
       badVersion <- fetchCard inPlayVersion
       outOfPlayCard <- fetchCard Assets.desiderioDelgadoAlvarez
       let goodVersion = lookupCard Enemies.desiderioDelgadoAlvarez107.cardCode outOfPlayCard.id

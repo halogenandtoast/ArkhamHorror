@@ -19,9 +19,9 @@ instance HasAbilities Vineyard where
     extendRevealed
       a
       [ playerLimit PerTurn
-          $ restricted a 1 (Here <> DuringTurn You <> exists (enemyAt a))
+          $ restricted a 1 (Here <> DuringTurn You <> exists (enemyAt a <> EnemyCanEngage You))
           $ FastAbility Free
-      , mkAbility a 2 $ forced $ EnemyEnters #when (be a) AnyEnemy
+      , mkAbility a 2 $ forced $ EnemyEnters #when (be a) EnemyWithAnyDamage
       ]
 
 instance RunMessage Vineyard where

@@ -384,7 +384,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let isMatch' = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
   let isAttackCancelled details = do
-        liveDetails <- field EnemyAttacking (attackEnemy details)
+        liveDetails <- fieldMayJoin EnemyAttacking (attackEnemy details)
         pure $ details.cancelled || maybe False (.cancelled) liveDetails
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of

@@ -76,24 +76,26 @@ preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  -- Forced abilities trigger automatically and are not "triggered" by the
-  -- investigator, so `CannotTriggerAbilityMatching` does not suppress them.
-  -- This also avoids self-locks like Narcolepsy, whose constant modifier
-  -- would otherwise block its own forced discard ability.
   isForced <- isForcedAbility iid ability
-  if isForced
-    then pure False
-    else do
-      let cannotTriggerMatchers =
-            modifiers & mapMaybe \case
-              CannotTriggerAbilityMatching m -> Just m
-              _ -> Nothing
-      suppressedByMatcher <-
-        if null cannotTriggerMatchers
-          then pure False
-          else elem ability <$> select (Matcher.AbilityOneOf cannotTriggerMatchers)
-      if suppressedByMatcher
-        then pure True
+  let cannotTriggerMatchers =
+        modifiers & mapMaybe \case
+          CannotTriggerAbilityMatching m -> Just m
+          _ -> Nothing
+      -- For forced abilities, only apply matchers that explicitly target them
+      -- (e.g. Vale Lantern). Generic matchers like AnyAbility are skipped to
+      -- avoid self-locks (e.g. Narcolepsy blocking its own forced discard).
+      effectiveMatchers
+        | isForced = filter explicitlyTargetsForcedAbilities cannotTriggerMatchers
+        | otherwise = cannotTriggerMatchers
+  suppressedByMatcher <-
+    if null effectiveMatchers
+      then pure False
+      else elem ability <$> select (Matcher.AbilityOneOf effectiveMatchers)
+  if suppressedByMatcher
+    then pure True
+    else
+      if isForced
+        then pure False
         else anyM (prevents modifiers) modifiers
  where
   prevents modifiers = \case
@@ -118,6 +120,13 @@ preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigato
       AssetSource eid ->
         if a `elem` abilityActions ability then eid <=~> matcher else pure False
       _ -> pure False
+
+explicitlyTargetsForcedAbilities :: Matcher.AbilityMatcher -> Bool
+explicitlyTargetsForcedAbilities = \case
+  Matcher.AbilityIsForcedAbility -> True
+  Matcher.AbilityMatches ms -> any explicitlyTargetsForcedAbilities ms
+  Matcher.AbilityOneOf ms -> any explicitlyTargetsForcedAbilities ms
+  _ -> False
 
 meetsActionRestrictions
   :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool

@@ -781,6 +781,9 @@
     "outOfSight3": {
       "disengageAndMove2": "与每个敌人解除交战并移动到一个已揭示的连接地点，该地点与其所在地点连接次数不超过2"
     },
+    "outerFieldsDesolateHills": {
+      "doneDiscarding": "完成弃牌"
+    },
     "patriceHathaway": {
       "shuffleDiscardKeepOne": "将弃牌堆中的1张卡牌留下并将其余卡牌混洗回你的牌库",
       "chooseOneCardToLeave": "选择1张牌留在弃牌堆",

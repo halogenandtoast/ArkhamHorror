@@ -89,7 +89,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization (hasCustomization)
 import Arkham.Helpers.Doom
-import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
+import Arkham.Helpers.Enemy (enemyEngagedInvestigators, getModifiedKeywords)
 import Arkham.Helpers.Game
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
@@ -3844,7 +3844,8 @@ enemyMatcherFilter es matcher' = do
       iids <- select investigatorMatcher
       es & filterM \enemy -> do
         emods <- getModifiers (toId enemy)
-        if CannotBeEngaged `elem` emods
+        kws <- getModifiedKeywords enemy
+        if CannotBeEngaged `elem` emods || Keyword.Massive `elem` kws
           then pure False
           else do
             let

@@ -93,17 +93,19 @@ instance RunMessage ConcealedCard where
       pure $ c {concealedCardFlipped = not c.concealedCardFlipped, concealedCardKnown = True}
     DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
-        Nothing -> case c.kind of
-          Decoy -> exposedDecoy iid c Nothing
-          DecoyVoidChimeraFellbeak -> exposedDecoy iid c (Just "decoyVoidChimeraFellbeak")
-          DecoyVoidChimeraEarsplitter -> exposedDecoy iid c (Just "decoyVoidChimeraEarsplitter")
-          DecoyVoidChimeraGorefeaster -> exposedDecoy iid c (Just "decoyVoidChimeraGorefeaster")
-          DecoyVoidChimeraFellhound -> exposedDecoy iid c (Just "decoyVoidChimeraFellhound")
-          CityOfRemnantsL -> scenarioSpecific "exposed[CityOfRemnantsL]" (iid, c)
-          CityOfRemnantsM -> scenarioSpecific "exposed[CityOfRemnantsM]" (iid, c)
-          CityOfRemnantsR -> scenarioSpecific "exposed[CityOfRemnantsR]" (iid, c)
-          MimeticNemesis -> scenarioSpecific "exposed[MimeticNemesis]" (iid, c)
-          _ -> pure ()
+        Nothing -> do
+          case c.kind of
+            Decoy -> exposedDecoy iid c Nothing
+            DecoyVoidChimeraFellbeak -> exposedDecoy iid c (Just "decoyVoidChimeraFellbeak")
+            DecoyVoidChimeraEarsplitter -> exposedDecoy iid c (Just "decoyVoidChimeraEarsplitter")
+            DecoyVoidChimeraGorefeaster -> exposedDecoy iid c (Just "decoyVoidChimeraGorefeaster")
+            DecoyVoidChimeraFellhound -> exposedDecoy iid c (Just "decoyVoidChimeraFellhound")
+            CityOfRemnantsL -> scenarioSpecific "exposed[CityOfRemnantsL]" (iid, c)
+            CityOfRemnantsM -> scenarioSpecific "exposed[CityOfRemnantsM]" (iid, c)
+            CityOfRemnantsR -> scenarioSpecific "exposed[CityOfRemnantsR]" (iid, c)
+            MimeticNemesis -> scenarioSpecific "exposed[MimeticNemesis]" (iid, c)
+            _ -> pure ()
+          pure c
         Just def -> do
           enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title
           chooseOrRunOneM iid do
@@ -114,7 +116,7 @@ instance RunMessage ConcealedCard where
                   _ -> error "invalid placement for concealed card"
                 doStep 2 msg'
           when (null enemies) $ doStep 2 msg' -- recovery
-      pure $ c {concealedCardPlacement = Unplaced}
+          pure $ c {concealedCardPlacement = Unplaced}
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
       removeFromGame (toTarget c)
       inShadows <- selectAny (EnemyWithPlacement InTheShadows)

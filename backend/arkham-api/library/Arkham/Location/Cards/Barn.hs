@@ -18,13 +18,11 @@ barn :: LocationCard Barn
 barn = symbolLabel $ locationWith Barn Cards.barn 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor Barn where
-  getModifiersFor (Barn a) =
-    modifySelect a (enemyAt a) [DamageDealt 1]
+  getModifiersFor (Barn a) = modifySelect a (enemyAt a) [DamageDealt 1]
 
 instance HasAbilities Barn where
   getAbilities (Barn a) =
-    extendRevealed1 a
-      $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+    extendRevealed1 a $ mkAbility a 1 $ triggered_ $ RevealLocation #after Anyone (be a)
 
 instance RunMessage Barn where
   runMessage msg l@(Barn attrs) = runQueueT $ case msg of

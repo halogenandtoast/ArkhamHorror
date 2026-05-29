@@ -4541,6 +4541,7 @@ library
       Arkham.Message.Type
       Arkham.Metrics
       Arkham.Modifier
+      Arkham.Modifier.Builder
       Arkham.ModifierData
       Arkham.Movement
       Arkham.Name

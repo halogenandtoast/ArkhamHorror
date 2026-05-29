@@ -180,6 +180,7 @@ import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
 import Arkham.Metrics (messageTag)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
+import Arkham.Modifier.Builder (buildModifiers)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -6451,13 +6452,16 @@ preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
-    allModifiers <-
-      traverse (foldMapM expandForEach . foldMap handleMoving) =<< execWriterT do
-        getModifiersFor $ gameEntities g
-        traverse_ getModifiersFor $ gameInHandEntities g
-        traverse_ getModifiersFor $ gameInDiscardEntities g
-        for_ (modeScenario (gameMode g)) getModifiersFor
-        for_ (modeCampaign (gameMode g)) getModifiersFor
+    -- Collect every entity's modifiers in a single pass with a scoped query
+    -- cache (see 'buildModifiers'); de-duplicates identical select/exist
+    -- queries across entities (huge with many same-type entities, e.g. swarms).
+    let rawModifiers = buildModifiers g do
+          getModifiersFor $ gameEntities g
+          traverse_ getModifiersFor $ gameInHandEntities g
+          traverse_ getModifiersFor $ gameInDiscardEntities g
+          for_ (modeScenario (gameMode g)) getModifiersFor
+          for_ (modeCampaign (gameMode g)) getModifiersFor
+    allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
     let offsetModifiers =
           Map.fromList
             [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing])

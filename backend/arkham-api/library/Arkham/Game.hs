@@ -3966,29 +3966,35 @@ enemyMatcherFilter es matcher' = do
           -- Dirty Fighting has to fight the evaded enemy, we are saying this is
           -- the one that must be fought
           pure $ filter ((== eid) . toId) es'
-        Nothing ->
+        Nothing -> do
+          -- Hoist loop-invariants out of the per-enemy filter: the source's
+          -- modifiers and the set of enemies that cannot be attacked do not
+          -- depend on the enemy being tested, but were being recomputed (and
+          -- re-looked-up in the query cache) once per enemy.
+          sourceModifiers <- case source of
+            AbilitySource abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            UseAbilitySource _ abSource idx -> do
+              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+            _ -> pure []
+          let
+            isOverride = \case
+              EnemyFightActionCriteria override -> Just override
+              CanModify (EnemyFightActionCriteria override) -> Just override
+              _ -> Nothing
+            enemyFilters = mapMaybe (preview _CannotFight) modifiers'
+            window = mkWindow #when Window.NonFast
+          cannotBeAttacked <- select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
           es' & filterM \enemy -> do
             enemyModifiers <- getModifiers enemy.id
-            sourceModifiers <- case source of
-              AbilitySource abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              UseAbilitySource _ abSource idx -> do
-                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-              _ -> pure []
             let
-              isOverride = \case
-                EnemyFightActionCriteria override -> Just override
-                CanModify (EnemyFightActionCriteria override) -> Just override
-                _ -> Nothing
               overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-              enemyFilters = mapMaybe (preview _CannotFight) modifiers'
-              window = mkWindow #when Window.NonFast
               overrideFunc = case nonEmpty overrides of
                 Nothing -> id
                 Just os -> overrideAbilityCriteria $ combineOverrides os
-            excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+              excluded = toId enemy `elem` cannotBeAttacked
             sourceIsExcluded <- flip anyM enemyModifiers \case
               CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
                 Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
@@ -4073,6 +4079,8 @@ enemyMatcherFilter es matcher' = do
             )
             modifiers'
         window = mkWindow #when (Window.DuringTurn iid)
+      -- Hoist the loop-invariant "cannot be evaded" set out of the per-enemy filter.
+      cannotBeEvaded <- select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
       flip filterM es \enemy -> do
         enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
         let
@@ -4081,7 +4089,7 @@ enemyMatcherFilter es matcher' = do
             [] -> id
             [o] -> overrideAbilityCriteria o
             _ -> error "multiple overrides found"
-        excluded <- elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
+          excluded = toId enemy `elem` cannotBeEvaded
         sourceIsExcluded <- flip anyM enemyModifiers \case
           CannotBeEvadedByPlayerSourcesExcept sourceMatcher ->
             not <$> sourceMatches source sourceMatcher

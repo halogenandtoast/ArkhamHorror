@@ -23,7 +23,14 @@ instance HasAbilities SophieItWasAllMyFault where
      in [controlled x 2 (criteria <> youExist (InvestigatorWithDamage (atMost 4))) $ forced AnyWindow]
 
 instance HasModifiersFor SophieItWasAllMyFault where
-  getModifiersFor (SophieItWasAllMyFault attrs) = controllerGets attrs [AnySkillValue (-1)]
+  getModifiersFor (SophieItWasAllMyFault attrs) =
+    controllerGets
+      attrs
+      [ SkillModifier #willpower (-1)
+      , SkillModifier #intellect (-1)
+      , SkillModifier #combat (-1)
+      , SkillModifier #agility (-1)
+      ]
 
 instance RunMessage SophieItWasAllMyFault where
   runMessage msg a@(SophieItWasAllMyFault attrs) = runQueueT $ case msg of

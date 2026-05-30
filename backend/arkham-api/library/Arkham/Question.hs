@@ -204,6 +204,10 @@ data Question msg
   | -- | Wraps any Question with a header that the frontend renders as
     -- "Pay <cost>", using its own Cost rendering.
     PayCostQuestion {cost :: Cost, question :: Question msg}
+  | -- | Wraps any Question with the Source that prompted it, which the frontend
+    -- highlights on the board while the question is pending (e.g. an enemy
+    -- fleeing via Elusive), plus an optional tooltip shown on that source.
+    QuestionWithSource {source :: Source, tooltip :: Maybe Tooltip, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies
       {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}

@@ -129,6 +129,7 @@ filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
 filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   QuestionLabel {} -> Just ask'
   PayCostQuestion {} -> Just ask'
+  QuestionWithSource {} -> Just ask'
   Read {} -> Just ask'
   DropDown {} -> Just ask'
   PickSupplies {} -> Just ask'
@@ -1091,14 +1092,17 @@ instance RunMessage EnemyAttrs where
         emptyConnectedLocations <-
           select $ connectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
         lead <- getLeadPlayer
+        let fleeChoice locs = case [targetLabel lid [EnemyMove eid lid] | lid <- locs] of
+              [x] -> uiToRun x
+              uis -> questionWithSourceWithTooltip (EnemySource eid) (Tooltip "$elusive.flee") lead (ChooseOne uis)
         if notNull emptyConnectedLocations
           then do
-            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
+            push $ fleeChoice emptyConnectedLocations
           else do
             otherConnectedLocations <-
               select $ connectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
             when (notNull otherConnectedLocations) do
-              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
+              push $ fleeChoice otherConnectedLocations
 
         whenM (eid <=~> ReadyEnemy) do
           push $ Exhaust (mkExhaustion a a)

@@ -2539,6 +2539,12 @@ questionLabel lbl pid q = Ask pid (QuestionLabel lbl Nothing q)
 questionLabelWithCard :: Text -> CardCode -> PlayerId -> Question Message -> Message
 questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) q)
 
+questionWithSource :: Source -> PlayerId -> Question Message -> Message
+questionWithSource s pid q = Ask pid (QuestionWithSource s Nothing q)
+
+questionWithSourceWithTooltip :: Source -> Tooltip -> PlayerId -> Question Message -> Message
+questionWithSourceWithTooltip s tt pid q = Ask pid (QuestionWithSource s (Just tt) q)
+
 asWindowChoose :: HasCallStack => [Window] -> Message -> Message
 asWindowChoose ws (Ask pid q) = WindowAsk ws pid q
 asWindowChoose _ _ = error "asWindowChoose: expected Ask"

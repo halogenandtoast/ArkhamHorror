@@ -134,6 +134,8 @@ instance RunMessage RunicAxe where
                         <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> EnemyIsEngagedWith Anyone, not_ AloofEnemy])
                     )
             , not <$> (coerce eid <=~> locationWithInvestigator iid)
+            , -- concealed cards are always at the investigator's location, so Hunt is never needed for them
+              not <$> selectAny (ConcealedCardWithId (coerce eid))
             ]
         let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
@@ -173,24 +175,28 @@ instance RunMessage RunicAxe where
         Hunt -> do
           mLoc <- getLocationOf iid
           isLocation <- coerce eid <=~> Anywhere
+          isConcealed <- selectAny (ConcealedCardWithId (coerce eid))
           if isLocation
             then moveTo (attrs.ability 1) iid (coerce @_ @LocationId eid)
+            -- concealed cards are always local; Hunt's movement/engage logic does not apply
             else
-              getLocationOf eid >>= traverse_ \loc -> do
-                if Just loc /= mLoc
-                  then do
-                    for_ mLoc \loc' -> do
-                      accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
-                      closestLocationIds <- select $ ClosestPathLocation loc' loc
-                      let locations = filter (`elem` closestLocationIds) accessibleLocations
-                      chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
-                  else do
-                    engaged <- eid <=~> enemyEngagedWith iid
-                    if engaged
-                      then do
-                        locations <- getAccessibleLocations iid (attrs.ability 1)
+              unless isConcealed
+                $ getLocationOf eid
+                >>= traverse_ \loc -> do
+                  if Just loc /= mLoc
+                    then do
+                      for_ mLoc \loc' -> do
+                        accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
+                        closestLocationIds <- select $ ClosestPathLocation loc' loc
+                        let locations = filter (`elem` closestLocationIds) accessibleLocations
                         chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
-                      else enemyEngageInvestigator eid iid
+                    else do
+                      engaged <- eid <=~> enemyEngagedWith iid
+                      if engaged
+                        then do
+                          locations <- getAccessibleLocations iid (attrs.ability 1)
+                          chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
+                        else enemyEngageInvestigator eid iid
         Fury -> pure ()
       RunicAxe . (`with` Metadata (inscription : inscriptions meta)) <$> liftRunMessage msg attrs
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
@@ -226,8 +232,12 @@ instance RunMessage RunicAxe where
         when (isJust mCanDraw || canHealDamage || canHealHorror) do
           chooseOne iid
             $ [Label "$label.cards.runicAxe.draw1Card" [drawing] | drawing <- maybeToList mCanDraw]
-            <> [Label "$label.cards.runicAxe.heal1Damage" [HealDamage (toTarget iid) (attrs.ability 1) 1] | canHealDamage]
-            <> [Label "$label.cards.runicAxe.heal1Horror" [HealHorror (toTarget iid) (attrs.ability 1) 1] | canHealHorror]
+            <> [ Label "$label.cards.runicAxe.heal1Damage" [HealDamage (toTarget iid) (attrs.ability 1) 1]
+               | canHealDamage
+               ]
+            <> [ Label "$label.cards.runicAxe.heal1Horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
+               | canHealHorror
+               ]
           push $ DoStep (n - 1) msg'
       pure a
     ResolvedAbility ab | ab.source == toSource attrs -> do

@@ -508,6 +508,12 @@ instance HasField "combat" InvestigatorAttrs Int where
 instance HasField "agility" InvestigatorAttrs Int where
   getField = investigatorAgility
 
+instance HasField "health" InvestigatorAttrs Int where
+  getField = investigatorHealth
+
+instance HasField "sanity" InvestigatorAttrs Int where
+  getField = investigatorSanity
+
 instance HasField "classSymbol" InvestigatorAttrs ClassSymbol where
   getField = investigatorClass
 

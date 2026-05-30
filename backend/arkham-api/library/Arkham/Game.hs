@@ -4772,14 +4772,22 @@ instance Projection Investigator where
         let
           applyModifier (HealthModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseHealth = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).health
+            _ -> investigatorHealth
 
-        foldr applyModifier investigatorHealth <$> getModifiers attrs
+        foldr applyModifier baseHealth <$> getModifiers attrs
       InvestigatorSanity -> do
         let
           applyModifier (SanityModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          baseSanity = case investigatorForm of
+            TransfiguredForm inner ->
+              (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).sanity
+            _ -> investigatorSanity
 
-        foldr applyModifier investigatorSanity <$> getModifiers attrs
+        foldr applyModifier baseSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
         sanity <- field InvestigatorSanity (toId attrs)
         pure $ max 0 (sanity - investigatorSanityDamage attrs)

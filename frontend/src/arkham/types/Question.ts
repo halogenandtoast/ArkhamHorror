@@ -20,6 +20,7 @@ export type Question =
   | ChooseAmounts 
   | QuestionLabel
   | PayCostQuestion
+  | QuestionWithSource
   | Read
   | PickSupplies 
   | DropDown 
@@ -47,6 +48,7 @@ export enum QuestionType {
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
   PAY_COST_QUESTION = 'PayCostQuestion',
+  QUESTION_WITH_SOURCE = 'QuestionWithSource',
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
   PICK_DESTINY = 'PickDestiny',
@@ -101,6 +103,13 @@ export type QuestionLabel = {
 export type PayCostQuestion = {
   tag: QuestionType.PAY_COST_QUESTION
   cost: Cost
+  question: Question
+}
+
+export type QuestionWithSource = {
+  tag: QuestionType.QUESTION_WITH_SOURCE
+  source: Source
+  tooltip: string | null
   question: Question
 }
 
@@ -370,6 +379,16 @@ export const payCostQuestionDecoder: JsonDecoder.Decoder<PayCostQuestion> = Json
   'PayCostQuestion',
 );
 
+export const questionWithSourceDecoder: JsonDecoder.Decoder<QuestionWithSource> = JsonDecoder.object<QuestionWithSource>(
+  {
+    tag: JsonDecoder.literal(QuestionType.QUESTION_WITH_SOURCE),
+    source: sourceDecoder,
+    tooltip: JsonDecoder.nullable(JsonDecoder.string()),
+    question: JsonDecoder.lazy(() => questionDecoder)
+  },
+  'QuestionWithSource',
+);
+
 
 export type ReadChoices
   = { tag: "BasicReadChoices", contents: Message[] }
@@ -538,6 +557,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseExchangeAmountsDecoder,
     questionLabelDecoder,
     payCostQuestionDecoder,
+    questionWithSourceDecoder,
     readDecoder,
     pickSuppliesDecoder,
     pickDestinyDecoder,

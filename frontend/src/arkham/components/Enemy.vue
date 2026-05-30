@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { handleEmbeddedI18n } from '@/arkham/i18n'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { keyToId } from '@/arkham/types/Key'
@@ -54,6 +56,16 @@ const imageId = computed(() => cardArt(props.enemy.cardCode, props.enemy.flipped
 const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped ? 'b' : ''))
 
 const id = computed(() => props.enemy.id)
+
+const isHighlighted = computed(() => {
+  const source = ArkhamGame.choicesSource(props.game, props.playerId)
+  return source !== null && 'contents' in source && source.contents === props.enemy.id
+})
+const { t } = useI18n()
+const sourceTooltip = computed<string | false>(() => {
+  const raw = isHighlighted.value ? ArkhamGame.choicesTooltip(props.game, props.playerId) : null
+  return raw ? handleEmbeddedI18n(raw, t as (key: string, params: { [key: string]: any }) => string) : false
+})
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -287,7 +299,8 @@ function onDrop(event: DragEvent) {
             </span>
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
-              :class="{ dragging, 'enemy--can-interact': canInteract, attached}"
+              v-tooltip="sourceTooltip"
+              :class="{ dragging, 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
               :data-is-spirit="hasSpiritAura || undefined"
               :data-fight="fight"
@@ -305,7 +318,8 @@ function onDrop(event: DragEvent) {
               @dragstart="startDrag($event, enemy)"
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
-              :class="{ 'enemy--can-interact': canInteract, attached}"
+              v-tooltip="sourceTooltip"
+              :class="{ 'enemy--can-interact': canInteract, attached, 'source-highlight': isHighlighted }"
               :data-id="id"
               :data-is-spirit="hasSpiritAura || undefined"
               :data-image-id="imageId"
@@ -455,6 +469,10 @@ function onDrop(event: DragEvent) {
   border: 2px solid var(--select);
   border-radius: 5px;
   cursor: pointer;
+}
+
+img.card.source-highlight {
+  box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
 }
 
 .enemy {

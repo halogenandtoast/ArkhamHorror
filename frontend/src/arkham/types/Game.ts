@@ -141,6 +141,8 @@ export function choices(game: Game, playerId: string): Message[] {
         return [{tag: MessageType.LABEL, label: q.label }, ...q.choices];
       case 'QuestionLabel':
         return toContents(q.question);
+      case 'QuestionWithSource':
+        return toContents(q.question);
       case 'Read':
         return q.readChoices.contents;
       case 'PickSupplies':
@@ -155,23 +157,31 @@ export function choices(game: Game, playerId: string): Message[] {
   return toContents(question)
 }
 
-export function choicesSource(game: Game, investigatorId: string): Source | null {
-  if (!game.question[investigatorId]) {
-    return null;
+// Returns the Source that prompted the player's active question, if any. The
+// engine wraps such questions in `QuestionWithSource` so the frontend can
+// highlight the source entity on the board while the question is pending.
+export function choicesSource(game: Game, playerId: string): Source | null {
+  let question: Question | undefined = game.question[playerId];
+
+  while (question) {
+    if (question.tag === 'QuestionWithSource') return question.source;
+    question = 'question' in question ? question.question : undefined;
   }
 
-  const question = game.question[investigatorId];
+  return null;
+}
 
-  switch (question.tag) {
-    case 'ChooseOne':
-      return null;
-    case 'ChooseOneAtATime':
-      return null;
-    case 'ChooseOneAtATimeWithAuto':
-      return null;
-    default:
-      return null;
+// Returns the optional tooltip carried by the active `QuestionWithSource`, shown
+// on the highlighted source entity.
+export function choicesTooltip(game: Game, playerId: string): string | null {
+  let question: Question | undefined = game.question[playerId];
+
+  while (question) {
+    if (question.tag === 'QuestionWithSource') return question.tooltip;
+    question = 'question' in question ? question.question : undefined;
   }
+
+  return null;
 }
 
 type Mode = {

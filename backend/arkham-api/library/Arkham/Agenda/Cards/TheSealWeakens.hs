@@ -36,7 +36,6 @@ instance RunMessage TheSealWeakens where
       search iid attrs iid [fromDeck] (basic "Tekeli-li") (defer attrs IsNotDraw)
       pure a
     SearchFound iid target@(isTarget attrs -> True) deck cards | notNull cards -> do
-      for_ cards obtainCard
       cards' <- shuffle cards
       doStep 1 $ SearchFound iid target deck cards'
       doStep 2 msg

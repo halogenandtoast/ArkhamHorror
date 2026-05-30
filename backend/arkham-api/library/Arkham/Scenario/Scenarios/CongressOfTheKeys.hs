@@ -166,7 +166,7 @@ instance RunMessage CongressOfTheKeys where
       eceDoesNotTrustTheCell <- getHasRecord EceDoesNotTrustTheCell
       youHaventSeenTheLastOfAmaranth <- getHasRecord YouHaventSeenTheLastOfAmaranth
       theLoversAreReunited <- getHasRecord TheLoversAreReunited
-      amaranthHasLeftTheCoterie <- getHasRecord TheRedCoterieWasDestroyedFromWithin
+      amaranthHasLeftTheCoterie <- getHasRecord AmaranthHasLeftTheCoterie
       youHaventSeenTheLastOfThorne <- getHasRecord YouHaventSeenTheLastOfThorne
       theCellMadeADealWithThorne <- getHasRecord TheCellMadeADealWithThorne
       thorneDisappeared <- getHasRecord ThorneDisappeared
@@ -200,6 +200,7 @@ instance RunMessage CongressOfTheKeys where
           | theDogsAreAtWar = 0
           | otherwise = 1
         yea1
+          | theCellAidedTheKnight = 0
           | theCellFailedToFendOffTheBeast = 1
           | youHaventSeenTheLastOfTheClaretKnight = 2
           | theDogsAreAtWar = 0

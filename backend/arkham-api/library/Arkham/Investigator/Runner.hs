@@ -1110,10 +1110,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
            | investigation.payCost
            ]
         <> [ Will (CheckAttackOfOpportunity investigatorId False Nothing)
-           | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
+           | investigation.payCost
+           , ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
            ]
         <> [ CheckAttackOfOpportunity investigatorId False Nothing
-           | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
+           | investigation.payCost
+           , ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
            ]
         <> [ toMessage $ investigation {investigateIsAction = False}
            , afterWindowMsg

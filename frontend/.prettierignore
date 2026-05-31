@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+.claude
+harness
+image-manifest.json
+package-lock.json

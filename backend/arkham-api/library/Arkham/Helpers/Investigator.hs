@@ -32,6 +32,8 @@ import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned, matchT
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message (
   Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly),
+  pattern HealDamage,
+  pattern HealHorror,
   pattern InvestigatorMulligan,
  )
 import Arkham.Name
@@ -645,32 +647,50 @@ setMeta meta attrs = attrs & metaL .~ toJSON meta
 healAdditional
   :: (Sourceable source, HasQueue Message m) => source -> DamageType -> [Window] -> Int -> m ()
 healAdditional (toSource -> source) dType ws' additional = do
-  -- this is meant to heal additional so we'd directly heal one more
-  -- (without triggering a window), and then overwrite the original window
-  -- to heal for one more
+  -- This is meant to make the triggering healing effect heal additional damage/horror.
+  -- For a `when` window, the original healing may not be in the queue yet, so apply
+  -- the additional healing directly without opening another healing window.
   let
     updateHealed = \case
       Window timing (Healed dType' t s n) mBatchId
         | dType == dType' ->
             Window timing (Healed dType' t s (n + additional)) mBatchId
       other -> other
-    getHealedTarget = \case
-      (windowType -> Healed dType' t _ _) | dType == dType' -> Just t
+    getHealed = \case
+      Window timing (Healed dType' t s _) _ | dType == dType' -> Just (timing, t, s)
       _ -> Nothing
-    healedTarget = fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealedTarget) ws'
+    (healedTiming, healedTarget, healedSource) =
+      fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealed) ws'
+    updateHealingMessage = \case
+      Do (HealDamage t s n) | dType == DamageType && t == healedTarget && s == healedSource ->
+        Do $ HealDamage t s (n + additional)
+      HealDamage t s n | dType == DamageType && t == healedTarget && s == healedSource ->
+        HealDamage t s (n + additional)
+      Do (HealHorror t s n) | dType == HorrorType && t == healedTarget && s == healedSource ->
+        Do $ HealHorror t s (n + additional)
+      HealHorror t s n | dType == HorrorType && t == healedTarget && s == healedSource ->
+        HealHorror t s (n + additional)
+      other -> other
 
-  replaceMessageMatching
-    \case
-      CheckWindows ws -> ws == ws'
-      Do (CheckWindows ws) -> ws == ws'
-      _ -> False
-    \case
-      CheckWindows ws -> [CheckWindows $ map updateHealed ws]
-      Do (CheckWindows ws) -> [Do (CheckWindows $ map updateHealed ws)]
-      _ -> error "invalid window"
-  case dType of
-    HorrorType -> push $ HealHorrorDirectly healedTarget source 1
-    DamageType -> push $ HealDamageDirectly healedTarget source 1
+  if healedTiming == #when
+    then do
+      mapQueue updateHealingMessage
+      case dType of
+        HorrorType -> push $ HealHorrorDirectly healedTarget source additional
+        DamageType -> push $ HealDamageDirectly healedTarget source additional
+    else do
+      replaceMessageMatching
+        \case
+          CheckWindows ws -> ws == ws'
+          Do (CheckWindows ws) -> ws == ws'
+          _ -> False
+        \case
+          CheckWindows ws -> [CheckWindows $ map updateHealed ws]
+          Do (CheckWindows ws) -> [Do (CheckWindows $ map updateHealed ws)]
+          _ -> error "invalid window"
+      case dType of
+        HorrorType -> push $ HealHorrorDirectly healedTarget source additional
+        DamageType -> push $ HealDamageDirectly healedTarget source additional
 
 getAsIfInHandCardsNotForPlay :: HasGame m => InvestigatorId -> m [Card]
 getAsIfInHandCardsNotForPlay iid = do

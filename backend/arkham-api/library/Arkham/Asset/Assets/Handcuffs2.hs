@@ -29,9 +29,7 @@ instance HasModifiersFor Handcuffs2 where
 instance HasAbilities Handcuffs2 where
   getAbilities (Handcuffs2 a) = case assetPlacement a of
     AttachedToEnemy _ -> []
-    _ ->
-      [ controlledAbility a 1 (exists $ CanEvadeEnemy (toSource a) <> EnemyWithTrait Humanoid) evadeAction_
-      ]
+    _ -> [controlled a 1 (exists $ CanEvadeEnemy (toSource a) <> #humanoid) (evadeActionWith_ #combat)]
 
 instance RunMessage Handcuffs2 where
   runMessage msg a@(Handcuffs2 attrs) = case msg of

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ThievesKit (thievesKit, ThievesKit (..)) where
+module Arkham.Asset.Assets.ThievesKit (thievesKit) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -16,7 +16,10 @@ thievesKit = asset ThievesKit Cards.thievesKit
 
 instance HasAbilities ThievesKit where
   getAbilities (ThievesKit a) =
-    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
+    [ controlled a 1 (exists $ YourLocation <> InvestigatableLocation)
+        $ investigateActionWithAlternate #agility
+        $ assetUseCost a Supply 1
+    ]
 
 instance RunMessage ThievesKit where
   runMessage msg a@(ThievesKit attrs) = runQueueT $ case msg of

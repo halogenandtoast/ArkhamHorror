@@ -19,7 +19,10 @@ secondSight = asset SecondSight Cards.secondSight
 
 instance HasAbilities SecondSight where
   getAbilities (SecondSight a) =
-    [skillTestAbility $ controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith_ #willpower]
+    [ skillTestAbility
+        $ controlled a 1 (exists $ YourLocation <> InvestigatableLocation)
+        $ investigateActionWith_ #willpower
+    ]
 
 instance RunMessage SecondSight where
   runMessage msg a@(SecondSight attrs) = runQueueT $ case msg of

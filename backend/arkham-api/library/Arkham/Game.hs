@@ -1232,10 +1232,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
+    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i ->
       gameValueMatches
-        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t)
+        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i)
         gameValueMatcher
     InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
@@ -1257,8 +1256,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       foolishness <- maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> flip runMatchesM as $ \i -> do
-      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
-      onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
+      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1431,8 +1429,18 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           let
             healGuardMatcher =
               case damageType of
-                HorrorType -> InvestigatorWithAnyHorror <> InvestigatorWithoutModifier CannotHaveHorrorHealed
-                DamageType -> InvestigatorWithAnyDamage <> InvestigatorWithoutModifier CannotHaveDamageHealed
+                HorrorType ->
+                  oneOf
+                    [ InvestigatorWithAnyHorror
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfHorror)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveHorrorHealed
+                DamageType ->
+                  oneOf
+                    [ InvestigatorWithAnyDamage
+                    , HasMatchingTreachery (TreacheryWithModifier IsPointOfDamage)
+                    ]
+                    <> InvestigatorWithoutModifier CannotHaveDamageHealed
           let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
           as & runMatchesM \i -> do
             case damageType of

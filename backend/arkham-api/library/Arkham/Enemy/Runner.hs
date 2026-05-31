@@ -402,11 +402,10 @@ instance RunMessage EnemyAttrs where
                   canSpawn <- canSpawnInLocation enemyId lid
                   if canSpawn
                     then do
-                      afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
                       pushAll $ EnemyEntered enemyId lid
                         : [ Will (EnemyEngageInvestigator enemyId iid) | not (spawnDetailsUnengaged details) || forcedEngagement
                           ]
-                          <> [afterSpawns, EnemySpawned details]
+                          <> [EnemySpawned details]
                       case swarms of
                         [] -> pure ()
                         [x] -> do
@@ -440,7 +439,6 @@ instance RunMessage EnemyAttrs where
         SpawnAtLocation lid -> do
           locations' <- select $ IncludeEmptySpace Anywhere
           canSpawn <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
-          afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
           if lid `notElem` locations' || not canSpawn
             then push (toDiscard GameSource eid)
             else do
@@ -456,7 +454,7 @@ instance RunMessage EnemyAttrs where
                 investigatorIds <- select $ investigatorAt lid
                 pushAll $ EnemyEntered eid lid
                   : [Will (EnemyEngageInvestigator eid iid) | iid <- investigatorIds]
-                    <> [afterSpawns, EnemySpawned details]
+                    <> [EnemySpawned details]
 
               if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
@@ -472,7 +470,7 @@ instance RunMessage EnemyAttrs where
                       pushAll $ EnemyEntered eid lid
                         : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
                           <> [EnemyCheckEngagement eid | not atSameLocation && not (spawnDetailsUnengaged details)]
-                          <> [afterSpawns, EnemySpawned details]
+                          <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer
@@ -483,15 +481,15 @@ instance RunMessage EnemyAttrs where
                             Just iid | iid `elem` allIds -> [iid]
                             _ -> allIds
                       case validInvestigatorIds of
-                        [] -> pushAll [EnemyEntered eid lid, afterSpawns, EnemySpawned details]
+                        [] -> pushAll [EnemyEntered eid lid, EnemySpawned details]
                         [iid] -> do
                           pushAll $ EnemyEntered eid lid
                             : [Will (EnemyEngageInvestigator eid iid) | not onlyPrey || iid `elem` preyIds]
-                              <> [afterSpawns, EnemySpawned details]
+                              <> [EnemySpawned details]
                         iids -> do
                           let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
                           case scoped of
-                            [] -> pushAll [EnemyEntered eid lid, afterSpawns, EnemySpawned details]
+                            [] -> pushAll [EnemyEntered eid lid, EnemySpawned details]
                             choices ->
                               push
                                 $ chooseOne lead
@@ -499,14 +497,13 @@ instance RunMessage EnemyAttrs where
                                       iid
                                       [ EnemyEntered eid lid
                                       , Will (EnemyEngageInvestigator eid iid)
-                                      , afterSpawns
                                       , EnemySpawned details
                                       ]
                                   | iid <- choices
                                   ]
                 else
                   unless (#massive `elem` keywords)
-                    $ pushAll [EnemyEntered eid lid, afterSpawns, EnemySpawned details]
+                    $ pushAll [EnemyEntered eid lid, EnemySpawned details]
         SpawnPlaced placement -> do
           placementLocation placement >>= \case
             Nothing -> push $ PlaceEnemy enemyId placement
@@ -567,15 +564,12 @@ instance RunMessage EnemyAttrs where
           swarm <- select $ SwarmOf eid
           let entries = eid : swarm
           iidsHere <- select $ investigatorAt lid
-          afterWindows <-
-            traverse
-              (\eid' -> checkWindows [mkAfter (Window.EnemyEnters eid' lid)])
-              entries
-          yourLocationAfters <-
-            traverse
-              (\(iid', eid') -> checkWindows [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid)])
-              [(iid', eid') | iid' <- iidsHere, eid' <- entries]
-          pushAll (afterWindows <> yourLocationAfters)
+          let spawnWindows = [mkAfter (Window.EnemySpawns eid lid) | isJust enemySpawnDetails]
+          afterWindows <- checkWindows $
+            spawnWindows
+              <> [mkAfter (Window.EnemyEnters eid' lid) | eid' <- entries]
+              <> [mkAfter (Window.EnemyEntersYourLocation iid' eid' lid) | iid' <- iidsHere, eid' <- entries]
+          push afterWindows
       pure a
     EnemyEnteredFollowing movingIid eid lid | eid == enemyId -> do
       -- Variant of EnemyEntered for an engaged enemy following the moving

@@ -738,18 +738,20 @@ payCost msg c iid skipAdditionalCosts cost = do
           withPayment $ DirectDamagePayment x <> DirectHorrorPayment y
         _ -> error "exactly one investigator expected for direct damage"
     InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      let damageStrategy' = if damageStrategy == DamageAny then DamageAnyDeferred else damageStrategy
       investigators <- select investigatorMatcher
       push
         $ chooseOrRunOne
           player
-          [ targetLabel iid' [InvestigatorAssignDamage iid' source' damageStrategy x 0]
+          [ targetLabel iid' [InvestigatorAssignDamage iid' source' damageStrategy' x 0]
           | iid' <- investigators
           ]
       withPayment $ InvestigatorDamagePayment x
     EachInvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
+      let damageStrategy' = if damageStrategy == DamageAny then DamageAnyDeferred else damageStrategy
       investigators <- select investigatorMatcher
       for_ investigators $ \iid' ->
-        push $ InvestigatorAssignDamage iid' source' damageStrategy x 0
+        push $ InvestigatorAssignDamage iid' source' damageStrategy' x 0
       withPayment $ InvestigatorDamagePayment (x * length investigators)
     FieldResourceCost (FieldCost mtchr fld) -> do
       ns <- nub <$> selectFields fld mtchr

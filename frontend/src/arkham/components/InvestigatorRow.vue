@@ -6,6 +6,7 @@ import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
 import {imgsrc} from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
+import { asCardCode } from '@/arkham/types/Card';
 import type { CardContents } from '@/arkham/types/Card';
 
 export interface Props {
@@ -41,18 +42,41 @@ const deck = computed(() => {
   const deck = props.game.campaign?.decks[props.investigator.id] || props.game.campaign?.meta?.otherCampaignAttrs?.decks[props.investigator.id]
 
   if (!deck) return null
-  const slots = deck.reduce((acc, { cardCode }) => {
+  const slots = (deck as CardContents[]).reduce((acc, { cardCode }) => {
       acc[cardCode] = (acc[cardCode] ?? 0) + 1;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
+  const attachmentMeta = (deck as CardContents[]).reduce<Record<string, string>>((acc, card) => {
+    const attachments = card.meta?.attachments
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      acc[`attachments_${card.cardCode.replace(/^c/, '')}`] = attachments.map((code) => String(code).replace(/^c/, '')).join(',')
+    }
+
+    return acc
+  }, {})
+
+  Object.entries(props.investigator.settings.perCardSettings).forEach(([cardCode, settings]) => {
+    if (settings.cardAttachments && settings.cardAttachments.length > 0) {
+      attachmentMeta[`attachments_${cardCode.replace(/^c/, '')}`] = settings.cardAttachments.map((code) => code.replace(/^c/, '')).join(',')
+    }
+  })
+
+  for (const asset of Object.values(props.game.assets)) {
+    if (asset.cardCode !== 'c09077' || asset.owner !== props.investigator.id || !asset.marketDeck?.length) continue
+    attachmentMeta.attachments_09077 = asset.marketDeck.map((card) => asCardCode(card).replace(/^c/, '')).join(',')
+  }
+
+  for (const cardCode of Object.keys(attachmentMeta)) {
+    const slotCode = `c${cardCode.replace(/^attachments_/, '')}`
+    slots[slotCode] = slots[slotCode] ?? 1
+  }
   return {
     id: props.investigator.id,
     name: "",
-    url: props.investigator.deckUrl,
+    url: props.investigator.deckUrl ?? null,
     list: {
       investigator_code: props.investigator.id,
-      taboo_id: null,
-      meta: null,
+      meta: Object.keys(attachmentMeta).length > 0 ? JSON.stringify(attachmentMeta) : undefined,
       slots
     }
   }

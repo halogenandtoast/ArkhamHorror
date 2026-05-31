@@ -89,6 +89,7 @@ export type CardContents = {
   art?: string
   customizations?: Customization[]
   mutated?: string
+  meta?: Record<string, any>
 }
 
 export type VengeanceCard = {
@@ -117,6 +118,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     art: v2Optional(JsonDecoder.string()),
     customizations: v2Optional(customizationsDecoder),
     mutated: v2Optional(JsonDecoder.string()),
+    meta: v2Optional(JsonDecoder.succeed()),
   },
   'CardContents',
 );

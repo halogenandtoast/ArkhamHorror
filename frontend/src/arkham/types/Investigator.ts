@@ -101,6 +101,8 @@ type CardSettings = {
   };
   perCardSettings: Record<string, {
     cardIgnoreUnrelatedSkillTestTriggers: boolean;
+    cardIgnoreDuringSkillTests?: boolean;
+    cardAttachments?: string[];
   }>;
 }
 
@@ -110,6 +112,8 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
   }, 'GlobalSettings'),
   perCardSettings: JsonDecoder.record(JsonDecoder.object({
     cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
+    cardIgnoreDuringSkillTests: v2Optional(JsonDecoder.boolean()),
+    cardAttachments: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');
 

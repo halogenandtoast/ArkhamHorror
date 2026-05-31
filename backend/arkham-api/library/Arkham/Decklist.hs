@@ -65,7 +65,8 @@ loadDecklistCards f decklist =
   fold <$> for (Map.toList $ f decklist) \(cardCode, count') ->
     replicateM count' do
       genPlayerCardWith (lookupPlayerCardDef cardCode)
-        $ applyCustomizations decklist
+        $ applyDecklistCardMeta decklist
+        . applyCustomizations decklist
         . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
         . setTaboo (fromTabooId $ taboo_id decklist)
 
@@ -82,10 +83,16 @@ loadExtraDeck decklist = do
     Nothing -> loadDecklistCards sideSlots decklist
     Just codes -> do
       let convert =
-            applyCustomizations decklist
+            applyDecklistCardMeta decklist
+              . applyCustomizations decklist
               . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
               . setTaboo (fromTabooId $ taboo_id decklist)
       traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
+
+applyDecklistCardMeta :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
+applyDecklistCardMeta decklist pCard = case Map.lookup pCard.cardCode (decklistAttachments decklist) of
+  Nothing -> pCard
+  Just attachments -> pCard {pcMeta = Just $ Map.singleton "attachments" attachments}
 
 -- things we can choose: cards, traits, skills
 applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard

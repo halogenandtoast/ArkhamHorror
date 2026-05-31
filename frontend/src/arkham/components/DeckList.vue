@@ -7,6 +7,7 @@ import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import sets from '@/arkham/data/sets.json'
+import CardImage from '@/arkham/components/CardImage.vue'
 
 const props = withDefaults(defineProps<{ deck: Deck; embedded?: boolean }>(), { embedded: false })
 const deckRef = ref(null)
@@ -34,34 +35,70 @@ const enum View {
 const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
 const view = ref(View.List)
 
+function localizeCard(result: Arkham.CardDef | undefined): Arkham.CardDef | undefined {
+  if (!result) return undefined
+
+  const language = localStorage.getItem('language') || 'en'
+  if (language === 'en') return result
+
+  const match: ArkhamDBCard | null = store.getDbCard(result.art)
+  if (!match) return result
+
+  const localized = { ...result, name: { ...result.name }, classSymbols: [...result.classSymbols], cardTraits: [...result.cardTraits] }
+  localized.name.title = match.name
+  if (match.subname) localized.name.subtitle = match.subname
+  if (match.faction_name && localized.classSymbols.length > 0) localized.classSymbols[0] = match.faction_name
+  if (match.faction2_name && localized.classSymbols.length > 1) {
+    localized.classSymbols[1] = match.faction2_name
+    if (match.faction3_name && localized.classSymbols.length > 2) localized.classSymbols[2] = match.faction3_name
+  }
+
+  localized.cardType = match.type_name
+  if (match.traits) localized.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
+
+  return localized
+}
+
+function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
+  if (code === "c01000") {
+    return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {} }
+  }
+
+  const normalized = code.replace(/^c/, '')
+  return localizeCard(cards.value.find((c) => c.art === normalized))
+}
+
 const allCards = computed(() => {
   return Object.entries(props.deck.list.slots).flatMap(([key, value]) => {
-    if (key === "c01000") {
-      return Array(value).fill({ cardCode: key, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null })
-    }
-
-    const result: Arkham.CardDef | undefined = cards.value.find((c) => `c${c.art}` === key)
-    const language = localStorage.getItem('language') || 'en'
-    if (language === 'en') return Array(value).fill(result)
-
-    if (!result) return
-    const match: ArkhamDBCard | null = store.getDbCard(result.art)
-    if (!match) return Array(value).fill(result)
-
-    result.name.title = match.name
-    if (match.subname) result.name.subtitle = match.subname
-    if (match.faction_name && result.classSymbols.length > 0) result.classSymbols[0] = match.faction_name
-    if (match.faction2_name && result.classSymbols.length > 1) {
-      result.classSymbols[1] = match.faction2_name
-      if (match.faction3_name && result.classSymbols.length > 2) result.classSymbols[2] = match.faction3_name
-    }
-
-    result.cardType = match.type_name
-    if (match.traits) result.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
-
+    const result = findCardByDeckCode(key)
+    if (!result) return []
     return Array(value).fill(result)
   })
 })
+
+const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
+  if (!props.deck.list.meta) return {}
+
+  try {
+    const meta = JSON.parse(props.deck.list.meta) as Record<string, unknown>
+    return Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
+      const match = key.match(/^attachments_(\d+)$/)
+      if (!match || typeof value !== 'string') return acc
+
+      const attachedCards = value
+        .split(',')
+        .map((code) => findCardByDeckCode(code.trim()))
+        .filter((card): card is Arkham.CardDef => !!card)
+
+      if (attachedCards.length > 0) acc[match[1]] = attachedCards
+      return acc
+    }, {})
+  } catch (_e) {
+    return {}
+  }
+})
+
+const attachedCards = (card: Arkham.CardDef) => attachments.value[card.art] ?? []
 
 const cardName = (card: Arkham.CardDef) => {
   const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
@@ -201,24 +238,70 @@ watch(deckRef, (el) => {
         </template>
       </header>
       <div class="cards" v-if="view == View.Image">
-        <img class="card" v-for="(card, idx) in allCards" :key="idx" :src="image(card)" />
+        <div
+          v-for="(card, idx) in allCards"
+          :key="idx"
+          class="card-tile"
+          :class="{ 'has-attachments': attachedCards(card).length > 0 }"
+        >
+          <img class="card" :src="image(card)" />
+          <div v-if="attachedCards(card).length > 0" class="attachments-panel">
+            <div class="attachments-title"><font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}</div>
+            <div class="attachment-grid">
+              <a
+                v-for="(attached, attachedIdx) in attachedCards(card)"
+                :key="`${attached.art}-${attachedIdx}`"
+                class="attachment-card"
+                target="_blank"
+                :href="`${localizeArkhamDBBaseUrl()}/card/${attached.art}`"
+                :title="cardName(attached)"
+              >
+                <CardImage :card="attached" />
+                <span>{{ cardName(attached) }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
       <table class="card-table" v-if="view == View.List">
         <thead>
           <tr><th>{{ $t('cardsList.name') }}</th><th>{{ $t('cardsList.class') }}</th><th>{{ $t('cardsList.cost') }}</th><th>{{ $t('cardsList.type') }}</th><th>{{ $t('cardsList.icons') }}</th><th>{{ $t('cardsList.traits') }}</th><th>{{ $t('cardsList.set') }}</th></tr>
         </thead>
         <tbody>
-          <tr v-for="(card, idx) in allCards" :key="idx">
-            <td>{{cardName(card)}}{{levelText(card)}}</td>
-            <td>{{card.classSymbols.join(', ')}}</td>
-            <td>{{cardCost(card)}}</td>
-            <td>{{cardType(card)}}</td>
-            <td>
-              <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]" ></i>
-            </td>
-            <td>{{cardTraits(card)}}</td>
-            <td>{{cardSetText(card)}}</td>
-          </tr>
+          <template v-for="(card, idx) in allCards" :key="idx">
+            <tr>
+              <td>{{cardName(card)}}{{levelText(card)}}</td>
+              <td>{{card.classSymbols.join(', ')}}</td>
+              <td>{{cardCost(card)}}</td>
+              <td>{{cardType(card)}}</td>
+              <td>
+                <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]" ></i>
+              </td>
+              <td>{{cardTraits(card)}}</td>
+              <td>{{cardSetText(card)}}</td>
+            </tr>
+            <tr v-if="attachedCards(card).length > 0" class="attachments-row">
+              <td colspan="7">
+                <div class="attachments-list">
+                  <div class="attachments-heading">
+                    <font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}
+                  </div>
+                  <div class="attachment-pills">
+                    <a
+                      v-for="(attached, attachedIdx) in attachedCards(card)"
+                      :key="`${attached.art}-${attachedIdx}`"
+                      class="attachment-pill"
+                      target="_blank"
+                      :href="`${localizeArkhamDBBaseUrl()}/card/${attached.art}`"
+                    >
+                      <span class="attachment-count">{{ attachedIdx + 1 }}</span>
+                      {{ cardName(attached) }}{{ levelText(attached) }}
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -363,6 +446,69 @@ watch(deckRef, (el) => {
   }
 }
 
+.attachments-row td {
+  padding-top: 0 !important;
+  padding-bottom: 10px !important;
+  background: rgba(200, 169, 110, 0.035);
+}
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  padding: 9px 10px;
+  background: linear-gradient(135deg, rgba(200, 169, 110, 0.14), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(200, 169, 110, 0.24);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.attachments-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #c8a96e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.attachment-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attachment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  color: #f0e2c0;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { background: rgba(200, 169, 110, 0.16); opacity: 1; }
+}
+
+.attachment-count {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  color: #1d170f;
+  background: #c8a96e;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
 /* ── Image view ──────────────────────────────────────────── */
 
 .card {
@@ -377,6 +523,81 @@ watch(deckRef, (el) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   padding: 10px;
+}
+
+.card-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: start;
+}
+
+.has-attachments {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  align-items: start;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(200, 169, 110, 0.12), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(200, 169, 110, 0.24);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attachments-panel {
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+}
+
+.attachments-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  color: #c8a96e;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.attachment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.attachment-card {
+  min-width: 0;
+  color: #f0e2c0;
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+
+  &:deep(.card-container) {
+    width: 100%;
+    max-width: unset;
+    margin: 0;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  span {
+    display: block;
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover { opacity: 0.82; }
 }
 
 /* ── Skill icons ─────────────────────────────────────────── */

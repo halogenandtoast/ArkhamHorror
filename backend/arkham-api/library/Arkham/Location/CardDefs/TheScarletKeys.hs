@@ -765,7 +765,7 @@ wayangKulitTheater =
     $ location
       "09672"
       "Wayang Kulit Theater"
-      [KualaLumpur]
+      [KualaLumpur, Haunted]
       Moon
       [Diamond]
       ShadesOfSuffering
@@ -776,7 +776,7 @@ tinMine =
     $ location
       "09673"
       "Tin Mine"
-      [KualaLumpur]
+      [KualaLumpur, Haunted]
       Star
       [Diamond]
       ShadesOfSuffering

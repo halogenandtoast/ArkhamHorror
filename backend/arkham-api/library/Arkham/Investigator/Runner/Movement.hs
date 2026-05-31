@@ -491,18 +491,30 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
           partitionM
             ( \eid -> do
                 keywords <- getModifiedKeywords eid
+                mods <- getModifiers eid
                 canEnter <- canEnterLocation eid lid
-                pure (#massive `notElem` keywords && canEnter)
+                pure
+                  ( #massive `notElem` keywords
+                      && canEnter
+                      && CannotMove `notElem` mods
+                      && CannotBeMoved `notElem` mods
+                  )
             )
             engagedEnemies
 
         pushAll
-          $ [WhenWillEnterLocation iid lid]
+          -- Disengage the left-behind enemies BEFORE the investigator enters the
+          -- new location. DisengageEnemy re-homes an enemy from a threat area to
+          -- the engaged investigator's *current* location, so it must run while
+          -- the investigator is still at the location being left — otherwise a
+          -- non-following enemy (e.g. a Geist held by Ghost Light's CannotMove)
+          -- would be dropped at the destination and immediately re-engaged.
+          $ [DisengageEnemy iid eid | eid <- disengagers]
+          <> [WhenWillEnterLocation iid lid]
           <> [ Simultaneously
                 $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid]
                 : [EnemyEnteredFollowing iid eid lid | eid <- followers]
              ]
-          <> [DisengageEnemy iid eid | eid <- disengagers]
           <> [After (MoveTo movement)]
 
         when (movement.means /= Place) do

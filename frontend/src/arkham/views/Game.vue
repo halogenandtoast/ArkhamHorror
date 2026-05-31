@@ -667,11 +667,27 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === ' ') {
+  if (event.key === ' ' || event.code === 'Space') {
+    event.preventDefault()
+
     const skipTriggers = choices.value.findIndex(
       (c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON,
     )
-    if (skipTriggers !== -1) choose(skipTriggers)
+    if (skipTriggers !== -1) {
+      choose(skipTriggers)
+      return
+    }
+
+    const doneCommitting = choices.value.findIndex((c) => {
+      if (c.tag === Message.MessageType.START_SKILL_TEST_BUTTON) return true
+      if (c.tag !== Message.MessageType.LABEL && c.tag !== Message.MessageType.DONE) return false
+      return c.label === '$label.doneCommitting' || c.label.endsWith('doneCommitting')
+    })
+    if (doneCommitting !== -1) {
+      choose(doneCommitting)
+      return
+    }
+
     const validIndices = choices.value
       .map((c, i) =>
         ![Message.MessageType.INVALID_LABEL, Message.MessageType.INFO].includes(c.tag) ? i : -1,

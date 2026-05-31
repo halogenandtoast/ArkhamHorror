@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
-import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message, type TargetLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/arkham/cardImages';
@@ -53,7 +53,7 @@ const questionChoices = computed(() => {
   const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
     if (tag === MessageType.ABILITY_LABEL) return true
-    if (tag === MessageType.TARGET_LABEL) return true
+    if (tag === MessageType.TARGET_LABEL) return !targetLabelHandledElsewhere(choice)
     if (tag === MessageType.TOOLTIP_LABEL) return true
     if (tag === MessageType.LABEL) return true
     if (tag === MessageType.INFO) return true
@@ -100,6 +100,17 @@ const focusedCards = computed(() => {
   return props.game.focusedCards
 })
 
+const visibleCardIds = computed(() => new Set([
+  ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
+  ...focusedCards.value.map((card) => toCardContents(card).id),
+  ...searchedCards.value.flatMap(([, cards]) => cards.map((card) => toCardContents(card).id)),
+]))
+
+function targetLabelHandledElsewhere(choice: TargetLabel) {
+  return choice.target.tag === 'CardIdTarget'
+    && typeof choice.target.contents === 'string'
+    && visibleCardIds.value.has(choice.target.contents)
+}
 
 const isRead = computed(() => question.value?.tag === QuestionType.READ)
 

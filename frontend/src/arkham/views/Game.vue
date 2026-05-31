@@ -825,6 +825,12 @@ const submittingBug = ref(false)
 const bugTitle = ref('')
 const bugDescription = ref('')
 
+function fileBugFromError() {
+  bugDescription.value = error.value ?? ''
+  error.value = null
+  filingBug.value = true
+}
+
 async function fileBug() {
   submittingBug.value = true
   filingBug.value = false
@@ -1047,13 +1053,7 @@ onUnmounted(() => {
       <p class="error-message">{{ error }}</p>
       <p>{{ $t('errorContent') }}</p>
       <div class="buttons">
-        <button
-          @click="
-            bugDescription = error ?? ''
-            error = null
-            filingBug = true
-          "
-        >
+        <button @click="fileBugFromError">
           <ExclamationTriangleIcon aria-hidden="true" /> {{ $t('fileBug') }}
         </button>
         <button @click="error = null">{{ $t('close') }}</button>

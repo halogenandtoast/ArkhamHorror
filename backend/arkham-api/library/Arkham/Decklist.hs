@@ -146,6 +146,6 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
 decklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
 decklistAttachments decklist = fromMaybe mempty do
   meta' <- meta decklist
-  ArkhamDBDecklistMeta {attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
-  codes <- T.splitOn "," <$> attachments_11080
-  pure $ Map.fromList [(CardCode "11080", map CardCode codes)]
+  ArkhamDBDecklistMeta {attachments_09077, attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
+  let parseAttachments cardCode = maybe [] (\codes -> [(CardCode cardCode, map CardCode $ filter (/= "") $ T.splitOn "," codes)])
+  pure $ Map.fromList $ parseAttachments "09077" attachments_09077 <> parseAttachments "11080" attachments_11080

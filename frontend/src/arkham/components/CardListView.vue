@@ -5,7 +5,9 @@ import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import sets from '@/arkham/data/sets.json'
 
-defineProps<{ cards: Arkham.CardDef[] }>()
+const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]> }>(), {
+  attachments: () => ({}),
+})
 
 const store = useDbCardStore()
 
@@ -79,6 +81,8 @@ const cardSetText = (card: Arkham.CardDef) => {
   if (setName) return `${setName} ${setNumber % 500}`
   return "Unknown"
 }
+
+const attachedCards = (card: Arkham.CardDef) => props.attachments[card.art] ?? []
 </script>
 
 <template>
@@ -96,24 +100,47 @@ const cardSetText = (card: Arkham.CardDef) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(card, idx) in cards" :key="idx">
-          <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a></td>
-          <td>
-            <span class="class-text">
-              <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
-            </span>
-            <span class="class-icons">
-              <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>
-            </span>
-          </td>
-          <td>{{ cardCost(card) }}</td>
-          <td>{{ cardType(card) }}</td>
-          <td>
-            <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
-          </td>
-          <td class="traits-col">{{ cardTraits(card) }}</td>
-          <td class="set-col">{{ cardSetText(card) }}</td>
-        </tr>
+        <template v-for="(card, idx) in cards" :key="idx">
+          <tr>
+            <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a></td>
+            <td>
+              <span class="class-text">
+                <span v-for="(sym, i) in card.classSymbols" :key="sym" :class="`class-sym ${sym.toLowerCase()}-sym`">{{ sym }}{{ i < card.classSymbols.length - 1 ? ', ' : '' }}</span>
+              </span>
+              <span class="class-icons">
+                <span v-for="sym in card.classSymbols" :key="sym" :class="[`${sym.toLowerCase()}-icon`, `${sym.toLowerCase()}-sym`]"></span>
+              </span>
+            </td>
+            <td>{{ cardCost(card) }}</td>
+            <td>{{ cardType(card) }}</td>
+            <td>
+              <i v-for="(icon, index) in cardIcons(card)" :key="index" :class="[icon, `${icon}-icon`]"></i>
+            </td>
+            <td class="traits-col">{{ cardTraits(card) }}</td>
+            <td class="set-col">{{ cardSetText(card) }}</td>
+          </tr>
+          <tr v-if="attachedCards(card).length > 0" class="attachments-row">
+            <td colspan="7">
+              <div class="attachments-list">
+                <div class="attachments-heading">
+                  <font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}
+                </div>
+                <div class="attachment-pills">
+                  <a
+                    v-for="(attached, attachedIdx) in attachedCards(card)"
+                    :key="`${attached.art}-${attachedIdx}`"
+                    class="attachment-pill"
+                    target="_blank"
+                    :href="`${localizeArkhamDBBaseUrl()}/card/${attached.art}`"
+                  >
+                    <span class="attachment-count">{{ attachedIdx + 1 }}</span>
+                    {{ cardName(attached) }}{{ levelText(attached) }}
+                  </a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -195,6 +222,69 @@ a {
   text-decoration: none;
   font-weight: 500;
   &:hover { opacity: 0.8; }
+}
+
+.attachments-row td {
+  padding-top: 0;
+  padding-bottom: 10px;
+  background: rgba(200, 169, 110, 0.035);
+}
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  padding: 9px 10px;
+  background: linear-gradient(135deg, rgba(200, 169, 110, 0.14), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(200, 169, 110, 0.24);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.attachments-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 3px;
+  color: #c8a96e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.attachment-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attachment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  color: #f0e2c0;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  &:hover { background: rgba(200, 169, 110, 0.16); opacity: 1; }
+}
+
+.attachment-count {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  color: #1d170f;
+  background: #c8a96e;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  font-weight: 900;
 }
 
 .class-icons {

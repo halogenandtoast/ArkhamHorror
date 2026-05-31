@@ -21,6 +21,7 @@ data ArkhamDBDecklist = ArkhamDBDecklist
 
 data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
   { alternate_front :: Maybe InvestigatorId
+  , attachments_09077 :: Maybe Text
   , attachments_11080 :: Maybe Text
   }
   deriving stock (Generic, Show)

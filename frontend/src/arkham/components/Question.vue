@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
-import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel } from '@/arkham/types/Message';
+import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage as cardCodeImage, investigatorPortrait } from '@/arkham/cardImages';
@@ -48,12 +48,13 @@ function zoneToLabel(s: string) {
 }
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const toChoiceEntry = (c: Message, idx: number): [Message, number] => [c, idx]
 const questionChoices = computed(() => {
-  const withoutDone = choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
+  const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
-    if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
+    if (tag === MessageType.ABILITY_LABEL) return true
+    if (tag === MessageType.TARGET_LABEL) return true
     if (tag === MessageType.TOOLTIP_LABEL) return true
-    if (tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction') return true
     if (tag === MessageType.LABEL) return true
     if (tag === MessageType.INFO) return true
     if (tag === MessageType.INVALID_LABEL) return true
@@ -67,7 +68,7 @@ const questionChoices = computed(() => {
   // When Done appears alongside regular label choices, include it so it renders
   // with the same button style instead of the modal-footer style
   if (withoutDone.length > 0 && doneLabel.value) {
-    const doneEntry = choices.value.map((c, idx) => [c, idx]).find(([c]) => c.tag === MessageType.DONE)
+    const doneEntry = choices.value.map(toChoiceEntry).find(([c]) => c.tag === MessageType.DONE)
     if (doneEntry) return [...withoutDone, doneEntry]
   }
 
@@ -269,7 +270,7 @@ const cardIdImage = (cardId: string) => {
 
 const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
-const portraits = computed<[Message, number]>(() =>
+const portraits = computed<[Message, number][]>(() =>
   choices.value.map((x: Message, i: number) => [x, i] as [Message, number]).filter(([choice,]) => choice.tag === "PortraitLabel")
 )
 

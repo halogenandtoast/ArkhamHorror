@@ -27,20 +27,20 @@ const label = function(body: string) {
 <template>
   <div class='question-choices'>
     <template v-for="[choice, index] in choices" :key="index">
-      <template v-if="choice.tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)">
+      <template v-if="choice.tag === MessageType.ABILITY_LABEL">
         <AbilityButton
           :ability="choice"
           :game="game"
           @click="choose(index)"
           />
       </template>
-      <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+      <template v-else-if="choice.tag === MessageType.TARGET_LABEL">
+        <button @click="choose(index)">{{ t('continue') }}</button>
+      </template>
+      <template v-else-if="choice.tag === MessageType.TOOLTIP_LABEL">
         <button @click="choose(index)" v-tooltip="choice.tooltip">{{ t(choice.label) }}</button>
       </template>
-      <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
-        <button @click="choose(index)">{{ t(choice.ability.type.label) }}</button>
-      </template>
-      <div v-if="choice.tag === MessageType.LABEL" class="message-label">
+      <div v-else-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
           Choose <i class="iconSkull"></i>
         </button>

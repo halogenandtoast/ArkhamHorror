@@ -830,7 +830,7 @@
       "tonguetwisterSkip": "Do not use second command (Tonguetwister)"
     },
     "predatorOrPrey": {
-      "enemiesMove": "Each unengaged enemy moves once toward the nearest investigator.",
+      "enemiesMove": "Each unengaged non-Elite enemy moves once toward the nearest investigator.",
       "investigatorsMove": "Each investigator disengages from each enemy engaged with them and moves once away from the nearest enemy."
     },
     "prescient": {

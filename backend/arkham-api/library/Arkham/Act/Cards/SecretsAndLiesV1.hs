@@ -11,6 +11,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
+import Arkham.Message.Lifted.CreateEnemy (createEnemyT)
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (setActiveDuringSetup)
@@ -45,7 +46,10 @@ instance RunMessage SecretsAndLiesV1 where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       eachInvestigator (`place` Unplaced)
-      theRedGlovedMan <- selectJust (enemyIs Enemies.theRedGlovedManPurposeUnknown)
+      theRedGlovedMan <-
+        selectOne (enemyIs Enemies.theRedGlovedManPurposeUnknown) >>= \case
+          Just eid -> pure eid
+          Nothing -> createEnemyT Enemies.theRedGlovedManPurposeUnknown Unplaced (const $ pure ())
       place theRedGlovedMan Unplaced
       selectEach ConcealedCardAny removeFromGame
       selectEach Anywhere removeLocation

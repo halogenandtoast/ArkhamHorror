@@ -10,6 +10,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
+import Arkham.Message.Lifted.CreateEnemy (createEnemyT)
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Phase
@@ -44,7 +45,10 @@ instance RunMessage SecretsAndLiesV2 where
       advanceToAgendaA attrs Agendas.theWorldUnbidden
       placeDoomOnAgenda doom
       eachInvestigator (`place` Unplaced)
-      theRedGlovedMan <- selectJust (enemyIs Enemies.theRedGlovedManPurposeUnknown)
+      theRedGlovedMan <-
+        selectOne (enemyIs Enemies.theRedGlovedManPurposeUnknown) >>= \case
+          Just eid -> pure eid
+          Nothing -> createEnemyT Enemies.theRedGlovedManPurposeUnknown Unplaced (const $ pure ())
       place theRedGlovedMan Unplaced
       selectEach ConcealedCardAny removeFromGame
       selectEach Anywhere removeLocation

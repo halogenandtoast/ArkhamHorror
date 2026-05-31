@@ -225,14 +225,15 @@ instance RunMessage AssetAttrs where
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> do
       mods <- getModifiers a
-      phase <- getPhase
-      if CannotReady `elem` mods || (phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods)
-        then pure a
-        else case a.controller of
-          Just iid -> do
-            modifiers <- getModifiers iid
-            pure $ if ControlledAssetsCannotReady `elem` modifiers then a else a & exhaustedL .~ False
-          _ -> pure $ a & exhaustedL .~ False
+      runMaybeT_ do
+        guard $ CannotReady `notElem` mods
+        phase <- lift getPhase
+        guard $ not $ phase == #upkeep && DoesNotReadyDuringUpkeep `elem` mods
+        for_ a.controller \iid -> do
+          modifiers <- getModifiers iid
+          guard $ ControlledAssetsCannotReady `notElem` modifiers
+        lift $ push $ Ready (toTarget a)
+      pure a
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens source target tType n | isTarget a target -> runQueueT do
       pushM $ checkWhen $ Window.PlacedToken source target tType n
@@ -394,9 +395,13 @@ instance RunMessage AssetAttrs where
       when (sanity > 0) $ Heal.pushHealedAfter HorrorType (toTarget a) source sanity
       pure
         $ a
-        & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
-        & assignedHealthHealL %~ deleteMap source
-        & assignedSanityHealL %~ deleteMap source
+        & tokensL
+        %~ subtractTokens Token.Damage health
+        . subtractTokens Token.Horror sanity
+        & assignedHealthHealL
+        %~ deleteMap source
+        & assignedSanityHealL
+        %~ deleteMap source
     HealDamage (isTarget a -> True) source amount -> do
       mods <- getModifiers a
       let n = sum [x | HealingTaken x <- mods]

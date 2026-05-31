@@ -1,5 +1,15 @@
 {
   "heading": "Scenario VII",
+  "specialRules": [
+    {
+      "title": "Spending Keys",
+      "body": "<p class='basic'>During this scenario, investigators may be instructed to spend 1 or more keys. Only an investigator in control of a key may spend it. Spent keys are placed on the scenario reference card.</p>"
+    },
+    {
+      "title": "Keys",
+      "body": "<div class='red bordered'><p class='basic'>During this scenario, keys represent the following:</p><ul><li>Red: A crest engraved with a glyph depicting a great sacrifice.</li><li>Blue: A scroll detailing some of the Order’s activities and secrets.</li><li>Green: A crest depicting a widening fish-eye.</li><li>Purple: A crest inscribed with a circle of words in an alphabet you do not comprehend.</li><li>Black: A crest carved with an arcane sigil.</li><li>White/Yellow: Crests whose glyphs depict the alignment of celestial bodies. The white key shows the moon overlapping the sun. The yellow key shows the sun overlapping the moon.</li></ul></div>"
+    }
+  ],
   "label": {
     "discardTwoCards": "Discard 2 cards from your hand",
     "discardAsset": "Discard an asset you control",

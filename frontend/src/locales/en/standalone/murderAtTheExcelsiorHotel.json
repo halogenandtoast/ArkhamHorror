@@ -1,4 +1,14 @@
 {
+  "specialRules": [
+    {
+      "title": "Patrol",
+      "body": "<p class='basic'>Some enemies have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location which is blocked by a card ability, the enemy does not move.</li></ul>"
+    },
+    {
+      "title": "The True Culprit",
+      "body": "<p class='basic'>Each copy of The True Culprit is an agenda card with a different card template than most other agendas. These agendas each have doom thresholds which can be found to the right of their title, instead of in their normal position.</p>"
+    }
+  ],
   "tooltips": {
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",

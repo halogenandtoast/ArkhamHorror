@@ -1,5 +1,11 @@
 {
   "heading": "Scenario II",
+  "specialRules": [
+    {
+      "title": "Finding Agent Harper",
+      "body": "<p class='basic'>In this scenario, you are tasked with figuring out which _Suspect_ enemy has kidnapped Agent Harper and which _Hideout_ location holds her. This is done by discovering and spending clues to look at and draw cards from the Leads deck.</p><p class='basic'>Each card in the Leads deck represents one of the possible _Suspect_ enemies or one of the possible _Hideout_ locations. Since the correct enemy and location are facedown beneath Finding Agent Harper, none of the cards in the Leads deck can be the correct choice. Therefore, by looking at cards from the Leads deck or by putting them into play, you can narrow down the list of possible enemies and locations by process of elimination. As you eliminate possible enemies and locations, use the list in your Campaign Log to cross off entries and discover the truth.</p><p class='basic'>Once you are confident in your information, use the _Objective_ ability on act 1a to advance. But beware—you only have so much time to find the truth, and you may have to guess…</p>"
+    }
+  ],
   "label": {
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the leads deck"
   },

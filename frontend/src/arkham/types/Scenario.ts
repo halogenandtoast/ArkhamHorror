@@ -222,6 +222,25 @@ export function scenarioToKeyI18n(scenario: Scenario): string {
   return full.split('.')[0] || "base"
 }
 
+// Maps a campaign id (e.g. "07" or "7") to its i18n scope root, so campaign-wide
+// content can be looked up even when no scenario is currently active.
+export function campaignIdToI18n(campaignId: string): string | null {
+  switch (campaignId.replace(/^0+/, '')) {
+    case "1": return "nightOfTheZealot"
+    case "2": return "theDunwichLegacy"
+    case "3": return "thePathToCarcosa"
+    case "4": return "theForgottenAge"
+    case "5": return "theCircleUndone"
+    case "6": return "theDreamEaters"
+    case "7": return "theInnsmouthConspiracy"
+    case "8": return "edgeOfTheEarth"
+    case "9": return "theScarletKeys"
+    case "10": return "theFeastOfHemlockVale"
+    case "12": return "brethrenOfAsh"
+    default: return null
+  }
+}
+
 export function scenarioToI18n(scenario: Scenario): string {
   return scenarioIdToI18n(scenario.id);
 }

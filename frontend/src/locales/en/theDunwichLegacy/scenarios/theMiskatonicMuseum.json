@@ -42,6 +42,12 @@
     "title": "“The Void”",
     "body": "Some cards in this scenario reference an area called “the void.” The void is an out-of-play area next to the act and agenda deck which the Hunting Horror enemy can enter and leave via card effects. While the Hunting Horror is in the void, it is considered out of play and cannot be affected by player cards or investigator actions."
   },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.theMiskatonicMuseum.theVoid.title",
+      "body": "@:theDunwichLegacy.theMiskatonicMuseum.theVoid.body"
+    }
+  ],
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

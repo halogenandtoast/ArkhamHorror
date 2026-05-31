@@ -1,5 +1,11 @@
 {
   "heading": "Scenario II",
+  "specialRules": [
+    {
+      "title": "Replacing Locations",
+      "body": "<p class='basic'>Throughout this scenario, you may be instructed to swap set-aside locations with existing ones. When a location is swapped with one that is already in play, it takes its place. All tokens, attachments, investigators, enemies, and other cards at the former location are considered to now be at the new location (attached cards remain attached, for example). No game element is considered to have moved during such a swap.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-1 (-3 instead if your location is haunted).",

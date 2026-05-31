@@ -1,5 +1,11 @@
 {
   "heading": "Scenario IV",
+  "specialRules": [
+    {
+      "title": "Replacing Locations",
+      "body": "<p class='basic'>Throughout this scenario, you may be instructed to place new locations on top of existing ones. When a location is placed on top of a location that is already in play, it takes its place. All tokens, attachments, investigators, enemies, and other cards at the former location are considered to now be at the new location (they have not “moved”—the location simply changed). If a location leaves play and there is another location underneath it, that location takes its place. All tokens, attachments, investigators, enemies, and other cards at the location leaving play are considered to now be at the former location.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-1 (-3 instead if you are at an _Ancient_ location).",

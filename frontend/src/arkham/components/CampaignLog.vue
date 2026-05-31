@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
-import { toCapitalizedWords } from '@/arkham/helpers'
+import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, watch, type Component } from 'vue'
 import { fetchCard } from '@/arkham/api'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
-import { scenarioToI18n, type Remembered } from '@/arkham/types/Scenario'
+import { scenarioToI18n, scenarioToKeyI18n, campaignIdToI18n, type Remembered } from '@/arkham/types/Scenario'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import Calendar from '@/arkham/components/TheScarletKeys/Calendar.vue'
 import KeysStatus from '@/arkham/components/TheScarletKeys/KeysStatus.vue'
@@ -17,6 +17,7 @@ import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import type { XpBreakdownStep } from '@/arkham/types/Xp'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
+import CampaignLogSpecialRules from '@/arkham/components/CampaignLogSpecialRules.vue'
 import CampaignLogRecordedSets from '@/arkham/components/CampaignLogRecordedSets.vue'
 import CampaignLogInvestigatorSection from '@/arkham/components/CampaignLogInvestigatorSection.vue'
 import CampaignLogPartners from '@/arkham/components/CampaignLogPartners.vue'
@@ -36,7 +37,10 @@ export interface Props {
 
 const props = defineProps<Props>()
 const store = useDbCardStore()
-const { t } = useI18n()
+const { t, tm } = useI18n()
+
+type LogTab = 'log' | 'investigators' | 'rules'
+const activeTab = ref<LogTab>('log')
 
 const sectionComponentById: Record<string, Component> = {
   motherRachelNotes: ResidentNotes,
@@ -153,6 +157,40 @@ const remembered = computed(() => {
     return t(`${prefix}.remembered.${toKey(record.tag)}`)
   })
 })
+
+// --- Special Rules (scenario-only) ----------------------------------------------
+// Scenarios with printed special rules store them as an array of `{ title?, body }`
+// blocks under `<scenarioI18n>.specialRules` in their locale files. Values may use
+// vue-i18n linked messages (`@:path.to.key`) to reuse existing setup text rather than
+// duplicating it. The section is shown only while that scenario is in play.
+type SpecialRule = { title?: string; bodyKey: string }
+
+const rulesAtScope = (scope: string | null): SpecialRule[] => {
+  if (!scope) return []
+  const key = `${scope}.specialRules`
+  const raw = tm(key) as unknown
+  if (!Array.isArray(raw)) return []
+  return raw.map((rule: any, i: number) => ({
+    title: rule.title ? formatContent(t(`${key}[${i}].title`)) : undefined,
+    bodyKey: `${key}[${i}].body`,
+  }))
+}
+
+const specialRules = computed<SpecialRule[]>(() =>
+  rulesAtScope(props.game.scenario ? scenarioToI18n(props.game.scenario) : null)
+)
+
+// Campaign-wide rules live at the campaign's i18n scope root (`<campaign>.specialRules`)
+// and are shown for the entire campaign, regardless of which scenario is active.
+const campaignSpecialRulesScope = computed(() => {
+  if (props.game.scenario) return scenarioToKeyI18n(props.game.scenario)
+  if (props.game.campaign) return campaignIdToI18n(props.game.campaign.id)
+  return null
+})
+
+const campaignSpecialRules = computed<SpecialRule[]>(() =>
+  rulesAtScope(campaignSpecialRulesScope.value)
+)
 
 const allGameInvestigators = computed(() => ({
   ...props.game.investigators,
@@ -526,7 +564,25 @@ const mapData = computed(() => {
       <div class="campaign-log column">
         <h1>Campaign Log: {{ game.name }}</h1>
 
-        <div class="investigators-log">
+        <nav class="log-tabs">
+          <button
+            type="button"
+            :class="{ active: activeTab === 'log' }"
+            @click="activeTab = 'log'"
+          >{{ t('campaignLog.tabs.log') }}</button>
+          <button
+            type="button"
+            :class="{ active: activeTab === 'investigators' }"
+            @click="activeTab = 'investigators'"
+          >{{ t('campaignLog.tabs.investigators') }}</button>
+          <button
+            type="button"
+            :class="{ active: activeTab === 'rules' }"
+            @click="activeTab = 'rules'"
+          >{{ t('campaignLog.tabs.rules') }}</button>
+        </nav>
+
+        <div v-show="activeTab === 'investigators'" class="investigators-log">
           <InvestigatorRow
             v-for="investigator in investigators"
             :key="investigator.id"
@@ -536,6 +592,26 @@ const mapData = computed(() => {
           />
         </div>
 
+        <template v-if="activeTab === 'rules'">
+          <CampaignLogSpecialRules
+            v-if="campaignSpecialRules.length > 0"
+            :title="t('campaignLog.campaignRules')"
+            :rules="campaignSpecialRules"
+          />
+
+          <CampaignLogSpecialRules
+            v-if="specialRules.length > 0"
+            :title="t('campaignLog.specialRules')"
+            :rules="specialRules"
+          />
+
+          <div
+            v-if="campaignSpecialRules.length === 0 && specialRules.length === 0"
+            class="empty-state"
+          >{{ t('campaignLog.noRules') }}</div>
+        </template>
+
+        <template v-if="activeTab === 'log'">
         <div v-if="time || scarletKeys" class="scarlet-keys-row">
           <div class="scarlet-keys-sidebar">
             <Calendar v-if="time" :time="time" :theta="theta" :delta="delta" :psi="psi" />
@@ -652,19 +728,22 @@ const mapData = computed(() => {
             :cardCodeToTitle="cardCodeToTitle"
           />
         </div>
+        </template>
       </div>
 
-      <XpBreakdown
-        v-for="(breakdown, idx) in breakdowns"
-        :key="idx"
-        :game="game"
-        :step="breakdown.step"
-        :entries="breakdown.entries"
-        :playerId="playerId"
-        :showAll="true"
-        :investigators="breakdownInvestigators(breakdown)"
-        :defaultCollapsed="idx > 0"
-      />
+      <template v-if="activeTab === 'log'">
+        <XpBreakdown
+          v-for="(breakdown, idx) in breakdowns"
+          :key="idx"
+          :game="game"
+          :step="breakdown.step"
+          :entries="breakdown.entries"
+          :playerId="playerId"
+          :showAll="true"
+          :investigators="breakdownInvestigators(breakdown)"
+          :defaultCollapsed="idx > 0"
+        />
+      </template>
     </div>
   </div>
 </template>
@@ -676,6 +755,40 @@ const mapData = computed(() => {
   overflow: auto;
   width: 100%;
   padding-bottom: 60px;
+}
+
+/* ── Tabs ────────────────────────────────────────────────── */
+
+.log-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.log-tabs button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 18px;
+  font-family: teutonic, sans-serif;
+  font-size: 1.05em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.log-tabs button:hover {
+  color: rgba(255,255,255,0.85);
+}
+
+.log-tabs button.active {
+  color: var(--title);
+  border-bottom-color: var(--select, #6E8640);
 }
 
 /* ── Investigators ───────────────────────────────────────── */

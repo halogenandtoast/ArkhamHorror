@@ -313,6 +313,14 @@
   "campaignLog": {
     "chaosBag": "Chaos Bag",
     "remembered": "Remembered",
+    "specialRules": "Special Rules",
+    "campaignRules": "Campaign Rules",
+    "noRules": "No special rules for the current scenario or campaign.",
+    "tabs": {
+      "log": "Campaign Log",
+      "investigators": "Investigators",
+      "rules": "Rules"
+    },
     "campaignNotes": "Campaign Notes"
   },
   "campaignLogView": {

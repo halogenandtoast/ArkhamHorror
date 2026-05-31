@@ -1,5 +1,11 @@
 {
   "heading": "Scenario VII",
+  "specialRules": [
+    {
+      "title": "Dual Agendas",
+      "body": "<p class='basic'>During this scenario, there are two agenda decks. One represents a means for you and your allies to open the path to Carcosa, and leads to one of the two set-aside act cards. The other represents a means for Hastur to escape into our world, and spells demise for Earth.</p><p class='basic'>When playing this scenario, while there are two agenda decks in play, players must observe the following additional rules:</p><ul><li>Whenever 1 or more doom is placed on “the current agenda,” the players may decide which of the two agendas to place this doom on.</li><li>Doom on cards other than the two agendas (such as enemies, locations, or assets) count towards the doom threshold of both agendas.</li><li>When one agenda advances, doom on the other agenda is not removed. All other doom in play is removed.</li><li>If the doom thresholds of both agendas are satisfied during the “Check doom threshold” step of the Mythos phase, choose only one agenda to advance. Then, once you have completed advancing that agenda, check the doom threshold of the other agenda and advance it if its doom threshold is still satisfied.</li></ul>"
+    }
+  ],
   "rollingPits": {
     "label": {
       "distributeClues": "Distribute remaining set-aside clues among copies of Sea of Pitch."

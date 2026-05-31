@@ -1,5 +1,11 @@
 {
   "heading": "Scenario I",
+  "specialRules": [
+    {
+      "title": "Lost and Separated",
+      "body": "<p class='basic'>During this scenario, the investigators begin play separated and cut off from one another. This is represented by locations entering play “in front of” each investigator (placed just above their play area).</p><p class='basic'>Act 1a—“Lost in the Woods” has the text: “Locations in front of you are connected to one another.” This text means that regardless of location/connection symbols, the locations in front of you are considered to be connected to one another, and enemies and investigators may move between them. Locations remain connected to one another via their location/connection symbols, as well.</p><p class='basic'>However, Lost in the Woods also has the text: “You cannot enter locations in front of other investigators.” This means that you cannot move to a location in front of another investigator, even if the two locations are connected or if you are moving via a card effect. Note that this restriction does not apply to enemies, who are free to move between connected locations regardless of which investigator those locations are in front of.</p>"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-1. For each point you fail by, discard the top card of the encounter deck.",

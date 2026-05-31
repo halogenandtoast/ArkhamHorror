@@ -1,5 +1,15 @@
 {
   "heading": "Scenario VII",
+  "specialRules": [
+    {
+      "title": "@:theCircleUndone.inTheClutchesOfChaos.choosingARandomLocation.title",
+      "body": "@:theCircleUndone.inTheClutchesOfChaos.choosingARandomLocation.body"
+    },
+    {
+      "title": "@:theCircleUndone.inTheClutchesOfChaos.breachesAndIncursions.title",
+      "body": "@:theCircleUndone.inTheClutchesOfChaos.breachesAndIncursions.body"
+    }
+  ],
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the total amount of doom and breaches on your location.",

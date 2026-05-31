@@ -1,4 +1,10 @@
 {
+  "specialRules": [
+    {
+      "title": "Sinking Locations",
+      "body": "<p class='basic'>During this scenario, damage tokens are placed on locations, as sinkholes, to represent the sinking of the bog. When a location has three or more sinkholes on it, it will flip via the agenda’s forced effect.</p><ul><li>When instructed to flip a location, discard all damage tokens on that location (not on investigators or enemies). Then, flip it, keeping all investigators, enemies, attached treacheries, and clues on that location. Discard all player card attachments from that location.</li></ul>"
+    }
+  ],
   "intro": {
     "title": "Scenario: The Thing in the Depths",
     "body": "<p class='basic unindented'>Check your Campaign Log.</p>",

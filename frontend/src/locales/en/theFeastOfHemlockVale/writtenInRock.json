@@ -1,4 +1,18 @@
 {
+  "specialRules": [
+    {
+      "title": "The Rail Line and Adjacency in Act 2",
+      "body": "<p class='basic'>Each Rail location has 1 or more rail icons printed on it. These rail icons represent the track the Mine Cart moves along.</p><ul><li>When a rail icon on one location faces a rail icon on an adjacent location, the rail icons are aligned.</li><li>Adjacent locations with aligned rail icons are connected to each other and form a rail line. Adjacent locations without aligned rail icons are not connected to each other.</li></ul>"
+    },
+    {
+      "title": "Sliding and Swapping Locations",
+      "body": "<p class='basic'>Sliding and swapping locations allow the investigators to create a path to the Rail Exit by aligning the rail line.</p><p class='basic'>To slide a location, choose a location with an empty space adjacent to it. Move that location (and all cards at that location) into that empty space.</p><p class='basic'>To swap 2 locations, simultaneously move each of those locations (and all cards at them) to the space the other one was occupying.</p><ul><li>Locations with story assets cannot be slid or swapped.</li></ul>"
+    },
+    {
+      "title": "The Mine Cart",
+      "body": "<p class='basic'>Each investigator’s mini-card is placed overlapping the Mine Cart.</p><ul><li>An investigator in the Mine Cart is also at its location. Investigators cannot move independently of the Mine Cart. When the Mine Cart moves, each investigator moves with it.</li><li>The Mine Cart story asset has a rail icon on its right side that indicates the direction it is facing. The Mine Cart’s rail icon must always face the same direction as one of its location’s rail icons.</li><li>When moving the Mine Cart, it can only move along a rail line to a connecting location.</li><li>When the Mine Cart enters a location, the investigators may turn it 90 degrees in either direction to face the same direction as a rail icon on that location.</li><li>The Mine Cart can only move in the direction its rail icon is facing. If the location it moves into does not form a complete rail line (they are not aligned), the Mine Cart moves off the rail line.</li></ul>"
+    }
+  ],
   "act1": {
     "tokens": {
       "easyStandard": {

@@ -1,4 +1,10 @@
 {
+  "specialRules": [
+    {
+      "title": "Enemy-Locations",
+      "body": "<p class='basic'>This scenario introduces a new cardtype: enemy-location. An enemy-location is both an enemy and a location, and that enemy is considered to be at that location. Investigators may fight, evade, and investigate enemy-locations.</p><ul><li>Enemy-locations cannot be moved by card effects.</li><li>When instructed to flip a location to its enemy-location side or vice versa, keep all investigators, enemies, attachments, and tokens on that location.</li><li>Locations with a seal on them are considered “sealed” and cannot be flipped to their enemy-location side by a predation test.<ul><li>An unsealed location is a location with no seals on it.</li></ul></li><li>When an enemy-location is defeated, add it to the victory display, leaving behind an empty space. Then, simultaneously slide each location that was above it in its column down one floor to fill that empty space. Place each investigator, story asset, and enemy that was at the defeated enemy-location at the newly-moved location.<ul><li>If there are no locations above the empty space in its column, choose a location adjacent to the empty space and place each investigator, story asset, and enemy in the chosen location.</li><li>If the entire middle column is removed, slide the entire left column one step to the right, so that the two remaining columns are adjacent. (They remain the left and right columns, respectively; there is no middle column.)</li></ul></li></ul>"
+    }
+  ],
   "cost": {
     "removeSeal": "Remove a seal from your location"
   },

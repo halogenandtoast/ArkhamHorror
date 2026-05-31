@@ -1,5 +1,11 @@
 {
   "heading": "Scenario VIII",
+  "specialRules": [
+    {
+      "title": "Keys",
+      "body": "<div class='red bordered'><p class='basic'>During this scenario, keys represent the following:</p><ul><li>Red: Information regarding the otherworldly route to Y’ha-nthlei, and the secrets that lie within.</li><li>Blue: A key allowing entrance through the gateway to Y’ha-nthlei and its other thresholds.</li><li>Green: A trophy proving one’s worthiness to enter Y’ha-nthlei and commune with its deities.</li><li>Yellow: A badge signifying one’s allegiance to Y’ha-nthlei and its deities.</li><li>Purple: A key of shimmering gold for opening the vaults of the deep.</li><li>Black: A key of obsidian used to activate the many traps within the city of the deep.</li><li>White: A key of coral, one of many used to navigate the depths of Y’ha-nthlei.</li></ul></div>"
+    }
+  ],
   "hydrasBrood": {
     "label": {
       "placeDoomOnHydra": "Place 1 doom on Hydra",

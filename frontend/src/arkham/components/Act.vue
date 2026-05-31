@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref } from 'vue'
 import { type Game } from '@/arkham/types/Game'
-import { type Card, cardImage, asCardCode } from '@/arkham/types/Card'
+import { type Card, cardImage, asCardCode, cardFacedown } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import { useDebug } from '@/arkham/debug';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import KeyToken from '@/arkham/components/Key.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -32,6 +33,7 @@ const emits = defineEmits<{
 
 const showAbilities = ref(false)
 const frame = ref(null)
+const debug = useDebug()
 
 const id = computed(() => props.act.id)
 
@@ -120,9 +122,24 @@ const hasObjective = computed(() =>
   )
 )
 
-const cardsUnder = computed(() => props.cardsUnder)
+function revealFacedownCard(card: Card): Card {
+  switch (card.tag) {
+    case 'PlayerCard':
+    case 'EncounterCard':
+      return { ...card, contents: { ...card.contents, facedown: false } }
+    case 'VengeanceCard':
+      return { ...card, contents: revealFacedownCard(card.contents) }
+  }
+}
 
-const showCardsUnderAct = () => emits('show', cardsUnder, 'Cards Under Act', false)
+const cardsUnder = computed(() => props.cardsUnder)
+const visibleCardsUnder = computed(() => {
+  if (debug.active) return props.cardsUnder.map(revealFacedownCard)
+  return props.cardsUnder.filter((card) => !cardFacedown(card))
+})
+const canViewUnder = computed(() => visibleCardsUnder.value.length > 0)
+
+const showCardsUnderAct = () => emits('show', visibleCardsUnder, 'Cards Under Act', false)
 
 const futureStack = computed(() => props.remainingStack.filter(c => asCardCode(c) !== props.act.id))
 const totalActs = computed(() => props.completedStack.length + props.remainingStack.length)
@@ -188,7 +205,8 @@ const nextToScarletKeys = computed(() => Object.values(props.game.scarletKeys).
       position="bottom"
       @choose="chooseAbility"
       />
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0 && canViewUnder" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>{{viewUnderLabel}}</button>
     <div class="card-container" v-for="(card, idx) in cardsNextTo" :key="idx">
       <img
         class="card card--sideways"

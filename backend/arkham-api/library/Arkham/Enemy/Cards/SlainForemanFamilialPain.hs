@@ -41,7 +41,7 @@ instance RunMessage SlainForemanFamilialPain where
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 _ (discardPayments -> ps) -> do
       let n = case ps of
-            ((_, card) : _) -> printedCardCost card `div` 2
+            ((_, card) : _) -> printedCardCost card
             _ -> 0
       sid <- getRandom
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed $ max 0 $ 6 - n)

@@ -480,7 +480,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
-      PlayerLimit PerTestOrAbility n ->
+      PlayerLimit lType n | lType `elem` [PerTest, PerTestOrAbility] ->
         pure
           . (< n)
           . maybe 0 usedTimes

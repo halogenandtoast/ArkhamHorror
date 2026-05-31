@@ -19,7 +19,7 @@ instance HasModifiersFor Frostbitten where
 
 instance HasAbilities Frostbitten where
   getAbilities (Frostbitten a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ restricted a 1 (InThreatAreaOf You <> DuringSkillTest AnySkillTest)
         $ forced
         $ RevealChaosToken #when You #frost

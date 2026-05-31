@@ -18,7 +18,7 @@ marinersCompass = asset MarinersCompass Cards.marinersCompass
 instance HasAbilities MarinersCompass where
   getAbilities (MarinersCompass x) =
     [ investigateAbility x 1 (exhaust x) ControlsThis
-    , limited (PlayerLimit PerTestOrAbility 3)
+    , limited (PlayerLimit PerTest 3)
         $ controlled x 2 (DuringSkillTest UsingThis)
         $ freeTrigger (ResourceCost 1)
     ]

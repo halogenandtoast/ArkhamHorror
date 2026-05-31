@@ -28,7 +28,7 @@ instance HasAbilities StandingStones where
     extendRevealed
       a
       [ mirage a 2 mirageCards
-      , playerLimit PerTestOrAbility
+      , playerLimit PerTest
           $ restricted a 1 (DuringSkillTest $ WhileInvestigating (be a))
           $ forced
           $ RevealChaosToken #after You #frost

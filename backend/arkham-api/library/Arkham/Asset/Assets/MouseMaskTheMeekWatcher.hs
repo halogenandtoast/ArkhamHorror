@@ -21,7 +21,7 @@ mouseMaskTheMeekWatcher = asset MouseMaskTheMeekWatcher Cards.mouseMaskTheMeekWa
 
 instance HasAbilities MouseMaskTheMeekWatcher where
   getAbilities (MouseMaskTheMeekWatcher a) =
-    [ playerLimit PerTestOrAbility
+    [ playerLimit PerTest
         $ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #intellect])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility

@@ -134,6 +134,9 @@ limited = limitedAbility
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 
+perTest :: Ability -> Ability
+perTest = playerLimit PerTest
+
 perTestOrAbility :: Ability -> Ability
 perTestOrAbility = playerLimit PerTestOrAbility
 

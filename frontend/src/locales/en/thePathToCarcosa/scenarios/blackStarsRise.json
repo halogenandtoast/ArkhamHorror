@@ -22,7 +22,7 @@
   "label": {
     "brokenSteps": {
       "omen": "Draw the topmost omen treachery in the encounter discard pile",
-      "cultist": "Draw the topmost cultist treachery in the encounter discard pile"
+      "cultist": "Draw the topmost cultist enemy in the encounter discard pile"
     },
     "riftSeeker": {
       "takeDamageAndHorror": "Take 1 additional damage and 1 additional horror",

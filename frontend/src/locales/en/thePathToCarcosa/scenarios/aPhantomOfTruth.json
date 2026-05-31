@@ -1,8 +1,5 @@
 {
   "heading": "Scenario V",
-  "label": {
-    "moveTheOrganist": "Move the organist"
-  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the amount of doom in play (max 5).",
@@ -18,6 +15,7 @@
     }
   },
   "label": {
+    "moveTheOrganist": "Move the organist",
     "theParisianConspiracy": {
       "spawn": "Where to spawn the organist"
     },

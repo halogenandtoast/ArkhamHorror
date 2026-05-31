@@ -192,6 +192,42 @@ const campaignSpecialRules = computed<SpecialRule[]>(() =>
   rulesAtScope(campaignSpecialRulesScope.value)
 )
 
+// Keywords and Concepts live at the scenario's i18n scope as
+// `<scenario>.keywordsAndConcepts = { title, entries: [{ title, body }] }` and are
+// shown while that scenario is in play. The title is per-scenario (e.g. some scenarios
+// introduce "New Keywords and Concepts"), so it travels with the data.
+type KeywordsSection = { title: string; rules: SpecialRule[] }
+
+const keywordsAtScope = (scope: string | null): KeywordsSection | null => {
+  if (!scope) return null
+  const key = `${scope}.keywordsAndConcepts`
+  const raw = tm(key) as unknown
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const entries = (raw as any).entries
+  if (!Array.isArray(entries) || entries.length === 0) return null
+  return {
+    title: t(`${key}.title`),
+    rules: entries.map((rule: any, i: number) => ({
+      title: rule.title ? formatContent(t(`${key}.entries[${i}].title`)) : undefined,
+      bodyKey: `${key}.entries[${i}].body`,
+    })),
+  }
+}
+
+const keywordsAndConcepts = computed<KeywordsSection | null>(() =>
+  keywordsAtScope(props.game.scenario ? scenarioToI18n(props.game.scenario) : null)
+)
+
+const hasRules = computed(() =>
+  campaignSpecialRules.value.length > 0 ||
+  specialRules.value.length > 0 ||
+  (keywordsAndConcepts.value?.rules.length ?? 0) > 0
+)
+
+watch(hasRules, (has) => {
+  if (!has && activeTab.value === 'rules') activeTab.value = 'log'
+})
+
 const allGameInvestigators = computed(() => ({
   ...props.game.investigators,
   ...props.game.killedInvestigators,
@@ -579,6 +615,7 @@ const mapData = computed(() => {
             @click="activeTab = 'investigators'"
           >{{ t('campaignLog.tabs.investigators') }}</button>
           <button
+            v-if="hasRules"
             type="button"
             :class="{ active: activeTab === 'rules' }"
             @click="activeTab = 'rules'"
@@ -608,10 +645,11 @@ const mapData = computed(() => {
             :rules="specialRules"
           />
 
-          <div
-            v-if="campaignSpecialRules.length === 0 && specialRules.length === 0"
-            class="empty-state"
-          >{{ t('campaignLog.noRules') }}</div>
+          <CampaignLogSpecialRules
+            v-if="keywordsAndConcepts"
+            :title="keywordsAndConcepts.title"
+            :rules="keywordsAndConcepts.rules"
+          />
         </template>
 
         <template v-if="activeTab === 'log'">

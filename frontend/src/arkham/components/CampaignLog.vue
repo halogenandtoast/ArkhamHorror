@@ -562,7 +562,10 @@ const mapData = computed(() => {
   <div class="content column">
     <div class="log-column">
       <div class="campaign-log column">
-        <h1>Campaign Log: {{ game.name }}</h1>
+        <div class="campaign-log-header">
+          <slot name="header-leading" />
+          <h1>{{ game.name }}</h1>
+        </div>
 
         <nav class="log-tabs">
           <button
@@ -817,15 +820,23 @@ const mapData = computed(() => {
   color: var(--title);
 }
 
+.campaign-log-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
 h1 {
   font-family: teutonic, sans-serif;
   font-size: 2.2em;
-  margin: 0 0 20px;
-  padding: 0 0 14px;
+  margin: 0;
+  padding: 0;
   color: var(--title);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 /* ── Empty state ─────────────────────────────────────────── */

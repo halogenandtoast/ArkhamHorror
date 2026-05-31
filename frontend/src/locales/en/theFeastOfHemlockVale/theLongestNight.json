@@ -11,11 +11,11 @@
     },
     "intro2": {
       "title": "Intro 2",
-      "body": "<p>_Intro 2_: You step out from your hiding place with Dr. Marquez. \"This is barbaric. These people belong in a hospital!\" The professor snarls at the matron.</p><ul><li>Add 1 {tablet} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 4_.</p>"
+      "body": "<p>_Intro 2_: You step out from your hiding place with Dr. Marquez. \"This is barbaric. These people belong in a hospital!\" The professor snarls at the matron.</p><ul><li>Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 4_.</p>"
     },
     "intro3": {
       "title": "Intro 3",
-      "body": "<p>_Intro 3_: You wait in silence as a fetid breeze stirs the heavy air. Tad saunters forward to address Mother Rachel. \"The witnesses are here,\" he gestures to your hiding place. In moments, you and the professor are dragged roughly out into the open.</p><ul><li>Add 1 {skull} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 4_.</p>"
+      "body": "<p>_Intro 3_: You wait in silence as a fetid breeze stirs the heavy air. Tad saunters forward to address Mother Rachel. \"The witnesses are here,\" he gestures to your hiding place. In moments, you and the professor are dragged roughly out into the open.</p><ul><li>Add 1 {'{'}skull{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 4_.</p>"
     },
     "intro4": {
       "title": "Intro 4",
@@ -27,15 +27,15 @@
     "danceNone": "Otherwise, skip to _Intro 7_.",
     "intro5": {
       "title": "Intro 5",
-      "body": "<p>_Intro 5:_ Several hooded figures pull back their hoods and stand behind you: they are the friends you danced with just hours ago. Mother Rachel regards you each in turn. \"So be it, then. We are the wheat; you the chaff.\"</p><ul><li>Add 1 {cultist} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
+      "body": "<p>_Intro 5:_ Several hooded figures pull back their hoods and stand behind you: they are the friends you danced with just hours ago. Mother Rachel regards you each in turn. \"So be it, then. We are the wheat; you the chaff.\"</p><ul><li>Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
     },
     "intro6": {
       "title": "Intro 6",
-      "body": "<p>_Intro 6:_ A single figure steps out from behind Mother Rachel and comes to your side. It is the friend you danced with just hours ago. Mother Rachel regards them bitterly. \"So be it, then. We are the wheat, and you the chaff.\"</p><ul><li>Add 1 {cultist} token and 1 {elderThing} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
+      "body": "<p>_Intro 6:_ A single figure steps out from behind Mother Rachel and comes to your side. It is the friend you danced with just hours ago. Mother Rachel regards them bitterly. \"So be it, then. We are the wheat, and you the chaff.\"</p><ul><li>Add 1 {'{'}cultist{'}'} token and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Skip to _Intro 8_.</p>"
     },
     "intro7": {
       "title": "Intro 7",
-      "body": "<p>_Intro 7:_ Dr. Marquez's plea hangs in the air, unanswered. The captives and the hooded figures remain silent as Mother Rachel regards you with a careworn smile. \"Oh, my children. The people of the Vale are family. We each know our place. You may yet learn yours.\"</p><ul><li>In your Campaign Log, record <i>The investigators faced the longest night alone</i>.</li><li>Add 1 {elderThing} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 8_.</p>"
+      "body": "<p>_Intro 7:_ Dr. Marquez's plea hangs in the air, unanswered. The captives and the hooded figures remain silent as Mother Rachel regards you with a careworn smile. \"Oh, my children. The people of the Vale are family. We each know our place. You may yet learn yours.\"</p><ul><li>In your Campaign Log, record <i>The investigators faced the longest night alone</i>.</li><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li></ul><p class='basic right'>Proceed to _Intro 8_.</p>"
     },
     "intro8": {
       "title": "Intro 8",

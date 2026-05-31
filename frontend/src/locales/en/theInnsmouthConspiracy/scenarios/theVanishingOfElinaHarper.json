@@ -25,7 +25,7 @@
   "tooltips": {
     "innsmouthSquare": {
       "resign": "You decide to lay low for a while.",
-      "ability2": "{'{fast}'} Spend 2 resources: <strong>Move.</strong> Move to a connecting <strong><i>Innsmouth</i></strong> location."
+      "ability2": "{'{'}fast{'}'} Spend 2 resources: <strong>Move.</strong> Move to a connecting <strong><i>Innsmouth</i></strong> location."
     }
   },
   "tokens": {

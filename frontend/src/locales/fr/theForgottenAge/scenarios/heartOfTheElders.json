@@ -15,7 +15,7 @@
   },
   "label": {
     "pitfall": {
-      "jumpTheGap": "Effectuer un test de {agility} (3) pour tenter de sauter au-dessus du trou. En cas d'échec, subissez 1 dégât pour chaque point manquant.",
+      "jumpTheGap": "Effectuer un test de {'{'}agility{'}'} (3) pour tenter de sauter au-dessus du trou. En cas d'échec, subissez 1 dégât pour chaque point manquant.",
       "shuffle": "Mélanger la Chausse-Trappe dans le deck Exploration. Vous ne pouvez pas choisir cette option si la Chausse-Trappe a été piochée dans le deck Exploration."
     },
     "descentToYoth": {

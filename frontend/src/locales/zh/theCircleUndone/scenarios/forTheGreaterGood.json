@@ -25,7 +25,7 @@
       "parley": "{'{'}action{'}'}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
     },
     "lodgeCellarMembersOnly": {
-      "action": "{'{'}action{'}'}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
+      "action": "{'{'}action{'}'}: Investigators at the Lodge Gates spend 1 {'{'}perPlayer{'}'} clues, as a group: Reveal the Lodge Cellar."
     }
   },
   "label": {

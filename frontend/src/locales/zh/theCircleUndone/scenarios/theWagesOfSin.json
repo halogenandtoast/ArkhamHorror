@@ -63,7 +63,7 @@
   "label": {
     "ominousPortents": {
       "spectral": "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled.",
-      "test": "Test {willpower} (3). If you fail take 2 horror."
+      "test": "Test {'{'}willpower{'}'} (3). If you fail take 2 horror."
     },
     "baneOfTheLiving": {
       "unfinishedBusiness": "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health.",

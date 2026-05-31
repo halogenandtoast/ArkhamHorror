@@ -21,7 +21,7 @@
   "tooltips": {
     "innsmouthSquare": {
       "resign": "你决定蛰伏一段时间。",
-      "ability2": "{'{fast}'} 花费2资源： <strong>移动</strong> 移动到一个连接的<strong><i>印斯茅斯</i></strong>地点。"
+      "ability2": "{'{'}fast{'}'} 花费2资源： <strong>移动</strong> 移动到一个连接的<strong><i>印斯茅斯</i></strong>地点。"
     }
   },
   "tokens": {

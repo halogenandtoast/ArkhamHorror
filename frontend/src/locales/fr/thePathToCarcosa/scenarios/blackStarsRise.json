@@ -25,7 +25,7 @@
   },
   "tooltips": {
     "knightsHall": {
-      "investigate": "{'{'}action{'}'} S'il n'y a aucun indice sur la Salle des Chevaliers : _Enquêter_. Enquêtez en utilisant {agility} au lieu de {'{'}intellect{'}'}. En cas de réussite, au lieu de découvrir des indices, souvenez-vous que vous avez « trouvé la clé de la tour »."
+      "investigate": "{'{'}action{'}'} S'il n'y a aucun indice sur la Salle des Chevaliers : _Enquêter_. Enquêtez en utilisant {'{'}agility{'}'} au lieu de {'{'}intellect{'}'}. En cas de réussite, au lieu de découvrir des indices, souvenez-vous que vous avez « trouvé la clé de la tour »."
     },
     "ashleighsInformation": {
       "ability": "{'{'}fast{'}'} retirer 1 fatalité d’une intrigue en jeu (Limite collective d’une fois par partie.)"

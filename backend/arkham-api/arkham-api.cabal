@@ -6206,6 +6206,7 @@ test-suite spec
       Arkham.Event.Events.MindOverMatterSpec
       Arkham.Event.Events.MindWipe1Spec
       Arkham.Event.Events.OccultEvidenceSpec
+      Arkham.Event.Events.OnTheHuntSpec
       Arkham.Event.Events.OnTheLamSpec
       Arkham.Event.Events.OopsSpec
       Arkham.Event.Events.RefineSpec

@@ -21,7 +21,7 @@ instance HasAbilities MorbidCuriosity where
         (InThreatAreaOf You <> youExist (not_ SuccessfullyInvestigatedThisRound))
         $ forced
         $ TurnEnds #when You
-    , restricted a 2 OnSameLocation investigateAction_
+    , restricted a 2 (OnSameLocation <> exists (YourLocation <> InvestigatableLocation)) investigateAction_
     ]
 
 instance RunMessage MorbidCuriosity where

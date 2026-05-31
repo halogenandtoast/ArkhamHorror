@@ -29,7 +29,7 @@ instance HasAbilities The9thWard where
       [ scenarioI18n
           $ skillTestAbility
           $ withI18nTooltip "the9thWard.investigate"
-          $ mkAbility a 1 investigateAction_
+          $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
       , scenarioI18n $ hauntedI "the9thWard.haunted" a 2
       ]
 

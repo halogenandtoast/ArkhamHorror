@@ -27,7 +27,7 @@ instance HasAbilities GrandBazaarJewelersRoad where
       $ scenarioI18n
       $ withI18nTooltip "grandBazaarJewelersRoad.investigate"
       $ skillTestAbility
-      $ restricted a 1 Here investigateAction_
+      $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage GrandBazaarJewelersRoad where
   runMessage msg l@(GrandBazaarJewelersRoad attrs) = runQueueT $ case msg of

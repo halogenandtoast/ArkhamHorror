@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest.Lifted
+import Arkham.Matcher
 
 newtype MineralSpecimen = MineralSpecimen AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,7 +16,8 @@ mineralSpecimen :: AssetCard MineralSpecimen
 mineralSpecimen = asset MineralSpecimen Cards.mineralSpecimen
 
 instance HasAbilities MineralSpecimen where
-  getAbilities (MineralSpecimen a) = [storyControlled_ a 1 $ investigateAction $ assetUseCost a Charge 1]
+  getAbilities (MineralSpecimen a) =
+    [storyControlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateAction $ assetUseCost a Charge 1]
 
 instance RunMessage MineralSpecimen where
   runMessage msg a@(MineralSpecimen attrs) = runQueueT $ case msg of

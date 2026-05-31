@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -18,7 +19,7 @@ secondSight = asset SecondSight Cards.secondSight
 
 instance HasAbilities SecondSight where
   getAbilities (SecondSight a) =
-    [skillTestAbility $ controlled_ a 1 $ investigateActionWith_ #willpower]
+    [skillTestAbility $ controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith_ #willpower]
 
 instance RunMessage SecondSight where
   runMessage msg a@(SecondSight attrs) = runQueueT $ case msg of

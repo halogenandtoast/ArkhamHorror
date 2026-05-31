@@ -16,8 +16,7 @@ chemistrySet = asset ChemistrySet Cards.chemistrySet
 
 instance HasAbilities ChemistrySet where
   getAbilities (ChemistrySet a) =
-    [ restrictedAbility a 1 ControlsThis $ investigateAction (exhaust a)
-    ]
+    [investigateAbility a 1 (exhaust a) ControlsThis]
 
 instance RunMessage ChemistrySet where
   runMessage msg a@(ChemistrySet attrs) = runQueueT $ case msg of

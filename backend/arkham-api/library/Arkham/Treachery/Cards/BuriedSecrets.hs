@@ -20,7 +20,8 @@ buriedSecrets :: TreacheryCard BuriedSecrets
 buriedSecrets = treachery BuriedSecrets Cards.buriedSecrets
 
 instance HasAbilities BuriedSecrets where
-  getAbilities (BuriedSecrets a) = [restrictedAbility a 1 OnSameLocation investigateAction_]
+  getAbilities (BuriedSecrets a) =
+    [restrictedAbility a 1 (OnSameLocation <> exists (YourLocation <> InvestigatableLocation)) investigateAction_]
 
 instance HasModifiersFor BuriedSecrets where
   getModifiersFor (BuriedSecrets a) = case a.placement of

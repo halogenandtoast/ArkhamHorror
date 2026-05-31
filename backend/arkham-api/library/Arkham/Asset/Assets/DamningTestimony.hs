@@ -50,7 +50,15 @@ instance HasModifiersFor DamningTestimony where
 
 instance HasAbilities DamningTestimony where
   getAbilities (DamningTestimony (With attrs _)) =
-    [ restrictedAbility attrs 1 (ControlsThis <> exists (EnemyAt Anywhere))
+    [ restrictedAbility
+        attrs
+        1
+        ( ControlsThis
+            <> exists (EnemyAt Anywhere)
+            <> if attrs `hasCustomization` Surveil
+              then oneOf [exists $ YourLocation <> InvestigatableLocation, exists $ EnemyAt InvestigatableLocation]
+              else exists $ YourLocation <> InvestigatableLocation
+        )
         $ investigateAction (exhaust attrs)
     ]
 

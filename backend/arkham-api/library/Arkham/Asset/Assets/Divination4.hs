@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.Discard
 import Arkham.Helpers.Message.Discard (discardFromHand)
 import Arkham.Investigate
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype Divination4 = Divination4 AssetAttrs
@@ -18,7 +19,7 @@ divination4 :: AssetCard Divination4
 divination4 = asset Divination4 Cards.divination4
 
 instance HasAbilities Divination4 where
-  getAbilities (Divination4 x) = [controlled_ x 1 $ investigateActionWithAlternate_ #willpower]
+  getAbilities (Divination4 x) = [controlled x 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWithAlternate_ #willpower]
 
 instance RunMessage Divination4 where
   runMessage msg a@(Divination4 attrs) = runQueueT $ case msg of

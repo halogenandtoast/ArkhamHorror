@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Investigate
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype ThievesKit3 = ThievesKit3 AssetAttrs
@@ -16,7 +17,7 @@ thievesKit3 = asset ThievesKit3 Cards.thievesKit3
 
 instance HasAbilities ThievesKit3 where
   getAbilities (ThievesKit3 a) =
-    [controlled_ a 1 $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
+    [controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWithAlternate #agility $ assetUseCost a Supply 1]
 
 instance RunMessage ThievesKit3 where
   runMessage msg a@(ThievesKit3 attrs) = runQueueT $ case msg of

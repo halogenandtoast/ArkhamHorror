@@ -16,7 +16,7 @@ const emits = defineEmits<{
 }>()
 
 export interface Props {
-  choices: Message[]
+  choices: readonly Message[]
   investigator: Arkham.Investigator
   game: Game
   portrait?: boolean

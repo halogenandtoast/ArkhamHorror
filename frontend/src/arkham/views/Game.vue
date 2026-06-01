@@ -54,9 +54,15 @@ import { imgsrc } from '@/arkham/helpers'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 import * as Arkham from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
+import {
+  choicesByPlayerKey,
+  choicesSourceByPlayerKey,
+  choicesTooltipByPlayerKey,
+} from '@/arkham/composables/useGameChoices'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
 import * as Message from '@/arkham/types/Message'
 import { type Question } from '@/arkham/types/Question'
+import type { Source } from '@/arkham/types/Source'
 import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
@@ -174,9 +180,33 @@ addEntry({
 
 // Computed
 const cards = computed(() => store.cards)
+const choicesByPlayer = computed(() => {
+  const currentGame = game.value
+  if (!currentGame) return new Map<string, readonly Message.Message[]>()
+
+  return new Map(
+    Object.keys(currentGame.question).map((pid) => [pid, ArkhamGame.choices(currentGame, pid)]),
+  )
+})
+const choicesSourceByPlayer = computed(() => {
+  const currentGame = game.value
+  if (!currentGame) return new Map<string, Source | null>()
+
+  return new Map(
+    Object.keys(currentGame.question).map((pid) => [pid, ArkhamGame.choicesSource(currentGame, pid)]),
+  )
+})
+const choicesTooltipByPlayer = computed(() => {
+  const currentGame = game.value
+  if (!currentGame) return new Map<string, string | null>()
+
+  return new Map(
+    Object.keys(currentGame.question).map((pid) => [pid, ArkhamGame.choicesTooltip(currentGame, pid)]),
+  )
+})
 const choices = computed(() => {
-  if (!game.value || !playerId.value) return []
-  return ArkhamGame.choices(game.value, playerId.value)
+  if (!playerId.value) return []
+  return choicesByPlayer.value.get(playerId.value) ?? []
 })
 const gameOver = computed(() => game.value?.gameState.tag === 'IsOver')
 const question = computed(() => (playerId.value ? game.value?.question[playerId.value] : null))
@@ -1017,6 +1047,9 @@ function debugExport(exportType: ExportType) {
 }
 
 // provides
+provide(choicesByPlayerKey, choicesByPlayer)
+provide(choicesSourceByPlayerKey, choicesSourceByPlayer)
+provide(choicesTooltipByPlayerKey, choicesTooltipByPlayer)
 provide('chooseDeck', chooseDeck)
 provide('chooseDeckList', chooseDeckList)
 provide('send', send)

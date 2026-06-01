@@ -8,7 +8,7 @@ import { keyToId } from '@/arkham/types/Key'
 import { TokenType } from '@/arkham/types/Token'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage, sourceCardCode } from '@/arkham/cardImages'
-import * as ArkhamGame from '@/arkham/types/Game'
+import { useGameChoices, useGameChoicesSource, useGameChoicesTooltip } from '@/arkham/composables/useGameChoices'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
@@ -58,17 +58,19 @@ const image = computed(() => cardImage(props.enemy.cardCode, props.enemy.flipped
 
 const id = computed(() => props.enemy.id)
 
+const choicesSource = useGameChoicesSource(() => props.game, () => props.playerId)
 const isHighlighted = computed(() => {
-  const source = ArkhamGame.choicesSource(props.game, props.playerId)
+  const source = choicesSource.value
   return source !== null && 'contents' in source && source.contents === props.enemy.id
 })
 const { t } = useI18n()
+const choicesTooltip = useGameChoicesTooltip(() => props.game, () => props.playerId)
 const sourceTooltip = computed<string | false>(() => {
-  const raw = isHighlighted.value ? ArkhamGame.choicesTooltip(props.game, props.playerId) : null
+  const raw = isHighlighted.value ? choicesTooltip.value : null
   return raw ? handleEmbeddedI18n(raw, t as (key: string, params: { [key: string]: any }) => string) : false
 })
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {

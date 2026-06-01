@@ -6,7 +6,7 @@ import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { actionsToList } from '@/arkham/types/Action';
@@ -66,7 +66,7 @@ const image = computed(() => {
 
 const id = computed(() => props.location.id)
 const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
 
 const locationStory = computed(() => {
   const { stories } = props.game

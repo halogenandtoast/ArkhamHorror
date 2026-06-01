@@ -7,7 +7,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import type { AbilityType } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
@@ -83,7 +83,7 @@ const dataImage = computed(() => {
   }
   return cardCode.value.replace('c', '') + mutated
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
 
 function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {

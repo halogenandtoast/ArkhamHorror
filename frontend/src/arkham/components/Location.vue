@@ -7,6 +7,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import { keyToId } from '@/arkham/types/Key'
 import { useGameChoices } from '@/arkham/composables/useGameChoices';
+import { useGameIndexes } from '@/arkham/composables/useGameIndexes';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { actionsToList } from '@/arkham/types/Action';
@@ -67,6 +68,7 @@ const image = computed(() => {
 const id = computed(() => props.location.id)
 const isExhausted = computed(() => props.location.enemyLocation && props.location.exhausted)
 const choices = useGameChoices(() => props.game, () => props.playerId)
+const gameIndexes = useGameIndexes(() => props.game)
 
 const locationStory = computed(() => {
   const { stories } = props.game
@@ -224,20 +226,7 @@ const attachedKeys = computed(() => {
     .filter((e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation')
 })
 
-const stories = computed(() => {
-  return Object.values(props.game.stories)
-    .filter((s) => {
-      const { assets, enemies } = props.game
-      if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
-        return false
-      }
-      if (Object.values(assets).find((a) => s.otherSide?.contents === a.id)) {
-        return false
-      }
-      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id
-    })
-    .map((s) => s.id)
-})
+const stories = computed(() => gameIndexes.value.storyIdsByLocation.get(props.location.id) ?? [])
 
 const treacheries = computed(() => {
   const treacheryIds = props.location.treacheries;
@@ -284,7 +273,7 @@ const hasPool = computed(() => {
 })
 
 const blocked = computed(() => {
-  const inv = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const inv = gameIndexes.value.investigatorByPlayerId.get(props.playerId)
   const invMods = inv?.modifiers ?? []
   const locMods = props.location.modifiers
 

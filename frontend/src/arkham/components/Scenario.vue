@@ -53,7 +53,7 @@ import Story from '@/arkham/components/Story.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
-import * as ArkhamGame from '@/arkham/types/Game';
+import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import { setLocationOffset, resetLocationOffsets } from '@/arkham/api';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
@@ -864,7 +864,7 @@ const unusedLabels = computed(() => {
   if (!locationLayout || !usesGrid) return []
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const choices = useGameChoices(() => props.game, () => props.playerId)
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const damage = computed(() => props.scenario.tokens[TokenType.Damage])
 const targets = computed(() => props.scenario.tokens[TokenType.Target])

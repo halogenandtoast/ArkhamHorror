@@ -59,6 +59,7 @@ import {
   choicesSourceByPlayerKey,
   choicesTooltipByPlayerKey,
 } from '@/arkham/composables/useGameChoices'
+import { buildGameIndexes, gameIndexesKey } from '@/arkham/composables/useGameIndexes'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
 import * as Message from '@/arkham/types/Message'
 import { type Question } from '@/arkham/types/Question'
@@ -160,6 +161,19 @@ const format = (str: string) => {
   return handleEmbeddedI18n(str, t)
 }
 
+function updateGameLog(nextLog: readonly string[]) {
+  const currentLog = gameLog.value
+  if (
+    currentLog.length === nextLog.length &&
+    currentLog[0] === nextLog[0] &&
+    currentLog[currentLog.length - 1] === nextLog[nextLog.length - 1]
+  ) {
+    return
+  }
+
+  gameLog.value = Object.freeze([...nextLog])
+}
+
 addEntry({
   id: 'viewSettings',
   icon: AdjustmentsHorizontalIcon,
@@ -204,6 +218,7 @@ const choicesTooltipByPlayer = computed(() => {
     Object.keys(currentGame.question).map((pid) => [pid, ArkhamGame.choicesTooltip(currentGame, pid)]),
   )
 })
+const gameIndexes = computed(() => buildGameIndexes(game.value))
 const choices = computed(() => {
   if (!playerId.value) return []
   return choicesByPlayer.value.get(playerId.value) ?? []
@@ -253,7 +268,7 @@ watch(
         ;(window as Window & { g?: Arkham.Game }).g = newGame
         game.value = newGame
         solo.value = multiplayerMode === 'Solo'
-        gameLog.value = Object.freeze(newGame.log)
+        updateGameLog(newGame.log)
         playerId.value = newPlayerId
         ready.value = true
       },
@@ -326,7 +341,7 @@ function scheduleApplyUpdate(payload: string) {
     .decodePromise(payload)
     .then((updatedGame) => {
       game.value = updatedGame
-      gameLog.value = Object.freeze([...updatedGame.log])
+      updateGameLog(updatedGame.log)
       preloadImages(updatedGame)
       if (solo.value === true) {
         if (Object.keys(game.value.question).length == 1) {
@@ -1050,6 +1065,7 @@ function debugExport(exportType: ExportType) {
 provide(choicesByPlayerKey, choicesByPlayer)
 provide(choicesSourceByPlayerKey, choicesSourceByPlayer)
 provide(choicesTooltipByPlayerKey, choicesTooltipByPlayer)
+provide(gameIndexesKey, gameIndexes)
 provide('chooseDeck', chooseDeck)
 provide('chooseDeckList', chooseDeckList)
 provide('send', send)

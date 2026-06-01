@@ -571,6 +571,11 @@ allLocationCards =
       , messHall
       , metropolitanCathedral
       , milkhouse
+      , mirrorNest10666
+      , mirrorNest10667
+      , mirrorNest10668
+      , mirrorNest10669
+      , theAbyssSpiralingOblivion
       , mineralTunnel
       , miramarYachtClub
       , miskatonicQuad

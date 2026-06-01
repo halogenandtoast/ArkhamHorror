@@ -170,6 +170,15 @@ allEncounterEnemyCards =
       , crystalParasite
       , crustaceanHybridInTheDark
       , crustaceanHybridInTheLight
+      , cosmicEmissaryTheAbyss
+      , cosmicEmissaryTheAbyssShattered
+      , cosmicEmissaryThePhantasm
+      , cosmicEmissaryThePhantasmShattered
+      , cosmicEmissaryTheMiasma
+      , cosmicEmissaryTheMiasmaShattered
+      , cosmicEmissaryTheBrilliance
+      , cosmicEmissaryTheBrillianceShattered
+      , crystalMimic
       , cultistOfTheEnclave
       , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged

@@ -14,16 +14,16 @@ export function portraitImage(cardCode: string, suffix: string = ''): string {
   return imgsrc(`portraits/${cardArt(cardCode, suffix)}.jpg`)
 }
 
-// YithianForm and HomunculusForm portraits use the investigator's own id (so
-// each player keeps a distinct portrait), while every other form uses the
-// underlying card code.
+// YithianForm, HomunculusForm, and ShatteredForm portraits use the
+// investigator's own id (so each player keeps a distinct portrait), while every
+// other form uses the underlying card code.
 export function investigatorPortrait(
   game: Game,
   investigatorId: string,
   suffix: string = ''
 ): string {
   const player = game.investigators[investigatorId]
-  const code = (player?.form.tag === 'YithianForm' || player?.form.tag === 'HomunculusForm')
+  const code = (player?.form.tag === 'YithianForm' || player?.form.tag === 'HomunculusForm' || player?.form.tag === 'ShatteredForm')
     ? investigatorId
     : (player?.cardCode ?? investigatorId)
   return portraitImage(code, suffix)

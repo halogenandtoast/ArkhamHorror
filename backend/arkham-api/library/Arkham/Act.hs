@@ -390,6 +390,13 @@ allActs =
       SomeActCard dawnOfTheSecondDay
     , --- Day of the Feast
       SomeActCard dawnOfTheFinalDay
+    , --- Fate of the Vale
+      SomeActCard shatteredMemories
+    , SomeActCard lostSelf
+    , SomeActCard fateOfTheValeV1
+    , SomeActCard fateOfTheValeV2
+    , SomeActCard fateOfTheValeV3
+    , SomeActCard fateOfTheValeV4
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

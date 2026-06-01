@@ -688,6 +688,10 @@ allTreacheries =
       , --- The Longest Night [fhv]
         SomeTreacheryCard endlessNight
       , SomeTreacheryCard incursion
+      , --- Fate of the Vale [fhv]
+        SomeTreacheryCard sublimation
+      , SomeTreacheryCard fragmentation
+      , SomeTreacheryCard euphoria
       , --- Fire [fhv]
         SomeTreacheryCard fire
       , -- The Drowned City

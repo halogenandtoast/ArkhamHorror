@@ -349,6 +349,10 @@ allAgendas =
       SomeAgendaCard allIsFullOfLove
     , SomeAgendaCard aroundTheTable
     , SomeAgendaCard lambsToTheSlaughter
+    , --- Fate of the Vale
+      SomeAgendaCard theSilence
+    , SomeAgendaCard theMiasma
+    , SomeAgendaCard theSpiral
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

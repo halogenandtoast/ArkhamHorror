@@ -589,6 +589,15 @@ allEnemies =
       , SomeEnemyCard limulusHybridInTheDark
       , SomeEnemyCard crustaceanHybridInTheLight
       , SomeEnemyCard crustaceanHybridInTheDark
+      , SomeEnemyCard cosmicEmissaryTheAbyss
+      , SomeEnemyCard cosmicEmissaryTheAbyssShattered
+      , SomeEnemyCard cosmicEmissaryThePhantasm
+      , SomeEnemyCard cosmicEmissaryThePhantasmShattered
+      , SomeEnemyCard cosmicEmissaryTheMiasma
+      , SomeEnemyCard cosmicEmissaryTheMiasmaShattered
+      , SomeEnemyCard cosmicEmissaryTheBrilliance
+      , SomeEnemyCard cosmicEmissaryTheBrillianceShattered
+      , SomeEnemyCard crystalMimic
       , SomeEnemyCard cavernMoss
       , --- The Thing in the Depths [fhv]
         SomeEnemyCard thingInTheDepths

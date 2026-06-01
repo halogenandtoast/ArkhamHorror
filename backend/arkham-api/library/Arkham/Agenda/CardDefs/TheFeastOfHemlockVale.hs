@@ -64,3 +64,12 @@ aroundTheTable = agenda "10688" "Around the Table" 1 DayOfTheFeast
 
 lambsToTheSlaughter :: CardDef
 lambsToTheSlaughter = agenda "10689" "Lambs to the Slaughter" 3 DayOfTheFeast
+
+theSilence :: CardDef
+theSilence = agenda "10652" "The Silence" 1 FateOfTheVale
+
+theMiasma :: CardDef
+theMiasma = agenda "10653" "The Miasma" 2 FateOfTheVale
+
+theSpiral :: CardDef
+theSpiral = agenda "10654" "The Spiral" 3 FateOfTheVale

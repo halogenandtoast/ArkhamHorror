@@ -269,6 +269,7 @@ data InvestigatorForm
   = RegularForm
   | YithianForm
   | HomunculusForm
+  | ShatteredForm
   | TransfiguredForm CardCode
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
@@ -748,4 +749,5 @@ instance FromJSON InvestigatorForm where
   parseJSON (String "RegularForm") = pure RegularForm
   parseJSON (String "YithianForm") = pure YithianForm
   parseJSON (String "HomunculusForm") = pure HomunculusForm
+  parseJSON (String "ShatteredForm") = pure ShatteredForm
   parseJSON v = $(mkParseJSON defaultOptions ''InvestigatorForm) v

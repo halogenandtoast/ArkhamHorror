@@ -1006,6 +1006,7 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | BecomeHomunculus InvestigatorId
+  | BecomeShatteredSelf InvestigatorId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
   | CampaignSpecific Text Value

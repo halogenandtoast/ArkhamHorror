@@ -434,3 +434,66 @@ bertieMusgrave =
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Patrol (LocationWithEnemy (EnemyWithTitle "Mother Rachel"))]
       , cdVictoryPoints = Just 0
       }
+
+cosmicEmissaryTheAbyss :: CardDef
+cosmicEmissaryTheAbyss =
+  doubleSided "10662b"
+    $ (enemy "10662a" ("Cosmic Emissary" <:> "The Abyss") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      }
+
+cosmicEmissaryTheAbyssShattered :: CardDef
+cosmicEmissaryTheAbyssShattered =
+  doubleSided "10662a"
+    $ (enemy "10662b" ("Cosmic Emissary" <:> "The Abyss") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      }
+
+cosmicEmissaryThePhantasm :: CardDef
+cosmicEmissaryThePhantasm =
+  doubleSided "10663b"
+    $ (enemy "10663a" ("Cosmic Emissary" <:> "The Phantasm") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      }
+
+cosmicEmissaryThePhantasmShattered :: CardDef
+cosmicEmissaryThePhantasmShattered =
+  doubleSided "10663a"
+    $ (enemy "10663b" ("Cosmic Emissary" <:> "The Phantasm") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      }
+
+cosmicEmissaryTheMiasma :: CardDef
+cosmicEmissaryTheMiasma =
+  doubleSided "10664b"
+    $ (enemy "10664a" ("Cosmic Emissary" <:> "The Miasma") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      }
+
+cosmicEmissaryTheMiasmaShattered :: CardDef
+cosmicEmissaryTheMiasmaShattered =
+  doubleSided "10664a"
+    $ (enemy "10664b" ("Cosmic Emissary" <:> "The Miasma") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      }
+
+cosmicEmissaryTheBrilliance :: CardDef
+cosmicEmissaryTheBrilliance =
+  doubleSided "10665b"
+    $ (enemy "10665a" ("Cosmic Emissary" <:> "The Brilliance") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Colour, Elite]
+      }
+
+cosmicEmissaryTheBrillianceShattered :: CardDef
+cosmicEmissaryTheBrillianceShattered =
+  doubleSided "10665a"
+    $ (enemy "10665b" ("Cosmic Emissary" <:> "The Brilliance") FateOfTheVale 1)
+      { cdCardTraits = setFromList [Emissary, Shattered, Elite]
+      }
+
+crystalMimic :: CardDef
+crystalMimic =
+  (enemy "10671" "Crystal Mimic" FateOfTheVale 1)
+    { cdCardTraits = setFromList [Humanoid, Colour]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+    }

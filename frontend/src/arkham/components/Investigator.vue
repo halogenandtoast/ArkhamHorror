@@ -153,6 +153,10 @@ const image = computed(() => {
     return imgsrc("cards/11068b.avif");
   }
 
+  if (props.investigator.form.tag === 'ShatteredForm') {
+    return imgsrc("cards/10661.avif");
+  }
+
   if (props.investigator.form.tag === "TransfiguredForm") {
     return cardImage(props.investigator.form.contents)
   }
@@ -164,7 +168,7 @@ const image = computed(() => {
 
 const investigatorPortraitImage = computed(() => {
   const suffix = props.investigator.endedTurn ? 'b' : ''
-  if (props.investigator.form.tag === "YithianForm" || props.investigator.form.tag === "HomunculusForm") {
+  if (props.investigator.form.tag === "YithianForm" || props.investigator.form.tag === "HomunculusForm" || props.investigator.form.tag === "ShatteredForm") {
     return portraitImage(id.value, suffix)
   }
 

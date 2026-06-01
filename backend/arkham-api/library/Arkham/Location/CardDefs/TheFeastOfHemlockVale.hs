@@ -622,3 +622,23 @@ openWater10599b =
   victory 1
     $ otherSideIs "10599a"
     $ location_ "10599b" "Open Water" [Sunken] TheThingInTheDepths
+
+mirrorNest10666 :: CardDef
+mirrorNest10666 =
+  locationWithUnrevealed_ "10666" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest10667 :: CardDef
+mirrorNest10667 =
+  locationWithUnrevealed_ "10667" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest10668 :: CardDef
+mirrorNest10668 =
+  locationWithUnrevealed_ "10668" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+mirrorNest10669 :: CardDef
+mirrorNest10669 =
+  locationWithUnrevealed_ "10669" "Mirror Nest" [Shattered, Lair] "Mirror Nest" [Shattered, Lair] FateOfTheVale
+
+theAbyssSpiralingOblivion :: CardDef
+theAbyssSpiralingOblivion =
+  location_ "10670" ("The Abyss" <:> "Spiraling Oblivion") [Extradimensional, Shattered] FateOfTheVale

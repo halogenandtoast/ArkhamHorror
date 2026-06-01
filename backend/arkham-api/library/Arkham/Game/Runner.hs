@@ -72,6 +72,7 @@ import Arkham.Id
 import Arkham.Investigator (
   InvestigatorForm (..),
   becomeHomunculus,
+  becomeShatteredSelf,
   becomeYithian,
   lookupInvestigator,
   returnToBody,
@@ -3407,6 +3408,9 @@ runGameMessage msg g = case msg of
   BecomeYithian iid -> do
     yithian <- becomeYithian <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
+  BecomeShatteredSelf iid -> do
+    shatteredSelf <- becomeShatteredSelf <$> getInvestigator iid
+    pure $ g & (entitiesL . investigatorsL . at iid ?~ shatteredSelf)
   BecomeHomunculus iid -> do
     findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
       Nothing -> error "The Great Work not found"

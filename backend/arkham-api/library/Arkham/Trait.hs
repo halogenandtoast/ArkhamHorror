@@ -95,6 +95,7 @@ data Trait
   | ElderThing
   | Eldritch
   | Elite
+  | Emissary
   | Endtimes
   | Entrepreneur
   | Evidence

@@ -23,12 +23,14 @@ type Form
   = { tag: 'RegularForm' }
   | { tag: 'YithianForm' }
   | { tag: 'HomunculusForm' }
+  | { tag: 'ShatteredForm' }
   | { tag: 'TransfiguredForm', contents: string }
 
 export const formDecoder = JsonDecoder.oneOf<Form>([
   JsonDecoder.object({ tag: JsonDecoder.literal('RegularForm') }, 'RegularForm'),
   JsonDecoder.object({ tag: JsonDecoder.literal('YithianForm') }, 'YithianForm'),
   JsonDecoder.object({ tag: JsonDecoder.literal('HomunculusForm') }, 'HomunculusForm'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ShatteredForm') }, 'ShatteredForm'),
   JsonDecoder.object({ tag: JsonDecoder.literal('TransfiguredForm'), contents: JsonDecoder.string() }, 'TransfiguredForm'),
 ], 'Form');
 

@@ -225,6 +225,9 @@ allAgendaCards =
       , theNightHowls
       , theOldOnesHunger
       , theOnslaught
+      , theSilence
+      , theMiasma
+      , theSpiral
       , theRedDepths
       , theRitualAdvances
       , theRitualBegins

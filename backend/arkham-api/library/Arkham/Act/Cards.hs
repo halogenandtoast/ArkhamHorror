@@ -95,6 +95,12 @@ allActCards =
       , exploringTheRainforest
       , eyesInTheTower
       , faceToCarapace
+      , shatteredMemories
+      , lostSelf
+      , fateOfTheValeV1
+      , fateOfTheValeV2
+      , fateOfTheValeV3
+      , fateOfTheValeV4
       , falseColorsV1
       , falseColorsV2
       , falseLight

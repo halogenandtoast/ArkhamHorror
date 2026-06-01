@@ -109,7 +109,7 @@ const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
-    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm" || player.form.tag === "ShatteredForm")
       ? choice.investigatorId
       : player.cardCode
     return portraitImage(code)
@@ -117,7 +117,7 @@ const investigatorPortrait = computed(() => {
 
   if (props.skillTest) {
     const player = props.game.investigators[props.skillTest.investigator]
-    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm")
+    const code = (player.form.tag === "YithianForm" || player.form.tag === "HomunculusForm" || player.form.tag === "ShatteredForm")
       ? props.skillTest.investigator
       : player.cardCode
     return portraitImage(code)

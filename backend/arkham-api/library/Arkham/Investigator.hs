@@ -62,6 +62,7 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
     "05047" -> f (SomeInvestigator @JeromeDavids)
     "05048" -> f (SomeInvestigator @ValentinoRivas)
     "05049" -> f (SomeInvestigator @PennyWhite)
+    "10661" -> f (SomeInvestigator @ShatteredSelf)
     _ -> error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator @a)
 
@@ -204,12 +205,49 @@ becomeHomunculus (Investigator a) =
       , investigatorForm = HomunculusForm
       }
 
+becomeShatteredSelf :: Investigator -> Investigator
+becomeShatteredSelf (Investigator a) =
+  Investigator
+    $ ShatteredSelf
+    . (`with` ShatteredSelfMetadata (toJSON a))
+    $ (toAttrs a)
+      { investigatorHealth = 7
+      , investigatorSanity = 7
+      , investigatorWillpower = 0
+      , investigatorIntellect = 0
+      , investigatorCombat = 0
+      , investigatorAgility = 0
+      , investigatorCardCode = "10661"
+      , investigatorClass = Neutral
+      , investigatorTraits = setFromList [Shattered]
+      , investigatorForm = ShatteredForm
+      , investigatorDiscarding = Nothing
+      }
+
+returnFromShatteredSelf :: Investigator -> Investigator
+returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` meta)) ->
+  case fromJSON meta.originalBody of
+    Success x -> updateAttrs x \a ->
+      a
+        { investigatorSettings = investigatorSettings attrs <> investigatorSettings a
+        , investigatorXp = investigatorXp attrs
+        , investigatorSpentXp = investigatorSpentXp attrs
+        , investigatorPhysicalTrauma = investigatorPhysicalTrauma attrs
+        , investigatorMentalTrauma = investigatorMentalTrauma attrs
+        , investigatorTokens = investigatorTokens attrs
+        , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities a)
+        , investigatorLog = investigatorLog a
+        , investigatorKilled = investigatorKilled a
+        , investigatorDrivenInsane = investigatorDrivenInsane a
+        }
+    _ -> error "The shattered self cannot be made whole again"
+
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
 handleInvestigator o@(Investigator a) f = maybe o f (cast a)
 
 returnToBody :: Investigator -> Investigator
 returnToBody = flip handleInvestigator \(BodyOfAYithian (attrs `With` meta)) ->
-  case fromJSON (originalBody meta) of
+  case fromJSON meta.originalBody of
     Success x -> updateAttrs x \a ->
       a
         { investigatorSettings = investigatorSettings attrs <> investigatorSettings a

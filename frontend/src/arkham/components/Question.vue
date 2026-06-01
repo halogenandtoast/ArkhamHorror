@@ -131,19 +131,40 @@ function abilitySourceHandledElsewhere(source: any) {
     case 'AgendaSource': return source.contents in props.game.agendas
     case 'EventSource': return source.contents in props.game.events
     case 'StorySource': return source.contents in props.game.stories
+    case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
     default: return false
   }
 }
 
 function targetLabelHandledElsewhere(choice: TargetLabel) {
-  if (choice.target.tag === 'LocationTarget') {
-    return typeof choice.target.contents === 'string'
-      && choice.target.contents in props.game.locations
+  const target = choice.target
+  const contents = target.contents
+
+  if (typeof contents === 'string') {
+    switch (target.tag) {
+      case 'AssetTarget': return contents in props.game.assets
+      case 'LocationTarget': return contents in props.game.locations
+      case 'EnemyTarget': return contents in props.game.enemies
+      case 'TreacheryTarget': return contents in props.game.treacheries
+      case 'ActTarget': return contents in props.game.acts
+      case 'AgendaTarget': return contents in props.game.agendas
+      case 'EventTarget': return contents in props.game.events
+      case 'StoryTarget': return contents in props.game.stories
+      case 'SkillTarget': return contents in props.game.skills
+      case 'InvestigatorTarget': return contents in props.game.investigators || contents in props.game.otherInvestigators
+      case 'ScarletKeyTarget': return contents in props.game.scarletKeys
+      case 'ConcealedTarget': return contents in props.game.concealed
+      case 'CardIdTarget': return visibleCardIds.value.has(contents)
+      case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
+      default: return false
+    }
   }
 
-  return choice.target.tag === 'CardIdTarget'
-    && typeof choice.target.contents === 'string'
-    && visibleCardIds.value.has(choice.target.contents)
+  if (target.tag === 'ChaosTokenTarget' && typeof contents === 'object' && contents !== null && 'id' in contents) {
+    return props.game.focusedChaosTokens.some((token) => token.id === contents.id)
+  }
+
+  return false
 }
 
 const isRead = computed(() => question.value?.tag === QuestionType.READ)

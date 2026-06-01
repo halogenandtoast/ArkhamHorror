@@ -92,6 +92,8 @@ data ScenarioLogKey
   | FoundHiddenBones
   | -- | Prelude Dawn of the SecondDay
     YouAreRunningAnErrand
+  | -- | Prelude Dawn of the Final Day
+    YouAreDeliveringAPackage
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

@@ -347,6 +347,8 @@ allAgendas =
       SomeAgendaCard darkClouds
     , --- Day of the Feast
       SomeAgendaCard allIsFullOfLove
+    , SomeAgendaCard aroundTheTable
+    , SomeAgendaCard lambsToTheSlaughter
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

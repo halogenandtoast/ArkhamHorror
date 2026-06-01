@@ -996,7 +996,9 @@ allLocations =
     , SomeLocationCard theCommonsNight
     , --- Day of the Feast
       SomeLocationCard theCrossroadsMorning
+    , SomeLocationCard theCrossroadsEvening
     , SomeLocationCard theOldMillMorning
+    , SomeLocationCard theOldMillEvening
     , --- Horrors in the Rock
       SomeLocationCard dryBurrow
     , SomeLocationCard alkalineForest

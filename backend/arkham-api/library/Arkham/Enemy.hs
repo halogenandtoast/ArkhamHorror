@@ -614,6 +614,18 @@ allEnemies =
         SomeEnemyCard crystalParasite
       , --- Agents of the Colour [fhv]
         SomeEnemyCard miasmaticShadow
+      , --- Day of the Feast [fhv]
+        SomeEnemyCard frenziedReveler
+      , --- Residents [fhv]
+        SomeEnemyCard motherRachelStarbornHerald
+      , SomeEnemyCard leahAtwood
+      , SomeEnemyCard simeonAtwood
+      , SomeEnemyCard williamHemlock
+      , SomeEnemyCard riverHawthorne
+      , SomeEnemyCard gideonMizrah
+      , SomeEnemyCard judithPark
+      , SomeEnemyCard theoPeters
+      , SomeEnemyCard bertieMusgrave
       , --- The Forest [fhv]
         SomeEnemyCard poisonblossom
       , SomeEnemyCard forestWatcher

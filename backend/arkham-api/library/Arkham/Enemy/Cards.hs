@@ -349,6 +349,17 @@ allEncounterEnemyCards =
       , memoryOfAnUnrequitedLove
       , memoryOfAnUnspeakableEvil
       , miasmaticShadow
+      , -- Day of the Feast / Residents [fhv]
+        frenziedReveler
+      , motherRachelStarbornHerald
+      , leahAtwood
+      , simeonAtwood
+      , williamHemlock
+      , riverHawthorne
+      , gideonMizrah
+      , judithPark
+      , theoPeters
+      , bertieMusgrave
       , mimeticNemesisInfiltratorOfRealities
       , mimeticNemesisOtherworldlySubjugator
       , mindlessDancer

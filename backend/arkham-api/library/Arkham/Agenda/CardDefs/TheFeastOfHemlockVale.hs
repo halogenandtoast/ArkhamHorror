@@ -58,3 +58,9 @@ darkClouds = agenda "10683" "Dark Clouds" 1 DayOfRain
 
 allIsFullOfLove :: CardDef
 allIsFullOfLove = agenda "10686" "All is Full of Love" 1 DayOfTheFeast
+
+aroundTheTable :: CardDef
+aroundTheTable = agenda "10688" "Around the Table" 1 DayOfTheFeast
+
+lambsToTheSlaughter :: CardDef
+lambsToTheSlaughter = agenda "10689" "Lambs to the Slaughter" 3 DayOfTheFeast

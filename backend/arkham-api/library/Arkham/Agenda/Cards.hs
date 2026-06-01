@@ -34,6 +34,8 @@ allAgendaCards =
       , allIsFullOfLove
       , allIsOne
       , annihilation
+      , aroundTheTable
+      , lambsToTheSlaughter
       , aSinisterRealm
       , aTearInReality
       , aTearInRealityV2

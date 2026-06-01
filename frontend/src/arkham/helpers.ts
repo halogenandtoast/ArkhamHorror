@@ -1,9 +1,3 @@
-import ita from '@/digests/ita.json'
-import es from '@/digests/es.json'
-import fr from '@/digests/fr.json'
-import ko from '@/digests/ko.json'
-import zh from '@/digests/zh.json'
-
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { ref, type Ref } from 'vue';
 
@@ -17,12 +11,20 @@ interface ImageHelper {
 const batchSize: number = 1000
 const defaultHelper: ImageHelper = { root: '', digests: new Set(), data: new Map(), loaded: ref(true) }
 const imgHelper: Map<string, ImageHelper> = new Map<string, ImageHelper>([
-  ['it', { root: 'ita', digests: new Set(ita), data: new Map(), loaded: ref(false) }],
-  ['fr', { root: 'fr', digests: new Set(fr), data: new Map(), loaded: ref(false) }],
-  ['es', { root: 'es', digests: new Set(es), data: new Map(), loaded: ref(false) }],
-  ['ko', { root: 'ko', digests: new Set(ko), data: new Map(), loaded: ref(false) }],
-  ['zh', { root: 'zh', digests: new Set(zh), data: new Map(), loaded: ref(false) }]
+  ['it', { root: 'ita', digests: new Set(), data: new Map(), loaded: ref(false) }],
+  ['fr', { root: 'fr', digests: new Set(), data: new Map(), loaded: ref(false) }],
+  ['es', { root: 'es', digests: new Set(), data: new Map(), loaded: ref(false) }],
+  ['ko', { root: 'ko', digests: new Set(), data: new Map(), loaded: ref(false) }],
+  ['zh', { root: 'zh', digests: new Set(), data: new Map(), loaded: ref(false) }]
 ])
+
+const digestLoaders: Record<string, () => Promise<{ default: string[] }>> = {
+  it: () => import('@/digests/ita.json'),
+  fr: () => import('@/digests/fr.json'),
+  es: () => import('@/digests/es.json'),
+  ko: () => import('@/digests/ko.json'),
+  zh: () => import('@/digests/zh.json'),
+}
 
 export async function checkImageExists(language: string = localStorage.getItem('language') || 'en') {
   if (language === 'en' || !imgHelper.has(language)) return
@@ -30,7 +32,10 @@ export async function checkImageExists(language: string = localStorage.getItem('
   const helper = imgHelper.get(language) || defaultHelper
   if (!helper.root || helper.loaded.value) return
 
-  const store = useSiteSettingsStore()
+  const digest = await digestLoaders[language]?.()
+  if (!digest) return
+
+  helper.digests = new Set(digest.default)
 
   helper.digests.forEach((originPath) => {
     const path = originPath.replace(/^\//, '')

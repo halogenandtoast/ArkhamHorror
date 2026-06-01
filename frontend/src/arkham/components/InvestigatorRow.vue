@@ -27,7 +27,7 @@ const expanded = ref(false)
 const storyCards = computed(() => {
   const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id]
   if (fromMeta) {
-    return fromMeta.map((c) => ({tag: 'CardContents', ...c} as CardContents))
+    return (fromMeta as Omit<CardContents, 'tag'>[]).map((c: Omit<CardContents, 'tag'>) => ({tag: 'CardContents', ...c} as CardContents))
   }
 
   return props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || []

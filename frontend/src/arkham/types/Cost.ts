@@ -27,7 +27,7 @@ export type GenericCost = {
 
 export type Cost = Costs | ActionCost | OtherCost | GenericCost
 
-export const costDecoder: JsonDecoder.Decoder<Cost> = JsonDecoder.succeed<Cost>().flatMap((value) => {
+export const costDecoder: JsonDecoder.Decoder<Cost> = JsonDecoder.succeed().flatMap((value: unknown) => {
   if (value && typeof value === 'object' && typeof (value as { tag?: unknown }).tag === 'string') {
     return JsonDecoder.constant(value as Cost)
   }

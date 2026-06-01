@@ -48,11 +48,12 @@ interface LocationData {
   travel: number | null
   unlocked: boolean
 }
-interface MapData {
+type LocationInputData = Partial<Pick<LocationData, 'travel'>> & Pick<LocationData, 'unlocked'>
+export interface MapData {
   current: string
   hasTicket: boolean
-  available: MapLocationId[]
-  locations: [MapLocationId, LocationData][]
+  available: string[]
+  locations: [string, LocationInputData][]
 } 
 
 const send = inject<(msg: string) => void>('send', () => {})
@@ -108,14 +109,16 @@ const data = {
 }
 
 //convert props.mapData.locations to a Record<MapLocationId, LocationData>
-const locationData = computed<Record<MapLocationId, LocationData>>(() => {
-  const record: Record<MapLocationId, LocationData> = {} as Record<MapLocationId, LocationData>
+const locationData = computed<Record<string, LocationData>>(() => {
+  const record: Record<string, LocationData> = {}
   for (const [key, value] of props.mapData.locations) {
     const unlocked = props.mapData.available.includes(key)
-    if (greenLocations.includes(key)) {
-      record[key] = {...value, ...data[key], travel: (value.travel ?? 0) + 1 , unlocked }
+    const mapPoint = data[key as MapLocationId]
+    if (!mapPoint) continue
+    if ((greenLocations as readonly string[]).includes(key)) {
+      record[key] = {...value, ...mapPoint, travel: (value.travel ?? 0) + 1 , unlocked }
     } else {
-      record[key] = {...value, ...data[key], unlocked}
+      record[key] = {...value, ...mapPoint, travel: value.travel ?? null, unlocked}
     }
   }
   return record

@@ -127,8 +127,10 @@ function revealFacedownCard(card: Card): Card {
     case 'PlayerCard':
     case 'EncounterCard':
       return { ...card, contents: { ...card.contents, facedown: false } }
-    case 'VengeanceCard':
-      return { ...card, contents: revealFacedownCard(card.contents) }
+    case 'VengeanceCard': {
+      const contents = card.contents
+      return { ...card, contents: { ...contents, contents: { ...contents.contents, facedown: false } } }
+    }
   }
 }
 

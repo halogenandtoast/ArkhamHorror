@@ -99,7 +99,7 @@ const deckLabel = computed(() => {
 <template>
   <div class="scenario-deck-area">
     <div v-if="topOfDiscard" class="discard-card">
-      <img :src="topOfDiscardImage" class="card" />
+      <img :src="topOfDiscardImage ?? undefined" class="card" />
       <span class="deck-size">{{ discardPile!.length }}</span>
     </div>
     <div class="deck">

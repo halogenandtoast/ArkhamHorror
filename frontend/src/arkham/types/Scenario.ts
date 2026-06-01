@@ -77,9 +77,9 @@ export type Scenario = {
   encounterDeck: CardContents[];
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
-  meta: any;
+  meta: Record<string, unknown>;
   log: Remembered[];
-  storyCards: { [key: string]: CardContents[] };
+  storyCards: { [key: string]: Card[] };
   campaignStep: CampaignStep | null;
 }
 
@@ -97,8 +97,8 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
 
 export type Remembered=
     { tag: "YouOweBiancaResources", contents: number } |
-    { tag: "RememberNamed", actualTag: string, name: Name } |
-    { tag: string }
+    { tag: "RememberNamed" | "RememberedName", actualTag: string, name: Name } |
+    { tag: string, contents?: undefined, actualTag?: undefined, name?: undefined }
 
 const rememberedDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<Remembered>(
@@ -116,8 +116,8 @@ const rememberedDecoder = JsonDecoder.oneOf([
       tag: JsonDecoder.string(),
       contents: JsonDecoder.object({ getLabel: nameDecoder, unLabel: JsonDecoder.string() }, 'labeled').map(res => res.getLabel)
     },
-    'Remembered').map(({tag, contents}) => ({ tag: "RememberedName", actualTag: tag, name: contents })),
-  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string() }, 'Remembered')
+    'Remembered').map<Remembered>(({tag, contents}) => ({ tag: "RememberedName", actualTag: tag, name: contents })),
+  JsonDecoder.object( { tag: JsonDecoder.string() }, 'Remembered').map<Remembered>(({ tag }) => ({ tag }))
 ], 'Remembered');
 
 
@@ -138,10 +138,12 @@ function intMapOfCardsDecoder(name: string) {
   )
 }
 
-export const scenarioDecoder = JsonDecoder.object<Scenario>({
+type DecodedScenario = Omit<Scenario, 'foundCards'> & { search: Record<string, Card[]> }
+
+export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string(),
-  meta: JsonDecoder.succeed(),
+  meta: JsonDecoder.succeed().map((meta: unknown) => meta as Record<string, unknown>),
   reference: JsonDecoder.string(),
   additionalReferences: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
   log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
@@ -152,7 +154,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   deckDiscards: JsonDecoder.oneOf<[string, Card[]][]>([
     JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
-    JsonDecoder.succeed<[string, Card[]][]>([]),
+    JsonDecoder.constant([] as [string, Card[]][]),
   ], 'deckDiscards'),
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
@@ -162,7 +164,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
       '[TarotScope, TarotCard[]][]'
     ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
-  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
+  search: v2Optional(searchDecoder).map((search?: Search) => search?.searchFoundCards || {}),
   counts:
     JsonDecoder.array<[string, number]>(
       JsonDecoder.oneOf([
@@ -215,7 +217,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
     }),
   storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
   campaignStep: JsonDecoder.nullable(campaignStepDecoder),
-}, 'Scenario').map(({search, ...rest}) => ({...rest, foundCards: search}));
+}, 'Scenario').map<Scenario>(({search, ...rest}) => ({...rest, foundCards: search}));
 
 export function scenarioToKeyI18n(scenario: Scenario): string {
   const full = scenarioToI18n(scenario);

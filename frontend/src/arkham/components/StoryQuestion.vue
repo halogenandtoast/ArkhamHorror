@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType, type Question } from '@/arkham/types/Question';
-import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel } from '@/arkham/types/Message';
+import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel, Info, type Message } from '@/arkham/types/Message';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage, investigatorPortrait } from '@/arkham/cardImages';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
@@ -14,7 +14,7 @@ import PickDestiny from '@/arkham/components/PickDestiny.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
-import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue';
+import WorldMap, { type MapData } from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 
 export interface Props {
   game: Game
@@ -53,63 +53,51 @@ const label = function(body: string) {
 
 const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
 
-const portraitChoices = computed(() => {
-  if (!question.value) return
+const portraitChoices = computed<[PortraitLabel, number][]>(() => {
+  const q = question.value
+  if (!q) return []
 
-  if (!['QuestionLabel', 'ChooseOne'].includes(question.value.tag)) {
-    return []
+  if (q.tag === QuestionType.CHOOSE_ONE) {
+    return q.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
   }
 
-  if (question.value.tag !== 'ChooseOne' && question.value.question.tag !== 'ChooseOne') {
-    return []
+  if (q.tag === QuestionType.QUESTION_LABEL && q.question.tag === QuestionType.CHOOSE_ONE) {
+    return q.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
   }
 
-  if (question.value.tag === 'ChooseOne') {
-    return question.value.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
-  }
-
-  return question.value.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
+  return []
 })
 
-const labelChoices = computed(() => {
-  if (!question.value) return
+type StoryLabelChoice = Label | TooltipLabel | ChaosTokenLabel | CardLabel | Done | Info
+const isStoryLabelChoice = (c: Message): c is StoryLabelChoice =>
+  c.tag === MessageType.LABEL ||
+  c.tag === MessageType.INFO ||
+  c.tag === MessageType.TOOLTIP_LABEL ||
+  c.tag === MessageType.CARD_LABEL ||
+  c.tag === MessageType.DONE ||
+  c.tag === MessageType.CHAOS_TOKEN_LABEL
 
-  if (question.value.tag === 'QuestionLabel') {
-    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
-      return []
-    }
+const labelChoices = computed<[StoryLabelChoice, number][]>(() => {
+  const q = question.value
+  if (!q) return []
 
-    return question.value.question.choices.flatMap<[Label | TooltipLabel | ChaosTokenLabel | CardLabel | Done, number]>((c, idx) => {
-      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE, MessageType.CHAOS_TOKEN_LABEL].includes(c.tag)) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.QUESTION_LABEL) {
+    const inner = q.question
+    if (inner.tag !== QuestionType.CHOOSE_ONE && inner.tag !== QuestionType.CHOOSE_UP_TO_N && inner.tag !== QuestionType.CHOOSE_N) return []
+    return inner.choices.flatMap<[StoryLabelChoice, number]>((c, idx) => isStoryLabelChoice(c) ? [[c, idx]] : [])
   }
 
-  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
-    return question.value.choices.flatMap<[Label | TooltipLabel | CardLabel | ChaosTokenLabel | Done, number]>((c, idx) => {
-      if ([MessageType.LABEL, MessageType.TOOLTIP_LABEL, MessageType.CHAOS_TOKEN_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.CHOOSE_ONE || q.tag === QuestionType.CHOOSE_UP_TO_N || q.tag === QuestionType.CHOOSE_N) {
+    return q.choices.flatMap<[StoryLabelChoice, number]>((c, idx) => isStoryLabelChoice(c) ? [[c, idx]] : [])
   }
+
+  return []
 })
 
 const questionImage = computed(() => {
-
-  if (question.value.tag !== 'QuestionLabel') {
-    return null
-  }
-
-  if(question.value.card) {
-    return cardLabelImage(question.value.card)
-  }
-
-  return null
+  const q = question.value
+  if (!q || q.tag !== QuestionType.QUESTION_LABEL) return null
+  return q.card ? cardLabelImage(q.card) : null
 })
 
 const choose = (idx: number) => {
@@ -133,31 +121,18 @@ const flippableCard = (cardCode: string) => {
   }
 }
 
-const scenarioChoices = computed(() => {
-  if (!question.value) return []
+const scenarioChoices = computed<[ScenarioLabel, number][]>(() => {
+  const q = question.value
+  if (!q) return []
 
-  if (question.value.tag === 'QuestionLabel') {
-    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
-      return []
-    }
-
-    return question.value.question.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
-      if (c.tag === MessageType.SCENARIO_LABEL) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.QUESTION_LABEL) {
+    const inner = q.question
+    if (inner.tag !== QuestionType.CHOOSE_ONE && inner.tag !== QuestionType.CHOOSE_UP_TO_N && inner.tag !== QuestionType.CHOOSE_N) return []
+    return inner.choices.flatMap<[ScenarioLabel, number]>((c, idx) => c.tag === MessageType.SCENARIO_LABEL ? [[c, idx]] : [])
   }
 
-  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
-    return question.value.choices.flatMap<[ScenarioLabel, number]>((c, idx) => {
-      if (c.tag === MessageType.SCENARIO_LABEL) {
-        return [[c, idx]]
-      } else {
-        return []
-      }
-    })
+  if (q.tag === QuestionType.CHOOSE_ONE || q.tag === QuestionType.CHOOSE_UP_TO_N || q.tag === QuestionType.CHOOSE_N) {
+    return q.choices.flatMap<[ScenarioLabel, number]>((c, idx) => c.tag === MessageType.SCENARIO_LABEL ? [[c, idx]] : [])
   }
 
   return []
@@ -166,6 +141,11 @@ const scenarioChoices = computed(() => {
 const scenarioBoxImage = (scenarioId: string) => {
   return imgsrc(`boxes/${scenarioId}.jpg`)
 }
+
+const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK_CAMPAIGN_SPECIFIC; contents: ['embark', MapData] } =>
+  q.tag === QuestionType.PICK_CAMPAIGN_SPECIFIC &&
+  Array.isArray(q.contents) &&
+  q.contents[0] === 'embark'
 </script>
 
 <template>
@@ -181,7 +161,7 @@ const scenarioBoxImage = (scenarioId: string) => {
         @choose="choose"
       />
     </template>
-    <div class="question-label" v-else-if="question && question.tag === 'QuestionLabel'">
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.QUESTION_LABEL">
       <div v-if="questionImage" class="question-image">
         <img :src="questionImage" class="card" />
       </div>
@@ -243,14 +223,14 @@ const scenarioBoxImage = (scenarioId: string) => {
       </div>
     </div>
 
-    <div class="question-label" v-else-if="question && question.tag === 'PickCampaignSpecific'">
-      <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
+    <div class="question-label" v-else-if="question && isEmbarkQuestion(question)">
+      <WorldMap :game="game" :playerId="effectivePlayerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
     </div>
 
-    <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.PICK_SUPPLIES">
       <PickSupplies :game="game" :playerId="effectivePlayerId" :question="question" @choose="choose" />
     </div>
-    <div class="question-label" v-else-if="question && question.tag === 'PickDestiny'">
+    <div class="question-label" v-else-if="question && question.tag === QuestionType.PICK_DESTINY">
       <PickDestiny :game="game" :playerId="effectivePlayerId" :question="question" @choose="choose" />
     </div>
     <template v-else-if="choices.length > 0">
@@ -298,7 +278,7 @@ const scenarioBoxImage = (scenarioId: string) => {
       :game="game"
       :playerId="effectivePlayerId"
       :noStory="true"
-      v-else-if="!question || (question.tag !== 'PickSupplies' && question.tag !== 'PickDestiny')"
+      v-else
       @choose="choose"
     />
   </div>

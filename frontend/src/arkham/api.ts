@@ -112,7 +112,7 @@ export const syncDeck = async (deckId: string): Promise<Deck> => {
   return deckDecoder.decodePromise(data)
 }
 
-export const fileBug = (gameId: string): Promise<void> =>
+export const fileBug = (gameId: string): Promise<{ data: string }> =>
   api.post(`arkham/games/${gameId}/file-bug`)
 
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> =>

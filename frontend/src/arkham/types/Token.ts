@@ -66,9 +66,10 @@ function literalUnionDecoder<const T extends readonly string[]>(
 }
 
 export const tokenDecoder = literalUnionDecoder(TOKENS, "Token");
-export type Token = JsonDecoder.FromDecoder<typeof tokenDecoder>;
+export type KnownToken = JsonDecoder.FromDecoder<typeof tokenDecoder>;
+export type Token = KnownToken | (string & {});
 export const TokenType = Object.fromEntries(TOKENS.map((t) => [t, t])) as {
-  readonly [K in Token]: K;
+  readonly [K in KnownToken]: K;
 };
 export type Tokens = Partial<Record<Token, number>>;
 export function isUse(t: Token): boolean {

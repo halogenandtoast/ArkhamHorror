@@ -8,7 +8,7 @@ import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Location';
 import { imgsrc } from '@/arkham/helpers';
-import { TokenType } from '@/arkham/types/Token';
+import { TokenType, type Token } from '@/arkham/types/Token';
 
 type Props = {
   game: Game
@@ -44,10 +44,10 @@ const image = computed(() => {
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 
 const hasPool = computed(() => {
-  return clues.value > 0;
+  return (clues.value ?? 0) > 0;
 })
 
-const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
   debug.send(props.game.id,
     { tag: 'CreateWindowModifierEffect'
     , contents:
@@ -77,7 +77,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <img :src="image" class="card-no-overlay" />
           </div>
           <div v-if="hasPool" class="pool">
-            <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
+            <PoolItem v-if="(clues ?? 0) > 0" type="clue" :amount="clues ?? 0" />
           </div>
         </div>
       </div>

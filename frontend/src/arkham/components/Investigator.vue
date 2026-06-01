@@ -15,7 +15,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import { cardId } from '@/arkham/types/Card'
+import { cardId, toCardContents } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
@@ -226,7 +226,7 @@ const isBlanked = computed(() => blankedModifier.value !== null)
 const blankedCardCode = computed<string | null>(() => {
   const m = blankedModifier.value
   if (!m) return null
-  if (m.card) return cardArt(m.card.contents.cardCode)
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
   return sourceCardCode(m.source, props.game)
 })
 

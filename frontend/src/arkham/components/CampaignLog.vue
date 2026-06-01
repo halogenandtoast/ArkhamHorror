@@ -55,13 +55,13 @@ const sectionComponentById: Record<string, Component> = {
 }
 
 // --- Utilities -----------------------------------------------------------------
-const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {} as any, recordedCounts: [], partners: {} as any }
+const EMPTY_LOG: LogContents = { recorded: [], recordedSets: {}, recordedCounts: [], partners: {}, options: [] }
 
 const fullName = (name: Name): string => (name.subtitle ? `${name.title}: ${name.subtitle}` : name.title)
 
 
 const time = computed(() =>
-  selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
+  selectedLog.value.recordedCounts.find((r) => r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')?.[1] ?? null
 )
 
 const theta = computed(() => props.game.campaign?.meta?.theta)
@@ -149,7 +149,7 @@ const remembered = computed(() => {
   const toKey = (s: string) => (s.charAt(0).toLowerCase() + s.slice(1)).replace(/'/g, '')
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') return `You owe Bianca resources (${record.contents})`
-    if (record.tag === 'RememberedName') {
+    if (record.tag === 'RememberedName' && record.actualTag && record.name) {
       return t(`${prefix}.remembered.${toKey(record.actualTag)}`, {
         name: simpleName(record.name),
       })
@@ -285,9 +285,9 @@ const relationshipLevelBySectionId = computed<Record<string, number>>(() => {
   const m: Record<string, number> = {}
 
   for (const [k, value] of selectedLog.value.recordedCounts) {
-    const sectionTag = k?.contents?.tag
-    const leafTag = k?.contents?.contents
-    if (!sectionTag || !leafTag) continue
+    if (!isSection(k)) continue
+    const sectionTag = k.contents.tag
+    const leafTag = k.contents.contents
 
     const sectionId = lowerFirst(sectionTag)
     if (!/RelationshipLevel$/.test(leafTag)) continue
@@ -303,8 +303,8 @@ const sectionsFromCounts = computed<Record<string, { baseKey: string; id: string
     const m: Record<string, { baseKey: string; id: string; titleKey: string; orderKey: string }> = {}
 
     for (const [k] of selectedLog.value.recordedCounts) {
-      const sectionTag = k?.contents?.tag
-      if (!sectionTag) continue
+      if (!isRecord(k.contents) || typeof k.contents.tag !== 'string') continue
+      const sectionTag = k.contents.tag
 
       const baseKey = lowerFirst(k.tag.replace(/Key$/, ''))
       const sectionId = lowerFirst(sectionTag)
@@ -547,13 +547,9 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
   const unlocked = props.game.campaign?.meta?.unlockedLocations || []
-  return {
-    current,
-    hasTicket: false,
-    available: unlocked,
-    locations: [
-      ['Alexandria', { unlocked: false }],
-      ['Anchorage', { unlocked: false }],
+  const locations: [string, { unlocked: boolean }][] = [
+    ['Alexandria', { unlocked: false }],
+    ['Anchorage', { unlocked: false }],
       ['Arkham', { unlocked: false }],
       ['Bermuda', { unlocked: false }],
       ['BermudaTriangle', { unlocked: false }],
@@ -587,8 +583,13 @@ const mapData = computed(() => {
       ['Tokyo', { unlocked: false }],
       ['Tunguska', { unlocked: false }],
       ['Venice', { unlocked: false }],
-      ['YborCity', { unlocked: false }],
-    ],
+    ['YborCity', { unlocked: false }],
+  ]
+  return {
+    current,
+    hasTicket: false,
+    available: unlocked,
+    locations,
   }
 })
 </script>

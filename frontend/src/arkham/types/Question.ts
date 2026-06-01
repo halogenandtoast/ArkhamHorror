@@ -6,7 +6,14 @@ import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
 import { Token, tokenDecoder } from '@/arkham/types/Token';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question =
+type QuestionCommon = {
+  choices?: Message[]
+  question?: Question
+  readCards?: string[] | null
+  label?: string
+}
+
+export type Question = QuestionCommon & (
   | ChooseOne 
   | ChooseUpToN 
   | ChooseSome 
@@ -31,6 +38,7 @@ export type Question =
   | PickCampaignSpecific
   | ChooseExchangeAmounts
   | ContinueCampaign
+)
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -177,7 +185,7 @@ export type PickDestiny = {
 
 export type PickCampaignSpecific = {
   tag: QuestionType.PICK_CAMPAIGN_SPECIFIC
-  contents: any
+  contents: unknown
 }
 
 export type DropDown = {

@@ -62,7 +62,7 @@ const label = function(body: string) {
         <button v-html="label(choice.label)" disabled></button>
       </div>
       <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
-        <FormattedEntry :entry="choice.flavor" />
+        <FormattedEntry v-for="(entry, entryIndex) in choice.flavor.body" :key="entryIndex" :entry="entry" />
       </div>
       <div v-else-if="choice.tag === MessageType.DONE" class="message-label">
         <button @click="choose(index)" v-html="label(choice.label)"></button>

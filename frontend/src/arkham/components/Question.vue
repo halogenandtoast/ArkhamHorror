@@ -249,7 +249,8 @@ const doneLabel = computed(() => {
   const doneIndex = choices.value.findIndex((c) => c.tag === MessageType.DONE)
 
   if (doneIndex !== -1) {
-    return { label: choices.value[doneIndex].label, index: doneIndex } // choices.value[doneIndex].label
+    const choice = choices.value[doneIndex]
+    return choice.tag === MessageType.DONE ? { label: choice.label, index: doneIndex } : null
   }
 
   return null
@@ -331,7 +332,8 @@ const questionImage = computed(() => {
 })
 
 const cardIdImage = (cardId: string) => {
-  return (imgsrc(cardImage(props.game.cards[cardId])))
+  const card = props.game.cards[cardId]
+  return card ? imgsrc(cardImage(card)) : ''
 }
 
 const portraitLabelImage = (investigatorId: string) => investigatorPortrait(props.game, investigatorId)
@@ -400,11 +402,12 @@ const flippableCard = (cardCode: string) => {
     cardType: 'UnknownType',
     art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: '', subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {}
   }
 }
 
@@ -428,8 +431,8 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
   <div class='question-wrapper'>
     <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
     <div v-if="cardPiles.length > 0" class="cardPiles">
-      <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
-        <div v-for="card in pile" :key="card" class="pile-card">
+      <div v-for="{pile, index} in cardPiles" :key="index" class="card-pile" @click="choose(index)">
+        <div v-for="card in pile" :key="`${card.cardId}-${card.cardOwner ?? ''}`" class="pile-card">
           <img class="card" :src="cardIdImage(card.cardId)" />
           <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
         </div>

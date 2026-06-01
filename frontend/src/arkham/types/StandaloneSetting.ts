@@ -21,6 +21,12 @@ export type Recordable = { key: string, content: string, ifRecorded?: SettingCon
 
 export type StandaloneSetting
   = {
+      type: "Group",
+      key: string,
+      content: StandaloneSetting[],
+      ifRecorded?: SettingCondition[]
+    }
+  | {
       type: "ToggleCrossedOut",
       key: string,
       recordable: RecordableType,

@@ -35,10 +35,12 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choose = (idx: number) => emit('choose', idx)
 
 const checkmarks = computed(() => {
-  return props.story.modifiers?.filter(m =>
-    m.type.tag === 'UIModifier' &&
-    m.type.contents.tag === 'OverlayCheckmark'
-  ).map(m => m.type.contents) ?? []
+  return props.story.modifiers?.flatMap((m) => {
+    if (m.type.tag !== 'UIModifier') return []
+    const contents = m.type.contents
+    if (typeof contents !== 'object' || contents.tag !== 'OverlayCheckmark') return []
+    return [contents]
+  }) ?? []
 })
 
 
@@ -146,7 +148,7 @@ const hasPool = computed(() => {
       </button>
     </div>
     <div v-if="setAsideInfestationTokens.length > 0" class="infestation-tokens">
-      <Token v-for="token in setAsideInfestationTokens" :key="token.id" :token="Arkham.infestationAsChaosToken(token)" :playerId="playerId" :game="game" @choose="choose" />
+      <Token v-for="token in setAsideInfestationTokens" :key="token.infestationTokenId" :token="Arkham.infestationAsChaosToken(token)" :playerId="playerId" :game="game" @choose="choose" />
     </div>
     <DebugStory v-if="debugging" :story="story" @close="debugging = false" />
   </div>

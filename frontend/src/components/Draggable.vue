@@ -192,7 +192,7 @@ onBeforeUnmount(() => {
 
 function moveUp() {
   const modals = document.querySelectorAll('.draggable')
-  modals.forEach(modal => modal.style.zIndex = 99)
+  modals.forEach(modal => { (modal as HTMLElement).style.zIndex = '99' })
 
   const el = draggable.value
   if (el) {

@@ -26,7 +26,7 @@ const isMultiplayer = ref(false)
 const importMode = ref<'Solo' | 'WithFriends'>('Solo')
 const selectedInvestigator = ref<string | null>(null)
 const gamePreview = ref<GamePreview | null>(null)
-const gameStub = { campaign: null, scenario: null } as Partial<Game>
+const gameStub = { campaign: null, scenario: null } as Game
 const loading = ref(false)
 const error = ref<string | null>(null)
 

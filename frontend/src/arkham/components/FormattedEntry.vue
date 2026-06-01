@@ -3,10 +3,11 @@ import { defineComponent, h } from 'vue'
 import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText'
 import { baseUrl, formatContent, imgsrc } from '@/arkham/helpers'
 import { cardImage } from '@/arkham/cardImages'
-import { I18n, useI18n } from 'vue-i18n'
+import { type ComposerTranslation, useI18n } from 'vue-i18n'
 import { tarotArcanaImage } from '@/arkham/types/TarotCard'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import CodexEntry from '@/arkham/components/CodexEntry.vue'
+import ChaosTokenMorph from '@/arkham/components/ChaosTokenMorph.vue'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
@@ -59,12 +60,12 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   }
 }
 
-function formatListEntry(t: I18n, entry: { tag: 'ListEntry', list: ListItemEntry[] }): any {
+function formatListEntry(t: ComposerTranslation, entry: ListItemEntry): ReturnType<typeof h> {
   const inner = formatEntry(t, entry.entry)
-  return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e) => formatListEntry(t, e)))])
+  return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e: ListItemEntry) => formatListEntry(t, e)))])
 }
 
-function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): any {
+function formatEntry(t: ComposerTranslation, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): ReturnType<typeof h> {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
     case 'HeaderEntry': if (entry.level == 1) {
@@ -88,6 +89,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: 
     case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: cardImage(entry.cardCode)})])
     case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
     case 'ChaosTokenEntry': return h('div', [h('img', { class: entryStyles(entry), src: chaosTokenImage(entry.chaosTokenFace)})])
+    case 'ChaosTokenMorphEntry': return h(ChaosTokenMorph, { from: entry.morphFrom, to: entry.morphTo })
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }

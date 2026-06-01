@@ -41,6 +41,7 @@ export type FlavorTextEntry
   | { tag: 'CardEntry', cardCode: string, imageModifiers: ImageModifier[] }
   | { tag: 'TarotEntry', tarot: TarotCardArcana }
   | { tag: 'ChaosTokenEntry', chaosTokenFace: TokenFace }
+  | { tag: 'ChaosTokenMorphEntry', morphFrom: TokenFace, morphTo: TokenFace }
   | { tag: 'EntrySplit' }
 
 export type FlavorText = {
@@ -93,6 +94,7 @@ export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = Json
   JsonDecoder.object({ tag: JsonDecoder.literal('CardEntry'), cardCode: JsonDecoder.string(), imageModifiers: JsonDecoder.array(imageModifierDecoder, 'ImageModifiers[]') }, 'CardEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('TarotEntry'), tarot: tarotCardArcanaDecoder}, 'TarotEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('ChaosTokenEntry'), chaosTokenFace: tokenFaceDecoder}, 'ChaosTokenEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ChaosTokenMorphEntry'), morphFrom: tokenFaceDecoder, morphTo: tokenFaceDecoder}, 'ChaosTokenMorphEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('EntrySplit')}, 'EntrySplit'),
 ], 'FlavorTextEntry');
 

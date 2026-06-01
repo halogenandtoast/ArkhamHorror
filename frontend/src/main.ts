@@ -16,7 +16,7 @@ import messages from '@/locales/messages'
 import mitt from 'mitt';
 
 const language = localStorage.getItem('language')
-const naviLanguage = navigator.language || navigator.userLanguage || 'en'
+const naviLanguage = navigator.language || 'en'
 const currentLanguage = language ?? naviLanguage.split('-')[0]
 if (!language) { localStorage.setItem('language', currentLanguage) }
 

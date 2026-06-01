@@ -39,7 +39,7 @@ const investigator = computed(() => {
   return Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
 })
 
-const skipTriggers = ref(investigator.value.settings.globalSettings.ignoreUnrelatedSkillTestTriggers)
+const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
 
 watch(() => skipTriggers.value, (value) => {
   if (investigator.value) {
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="settings">
     <div class="settings-header" :style="headerStyle">
-      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator.name.title})}}</h2>
+      <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator?.name.title ?? ''})}}</h2>
     </div>
 
     <div class="settings-body">

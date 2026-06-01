@@ -356,7 +356,15 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.literal(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message =
+type MessageCommon = {
+  label?: string
+  target?: Target
+  component?: Component
+  investigatorId?: string
+  index?: number
+}
+
+export type Message = MessageCommon & (
   | Label
   | CostLabel
   | Info
@@ -388,6 +396,7 @@ export type Message =
   | SkipTriggersButton 
   | CardPile
   | ScenarioLabel
+)
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {

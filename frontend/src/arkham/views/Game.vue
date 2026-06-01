@@ -120,7 +120,7 @@ interface PlayabilityInfo {
   checks: [string, string | null][]
 }
 
-const game = ref<Arkham.Game | null>(null)
+const game = shallowRef<Arkham.Game | null>(null)
 const gameCard = ref<GameCard | null>(null)
 const playabilityInfo = ref<PlayabilityInfo | null>(null)
 const gameLog = shallowRef<readonly string[]>(Object.freeze([]))
@@ -195,6 +195,12 @@ const skipAllAvailable = computed(() => {
   if (!solo.value || !game.value) return false
   return skipTriggerEntries(game.value).length > 1
 })
+
+function setGameQuestion(question: Record<string, Question>) {
+  if (!game.value) return
+  game.value = { ...game.value, question }
+}
+
 const websocketUrl = computed(() => {
   const spectatePrefix = props.spectate ? '/spectate' : ''
   return `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`
@@ -214,7 +220,7 @@ watch(
         } catch (e) {
           console.error(e)
         }
-        window.g = newGame
+        ;(window as Window & { g?: Arkham.Game }).g = newGame
         game.value = newGame
         solo.value = multiplayerMode === 'Solo'
         gameLog.value = Object.freeze(newGame.log)
@@ -250,7 +256,7 @@ const baseURL = `${window.location.protocol}//${window.location.hostname}${windo
 const onError = () => {
   processing.value = false
   if (game.value && oldQuestion.value) {
-    game.value.question = oldQuestion.value
+    setGameQuestion(oldQuestion.value)
   }
   socketError.value = true
 }
@@ -288,10 +294,10 @@ function scheduleApplyUpdate(payload: string) {
   decoding = true
   Arkham.gameDecoder
     .decodePromise(payload)
-    .then(async (updatedGame) => {
-      await loadAllImages(updatedGame)
+    .then((updatedGame) => {
       game.value = updatedGame
       gameLog.value = Object.freeze([...updatedGame.log])
+      preloadImages(updatedGame)
       if (solo.value === true) {
         if (Object.keys(game.value.question).length == 1) {
           playerId.value = Object.keys(game.value.question)[0]
@@ -332,7 +338,7 @@ function sendSkipFor(targetPlayerId: string, choiceIdx: number) {
   if (!game.value || props.spectate) return
   oldQuestion.value = game.value.question
   const questionVersion = game.value.scenarioSteps
-  game.value.question = {}
+  setGameQuestion({})
   processing.value = true
   send(
     JSON.stringify({
@@ -364,7 +370,7 @@ const handleResult = (result: ServerResult) => {
       if (props.spectate) return
       error.value = result.contents
       if (game.value && oldQuestion.value) {
-        game.value.question = oldQuestion.value
+        setGameQuestion(oldQuestion.value)
       }
       return
     case 'GameMessage':
@@ -385,7 +391,7 @@ const handleResult = (result: ServerResult) => {
               origin: { y: 0.7 },
             }
 
-            function fire(particleRatio, opts) {
+            function fire(particleRatio: number, opts: Parameters<typeof confetti>[0]) {
               confetti({
                 ...defaults,
                 ...opts,
@@ -466,7 +472,7 @@ const handleResult = (result: ServerResult) => {
     case 'GameUpdate':
       if (uiLock.value) {
         qPush(result)
-        if (game.value) game.value.question = {}
+        if (game.value) setGameQuestion({})
       } else {
         scheduleApplyUpdate(result.contents)
       }
@@ -783,7 +789,7 @@ const undoLock = ref(false)
 async function undo() {
   processing.value = true
   const oldQuestion = game.value?.question
-  if (game.value) game.value.question = {}
+  if (game.value) setGameQuestion({})
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
@@ -794,7 +800,7 @@ async function undo() {
     await undoChoice(props.gameId, debug.active)
   } catch (e) {
     processing.value = false
-    if (game.value && oldQuestion) game.value.question = oldQuestion
+    if (game.value && oldQuestion) setGameQuestion(oldQuestion)
     console.log(e)
   }
   undoLock.value = false
@@ -803,7 +809,7 @@ async function undo() {
 async function undoScenario() {
   undoScenarioDialog.value?.close()
   processing.value = true
-  if (game.value) game.value.question = {}
+  if (game.value) setGameQuestion({})
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
@@ -815,7 +821,7 @@ async function undoBoundary(call: (gameId: string) => Promise<void>) {
   if (undoLock.value) return
   processing.value = true
   const oldQuestion = game.value?.question
-  if (game.value) game.value.question = {}
+  if (game.value) setGameQuestion({})
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
@@ -825,7 +831,7 @@ async function undoBoundary(call: (gameId: string) => Promise<void>) {
     await call(props.gameId)
   } catch (e) {
     processing.value = false
-    if (game.value && oldQuestion) game.value.question = oldQuestion
+    if (game.value && oldQuestion) setGameQuestion(oldQuestion)
     console.log(e)
   }
   undoLock.value = false
@@ -874,6 +880,12 @@ const continueUI = () => {
   uiLock.value = false
 }
 
+function preloadImages(game: Arkham.Game): void {
+  void loadAllImages(game).catch((e: unknown) => {
+    console.error(e)
+  })
+}
+
 async function loadAllImages(game: Arkham.Game): Promise<void> {
   const pending: string[] = []
   for (const card of Object.values(game.cards)) {
@@ -892,7 +904,10 @@ async function loadAllImages(game: Arkham.Game): Promise<void> {
             preloaded.add(url)
             resolve()
           }
-          img.onerror = () => reject(`Could not load ${url}`)
+          img.onerror = () => {
+            preloaded.add(url)
+            reject(`Could not load ${url}`)
+          }
           img.src = url
         }),
     ),
@@ -904,7 +919,7 @@ async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
-    game.value.question = {}
+    setGameQuestion({})
     processing.value = true
     send(
       JSON.stringify({
@@ -918,7 +933,7 @@ async function choose(idx: number) {
 async function chooseDeck(deckId: string): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
-    game.value.question = {}
+    setGameQuestion({})
     processing.value = true
     send(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value }))
   }
@@ -927,7 +942,7 @@ async function chooseDeck(deckId: string): Promise<void> {
 async function chooseDeckList(deckList: object): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
-    game.value.question = {}
+    setGameQuestion({})
     processing.value = true
     send(JSON.stringify({ tag: 'DeckListAnswer', deckList, playerId: playerId.value }))
   }
@@ -937,7 +952,7 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
-    game.value.question = {}
+    setGameQuestion({})
     processing.value = true
     send(
       JSON.stringify({
@@ -952,7 +967,7 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
-    game.value.question = {}
+    setGameQuestion({})
     processing.value = true
     send(
       JSON.stringify({

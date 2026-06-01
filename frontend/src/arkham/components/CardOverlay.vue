@@ -8,6 +8,7 @@ import {
   watchEffect,
   onMounted,
   onUnmounted,
+  type VNodeRef,
 } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
@@ -600,14 +601,15 @@ const queueFit = () => {
   })
 }
 
-const setLabelRef = (id: string, deps: () => string) => (el: SVGTextElement | null) => {
-  if (!el) {
+const setLabelRef = (id: string, deps: () => string): VNodeRef => (el) => {
+  const textEl = el instanceof SVGTextElement ? el : null
+  if (!textEl) {
     labelRefs.delete(id)
     labelFits.delete(id)
     labelDepsSig.delete(id)
     return
   }
-  labelRefs.set(id, el)
+  labelRefs.set(id, textEl)
   const sig = deps()
   if (labelDepsSig.get(id) !== sig) {
     labelDepsSig.set(id, sig)

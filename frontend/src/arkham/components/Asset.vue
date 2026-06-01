@@ -137,7 +137,7 @@ function isAbility(v: Message): v is AbilityLabel {
 
   if (source.sourceTag === 'ProxySource') {
     if (source.source.tag === 'CardCodeSource') {
-      return source.originalSource.contents === id.value
+      return 'contents' in source.originalSource && source.originalSource.contents === id.value
     }
     if ("contents" in source.source) {
       return source.source.contents === id.value
@@ -173,7 +173,7 @@ const dragging = ref(false)
 
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
-const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
+const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && (v ?? 0) > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 
 const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) - props.asset.assignedHealthHeal)
@@ -188,7 +188,7 @@ const hasPool = computed(() => {
     keys,
   } = props.asset;
 
-  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => (v ?? 0) > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
 })
 
 const choose = (idx: number) => emits('choose', idx)
@@ -299,7 +299,7 @@ function startDrag(event: DragEvent) {
           </div>
           <template v-for="[use, amount] in uses" :key="use">
             <PoolItem
-              v-if="amount > 0"
+              v-if="(amount ?? 0) > 0"
               type="resource"
               :tooltip="formatUse(use)"
               :amount="amount"

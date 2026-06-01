@@ -158,7 +158,7 @@ export function replaceIcons(body: string) {
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 
-type InvestigatorClass =
+export type InvestigatorClass =
   | "guardian"
   | "seeker"
   | "rogue"
@@ -166,7 +166,7 @@ type InvestigatorClass =
   | "survivor"
   | "neutral"
 
-type CssClassFlags = Partial<Record<InvestigatorClass, true>>
+export type CssClassFlags = Partial<Record<InvestigatorClass, true>>
 
 const CLASS_TO_CODES: Record<InvestigatorClass, Set<string>> = {
   guardian: new Set([

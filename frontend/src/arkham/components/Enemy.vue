@@ -24,6 +24,7 @@ import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 import { Source } from '@/arkham/types/Source'
 import { isManifestedSpiritEnemy } from '@/arkham/spiritVisuals';
+import { toCardContents } from '@/arkham/types/Card';
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -165,11 +166,11 @@ const omnipotent = computed(() => {
 
 const important = computed(() => {
   const {modifiers} = props.enemy
-  return modifiers.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
+  return modifiers.some((m) => m.type.tag === "UIModifier" && typeof m.type.contents === 'object' && m.type.contents.tag === "ImportantToScenario") ?? false
 })
 
 function sourceIsSelf(source: Source): boolean {
-  if (source.tag === 'ProxySource') return sourceIsSelf(source.source)
+  if (source.sourceTag === 'ProxySource') return sourceIsSelf(source.source)
   if (source.tag === 'AbilitySource') {
     const [inner] = (source.contents as unknown) as [Source, number]
     return sourceIsSelf(inner)
@@ -193,7 +194,7 @@ const isCannotBeDamaged = computed(() => cannotBeDamagedModifier.value !== null)
 const cannotBeDamagedCardCode = computed<string | null>(() => {
   const m = cannotBeDamagedModifier.value
   if (!m) return null
-  if (m.card) return cardArt(m.card.contents.cardCode)
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
   return sourceCardCode(m.source, props.game)
 })
 

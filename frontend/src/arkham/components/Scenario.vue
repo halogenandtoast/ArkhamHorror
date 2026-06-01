@@ -15,6 +15,7 @@ import {
   provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
+import { type Scenario } from '@/arkham/types/Scenario';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
 import ConcealedCardView from '@/arkham/components/ConcealedCard.vue';
@@ -249,7 +250,7 @@ async function updateLayoutPadding() {
   const contentHeight = grid.clientHeight - current.top - current.bottom
 
   let left = 0, right = 0, top = 0, bottom = 0
-  const cells = grid.querySelectorAll<HTMLElement>('.location-cell[data-location-id]')
+  const cells = grid.querySelectorAll('.location-cell[data-location-id]') as NodeListOf<HTMLElement>
   for (const cell of cells) {
     const id = cell.dataset.locationId
     if (!id) continue
@@ -746,14 +747,15 @@ const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
 const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
-const inTheShadowLocations = computed(() => {
-  if(!props.scenario.meta) return null
-  return props.scenario.meta.locationsInShadows
+type InTheShadowLocations = { left?: string; middle?: string; right?: string }
+const inTheShadowLocations = computed<InTheShadowLocations>(() => {
+  const locations = props.scenario.meta?.locationsInShadows
+  if (!locations || typeof locations !== 'object') return {}
+  return locations as InTheShadowLocations
 })
 
 const anyInTheShadowLocations = computed(() => {
   const locations = inTheShadowLocations.value
-  if(!locations) return false
   return locations.left || locations.right || locations.middle
 })
 const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
@@ -1020,11 +1022,14 @@ function rotateImages(init: boolean) {
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
     const oY = middleCardImgRect.top + middleCardImgRect.height / 2
 
-    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img: HTMLElement) => {
+    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+      const img = el as HTMLElement
+      const label = img.dataset.label
+      if (!label) return
 
-      if (init || !legsSet.value.includes(img.dataset.label)) {
-        if(!legsSet.value.includes(img.dataset.label)) {
-          legsSet.value = [...legsSet.value, img.dataset.label]
+      if (init || !legsSet.value.includes(label)) {
+        if(!legsSet.value.includes(label)) {
+          legsSet.value = [...legsSet.value, label]
         }
         const thisRect = img.getBoundingClientRect()
         const thisX = thisRect.left
@@ -1040,7 +1045,8 @@ function rotateImages(init: boolean) {
         requestAnimationFrame(() => {
           atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
           atlachNacha.style.transition = 'transform 0.5s'
-          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((el) => {
+            const img = el as HTMLElement
             img.style.transition = 'transform 0.5s'
             img.style.transform = `rotate(${degrees}deg)`
           })

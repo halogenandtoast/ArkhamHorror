@@ -111,7 +111,7 @@ const discardCardsAction = computed(() => {
     .some(choice => 
       discards
         .value
-        .some(discardItem => discardItem.contents.id === choice.target?.contents)
+        .some(discardItem => choice.tag === 'TargetLabel' && ArkhamCard.toCardContents(discardItem).id === choice.target.contents)
     )
 })
 

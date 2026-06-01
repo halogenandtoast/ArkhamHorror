@@ -4,8 +4,9 @@ import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import CardImage from '@/arkham/components/CardImage.vue'
 
-const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]> }>(), {
+const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
   attachments: () => ({}),
+  showCounts: true,
 })
 
 const groupedCards = computed(() => {
@@ -53,7 +54,7 @@ const cardName = (card: Arkham.CardDef) => {
       <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
         <CardImage :card="card" />
         <span class="card-badges">
-          <span class="deck-card-count">x {{ count }}</span>
+          <span v-if="showCounts" class="deck-card-count">x {{ count }}</span>
           <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
             <font-awesome-icon icon="store" />
             <span>x {{ marketCardCount(card) }}</span>

@@ -6,8 +6,9 @@ import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import sets from '@/arkham/data/sets.json'
 
-const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]> }>(), {
+const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
   attachments: () => ({}),
+  showCounts: true,
 })
 
 const store = useDbCardStore()
@@ -131,7 +132,7 @@ const isUnderworldMarketCard = (card: Arkham.CardDef) => marketCardCount(card) >
           <tr>
             <td>
               <div class="card-name-cell">
-                <span class="deck-card-count">x {{ count }}</span>
+                <span v-if="showCounts" class="deck-card-count">x {{ count }}</span>
                 <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
                 <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
                   <font-awesome-icon icon="store" />

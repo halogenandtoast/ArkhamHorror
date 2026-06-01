@@ -517,8 +517,8 @@ const showSidebar = ref(false)
           <span>{{ $t('cardsView.includeEncounter') }}</span>
         </label>
       </header>
-      <CardImageView v-if="view == View.Image" :cards="cards" />
-      <CardListView v-if="view == View.List" :cards="cards" />
+      <CardImageView v-if="view == View.Image" :cards="cards" :show-counts="false" />
+      <CardListView v-if="view == View.List" :cards="cards" :show-counts="false" />
     </div>
   </div>
 </template>

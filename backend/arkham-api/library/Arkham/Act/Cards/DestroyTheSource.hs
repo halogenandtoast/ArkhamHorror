@@ -53,7 +53,9 @@ instance RunMessage DestroyTheSource where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       locations <- select $ LocationWithMostInvestigators Anywhere
       chooseOrRunOneM iid do
-        targets locations \lid -> for_ cards (`createEnemyAt_` lid)
+        targets cards \card ->
+          chooseOrRunOneM iid do
+            targets locations \lid -> createEnemyAt_ card lid
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R3

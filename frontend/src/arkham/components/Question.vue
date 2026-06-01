@@ -52,7 +52,7 @@ const toChoiceEntry = (c: Message, idx: number): [Message, number] => [c, idx]
 const questionChoices = computed(() => {
   const withoutDone = choices.value.map(toChoiceEntry).filter(([choice, _]) => {
     const { tag } = choice
-    if (tag === MessageType.ABILITY_LABEL) return true
+    if (tag === MessageType.ABILITY_LABEL) return !abilityLabelHandledElsewhere(choice)
     if (tag === MessageType.TARGET_LABEL) return !targetLabelHandledElsewhere(choice)
     if (tag === MessageType.TOOLTIP_LABEL) return true
     if (tag === MessageType.LABEL) return true
@@ -106,7 +106,41 @@ const visibleCardIds = computed(() => new Set([
   ...searchedCards.value.flatMap(([, cards]) => cards.map((card) => toCardContents(card).id)),
 ]))
 
+function abilityLabelHandledElsewhere(choice: Message) {
+  if (choice.tag !== MessageType.ABILITY_LABEL) return false
+
+  const source = choice.ability.source
+  if (source.sourceTag === 'ProxySource') {
+    return source.source.tag === 'CardCodeSource'
+      ? abilitySourceHandledElsewhere(source.originalSource)
+      : abilitySourceHandledElsewhere(source.source)
+  }
+
+  return abilitySourceHandledElsewhere(source)
+}
+
+function abilitySourceHandledElsewhere(source: any) {
+  if (typeof source.contents !== 'string') return false
+
+  switch (source.tag) {
+    case 'AssetSource': return source.contents in props.game.assets
+    case 'LocationSource': return source.contents in props.game.locations
+    case 'EnemySource': return source.contents in props.game.enemies
+    case 'TreacherySource': return source.contents in props.game.treacheries
+    case 'ActSource': return source.contents in props.game.acts
+    case 'AgendaSource': return source.contents in props.game.agendas
+    case 'EventSource': return source.contents in props.game.events
+    case 'StorySource': return source.contents in props.game.stories
+    default: return false
+  }
+}
+
 function targetLabelHandledElsewhere(choice: TargetLabel) {
+  if (choice.target.tag === 'LocationTarget') {
+    return typeof choice.target.contents === 'string'
+      && choice.target.contents in props.game.locations
+  }
+
   return choice.target.tag === 'CardIdTarget'
     && typeof choice.target.contents === 'string'
     && visibleCardIds.value.has(choice.target.contents)

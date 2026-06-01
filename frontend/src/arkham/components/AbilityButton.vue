@@ -194,7 +194,7 @@ const abilityLabel = computed(() => {
   }
 
   if (labelType.value?.tag === "ReactionAbility") {
-    return ""
+    return t('Reaction')
   }
 
   if (labelType.value?.tag === "ActionAbility") {

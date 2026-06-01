@@ -200,6 +200,16 @@ instance
 
 instance
   HasField
+    "validate"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (Bool -> FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f cond builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry ((if cond then ValidEntry else InvalidEntry) : mods) inner'
+    inner' -> addEntry $ ModifyEntry [if cond then ValidEntry else InvalidEntry] inner'
+
+instance
+  HasField
     "codex"
     (FlavorTextBuilder () -> FlavorTextBuilder ())
     (FlavorTextBuilder () -> FlavorTextBuilder ())

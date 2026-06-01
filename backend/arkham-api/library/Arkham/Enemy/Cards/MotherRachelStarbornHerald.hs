@@ -25,7 +25,7 @@ instance HasModifiersFor MotherRachelStarbornHerald where
 instance HasAbilities MotherRachelStarbornHerald where
   getAbilities (MotherRachelStarbornHerald a) =
     extend1 a
-      $ mkAbility a 1
+      $ restricted a 1 (exists $ EnemyAt (locationWithEnemy a) <> not_ (be a))
       $ forced
       $ EnemyDealtDamage #after AnyDamageEffect (be a) (SourceOwnedBy You)
 

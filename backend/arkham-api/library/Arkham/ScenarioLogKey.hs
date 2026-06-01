@@ -94,6 +94,8 @@ data ScenarioLogKey
     YouAreRunningAnErrand
   | -- | Prelude Dawn of the Final Day
     YouAreDeliveringAPackage
+  | -- | Prelude The Final Evening
+    TheHemlocksAreHashingItOut
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

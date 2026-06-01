@@ -14,7 +14,7 @@ theOldMillEvening = symbolLabel $ location TheOldMillEvening Cards.theOldMillEve
 
 instance HasAbilities TheOldMillEvening where
   getAbilities (TheOldMillEvening a) =
-    extendRevealed1 a $ restricted a 1 Here $ FastAbility Free
+    extendRevealed1 a $ restricted a 1 Here actionAbility
 
 instance RunMessage TheOldMillEvening where
   runMessage msg l@(TheOldMillEvening attrs) = runQueueT $ case msg of

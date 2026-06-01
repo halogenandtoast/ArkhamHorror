@@ -324,6 +324,7 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "09694": return "theScarletKeys.congressOfTheKeys"
     case "10677a": return "theFeastOfHemlockVale"
     case "10679a": return "theFeastOfHemlockVale"
+    case "10679b": return "theFeastOfHemlockVale"
     case "10501": return "theFeastOfHemlockVale.writtenInRock"
     case "10523": return "theFeastOfHemlockVale.hemlockHouse"
     case "10549": return "theFeastOfHemlockVale.theSilentHeath"

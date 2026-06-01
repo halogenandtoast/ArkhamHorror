@@ -27,7 +27,7 @@ import Arkham.Matcher.Investigator
 import Arkham.Matcher.Scenario
 import Arkham.Message (Message (NextCampaignStep), pattern SetCampaignChaosBag)
 import Arkham.Message.Lifted hiding (continue)
-import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount)
+import Arkham.Message.Lifted.Log (decrementRecordCount, incrementRecordCount, recordCount)
 import Arkham.Modifier
 import Arkham.Prelude hiding (Day)
 import Arkham.Scenario.Options
@@ -234,6 +234,9 @@ increaseRelationshipLevel r = incrementRecordCount (relationshipKey r)
 
 decreaseRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
 decreaseRelationshipLevel r = decrementRecordCount (relationshipKey r)
+
+setRelationshipLevel :: ReverseQueue m => Resident -> Int -> m ()
+setRelationshipLevel r = recordCount (relationshipKey r)
 
 crossedOutKey :: Resident -> CampaignLogKey
 crossedOutKey = \case

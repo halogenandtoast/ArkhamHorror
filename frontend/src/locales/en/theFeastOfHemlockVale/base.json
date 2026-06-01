@@ -351,8 +351,7 @@
   },
   "fatigue": {
     "title": "Fatigue",
-    "chosen": "The fatigue from the long night catches up to you. You draw these two non-symbol tokens from the chaos bag at random:",
-    "replaced": "These tokens are replaced with a chaos token of a value 1 lower for the remainder of the campaign."
+    "body": "The fatigue from the long night catches up to you. Two non-symbol tokens drawn at random are replaced with a chaos token of a value 1 lower for the remainder of the campaign:"
   },
   "prelude3": {
     "xp": {

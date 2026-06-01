@@ -15,6 +15,7 @@ module Arkham.FlavorText (
   cols,
   img,
   chaosTokenImg,
+  chaosTokenMorph,
   UlItems,
 )
 where
@@ -57,6 +58,9 @@ img = (`CardEntry` [])
 
 chaosTokenImg :: ChaosTokenFace -> FlavorTextEntry
 chaosTokenImg = ChaosTokenEntry
+
+chaosTokenMorph :: ChaosTokenFace -> ChaosTokenFace -> FlavorTextEntry
+chaosTokenMorph = ChaosTokenMorphEntry
 
 hr :: FlavorTextEntry
 hr = EntrySplit

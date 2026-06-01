@@ -10,13 +10,13 @@ import Arkham.CampaignStep
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
-import Arkham.ChaosToken.Types (ChaosTokenFace (..), createChaosToken, isSymbolChaosToken)
+import Arkham.ChaosToken.Types (ChaosTokenFace (..), isSymbolChaosToken)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Criteria
 import Arkham.Enemy.Types.Attrs
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.FlavorText (p, setTitle, storyBuild)
+import Arkham.Helpers.FlavorText (chaosTokenMorph, p, setTitle, storyBuild)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.I18n
@@ -272,8 +272,9 @@ residentFromCardDef def
 getAreasSurveyed :: (HasGame m, Tracing m) => m [AreasSurveyed]
 getAreasSurveyed = filterM (getHasRecord . AreasSurveyed) [NorthPointMine ..]
 
--- | The chaos token of a value one lower, or Nothing if it cannot be lowered
--- (i.e. it is a symbol token or already the lowest possible value).
+{- | The chaos token of a value one lower, or Nothing if it cannot be lowered
+(i.e. it is a symbol token or already the lowest possible value).
+-}
 lowerChaosTokenValue :: ChaosTokenFace -> Maybe ChaosTokenFace
 lowerChaosTokenValue = \case
   PlusOne -> Just Zero
@@ -287,26 +288,24 @@ lowerChaosTokenValue = \case
   MinusSeven -> Just MinusEight
   _ -> Nothing
 
--- | The fatigue from the long night catches up to you. Draw tokens from the
--- chaos bag at random until you have 2 non-symbol tokens. Replace these tokens
--- with a chaos token of a value 1 lower for the remainder of the campaign. (If
--- you are unable to replace a token, repeat this process until a total of 2
--- chaos tokens have been replaced.)
+{- | The fatigue from the long night catches up to you. Draw tokens from the
+chaos bag at random until you have 2 non-symbol tokens. Replace these tokens
+with a chaos token of a value 1 lower for the remainder of the campaign. (If
+you are unable to replace a token, repeat this process until a total of 2
+chaos tokens have been replaced.)
+-}
 replaceFatigueChaosTokens :: ReverseQueue m => m ()
 replaceFatigueChaosTokens = do
   bag <- campaignField CampaignChaosBag
   (newBag, replaced) <- go (2 :: Int) bag bag []
-  unless (null replaced) $ campaignI18n $ scope "fatigue" do
-    -- Show the two chosen tokens, then show them being replaced by the lower
-    -- versions. Each focus triggers the chaos token flip animation in the UI.
-    originalTokens <- traverse (createChaosToken . fst) replaced
-    focusChaosTokens originalTokens \unfocus -> do
-      storyBuild $ setTitle "title" >> p "chosen"
-      push unfocus
-    loweredTokens <- traverse (createChaosToken . snd) replaced
-    focusChaosTokens loweredTokens \unfocus -> do
-      storyBuild $ setTitle "title" >> p "replaced"
-      push unfocus
+  unless (null replaced) $ campaignI18n $ scope "fatigue" $ storyBuild do
+    -- Render each replaced token as a self-contained morph: the frontend shows
+    -- the original face and then flips it in place to the lowered face. Because
+    -- the whole animation lives in a single story entry (one component mount),
+    -- it is immune to the game-state re-render that happens between prompts.
+    setTitle "title"
+    p "body"
+    for_ replaced (uncurry chaosTokenMorph)
   push $ SetCampaignChaosBag newBag
  where
   -- @bag@ is the running campaign chaos bag we are mutating; @pool@ is the set

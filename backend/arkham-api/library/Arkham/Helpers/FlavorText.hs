@@ -97,6 +97,10 @@ img = addEntry . FT.img . toCardCode
 chaosTokenImg :: ChaosTokenFace -> FlavorTextBuilder ()
 chaosTokenImg = addEntry . FT.chaosTokenImg
 
+-- | Render a chaos token that animates in place from one face to another.
+chaosTokenMorph :: ChaosTokenFace -> ChaosTokenFace -> FlavorTextBuilder ()
+chaosTokenMorph from to_ = addEntry (FT.chaosTokenMorph from to_)
+
 tarot :: TarotCardArcana -> FlavorTextBuilder ()
 tarot = addEntry . TarotEntry
 

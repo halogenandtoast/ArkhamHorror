@@ -994,6 +994,9 @@ allLocations =
     , SomeLocationCard valeSchoolhouseNight
     , SomeLocationCard theCommonsDay
     , SomeLocationCard theCommonsNight
+    , --- Day of the Feast
+      SomeLocationCard theCrossroadsMorning
+    , SomeLocationCard theOldMillMorning
     , --- Horrors in the Rock
       SomeLocationCard dryBurrow
     , SomeLocationCard alkalineForest

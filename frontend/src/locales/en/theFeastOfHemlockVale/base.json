@@ -349,6 +349,39 @@
       }
     }
   },
+  "fatigue": {
+    "title": "Fatigue",
+    "chosen": "The fatigue from the long night catches up to you. You draw these two non-symbol tokens from the chaos bag at random:",
+    "replaced": "These tokens are replaced with a chaos token of a value 1 lower for the remainder of the campaign."
+  },
+  "prelude3": {
+    "xp": {
+      "survivor": "Survey assistance"
+    },
+    "intro": {
+      "title": "Prelude: Dawn of the Final Day",
+      "checkCampaignLog": "Check your Campaign Log.",
+      "proceedToIntro1": "If <i>Dr. Marquez has a plan</i>, proceed to _Intro 1_.",
+      "skipToIntro2": "Otherwise, skip to _Intro 2_.",
+      "intro1": "<p>_Intro 1_: After a few scant hours of sleep, you emerge from your room to find Dr. Marquez groggily sipping hot black coffee. “You look like death,” she says darkly. You tell her she looks the same, and she laughs emptily. “I’ve had worse. Not much worse. But worse.”</p><p class='basic'>Skip to _Intro 3_.</p>",
+      "intro2": "<p>_Intro 2_: You awaken to the sound of singing outside your window. You head downstairs to find Dr. Marquez groggily sipping black coffee, her expression grim. When you ask about the events of last night, she looks at you wearily. “Whatever happened last night is not going into the report, is all I’ll say.” Further questions are met with a stony silence.</p><p class='basic'>Proceed to _Intro 3_.</p>",
+      "intro3": "<p>_Intro 3_: After a quick breakfast, you emerge from the Boarding House into an almost fairy tale atmosphere: locals dancing in circles, singing lilting melodies, and reclining on quilts. Dozens of outsiders in everyday clothes mingle with the locals, laughing. Fully aware of the danger ahead, you make preparations for one last survey.</p><ul><li>More survey assistance has arrived. Any player whose investigator was _killed_ in The Longest Night scenario may select a new investigator and upgrade their new deck to half the earned experience of their previous investigator (*rounded up*).</li><li>The fatigue from the long night catches up to you. Draw tokens from the chaos bag at random until you have 2 non-symbol tokens. Replace these tokens with a chaos token of a value 1 lower for the remainder of the campaign. (If you are unable to replace a token, repeat this process until a total of 2 chaos tokens have been replaced.)</li></ul>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Final Day*, *Day of the Feast*, *Agents of the Colour*, *Residents*, and *The Vale*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-final-day.png' /><img src='{setImgPath}/day-of-the-feast.png' /><img src='{setImgPath}/agents-of-the-colour.png' /><img src='{setImgPath}/residents.png' /><img src='{setImgPath}/the-vale.png' /></section>",
+      "dayThree": "Put the _Day Three_ Time Marker card into play. Are you hungry yet?",
+      "buildActAgenda": "Build the act and agenda deck using All is Full of Love and Dawn of the Final Day. Remove each other act and agenda from the game.",
+      "placeLocations": "Put each location except for The Crossroads and The Old Mill into play on its _(Day 3)_ side according to the map on page 6.",
+      "crossroadsAndOldMill": "Use The Crossroads and The Old Mill locations from the *Day of the Feast* encounter set, _(Morning)_ side faceup. Remove the other The Crossroads and The Old Mill locations from the game.",
+      "startAt": "Each investigator begins play at The Boarding House.",
+      "residents": "Gather the *Residents* encounter set and check the Campaign Log.",
+      "removeResidents": "Remove each resident whose name is crossed off from the game.",
+      "motherRachelAndJudith": "Put Mother Rachel and Judith Park into play at The Crossroads, asset side faceup.",
+      "setOutOfPlay": "Set each remaining card from the *Residents* encounter set aside, out of play.",
+      "setAsideAgents": "Set the *Agents of the Colour* encounter set aside, out of play.",
+      "placeDoom": "Place doom on the agenda equal to the number of investigators."
+    }
+  },
   "prelude": {
     "theFirstEvening": {
       "xp": {

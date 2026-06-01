@@ -570,7 +570,7 @@ nightTwo :: CardDef
 nightTwo = story "10677b" "Night Two" TheSecondDay & otherSideIs "10677"
 
 dayThree :: CardDef
-dayThree = story "10679" "Day One" TheFinalDay & otherSideIs "10679b"
+dayThree = story "10679" "Day Three" TheFinalDay & otherSideIs "10679b"
 
 nightThree :: CardDef
 nightThree = story "10679b" "Night Three" TheFinalDay & otherSideIs "10679"

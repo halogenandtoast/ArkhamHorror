@@ -31,6 +31,7 @@ allAgendaCards =
       , aHarshWindBlows
       , aKillerParty
       , allBetsDown
+      , allIsFullOfLove
       , allIsOne
       , annihilation
       , aSinisterRealm

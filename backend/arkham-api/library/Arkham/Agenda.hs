@@ -345,6 +345,8 @@ allAgendas =
       SomeAgendaCard welcomeToHemlockVale
     , --- Day of Rain
       SomeAgendaCard darkClouds
+    , --- Day of the Feast
+      SomeAgendaCard allIsFullOfLove
     , -- Return to the Night of the Zealot
       --- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

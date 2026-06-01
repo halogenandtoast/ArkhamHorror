@@ -72,6 +72,7 @@ allActCards =
       , curtainCall
       , darkKnowledgeV1
       , darkKnowledgeV2
+      , dawnOfTheFinalDay
       , dawnOfTheFirstDay
       , dawnOfTheSecondDay
       , descentIntoDark

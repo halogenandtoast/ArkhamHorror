@@ -401,6 +401,11 @@ instance RunMessage TheFeastOfHemlockVale where
       let meta = toResultDefault initMeta attrs.meta
       let meta' = meta {chosenCodexEntries = entry : meta.chosenCodexEntries}
       pure $ TheFeastOfHemlockVale $ attrs & metaL .~ toJSON meta'
+    -- The Dawn of the Final Day prelude handles each investigator killed in The
+    -- Longest Night itself (letting their player pick a new investigator and
+    -- awarding half experience), so we skip the standard killed/insane handling
+    -- as we transition into it.
+    HandleKilledOrInsaneInvestigators | PreludeDawnOfTheFinalDay <- (campaignStep attrs).unwrap.normalize -> pure c
     NextCampaignStep mOverrideStep -> do
       let mstep = mOverrideStep <|> nextStep c
       let meta = toResultDefault initMeta attrs.meta

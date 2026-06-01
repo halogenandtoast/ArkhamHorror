@@ -918,6 +918,7 @@ allLocationCards =
       , theCommonsNight
       , theCorniche
       , theCrossroadsDay
+      , theCrossroadsMorning
       , theCrossroadsNight
       , theDarkCrater
       , theEdgeOfTheUniverse
@@ -948,6 +949,7 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOldMillDay
+      , theOldMillMorning
       , theOldMillNight
       , theOnyxCastle
       , thePriceManor

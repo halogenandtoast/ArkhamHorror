@@ -52,3 +52,6 @@ dawnOfTheFirstDay = act "10682" "Dawn of the First Day" 1 DayOfRest
 
 dawnOfTheSecondDay :: CardDef
 dawnOfTheSecondDay = act "10684" "Dawn of the Second Day" 1 DayOfRain
+
+dawnOfTheFinalDay :: CardDef
+dawnOfTheFinalDay = act "10687" "Dawn of the Final Day" 1 DayOfTheFeast

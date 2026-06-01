@@ -432,6 +432,22 @@ theOldMillNight =
   otherSideIs "10708a"
     $ location "10708b" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] TheVale
 
+theCrossroadsMorning :: CardDef
+theCrossroadsMorning =
+  otherSideIs "10690b"
+    $ location
+      "10690a"
+      "The Crossroads"
+      [HemlockVale, Central]
+      Diamond
+      [Triangle, Square, Star, Circle, Heart, Moon]
+      DayOfTheFeast
+
+theOldMillMorning :: CardDef
+theOldMillMorning =
+  otherSideIs "10691b"
+    $ location "10691a" "The Old Mill" [HemlockVale] Heart [Diamond, Moon] DayOfTheFeast
+
 theAtwoodHouseDay :: CardDef
 theAtwoodHouseDay =
   otherSideIs "10709b"

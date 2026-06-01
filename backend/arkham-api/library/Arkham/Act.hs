@@ -388,6 +388,8 @@ allActs =
       SomeActCard dawnOfTheFirstDay
     , --- Day of Rain
       SomeActCard dawnOfTheSecondDay
+    , --- Day of the Feast
+      SomeActCard dawnOfTheFinalDay
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

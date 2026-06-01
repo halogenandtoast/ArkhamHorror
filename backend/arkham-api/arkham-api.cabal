@@ -115,6 +115,7 @@ library
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DarkKnowledgeV1
       Arkham.Act.Cards.DarkKnowledgeV2
+      Arkham.Act.Cards.DawnOfTheFinalDay
       Arkham.Act.Cards.DawnOfTheFirstDay
       Arkham.Act.Cards.DawnOfTheSecondDay
       Arkham.Act.Cards.DescentIntoDark
@@ -411,6 +412,7 @@ library
       Arkham.Agenda.Cards.AHarshWindBlows
       Arkham.Agenda.Cards.AKillerParty
       Arkham.Agenda.Cards.AllBetsDown
+      Arkham.Agenda.Cards.AllIsFullOfLove
       Arkham.Agenda.Cards.AllIsOne
       Arkham.Agenda.Cards.Annihilation
       Arkham.Agenda.Cards.ARitual
@@ -4293,6 +4295,7 @@ library
       Arkham.Location.Cards.TheCommonsNight
       Arkham.Location.Cards.TheCorniche
       Arkham.Location.Cards.TheCrossroadsDay
+      Arkham.Location.Cards.TheCrossroadsMorning
       Arkham.Location.Cards.TheCrossroadsNight
       Arkham.Location.Cards.TheDarkCrater
       Arkham.Location.Cards.TheEdgeOfTheUniverse
@@ -4323,6 +4326,7 @@ library
       Arkham.Location.Cards.TheLittleBookshopInTooDeep
       Arkham.Location.Cards.TheMoonRoom
       Arkham.Location.Cards.TheOldMillDay
+      Arkham.Location.Cards.TheOldMillMorning
       Arkham.Location.Cards.TheOldMillNight
       Arkham.Location.Cards.TheOnyxCastle
       Arkham.Location.Cards.ThePriceManor
@@ -4604,6 +4608,7 @@ library
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.OnThinIce
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.PreludeDawnOfTheFinalDay
       Arkham.Scenario.Scenarios.PreludeDawnOfTheSecondDay
       Arkham.Scenario.Scenarios.PreludeWelcomeToHemlockVale
       Arkham.Scenario.Scenarios.QueenOfAsh

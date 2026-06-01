@@ -55,3 +55,6 @@ welcomeToHemlockVale = agenda "10681" "Welcome to Hemlock Vale" 1 DayOfRest
 
 darkClouds :: CardDef
 darkClouds = agenda "10683" "Dark Clouds" 1 DayOfRain
+
+allIsFullOfLove :: CardDef
+allIsFullOfLove = agenda "10686" "All is Full of Love" 1 DayOfTheFeast

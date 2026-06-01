@@ -11,8 +11,10 @@ import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Agenda (getCurrentAgenda)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCards)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (
   getInvestigators,
   getJustLocationByName,
@@ -37,8 +39,12 @@ import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Resident))
 
 newtype PreludeTheFinalEvening = PreludeTheFinalEvening ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeTheFinalEvening where
+  getModifiersFor (PreludeTheFinalEvening a) =
+    modifySelect a (assetIs Assets.drRosaMarquezBestInHerField) [DoNotTakeUpSlot #ally]
 
 preludeTheFinalEvening :: Difficulty -> PreludeTheFinalEvening
 preludeTheFinalEvening difficulty =
@@ -128,10 +134,6 @@ instance RunMessage PreludeTheFinalEvening where
       gather Set.TheVale
       gatherAndSetAside Set.Residents
 
-      -- "Around the Table" serves as both the current act and the current
-      -- agenda. We model it as the agenda (the doom track that leads to "The
-      -- Sleep"); the act objective is added with the full Final Evening
-      -- scenario. The special agenda "Lambs to the Slaughter" is set aside.
       setAgendaDeck [Agendas.aroundTheTable]
       setAside [Agendas.lambsToTheSlaughter]
 
@@ -151,7 +153,6 @@ instance RunMessage PreludeTheFinalEvening where
       interrupted <- getHasRecord TheInvestigatorsInterruptedTheFeast
       if interrupted then startAt boardingHouse else startAt theCrossroads
 
-      -- If North Point Mine was never surveyed, Leah Atwood's name is crossed out.
       northPointSurveyed <- getHasRecord (AreasSurveyed NorthPointMine)
       unless northPointSurveyed $ record LeahCrossedOut
 
@@ -161,15 +162,8 @@ instance RunMessage PreludeTheFinalEvening where
               then crossed0
               else LeahAtwood : crossed0
 
-      -- Remove each crossed-out resident from the game.
       for_ crossed (obtainCard <=< fetchCard)
 
-      -- Place each remaining resident. If their Relationship Level is at or below
-      -- the listed threshold, they are placed on their enemy side instead. The
-      -- enemy and asset are the two sides of the same double-sided card, so when
-      -- we place the enemy we must remove the set-aside asset version (the enemy
-      -- card code does not match the asset's, so creating the enemy otherwise
-      -- leaves the asset behind in set aside).
       let placeResident resident loc threshold enemyCard assetCard =
             unless (resident `elem` crossed) do
               rel <- getRelationshipLevel resident
@@ -187,10 +181,26 @@ instance RunMessage PreludeTheFinalEvening where
         obtainCard Assets.bertieMusgraveATrueAesthete
         createEnemyAt_ Enemies.bertieMusgrave theCrossroads
 
-      -- If the investigators interrupted the Feast, Dr. Marquez joins the fray.
-      -- TODO: search each investigator's deck and all out-of-play areas for Dr.
-      -- Marquez, then put her into play under an investigator's control (she
-      -- does not take up an ally slot for the remainder of this prelude).
+      when interrupted do
+        investigators <- getInvestigators
+        let drMarquezMatcher = cardIs Assets.drRosaMarquezBestInHerField
+        deckCards <- concatForM investigators \iid ->
+          select $ inDeckOf iid <> basic drMarquezMatcher
+        outOfPlayCards <-
+          concat
+            <$> traverse
+              select
+              [ SetAsideCardMatch drMarquezMatcher
+              , UnderScenarioReferenceMatch drMarquezMatcher
+              , VictoryDisplayCardMatch $ basic drMarquezMatcher
+              ]
+        for_ (listToMaybe $ nub $ deckCards <> outOfPlayCards) \drMarquez -> do
+          leadChooseOneM do
+            unscoped
+              $ nameVar Assets.drRosaMarquezBestInHerField
+              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            questionLabeledCard Assets.drRosaMarquezBestInHerField
+            portraits investigators (`putCardIntoPlay` drMarquez)
 
       placeResident LeahAtwood hemlockChapel 2 Enemies.leahAtwood Assets.leahAtwoodTheValeCook
       placeResident
@@ -237,8 +247,6 @@ instance RunMessage PreludeTheFinalEvening where
       let takeControlOfResident :: ReverseQueue m => Resident -> m ()
           takeControlOfResident resident =
             selectOne (assetIs (toCardDef resident)) >>= traverse_ (takeControlOfAsset iid)
-      -- Defined at the @codex@ scope so the XP key always resolves to
-      -- @codex.xp.<key>@ regardless of the sub-scope it is invoked from.
       let
         awardXp :: ReverseQueue m => Text -> Int -> m ()
         awardXp xpKey xpAmount =
@@ -254,21 +262,18 @@ instance RunMessage PreludeTheFinalEvening where
           if
             | believed -> do
                 flavor $ setTitle "title" >> p.green "believed"
-                -- Flip each resident except Mother Rachel to their enemy side.
                 traverse_
                   flipResidentToEnemy
                   [LeahAtwood, SimeonAtwood, GideonMizrah, JudithPark, TheoPeters]
-                -- Gather each set-aside resident and put each into play at an
-                -- empty location, enemy side faceup.
                 for_ [WilliamHemlock, RiverHawthorne] \resident ->
                   getSetAsideCardMaybe (toCardDef resident) >>= traverse_ \card -> do
                     obtainCard card
                     locs <- select EmptyLocation
                     unless (null locs) $ chooseTargetM iid locs $ createEnemyAt_ (residentEnemyDef resident)
-            -- TODO: remove all doom from the current agenda and swap it with
-            -- the set-aside Lambs to the Slaughter agenda. This transitions
-            -- into the full Feast of Hemlock Vale scenario, which is not yet
-            -- implemented, so the agenda swap is deferred to that work.
+                currentAgenda <- getCurrentAgenda
+                removeAllDoom attrs currentAgenda
+                getSetAsideCardMaybe Agendas.lambsToTheSlaughter >>= traverse_ \lambs ->
+                  setCurrentAgendaDeck [lambs]
             | lied -> do
                 flavor $ setTitle "title" >> p.green "lied"
                 flipResidentToEnemy MotherRachel >>= traverse_ \eid ->
@@ -451,8 +456,6 @@ instance RunMessage PreludeTheFinalEvening where
         _ -> error "invalid codex entry"
       pure s
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      -- Codex 12/15: a successful "test any skill (2)" automatically evades the
-      -- chosen Resident enemy (carried as the skill test's target).
       getSkillTestTargetedEnemy >>= traverse_ (automaticallyEvadeEnemy iid)
       pure s
     _ -> PreludeTheFinalEvening <$> liftRunMessage msg attrs
@@ -477,9 +480,6 @@ instance RunMessage PreludeTheFinalEvening where
       addChaosToken Tablet
       addChaosToken ElderThing
       record TheInvestigatorsInterruptedTheFeast
-    -- \| Flip a resident from their asset side to their enemy side, in place,
-    -- returning the created enemy (or Nothing if they are not in play as an
-    -- asset). Used by Codex 1.
     flipResidentToEnemy resident =
       selectOne (assetIs (toCardDef resident)) >>= \case
         Nothing -> pure Nothing

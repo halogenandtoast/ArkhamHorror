@@ -12,43 +12,56 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
 import { faBan, faCircleExclamation, faGhost, faLocationDot, faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faStore } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
-import messages from '@/locales/messages'
+import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
 import mitt from 'mitt';
-
-const language = localStorage.getItem('language')
-const naviLanguage = navigator.language || 'en'
-const currentLanguage = language ?? naviLanguage.split('-')[0]
-if (!language) { localStorage.setItem('language', currentLanguage) }
-
-const i18n = VueI18n.createI18n({
-  locale: currentLanguage, // set locale
-  fallbackLocale: 'en', // set fallback locale
-  legacy: false,
-  warnHtmlMessage: false,
-  messages
-})
 
 library.add(faBan, faLocationDot, faCircleExclamation, faGhost, faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh, faBook, faChevronRight, faBars, faTimes, faShieldHeart, faWrench, faPaperclip, faArrowLeft, faStore)
 
-const pinia = createPinia()
-const vfm = createVfm()
-const emitter = mitt()
+async function bootstrap() {
+  const language = localStorage.getItem('language')
+  const naviLanguage = navigator.language || 'en'
+  const currentLanguage = normalizeLocale(language ?? naviLanguage.split('-')[0])
+  if (language !== currentLanguage) { localStorage.setItem('language', currentLanguage) }
 
-const app = createApp(App).
-  use(router).
-  use(pinia).
-  use(FloatingVue, {
-    themes: {
-      'stack-indicator-popover': {
-        $extend: 'dropdown',
+  const loadedMessages: Record<string, any> = {}
+  const fallback = await loadLocaleMessages('en')
+  loadedMessages[fallback.locale] = fallback.messages
+
+  if (currentLanguage !== fallback.locale) {
+    const current = await loadLocaleMessages(currentLanguage)
+    loadedMessages[current.locale] = current.messages
+  }
+
+  const i18n = VueI18n.createI18n({
+    locale: currentLanguage, // set locale
+    fallbackLocale: 'en', // set fallback locale
+    legacy: false,
+    warnHtmlMessage: false,
+    messages: loadedMessages
+  })
+
+  const pinia = createPinia()
+  const vfm = createVfm()
+  const emitter = mitt()
+
+  const app = createApp(App).
+    use(router).
+    use(pinia).
+    use(FloatingVue, {
+      themes: {
+        'stack-indicator-popover': {
+          $extend: 'dropdown',
+        },
       },
-    },
-  }).
-  use(Toast, {}).
-  use(vfm).
-  use(i18n).
-  component("font-awesome-icon", FontAwesomeIcon)
+    }).
+    use(Toast, {}).
+    use(vfm).
+    use(i18n).
+    component("font-awesome-icon", FontAwesomeIcon)
 
-app.config.globalProperties.emitter = emitter
+  app.config.globalProperties.emitter = emitter
 
-app.mount('#app')
+  app.mount('#app')
+}
+
+void bootstrap()

@@ -385,9 +385,12 @@ getIsPerilous skillTest = case skillTestSource skillTest of
 getSkillTestModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getSkillTestModifiedSkillValue = do
   st <- getJustSkillTest
+  modifiers' <- getModifiers (SkillTestTarget st.id)
+  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
-  iconCount <- skillIconCount st
-  pure $ max 0 (currentSkillValue + iconCount)
+  iconCount <- if cancelSkills then pure 0 else skillIconCount st
+  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
+  pure $ max 0 (currentSkillValue + iconCount - subtractIconCount)
 
 getModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getModifiedSkillValue = do

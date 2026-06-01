@@ -76,12 +76,21 @@ const allCards = computed(() => {
   })
 })
 
+const groupedCards = computed(() => {
+  return allCards.value.reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, card) => {
+    const existing = acc.find((entry) => entry.card.art === card.art)
+    if (existing) existing.count += 1
+    else acc.push({ card, count: 1 })
+    return acc
+  }, [])
+})
+
 const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
   if (!props.deck.list.meta) return {}
 
   try {
     const meta = JSON.parse(props.deck.list.meta) as Record<string, unknown>
-    return Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
+    const result = Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
       const match = key.match(/^attachments_(\d+)$/)
       if (!match || typeof value !== 'string') return acc
 
@@ -93,12 +102,47 @@ const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
       if (attachedCards.length > 0) acc[match[1]] = attachedCards
       return acc
     }, {})
+
+    const hiddenSlots = (meta.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
+    if (!result['09077'] && hiddenSlots) {
+      const marketCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
+        const card = findCardByDeckCode(code)
+        return card ? Array(quantity).fill(card) : []
+      })
+      if (marketCards.length > 0) result['09077'] = marketCards
+    }
+
+    return result
   } catch (_e) {
     return {}
   }
 })
 
 const attachedCards = (card: Arkham.CardDef) => attachments.value[card.art] ?? []
+
+const groupedAttachedCards = (card: Arkham.CardDef) => {
+  return attachedCards(card).reduce<Array<{ card: Arkham.CardDef; count: number }>>((acc, attached) => {
+    const existing = acc.find((entry) => entry.card.art === attached.art)
+    if (existing) existing.count += 1
+    else acc.push({ card: attached, count: 1 })
+    return acc
+  }, [])
+}
+
+const underworldMarketCards = () => attachments.value['09077'] ?? []
+
+const marketCardCount = (card: Arkham.CardDef) => underworldMarketCards().filter((c) => c.art === card.art).length
+
+const marketTooltip = (card: Arkham.CardDef) => `Attached to Market deck (x ${marketCardCount(card)})`
+
+const isUnderworldMarketCard = (card: Arkham.CardDef, idx?: number) => {
+  const marketCount = marketCardCount(card)
+  if (marketCount === 0) return false
+  if (idx === undefined) return true
+
+  const occurrence = allCards.value.slice(0, idx + 1).filter((c) => c.art === card.art).length
+  return occurrence <= marketCount
+}
 
 const cardName = (card: Arkham.CardDef) => {
   const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
@@ -239,25 +283,37 @@ watch(deckRef, (el) => {
       </header>
       <div class="cards" v-if="view == View.Image">
         <div
-          v-for="(card, idx) in allCards"
-          :key="idx"
+          v-for="{ card, count } in groupedCards"
+          :key="card.art"
           class="card-tile"
           :class="{ 'has-attachments': attachedCards(card).length > 0 }"
         >
-          <img class="card" :src="image(card)" />
+          <div class="card-image-wrap">
+            <img class="card" :src="image(card)" />
+            <span class="card-badges">
+              <span class="deck-card-count deck-card-count--image">x {{ count }}</span>
+              <span v-if="isUnderworldMarketCard(card)" class="market-badge market-badge--image" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
+                <font-awesome-icon icon="store" />
+                <span>x {{ marketCardCount(card) }}</span>
+              </span>
+            </span>
+          </div>
           <div v-if="attachedCards(card).length > 0" class="attachments-panel">
             <div class="attachments-title"><font-awesome-icon icon="paperclip" /> Attached cards for {{ cardName(card) }}</div>
             <div class="attachment-grid">
               <a
-                v-for="(attached, attachedIdx) in attachedCards(card)"
-                :key="`${attached.art}-${attachedIdx}`"
+                v-for="entry in groupedAttachedCards(card)"
+                :key="entry.card.art"
                 class="attachment-card"
                 target="_blank"
-                :href="`${localizeArkhamDBBaseUrl()}/card/${attached.art}`"
-                :title="cardName(attached)"
+                :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"
+                :title="cardName(entry.card)"
               >
-                <CardImage :card="attached" />
-                <span>{{ cardName(attached) }}</span>
+                <CardImage :card="entry.card" />
+                <span class="attachment-label">
+                  <span class="attachment-name">{{ cardName(entry.card) }}</span>
+                  <span class="attachment-count">x {{ entry.count }}</span>
+                </span>
               </a>
             </div>
           </div>
@@ -268,9 +324,18 @@ watch(deckRef, (el) => {
           <tr><th>{{ $t('cardsList.name') }}</th><th>{{ $t('cardsList.class') }}</th><th>{{ $t('cardsList.cost') }}</th><th>{{ $t('cardsList.type') }}</th><th>{{ $t('cardsList.icons') }}</th><th>{{ $t('cardsList.traits') }}</th><th>{{ $t('cardsList.set') }}</th></tr>
         </thead>
         <tbody>
-          <template v-for="(card, idx) in allCards" :key="idx">
+          <template v-for="{ card, count } in groupedCards" :key="card.art">
             <tr>
-              <td>{{cardName(card)}}{{levelText(card)}}</td>
+              <td>
+                <div class="card-name-cell">
+                  <span class="deck-card-count">x {{ count }}</span>
+                  <span>{{cardName(card)}}{{levelText(card)}}</span>
+                  <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
+                    <font-awesome-icon icon="store" />
+                    <span>x {{ marketCardCount(card) }}</span>
+                  </span>
+                </div>
+              </td>
               <td>{{card.classSymbols.join(', ')}}</td>
               <td>{{cardCost(card)}}</td>
               <td>{{cardType(card)}}</td>
@@ -288,14 +353,14 @@ watch(deckRef, (el) => {
                   </div>
                   <div class="attachment-pills">
                     <a
-                      v-for="(attached, attachedIdx) in attachedCards(card)"
-                      :key="`${attached.art}-${attachedIdx}`"
+                      v-for="entry in groupedAttachedCards(card)"
+                      :key="entry.card.art"
                       class="attachment-pill"
                       target="_blank"
-                      :href="`${localizeArkhamDBBaseUrl()}/card/${attached.art}`"
+                      :href="`${localizeArkhamDBBaseUrl()}/card/${entry.card.art}`"
                     >
-                      <span class="attachment-count">{{ attachedIdx + 1 }}</span>
-                      {{ cardName(attached) }}{{ levelText(attached) }}
+                      <span class="attachment-name">{{ cardName(entry.card) }}{{ levelText(entry.card) }}</span>
+                      <span class="attachment-count">x {{ entry.count }}</span>
                     </a>
                   </div>
                 </div>
@@ -446,6 +511,45 @@ watch(deckRef, (el) => {
   }
 }
 
+.card-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.deck-card-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 20px;
+  padding: 0 6px;
+  color: #cfcfcf;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.market-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  color: #c8a96e;
+  background: rgba(200, 169, 110, 0.14);
+  border: 1px solid rgba(200, 169, 110, 0.32);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .attachments-row td {
   padding-top: 0 !important;
   padding-bottom: 10px !important;
@@ -485,8 +589,10 @@ watch(deckRef, (el) => {
 .attachment-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 8px 3px 4px;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: 240px;
+  padding: 3px 5px 3px 8px;
   color: #f0e2c0;
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -497,25 +603,68 @@ watch(deckRef, (el) => {
   &:hover { background: rgba(200, 169, 110, 0.16); opacity: 1; }
 }
 
+.attachment-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .attachment-count {
   display: inline-grid;
   place-items: center;
-  width: 16px;
+  min-width: 28px;
   height: 16px;
+  padding: 0 5px;
   color: #1d170f;
   background: #c8a96e;
-  border-radius: 50%;
+  border-radius: 999px;
   font-size: 0.62rem;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 /* ── Image view ──────────────────────────────────────────── */
+
+.card-image-wrap {
+  position: relative;
+}
 
 .card {
   width: calc(100% - 20px);
   margin: 10px;
   border-radius: 10px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+.card-badges {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.deck-card-count--image {
+  height: 26px;
+  background: rgba(0, 0, 0, 0.72);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
+  font-size: 0.82rem;
+}
+
+.market-badge--image {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 7px;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.72);
+  border-color: rgba(200, 169, 110, 0.46);
+  border-radius: 7px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
+  font-size: 0.82rem;
 }
 
 .cards {

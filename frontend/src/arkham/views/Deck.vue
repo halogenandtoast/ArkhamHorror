@@ -119,7 +119,7 @@ const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
 
   try {
     const meta = JSON.parse(deck.value.list.meta) as Record<string, unknown>
-    return Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
+    const result = Object.entries(meta).reduce<Record<string, Arkham.CardDef[]>>((acc, [key, value]) => {
       const match = key.match(/^attachments_(\d+)$/)
       if (!match || typeof value !== 'string') return acc
 
@@ -131,6 +131,17 @@ const attachments = computed<Record<string, Arkham.CardDef[]>>(() => {
       if (attachedCards.length > 0) acc[match[1]] = attachedCards
       return acc
     }, {})
+
+    const hiddenSlots = (meta.hidden_slots as { slots?: Record<string, number> } | undefined)?.slots
+    if (!result['09077'] && hiddenSlots) {
+      const marketCards = Object.entries(hiddenSlots).flatMap(([code, quantity]) => {
+        const card = findCardByDeckCode(code)
+        return card ? Array(quantity).fill(card) : []
+      })
+      if (marketCards.length > 0) result['09077'] = marketCards
+    }
+
+    return result
   } catch (_e) {
     return {}
   }

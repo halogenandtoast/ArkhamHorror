@@ -27,7 +27,11 @@ const emits = defineEmits<{
 
 const choose = (idx: number) => emits('choose', idx)
 const deckAction = computed(() => {
-  return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "ScenarioDeckTarget")
+  return choices.value.findIndex((c) => {
+    if (c.tag !== MessageType.TARGET_LABEL) return false
+    if (props.deck[0] === 'AbyssDeck') return c.target.tag === "EncounterDeckTarget"
+    return c.target.tag === "ScenarioDeckTarget"
+  })
 })
 
 const revealedCards = computed(() => props.deck[1].map(card => {
@@ -92,8 +96,6 @@ const deckLabel = computed(() => {
       return "Monsters"
     case 'LeadsDeck':
       return "Leads"
-    case 'AbyssDeck':
-      return "The Abyss"
     default:
       return null
   }
@@ -114,7 +116,7 @@ const deckLabel = computed(() => {
         @click="choose(deckAction)"
       />
       <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
-      <span class="deck-size">{{deck[1].length}}</span>
+      <span class="deck-size" :class="{ 'abyss-deck-size': deck[0] === 'AbyssDeck' }">{{deck[1].length}}</span>
     </div>
     <button v-if="debug.active" @click="showCards">{{ $t('scenarioDeck.showCards') }}</button>
   </div>
@@ -196,6 +198,24 @@ const deckLabel = computed(() => {
   bottom: 0%;
   transform: translateX(-50%) translateY(-50%);
   pointer-events: none;
+}
+
+.abyss-deck-size {
+  top: 6px;
+  right: 6px;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  min-width: 1.7em;
+  width: auto;
+  height: 1.7em;
+  line-height: 1.7em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  font-size: 0.95em;
+  color: white;
+  background: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 
 .can-interact {

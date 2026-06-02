@@ -40,6 +40,14 @@ const investigator = computed(() => {
 })
 
 const skipTriggers = ref(investigator.value?.settings.globalSettings.ignoreUnrelatedSkillTestTriggers ?? false)
+const cosmicEmissaryAnimationKey = computed(() => `game:${props.game.id}:enableCosmicEmissaryAnimation`)
+const legacyDisableCosmicEmissaryAnimationKey = computed(() => `game:${props.game.id}:disableCosmicEmissaryAnimation`)
+const showCosmicEmissaryAnimationSetting = computed(() => props.game.scenario?.id === 'c10651')
+const enableCosmicEmissaryAnimation = ref(
+  localStorage.getItem(cosmicEmissaryAnimationKey.value) === null
+    ? localStorage.getItem(legacyDisableCosmicEmissaryAnimationKey.value) !== 'true'
+    : localStorage.getItem(cosmicEmissaryAnimationKey.value) !== 'false'
+)
 
 watch(() => skipTriggers.value, (value) => {
   if (investigator.value) {
@@ -50,6 +58,14 @@ watch(() => skipTriggers.value, (value) => {
       )
     )
   }
+})
+
+watch(enableCosmicEmissaryAnimation, (value) => {
+  localStorage.setItem(cosmicEmissaryAnimationKey.value, value ? 'true' : 'false')
+  localStorage.removeItem(legacyDisableCosmicEmissaryAnimationKey.value)
+  window.dispatchEvent(new CustomEvent('arkham-setting-change', {
+    detail: { key: cosmicEmissaryAnimationKey.value, value: value ? 'true' : 'false' }
+  }))
 })
 
 type RecommendedToggle = {
@@ -175,6 +191,19 @@ onBeforeUnmount(() => {
               <label for="opt-showHands-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-showHands-off" name="opt-showHands" :checked="!showOtherHands" @change="showOtherHands = false" />
               <label for="opt-showHands-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row" v-if="showCosmicEmissaryAnimationSetting">
+            <div class="toggle-text">
+              <div class="toggle-name">Enable Cosmic Emissary Animation</div>
+              <div class="toggle-desc">Shows animated Cosmic Emissary connection effects for Fate of the Vale.</div>
+            </div>
+            <div class="segmented segmented-2 toggle-control">
+              <input type="radio" id="opt-cosmicEmissaryAnimation-on" name="opt-cosmicEmissaryAnimation" :checked="enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = true" />
+              <label for="opt-cosmicEmissaryAnimation-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-cosmicEmissaryAnimation-off" name="opt-cosmicEmissaryAnimation" :checked="!enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = false" />
+              <label for="opt-cosmicEmissaryAnimation-off">{{ $t('Off') }}</label>
             </div>
           </div>
         </div>

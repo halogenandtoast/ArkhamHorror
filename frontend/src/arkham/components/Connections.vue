@@ -5,6 +5,7 @@ import type {Game} from '@/arkham/types/Game'
 export interface Props {
   game: Game
   playerId: string
+  enableCosmicEmissaryAnimation?: boolean
 }
 
 const props = defineProps<Props>()
@@ -95,7 +96,13 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   if (!close(ex2, x2)) line.setAttribute('x2', String(x2))
   if (!close(ey2, y2)) line.setAttribute('y2', String(y2))
 
-  if (className === 'fate-of-the-vale-enemy-line') updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+  if (className === 'fate-of-the-vale-enemy-line') {
+    if (props.enableCosmicEmissaryAnimation === false) {
+      line.removeAttribute('style')
+    } else {
+      updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+    }
+  }
 
   if (activeLine) line.classList.add('active')
   else line.classList.remove('active')
@@ -236,7 +243,7 @@ function chevronPath(cx: number, cy: number, ux: number, uy: number, px: number,
   return `M${f} L${a} L${b} L${c} L${d} L${e} Z`
 }
 
-function handleConnections() {
+function handleConnections(includeFateOfTheVale = true) {
   if(!svgEl) return
   const live = new Set<string>()
 
@@ -291,7 +298,7 @@ function handleConnections() {
   }
 
   const isFateOfTheVale = props.game.scenario?.id === 'c10651'
-  if (isFateOfTheVale) {
+  if (includeFateOfTheVale && isFateOfTheVale) {
     for (const [enemyLabel, locationLabel] of Object.entries(fateOfTheValeEnemyLocations)) {
       const start = document.querySelector<HTMLElement>(`[data-label="${enemyLabel}"] [data-id]`)
       const end = document.querySelector<HTMLElement>(`.location-cell[data-label="${locationLabel}"] [data-id]`)
@@ -323,6 +330,7 @@ function handleConnections() {
 
   for (const [conn, el] of linesByConn) {
     if (!live.has(conn)) {
+      if (!includeFateOfTheVale && el.classList.contains('fate-of-the-vale-enemy-line')) continue
       el.remove()
       linesByConn.delete(conn)
     }
@@ -336,14 +344,25 @@ function handleConnections() {
 }
 
 const requestId = ref<number | null>(null)
+const connectionUpdateRequestId = ref<number | null>(null)
+let connectionObserver: MutationObserver | null = null
+let resizeObserver: ResizeObserver | null = null
 let lastTime = 0
-const FRAME_MS = 1000 / 30 // 30fps
+const FRAME_MS = 1000 / 30 // 30fps for normal/enemy connection following only
+
+function requestConnectionUpdate() {
+  if (connectionUpdateRequestId.value !== null) return
+  connectionUpdateRequestId.value = window.requestAnimationFrame(() => {
+    connectionUpdateRequestId.value = null
+    handleConnections(true)
+  })
+}
 
 function tick(ts: number) {
   requestId.value = null
   if (ts - lastTime >= FRAME_MS) {
     lastTime = ts
-    handleConnections()
+    handleConnections(false)
   }
   requestId.value = window.requestAnimationFrame(tick)
 }
@@ -355,16 +374,45 @@ onMounted(async () => {
   lineProto = protoRef.value
   chevronProto = chevronProtoRef.value
   // first draw immediately so a cold refresh shows lines at once
-  handleConnections()
+  handleConnections(true)
   requestId.value = window.requestAnimationFrame(tick)
+
+  window.addEventListener('resize', requestConnectionUpdate)
+  window.addEventListener('scroll', requestConnectionUpdate, true)
+  window.addEventListener('arkham-location-layout-change', requestConnectionUpdate)
+
+  const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+  if (locationCards) {
+    connectionObserver = new MutationObserver(requestConnectionUpdate)
+    connectionObserver.observe(locationCards, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class', 'data-id', 'data-label'],
+    })
+
+    resizeObserver = new ResizeObserver(requestConnectionUpdate)
+    resizeObserver.observe(locationCards)
+  }
 })
 
 // keep lines fresh if the set of locations changes
-watch(locations, ()=> { handleConnections() }, { flush: 'post' })
+watch(locations, ()=> { requestConnectionUpdate() }, { flush: 'post' })
+watch(enemies, ()=> { requestConnectionUpdate() }, { flush: 'post' })
+watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate() }, { flush: 'post' })
 
 onBeforeUnmount(()=> {
+  window.removeEventListener('resize', requestConnectionUpdate)
+  window.removeEventListener('scroll', requestConnectionUpdate, true)
+  window.removeEventListener('arkham-location-layout-change', requestConnectionUpdate)
+  connectionObserver?.disconnect()
+  connectionObserver = null
+  resizeObserver?.disconnect()
+  resizeObserver = null
   if(requestId.value !== null) cancelAnimationFrame(requestId.value)
   requestId.value = null
+  if(connectionUpdateRequestId.value !== null) cancelAnimationFrame(connectionUpdateRequestId.value)
+  connectionUpdateRequestId.value = null
   for (const [,el] of linesByConn) el.remove()
   linesByConn.clear()
   for (const [,el] of chevronsByConn) el.remove()
@@ -377,11 +425,11 @@ onBeforeUnmount(()=> {
 </script>
 
 <template>
-  <svg ref="svgRef" class="connections-svg">
+  <svg ref="svgRef" class="connections-svg" :class="{ 'cosmic-emissary-animation-disabled': props.enableCosmicEmissaryAnimation === false }">
     <defs>
-      <filter id="fate-of-the-vale-smoke-filter" x="-5000" y="-5000" width="10000" height="10000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <filter id="fate-of-the-vale-smoke-filter" x="-1000" y="-1000" width="4000" height="4000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="17" result="smokeNoise">
-          <animate attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
+          <animate v-if="props.enableCosmicEmissaryAnimation !== false" attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
         <feGaussianBlur in="distorted" stdDeviation="1.9" result="softSmoke" />
@@ -443,6 +491,13 @@ onBeforeUnmount(()=> {
     drop-shadow(0 0 4px rgba(221 242 235 / 0.9))
     drop-shadow(0 0 10px rgba(132 202 199 / 0.95))
     drop-shadow(0 0 18px rgba(54 102 114 / 0.85));
+}
+
+.cosmic-emissary-animation-disabled .fate-of-the-vale-enemy-line {
+  animation: none;
+  filter: none;
+  stroke: rgba(132 202 199 / 0.7);
+  stroke-dasharray: unset;
 }
 
 @keyframes fate-of-the-vale-smoke-flow {

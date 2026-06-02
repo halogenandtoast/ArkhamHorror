@@ -104,10 +104,21 @@ const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
 let cosmicEmissaryObserver: MutationObserver | null = null
+let cosmicEmissaryResizeObserver: ResizeObserver | null = null
+let cosmicEmissaryCompactRequest: number | null = null
+let cosmicEmissaryCompactForce = false
 
 function readStyleMapCache(key: string): Record<string, Record<string, string>> {
   try {
-    return JSON.parse(sessionStorage.getItem(key) ?? '{}')
+    const cached = JSON.parse(sessionStorage.getItem(key) ?? '{}') as Record<string, Record<string, string>>
+    for (const style of Object.values(cached)) {
+      const match = style.transform?.match(/^translate\(([^,]+),\s*([^\)]+)\)$/)
+      if (match) {
+        style.translate = `${match[1]} ${match[2]}`
+        delete style.transform
+      }
+    }
+    return cached
   } catch {
     return {}
   }
@@ -123,11 +134,18 @@ function writeStyleMapCache(key: string, value: Record<string, Record<string, st
 
 const cosmicEmissaryEnemyStylesCacheKey = `game:${props.game.id}:cosmicEmissaryEnemyStyles`
 const cosmicEmissaryLocationCellStylesCacheKey = `game:${props.game.id}:cosmicEmissaryLocationCellStyles`
+const cosmicEmissaryAnimationSettingKey = `game:${props.game.id}:enableCosmicEmissaryAnimation`
+const legacyDisableCosmicEmissaryAnimationSettingKey = `game:${props.game.id}:disableCosmicEmissaryAnimation`
 const cachedCosmicEmissaryEnemyStyles = readStyleMapCache(cosmicEmissaryEnemyStylesCacheKey)
 const cachedCosmicEmissaryLocationCellStyles = readStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey)
 const cosmicEmissaryEnemyStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryEnemyStyles)
 const cosmicEmissaryLocationCellStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryLocationCellStyles)
 const cosmicEmissaryFormationHasMeasured = ref(Object.keys(cachedCosmicEmissaryEnemyStyles).length > 0)
+const enableCosmicEmissaryAnimation = ref(
+  localStorage.getItem(cosmicEmissaryAnimationSettingKey) === null
+    ? localStorage.getItem(legacyDisableCosmicEmissaryAnimationSettingKey) !== 'true'
+    : localStorage.getItem(cosmicEmissaryAnimationSettingKey) !== 'false'
+)
 const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
@@ -391,7 +409,9 @@ function onWindowPointerUp(event: PointerEvent) {
     ...pendingOffsets.value,
     [drag.locationId]: { x: drag.canonicalFinalX, y: drag.canonicalFinalY },
   }
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
   void setLocationOffset(props.game.id, drag.locationId, drag.canonicalFinalX, drag.canonicalFinalY)
+    .finally(() => nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change'))))
 }
 
 // Drop a pending entry once the server's modifier confirms it.
@@ -406,7 +426,10 @@ watch(locationOffsets, (newServer) => {
       changed = true
     }
   }
-  if (changed) pendingOffsets.value = next
+  if (changed) {
+    pendingOffsets.value = next
+    nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+  }
 }, { deep: true })
 
 function cancelActiveDrag() {
@@ -421,22 +444,29 @@ function cancelActiveDrag() {
 
 function toggleLocationsUnlocked() {
   locationsUnlocked.value = !locationsUnlocked.value
-  if (locationsUnlocked.value) {
-    cosmicEmissaryEnemyStyles.value = {}
-    cosmicEmissaryLocationCellStyles.value = {}
-    sessionStorage.removeItem(cosmicEmissaryEnemyStylesCacheKey)
-    sessionStorage.removeItem(cosmicEmissaryLocationCellStylesCacheKey)
-    cosmicEmissaryFormationHasMeasured.value = false
-  } else {
-    cancelActiveDrag()
-  }
-  nextTick(() => compactCosmicEmissaryFormation())
+  if (!locationsUnlocked.value) cancelActiveDrag()
+  nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
+}
+
+function clearCosmicEmissaryCompactStyles() {
+  cosmicEmissaryEnemyStyles.value = {}
+  cosmicEmissaryLocationCellStyles.value = {}
+  sessionStorage.removeItem(cosmicEmissaryEnemyStylesCacheKey)
+  sessionStorage.removeItem(cosmicEmissaryLocationCellStylesCacheKey)
+  cosmicEmissaryFormationHasMeasured.value = false
 }
 
 function resetLocationsLayout() {
   if (!hasAnyOffset.value) return
   pendingOffsets.value = {}
-  void resetLocationOffsets(props.game.id)
+  if (props.scenario.id === 'c10651') clearCosmicEmissaryCompactStyles()
+  void resetLocationOffsets(props.game.id).finally(() => {
+    if (props.scenario.id === 'c10651') {
+      requestCosmicEmissaryCompact(true)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 100)
+      setTimeout(() => requestCosmicEmissaryCompact(true), 500)
+    }
+  })
 }
 
 let holdTimer: ReturnType<typeof setTimeout> | null = null
@@ -454,23 +484,63 @@ function stopHold() {
   if (holdInterval !== null) { clearInterval(holdInterval); holdInterval = null }
 }
 
+function requestCosmicEmissaryCompact(force = false) {
+  cosmicEmissaryCompactForce = cosmicEmissaryCompactForce || force
+  if (cosmicEmissaryCompactRequest !== null) return
+  cosmicEmissaryCompactRequest = requestAnimationFrame(() => {
+    const shouldForce = cosmicEmissaryCompactForce
+    cosmicEmissaryCompactForce = false
+    cosmicEmissaryCompactRequest = null
+    compactCosmicEmissaryFormation(shouldForce)
+  })
+}
+
 const { isMobile } = IsMobile();
+
+function updateCosmicEmissaryAnimationSetting(value: string | null) {
+  enableCosmicEmissaryAnimation.value = value !== 'false'
+  nextTick(() => compactCosmicEmissaryFormation())
+}
+
+const onCosmicEmissaryStorage = (event: StorageEvent) => {
+  if (event.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(event.newValue)
+}
+
+const onCosmicEmissarySettingChange = (event: Event) => {
+  const detail = (event as CustomEvent<{ key?: string, value?: string }>).detail
+  if (detail?.key === cosmicEmissaryAnimationSettingKey) updateCosmicEmissaryAnimationSetting(detail.value ?? null)
+}
 
 // callbacks
 onMounted(() => {
   setGameId(props.game.id)
+  window.addEventListener('storage', onCosmicEmissaryStorage)
+  window.addEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
   if(props.scenario.id === "c10651") {
-    waitForImagesToLoad(() => {
-      nextTick(() => compactCosmicEmissaryFormation())
+    nextTick(requestCosmicEmissaryCompact)
+    setTimeout(requestCosmicEmissaryCompact, 100)
+    setTimeout(requestCosmicEmissaryCompact, 500)
+    setTimeout(requestCosmicEmissaryCompact, 1500)
 
+    const setupCosmicEmissaryObservers = () => {
       const locationCards = document.querySelector('.location-cards') as HTMLElement | null
-      if (locationCards) {
-        cosmicEmissaryObserver = new MutationObserver(() => nextTick(() => compactCosmicEmissaryFormation()))
-        cosmicEmissaryObserver.observe(locationCards, { childList: true, subtree: true })
-      }
+      if (!locationCards || cosmicEmissaryObserver) return
+
+      cosmicEmissaryObserver = new MutationObserver(() => nextTick(requestCosmicEmissaryCompact))
+      cosmicEmissaryObserver.observe(locationCards, { childList: true, subtree: true })
+
+      cosmicEmissaryResizeObserver = new ResizeObserver(() => requestCosmicEmissaryCompact())
+      cosmicEmissaryResizeObserver.observe(locationCards)
+      locationCards.querySelectorAll<HTMLElement>('[data-label]').forEach((el) => cosmicEmissaryResizeObserver?.observe(el))
+    }
+
+    nextTick(setupCosmicEmissaryObservers)
+    waitForImagesToLoad(() => {
+      setupCosmicEmissaryObservers()
+      requestCosmicEmissaryCompact()
     })
   }
 
@@ -537,18 +607,20 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('storage', onCosmicEmissaryStorage)
+  window.removeEventListener('arkham-setting-change', onCosmicEmissarySettingChange)
   legObserver?.disconnect()
   legObserver = null
   cosmicEmissaryObserver?.disconnect()
   cosmicEmissaryObserver = null
+  cosmicEmissaryResizeObserver?.disconnect()
+  cosmicEmissaryResizeObserver = null
+  if (cosmicEmissaryCompactRequest !== null) cancelAnimationFrame(cosmicEmissaryCompactRequest)
+  cosmicEmissaryCompactRequest = null
   cancelActiveDrag()
 })
 
 onUpdated(() => {
-  if(props.scenario.id === "c10651") {
-    nextTick(() => compactCosmicEmissaryFormation())
-  }
-
   if(props.scenario.id === "c06333") {
     nextTick(() => rotateImages(needsInit.value))
   }
@@ -617,6 +689,8 @@ const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
   return Object.entries(props.scenario.decks)
 })
+
+const hideEncounterDeck = computed(() => props.scenario.id === 'c10651')
 
 const scenarioDeckDiscard = (key: string) => {
   const discards = props.scenario.deckDiscards
@@ -905,7 +979,14 @@ const locations = computed(() => Object.values(props.game.locations).
 watch(locations, updateScrollMargins, { flush: 'post' })
 watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
-watch([locations, rotationSteps, locationsZoom], () => nextTick(() => compactCosmicEmissaryFormation()), { flush: 'post' })
+const cosmicEmissaryLayoutSignature = computed(() => {
+  if (props.scenario.id !== 'c10651') return ''
+  return [
+    locations.value.map((l) => `${l.id}:${l.label}`).join('|'),
+    enemiesAsLocations.value.map((e) => `${e.id}:${e.asSelfLocation}`).join('|'),
+  ].join('::')
+})
+watch([cosmicEmissaryLayoutSignature, rotationSteps, locationsZoom], () => nextTick(requestCosmicEmissaryCompact), { flush: 'post' })
 watch(
   [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
   updateLayoutPadding,
@@ -1057,7 +1138,14 @@ function locationHasManualOffset(el: HTMLElement): boolean {
 }
 
 function transformTranslate(el: HTMLElement): { x: number, y: number } {
-  const transform = getComputedStyle(el).transform
+  const style = getComputedStyle(el)
+  const translate = style.translate
+  if (translate && translate !== 'none') {
+    const [x = '0px', y = '0px'] = translate.split(/\s+/)
+    return { x: parseFloat(x) || 0, y: parseFloat(y) || 0 }
+  }
+
+  const transform = style.transform
   if (!transform || transform === 'none') return { x: 0, y: 0 }
   const matrix = new DOMMatrixReadOnly(transform)
   return { x: matrix.e, y: matrix.f }
@@ -1078,8 +1166,8 @@ function styleMapsEqual(a: Record<string, Record<string, string>>, b: Record<str
   })
 }
 
-function compactCosmicEmissaryFormation() {
-  if (props.scenario.id !== 'c10651' || locationsUnlocked.value) return
+function compactCosmicEmissaryFormation(force = false) {
+  if (props.scenario.id !== 'c10651' || (locationsUnlocked.value && !force)) return
 
   const entries = cosmicEmissaryLabels.map((label) => {
     const el = document.querySelector(`[data-label=${label}]`) as HTMLElement | null
@@ -1144,34 +1232,37 @@ function compactCosmicEmissaryFormation() {
 
     const nextEnemyStyles: Record<string, Record<string, string>> = {}
     const nextLocationCellStyles: Record<string, Record<string, string>> = {}
-    const transition = cosmicEmissaryFormationHasMeasured.value ? 'none' : 'transform 0.2s ease'
+    const transition = (!enableCosmicEmissaryAnimation.value || cosmicEmissaryFormationHasMeasured.value) ? 'none' : 'transform 0.2s ease'
 
     for (const label of cosmicEmissaryLabels) {
       const rect = rects[label]
       const target = targets[label]
-      const dx = (target.left - rect.left) / visualScale
-      const dy = (target.top - rect.top) / visualScale
+      const dx = Math.round(((target.left - rect.left) / visualScale) * 10) / 10
+      const dy = Math.round(((target.top - rect.top) / visualScale) * 10) / 10
       nextEnemyStyles[label] = {
-        transform: `translate(${dx}px, ${dy}px)`,
+        translate: `${dx}px ${dy}px`,
         transition,
         zIndex: '20',
       }
 
       const locationEl = locationElements[label]
       const locationLabel = cosmicEmissaryLocationLabels[label]
-      if (locationEl && !locationHasManualOffset(locationEl)) {
+      if (locationEl && locationHasManualOffset(locationEl)) {
+        const existing = cosmicEmissaryLocationCellStyles.value[locationLabel]
+        if (existing) nextLocationCellStyles[locationLabel] = existing
+      } else if (locationEl) {
         const shouldAlignVerticalMidpoint = label === 'cosmicEmissaryPhantasm' || label === 'cosmicEmissaryMiasma'
         const locationDy = shouldAlignVerticalMidpoint
           ? (() => {
               const locationRect = rectFor(locationEl)
               const enemyCenterY = rect.top + rect.height / 2
               const locationCenterY = locationRect.top + locationRect.height / 2
-              return dy + (enemyCenterY - locationCenterY) / visualScale
+              return Math.round((dy + (enemyCenterY - locationCenterY) / visualScale) * 10) / 10
             })()
           : dy
 
         nextLocationCellStyles[locationLabel] = {
-          transform: `translate(${dx}px, ${locationDy}px)`,
+          translate: `${dx}px ${locationDy}px`,
           transition,
           zIndex: '10',
         }
@@ -1620,7 +1711,7 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             @choose="choose"
             style="grid-area: encounterDeck"
-            v-if="props.scenario.hasEncounterDeck"
+            v-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
           />
 
           <div v-if="topOfSpectralDiscard" class="discard" style="grid-area: spectralDiscard"
@@ -1807,7 +1898,7 @@ async function addChaosToken(face: any){
 
 
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
-        <Connections :game="game" :playerId="playerId" />
+        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
         <div class="location-cards-scroller" ref="scrollerRef">
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <div

@@ -100,7 +100,7 @@ instance RunMessage DamningTestimony where
               guardM $ lift $ getCanDiscoverClues IsInvestigate iid lid
               enabled <- Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
               pure
-                $ Label "$label.cards.damningTestimony.spend1EvidenceToDiscover1AdditionalClueAtTheChosenEnemysLoca"
+                $ Label "$label.cards.damningTestimony.spendForClue"
                   [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
                   , enabled
                   , DoStep (setBit 0 n) msg'
@@ -111,7 +111,7 @@ instance RunMessage DamningTestimony where
               guard $ attrs `hasCustomization` Extort
               guardM $ lift $ eid <=~> ReadyEnemy
               pure
-                $ Label "$label.cards.damningTestimony.spend1EvidenceToAutomaticallyEvadeTheChosenEnemy"
+                $ Label "$label.cards.damningTestimony.spendEvidence"
                   [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
                   , EnemyEvaded iid eid
                   , DoStep (setBit 1 n) msg'

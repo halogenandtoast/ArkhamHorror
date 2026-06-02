@@ -303,7 +303,12 @@ function onDrop(event: DragEvent) {
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame" ref="frame">
-          <div class="card-wrapper" :class="{ exhausted: isExhausted }" :style="{ '--ui-rotation': `${uiRotation}deg` }">
+          <div
+            class="card-wrapper"
+            :class="{ exhausted: isExhausted }"
+            :style="{ '--ui-rotation': `${uiRotation}deg` }"
+            :data-image-id="imageId"
+          >
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />

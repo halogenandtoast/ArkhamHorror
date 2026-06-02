@@ -729,6 +729,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   }
 }
 
+
 .pool.location-pool {
   position: absolute;
   top: 50%;

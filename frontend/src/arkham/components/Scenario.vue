@@ -103,6 +103,7 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
+let cosmicEmissaryObserver: MutationObserver | null = null
 const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
@@ -397,6 +398,7 @@ function cancelActiveDrag() {
 function toggleLocationsUnlocked() {
   locationsUnlocked.value = !locationsUnlocked.value
   if (!locationsUnlocked.value) cancelActiveDrag()
+  nextTick(() => compactCosmicEmissaryFormation())
 }
 
 function resetLocationsLayout() {
@@ -428,6 +430,18 @@ onMounted(() => {
   updateScrollMargins()
   updateCellDimensions()
   updateLayoutPadding()
+  if(props.scenario.id === "c10651") {
+    waitForImagesToLoad(() => {
+      nextTick(() => compactCosmicEmissaryFormation())
+
+      const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+      if (locationCards) {
+        cosmicEmissaryObserver = new MutationObserver(() => nextTick(() => compactCosmicEmissaryFormation()))
+        cosmicEmissaryObserver.observe(locationCards, { childList: true, subtree: true })
+      }
+    })
+  }
+
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
       nextTick(() => rotateImages(true));
@@ -493,10 +507,16 @@ onMounted(() => {
 onBeforeUnmount(() => {
   legObserver?.disconnect()
   legObserver = null
+  cosmicEmissaryObserver?.disconnect()
+  cosmicEmissaryObserver = null
   cancelActiveDrag()
 })
 
 onUpdated(() => {
+  if(props.scenario.id === "c10651") {
+    nextTick(() => compactCosmicEmissaryFormation())
+  }
+
   if(props.scenario.id === "c06333") {
     nextTick(() => rotateImages(needsInit.value))
   }
@@ -853,6 +873,7 @@ const locations = computed(() => Object.values(props.game.locations).
 watch(locations, updateScrollMargins, { flush: 'post' })
 watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })
+watch([locations, rotationSteps, locationsZoom], () => nextTick(() => compactCosmicEmissaryFormation()), { flush: 'post' })
 watch(
   [locationOffsets, pendingOffsets, rotationSteps, locationsZoom, locations, cellDimensions],
   updateLayoutPadding,
@@ -979,6 +1000,116 @@ watchEffect(() => {
 
 
 // Helpers
+const cosmicEmissaryLabels = [
+  'cosmicEmissaryPhantasm',
+  'cosmicEmissaryAbyss',
+  'cosmicEmissaryBrilliance',
+  'cosmicEmissaryMiasma',
+] as const
+
+type CosmicEmissaryLabel = typeof cosmicEmissaryLabels[number]
+
+const cosmicEmissaryLocationLabels: Record<CosmicEmissaryLabel, string> = {
+  cosmicEmissaryPhantasm: 'mirrorNestLeft',
+  cosmicEmissaryAbyss: 'mirrorNestTop',
+  cosmicEmissaryBrilliance: 'mirrorNestBottom',
+  cosmicEmissaryMiasma: 'mirrorNestRight',
+}
+
+function locationHasManualOffset(el: HTMLElement): boolean {
+  const locationId = el.dataset.locationId
+  if (!locationId) return false
+  return locationId in locationOffsets.value
+    || locationId in pendingOffsets.value
+    || dragInternal?.locationId === locationId
+}
+
+function compactCosmicEmissaryFormation() {
+  if (props.scenario.id !== 'c10651' || locationsUnlocked.value) return
+
+  const entries = cosmicEmissaryLabels.map((label) => {
+    const el = document.querySelector(`[data-label=${label}]`) as HTMLElement | null
+    return el ? [label, el] as const : null
+  })
+
+  if (entries.some((entry) => entry === null)) return
+
+  const elements = Object.fromEntries(entries as [CosmicEmissaryLabel, HTMLElement][]) as Record<CosmicEmissaryLabel, HTMLElement>
+
+  const locationElements = Object.fromEntries(
+    cosmicEmissaryLabels.map((label) => [
+      label,
+      document.querySelector(`.location-cell[data-label=${cosmicEmissaryLocationLabels[label]}]`) as HTMLElement | null,
+    ])
+  ) as Record<CosmicEmissaryLabel, HTMLElement | null>
+
+  for (const el of [...Object.values(elements), ...Object.values(locationElements).filter((el): el is HTMLElement => el !== null)]) {
+    el.style.transition = 'none'
+    el.style.transform = ''
+  }
+
+  requestAnimationFrame(() => {
+    const rectFor = (el: HTMLElement) => (el.querySelector('img.card') ?? el).getBoundingClientRect()
+    const rects = Object.fromEntries(
+      Object.entries(elements).map(([label, el]) => [label, rectFor(el as HTMLElement)])
+    ) as Record<CosmicEmissaryLabel, DOMRect>
+
+    const centerX = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].left + rects[label].width / 2, 0) / cosmicEmissaryLabels.length
+    const centerY = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].top + rects[label].height / 2, 0) / cosmicEmissaryLabels.length
+    const locationCards = document.querySelector('.location-cards') as HTMLElement | null
+    const visualScale = locationCards
+      ? (new DOMMatrixReadOnly(getComputedStyle(locationCards).transform).a || 1)
+      : 1
+
+    const targets: Record<CosmicEmissaryLabel, { left: number; top: number }> = {
+      cosmicEmissaryPhantasm: {
+        left: centerX - rects.cosmicEmissaryPhantasm.width,
+        top: centerY - rects.cosmicEmissaryPhantasm.height,
+      },
+      cosmicEmissaryAbyss: {
+        left: centerX,
+        top: centerY - rects.cosmicEmissaryAbyss.height,
+      },
+      cosmicEmissaryBrilliance: {
+        left: centerX - rects.cosmicEmissaryBrilliance.width,
+        top: centerY,
+      },
+      cosmicEmissaryMiasma: {
+        left: centerX,
+        top: centerY,
+      },
+    }
+
+    for (const label of cosmicEmissaryLabels) {
+      const el = elements[label]
+      const rect = rects[label]
+      const target = targets[label]
+      const dx = (target.left - rect.left) / visualScale
+      const dy = (target.top - rect.top) / visualScale
+      el.style.transition = 'transform 0.2s ease'
+      el.style.transform = `translate(${dx}px, ${dy}px)`
+      el.style.zIndex = '20'
+
+      const locationEl = locationElements[label]
+      if (locationEl && !locationHasManualOffset(locationEl)) {
+        const shouldAlignVerticalMidpoint = label === 'cosmicEmissaryPhantasm' || label === 'cosmicEmissaryMiasma'
+        const locationDy = shouldAlignVerticalMidpoint
+          ? (() => {
+              const locationRect = rectFor(locationEl)
+              const enemyCenterY = rect.top + rect.height / 2
+              const locationCenterY = locationRect.top + locationRect.height / 2
+              return dy + (enemyCenterY - locationCenterY) / visualScale
+            })()
+          : dy
+
+        locationEl.style.transition = 'transform 0.2s ease'
+        locationEl.style.transform = `translate(${dx}px, ${locationDy}px)`
+        locationEl.style.zIndex = '10'
+      }
+    }
+  })
+}
+
 function rotateImages(init: boolean) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]') as HTMLElement
   const locationCards = document.querySelector('.location-cards')
@@ -1604,6 +1735,7 @@ async function addChaosToken(face: any){
             :key="location.label"
             class="location-cell"
             :data-location-id="location.id"
+            :data-label="location.label"
             :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
           >
             <Location

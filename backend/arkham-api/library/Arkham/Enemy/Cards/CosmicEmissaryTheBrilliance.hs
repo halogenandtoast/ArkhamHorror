@@ -10,7 +10,7 @@ newtype CosmicEmissaryTheBrilliance = CosmicEmissaryTheBrilliance EnemyAttrs
 cosmicEmissaryTheBrilliance :: EnemyCard CosmicEmissaryTheBrilliance
 cosmicEmissaryTheBrilliance =
   enemyWith CosmicEmissaryTheBrilliance Cards.cosmicEmissaryTheBrilliance (3, Static 0, 3) (1, 1)
-    $ healthL .~ Nothing
+    $ (healthL .~ Nothing) . (asSelfLocationL ?~ "cosmicEmissaryBrilliance")
 
 instance RunMessage CosmicEmissaryTheBrilliance where
   runMessage msg (CosmicEmissaryTheBrilliance attrs) =

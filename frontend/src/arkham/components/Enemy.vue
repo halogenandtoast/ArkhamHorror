@@ -171,6 +171,17 @@ const important = computed(() => {
   return modifiers.some((m) => m.type.tag === "UIModifier" && typeof m.type.contents === 'object' && m.type.contents.tag === "ImportantToScenario") ?? false
 })
 
+const uiRotation = computed(() => {
+  const modifier = props.enemy.modifiers.find((m) => {
+    const t = m.type
+    return t.tag === 'UIModifier' && typeof t.contents === 'object' && t.contents.tag === 'Rotated'
+  })
+
+  if (!modifier || modifier.type.tag !== 'UIModifier' || typeof modifier.type.contents !== 'object') return 0
+  if (modifier.type.contents.tag !== 'Rotated') return 0
+  return modifier.type.contents.contents
+})
+
 function sourceIsSelf(source: Source): boolean {
   if (source.sourceTag === 'ProxySource') return sourceIsSelf(source.source)
   if (source.tag === 'AbilitySource') {
@@ -292,7 +303,7 @@ function onDrop(event: DragEvent) {
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame" ref="frame">
-          <div class="card-wrapper" :class="{ exhausted: isExhausted }">
+          <div class="card-wrapper" :class="{ exhausted: isExhausted }" :style="{ '--ui-rotation': `${uiRotation}deg` }">
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
@@ -516,12 +527,17 @@ img.card.source-highlight {
 }
 
 .exhausted {
-  transition: transform 0.2s linear;
-  transform: rotate(90deg) translateX(-10px);
+  --exhaust-rotation: 90deg;
+  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation))) translateX(-10px);
 }
 
 .card-wrapper {
+  --ui-rotation: 0deg;
+  --exhaust-rotation: 0deg;
   position: relative;
+  transition: transform 0.2s linear;
+  transform: rotate(calc(var(--ui-rotation) + var(--exhaust-rotation)));
+  transform-origin: center;
 }
 
 .spirit-icon {

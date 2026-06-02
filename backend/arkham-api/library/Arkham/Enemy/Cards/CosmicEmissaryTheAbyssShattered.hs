@@ -9,7 +9,8 @@ newtype CosmicEmissaryTheAbyssShattered = CosmicEmissaryTheAbyssShattered EnemyA
 
 cosmicEmissaryTheAbyssShattered :: EnemyCard CosmicEmissaryTheAbyssShattered
 cosmicEmissaryTheAbyssShattered =
-  enemy CosmicEmissaryTheAbyssShattered Cards.cosmicEmissaryTheAbyssShattered (4, Static 10, 4) (1, 1)
+  enemyWith CosmicEmissaryTheAbyssShattered Cards.cosmicEmissaryTheAbyssShattered (4, Static 10, 4) (1, 1)
+    $ asSelfLocationL ?~ "cosmicEmissaryAbyss"
 
 instance RunMessage CosmicEmissaryTheAbyssShattered where
   runMessage msg (CosmicEmissaryTheAbyssShattered attrs) =

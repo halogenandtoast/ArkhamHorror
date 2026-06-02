@@ -3,24 +3,57 @@ module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (connectBothWays)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier (UIModifier (..), setActiveDuringSetup)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype FateOfTheVale = FateOfTheVale ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fateOfTheVale :: Difficulty -> FateOfTheVale
 fateOfTheVale difficulty = scenario FateOfTheVale "10651" "Fate of the Vale" difficulty []
+
+cosmicEmissaryFormation :: [(Text, CardDef, CardDef)]
+cosmicEmissaryFormation =
+  [ ("mirrorNestTop", Enemies.cosmicEmissaryTheAbyss, Locations.mirrorNest10666)
+  , ("mirrorNestRight", Enemies.cosmicEmissaryTheMiasma, Locations.mirrorNest10667)
+  , ("mirrorNestBottom", Enemies.cosmicEmissaryTheBrilliance, Locations.mirrorNest10668)
+  , ("mirrorNestLeft", Enemies.cosmicEmissaryThePhantasm, Locations.mirrorNest10669)
+  ]
+
+cosmicEmissaryLayout :: [GridTemplateRow]
+cosmicEmissaryLayout =
+  [ ". . mirrorNestTop ."
+  , "mirrorNestLeft cosmicEmissaryPhantasm cosmicEmissaryAbyss ."
+  , ". cosmicEmissaryBrilliance cosmicEmissaryMiasma mirrorNestRight"
+  , ". mirrorNestBottom . ."
+  ]
+
+instance HasModifiersFor FateOfTheVale where
+  getModifiersFor (FateOfTheVale attrs) = do
+    modifySelectWith
+      attrs
+      (mapOneOf enemyIs [Enemies.cosmicEmissaryThePhantasm, Enemies.cosmicEmissaryThePhantasmShattered])
+      setActiveDuringSetup
+      [UIModifier $ Rotated 90]
+    modifySelectWith
+      attrs
+      (mapOneOf enemyIs [Enemies.cosmicEmissaryTheMiasma, Enemies.cosmicEmissaryTheMiasmaShattered])
+      setActiveDuringSetup
+      [UIModifier $ Rotated 270]
 
 instance HasChaosTokenValue FateOfTheVale where
   getChaosTokenValue iid tokenFace (FateOfTheVale attrs) = case tokenFace of
@@ -74,35 +107,20 @@ instance RunMessage FateOfTheVale where
       setAgendaDeck [Agendas.theSilence, Agendas.theMiasma, Agendas.theSpiral]
       setActDeck [Acts.shatteredMemories, Acts.lostSelf]
 
-      -- Replace each player's investigator card with a Shattered Self investigator card
       eachInvestigator $ push . BecomeShatteredSelf
 
-      -- Shuffle the 4 Mirror Nest locations and put them into play, unrevealed
-      mirrorNests <-
-        shuffle
-          [ Locations.mirrorNest10666
-          , Locations.mirrorNest10667
-          , Locations.mirrorNest10668
-          , Locations.mirrorNest10669
-          ]
-      nestLids <- traverse place mirrorNests
+      mirrorNests <- shuffle $ map (\(_, _, nest) -> nest) cosmicEmissaryFormation
 
-      -- Each Mirror Nest is connected to the location clockwise and counter-clockwise from it
+      setLayout cosmicEmissaryLayout
+      nestLids <- for (zip cosmicEmissaryFormation mirrorNests) \((label, emissary, _), nest) -> do
+        lid <- placeLabeled label nest
+        void $ enemyAt emissary lid
+        pure lid
+
       for_ (zip nestLids (drop 1 nestLids <> take 1 nestLids)) (uncurry connectBothWays)
 
-      -- Place a Cosmic Emissary enemy (Colour side faceup) bordering each Mirror Nest
-      let emissaries =
-            [ Enemies.cosmicEmissaryTheAbyss
-            , Enemies.cosmicEmissaryThePhantasm
-            , Enemies.cosmicEmissaryTheMiasma
-            , Enemies.cosmicEmissaryTheBrilliance
-            ]
-      for_ (zip emissaries nestLids) \(emissary, lid) -> void $ enemyAt emissary lid
-
-      -- Each investigator begins play at a different Mirror Nest location of their choice
       eachInvestigator \iid -> chooseTargetM iid nestLids $ moveTo_ attrs iid
 
-      -- Set aside, out of play
       setAside
         [ Acts.fateOfTheValeV1
         , Acts.fateOfTheValeV2

@@ -17,6 +17,13 @@ const enemies = computed(() =>
   Object.values(props.game.enemies).filter(a => a.asSelfLocation && a.placement.tag === "AtLocation")
 )
 
+const fateOfTheValeEnemyLocations: Record<string, string> = {
+  cosmicEmissaryPhantasm: 'mirrorNestLeft',
+  cosmicEmissaryAbyss: 'mirrorNestTop',
+  cosmicEmissaryBrilliance: 'mirrorNestBottom',
+  cosmicEmissaryMiasma: 'mirrorNestRight',
+}
+
 const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
   const aId = a.dataset.id, bId = b.dataset.id
   if (!aId || !bId) return 0
@@ -33,6 +40,7 @@ const svgRef = ref<SVGSVGElement | null>(null)
 const protoRef = ref<SVGLineElement | null>(null)
 const chevronProtoRef = ref<SVGPathElement | null>(null)
 let svgEl: SVGSVGElement | null = null
+let defsEl: SVGDefsElement | null = null
 let lineProto: SVGLineElement | null = null
 let chevronProto: SVGPathElement | null = null
 
@@ -41,8 +49,8 @@ const close = (a: number, b: number) => Math.abs(a - b) < EPS
 const linesByConn = new Map<string, SVGLineElement>()
 const chevronsByConn = new Map<string, SVGPathElement>()
 
-function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: string) {
-  const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
+function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: string, preserveDirection = false) {
+  const [leftDiv, rightDiv] = preserveDirection ? [div1, div2] : [div1, div2].sort(sortByDataId)
   const leftDivId = leftDiv.dataset.id
   const rightDivId = rightDiv.dataset.id
   if (!leftDivId || !rightDivId || !svgEl || !lineProto) return
@@ -87,8 +95,51 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement, className?: stri
   if (!close(ex2, x2)) line.setAttribute('x2', String(x2))
   if (!close(ey2, y2)) line.setAttribute('y2', String(y2))
 
+  if (className === 'fate-of-the-vale-enemy-line') updateFateOfTheValeEnemyLineGradient(line, connection, x1, y1, x2, y2)
+
   if (activeLine) line.classList.add('active')
   else line.classList.remove('active')
+}
+
+function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: string, x1: number, y1: number, x2: number, y2: number) {
+  if (!defsEl) return
+
+  const gradientId = `fate-of-the-vale-enemy-line-gradient-${connection.replace(/[^a-zA-Z0-9_-]/g, '-')}`
+  let gradient = defsEl.querySelector<SVGLinearGradientElement>(`#${gradientId}`)
+  if (!gradient) {
+    gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
+    gradient.id = gradientId
+    gradient.setAttribute('gradientUnits', 'userSpaceOnUse')
+    gradient.setAttribute('spreadMethod', 'repeat')
+    gradient.innerHTML = `
+      <stop offset="0%" stop-color="rgba(8, 34, 46, 0.55)" />
+      <stop offset="16%" stop-color="rgba(34, 155, 185, 0.9)" />
+      <stop offset="34%" stop-color="rgba(96, 235, 240, 1)" />
+      <stop offset="48%" stop-color="rgba(248, 255, 250, 1)" />
+      <stop offset="60%" stop-color="rgba(105, 242, 238, 1)" />
+      <stop offset="76%" stop-color="rgba(27, 132, 162, 0.88)" />
+      <stop offset="90%" stop-color="rgba(3, 18, 27, 0.72)" />
+      <stop offset="100%" stop-color="rgba(8, 34, 46, 0.55)" />
+      <animateTransform attributeName="gradientTransform" type="translate" dur="7s" repeatCount="indefinite" />
+    `
+    defsEl.appendChild(gradient)
+  }
+
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const dist = Math.hypot(dx, dy)
+  if (dist < 1) return
+  const ux = dx / dist
+  const uy = dy / dist
+  const patternLength = 160
+
+  gradient.setAttribute('x1', String(x1))
+  gradient.setAttribute('y1', String(y1))
+  gradient.setAttribute('x2', String(x1 + ux * patternLength))
+  gradient.setAttribute('y2', String(y1 + uy * patternLength))
+  gradient.querySelector('animateTransform')?.setAttribute('from', '0 0')
+  gradient.querySelector('animateTransform')?.setAttribute('to', `${ux * patternLength} ${uy * patternLength}`)
+  line.setAttribute('stroke', `url(#${gradientId})`)
 }
 
 // Renders a one-way connection as a stream of filled chevron polygons
@@ -242,8 +293,22 @@ function handleConnections() {
     }
   }
 
+  const isFateOfTheVale = props.game.scenario?.id === 'c10651'
+  if (isFateOfTheVale) {
+    for (const [enemyLabel, locationLabel] of Object.entries(fateOfTheValeEnemyLocations)) {
+      const start = document.querySelector<HTMLElement>(`[data-label="${enemyLabel}"] [data-id]`)
+      const end = document.querySelector<HTMLElement>(`.location-cell[data-label="${locationLabel}"] [data-id]`)
+      if (!start || !end) continue
+
+      const conn = `${start.dataset.id}:${end.dataset.id}`
+      live.add(conn)
+      makeOrUpdateLine(start, end, "fate-of-the-vale-enemy-line", true)
+    }
+  }
+
   for (const enemy of enemies.value) {
-    const { id, placement } = enemy
+    const { id, placement, asSelfLocation } = enemy
+    if (isFateOfTheVale && asSelfLocation && asSelfLocation in fateOfTheValeEnemyLocations) continue
     if (placement.tag !== "AtLocation") continue
 
     const start = document.querySelector<HTMLElement>(`[data-id="${id}"]`)
@@ -289,6 +354,7 @@ function tick(ts: number) {
 onMounted(async () => {
   await nextTick() // ensure template is in DOM
   svgEl = svgRef.value
+  defsEl = svgEl?.querySelector('defs') ?? null
   lineProto = protoRef.value
   chevronProto = chevronProtoRef.value
   // first draw immediately so a cold refresh shows lines at once
@@ -307,6 +373,7 @@ onBeforeUnmount(()=> {
   for (const [,el] of chevronsByConn) el.remove()
   chevronsByConn.clear()
   svgEl = null
+  defsEl = null
   lineProto = null
   chevronProto = null
 })
@@ -314,6 +381,7 @@ onBeforeUnmount(()=> {
 
 <template>
   <svg ref="svgRef" class="connections-svg">
+    <defs></defs>
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="chevronProtoRef" class="chevrons original"/>
   </svg>
@@ -351,5 +419,23 @@ onBeforeUnmount(()=> {
 .enemy-line{
   stroke: rgba(255 0 0 / 0.4);
   stroke-dasharray: unset;
+}
+
+.fate-of-the-vale-enemy-line{
+  stroke-width: 7px;
+  stroke-dasharray: 42 12 18 16 54 18;
+  stroke-linecap: round;
+  stroke-opacity: 1;
+  animation: fate-of-the-vale-smoke-flow 6.5s linear infinite;
+  filter:
+    blur(0.25px)
+    drop-shadow(0 0 3px rgba(248 255 250 / 0.85))
+    drop-shadow(0 0 10px rgba(83 232 238 / 0.95))
+    drop-shadow(0 0 20px rgba(10 92 126 / 0.85));
+}
+
+@keyframes fate-of-the-vale-smoke-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -160; }
 }
 </style>

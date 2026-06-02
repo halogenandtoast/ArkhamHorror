@@ -112,14 +112,14 @@ function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: 
     gradient.setAttribute('gradientUnits', 'userSpaceOnUse')
     gradient.setAttribute('spreadMethod', 'repeat')
     gradient.innerHTML = `
-      <stop offset="0%" stop-color="rgba(8, 34, 46, 0.55)" />
-      <stop offset="16%" stop-color="rgba(34, 155, 185, 0.9)" />
-      <stop offset="34%" stop-color="rgba(96, 235, 240, 1)" />
-      <stop offset="48%" stop-color="rgba(248, 255, 250, 1)" />
-      <stop offset="60%" stop-color="rgba(105, 242, 238, 1)" />
-      <stop offset="76%" stop-color="rgba(27, 132, 162, 0.88)" />
-      <stop offset="90%" stop-color="rgba(3, 18, 27, 0.72)" />
-      <stop offset="100%" stop-color="rgba(8, 34, 46, 0.55)" />
+      <stop offset="0%" stop-color="rgba(4, 18, 28, 0.45)" />
+      <stop offset="14%" stop-color="rgba(20, 105, 140, 0.82)" />
+      <stop offset="30%" stop-color="rgba(74, 226, 239, 1)" />
+      <stop offset="45%" stop-color="rgba(248, 255, 250, 1)" />
+      <stop offset="58%" stop-color="rgba(113, 246, 239, 1)" />
+      <stop offset="73%" stop-color="rgba(18, 111, 151, 0.86)" />
+      <stop offset="88%" stop-color="rgba(0, 8, 14, 0.78)" />
+      <stop offset="100%" stop-color="rgba(4, 18, 28, 0.45)" />
       <animateTransform attributeName="gradientTransform" type="translate" dur="7s" repeatCount="indefinite" />
     `
     defsEl.appendChild(gradient)
@@ -131,7 +131,7 @@ function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: 
   if (dist < 1) return
   const ux = dx / dist
   const uy = dy / dist
-  const patternLength = 160
+  const patternLength = 96
 
   gradient.setAttribute('x1', String(x1))
   gradient.setAttribute('y1', String(y1))
@@ -381,7 +381,20 @@ onBeforeUnmount(()=> {
 
 <template>
   <svg ref="svgRef" class="connections-svg">
-    <defs></defs>
+    <defs>
+      <filter id="fate-of-the-vale-smoke-filter" x="-5000" y="-5000" width="10000" height="10000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="17" result="smokeNoise">
+          <animate attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
+        <feGaussianBlur in="distorted" stdDeviation="1.9" result="softSmoke" />
+        <feGaussianBlur in="distorted" stdDeviation="5.5" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="softSmoke" />
+        </feMerge>
+      </filter>
+    </defs>
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="chevronProtoRef" class="chevrons original"/>
   </svg>
@@ -423,19 +436,20 @@ onBeforeUnmount(()=> {
 
 .fate-of-the-vale-enemy-line{
   stroke-width: 7px;
-  stroke-dasharray: 42 12 18 16 54 18;
+  stroke-dasharray: 78 18;
   stroke-linecap: round;
-  stroke-opacity: 1;
-  animation: fate-of-the-vale-smoke-flow 6.5s linear infinite;
+  stroke-opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+  animation: fate-of-the-vale-smoke-flow 7.5s linear infinite;
   filter:
-    blur(0.25px)
-    drop-shadow(0 0 3px rgba(248 255 250 / 0.85))
-    drop-shadow(0 0 10px rgba(83 232 238 / 0.95))
-    drop-shadow(0 0 20px rgba(10 92 126 / 0.85));
+    url(#fate-of-the-vale-smoke-filter)
+    drop-shadow(0 0 5px rgba(248 255 250 / 0.62))
+    drop-shadow(0 0 14px rgba(83 232 238 / 0.82))
+    drop-shadow(0 0 28px rgba(10 92 126 / 0.72));
 }
 
 @keyframes fate-of-the-vale-smoke-flow {
   from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -160; }
+  to { stroke-dashoffset: -96; }
 }
 </style>

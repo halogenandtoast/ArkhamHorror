@@ -481,7 +481,8 @@
       "failBy1More": "Fail by 1 more"
     },
     "grannyOrne3": {
-      "get1SkillValue": "Get -1 skill value"
+      "getPlus1SkillValue": "Get +1 skill value",
+      "getMinus1SkillValue": "Get -1 skill value"
     },
     "graysAnatomyTheDoctorsBible5": {
       "damagePlus": "The next time that card would be dealt damage this round, deal +1 damage/horror (to a maximum of +3",

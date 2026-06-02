@@ -32,10 +32,10 @@ instance RunMessage GrannyOrne3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       getSkillTest >>= traverse_ \st -> do
         chooseOneM iid do
-          (cardI18n $ labeled' "grannyOrne3.get1SkillValue") do
+          (cardI18n $ labeled' "grannyOrne3.getPlus1SkillValue") do
             skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue 1)
             push RerunSkillTest
-          (cardI18n $ labeled' "grannyOrne3.get1SkillValue") do
+          (cardI18n $ labeled' "grannyOrne3.getMinus1SkillValue") do
             skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue (-1))
             push RerunSkillTest
       pure a

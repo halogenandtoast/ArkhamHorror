@@ -112,14 +112,11 @@ function updateFateOfTheValeEnemyLineGradient(line: SVGLineElement, connection: 
     gradient.setAttribute('gradientUnits', 'userSpaceOnUse')
     gradient.setAttribute('spreadMethod', 'repeat')
     gradient.innerHTML = `
-      <stop offset="0%" stop-color="rgba(4, 18, 28, 0.45)" />
-      <stop offset="14%" stop-color="rgba(20, 105, 140, 0.82)" />
-      <stop offset="30%" stop-color="rgba(74, 226, 239, 1)" />
-      <stop offset="45%" stop-color="rgba(248, 255, 250, 1)" />
-      <stop offset="58%" stop-color="rgba(113, 246, 239, 1)" />
-      <stop offset="73%" stop-color="rgba(18, 111, 151, 0.86)" />
-      <stop offset="88%" stop-color="rgba(0, 8, 14, 0.78)" />
-      <stop offset="100%" stop-color="rgba(4, 18, 28, 0.45)" />
+      <stop offset="0%" stop-color="#88ADA4" stop-opacity="1" />
+      <stop offset="25%" stop-color="#366672" stop-opacity="1" />
+      <stop offset="50%" stop-color="#DDF2EB" stop-opacity="1" />
+      <stop offset="75%" stop-color="#84CAC7" stop-opacity="1" />
+      <stop offset="100%" stop-color="#88ADA4" stop-opacity="1" />
       <animateTransform attributeName="gradientTransform" type="translate" dur="7s" repeatCount="indefinite" />
     `
     defsEl.appendChild(gradient)
@@ -435,17 +432,17 @@ onBeforeUnmount(()=> {
 }
 
 .fate-of-the-vale-enemy-line{
-  stroke-width: 7px;
-  stroke-dasharray: 78 18;
+  stroke-width: 10px;
+  stroke-dasharray: 86 10;
   stroke-linecap: round;
-  stroke-opacity: 0.9;
+  stroke-opacity: 1;
   vector-effect: non-scaling-stroke;
   animation: fate-of-the-vale-smoke-flow 7.5s linear infinite;
   filter:
     url(#fate-of-the-vale-smoke-filter)
-    drop-shadow(0 0 5px rgba(248 255 250 / 0.62))
-    drop-shadow(0 0 14px rgba(83 232 238 / 0.82))
-    drop-shadow(0 0 28px rgba(10 92 126 / 0.72));
+    drop-shadow(0 0 4px rgba(221 242 235 / 0.9))
+    drop-shadow(0 0 10px rgba(132 202 199 / 0.95))
+    drop-shadow(0 0 18px rgba(54 102 114 / 0.85));
 }
 
 @keyframes fate-of-the-vale-smoke-flow {

@@ -93,7 +93,28 @@ const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) :
 
 const targetFromEvent = (e: Event): HTMLElement | null => {
   const raw = e.target as HTMLElement | null
-  return raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
+  const closest = raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
+  if (closest) return closest
+
+  // Transformed cards can visually extend outside their untransformed layout
+  // box (notably rotated enemy-as-location cards). In that case normal event
+  // targeting may hit the map/background instead of the image even though the
+  // pointer is over the rendered card. Fall back to a geometry check using the
+  // transformed bounding rects so the full visual card surface opens overlays.
+  if (!(e instanceof MouseEvent)) return null
+  const { clientX, clientY } = e
+  const candidates = Array.from(document.querySelectorAll<HTMLElement>('img.card,[data-image-id],[data-target],[data-image]'))
+    .reverse()
+  return candidates.find((el) => {
+    if (el.classList.contains('dragging') || el.classList.contains('no-overlay')) return false
+    const rect = el.getBoundingClientRect()
+    return rect.width > 0
+      && rect.height > 0
+      && clientX >= rect.left
+      && clientX <= rect.right
+      && clientY >= rect.top
+      && clientY <= rect.bottom
+  }) ?? null
 }
 
 const queueHover = (el: HTMLElement) => {

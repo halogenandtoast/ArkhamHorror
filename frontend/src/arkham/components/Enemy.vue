@@ -307,7 +307,6 @@ function onDrop(event: DragEvent) {
             class="card-wrapper"
             :class="{ exhausted: isExhausted }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
-            :data-image-id="imageId"
           >
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">

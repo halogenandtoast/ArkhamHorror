@@ -104,6 +104,30 @@ const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 let legObserver: MutationObserver | null = null
 let cosmicEmissaryObserver: MutationObserver | null = null
+
+function readStyleMapCache(key: string): Record<string, Record<string, string>> {
+  try {
+    return JSON.parse(sessionStorage.getItem(key) ?? '{}')
+  } catch {
+    return {}
+  }
+}
+
+function writeStyleMapCache(key: string, value: Record<string, Record<string, string>>) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Ignore storage failures; the in-memory ref still prevents normal update hops.
+  }
+}
+
+const cosmicEmissaryEnemyStylesCacheKey = `game:${props.game.id}:cosmicEmissaryEnemyStyles`
+const cosmicEmissaryLocationCellStylesCacheKey = `game:${props.game.id}:cosmicEmissaryLocationCellStyles`
+const cachedCosmicEmissaryEnemyStyles = readStyleMapCache(cosmicEmissaryEnemyStylesCacheKey)
+const cachedCosmicEmissaryLocationCellStyles = readStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey)
+const cosmicEmissaryEnemyStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryEnemyStyles)
+const cosmicEmissaryLocationCellStyles = ref<Record<string, Record<string, string>>>(cachedCosmicEmissaryLocationCellStyles)
+const cosmicEmissaryFormationHasMeasured = ref(Object.keys(cachedCosmicEmissaryEnemyStyles).length > 0)
 const locationsZoom = ref(parseFloat(localStorage.getItem(`game:${props.game.id}:locationsZoom`) ?? '1'))
 const doubleZoomActive = ref(false)
 const doubleZoomPrevValue = ref(1)
@@ -397,7 +421,15 @@ function cancelActiveDrag() {
 
 function toggleLocationsUnlocked() {
   locationsUnlocked.value = !locationsUnlocked.value
-  if (!locationsUnlocked.value) cancelActiveDrag()
+  if (locationsUnlocked.value) {
+    cosmicEmissaryEnemyStyles.value = {}
+    cosmicEmissaryLocationCellStyles.value = {}
+    sessionStorage.removeItem(cosmicEmissaryEnemyStylesCacheKey)
+    sessionStorage.removeItem(cosmicEmissaryLocationCellStylesCacheKey)
+    cosmicEmissaryFormationHasMeasured.value = false
+  } else {
+    cancelActiveDrag()
+  }
   nextTick(() => compactCosmicEmissaryFormation())
 }
 
@@ -1024,6 +1056,28 @@ function locationHasManualOffset(el: HTMLElement): boolean {
     || dragInternal?.locationId === locationId
 }
 
+function transformTranslate(el: HTMLElement): { x: number, y: number } {
+  const transform = getComputedStyle(el).transform
+  if (!transform || transform === 'none') return { x: 0, y: 0 }
+  const matrix = new DOMMatrixReadOnly(transform)
+  return { x: matrix.e, y: matrix.f }
+}
+
+function styleMapsEqual(a: Record<string, Record<string, string>>, b: Record<string, Record<string, string>>): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  return aKeys.every((key) => {
+    const aStyle = a[key]
+    const bStyle = b[key]
+    if (!bStyle) return false
+    const aStyleKeys = Object.keys(aStyle)
+    const bStyleKeys = Object.keys(bStyle)
+    return aStyleKeys.length === bStyleKeys.length
+      && aStyleKeys.every((styleKey) => aStyle[styleKey] === bStyle[styleKey])
+  })
+}
+
 function compactCosmicEmissaryFormation() {
   if (props.scenario.id !== 'c10651' || locationsUnlocked.value) return
 
@@ -1043,23 +1097,31 @@ function compactCosmicEmissaryFormation() {
     ])
   ) as Record<CosmicEmissaryLabel, HTMLElement | null>
 
-  for (const el of [...Object.values(elements), ...Object.values(locationElements).filter((el): el is HTMLElement => el !== null)]) {
-    el.style.transition = 'none'
-    el.style.transform = ''
-  }
-
   requestAnimationFrame(() => {
-    const rectFor = (el: HTMLElement) => (el.querySelector('img.card') ?? el).getBoundingClientRect()
-    const rects = Object.fromEntries(
-      Object.entries(elements).map(([label, el]) => [label, rectFor(el as HTMLElement)])
-    ) as Record<CosmicEmissaryLabel, DOMRect>
-
-    const centerX = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].left + rects[label].width / 2, 0) / cosmicEmissaryLabels.length
-    const centerY = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].top + rects[label].height / 2, 0) / cosmicEmissaryLabels.length
     const locationCards = document.querySelector('.location-cards') as HTMLElement | null
     const visualScale = locationCards
       ? (new DOMMatrixReadOnly(getComputedStyle(locationCards).transform).a || 1)
       : 1
+    const rectFor = (el: HTMLElement) => {
+      const rectEl = (el.querySelector('img.card') ?? el) as HTMLElement
+      const rect = rectEl.getBoundingClientRect()
+      const existing = transformTranslate(el)
+      // Measure the element's natural grid position without removing its current
+      // transform. This keeps the compacted positions in the VDOM between game
+      // updates, so cards don't snap outward before this rAF runs again.
+      return {
+        left: rect.left - existing.x * visualScale,
+        top: rect.top - existing.y * visualScale,
+        width: rect.width,
+        height: rect.height,
+      }
+    }
+    const rects = Object.fromEntries(
+      Object.entries(elements).map(([label, el]) => [label, rectFor(el as HTMLElement)])
+    ) as Record<CosmicEmissaryLabel, { left: number, top: number, width: number, height: number }>
+
+    const centerX = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].left + rects[label].width / 2, 0) / cosmicEmissaryLabels.length
+    const centerY = cosmicEmissaryLabels.reduce((acc, label) => acc + rects[label].top + rects[label].height / 2, 0) / cosmicEmissaryLabels.length
 
     const targets: Record<CosmicEmissaryLabel, { left: number; top: number }> = {
       cosmicEmissaryPhantasm: {
@@ -1080,17 +1142,23 @@ function compactCosmicEmissaryFormation() {
       },
     }
 
+    const nextEnemyStyles: Record<string, Record<string, string>> = {}
+    const nextLocationCellStyles: Record<string, Record<string, string>> = {}
+    const transition = cosmicEmissaryFormationHasMeasured.value ? 'none' : 'transform 0.2s ease'
+
     for (const label of cosmicEmissaryLabels) {
-      const el = elements[label]
       const rect = rects[label]
       const target = targets[label]
       const dx = (target.left - rect.left) / visualScale
       const dy = (target.top - rect.top) / visualScale
-      el.style.transition = 'transform 0.2s ease'
-      el.style.transform = `translate(${dx}px, ${dy}px)`
-      el.style.zIndex = '20'
+      nextEnemyStyles[label] = {
+        transform: `translate(${dx}px, ${dy}px)`,
+        transition,
+        zIndex: '20',
+      }
 
       const locationEl = locationElements[label]
+      const locationLabel = cosmicEmissaryLocationLabels[label]
       if (locationEl && !locationHasManualOffset(locationEl)) {
         const shouldAlignVerticalMidpoint = label === 'cosmicEmissaryPhantasm' || label === 'cosmicEmissaryMiasma'
         const locationDy = shouldAlignVerticalMidpoint
@@ -1102,11 +1170,23 @@ function compactCosmicEmissaryFormation() {
             })()
           : dy
 
-        locationEl.style.transition = 'transform 0.2s ease'
-        locationEl.style.transform = `translate(${dx}px, ${locationDy}px)`
-        locationEl.style.zIndex = '10'
+        nextLocationCellStyles[locationLabel] = {
+          transform: `translate(${dx}px, ${locationDy}px)`,
+          transition,
+          zIndex: '10',
+        }
       }
     }
+
+    if (!styleMapsEqual(cosmicEmissaryEnemyStyles.value, nextEnemyStyles)) {
+      cosmicEmissaryEnemyStyles.value = nextEnemyStyles
+      writeStyleMapCache(cosmicEmissaryEnemyStylesCacheKey, nextEnemyStyles)
+    }
+    if (!styleMapsEqual(cosmicEmissaryLocationCellStyles.value, nextLocationCellStyles)) {
+      cosmicEmissaryLocationCellStyles.value = nextLocationCellStyles
+      writeStyleMapCache(cosmicEmissaryLocationCellStylesCacheKey, nextLocationCellStyles)
+    }
+    cosmicEmissaryFormationHasMeasured.value = true
   })
 }
 
@@ -1729,14 +1809,17 @@ async function addChaosToken(face: any){
       <div class="location-cards-container" @dblclick.passive="toggleZoom">
         <Connections :game="game" :playerId="playerId" />
         <div class="location-cards-scroller" ref="scrollerRef">
-        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
+        <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <div
             v-for="location in locations"
             :key="location.label"
             class="location-cell"
             :data-location-id="location.id"
             :data-label="location.label"
-            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            :style="[
+              { 'grid-area': location.label, 'justify-self': 'center' },
+              cosmicEmissaryLocationCellStyles[location.label] ?? {},
+            ]"
           >
             <Location
               class="location"
@@ -1758,7 +1841,10 @@ async function addChaosToken(face: any){
             :playerId="playerId"
             :data-label="enemy.asSelfLocation"
             :data-rotation="enemy.meta?.rotation ?? null"
-            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
+            :style="[
+              { 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' },
+              enemy.asSelfLocation ? (cosmicEmissaryEnemyStyles[enemy.asSelfLocation] ?? {}) : {},
+            ]"
             @choose="choose"
           />
           <div

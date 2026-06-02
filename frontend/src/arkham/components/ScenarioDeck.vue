@@ -65,6 +65,8 @@ const deckImage = computed(() => {
       return imgsrc("cards/10577b.avif");
     case 'EnemyDeck':
       return imgsrc("backs/back_the_longest_night.jpg");
+    case 'AbyssDeck':
+      return imgsrc("cards/10670b.avif");
     default:
       return imgsrc("back.png");
   }
@@ -90,6 +92,8 @@ const deckLabel = computed(() => {
       return "Monsters"
     case 'LeadsDeck':
       return "Leads"
+    case 'AbyssDeck':
+      return "The Abyss"
     default:
       return null
   }

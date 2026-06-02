@@ -428,16 +428,11 @@ onBeforeUnmount(()=> {
   <svg ref="svgRef" class="connections-svg" :class="{ 'cosmic-emissary-animation-disabled': props.enableCosmicEmissaryAnimation === false }">
     <defs>
       <filter id="fate-of-the-vale-smoke-filter" x="-1000" y="-1000" width="4000" height="4000" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="17" result="smokeNoise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17" result="smokeNoise">
           <animate v-if="props.enableCosmicEmissaryAnimation !== false" attributeName="baseFrequency" values="0.024;0.036;0.024" dur="9s" repeatCount="indefinite" />
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="smokeNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="distorted" />
-        <feGaussianBlur in="distorted" stdDeviation="1.9" result="softSmoke" />
-        <feGaussianBlur in="distorted" stdDeviation="5.5" result="glow" />
-        <feMerge>
-          <feMergeNode in="glow" />
-          <feMergeNode in="softSmoke" />
-        </feMerge>
+        <feGaussianBlur in="distorted" stdDeviation="1.9" />
       </filter>
     </defs>
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>

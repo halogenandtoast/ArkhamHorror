@@ -33,7 +33,7 @@ prestidigitationEffect = cardEffect PrestidigitationEffect Cards.prestidigitatio
 
 instance RunMessage PrestidigitationEffect where
   runMessage msg e@(PrestidigitationEffect attrs) = runQueueT $ case msg of
-    EndTurn _ -> do
+    When (EndTurn _) -> do
       for_ attrs.target.investigator \iid -> do
         items <- select $ assetControlledBy iid <> #item <> AssetCanLeavePlayByNormalMeans
         chooseTargetM iid items $ returnToHand iid

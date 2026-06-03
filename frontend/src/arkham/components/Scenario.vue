@@ -27,7 +27,7 @@ import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
-import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
+import { waitForImagesToLoad, imgsrc, groupBy } from '@/arkham/helpers';
 import { cardImage as cardCodeImage } from '@/arkham/cardImages';
 import { useMenu } from '@/composable/menu';
 import { useSettings } from '@/stores/settings';
@@ -49,6 +49,7 @@ import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import Story from '@/arkham/components/Story.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
@@ -94,6 +95,7 @@ const showOutOfPlay = ref(false)
 const forcedShowOutOfPlay = ref(false)
 const forcedShowDiscard = ref(false)
 const forcedShowHollowed = ref(false)
+const encounterDiscardPopoverShown = ref(false)
 const locationMap = ref<Element | null>(null)
 const scrollerRef = ref<HTMLElement | null>(null)
 const viewingDiscard = ref(false)
@@ -943,7 +945,6 @@ const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 const viewUnderScenarioReference = computed(() => t('cardsUnderneath', cardsUnderScenarioReference.value.length))
-const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
   return cardCodeImage(props.scenario.discard[0].cardCode)
@@ -999,6 +1000,19 @@ const unusedLabels = computed(() => {
   return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)
+
+const isEncounterDiscardChoice = (c: Message) => {
+  if (c.tag !== "TargetLabel") return false
+  if (c.target.tag === "EnemyTarget") {
+    const enemy = props.game.enemies[c.target.contents as string]
+    if (!enemy) return false
+    return discards.value.some(card => cardId(card) === enemy.cardId)
+  }
+  if (c.target.tag !== "CardIdTarget") return false
+  return discards.value.some(card => cardId(card) === c.target.contents)
+}
+const encounterDiscardCardsAction = computed(() => choices.value.some(isEncounterDiscardChoice))
+
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const damage = computed(() => props.scenario.tokens[TokenType.Damage])
 const targets = computed(() => props.scenario.tokens[TokenType.Target])
@@ -1079,25 +1093,16 @@ watchEffect(() => {
   }
   forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
 
-  const isDiscardChoice = (c: Message) => {
-    if (c.tag !== "TargetLabel") return false
-    if (c.tag === "TargetLabel" && c.target.tag === "EnemyTarget") {
-      const enemy = props.game.enemies[c.target.contents as string]
-      if (!enemy) return false
-      return discards.value.some(card => cardId(card) === enemy.cardId)
-    }
-    if (c.target.tag !== "CardIdTarget") return false
-    return discards.value.some(card => cardId(card) === c.target.contents)
-  }
   const isHollowedChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false
     if (c.target.tag !== "CardIdTarget") return false
     return hollowed.value.some(card => cardId(card) === c.target.contents)
   }
-  const showDiscard = choices.value.some(isDiscardChoice)
+  const showDiscard = choices.value.some(isEncounterDiscardChoice)
   const showHollowedCards = choices.value.some(isHollowedChoice)
   if (showDiscard) {
-    showDiscards();
+    encounterDiscardPopoverShown.value = true
+    hideCards()
     forcedShowDiscard.value = true
     forcedShowHollowed.value = false
   } else if (showHollowedCards) {
@@ -1692,14 +1697,25 @@ async function addChaosToken(face: any){
               <img
                 :src="topOfEncounterDiscard"
                 class="card"
-                @click="showDiscards"
               />
               <span class="deck-size">{{discards.length}}</span>
             </div>
 
 
             <div v-if="discards.length > 0" class="buttons">
-              <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+              <CardsUnderIndicator
+                v-if="discards.length > 0"
+                v-model:shown="encounterDiscardPopoverShown"
+                class="view-discard-button"
+                :cards="discards"
+                :game="game"
+                :playerId="playerId"
+                :label="t('scenario.discards')"
+                :isDiscards="true"
+                :highlighted="encounterDiscardCardsAction"
+                :fullWidth="true"
+                @choose="choose"
+              />
               <template v-if="debug.active">
                 <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">{{ $t('scenarioComponent.shuffleBackIn') }}</button>
               </template>
@@ -2111,6 +2127,13 @@ async function addChaosToken(face: any){
   }
 }
 
+/* A revealed (slid-out) treachery extends down into the board's region; lift the
+   whole scenario-cards layer above the board (normally z-index: -2, behind it) so
+   the revealed card and its buttons stay clickable. */
+.scenario-cards:has(.treachery-group.is-revealed) {
+  z-index: 1;
+}
+
 .clue {
   position: relative;
   width: 57px;
@@ -2257,9 +2280,6 @@ async function addChaosToken(face: any){
     display: flex;
     flex-direction: column;
     gap: 5px;
-    @media (max-width: 800px) and (orientation: portrait) {
-      display: none;
-    }
   }
 }
 

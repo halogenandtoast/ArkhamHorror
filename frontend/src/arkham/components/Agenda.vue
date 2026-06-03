@@ -120,6 +120,21 @@ const attachedEnemies = computed(() => Object.values(props.game.enemies).
 
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
+// Which treachery group is slid out. We reveal only when the pointer is over the
+// card image, not over its buttons — so mousing straight onto a Forced button
+// presses it in place instead of triggering the slide. Once revealed it stays
+// out (so you can move onto the now-slid button) until the pointer leaves the
+// whole group.
+const revealedTreacheryGroup = ref<string | null>(null)
+function revealTreacheryGroup(e: PointerEvent, cCode: string) {
+  if (e.target instanceof Element && e.target.matches('img.card')) {
+    revealedTreacheryGroup.value = cCode
+  }
+}
+function hideTreacheryGroup(cCode: string) {
+  if (revealedTreacheryGroup.value === cCode) revealedTreacheryGroup.value = null
+}
+
 const isVertical = computed(() => {
   const cardCode = props.agenda.flipped ? id.value.replace(/a?$/, 'b') : id.value
   return ["c01121b", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
@@ -195,20 +210,30 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
         @choose="$emit('choose', $event)"
       />
       <div v-if="groupedTreacheries.length > 0" class="treacheries">
-        <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">
-          <div
-            v-for="(treacheryId, cardIdx) in treacheries"
-            class="treachery-card"
-            :key="treacheryId"
-            :style="{ '--attachment-index': cardIdx }"
-          >
-            <Treachery
-              :treachery="game.treacheries[treacheryId]"
-              :game="game"
-              :playerId="playerId"
-              @choose="$emit('choose', $event)"
-              :overlay-delay="310"
-            />
+        <div
+          v-for="([cCode, treacheries], idx) in groupedTreacheries"
+          :key="cCode"
+          class="treachery-group"
+          :class="{ 'is-revealed': revealedTreacheryGroup === cCode }"
+          :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }"
+          @pointerover="revealTreacheryGroup($event, cCode)"
+          @pointerleave="hideTreacheryGroup(cCode)"
+        >
+          <div class="treachery-group__cards">
+            <div
+              v-for="(treacheryId, cardIdx) in treacheries"
+              class="treachery-card"
+              :key="treacheryId"
+              :style="{ '--attachment-index': cardIdx }"
+            >
+              <Treachery
+                :treachery="game.treacheries[treacheryId]"
+                :game="game"
+                :playerId="playerId"
+                @choose="$emit('choose', $event)"
+                :overlay-delay="310"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -286,13 +311,6 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
   border: 1px solid #ff00ff;
 }
 
-.agenda :deep(.treachery) {
-  object-fit: cover;
-  object-position: 0 -74px;
-  height: 68px;
-  margin-top: 2px;
-}
-
 .treacheries {
   position:relative;
   display: flex;
@@ -300,26 +318,35 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
   gap: 5px;
 }
 
+/* The group is the stationary hover target: its layout box stays put while only
+   the inner .treachery-group__cards translate. If the group itself moved, it
+   would slide out from under the pointer, drop :hover, snap back, and flicker —
+   making attachments (and their Forced buttons) hard to click.
+
+   The slide reveals the card downward into the board's region. The agenda lives
+   in .scenario-cards (z-index: -2), so on its own the slid card would render
+   behind the board and be unclickable — Scenario.vue lifts .scenario-cards while
+   a treachery is hovered (:has) so the revealed card stays on top. */
 .treachery-group {
+  margin-top: -50px;
+  position: relative;
+}
+
+.treachery-group__cards {
   display: flex;
   gap: 5px;
   flex-direction: row;
-  margin-top: -50px;
-  position: relative;
   transition: transform 0.3s;
   will-change: transform;
+}
 
-  &:hover {
-    transform: translateY(50px);
+.treachery-group.is-revealed .treachery-group__cards,
+.treachery-group.is-revealed ~ .treachery-group .treachery-group__cards {
+  transform: translateY(50px);
+}
 
-    .treachery-card {
-      transform: translateX(calc(var(--attachment-index, 0) * 50px));
-    }
-  }
-
-  &:hover ~ .treachery-group {
-    transform: translateY(50px);
-  }
+.treachery-group.is-revealed .treachery-card {
+  transform: translateX(calc(var(--attachment-index, 0) * 50px));
 }
 
 .treachery {

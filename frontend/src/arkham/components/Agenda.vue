@@ -130,15 +130,15 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 
 <template>
   <div class="agenda-container">
-    <div class="agenda-row">
-      <StackIndicator
-        label="Agenda"
-        :current="agenda.sequence.step"
-        :total="totalAgendas"
-        :completedCards="completedStack"
-        :currentImage="image"
-        :remainingCards="futureStack"
-      />
+    <StackIndicator
+      label="Agenda"
+      :current="agenda.sequence.step"
+      :total="totalAgendas"
+      :completedCards="completedStack"
+      :currentImage="image"
+      :remainingCards="futureStack"
+    />
+    <div class="agenda-main">
       <div class="agenda-card">
         <img
         :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
@@ -165,52 +165,52 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
           </template>
         </div>
       </div>
-    </div>
-    <img
-      v-for="(card, idx) in cardsNextTo"
-      class="card card--sideways"
-      :key="idx"
-      :src="imgsrc(cardImage(card))"
-    />
-    <AbilityButton
-      v-for="ability in abilities"
-      :key="ability.index"
-      :ability="ability.contents"
-      :data-image="image"
-      :game="game"
-      class="sideways"
-      @click="$emit('choose', ability.index)"
+      <img
+        v-for="(card, idx) in cardsNextTo"
+        class="card card--sideways"
+        :key="idx"
+        :src="imgsrc(cardImage(card))"
       />
-    <Enemy
-      v-for="enemyId in attachedEnemies"
-      :enemy="game.enemies[enemyId]"
-      :game="game"
-      :playerId="playerId"
-      @choose="$emit('choose', $event)"
-    />
-    <Event
-      v-for="eventId in nextToEvents"
-      :event="game.events[eventId]"
-      :game="game"
-      :playerId="playerId"
-      @choose="$emit('choose', $event)"
-    />
-    <div v-if="groupedTreacheries.length > 0" class="treacheries">
-      <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">
-        <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
-          <Treachery
-            :treachery="game.treacheries[treacheryId]"
-            :game="game"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-            :overlay-delay="310"
-          />
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability.index"
+        :ability="ability.contents"
+        :data-image="image"
+        :game="game"
+        class="sideways"
+        @click="$emit('choose', ability.index)"
+        />
+      <Enemy
+        v-for="enemyId in attachedEnemies"
+        :enemy="game.enemies[enemyId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <Event
+        v-for="eventId in nextToEvents"
+        :event="game.events[eventId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <div v-if="groupedTreacheries.length > 0" class="treacheries">
+        <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">
+          <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
+            <Treachery
+              :treachery="game.treacheries[treacheryId]"
+              :game="game"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+              :overlay-delay="310"
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    <button v-if="cardsUnder.length > 0 && canViewUnder" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
-    <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>{{viewUnderLabel}}</button>
+      <button v-if="cardsUnder.length > 0 && canViewUnder" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
+      <button v-else-if="cardsUnder.length > 0" class="view-cards-under-button" disabled>{{viewUnderLabel}}</button>
+    </div>
   </div>
 </template>
 
@@ -233,18 +233,27 @@ const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 
 .agenda-container {
   display: flex;
-  flex-direction: column;
-}
-
-.agenda-row {
-  display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 6px;
 }
 
-.agenda-row :deep(.v-popper) {
-  align-self: center;
+/* The card and everything attached to it share one column, so attachments line
+   up under the card on their own — the stack-indicator pips sit beside that
+   column and never need a margin to clear. */
+.agenda-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep the pips centered against the card (the first row of .agenda-main),
+   not the full attachment stack below it. The sideways card is var(--card-width)
+   tall, so matching that height centers the pips on the card. */
+.agenda-container > :deep(.v-popper) {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  height: var(--card-width);
 }
 
 .agenda--can-progress {

@@ -2519,8 +2519,7 @@ runGameMessage msg g = case msg of
   ForInvestigator iid AllDrawEncounterCard -> do
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
     whenM (not <$> isEliminated iid) do
-      player <- getPlayer iid'
-      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid' GameSource]]
+      push $ drawEncounterCard iid' GameSource
     pure $ g & activeInvestigatorIdL .~ iid'
   EndMythos -> do
     pushAll

@@ -61,12 +61,12 @@ revealFromBottomOfAbyss source iid n = do
     chooseOneM iid do
       targets revealed \card -> do
         unfocusCards
-        if toCardType card == InvestigatorType
-          then resolveTrueSelf source iid card
-          else addToHand iid [card]
         let rest = filter (/= card) revealed
         for_ revealed \c -> scenarioSpecific "removeFromAbyss" (toCardId c)
         shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
+        if toCardType card == InvestigatorType
+          then resolveTrueSelf source iid card
+          else scenarioSpecific "drawFromAbyss" (iid, card)
 
 instance RunMessage ShatteredMemories where
   runMessage msg a@(ShatteredMemories attrs) = runQueueT $ case msg of

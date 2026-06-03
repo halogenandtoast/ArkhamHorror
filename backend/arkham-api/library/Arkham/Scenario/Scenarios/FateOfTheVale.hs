@@ -9,15 +9,16 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Draw.Types (finalizeDraw)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers (draw, unDeck)
 import Arkham.Helpers.Act (getCurrentAct, getCurrentActStep)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (connectBothWays)
+import Arkham.Helpers.Location (connectBothWays, withLocationOf)
+import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (allInvestigators, getSetAsideCardMaybe)
+import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as InvestigatorCards
@@ -33,14 +34,14 @@ import Arkham.Modifier (UIModifier (..), setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck (ScenarioDeckKey (..))
-import Arkham.Scenario.Import.Lifted hiding ((.=), say)
+import Arkham.Scenario.Import.Lifted hiding (say, (.=))
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.ScenarioLogKey (ScenarioLogKey (BertieIsFleeing))
 import Arkham.Scenarios.FateOfTheVale.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Strategy (FoundCardsStrategy (..), ZoneReturnStrategy (..), fromDeck, fromDiscard)
 import Arkham.Token (Token (Resource))
-import Arkham.Trait (Trait (Emissary))
+import Arkham.Trait (Trait (Colour, Emissary))
 import Arkham.Zone (OutOfPlayZone (..), Zone (..))
 import Control.Lens (use, (%=), (.=))
 
@@ -115,6 +116,27 @@ drawResidentUnderneath iid source = do
       eid <- createEnemyAt (residentEnemyDef r) lid
       exhaustEnemy source eid
 
+{- | Resolve drawing a card from The Abyss. Resident cards have special text on
+The Abyss: flip them to their enemy side, they attack without engaging, then
+are discarded instead of going to hand.
+-}
+drawCardFromAbyss :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
+drawCardFromAbyss iid source card = do
+  scenarioSpecific "removeFromAbyss" (toCardId card)
+  case residentFromCardDef (toCardDef card) of
+    Just resident -> do
+      enemyCard <- fetchCard (residentEnemyDef resident)
+      focusCards [enemyCard] do
+        chooseOneM iid do
+          labeled "Continue" do
+            unfocusCards
+            obtainCard card
+            withLocationOf iid \lid -> do
+              eid <- createEnemyAt enemyCard lid
+              initiateEnemyAttack eid source iid
+              toDiscard source eid
+    Nothing -> addToHand iid [card]
+
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do
     modifySelectWith
@@ -130,10 +152,13 @@ instance HasModifiersFor FateOfTheVale where
 
 instance HasChaosTokenValue FateOfTheVale where
   getChaosTokenValue iid tokenFace (FateOfTheVale attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      actStep <- getCurrentActStep
+      colourEnemies <- selectCount $ EnemyWithTrait Colour
+      pure $ toChaosTokenValue attrs Skull (actStep + 1) colourEnemies
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 4 6
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 5 8
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage FateOfTheVale where
@@ -222,29 +247,30 @@ instance RunMessage FateOfTheVale where
       topHalfWithTrueSelves <- shuffle $ trueInvestigatorCards <> topHalf
       attrsL . encounterDeckL .= mempty
       attrsL . decksL %= insertMap AbyssDeck (topHalfWithTrueSelves <> bottomHalf)
-    Do (DrawCards iid drawing) | drawing.deck == Deck.EncounterDeck -> do
-      let
-        drawOneFromAbyss deck = do
-          let
-            go rv [] = (Nothing, [], rv)
-            go rv (card : rest) = case card of
-              EncounterCard ec -> (Just ec, reverse rest, rv)
-              _ -> go (card : rv) rest
-            (mEncounter, remaining, revealed) = go [] (reverse deck)
-          shuffledRevealed <- shuffle revealed
-          pure (mEncounter, shuffledRevealed <> remaining)
-
-        drawFromAbyss 0 deck drawn = pure (reverse drawn, deck)
-        drawFromAbyss n deck drawn = do
-          (mEncounter, deck') <- drawOneFromAbyss deck
-          case mEncounter of
-            Nothing -> pure (reverse drawn, deck')
-            Just encounter -> drawFromAbyss (n - 1) deck' (EncounterCard encounter : drawn)
-
-      let abyssDeck = findWithDefault [] AbyssDeck attrs.decks
-      (drawn, abyssDeck') <- drawFromAbyss drawing.amount abyssDeck []
-      pushWhen (notNull drawn) $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> drawn
-      pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck ?~ abyssDeck'
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      randomDiscard iid Cultist
+      pure s
+    ResolveChaosToken drawnToken Tablet iid -> do
+      chooseOneM iid do
+        when (isEasyStandard attrs) $ labeled' "tablet.easyStandard" do
+          placeDoom Tablet iid 1
+          chaosTokenEffect Tablet drawnToken $ ChaosTokenFaceModifier [Zero]
+        when (isHardExpert attrs) $ labeled' "tablet.hardExpert" do
+          placeDoom Tablet iid 1
+          chaosTokenEffect Tablet drawnToken $ ChaosTokenFaceModifier [MinusThree]
+        unscoped skip_
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      let cosmicEmissary = EnemyWithTrait Emissary
+      againstEmissary <- (||) <$> isFightWith cosmicEmissary <*> isEvadeWith cosmicEmissary
+      when againstEmissary
+        $ if isEasyStandard attrs then drawAnotherChaosToken iid else failSkillTest
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
+      | token.face == Cultist
+      , isEasyStandard attrs -> do
+          randomDiscard iid Cultist
+          pure s
     ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
       shuffled <- shuffle $ cards <> findWithDefault [] AbyssDeck attrs.decks
       pure $ FateOfTheVale $ attrs & decksL . at AbyssDeck ?~ shuffled
@@ -482,9 +508,7 @@ instance RunMessage FateOfTheVale where
               unless (null bottom6) $ focusCards bottom6 do
                 chooseOneAtATimeM iid do
                   labeled' "doneDrawing" unfocusCards
-                  targets bottom6 \card -> do
-                    addToHand iid [card]
-                    scenarioSpecific "removeFromAbyss" (toCardId card)
+                  targets bottom6 $ drawCardFromAbyss iid source
             else do
               if isVersion Acts.fateOfTheValeV1 then say "fateOfTheValeV1" else say "otherwise"
               eachInvestigator \iid' -> gainClues iid' source 1
@@ -498,6 +522,15 @@ instance RunMessage FateOfTheVale where
                 >>= traverse_ (takeControlOfSetAsideAsset iid)
           when (isVersion Acts.fateOfTheValeV4) $ remember BertieIsFleeing
         _ -> pure ()
+      pure s
+    AddToHand iid [card]
+      | any ((== toCardId card) . toCardId) (findWithDefault [] AbyssDeck attrs.decks)
+      , Just _ <- residentFromCardDef (toCardDef card) -> do
+          drawCardFromAbyss iid ScenarioSource card
+          pure s
+    ScenarioSpecific "drawFromAbyss" v -> do
+      let (iid, card) = toResult v :: (InvestigatorId, Card)
+      drawCardFromAbyss iid ScenarioSource card
       pure s
     ScenarioSpecific "removeFromAbyss" v -> do
       let cid = toResult v :: CardId
